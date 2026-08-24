@@ -10,7 +10,12 @@ from __future__ import annotations
 import argparse,csv,json
 from dataclasses import replace
 from pathlib import Path
+import matplotlib
 import numpy as np
+
+# Long runs render files rather than interactive windows.  Agg works with the
+# bundled Windows Python even when Tcl/Tk is not installed.
+matplotlib.use("Agg")
 
 from tectonics.checkpoint import RunCheckpoint,load_checkpoint,save_checkpoint
 from tectonics.continental import ContinentalCycleParameters,advance_continental_cycle,initialize_continental_cycle

@@ -11,7 +11,8 @@ primary:
 orbit:
   semi_major_axis_primary_radii: 10.5
 mesh:
-  subdivisions: 5
+  # Fast paired-research mesh; production canonical_moon.yaml remains sub5.
+  subdivisions: 3
 plates:
   count: 12
   seed: 20260806
@@ -23,7 +24,7 @@ classification:
   inactive_speed_km_per_myr: 1.0
 output:
   directory: outputs
-  dpi: 180
+  dpi: 130
   evolution_directory: outputs_v02
   evolution_dpi: 120
   crust_directory: outputs_v03

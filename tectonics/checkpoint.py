@@ -29,6 +29,7 @@ from .topography import TopographyState
 from .topology import PlateTopologyManager
 from .subduction_memory import SubductionMemoryState, memory_to_json, memory_from_json
 from .sediment import SedimentBudgetState
+from .plumes import MantlePlumeState
 
 
 @dataclass(slots=True)
@@ -61,6 +62,8 @@ class RunCheckpoint:
     sediment_budget: SedimentBudgetState | None = None
     sediment_rows: list[dict[str, Any]] = field(default_factory=list)
     craton_rows: list[dict[str, Any]] = field(default_factory=list)
+    plume_state: MantlePlumeState | None = None
+    plume_rows: list[dict[str, Any]] = field(default_factory=list)
 
 
 def _plate_dict(p: Plate) -> dict[str, Any]:
@@ -139,6 +142,15 @@ def save_checkpoint(path: str | Path, cp: RunCheckpoint) -> Path:
     if cp.transport_state is not None:
         arrays["transport_residual_quaternions"] = np.asarray(cp.transport_state.residual_quaternions, dtype=np.float64)
         arrays["transport_hold_age_myr"] = np.asarray(cp.transport_state.hold_age_myr, dtype=np.float64)
+    if cp.plume_state is not None:
+        arrays["plume_centers_unit"] = np.asarray(cp.plume_state.centers_unit, dtype=np.float64)
+        arrays["plume_ages_myr"] = np.asarray(cp.plume_state.ages_myr, dtype=np.float64)
+        arrays["plume_lifetimes_myr"] = np.asarray(cp.plume_state.lifetimes_myr, dtype=np.float64)
+        arrays["plume_head_radii_km"] = np.asarray(cp.plume_state.head_radii_km, dtype=np.float64)
+        arrays["plume_peak_fluxes"] = np.asarray(cp.plume_state.peak_fluxes, dtype=np.float64)
+        arrays["plume_last_flux"] = np.asarray(cp.plume_state.last_flux, dtype=np.float64)
+        arrays["plume_cumulative_exposure_myr"] = np.asarray(cp.plume_state.cumulative_exposure_myr, dtype=np.float64)
+        arrays["plume_cumulative_root_erosion_km"] = np.asarray(cp.plume_state.cumulative_root_erosion_km, dtype=np.float64)
     np.savez_compressed(root/"state.npz", **arrays)
     collision=[
         [int(a), int(b), float(age)]
@@ -150,7 +162,7 @@ def save_checkpoint(path: str | Path, cp: RunCheckpoint) -> Path:
     ]
     meta={
         "format":"moon_tectonics_checkpoint",
-        "version":("0.24-cratonic-memory" if cp.state.craton_strength is not None else ("0.23-conservative-sediments" if cp.sediment_budget is not None else ("0.22-flexural-isostasy" if (cp.relief_rows and "mean_elastic_thickness_km" in cp.relief_rows[-1]) else ("0.21-slab-geometry-arcs" if cp.arc_rows else ("0.20-slab-breakoff" if cp.breakoff_rows else ("0.19-rollback" if cp.rollback_rows else ("0.18-subduction-memory" if cp.subduction_memory is not None else ("0.16-lithosphere-split" if cp.state.mantle_lithosphere_thickness_km is not None else ("0.14-hydrosphere" if cp.hydrosphere is not None else ("0.11-material" if cp.state.continental_fraction is not None else ("0.10-reconstructed" if (cp.mantle_flow is not None or cp.transport_state is not None) else "0.9.5"))))))))))),
+        "version":("0.25-mantle-plumes" if cp.plume_state is not None else ("0.24-cratonic-memory" if cp.state.craton_strength is not None else ("0.23-conservative-sediments" if cp.sediment_budget is not None else ("0.22-flexural-isostasy" if (cp.relief_rows and "mean_elastic_thickness_km" in cp.relief_rows[-1]) else ("0.21-slab-geometry-arcs" if cp.arc_rows else ("0.20-slab-breakoff" if cp.breakoff_rows else ("0.19-rollback" if cp.rollback_rows else ("0.18-subduction-memory" if cp.subduction_memory is not None else ("0.16-lithosphere-split" if cp.state.mantle_lithosphere_thickness_km is not None else ("0.14-hydrosphere" if cp.hydrosphere is not None else ("0.11-material" if cp.state.continental_fraction is not None else ("0.10-reconstructed" if (cp.mantle_flow is not None or cp.transport_state is not None) else "0.9.5")))))))))))),
         "time_myr":float(cp.state.time_myr),
         "lithosphere_time_myr":float(cp.state.time_myr),
         "continental_cycle":{
@@ -197,6 +209,12 @@ def save_checkpoint(path: str | Path, cp: RunCheckpoint) -> Path:
         "sediment_budget": None if cp.sediment_budget is None else asdict(cp.sediment_budget),
         "sediment_rows": _jsonable_rows(cp.sediment_rows),
         "craton_rows": _jsonable_rows(cp.craton_rows),
+        "plume_state": None if cp.plume_state is None else {
+            "time_myr": float(cp.plume_state.time_myr),
+            "next_plume_id": int(cp.plume_state.next_plume_id),
+            "next_birth_time_myr": float(cp.plume_state.next_birth_time_myr),
+        },
+        "plume_rows": _jsonable_rows(cp.plume_rows),
         "transport_state": None if cp.transport_state is None else {
             "cumulative_commit_count": int(cp.transport_state.cumulative_commit_count),
             "max_hold_age_myr": float(cp.transport_state.max_hold_age_myr),
@@ -213,7 +231,7 @@ def load_checkpoint(path: str | Path, manager: PlateTopologyManager) -> RunCheck
         meta=json.load(h)
     if meta.get("format")!="moon_tectonics_checkpoint":
         raise ValueError("Not a moon tectonics checkpoint")
-    if meta.get("version") not in {"0.9.1", "0.9.2", "0.9.3", "0.9.4", "0.9.5", "0.10-reconstructed", "0.11-material", "0.14-hydrosphere", "0.16-lithosphere-split", "0.18-subduction-memory", "0.19-rollback", "0.20-slab-breakoff", "0.21-slab-geometry-arcs", "0.22-flexural-isostasy", "0.23-conservative-sediments", "0.24-cratonic-memory"}:
+    if meta.get("version") not in {"0.9.1", "0.9.2", "0.9.3", "0.9.4", "0.9.5", "0.10-reconstructed", "0.11-material", "0.14-hydrosphere", "0.16-lithosphere-split", "0.18-subduction-memory", "0.19-rollback", "0.20-slab-breakoff", "0.21-slab-geometry-arcs", "0.22-flexural-isostasy", "0.23-conservative-sediments", "0.24-cratonic-memory", "0.25-mantle-plumes"}:
         raise ValueError(f"Unsupported checkpoint version: {meta.get('version')}")
     with np.load(root/"state.npz", allow_pickle=False) as z:
         state=LithosphereState(
@@ -267,6 +285,22 @@ def load_checkpoint(path: str | Path, manager: PlateTopologyManager) -> RunCheck
                 cumulative_commit_count=int(ts.get("cumulative_commit_count", 0)),
                 max_hold_age_myr=float(ts.get("max_hold_age_myr", 0.0)),
             )
+        plume_state = None
+        ps = meta.get("plume_state")
+        if ps is not None and "plume_centers_unit" in z.files:
+            plume_state = MantlePlumeState(
+                time_myr=float(ps["time_myr"]),
+                centers_unit=z["plume_centers_unit"].copy(),
+                ages_myr=z["plume_ages_myr"].copy(),
+                lifetimes_myr=z["plume_lifetimes_myr"].copy(),
+                head_radii_km=z["plume_head_radii_km"].copy(),
+                peak_fluxes=z["plume_peak_fluxes"].copy(),
+                next_plume_id=int(ps["next_plume_id"]),
+                next_birth_time_myr=float(ps["next_birth_time_myr"]),
+                last_flux=z["plume_last_flux"].copy(),
+                cumulative_exposure_myr=z["plume_cumulative_exposure_myr"].copy(),
+                cumulative_root_erosion_km=z["plume_cumulative_root_erosion_km"].copy(),
+            )
     manager.collision_age_myr={
         (int(a),int(b)):float(age) for a,b,age in meta["topology_manager"]["collision_age_myr"]
     }
@@ -305,4 +339,6 @@ def load_checkpoint(path: str | Path, manager: PlateTopologyManager) -> RunCheck
         sediment_budget=sediment_budget,
         sediment_rows=list(meta.get("sediment_rows",[])),
         craton_rows=list(meta.get("craton_rows",[])),
+        plume_state=plume_state,
+        plume_rows=list(meta.get("plume_rows",[])),
     )

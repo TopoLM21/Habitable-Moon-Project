@@ -1,3 +1,13 @@
+# Moon Tectonics v0.25 — Mantle Plumes and Metasomatic Root Modification
+
+v0.25 adds a deterministic, checkpointable population of approximately mantle-fixed plume heads. Plates move across the plume field, so the affected material naturally forms plume tracks. Continental lithosphere above an active plume is thermally rejuvenated, melt/fluid-refertilized and basally eroded; its transported v0.24 age, depletion and craton-strength memory records the encounter after it moves away. Plume flux, cumulative exposure and imposed root erosion have dedicated maps and histories.
+
+Validation: **147/147 tests**, a full canonical-sub5 smoke at 20,480 cells, exact bitwise `0->12` versus `0->4->resume->12` equality for both the compressed numerical state and complete JSON metadata, and four paired subdivision-3 500-Myr control/plume runs. The plume runs have zero elevation safety-rail clips and close the global continental ledger to `<=9.54e-7 km3`. Direct local erosion reaches 21–47 km, while the coupled ensemble reorganizes nonlinearly and finishes with 3.25 fewer plates on average. The current coupling does not itself nucleate a plume-centered rift, so these first ensemble statistics diagnose model feedback rather than constitute a calibrated planetary prediction.
+
+Primary runner: `run_long_evolution_v125.py`. See `V125_PLUME_FINDINGS.md`, `V125_PLUME_PAIRED_500MYR.csv`, and `V125_PLUME_PAIRED_500MYR.png`.
+
+---
+
 # Moon Tectonics v0.24 — Continental-Lithosphere Maturation and Cratons
 
 v0.24 adds transported continuous memory that distinguishes juvenile arc-derived continent from old cratonic lithosphere. Each continental parcel now carries effective lithosphere age, mantle-depletion fraction, and a derived craton-strength field. Quiet roots mature, new arc volume dilutes old memory, and sustained rifting or thermal weakening rejuvenates it.

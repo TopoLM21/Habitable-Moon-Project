@@ -11,10 +11,11 @@ primary:
 orbit:
   semi_major_axis_primary_radii: 10.5
 mesh:
-  subdivisions: 5
+  # Fast paired-research mesh; production canonical_moon.yaml remains sub5.
+  subdivisions: 3
 plates:
   count: 12
-  seed: 20260806
+  seed: 20260809
   boundary_roughness: 0.28
   min_speed_deg_per_myr: 0.12
   max_speed_deg_per_myr: 0.85
@@ -23,7 +24,7 @@ classification:
   inactive_speed_km_per_myr: 1.0
 output:
   directory: outputs
-  dpi: 180
+  dpi: 130
   evolution_directory: outputs_v02
   evolution_dpi: 120
   crust_directory: outputs_v03
@@ -330,7 +331,7 @@ cratons:
 mantle_plumes:
   enabled: true
   # Deterministic deep-mantle chronology, independent of plate transport.
-  seed: 20261055
+  seed: 20261058
   initial_plume_count: 3
   mean_birth_interval_myr: 160.0
   birth_interval_jitter_fraction: 0.25

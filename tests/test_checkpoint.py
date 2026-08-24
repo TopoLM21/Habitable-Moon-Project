@@ -10,6 +10,7 @@ from tectonics.topography import TopographyParameters,initialize_topography
 from tectonics.lithosphere import boundary_records_for_state
 from tectonics.topology import PlateTopologyManager,PlateTopologyParameters
 from tectonics.cratons import CratonParameters,initialize_craton_memory
+from tectonics.plumes import MantlePlumeParameters,initialize_mantle_plumes
 
 
 def test_checkpoint_roundtrip(tmp_path: Path):
@@ -64,6 +65,12 @@ def test_checkpoint_roundtrip_reconstructed_transport_and_mantle(tmp_path: Path)
     transport.hold_age_myr[0]=12.0; transport.cumulative_commit_count=7; transport.max_hold_age_myr=16.0
     cp=RunCheckpoint(state,cycle,thermal,topo,system,system,manager,0.25,123.0,[],[],[],[],[],[],[],mantle,transport)
     cp.craton_rows=[{'time_myr':0.0,'mean_craton_strength':float(np.mean(state.craton_strength))}]
+    cp.plume_state=initialize_mantle_plumes(mesh,0.0,MantlePlumeParameters(seed=322,initial_plume_count=2))
+    cp.plume_state.ages_myr[:]=12.0
+    cp.plume_state.last_flux[:]=np.linspace(0.0,1.0,mesh.cell_count)
+    cp.plume_state.cumulative_exposure_myr[:]=2.0*cp.plume_state.last_flux
+    cp.plume_state.cumulative_root_erosion_km[:]=0.5*cp.plume_state.last_flux
+    cp.plume_rows=[{'time_myr':0.0,'active_plume_count':2}]
     save_checkpoint(tmp_path/'cp2',cp)
     got=load_checkpoint(tmp_path/'cp2',PlateTopologyManager(PlateTopologyParameters()))
     assert got.mantle_flow is not None and got.transport_state is not None
@@ -86,3 +93,12 @@ def test_checkpoint_roundtrip_reconstructed_transport_and_mantle(tmp_path: Path)
     assert np.array_equal(got.state.mantle_depletion_fraction,state.mantle_depletion_fraction)
     assert np.array_equal(got.state.craton_strength,state.craton_strength)
     assert got.craton_rows==cp.craton_rows
+    assert got.plume_state is not None
+    assert np.array_equal(got.plume_state.centers_unit,cp.plume_state.centers_unit)
+    assert np.array_equal(got.plume_state.ages_myr,cp.plume_state.ages_myr)
+    assert np.array_equal(got.plume_state.last_flux,cp.plume_state.last_flux)
+    assert np.array_equal(got.plume_state.cumulative_exposure_myr,cp.plume_state.cumulative_exposure_myr)
+    assert np.array_equal(got.plume_state.cumulative_root_erosion_km,cp.plume_state.cumulative_root_erosion_km)
+    assert got.plume_state.next_plume_id==cp.plume_state.next_plume_id
+    assert got.plume_state.next_birth_time_myr==cp.plume_state.next_birth_time_myr
+    assert got.plume_rows==cp.plume_rows
