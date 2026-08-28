@@ -1,3 +1,26 @@
+# Moon Tectonics v0.26 — Plume-Driven Mechanical Rifting
+
+v0.26 gives the v0.25 mantle plumes an independently switchable mechanical
+effect. Broad plume-head extension and flank localization are passed through
+the existing progressive continental-rift solver, so the plume cannot directly
+create a plate boundary. Diagnostic dynamic uplift and magmatic productivity
+are recorded but do not yet alter topography or crustal volume.
+
+Validation: **151/151 tests**, byte-identical continuous versus checkpointed
+continuation, a local five-GIF smoke run, and sixteen 500-Myr subdivision-3
+runs spanning control, weakening-only, forcing-only and combined modes.
+Mechanical forcing raises ensemble-mean maximum rift extension from `0.126` to
+`0.797–0.839`; successful breakup appears in half the mechanically forced
+worlds and none of the non-mechanical worlds. All ensemble runs have zero
+elevation safety-rail clips and close the final global continental ledger to
+`<=1.43e-6 km3`.
+
+Primary runner: `run_long_evolution_v126.py`. See
+`V126_PLUME_RIFTING_FINDINGS.md`, `V126_PLUME_RIFTING_4MODE_500MYR.csv`, and
+`V126_PLUME_RIFTING_4MODE_500MYR.png`.
+
+---
+
 # Moon Tectonics v0.25 — Mantle Plumes and Metasomatic Root Modification
 
 v0.25 adds a deterministic, checkpointable population of approximately mantle-fixed plume heads. Plates move across the plume field, so the affected material naturally forms plume tracks. Continental lithosphere above an active plume is thermally rejuvenated, melt/fluid-refertilized and basally eroded; its transported v0.24 age, depletion and craton-strength memory records the encounter after it moves away. Plume flux, cumulative exposure and imposed root erosion have dedicated maps and histories.

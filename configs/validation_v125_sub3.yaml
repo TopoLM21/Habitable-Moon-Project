@@ -330,6 +330,7 @@ cratons:
   minimum_extension_factor: 0.28
 mantle_plumes:
   enabled: true
+  lithosphere_weakening_enabled: true
   # Deterministic deep-mantle chronology, independent of plate transport.
   seed: 20261055
   initial_plume_count: 3
@@ -350,6 +351,21 @@ mantle_plumes:
   refertilization_rate_per_myr: 0.0035
   root_erosion_km_per_myr: 0.35
   minimum_continental_root_thickness_km: 60.0
+  continental_fraction_epsilon: 1.0e-9
+plume_rifting:
+  enabled: true
+  flux_onset: 0.10
+  flux_saturation: 0.75
+  core_weight: 0.90
+  annular_weight: 0.35
+  annular_peak_flux: 0.35
+  annular_width_flux: 0.18
+  root_contrast_scale_km: 35.0
+  root_contrast_boost: 0.25
+  maximum_extension_forcing: 1.0
+  maximum_dynamic_uplift_m: 1800.0
+  magmatic_productivity_exponent: 1.4
+  forced_area_threshold: 0.10
   continental_fraction_epsilon: 1.0e-9
 late_tectonics:
   enabled: true

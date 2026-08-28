@@ -30,6 +30,7 @@ from .topology import PlateTopologyManager
 from .subduction_memory import SubductionMemoryState, memory_to_json, memory_from_json
 from .sediment import SedimentBudgetState
 from .plumes import MantlePlumeState
+from .plume_rifting import PlumeRiftingState
 
 
 @dataclass(slots=True)
@@ -64,6 +65,8 @@ class RunCheckpoint:
     craton_rows: list[dict[str, Any]] = field(default_factory=list)
     plume_state: MantlePlumeState | None = None
     plume_rows: list[dict[str, Any]] = field(default_factory=list)
+    plume_rifting_state: PlumeRiftingState | None = None
+    plume_rifting_rows: list[dict[str, Any]] = field(default_factory=list)
 
 
 def _plate_dict(p: Plate) -> dict[str, Any]:
@@ -151,6 +154,11 @@ def save_checkpoint(path: str | Path, cp: RunCheckpoint) -> Path:
         arrays["plume_last_flux"] = np.asarray(cp.plume_state.last_flux, dtype=np.float64)
         arrays["plume_cumulative_exposure_myr"] = np.asarray(cp.plume_state.cumulative_exposure_myr, dtype=np.float64)
         arrays["plume_cumulative_root_erosion_km"] = np.asarray(cp.plume_state.cumulative_root_erosion_km, dtype=np.float64)
+    if cp.plume_rifting_state is not None:
+        arrays["plume_rifting_last_extension_forcing"] = np.asarray(cp.plume_rifting_state.last_extension_forcing, dtype=np.float64)
+        arrays["plume_rifting_cumulative_extension_impulse_myr"] = np.asarray(cp.plume_rifting_state.cumulative_extension_impulse_myr, dtype=np.float64)
+        arrays["plume_rifting_last_dynamic_uplift_m"] = np.asarray(cp.plume_rifting_state.last_dynamic_uplift_m, dtype=np.float64)
+        arrays["plume_rifting_last_magmatic_productivity"] = np.asarray(cp.plume_rifting_state.last_magmatic_productivity, dtype=np.float64)
     np.savez_compressed(root/"state.npz", **arrays)
     collision=[
         [int(a), int(b), float(age)]
@@ -162,7 +170,7 @@ def save_checkpoint(path: str | Path, cp: RunCheckpoint) -> Path:
     ]
     meta={
         "format":"moon_tectonics_checkpoint",
-        "version":("0.25-mantle-plumes" if cp.plume_state is not None else ("0.24-cratonic-memory" if cp.state.craton_strength is not None else ("0.23-conservative-sediments" if cp.sediment_budget is not None else ("0.22-flexural-isostasy" if (cp.relief_rows and "mean_elastic_thickness_km" in cp.relief_rows[-1]) else ("0.21-slab-geometry-arcs" if cp.arc_rows else ("0.20-slab-breakoff" if cp.breakoff_rows else ("0.19-rollback" if cp.rollback_rows else ("0.18-subduction-memory" if cp.subduction_memory is not None else ("0.16-lithosphere-split" if cp.state.mantle_lithosphere_thickness_km is not None else ("0.14-hydrosphere" if cp.hydrosphere is not None else ("0.11-material" if cp.state.continental_fraction is not None else ("0.10-reconstructed" if (cp.mantle_flow is not None or cp.transport_state is not None) else "0.9.5")))))))))))),
+        "version":("0.26-plume-rifting" if cp.plume_rifting_state is not None else ("0.25-mantle-plumes" if cp.plume_state is not None else ("0.24-cratonic-memory" if cp.state.craton_strength is not None else ("0.23-conservative-sediments" if cp.sediment_budget is not None else ("0.22-flexural-isostasy" if (cp.relief_rows and "mean_elastic_thickness_km" in cp.relief_rows[-1]) else ("0.21-slab-geometry-arcs" if cp.arc_rows else ("0.20-slab-breakoff" if cp.breakoff_rows else ("0.19-rollback" if cp.rollback_rows else ("0.18-subduction-memory" if cp.subduction_memory is not None else ("0.16-lithosphere-split" if cp.state.mantle_lithosphere_thickness_km is not None else ("0.14-hydrosphere" if cp.hydrosphere is not None else ("0.11-material" if cp.state.continental_fraction is not None else ("0.10-reconstructed" if (cp.mantle_flow is not None or cp.transport_state is not None) else "0.9.5"))))))))))))),
         "time_myr":float(cp.state.time_myr),
         "lithosphere_time_myr":float(cp.state.time_myr),
         "continental_cycle":{
@@ -215,6 +223,10 @@ def save_checkpoint(path: str | Path, cp: RunCheckpoint) -> Path:
             "next_birth_time_myr": float(cp.plume_state.next_birth_time_myr),
         },
         "plume_rows": _jsonable_rows(cp.plume_rows),
+        "plume_rifting_state": None if cp.plume_rifting_state is None else {
+            "time_myr": float(cp.plume_rifting_state.time_myr),
+        },
+        "plume_rifting_rows": _jsonable_rows(cp.plume_rifting_rows),
         "transport_state": None if cp.transport_state is None else {
             "cumulative_commit_count": int(cp.transport_state.cumulative_commit_count),
             "max_hold_age_myr": float(cp.transport_state.max_hold_age_myr),
@@ -231,7 +243,7 @@ def load_checkpoint(path: str | Path, manager: PlateTopologyManager) -> RunCheck
         meta=json.load(h)
     if meta.get("format")!="moon_tectonics_checkpoint":
         raise ValueError("Not a moon tectonics checkpoint")
-    if meta.get("version") not in {"0.9.1", "0.9.2", "0.9.3", "0.9.4", "0.9.5", "0.10-reconstructed", "0.11-material", "0.14-hydrosphere", "0.16-lithosphere-split", "0.18-subduction-memory", "0.19-rollback", "0.20-slab-breakoff", "0.21-slab-geometry-arcs", "0.22-flexural-isostasy", "0.23-conservative-sediments", "0.24-cratonic-memory", "0.25-mantle-plumes"}:
+    if meta.get("version") not in {"0.9.1", "0.9.2", "0.9.3", "0.9.4", "0.9.5", "0.10-reconstructed", "0.11-material", "0.14-hydrosphere", "0.16-lithosphere-split", "0.18-subduction-memory", "0.19-rollback", "0.20-slab-breakoff", "0.21-slab-geometry-arcs", "0.22-flexural-isostasy", "0.23-conservative-sediments", "0.24-cratonic-memory", "0.25-mantle-plumes", "0.26-plume-rifting"}:
         raise ValueError(f"Unsupported checkpoint version: {meta.get('version')}")
     with np.load(root/"state.npz", allow_pickle=False) as z:
         state=LithosphereState(
@@ -301,6 +313,16 @@ def load_checkpoint(path: str | Path, manager: PlateTopologyManager) -> RunCheck
                 cumulative_exposure_myr=z["plume_cumulative_exposure_myr"].copy(),
                 cumulative_root_erosion_km=z["plume_cumulative_root_erosion_km"].copy(),
             )
+        plume_rifting_state = None
+        prs = meta.get("plume_rifting_state")
+        if prs is not None and "plume_rifting_last_extension_forcing" in z.files:
+            plume_rifting_state = PlumeRiftingState(
+                time_myr=float(prs["time_myr"]),
+                last_extension_forcing=z["plume_rifting_last_extension_forcing"].copy(),
+                cumulative_extension_impulse_myr=z["plume_rifting_cumulative_extension_impulse_myr"].copy(),
+                last_dynamic_uplift_m=z["plume_rifting_last_dynamic_uplift_m"].copy(),
+                last_magmatic_productivity=z["plume_rifting_last_magmatic_productivity"].copy(),
+            )
     manager.collision_age_myr={
         (int(a),int(b)):float(age) for a,b,age in meta["topology_manager"]["collision_age_myr"]
     }
@@ -341,4 +363,6 @@ def load_checkpoint(path: str | Path, manager: PlateTopologyManager) -> RunCheck
         craton_rows=list(meta.get("craton_rows",[])),
         plume_state=plume_state,
         plume_rows=list(meta.get("plume_rows",[])),
+        plume_rifting_state=plume_rifting_state,
+        plume_rifting_rows=list(meta.get("plume_rifting_rows",[])),
     )

@@ -11,6 +11,7 @@ from tectonics.lithosphere import boundary_records_for_state
 from tectonics.topology import PlateTopologyManager,PlateTopologyParameters
 from tectonics.cratons import CratonParameters,initialize_craton_memory
 from tectonics.plumes import MantlePlumeParameters,initialize_mantle_plumes
+from tectonics.plume_rifting import initialize_plume_rifting
 
 
 def test_checkpoint_roundtrip(tmp_path: Path):
@@ -71,6 +72,12 @@ def test_checkpoint_roundtrip_reconstructed_transport_and_mantle(tmp_path: Path)
     cp.plume_state.cumulative_exposure_myr[:]=2.0*cp.plume_state.last_flux
     cp.plume_state.cumulative_root_erosion_km[:]=0.5*cp.plume_state.last_flux
     cp.plume_rows=[{'time_myr':0.0,'active_plume_count':2}]
+    cp.plume_rifting_state=initialize_plume_rifting(mesh,0.0)
+    cp.plume_rifting_state.last_extension_forcing[:]=np.linspace(0.0,0.8,mesh.cell_count)
+    cp.plume_rifting_state.cumulative_extension_impulse_myr[:]=12.0*cp.plume_rifting_state.last_extension_forcing
+    cp.plume_rifting_state.last_dynamic_uplift_m[:]=1800.0*cp.plume_rifting_state.last_extension_forcing
+    cp.plume_rifting_state.last_magmatic_productivity[:]=cp.plume_rifting_state.last_extension_forcing**1.4
+    cp.plume_rifting_rows=[{'time_myr':0.0,'max_surface_extension_forcing':0.8}]
     save_checkpoint(tmp_path/'cp2',cp)
     got=load_checkpoint(tmp_path/'cp2',PlateTopologyManager(PlateTopologyParameters()))
     assert got.mantle_flow is not None and got.transport_state is not None
@@ -102,3 +109,9 @@ def test_checkpoint_roundtrip_reconstructed_transport_and_mantle(tmp_path: Path)
     assert got.plume_state.next_plume_id==cp.plume_state.next_plume_id
     assert got.plume_state.next_birth_time_myr==cp.plume_state.next_birth_time_myr
     assert got.plume_rows==cp.plume_rows
+    assert got.plume_rifting_state is not None
+    assert np.array_equal(got.plume_rifting_state.last_extension_forcing,cp.plume_rifting_state.last_extension_forcing)
+    assert np.array_equal(got.plume_rifting_state.cumulative_extension_impulse_myr,cp.plume_rifting_state.cumulative_extension_impulse_myr)
+    assert np.array_equal(got.plume_rifting_state.last_dynamic_uplift_m,cp.plume_rifting_state.last_dynamic_uplift_m)
+    assert np.array_equal(got.plume_rifting_state.last_magmatic_productivity,cp.plume_rifting_state.last_magmatic_productivity)
+    assert got.plume_rifting_rows==cp.plume_rifting_rows

@@ -33,6 +33,7 @@ class MantlePlumeParameters:
     """Effective plume-population and lithosphere-coupling parameters."""
 
     enabled: bool = True
+    lithosphere_weakening_enabled: bool = True
     seed: int = 20261055
     initial_plume_count: int = 3
     mean_birth_interval_myr: float = 160.0
@@ -323,7 +324,7 @@ def advance_mantle_plumes(
 
     n = mesh.cell_count
     zero = np.zeros(n, dtype=np.float64)
-    if not params.enabled:
+    if not params.enabled or not params.lithosphere_weakening_enabled:
         return lithosphere, plume_state, diagnose_mantle_plumes(
             mesh, lithosphere, plume_state, radius_km, params, dt_myr=dt_myr
         )
