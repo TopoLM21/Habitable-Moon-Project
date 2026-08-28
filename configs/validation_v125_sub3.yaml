@@ -367,6 +367,15 @@ plume_rifting:
   magmatic_productivity_exponent: 1.4
   forced_area_threshold: 0.10
   continental_fraction_epsilon: 1.0e-9
+plume_dynamic_topography:
+  enabled: true
+  flux_saturation: 0.75
+  maximum_center_uplift_m: 1000.0
+  response_time_myr: 8.0
+  decay_time_myr: 20.0
+  affected_uplift_threshold_m: 50.0
+  maximum_absolute_anomaly_m: 1200.0
+  remove_area_mean: true
 late_tectonics:
   enabled: true
   seam_relaxation_myr: 1800.0

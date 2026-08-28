@@ -1,3 +1,25 @@
+# Moon Tectonics v0.27 — Transient Plume Dynamic Topography
+
+v0.27 turns the plume uplift diagnostic into delayed, reversible surface
+relief. Convective support enters the non-flexed topographic background, affects
+the solved ocean and conservative surface-process system, and creates no crustal
+material. Its area-weighted degree-zero component is removed every step, so a
+local plume swell does not change the planet's mean radius.
+
+Validation: **156/156 tests**, byte-identical continuous versus checkpointed
+continuation, a six-GIF local smoke, and four paired 500-Myr subdivision-3
+control/dynamic comparisons. Production plume swells remain below the `1 km`
+ceiling; all paired runs have zero elevation safety-rail clips, close the final
+continental ledger to `<=1.43e-6 km3`, and keep the zero-mean dynamic
+displacement residual below `1.91e-9 km3`.
+
+Primary runner: `run_long_evolution_v127.py`. See
+`V127_DYNAMIC_TOPOGRAPHY_FINDINGS.md`,
+`V127_DYNAMIC_TOPOGRAPHY_PAIRED_500MYR.csv`, and
+`V127_DYNAMIC_TOPOGRAPHY_PAIRED_500MYR.png`.
+
+---
+
 # Moon Tectonics v0.26 — Plume-Driven Mechanical Rifting
 
 v0.26 gives the v0.25 mantle plumes an independently switchable mechanical

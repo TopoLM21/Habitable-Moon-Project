@@ -12,6 +12,7 @@ from tectonics.topology import PlateTopologyManager,PlateTopologyParameters
 from tectonics.cratons import CratonParameters,initialize_craton_memory
 from tectonics.plumes import MantlePlumeParameters,initialize_mantle_plumes
 from tectonics.plume_rifting import initialize_plume_rifting
+from tectonics.plume_dynamic_topography import initialize_plume_dynamic_topography
 
 
 def test_checkpoint_roundtrip(tmp_path: Path):
@@ -78,6 +79,11 @@ def test_checkpoint_roundtrip_reconstructed_transport_and_mantle(tmp_path: Path)
     cp.plume_rifting_state.last_dynamic_uplift_m[:]=1800.0*cp.plume_rifting_state.last_extension_forcing
     cp.plume_rifting_state.last_magmatic_productivity[:]=cp.plume_rifting_state.last_extension_forcing**1.4
     cp.plume_rifting_rows=[{'time_myr':0.0,'max_surface_extension_forcing':0.8}]
+    cp.plume_dynamic_topography_state=initialize_plume_dynamic_topography(mesh,0.0)
+    cp.plume_dynamic_topography_state.target_dynamic_topography_m[:]=np.linspace(-40.0,900.0,mesh.cell_count)
+    cp.plume_dynamic_topography_state.realized_dynamic_topography_m[:]=0.7*cp.plume_dynamic_topography_state.target_dynamic_topography_m
+    cp.plume_dynamic_topography_state.cumulative_positive_support_m_myr[:]=20.0*np.maximum(cp.plume_dynamic_topography_state.realized_dynamic_topography_m,0.0)
+    cp.plume_dynamic_topography_rows=[{'time_myr':0.0,'maximum_realized_uplift_m':630.0}]
     save_checkpoint(tmp_path/'cp2',cp)
     got=load_checkpoint(tmp_path/'cp2',PlateTopologyManager(PlateTopologyParameters()))
     assert got.mantle_flow is not None and got.transport_state is not None
@@ -115,3 +121,8 @@ def test_checkpoint_roundtrip_reconstructed_transport_and_mantle(tmp_path: Path)
     assert np.array_equal(got.plume_rifting_state.last_dynamic_uplift_m,cp.plume_rifting_state.last_dynamic_uplift_m)
     assert np.array_equal(got.plume_rifting_state.last_magmatic_productivity,cp.plume_rifting_state.last_magmatic_productivity)
     assert got.plume_rifting_rows==cp.plume_rifting_rows
+    assert got.plume_dynamic_topography_state is not None
+    assert np.array_equal(got.plume_dynamic_topography_state.target_dynamic_topography_m,cp.plume_dynamic_topography_state.target_dynamic_topography_m)
+    assert np.array_equal(got.plume_dynamic_topography_state.realized_dynamic_topography_m,cp.plume_dynamic_topography_state.realized_dynamic_topography_m)
+    assert np.array_equal(got.plume_dynamic_topography_state.cumulative_positive_support_m_myr,cp.plume_dynamic_topography_state.cumulative_positive_support_m_myr)
+    assert got.plume_dynamic_topography_rows==cp.plume_dynamic_topography_rows

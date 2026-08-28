@@ -437,6 +437,7 @@ def _equilibrium_build(
     arc_uplift_forcing: Array | None = None,
     flexure_params: FlexureParameters | None = None,
     gravity_m_s2: float | None = None,
+    dynamic_topography_m: Array | None = None,
 ) -> tuple[Array, dict[str,set[int]], dict[str,Array], FlexureDiagnostics]:
     """Build local-isostatic and elastic-plate equilibrium topography.
 
@@ -464,7 +465,17 @@ def _equilibrium_build(
     # Remove only the thickness-dependent Airy anomaly from the background;
     # ridge uplift is intentionally not flexed because it is a thermal buoyancy
     # anomaly rather than an imposed surface load in this effective model.
-    background=base-local_airy+np.asarray(comp['ridge'],dtype=np.float64)+sediment_h
+    dynamic=np.zeros(mesh.cell_count,dtype=np.float64)
+    if dynamic_topography_m is not None:
+        dynamic=np.asarray(dynamic_topography_m,dtype=np.float64)
+        if dynamic.shape != (mesh.cell_count,):
+            raise ValueError("dynamic_topography_m must have shape (cell_count,)")
+        if not np.all(np.isfinite(dynamic)):
+            raise ValueError("dynamic_topography_m must contain only finite values")
+    # Convective dynamic topography is mantle support, not a surface load.  It
+    # shifts the background datum locally and is deliberately not flexed.
+    background=(base-local_airy+np.asarray(comp['ridge'],dtype=np.float64)
+                +sediment_h+dynamic)
     if flexure_params is not None and radius_km is not None and gravity_m_s2 is not None:
         flex_response,fdiag,Te,alpha=solve_flexural_response(
             mesh,state,flex_source,float(radius_km),float(gravity_m_s2),flexure_params)
@@ -484,7 +495,8 @@ def _equilibrium_build(
          'flexural_response':np.asarray(flex_response,dtype=np.float64),
          'flexural_correction':np.asarray(flex_response,dtype=np.float64)-flex_source,
          'effective_elastic_thickness_km':np.asarray(Te,dtype=np.float64),
-         'flexural_parameter_km':np.asarray(alpha,dtype=np.float64)}
+         'flexural_parameter_km':np.asarray(alpha,dtype=np.float64),
+         'dynamic_topography':dynamic}
     out['sediment_thickness_m']=sediment_h
     out['sediment_load_isostatic_m']=sediment_load
     if bool(params.material_aware_isostasy) and radius_km is not None:
@@ -504,8 +516,9 @@ def equilibrium_elevation(
     arc_uplift_forcing: Array | None = None,
     flexure_params: FlexureParameters | None = None,
     gravity_m_s2: float | None = None,
+    dynamic_topography_m: Array | None = None,
 ) -> tuple[Array, dict[str, set[int]]]:
-    target,tags,_,_=_equilibrium_build(mesh,state,boundaries,params,radius_km,arc_uplift_forcing,flexure_params,gravity_m_s2)
+    target,tags,_,_=_equilibrium_build(mesh,state,boundaries,params,radius_km,arc_uplift_forcing,flexure_params,gravity_m_s2,dynamic_topography_m)
     return target,tags
 
 
@@ -518,9 +531,10 @@ def topography_components(
     arc_uplift_forcing: Array | None = None,
     flexure_params: FlexureParameters | None = None,
     gravity_m_s2: float | None = None,
+    dynamic_topography_m: Array | None = None,
 ) -> dict[str, Array]:
     """Return diagnostic component fields used to build equilibrium relief."""
-    _,_,out,_=_equilibrium_build(mesh,state,boundaries,params,radius_km,arc_uplift_forcing,flexure_params,gravity_m_s2)
+    _,_,out,_=_equilibrium_build(mesh,state,boundaries,params,radius_km,arc_uplift_forcing,flexure_params,gravity_m_s2,dynamic_topography_m)
     return out
 
 
@@ -532,8 +546,9 @@ def initialize_topography(
     radius_km: float | None = None,
     flexure_params: FlexureParameters | None = None,
     gravity_m_s2: float | None = None,
+    dynamic_topography_m: Array | None = None,
 ) -> TopographyState:
-    target,_=equilibrium_elevation(mesh,state,boundaries,params,radius_km,None,flexure_params,gravity_m_s2)
+    target,_=equilibrium_elevation(mesh,state,boundaries,params,radius_km,None,flexure_params,gravity_m_s2,dynamic_topography_m)
     return TopographyState(time_myr=float(state.time_myr),elevation_m=target.copy())
 
 def _erode_positive_relief(mesh: SphereMesh, elevation: Array, areas_km2: Array, dt_myr: float, params: TopographyParameters) -> tuple[Array, float]:
@@ -561,11 +576,12 @@ def advance_topography(
     arc_uplift_forcing: Array | None = None,
     flexure_params: FlexureParameters | None = None,
     gravity_m_s2: float | None = None,
+    dynamic_topography_m: Array | None = None,
 ) -> tuple[TopographyState, TopographyDiagnostics, Array]:
     if dt_myr <= 0.0:
         raise ValueError("dt_myr must be positive")
     target,tags,components,fdiag=_equilibrium_build(
-        mesh,lithosphere,boundaries,params,radius_km,arc_uplift_forcing,flexure_params,gravity_m_s2)
+        mesh,lithosphere,boundaries,params,radius_km,arc_uplift_forcing,flexure_params,gravity_m_s2,dynamic_topography_m)
     alpha=1.0-np.exp(-float(dt_myr)/max(float(params.isostatic_relaxation_myr),1e-9))
     elev=np.asarray(previous.elevation_m,dtype=np.float64)+alpha*(target-np.asarray(previous.elevation_m,dtype=np.float64))
     areas=mesh.physical_cell_areas_km2(radius_km)
@@ -604,4 +620,3 @@ def advance_topography(
         flexure_area_mean_source_m=float(fdiag.area_mean_source_m),flexure_area_mean_response_m=float(fdiag.area_mean_response_m),
     )
     return out,diag,target
-
