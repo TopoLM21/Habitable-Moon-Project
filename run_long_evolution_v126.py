@@ -139,15 +139,16 @@ def _advance_lithosphere_v126(*args, **kwargs):
     )
     _rows.append(_row(diagnostics))
 
-    existing = kwargs.get("continental_extension_external_forcing")
-    if existing is None:
-        combined = plume_forcing
-    else:
-        existing_array = np.asarray(existing, dtype=np.float64)
-        if existing_array.shape != (mesh.cell_count,):
-            raise ValueError("existing external forcing must have shape (cell_count,)")
-        combined = np.maximum(existing_array, plume_forcing)
-    kwargs["continental_extension_external_forcing"] = combined
+    if _params.couple_to_lithosphere:
+        existing = kwargs.get("continental_extension_external_forcing")
+        if existing is None:
+            combined = plume_forcing
+        else:
+            existing_array = np.asarray(existing, dtype=np.float64)
+            if existing_array.shape != (mesh.cell_count,):
+                raise ValueError("existing external forcing must have shape (cell_count,)")
+            combined = np.maximum(existing_array, plume_forcing)
+        kwargs["continental_extension_external_forcing"] = combined
     result = v124._advance_lithosphere_v124(*args, **kwargs)
 
     new_lithosphere = result[0]

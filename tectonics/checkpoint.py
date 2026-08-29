@@ -32,6 +32,7 @@ from .sediment import SedimentBudgetState
 from .plumes import MantlePlumeState
 from .plume_rifting import PlumeRiftingState
 from .plume_dynamic_topography import PlumeDynamicTopographyState
+from .plume_magmatism import PlumeMagmatismState
 
 
 @dataclass(slots=True)
@@ -70,6 +71,8 @@ class RunCheckpoint:
     plume_rifting_rows: list[dict[str, Any]] = field(default_factory=list)
     plume_dynamic_topography_state: PlumeDynamicTopographyState | None = None
     plume_dynamic_topography_rows: list[dict[str, Any]] = field(default_factory=list)
+    plume_magmatism_state: PlumeMagmatismState | None = None
+    plume_magmatism_rows: list[dict[str, Any]] = field(default_factory=list)
 
 
 def _plate_dict(p: Plate) -> dict[str, Any]:
@@ -166,6 +169,12 @@ def save_checkpoint(path: str | Path, cp: RunCheckpoint) -> Path:
         arrays["plume_dynamic_topography_target_m"] = np.asarray(cp.plume_dynamic_topography_state.target_dynamic_topography_m, dtype=np.float64)
         arrays["plume_dynamic_topography_realized_m"] = np.asarray(cp.plume_dynamic_topography_state.realized_dynamic_topography_m, dtype=np.float64)
         arrays["plume_dynamic_topography_cumulative_positive_support_m_myr"] = np.asarray(cp.plume_dynamic_topography_state.cumulative_positive_support_m_myr, dtype=np.float64)
+    if cp.plume_magmatism_state is not None:
+        arrays["plume_magmatism_extrusive_volume_km3"] = np.asarray(cp.plume_magmatism_state.extrusive_volume_km3, dtype=np.float64)
+        arrays["plume_magmatism_dyke_volume_km3"] = np.asarray(cp.plume_magmatism_state.dyke_volume_km3, dtype=np.float64)
+        arrays["plume_magmatism_underplate_volume_km3"] = np.asarray(cp.plume_magmatism_state.underplate_volume_km3, dtype=np.float64)
+        arrays["plume_magmatism_track_age_myr"] = np.asarray(cp.plume_magmatism_state.track_age_myr, dtype=np.float64)
+        arrays["plume_magmatism_last_emplacement_productivity"] = np.asarray(cp.plume_magmatism_state.last_emplacement_productivity, dtype=np.float64)
     np.savez_compressed(root/"state.npz", **arrays)
     collision=[
         [int(a), int(b), float(age)]
@@ -238,11 +247,23 @@ def save_checkpoint(path: str | Path, cp: RunCheckpoint) -> Path:
             "time_myr": float(cp.plume_dynamic_topography_state.time_myr),
         },
         "plume_dynamic_topography_rows": _jsonable_rows(cp.plume_dynamic_topography_rows),
+        "plume_magmatism_state": None if cp.plume_magmatism_state is None else {
+            "time_myr": float(cp.plume_magmatism_state.time_myr),
+            "cumulative_generated_extrusive_volume_km3": float(cp.plume_magmatism_state.cumulative_generated_extrusive_volume_km3),
+            "cumulative_generated_dyke_volume_km3": float(cp.plume_magmatism_state.cumulative_generated_dyke_volume_km3),
+            "cumulative_generated_underplate_volume_km3": float(cp.plume_magmatism_state.cumulative_generated_underplate_volume_km3),
+            "deep_recycled_extrusive_volume_km3": float(cp.plume_magmatism_state.deep_recycled_extrusive_volume_km3),
+            "deep_recycled_dyke_volume_km3": float(cp.plume_magmatism_state.deep_recycled_dyke_volume_km3),
+            "deep_recycled_underplate_volume_km3": float(cp.plume_magmatism_state.deep_recycled_underplate_volume_km3),
+        },
+        "plume_magmatism_rows": _jsonable_rows(cp.plume_magmatism_rows),
         "transport_state": None if cp.transport_state is None else {
             "cumulative_commit_count": int(cp.transport_state.cumulative_commit_count),
             "max_hold_age_myr": float(cp.transport_state.max_hold_age_myr),
         },
     }
+    if cp.plume_magmatism_state is not None:
+        meta["version"] = "0.28-plume-magmatism"
     with (root/"meta.json").open("w",encoding="utf-8") as h:
         json.dump(meta,h,ensure_ascii=False,indent=2)
     return root
@@ -254,7 +275,7 @@ def load_checkpoint(path: str | Path, manager: PlateTopologyManager) -> RunCheck
         meta=json.load(h)
     if meta.get("format")!="moon_tectonics_checkpoint":
         raise ValueError("Not a moon tectonics checkpoint")
-    if meta.get("version") not in {"0.9.1", "0.9.2", "0.9.3", "0.9.4", "0.9.5", "0.10-reconstructed", "0.11-material", "0.14-hydrosphere", "0.16-lithosphere-split", "0.18-subduction-memory", "0.19-rollback", "0.20-slab-breakoff", "0.21-slab-geometry-arcs", "0.22-flexural-isostasy", "0.23-conservative-sediments", "0.24-cratonic-memory", "0.25-mantle-plumes", "0.26-plume-rifting", "0.27-plume-dynamic-topography"}:
+    if meta.get("version") not in {"0.9.1", "0.9.2", "0.9.3", "0.9.4", "0.9.5", "0.10-reconstructed", "0.11-material", "0.14-hydrosphere", "0.16-lithosphere-split", "0.18-subduction-memory", "0.19-rollback", "0.20-slab-breakoff", "0.21-slab-geometry-arcs", "0.22-flexural-isostasy", "0.23-conservative-sediments", "0.24-cratonic-memory", "0.25-mantle-plumes", "0.26-plume-rifting", "0.27-plume-dynamic-topography", "0.28-plume-magmatism"}:
         raise ValueError(f"Unsupported checkpoint version: {meta.get('version')}")
     with np.load(root/"state.npz", allow_pickle=False) as z:
         state=LithosphereState(
@@ -343,6 +364,23 @@ def load_checkpoint(path: str | Path, manager: PlateTopologyManager) -> RunCheck
                 realized_dynamic_topography_m=z["plume_dynamic_topography_realized_m"].copy(),
                 cumulative_positive_support_m_myr=z["plume_dynamic_topography_cumulative_positive_support_m_myr"].copy(),
             )
+        plume_magmatism_state = None
+        pms = meta.get("plume_magmatism_state")
+        if pms is not None and "plume_magmatism_extrusive_volume_km3" in z.files:
+            plume_magmatism_state = PlumeMagmatismState(
+                time_myr=float(pms["time_myr"]),
+                extrusive_volume_km3=z["plume_magmatism_extrusive_volume_km3"].copy(),
+                dyke_volume_km3=z["plume_magmatism_dyke_volume_km3"].copy(),
+                underplate_volume_km3=z["plume_magmatism_underplate_volume_km3"].copy(),
+                track_age_myr=z["plume_magmatism_track_age_myr"].copy(),
+                last_emplacement_productivity=z["plume_magmatism_last_emplacement_productivity"].copy(),
+                cumulative_generated_extrusive_volume_km3=float(pms.get("cumulative_generated_extrusive_volume_km3", 0.0)),
+                cumulative_generated_dyke_volume_km3=float(pms.get("cumulative_generated_dyke_volume_km3", 0.0)),
+                cumulative_generated_underplate_volume_km3=float(pms.get("cumulative_generated_underplate_volume_km3", 0.0)),
+                deep_recycled_extrusive_volume_km3=float(pms.get("deep_recycled_extrusive_volume_km3", 0.0)),
+                deep_recycled_dyke_volume_km3=float(pms.get("deep_recycled_dyke_volume_km3", 0.0)),
+                deep_recycled_underplate_volume_km3=float(pms.get("deep_recycled_underplate_volume_km3", 0.0)),
+            )
     manager.collision_age_myr={
         (int(a),int(b)):float(age) for a,b,age in meta["topology_manager"]["collision_age_myr"]
     }
@@ -387,4 +425,6 @@ def load_checkpoint(path: str | Path, manager: PlateTopologyManager) -> RunCheck
         plume_rifting_rows=list(meta.get("plume_rifting_rows",[])),
         plume_dynamic_topography_state=plume_dynamic_topography_state,
         plume_dynamic_topography_rows=list(meta.get("plume_dynamic_topography_rows",[])),
+        plume_magmatism_state=plume_magmatism_state,
+        plume_magmatism_rows=list(meta.get("plume_magmatism_rows",[])),
     )

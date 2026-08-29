@@ -1,3 +1,26 @@
+# Moon Tectonics v0.28 — Permanent Plume Magmatism and Volcanic Tracks
+
+v0.28 turns plume decompression-melt productivity into permanent, transported
+extrusive-basalt, dyke/sill and mafic-underplate reservoirs. The mantle source
+stays fixed while the material moves with its plate, leaving a checkpointed
+volcanic track and age field. A closed generated/surface/deep-recycled ledger
+prevents material loss, and reservoir densities control flexed crustal support.
+
+Validation: **161/161 tests**, exact continuous versus checkpointed equality
+for all 45 arrays and complete metadata, a 40-Myr smoke, and a full 2×2×2
+500-Myr subdivision-3 factorial isolating dynamic uplift, permanent magmatism
+and mechanical plume-rift coupling. Magmatic runs retain `9.04–9.33 million
+km3` at the surface, reach `2.594–2.601 km` added thickness and `224 m` local
+density-aware support. All eight worlds have zero elevation safety-rail clips;
+the maximum absolute igneous-ledger error is `1.86e-8 km3`.
+
+Primary runner: `run_long_evolution_v128.py`. See
+`V128_PLUME_MAGMATISM_FINDINGS.md`,
+`V128_PLUME_MAGMATISM_FACTORIAL_500MYR.csv`, and
+`V128_PLUME_MAGMATISM_FACTORIAL_500MYR.png`.
+
+---
+
 # Moon Tectonics v0.27 — Transient Plume Dynamic Topography
 
 v0.27 turns the plume uplift diagnostic into delayed, reversible surface

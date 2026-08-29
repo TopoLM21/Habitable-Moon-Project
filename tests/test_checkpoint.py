@@ -13,6 +13,7 @@ from tectonics.cratons import CratonParameters,initialize_craton_memory
 from tectonics.plumes import MantlePlumeParameters,initialize_mantle_plumes
 from tectonics.plume_rifting import initialize_plume_rifting
 from tectonics.plume_dynamic_topography import initialize_plume_dynamic_topography
+from tectonics.plume_magmatism import initialize_plume_magmatism
 
 
 def test_checkpoint_roundtrip(tmp_path: Path):
@@ -84,6 +85,19 @@ def test_checkpoint_roundtrip_reconstructed_transport_and_mantle(tmp_path: Path)
     cp.plume_dynamic_topography_state.realized_dynamic_topography_m[:]=0.7*cp.plume_dynamic_topography_state.target_dynamic_topography_m
     cp.plume_dynamic_topography_state.cumulative_positive_support_m_myr[:]=20.0*np.maximum(cp.plume_dynamic_topography_state.realized_dynamic_topography_m,0.0)
     cp.plume_dynamic_topography_rows=[{'time_myr':0.0,'maximum_realized_uplift_m':630.0}]
+    cp.plume_magmatism_state=initialize_plume_magmatism(mesh,0.0)
+    cp.plume_magmatism_state.extrusive_volume_km3[:]=np.linspace(0.0,10.0,mesh.cell_count)
+    cp.plume_magmatism_state.dyke_volume_km3[:]=2.0*cp.plume_magmatism_state.extrusive_volume_km3
+    cp.plume_magmatism_state.underplate_volume_km3[:]=5.0*cp.plume_magmatism_state.extrusive_volume_km3
+    cp.plume_magmatism_state.track_age_myr[:]=np.linspace(0.0,100.0,mesh.cell_count)
+    cp.plume_magmatism_state.last_emplacement_productivity[:]=np.linspace(0.0,1.0,mesh.cell_count)
+    cp.plume_magmatism_state.cumulative_generated_extrusive_volume_km3=123.0
+    cp.plume_magmatism_state.cumulative_generated_dyke_volume_km3=287.0
+    cp.plume_magmatism_state.cumulative_generated_underplate_volume_km3=956.0
+    cp.plume_magmatism_state.deep_recycled_extrusive_volume_km3=1.0
+    cp.plume_magmatism_state.deep_recycled_dyke_volume_km3=2.0
+    cp.plume_magmatism_state.deep_recycled_underplate_volume_km3=3.0
+    cp.plume_magmatism_rows=[{'time_myr':0.0,'surface_extrusive_volume_km3':123.0}]
     save_checkpoint(tmp_path/'cp2',cp)
     got=load_checkpoint(tmp_path/'cp2',PlateTopologyManager(PlateTopologyParameters()))
     assert got.mantle_flow is not None and got.transport_state is not None
@@ -126,3 +140,12 @@ def test_checkpoint_roundtrip_reconstructed_transport_and_mantle(tmp_path: Path)
     assert np.array_equal(got.plume_dynamic_topography_state.realized_dynamic_topography_m,cp.plume_dynamic_topography_state.realized_dynamic_topography_m)
     assert np.array_equal(got.plume_dynamic_topography_state.cumulative_positive_support_m_myr,cp.plume_dynamic_topography_state.cumulative_positive_support_m_myr)
     assert got.plume_dynamic_topography_rows==cp.plume_dynamic_topography_rows
+    assert got.plume_magmatism_state is not None
+    assert np.array_equal(got.plume_magmatism_state.extrusive_volume_km3,cp.plume_magmatism_state.extrusive_volume_km3)
+    assert np.array_equal(got.plume_magmatism_state.dyke_volume_km3,cp.plume_magmatism_state.dyke_volume_km3)
+    assert np.array_equal(got.plume_magmatism_state.underplate_volume_km3,cp.plume_magmatism_state.underplate_volume_km3)
+    assert np.array_equal(got.plume_magmatism_state.track_age_myr,cp.plume_magmatism_state.track_age_myr)
+    assert np.array_equal(got.plume_magmatism_state.last_emplacement_productivity,cp.plume_magmatism_state.last_emplacement_productivity)
+    assert got.plume_magmatism_state.cumulative_generated_underplate_volume_km3==956.0
+    assert got.plume_magmatism_state.deep_recycled_underplate_volume_km3==3.0
+    assert got.plume_magmatism_rows==cp.plume_magmatism_rows

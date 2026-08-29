@@ -31,6 +31,7 @@ class PlumeRiftingParameters:
     """Effective active-rifting parameters for the surface plate model."""
 
     enabled: bool = True
+    couple_to_lithosphere: bool = True
     flux_onset: float = 0.10
     flux_saturation: float = 0.75
     core_weight: float = 0.90

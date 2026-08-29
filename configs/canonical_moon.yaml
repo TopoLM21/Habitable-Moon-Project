@@ -353,6 +353,7 @@ mantle_plumes:
   continental_fraction_epsilon: 1.0e-9
 plume_rifting:
   enabled: true
+  couple_to_lithosphere: true
   # Broad radial-flow/dynamic-uplift forcing plus plume-head flank localization.
   flux_onset: 0.10
   flux_saturation: 0.75
@@ -379,6 +380,24 @@ plume_dynamic_topography:
   maximum_absolute_anomaly_m: 1200.0
   # Remove spherical degree zero so the planet's mean radius is unchanged.
   remove_area_mean: true
+plume_magmatism:
+  enabled: true
+  # Coarse-grid upper bound: 18 m/Myr at unit productivity and full extraction.
+  maximum_emplacement_thickness_km_per_myr: 0.018
+  minimum_productivity: 0.025
+  # Hotspot melt persists without rupture; mechanical extension raises extraction.
+  background_extraction_fraction: 0.25
+  extension_extraction_gain: 0.75
+  maximum_igneous_thickness_km: 25.0
+  # Continental systems are intrusion dominated (~10:1 intrusive/extrusive).
+  extrusive_fraction: 0.09
+  dyke_fraction: 0.21
+  underplate_fraction: 0.70
+  extrusive_density_kg_m3: 2900.0
+  dyke_density_kg_m3: 2950.0
+  underplate_density_kg_m3: 3050.0
+  mantle_density_kg_m3: 3300.0
+  mapped_track_volume_km3: 1.0e-9
 late_tectonics:
   enabled: true
   seam_relaxation_myr: 1800.0

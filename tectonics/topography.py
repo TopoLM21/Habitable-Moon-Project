@@ -438,6 +438,9 @@ def _equilibrium_build(
     flexure_params: FlexureParameters | None = None,
     gravity_m_s2: float | None = None,
     dynamic_topography_m: Array | None = None,
+    magmatic_extrusive_thickness_m: Array | None = None,
+    magmatic_extrusive_load_m: Array | None = None,
+    magmatic_intrusive_support_m: Array | None = None,
 ) -> tuple[Array, dict[str,set[int]], dict[str,Array], FlexureDiagnostics]:
     """Build local-isostatic and elastic-plate equilibrium topography.
 
@@ -472,10 +475,31 @@ def _equilibrium_build(
             raise ValueError("dynamic_topography_m must have shape (cell_count,)")
         if not np.all(np.isfinite(dynamic)):
             raise ValueError("dynamic_topography_m must contain only finite values")
+    magmatic_extrusive=np.zeros(mesh.cell_count,dtype=np.float64)
+    magmatic_load=np.zeros(mesh.cell_count,dtype=np.float64)
+    magmatic_intrusive=np.zeros(mesh.cell_count,dtype=np.float64)
+    for supplied,target,name in (
+        (magmatic_extrusive_thickness_m,magmatic_extrusive,"magmatic_extrusive_thickness_m"),
+        (magmatic_extrusive_load_m,magmatic_load,"magmatic_extrusive_load_m"),
+        (magmatic_intrusive_support_m,magmatic_intrusive,"magmatic_intrusive_support_m"),
+    ):
+        if supplied is None:
+            continue
+        values=np.asarray(supplied,dtype=np.float64)
+        if values.shape!=(mesh.cell_count,):
+            raise ValueError(f"{name} must have shape (cell_count,)")
+        if not np.all(np.isfinite(values)):
+            raise ValueError(f"{name} must contain only finite values")
+        target[:]=values
+    if np.any(magmatic_extrusive<0.0) or np.any(magmatic_intrusive<0.0):
+        raise ValueError("magmatic thickness and intrusive support must be non-negative")
+    if np.any(magmatic_load>0.0):
+        raise ValueError("magmatic extrusive load must be non-positive")
     # Convective dynamic topography is mantle support, not a surface load.  It
     # shifts the background datum locally and is deliberately not flexed.
+    flex_source=(flex_source+magmatic_load+magmatic_intrusive)
     background=(base-local_airy+np.asarray(comp['ridge'],dtype=np.float64)
-                +sediment_h+dynamic)
+                +sediment_h+dynamic+magmatic_extrusive)
     if flexure_params is not None and radius_km is not None and gravity_m_s2 is not None:
         flex_response,fdiag,Te,alpha=solve_flexural_response(
             mesh,state,flex_source,float(radius_km),float(gravity_m_s2),flexure_params)
@@ -496,7 +520,13 @@ def _equilibrium_build(
          'flexural_correction':np.asarray(flex_response,dtype=np.float64)-flex_source,
          'effective_elastic_thickness_km':np.asarray(Te,dtype=np.float64),
          'flexural_parameter_km':np.asarray(alpha,dtype=np.float64),
-         'dynamic_topography':dynamic}
+         'dynamic_topography':dynamic,
+         'magmatic_extrusive_thickness_m':magmatic_extrusive,
+         'magmatic_extrusive_load_m':magmatic_load,
+         'magmatic_intrusive_support_m':magmatic_intrusive,
+         'magmatic_net_local_isostatic_support_m':(
+             magmatic_extrusive+magmatic_load+magmatic_intrusive
+         )}
     out['sediment_thickness_m']=sediment_h
     out['sediment_load_isostatic_m']=sediment_load
     if bool(params.material_aware_isostasy) and radius_km is not None:
@@ -517,8 +547,11 @@ def equilibrium_elevation(
     flexure_params: FlexureParameters | None = None,
     gravity_m_s2: float | None = None,
     dynamic_topography_m: Array | None = None,
+    magmatic_extrusive_thickness_m: Array | None = None,
+    magmatic_extrusive_load_m: Array | None = None,
+    magmatic_intrusive_support_m: Array | None = None,
 ) -> tuple[Array, dict[str, set[int]]]:
-    target,tags,_,_=_equilibrium_build(mesh,state,boundaries,params,radius_km,arc_uplift_forcing,flexure_params,gravity_m_s2,dynamic_topography_m)
+    target,tags,_,_=_equilibrium_build(mesh,state,boundaries,params,radius_km,arc_uplift_forcing,flexure_params,gravity_m_s2,dynamic_topography_m,magmatic_extrusive_thickness_m,magmatic_extrusive_load_m,magmatic_intrusive_support_m)
     return target,tags
 
 
@@ -532,9 +565,12 @@ def topography_components(
     flexure_params: FlexureParameters | None = None,
     gravity_m_s2: float | None = None,
     dynamic_topography_m: Array | None = None,
+    magmatic_extrusive_thickness_m: Array | None = None,
+    magmatic_extrusive_load_m: Array | None = None,
+    magmatic_intrusive_support_m: Array | None = None,
 ) -> dict[str, Array]:
     """Return diagnostic component fields used to build equilibrium relief."""
-    _,_,out,_=_equilibrium_build(mesh,state,boundaries,params,radius_km,arc_uplift_forcing,flexure_params,gravity_m_s2,dynamic_topography_m)
+    _,_,out,_=_equilibrium_build(mesh,state,boundaries,params,radius_km,arc_uplift_forcing,flexure_params,gravity_m_s2,dynamic_topography_m,magmatic_extrusive_thickness_m,magmatic_extrusive_load_m,magmatic_intrusive_support_m)
     return out
 
 
@@ -547,8 +583,11 @@ def initialize_topography(
     flexure_params: FlexureParameters | None = None,
     gravity_m_s2: float | None = None,
     dynamic_topography_m: Array | None = None,
+    magmatic_extrusive_thickness_m: Array | None = None,
+    magmatic_extrusive_load_m: Array | None = None,
+    magmatic_intrusive_support_m: Array | None = None,
 ) -> TopographyState:
-    target,_=equilibrium_elevation(mesh,state,boundaries,params,radius_km,None,flexure_params,gravity_m_s2,dynamic_topography_m)
+    target,_=equilibrium_elevation(mesh,state,boundaries,params,radius_km,None,flexure_params,gravity_m_s2,dynamic_topography_m,magmatic_extrusive_thickness_m,magmatic_extrusive_load_m,magmatic_intrusive_support_m)
     return TopographyState(time_myr=float(state.time_myr),elevation_m=target.copy())
 
 def _erode_positive_relief(mesh: SphereMesh, elevation: Array, areas_km2: Array, dt_myr: float, params: TopographyParameters) -> tuple[Array, float]:
@@ -577,11 +616,14 @@ def advance_topography(
     flexure_params: FlexureParameters | None = None,
     gravity_m_s2: float | None = None,
     dynamic_topography_m: Array | None = None,
+    magmatic_extrusive_thickness_m: Array | None = None,
+    magmatic_extrusive_load_m: Array | None = None,
+    magmatic_intrusive_support_m: Array | None = None,
 ) -> tuple[TopographyState, TopographyDiagnostics, Array]:
     if dt_myr <= 0.0:
         raise ValueError("dt_myr must be positive")
     target,tags,components,fdiag=_equilibrium_build(
-        mesh,lithosphere,boundaries,params,radius_km,arc_uplift_forcing,flexure_params,gravity_m_s2,dynamic_topography_m)
+        mesh,lithosphere,boundaries,params,radius_km,arc_uplift_forcing,flexure_params,gravity_m_s2,dynamic_topography_m,magmatic_extrusive_thickness_m,magmatic_extrusive_load_m,magmatic_intrusive_support_m)
     alpha=1.0-np.exp(-float(dt_myr)/max(float(params.isostatic_relaxation_myr),1e-9))
     elev=np.asarray(previous.elevation_m,dtype=np.float64)+alpha*(target-np.asarray(previous.elevation_m,dtype=np.float64))
     areas=mesh.physical_cell_areas_km2(radius_km)
