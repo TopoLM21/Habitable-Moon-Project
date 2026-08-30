@@ -97,8 +97,17 @@ def _active_arrays(state: MantlePlumeState) -> tuple[Array, Array, Array, Array,
         return np.asarray(values, dtype=dtype)
 
     plume_ids = vector_or_zeros(state.plume_ids, dtype=np.int64)
-    axes = vector_or_zeros(state.source_drift_axes_unit, 3)
-    speeds = vector_or_zeros(state.source_drift_speeds_km_per_myr)
+    axes = vector_or_zeros(
+        state.last_effective_source_axes_unit
+        if state.last_effective_source_axes_unit is not None
+        else state.source_drift_axes_unit,
+        3,
+    )
+    speeds = vector_or_zeros(
+        state.last_effective_source_speeds_km_per_myr
+        if state.last_effective_source_speeds_km_per_myr is not None
+        else state.source_drift_speeds_km_per_myr
+    )
     distances = vector_or_zeros(state.cumulative_source_distance_km)
     bends = vector_or_zeros(state.cumulative_source_bend_deg)
     centers = np.asarray(state.centers_unit, dtype=np.float64)

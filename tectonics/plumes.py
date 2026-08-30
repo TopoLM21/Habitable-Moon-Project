@@ -2,8 +2,9 @@
 
 This is an effective surface projection of deep plumes.  Before v0.30 the
 plume field is Eulerian and mantle-fixed; v0.30 can opt individual conduits into
-slow deterministic drift while plates and their material memory move across
-them.  While continental lithosphere overlies an active plume, the
+slow deterministic drift, while v0.31 can guide most of that motion with the
+checkpointed fixed-grid mantle-flow memory. Plates and their material memory
+move independently across the sources. While continental lithosphere overlies an active plume, the
 model applies three coupled effects supported by thermomechanical studies:
 
 * thermal rejuvenation of effective continental-lithosphere age;
@@ -73,6 +74,12 @@ class MantlePlumeParameters:
     maximum_source_drift_km_per_myr: float = 30.0
     source_drift_persistence_myr: float = 80.0
     source_drift_direction_memory: float = 0.65
+    # v0.31 optional coupling to the fixed-grid mantle-flow memory. The v0.30
+    # stochastic arc becomes a smaller unresolved residual when enabled.
+    source_flow_coupling_enabled: bool = False
+    source_flow_velocity_fraction: float = 0.35
+    source_residual_drift_fraction: float = 0.30
+    source_flow_sampling_radius_km: float = 550.0
 
 
 @dataclass(slots=True)
@@ -98,6 +105,9 @@ class MantlePlumeState:
     source_drift_segment_index: Array | None = None
     cumulative_source_distance_km: Array | None = None
     cumulative_source_bend_deg: Array | None = None
+    source_flow_omega_rad_per_myr: Array | None = None
+    last_effective_source_axes_unit: Array | None = None
+    last_effective_source_speeds_km_per_myr: Array | None = None
     population_source_distance_km: float = 0.0
     population_source_bend_deg: float = 0.0
 
@@ -185,6 +195,12 @@ def _validate_parameters(params: MantlePlumeParameters) -> None:
         raise ValueError("source_drift_persistence_myr must be positive")
     if not (0.0 <= params.source_drift_direction_memory <= 1.0):
         raise ValueError("source_drift_direction_memory must be in [0, 1]")
+    if not (0.0 <= params.source_flow_velocity_fraction <= 1.0):
+        raise ValueError("source_flow_velocity_fraction must be in [0, 1]")
+    if not (0.0 <= params.source_residual_drift_fraction <= 1.0):
+        raise ValueError("source_residual_drift_fraction must be in [0, 1]")
+    if params.source_flow_sampling_radius_km <= 0.0:
+        raise ValueError("source_flow_sampling_radius_km must be positive")
 
 
 def _rng(params: MantlePlumeParameters, plume_id: int, stream: int = 0) -> np.random.Generator:
@@ -345,6 +361,116 @@ def _ensure_source_drift_state(
         state.cumulative_source_bend_deg = np.asarray(
             state.cumulative_source_bend_deg, dtype=np.float64
         )
+    if (
+        state.source_flow_omega_rad_per_myr is None
+        or np.asarray(state.source_flow_omega_rad_per_myr).shape != (count, 3)
+    ):
+        state.source_flow_omega_rad_per_myr = np.zeros((count, 3), dtype=np.float64)
+    else:
+        state.source_flow_omega_rad_per_myr = np.asarray(
+            state.source_flow_omega_rad_per_myr, dtype=np.float64
+        )
+    if (
+        state.last_effective_source_axes_unit is None
+        or np.asarray(state.last_effective_source_axes_unit).shape != (count, 3)
+    ):
+        state.last_effective_source_axes_unit = np.asarray(
+            state.source_drift_axes_unit, dtype=np.float64
+        ).copy()
+    else:
+        state.last_effective_source_axes_unit = np.asarray(
+            state.last_effective_source_axes_unit, dtype=np.float64
+        )
+    if (
+        state.last_effective_source_speeds_km_per_myr is None
+        or np.asarray(state.last_effective_source_speeds_km_per_myr).shape != (count,)
+    ):
+        state.last_effective_source_speeds_km_per_myr = np.asarray(
+            state.source_drift_speeds_km_per_myr, dtype=np.float64
+        ).copy()
+    else:
+        state.last_effective_source_speeds_km_per_myr = np.asarray(
+            state.last_effective_source_speeds_km_per_myr, dtype=np.float64
+        )
+
+
+def _effective_source_axis_speed(
+    state: MantlePlumeState,
+    params: MantlePlumeParameters,
+    index: int,
+    radius_km: float,
+) -> tuple[Array, float]:
+    """Combine the resolved mantle-flow velocity and unresolved residual."""
+
+    center = np.asarray(state.centers_unit[index], dtype=np.float64)
+    residual = (
+        np.cross(state.source_drift_axes_unit[index], center)
+        * float(state.source_drift_speeds_km_per_myr[index])
+    )
+    if params.source_flow_coupling_enabled:
+        residual *= float(params.source_residual_drift_fraction)
+        flow = (
+            np.cross(state.source_flow_omega_rad_per_myr[index], center)
+            * float(radius_km)
+            * float(params.source_flow_velocity_fraction)
+        )
+        velocity = flow + residual
+    else:
+        velocity = residual
+    speed = float(np.linalg.norm(velocity))
+    if speed <= 1.0e-14:
+        return np.zeros(3, dtype=np.float64), 0.0
+    tangent = velocity / speed
+    axis = np.cross(center, tangent)
+    axis /= max(float(np.linalg.norm(axis)), 1.0e-30)
+    return axis, speed
+
+
+def update_plume_source_flow(
+    mesh: SphereMesh,
+    state: MantlePlumeState,
+    mantle_omega_field_rad_per_myr: Array,
+    radius_km: float,
+    params: MantlePlumeParameters,
+    *,
+    initialize_effective_velocity: bool = False,
+) -> MantlePlumeState:
+    """Sample fixed-grid mantle flow at arbitrary active source positions.
+
+    Area-weighted Gaussian interpolation avoids making the source velocity jump
+    as it crosses a mesh-cell boundary. The sampled angular-velocity vectors are
+    part of the plume checkpoint, while the full Eulerian field remains in the
+    existing mantle checkpoint.
+    """
+
+    _ensure_source_drift_state(state, params)
+    field = np.asarray(mantle_omega_field_rad_per_myr, dtype=np.float64)
+    if field.shape != (mesh.cell_count, 3):
+        raise ValueError("mantle omega field must have shape (cell_count, 3)")
+    count = len(state.ages_myr)
+    if count == 0:
+        return state
+    dots = np.clip(
+        np.asarray(mesh.centroids, dtype=np.float64)
+        @ np.asarray(state.centers_unit, dtype=np.float64).T,
+        -1.0,
+        1.0,
+    )
+    distance_km = float(radius_km) * np.arccos(dots)
+    sigma = float(params.source_flow_sampling_radius_km)
+    weights = (
+        mesh.physical_cell_areas_km2(float(radius_km))[:, None]
+        * np.exp(-0.5 * np.square(distance_km / sigma))
+    )
+    state.source_flow_omega_rad_per_myr = (
+        weights.T @ field
+    ) / np.maximum(np.sum(weights, axis=0)[:, None], 1.0e-30)
+    if initialize_effective_velocity:
+        for i in range(count):
+            axis, speed = _effective_source_axis_speed(state, params, i, radius_km)
+            state.last_effective_source_axes_unit[i] = axis
+            state.last_effective_source_speeds_km_per_myr[i] = speed
+    return state
 
 
 def _rotate_about_axis(point: Array, axis: Array, angle_rad: float) -> Array:
@@ -390,11 +516,37 @@ def _advance_source_drift(
             boundary = float(segment + 1) * persistence
             stop = min(end, boundary)
             duration = max(stop - t, 0.0)
-            speed = float(state.source_drift_speeds_km_per_myr[i])
+            axis, speed = _effective_source_axis_speed(
+                state, params, i, radius_km
+            )
+            old_effective_axis = state.last_effective_source_axes_unit[i]
+            if (
+                float(np.linalg.norm(old_effective_axis)) > 0.0
+                and float(np.linalg.norm(axis)) > 0.0
+            ):
+                old_tangent = _unit_tangent(
+                    state.centers_unit[i],
+                    np.cross(old_effective_axis, state.centers_unit[i]),
+                )
+                new_tangent = _unit_tangent(
+                    state.centers_unit[i], np.cross(axis, state.centers_unit[i])
+                )
+                bend = float(
+                    np.rad2deg(
+                        np.arccos(
+                            np.clip(np.dot(old_tangent, new_tangent), -1.0, 1.0)
+                        )
+                    )
+                )
+                if bend > 1.0e-10:
+                    state.cumulative_source_bend_deg[i] += bend
+                    total_bend += bend
+            state.last_effective_source_axes_unit[i] = axis
+            state.last_effective_source_speeds_km_per_myr[i] = speed
             distance = speed * duration
             state.centers_unit[i] = _rotate_about_axis(
                 state.centers_unit[i],
-                state.source_drift_axes_unit[i],
+                axis,
                 distance / max(float(radius_km), 1.0e-30),
             )
             state.cumulative_source_distance_km[i] += distance
@@ -402,9 +554,6 @@ def _advance_source_drift(
             t = stop
             if t >= boundary - 1.0e-12:
                 old_axis = state.source_drift_axes_unit[i].copy()
-                old_tangent = _unit_tangent(
-                    state.centers_unit[i], np.cross(old_axis, state.centers_unit[i])
-                )
                 new_segment = segment + 1
                 new_axis, new_speed = _sample_source_drift(
                     params,
@@ -413,16 +562,6 @@ def _advance_source_drift(
                     state.centers_unit[i],
                     previous_axis=old_axis,
                 )
-                new_tangent = _unit_tangent(
-                    state.centers_unit[i], np.cross(new_axis, state.centers_unit[i])
-                )
-                bend = float(
-                    np.rad2deg(
-                        np.arccos(np.clip(np.dot(old_tangent, new_tangent), -1.0, 1.0))
-                    )
-                )
-                state.cumulative_source_bend_deg[i] += bend
-                total_bend += bend
                 state.source_drift_axes_unit[i] = new_axis
                 state.source_drift_speeds_km_per_myr[i] = new_speed
                 state.source_drift_segment_index[i] = new_segment
@@ -453,6 +592,15 @@ def _append_plume(state: MantlePlumeState, params: MantlePlumeParameters, plume_
     )
     state.cumulative_source_bend_deg = np.append(
         state.cumulative_source_bend_deg, 0.0
+    )
+    state.source_flow_omega_rad_per_myr = np.vstack(
+        (state.source_flow_omega_rad_per_myr, np.zeros((1, 3), dtype=np.float64))
+    )
+    state.last_effective_source_axes_unit = np.vstack(
+        (state.last_effective_source_axes_unit, axis.reshape(1, 3))
+    )
+    state.last_effective_source_speeds_km_per_myr = np.append(
+        state.last_effective_source_speeds_km_per_myr, speed
     )
 
 
@@ -486,6 +634,9 @@ def initialize_mantle_plumes(
         source_drift_segment_index=np.empty(0, dtype=np.int32),
         cumulative_source_distance_km=np.empty(0, dtype=np.float64),
         cumulative_source_bend_deg=np.empty(0, dtype=np.float64),
+        source_flow_omega_rad_per_myr=np.empty((0, 3), dtype=np.float64),
+        last_effective_source_axes_unit=np.empty((0, 3), dtype=np.float64),
+        last_effective_source_speeds_km_per_myr=np.empty(0, dtype=np.float64),
     )
     if not p.enabled:
         state.next_birth_time_myr = float("inf")
@@ -678,15 +829,15 @@ def diagnose_mantle_plumes(
         max_tail_flux=float(np.max(tail_flux)) if len(tail_flux) else 0.0,
         source_drift_enabled=bool(params.source_drift_enabled),
         mean_source_drift_speed_km_per_myr=(
-            float(np.mean(plume_state.source_drift_speeds_km_per_myr))
-            if plume_state.source_drift_speeds_km_per_myr is not None
-            and len(plume_state.source_drift_speeds_km_per_myr)
+            float(np.mean(plume_state.last_effective_source_speeds_km_per_myr))
+            if plume_state.last_effective_source_speeds_km_per_myr is not None
+            and len(plume_state.last_effective_source_speeds_km_per_myr)
             else 0.0
         ),
         max_source_drift_speed_km_per_myr=(
-            float(np.max(plume_state.source_drift_speeds_km_per_myr))
-            if plume_state.source_drift_speeds_km_per_myr is not None
-            and len(plume_state.source_drift_speeds_km_per_myr)
+            float(np.max(plume_state.last_effective_source_speeds_km_per_myr))
+            if plume_state.last_effective_source_speeds_km_per_myr is not None
+            and len(plume_state.last_effective_source_speeds_km_per_myr)
             else 0.0
         ),
         active_source_path_length_km=(
@@ -726,6 +877,8 @@ def advance_mantle_plumes(
     radius_km: float,
     params: MantlePlumeParameters,
     craton_params: CratonParameters,
+    *,
+    source_flow_omega_field_rad_per_myr: Array | None = None,
 ) -> tuple[LithosphereState, MantlePlumeState, MantlePlumeDiagnostics]:
     """Advance plume births/lifecycles and modify overlying continental roots."""
 
@@ -750,6 +903,14 @@ def advance_mantle_plumes(
             plume_state.next_birth_time_myr = birth_time + _birth_interval(
                 params, plume_state.next_plume_id
             )
+    if source_flow_omega_field_rad_per_myr is not None:
+        update_plume_source_flow(
+            mesh,
+            plume_state,
+            source_flow_omega_field_rad_per_myr,
+            radius_km,
+            params,
+        )
     _advance_source_drift(
         plume_state, params, start_ages_myr, float(radius_km)
     )
@@ -772,6 +933,15 @@ def advance_mantle_plumes(
     )
     plume_state.cumulative_source_bend_deg = (
         plume_state.cumulative_source_bend_deg[alive]
+    )
+    plume_state.source_flow_omega_rad_per_myr = (
+        plume_state.source_flow_omega_rad_per_myr[alive]
+    )
+    plume_state.last_effective_source_axes_unit = (
+        plume_state.last_effective_source_axes_unit[alive]
+    )
+    plume_state.last_effective_source_speeds_km_per_myr = (
+        plume_state.last_effective_source_speeds_km_per_myr[alive]
     )
     plume_state.time_myr = end_time
     head_flux, tail_flux = plume_component_flux_fields(
@@ -876,6 +1046,7 @@ __all__ = [
     "initialize_mantle_plumes",
     "plume_component_flux_fields",
     "plume_flux_field",
+    "update_plume_source_flow",
     "diagnose_mantle_plumes",
     "advance_mantle_plumes",
 ]

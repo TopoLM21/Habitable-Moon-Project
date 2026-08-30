@@ -78,6 +78,7 @@ class RunCheckpoint:
     hotspot_track_rows: list[dict[str, Any]] = field(default_factory=list)
     plume_drift_rows: list[dict[str, Any]] = field(default_factory=list)
     plume_source_path_rows: list[dict[str, Any]] = field(default_factory=list)
+    plume_flow_coupling_rows: list[dict[str, Any]] = field(default_factory=list)
 
 
 def _plate_dict(p: Plate) -> dict[str, Any]:
@@ -181,6 +182,12 @@ def save_checkpoint(path: str | Path, cp: RunCheckpoint) -> Path:
             arrays["plume_cumulative_source_distance_km"] = np.asarray(cp.plume_state.cumulative_source_distance_km, dtype=np.float64)
         if cp.plume_state.cumulative_source_bend_deg is not None:
             arrays["plume_cumulative_source_bend_deg"] = np.asarray(cp.plume_state.cumulative_source_bend_deg, dtype=np.float64)
+        if cp.plume_state.source_flow_omega_rad_per_myr is not None:
+            arrays["plume_source_flow_omega_rad_per_myr"] = np.asarray(cp.plume_state.source_flow_omega_rad_per_myr, dtype=np.float64)
+        if cp.plume_state.last_effective_source_axes_unit is not None:
+            arrays["plume_last_effective_source_axes_unit"] = np.asarray(cp.plume_state.last_effective_source_axes_unit, dtype=np.float64)
+        if cp.plume_state.last_effective_source_speeds_km_per_myr is not None:
+            arrays["plume_last_effective_source_speeds_km_per_myr"] = np.asarray(cp.plume_state.last_effective_source_speeds_km_per_myr, dtype=np.float64)
     if cp.plume_rifting_state is not None:
         arrays["plume_rifting_last_extension_forcing"] = np.asarray(cp.plume_rifting_state.last_extension_forcing, dtype=np.float64)
         arrays["plume_rifting_cumulative_extension_impulse_myr"] = np.asarray(cp.plume_rifting_state.cumulative_extension_impulse_myr, dtype=np.float64)
@@ -296,6 +303,7 @@ def save_checkpoint(path: str | Path, cp: RunCheckpoint) -> Path:
         "hotspot_track_rows": _jsonable_rows(cp.hotspot_track_rows),
         "plume_drift_rows": _jsonable_rows(cp.plume_drift_rows),
         "plume_source_path_rows": _jsonable_rows(cp.plume_source_path_rows),
+        "plume_flow_coupling_rows": _jsonable_rows(cp.plume_flow_coupling_rows),
         "transport_state": None if cp.transport_state is None else {
             "cumulative_commit_count": int(cp.transport_state.cumulative_commit_count),
             "max_hold_age_myr": float(cp.transport_state.max_hold_age_myr),
@@ -307,6 +315,8 @@ def save_checkpoint(path: str | Path, cp: RunCheckpoint) -> Path:
         meta["version"] = "0.29-hotspot-tracks"
     if cp.plume_drift_rows or cp.plume_source_path_rows:
         meta["version"] = "0.30-mobile-plumes"
+    if cp.plume_flow_coupling_rows:
+        meta["version"] = "0.31-flow-coupled-plumes"
     with (root/"meta.json").open("w",encoding="utf-8") as h:
         json.dump(meta,h,ensure_ascii=False,indent=2)
     return root
@@ -318,7 +328,7 @@ def load_checkpoint(path: str | Path, manager: PlateTopologyManager) -> RunCheck
         meta=json.load(h)
     if meta.get("format")!="moon_tectonics_checkpoint":
         raise ValueError("Not a moon tectonics checkpoint")
-    if meta.get("version") not in {"0.9.1", "0.9.2", "0.9.3", "0.9.4", "0.9.5", "0.10-reconstructed", "0.11-material", "0.14-hydrosphere", "0.16-lithosphere-split", "0.18-subduction-memory", "0.19-rollback", "0.20-slab-breakoff", "0.21-slab-geometry-arcs", "0.22-flexural-isostasy", "0.23-conservative-sediments", "0.24-cratonic-memory", "0.25-mantle-plumes", "0.26-plume-rifting", "0.27-plume-dynamic-topography", "0.28-plume-magmatism", "0.29-hotspot-tracks", "0.30-mobile-plumes"}:
+    if meta.get("version") not in {"0.9.1", "0.9.2", "0.9.3", "0.9.4", "0.9.5", "0.10-reconstructed", "0.11-material", "0.14-hydrosphere", "0.16-lithosphere-split", "0.18-subduction-memory", "0.19-rollback", "0.20-slab-breakoff", "0.21-slab-geometry-arcs", "0.22-flexural-isostasy", "0.23-conservative-sediments", "0.24-cratonic-memory", "0.25-mantle-plumes", "0.26-plume-rifting", "0.27-plume-dynamic-topography", "0.28-plume-magmatism", "0.29-hotspot-tracks", "0.30-mobile-plumes", "0.31-flow-coupled-plumes"}:
         raise ValueError(f"Unsupported checkpoint version: {meta.get('version')}")
     with np.load(root/"state.npz", allow_pickle=False) as z:
         state=LithosphereState(
@@ -395,6 +405,9 @@ def load_checkpoint(path: str | Path, manager: PlateTopologyManager) -> RunCheck
                 source_drift_segment_index=(z["plume_source_drift_segment_index"].copy() if "plume_source_drift_segment_index" in z.files else None),
                 cumulative_source_distance_km=(z["plume_cumulative_source_distance_km"].copy() if "plume_cumulative_source_distance_km" in z.files else None),
                 cumulative_source_bend_deg=(z["plume_cumulative_source_bend_deg"].copy() if "plume_cumulative_source_bend_deg" in z.files else None),
+                source_flow_omega_rad_per_myr=(z["plume_source_flow_omega_rad_per_myr"].copy() if "plume_source_flow_omega_rad_per_myr" in z.files else None),
+                last_effective_source_axes_unit=(z["plume_last_effective_source_axes_unit"].copy() if "plume_last_effective_source_axes_unit" in z.files else None),
+                last_effective_source_speeds_km_per_myr=(z["plume_last_effective_source_speeds_km_per_myr"].copy() if "plume_last_effective_source_speeds_km_per_myr" in z.files else None),
                 population_source_distance_km=float(ps.get("population_source_distance_km", 0.0)),
                 population_source_bend_deg=float(ps.get("population_source_bend_deg", 0.0)),
             )
@@ -499,4 +512,5 @@ def load_checkpoint(path: str | Path, manager: PlateTopologyManager) -> RunCheck
         hotspot_track_rows=list(meta.get("hotspot_track_rows",[])),
         plume_drift_rows=list(meta.get("plume_drift_rows",[])),
         plume_source_path_rows=list(meta.get("plume_source_path_rows",[])),
+        plume_flow_coupling_rows=list(meta.get("plume_flow_coupling_rows",[])),
     )

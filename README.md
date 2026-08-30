@@ -1,3 +1,28 @@
+# Moon Tectonics v0.31 — Mantle-Flow-Coupled Plume Sources
+
+v0.31 couples mobile deep plume sources to the checkpointed Eulerian mantle
+flow already present in the model. Each conduit continuously samples the
+fixed-grid field, follows `0.35` of its resolved tangent velocity and retains
+`0.30` of the deterministic v0.30 drift as an unresolved residual. The two
+vectors determine the effective source path and bends; the overlying plate and
+transported volcanic material remain independent.
+
+Validation: **174/174 tests**, exact equality of all 62 arrays and metadata
+across checkpoint/resume, complete subdivision-3 and canonical 20,480-cell
+Windows smokes, and five new 500-Myr flow-coupled worlds compared with the ten
+v0.30 controls. Across four
+subdivision-3 seeds, mean source path decreases from `19,086` to `11,360 km`
+relative to independent drift while final age-distance correlation increases
+from `+0.582` to `+0.728`. Material ledgers remain closed to `2.79e-9 km3`
+(igneous) and `9.54e-7 km3` (continental), with zero elevation clips.
+
+Primary runner: `run_long_evolution_v131.py`. See
+`V131_FLOW_COUPLED_PLUME_FINDINGS.md`,
+`V131_FLOW_COUPLED_PLUME_VALIDATION_500MYR.csv`, and
+`V131_FLOW_COUPLED_PLUME_VALIDATION_500MYR.png`.
+
+---
+
 # Moon Tectonics v0.30 — Mobile Plume Sources and Bent Hotspot Tracks
 
 v0.30 lets deep plume sources drift independently of the overlying plates.

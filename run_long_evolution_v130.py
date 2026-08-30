@@ -40,6 +40,7 @@ _rows: list[dict] = []
 _source_rows: list[dict] = []
 _output = Path("outputs_v130_mobile_plumes")
 _dpi = 180
+_frame_version_label = "v0.30"
 
 
 def _row(diagnostics) -> dict:
@@ -139,7 +140,7 @@ def _save_frame_v130(lithosphere, topography) -> None:
         / f"hotspot_tracks_{lithosphere.time_myr:08.1f}_Myr.png",
         v129._frame_dpi,
         source_path_rows=_source_rows,
-        version_label="v0.30",
+        version_label=_frame_version_label,
     )
 
 

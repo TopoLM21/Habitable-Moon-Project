@@ -450,6 +450,13 @@ plume_drift:
   path_sample_interval_myr: 4.0
   # Match the nonlinear melt-productivity law when normalizing narrow kernels.
   area_normalization_exponent: 1.4
+plume_flow_coupling:
+  enabled: true
+  # The resolved low-degree mantle field controls most of the coherent drift;
+  # v0.30 motion is retained as a smaller unresolved deep-mantle residual.
+  mantle_flow_velocity_fraction: 0.35
+  residual_drift_fraction: 0.30
+  mantle_flow_sampling_radius_km: 550.0
 late_tectonics:
   enabled: true
   seam_relaxation_myr: 1800.0

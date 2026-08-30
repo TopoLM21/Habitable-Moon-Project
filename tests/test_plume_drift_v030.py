@@ -103,6 +103,8 @@ def test_source_plate_relative_kinematics_separates_the_two_velocities():
     state.centers_unit[0] = np.array([1.0, 0.0, 0.0])
     state.source_drift_axes_unit[0] = np.array([0.0, 0.0, 1.0])
     state.source_drift_speeds_km_per_myr[0] = 10.0
+    state.last_effective_source_axes_unit[0] = np.array([0.0, 0.0, 1.0])
+    state.last_effective_source_speeds_km_per_myr[0] = 10.0
     plate = Plate(
         plate_id=7,
         seed_cell=0,
