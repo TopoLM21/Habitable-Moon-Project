@@ -438,6 +438,18 @@ hotspot_tracks:
   delamination_onset_fraction: 0.42
   delamination_timescale_myr: 120.0
   mapped_track_volume_km3: 1.0e-9
+plume_drift:
+  enabled: true
+  # Deep-source speeds are deliberately lower than most plate speeds, but
+  # large enough to create resolvable offsets over a plume lifetime.
+  minimum_speed_km_per_myr: 8.0
+  maximum_speed_km_per_myr: 30.0
+  # Long coherent arcs separated by deterministic conduit reorientation.
+  direction_persistence_myr: 80.0
+  direction_memory: 0.65
+  path_sample_interval_myr: 4.0
+  # Match the nonlinear melt-productivity law when normalizing narrow kernels.
+  area_normalization_exponent: 1.4
 late_tectonics:
   enabled: true
   seam_relaxation_myr: 1800.0

@@ -76,6 +76,13 @@ def test_checkpoint_roundtrip_reconstructed_transport_and_mantle(tmp_path: Path)
     cp.plume_state.last_tail_flux[:]=0.3*cp.plume_state.last_flux
     cp.plume_state.cumulative_exposure_myr[:]=2.0*cp.plume_state.last_flux
     cp.plume_state.cumulative_root_erosion_km[:]=0.5*cp.plume_state.last_flux
+    cp.plume_state.source_drift_axes_unit[:]=np.array([0.0,0.0,1.0])
+    cp.plume_state.source_drift_speeds_km_per_myr[:]=12.0
+    cp.plume_state.source_drift_segment_index[:]=2
+    cp.plume_state.cumulative_source_distance_km[:]=144.0
+    cp.plume_state.cumulative_source_bend_deg[:]=18.0
+    cp.plume_state.population_source_distance_km=288.0
+    cp.plume_state.population_source_bend_deg=36.0
     cp.plume_rows=[{'time_myr':0.0,'active_plume_count':2}]
     cp.plume_rifting_state=initialize_plume_rifting(mesh,0.0)
     cp.plume_rifting_state.last_extension_forcing[:]=np.linspace(0.0,0.8,mesh.cell_count)
@@ -108,6 +115,8 @@ def test_checkpoint_roundtrip_reconstructed_transport_and_mantle(tmp_path: Path)
     cp.hotspot_track_state.last_dike_localization[:]=np.linspace(0.0,1.0,mesh.cell_count)
     cp.hotspot_track_state.last_head_productivity[:]=0.7*cp.plume_state.last_flux
     cp.hotspot_track_state.last_tail_productivity[:]=0.3*cp.plume_state.last_flux
+    cp.plume_drift_rows=[{'time_myr':12.0,'mean_source_speed_km_per_myr':12.0}]
+    cp.plume_source_path_rows=[{'time_myr':12.0,'plume_id':0,'longitude_deg':10.0,'latitude_deg':20.0}]
     cp.hotspot_track_state.cumulative_delaminated_underplate_volume_km3=17.0
     cp.hotspot_track_state.cumulative_head_generated_volume_km3=29.0
     cp.hotspot_track_state.cumulative_tail_generated_volume_km3=31.0
@@ -142,8 +151,18 @@ def test_checkpoint_roundtrip_reconstructed_transport_and_mantle(tmp_path: Path)
     assert np.array_equal(got.plume_state.last_tail_flux,cp.plume_state.last_tail_flux)
     assert np.array_equal(got.plume_state.cumulative_exposure_myr,cp.plume_state.cumulative_exposure_myr)
     assert np.array_equal(got.plume_state.cumulative_root_erosion_km,cp.plume_state.cumulative_root_erosion_km)
+    assert np.array_equal(got.plume_state.plume_ids,cp.plume_state.plume_ids)
+    assert np.array_equal(got.plume_state.source_drift_axes_unit,cp.plume_state.source_drift_axes_unit)
+    assert np.array_equal(got.plume_state.source_drift_speeds_km_per_myr,cp.plume_state.source_drift_speeds_km_per_myr)
+    assert np.array_equal(got.plume_state.source_drift_segment_index,cp.plume_state.source_drift_segment_index)
+    assert np.array_equal(got.plume_state.cumulative_source_distance_km,cp.plume_state.cumulative_source_distance_km)
+    assert np.array_equal(got.plume_state.cumulative_source_bend_deg,cp.plume_state.cumulative_source_bend_deg)
+    assert got.plume_state.population_source_distance_km==cp.plume_state.population_source_distance_km
+    assert got.plume_state.population_source_bend_deg==cp.plume_state.population_source_bend_deg
     assert got.plume_state.next_plume_id==cp.plume_state.next_plume_id
     assert got.plume_state.next_birth_time_myr==cp.plume_state.next_birth_time_myr
+    assert got.plume_drift_rows==cp.plume_drift_rows
+    assert got.plume_source_path_rows==cp.plume_source_path_rows
     assert got.plume_rows==cp.plume_rows
     assert got.plume_rifting_state is not None
     assert np.array_equal(got.plume_rifting_state.last_extension_forcing,cp.plume_rifting_state.last_extension_forcing)

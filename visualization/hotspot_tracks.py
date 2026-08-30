@@ -92,7 +92,8 @@ def save_hotspot_track_history(rows, path: Path, dpi: int = 160) -> None:
 def save_hotspot_track_frame(mesh, lithosphere, topography, plume_state,
                              magmatic_state, state, radius_km: float,
                              plate_count: int, path: Path,
-                             dpi: int = 105) -> None:
+                             dpi: int = 105, *, source_path_rows=None,
+                             version_label: str = "v0.29") -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     areas = mesh.physical_cell_areas_km2(float(radius_km))
     thickness = total_igneous_volume_field(magmatic_state) / np.maximum(areas, 1e-30)
@@ -120,10 +121,39 @@ def save_hotspot_track_frame(mesh, lithosphere, topography, plume_state,
         ax.grid(True, alpha=0.25)
     if len(plume_state.centers_unit):
         centers = np.asarray(plume_state.centers_unit, dtype=float)
+        if source_path_rows:
+            active_ids = (
+                set(int(x) for x in np.asarray(plume_state.plume_ids))
+                if plume_state.plume_ids is not None
+                else set()
+            )
+            grouped = {}
+            for row in source_path_rows:
+                plume_id = int(row["plume_id"])
+                if active_ids and plume_id not in active_ids:
+                    continue
+                grouped.setdefault(plume_id, []).append(row)
+            for plume_id, rows in grouped.items():
+                rows = sorted(rows, key=lambda item: float(item["time_myr"]))
+                lon_path = np.deg2rad(
+                    np.asarray([row["longitude_deg"] for row in rows], dtype=float)
+                )
+                lat_path = np.deg2rad(
+                    np.asarray([row["latitude_deg"] for row in rows], dtype=float)
+                )
+                if len(lon_path) > 1:
+                    jumps = np.flatnonzero(np.abs(np.diff(lon_path)) > np.pi)
+                    for jump in jumps[::-1]:
+                        lon_path = np.insert(lon_path, jump + 1, np.nan)
+                        lat_path = np.insert(lat_path, jump + 1, np.nan)
+                axes[1].plot(
+                    lon_path, lat_path, linewidth=1.6, alpha=0.85,
+                    label=f"source {plume_id}",
+                )
         axes[1].scatter(np.arctan2(centers[:, 1], centers[:, 0]),
                         np.arcsin(np.clip(centers[:, 2], -1.0, 1.0)),
                         marker="*", s=55, c="cyan", edgecolors="black", linewidths=0.5)
-    fig.suptitle(f"Moon tectonics v0.29 — plume heads, tails and hotspot chains — t={lithosphere.time_myr:g} Myr")
+    fig.suptitle(f"Moon tectonics {version_label} — plume heads, tails and hotspot chains — t={lithosphere.time_myr:g} Myr")
     fig.tight_layout()
     fig.savefig(path, dpi=dpi, bbox_inches="tight")
     plt.close(fig)

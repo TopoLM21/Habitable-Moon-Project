@@ -1,3 +1,28 @@
+# Moon Tectonics v0.30 — Mobile Plume Sources and Bent Hotspot Tracks
+
+v0.30 lets deep plume sources drift independently of the overlying plates.
+Each checkpointed source follows persistent great-circle arcs, reorients at
+finite intervals and records its path and bend angles. Diagnostics now separate
+source velocity, plate velocity and their relative hotspot-track velocity;
+source trajectories are overlaid on the GIF. A powered-Gaussian quadrature
+normalization keeps nonlinear narrow-tail productivity stable as a moving
+source crosses differently aligned mesh cells.
+
+Validation: **171/171 tests**, exact equality of all 59 arrays and metadata
+across checkpoint/resume, a 240-Myr 16-frame GIF, and ten paired 500-Myr
+worlds. The mobile subdivision-3/4 source check differs by `0.021%` in the tail
+productivity time integral and `0.385%` in generated igneous volume; source
+paths are exactly resolution-independent. Maximum absolute igneous and
+continental ledger errors are `2.79e-9` and `9.54e-7 km3`, with zero elevation
+clips.
+
+Primary runner: `run_long_evolution_v130.py`. See
+`V130_MOBILE_PLUME_FINDINGS.md`,
+`V130_MOBILE_PLUME_VALIDATION_500MYR.csv`, and
+`V130_MOBILE_PLUME_VALIDATION_500MYR.png`.
+
+---
+
 # Moon Tectonics v0.29 — Plume Heads, Tails and Hotspot Tracks
 
 v0.29 separates each mantle plume into a short broad head and a narrow,
