@@ -33,6 +33,7 @@ from .plumes import MantlePlumeState
 from .plume_rifting import PlumeRiftingState
 from .plume_dynamic_topography import PlumeDynamicTopographyState
 from .plume_magmatism import PlumeMagmatismState
+from .hotspot_tracks import HotspotTrackState
 
 
 @dataclass(slots=True)
@@ -73,6 +74,8 @@ class RunCheckpoint:
     plume_dynamic_topography_rows: list[dict[str, Any]] = field(default_factory=list)
     plume_magmatism_state: PlumeMagmatismState | None = None
     plume_magmatism_rows: list[dict[str, Any]] = field(default_factory=list)
+    hotspot_track_state: HotspotTrackState | None = None
+    hotspot_track_rows: list[dict[str, Any]] = field(default_factory=list)
 
 
 def _plate_dict(p: Plate) -> dict[str, Any]:
@@ -160,6 +163,10 @@ def save_checkpoint(path: str | Path, cp: RunCheckpoint) -> Path:
         arrays["plume_last_flux"] = np.asarray(cp.plume_state.last_flux, dtype=np.float64)
         arrays["plume_cumulative_exposure_myr"] = np.asarray(cp.plume_state.cumulative_exposure_myr, dtype=np.float64)
         arrays["plume_cumulative_root_erosion_km"] = np.asarray(cp.plume_state.cumulative_root_erosion_km, dtype=np.float64)
+        if cp.plume_state.last_head_flux is not None:
+            arrays["plume_last_head_flux"] = np.asarray(cp.plume_state.last_head_flux, dtype=np.float64)
+        if cp.plume_state.last_tail_flux is not None:
+            arrays["plume_last_tail_flux"] = np.asarray(cp.plume_state.last_tail_flux, dtype=np.float64)
     if cp.plume_rifting_state is not None:
         arrays["plume_rifting_last_extension_forcing"] = np.asarray(cp.plume_rifting_state.last_extension_forcing, dtype=np.float64)
         arrays["plume_rifting_cumulative_extension_impulse_myr"] = np.asarray(cp.plume_rifting_state.cumulative_extension_impulse_myr, dtype=np.float64)
@@ -175,6 +182,13 @@ def save_checkpoint(path: str | Path, cp: RunCheckpoint) -> Path:
         arrays["plume_magmatism_underplate_volume_km3"] = np.asarray(cp.plume_magmatism_state.underplate_volume_km3, dtype=np.float64)
         arrays["plume_magmatism_track_age_myr"] = np.asarray(cp.plume_magmatism_state.track_age_myr, dtype=np.float64)
         arrays["plume_magmatism_last_emplacement_productivity"] = np.asarray(cp.plume_magmatism_state.last_emplacement_productivity, dtype=np.float64)
+    if cp.hotspot_track_state is not None:
+        arrays["hotspot_track_thermal_anomaly"] = np.asarray(cp.hotspot_track_state.thermal_anomaly, dtype=np.float64)
+        arrays["hotspot_track_underplate_mean_age_myr"] = np.asarray(cp.hotspot_track_state.underplate_mean_age_myr, dtype=np.float64)
+        arrays["hotspot_track_underplate_eclogite_fraction"] = np.asarray(cp.hotspot_track_state.underplate_eclogite_fraction, dtype=np.float64)
+        arrays["hotspot_track_last_dike_localization"] = np.asarray(cp.hotspot_track_state.last_dike_localization, dtype=np.float64)
+        arrays["hotspot_track_last_head_productivity"] = np.asarray(cp.hotspot_track_state.last_head_productivity, dtype=np.float64)
+        arrays["hotspot_track_last_tail_productivity"] = np.asarray(cp.hotspot_track_state.last_tail_productivity, dtype=np.float64)
     np.savez_compressed(root/"state.npz", **arrays)
     collision=[
         [int(a), int(b), float(age)]
@@ -257,6 +271,13 @@ def save_checkpoint(path: str | Path, cp: RunCheckpoint) -> Path:
             "deep_recycled_underplate_volume_km3": float(cp.plume_magmatism_state.deep_recycled_underplate_volume_km3),
         },
         "plume_magmatism_rows": _jsonable_rows(cp.plume_magmatism_rows),
+        "hotspot_track_state": None if cp.hotspot_track_state is None else {
+            "time_myr": float(cp.hotspot_track_state.time_myr),
+            "cumulative_delaminated_underplate_volume_km3": float(cp.hotspot_track_state.cumulative_delaminated_underplate_volume_km3),
+            "cumulative_head_generated_volume_km3": float(cp.hotspot_track_state.cumulative_head_generated_volume_km3),
+            "cumulative_tail_generated_volume_km3": float(cp.hotspot_track_state.cumulative_tail_generated_volume_km3),
+        },
+        "hotspot_track_rows": _jsonable_rows(cp.hotspot_track_rows),
         "transport_state": None if cp.transport_state is None else {
             "cumulative_commit_count": int(cp.transport_state.cumulative_commit_count),
             "max_hold_age_myr": float(cp.transport_state.max_hold_age_myr),
@@ -264,6 +285,8 @@ def save_checkpoint(path: str | Path, cp: RunCheckpoint) -> Path:
     }
     if cp.plume_magmatism_state is not None:
         meta["version"] = "0.28-plume-magmatism"
+    if cp.hotspot_track_state is not None:
+        meta["version"] = "0.29-hotspot-tracks"
     with (root/"meta.json").open("w",encoding="utf-8") as h:
         json.dump(meta,h,ensure_ascii=False,indent=2)
     return root
@@ -275,7 +298,7 @@ def load_checkpoint(path: str | Path, manager: PlateTopologyManager) -> RunCheck
         meta=json.load(h)
     if meta.get("format")!="moon_tectonics_checkpoint":
         raise ValueError("Not a moon tectonics checkpoint")
-    if meta.get("version") not in {"0.9.1", "0.9.2", "0.9.3", "0.9.4", "0.9.5", "0.10-reconstructed", "0.11-material", "0.14-hydrosphere", "0.16-lithosphere-split", "0.18-subduction-memory", "0.19-rollback", "0.20-slab-breakoff", "0.21-slab-geometry-arcs", "0.22-flexural-isostasy", "0.23-conservative-sediments", "0.24-cratonic-memory", "0.25-mantle-plumes", "0.26-plume-rifting", "0.27-plume-dynamic-topography", "0.28-plume-magmatism"}:
+    if meta.get("version") not in {"0.9.1", "0.9.2", "0.9.3", "0.9.4", "0.9.5", "0.10-reconstructed", "0.11-material", "0.14-hydrosphere", "0.16-lithosphere-split", "0.18-subduction-memory", "0.19-rollback", "0.20-slab-breakoff", "0.21-slab-geometry-arcs", "0.22-flexural-isostasy", "0.23-conservative-sediments", "0.24-cratonic-memory", "0.25-mantle-plumes", "0.26-plume-rifting", "0.27-plume-dynamic-topography", "0.28-plume-magmatism", "0.29-hotspot-tracks"}:
         raise ValueError(f"Unsupported checkpoint version: {meta.get('version')}")
     with np.load(root/"state.npz", allow_pickle=False) as z:
         state=LithosphereState(
@@ -344,6 +367,8 @@ def load_checkpoint(path: str | Path, manager: PlateTopologyManager) -> RunCheck
                 last_flux=z["plume_last_flux"].copy(),
                 cumulative_exposure_myr=z["plume_cumulative_exposure_myr"].copy(),
                 cumulative_root_erosion_km=z["plume_cumulative_root_erosion_km"].copy(),
+                last_head_flux=(z["plume_last_head_flux"].copy() if "plume_last_head_flux" in z.files else np.zeros_like(z["plume_last_flux"], dtype=np.float64)),
+                last_tail_flux=(z["plume_last_tail_flux"].copy() if "plume_last_tail_flux" in z.files else np.zeros_like(z["plume_last_flux"], dtype=np.float64)),
             )
         plume_rifting_state = None
         prs = meta.get("plume_rifting_state")
@@ -380,6 +405,21 @@ def load_checkpoint(path: str | Path, manager: PlateTopologyManager) -> RunCheck
                 deep_recycled_extrusive_volume_km3=float(pms.get("deep_recycled_extrusive_volume_km3", 0.0)),
                 deep_recycled_dyke_volume_km3=float(pms.get("deep_recycled_dyke_volume_km3", 0.0)),
                 deep_recycled_underplate_volume_km3=float(pms.get("deep_recycled_underplate_volume_km3", 0.0)),
+            )
+        hotspot_track_state = None
+        hts = meta.get("hotspot_track_state")
+        if hts is not None and "hotspot_track_thermal_anomaly" in z.files:
+            hotspot_track_state = HotspotTrackState(
+                time_myr=float(hts["time_myr"]),
+                thermal_anomaly=z["hotspot_track_thermal_anomaly"].copy(),
+                underplate_mean_age_myr=z["hotspot_track_underplate_mean_age_myr"].copy(),
+                underplate_eclogite_fraction=z["hotspot_track_underplate_eclogite_fraction"].copy(),
+                last_dike_localization=z["hotspot_track_last_dike_localization"].copy(),
+                last_head_productivity=z["hotspot_track_last_head_productivity"].copy(),
+                last_tail_productivity=z["hotspot_track_last_tail_productivity"].copy(),
+                cumulative_delaminated_underplate_volume_km3=float(hts.get("cumulative_delaminated_underplate_volume_km3", 0.0)),
+                cumulative_head_generated_volume_km3=float(hts.get("cumulative_head_generated_volume_km3", 0.0)),
+                cumulative_tail_generated_volume_km3=float(hts.get("cumulative_tail_generated_volume_km3", 0.0)),
             )
     manager.collision_age_myr={
         (int(a),int(b)):float(age) for a,b,age in meta["topology_manager"]["collision_age_myr"]
@@ -427,4 +467,6 @@ def load_checkpoint(path: str | Path, manager: PlateTopologyManager) -> RunCheck
         plume_dynamic_topography_rows=list(meta.get("plume_dynamic_topography_rows",[])),
         plume_magmatism_state=plume_magmatism_state,
         plume_magmatism_rows=list(meta.get("plume_magmatism_rows",[])),
+        hotspot_track_state=hotspot_track_state,
+        hotspot_track_rows=list(meta.get("hotspot_track_rows",[])),
     )

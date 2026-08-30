@@ -14,6 +14,7 @@ from tectonics.plumes import MantlePlumeParameters,initialize_mantle_plumes
 from tectonics.plume_rifting import initialize_plume_rifting
 from tectonics.plume_dynamic_topography import initialize_plume_dynamic_topography
 from tectonics.plume_magmatism import initialize_plume_magmatism
+from tectonics.hotspot_tracks import initialize_hotspot_tracks
 
 
 def test_checkpoint_roundtrip(tmp_path: Path):
@@ -71,6 +72,8 @@ def test_checkpoint_roundtrip_reconstructed_transport_and_mantle(tmp_path: Path)
     cp.plume_state=initialize_mantle_plumes(mesh,0.0,MantlePlumeParameters(seed=322,initial_plume_count=2))
     cp.plume_state.ages_myr[:]=12.0
     cp.plume_state.last_flux[:]=np.linspace(0.0,1.0,mesh.cell_count)
+    cp.plume_state.last_head_flux[:]=0.7*cp.plume_state.last_flux
+    cp.plume_state.last_tail_flux[:]=0.3*cp.plume_state.last_flux
     cp.plume_state.cumulative_exposure_myr[:]=2.0*cp.plume_state.last_flux
     cp.plume_state.cumulative_root_erosion_km[:]=0.5*cp.plume_state.last_flux
     cp.plume_rows=[{'time_myr':0.0,'active_plume_count':2}]
@@ -98,6 +101,17 @@ def test_checkpoint_roundtrip_reconstructed_transport_and_mantle(tmp_path: Path)
     cp.plume_magmatism_state.deep_recycled_dyke_volume_km3=2.0
     cp.plume_magmatism_state.deep_recycled_underplate_volume_km3=3.0
     cp.plume_magmatism_rows=[{'time_myr':0.0,'surface_extrusive_volume_km3':123.0}]
+    cp.hotspot_track_state=initialize_hotspot_tracks(mesh,0.0)
+    cp.hotspot_track_state.thermal_anomaly[:]=np.linspace(0.0,0.9,mesh.cell_count)
+    cp.hotspot_track_state.underplate_mean_age_myr[:]=np.linspace(0.0,240.0,mesh.cell_count)
+    cp.hotspot_track_state.underplate_eclogite_fraction[:]=np.linspace(0.0,0.6,mesh.cell_count)
+    cp.hotspot_track_state.last_dike_localization[:]=np.linspace(0.0,1.0,mesh.cell_count)
+    cp.hotspot_track_state.last_head_productivity[:]=0.7*cp.plume_state.last_flux
+    cp.hotspot_track_state.last_tail_productivity[:]=0.3*cp.plume_state.last_flux
+    cp.hotspot_track_state.cumulative_delaminated_underplate_volume_km3=17.0
+    cp.hotspot_track_state.cumulative_head_generated_volume_km3=29.0
+    cp.hotspot_track_state.cumulative_tail_generated_volume_km3=31.0
+    cp.hotspot_track_rows=[{'time_myr':0.0,'maximum_tail_productivity':0.3}]
     save_checkpoint(tmp_path/'cp2',cp)
     got=load_checkpoint(tmp_path/'cp2',PlateTopologyManager(PlateTopologyParameters()))
     assert got.mantle_flow is not None and got.transport_state is not None
@@ -124,6 +138,8 @@ def test_checkpoint_roundtrip_reconstructed_transport_and_mantle(tmp_path: Path)
     assert np.array_equal(got.plume_state.centers_unit,cp.plume_state.centers_unit)
     assert np.array_equal(got.plume_state.ages_myr,cp.plume_state.ages_myr)
     assert np.array_equal(got.plume_state.last_flux,cp.plume_state.last_flux)
+    assert np.array_equal(got.plume_state.last_head_flux,cp.plume_state.last_head_flux)
+    assert np.array_equal(got.plume_state.last_tail_flux,cp.plume_state.last_tail_flux)
     assert np.array_equal(got.plume_state.cumulative_exposure_myr,cp.plume_state.cumulative_exposure_myr)
     assert np.array_equal(got.plume_state.cumulative_root_erosion_km,cp.plume_state.cumulative_root_erosion_km)
     assert got.plume_state.next_plume_id==cp.plume_state.next_plume_id
@@ -149,3 +165,12 @@ def test_checkpoint_roundtrip_reconstructed_transport_and_mantle(tmp_path: Path)
     assert got.plume_magmatism_state.cumulative_generated_underplate_volume_km3==956.0
     assert got.plume_magmatism_state.deep_recycled_underplate_volume_km3==3.0
     assert got.plume_magmatism_rows==cp.plume_magmatism_rows
+    assert got.hotspot_track_state is not None
+    assert np.array_equal(got.hotspot_track_state.thermal_anomaly,cp.hotspot_track_state.thermal_anomaly)
+    assert np.array_equal(got.hotspot_track_state.underplate_mean_age_myr,cp.hotspot_track_state.underplate_mean_age_myr)
+    assert np.array_equal(got.hotspot_track_state.underplate_eclogite_fraction,cp.hotspot_track_state.underplate_eclogite_fraction)
+    assert np.array_equal(got.hotspot_track_state.last_dike_localization,cp.hotspot_track_state.last_dike_localization)
+    assert got.hotspot_track_state.cumulative_delaminated_underplate_volume_km3==17.0
+    assert got.hotspot_track_state.cumulative_head_generated_volume_km3==29.0
+    assert got.hotspot_track_state.cumulative_tail_generated_volume_km3==31.0
+    assert got.hotspot_track_rows==cp.hotspot_track_rows

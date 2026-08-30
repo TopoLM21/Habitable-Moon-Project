@@ -1,3 +1,28 @@
+# Moon Tectonics v0.29 — Plume Heads, Tails and Hotspot Tracks
+
+v0.29 separates each mantle plume into a short broad head and a narrow,
+persistent tail. The source creates permanent volcanic material that moves with
+the plates, while transported heat weakens lithosphere, active rifts focus melt
+into dykes, and old underplate can eclogitize and delaminate into the existing
+deep-recycled reservoir. Component source kernels are area-normalized to reduce
+grid-dependent plume production.
+
+Validation: **167/167 tests**, exact equality of all 53 arrays and metadata
+across checkpoint/resume, a subdivision-5 canonical smoke, a 120-Myr six-panel
+GIF, and ten 500-Myr paired validation worlds. The maximum absolute igneous
+ledger error is `1.86e-8 km3`, continental ledger error is `9.54e-7 km3`, and
+no elevation clips occur. At subdivision 3, the full model produces a mean
+age–distance correlation of `+0.752`; its area-normalized integrated source
+changes by only `1.65%` from subdivision 3 to 4 for the resolution-check seed.
+Late plate topology and retained surface volume remain resolution-sensitive.
+
+Primary runner: `run_long_evolution_v129.py`. See
+`V129_HOTSPOT_TRACK_FINDINGS.md`,
+`V129_HOTSPOT_TRACK_VALIDATION_500MYR.csv`, and
+`V129_HOTSPOT_TRACK_VALIDATION_500MYR.png`.
+
+---
+
 # Moon Tectonics v0.28 — Permanent Plume Magmatism and Volcanic Tracks
 
 v0.28 turns plume decompression-melt productivity into permanent, transported

@@ -398,6 +398,46 @@ plume_magmatism:
   underplate_density_kg_m3: 3050.0
   mantle_density_kg_m3: 3300.0
   mapped_track_volume_km3: 1.0e-9
+hotspot_tracks:
+  enabled: true
+  # A 30--45 Myr broad head (for the configured plume lifetimes) is followed
+  # by a persistent tail about one quarter as wide.
+  head_tail_separation_enabled: true
+  head_duration_fraction: 0.18
+  head_rise_fraction: 0.25
+  head_decay_fraction: 0.50
+  tail_radius_fraction: 0.23
+  tail_flux_fraction: 0.55
+  tail_rise_time_fraction: 0.08
+  tail_decay_time_fraction: 0.15
+  area_normalize_component_flux: true
+  flux_saturation: 0.75
+  productivity_exponent: 1.4
+  productivity_threshold: 0.025
+  # Heat is material memory: it moves with the plate and relaxes after the
+  # parcel leaves the fixed hotspot.
+  magmatic_thermal_weakening_enabled: true
+  couple_thermal_to_lithosphere: true
+  thermal_relaxation_myr: 90.0
+  thermal_gain_per_km_emplaced: 0.45
+  maximum_thermal_extension_forcing: 0.32
+  # Active rifts divert at most 30 percentage points of the underplate share
+  # into dykes; total generated volume is unchanged.
+  dike_localization_enabled: true
+  dike_rift_onset: 0.18
+  dike_rift_saturation: 0.70
+  maximum_dyke_fraction_gain: 0.30
+  # Old cooled mafic underplate densifies gradually. Only the sufficiently
+  # transformed fraction can founder into the closed deep-recycling ledger.
+  underplate_evolution_enabled: true
+  eclogitization_onset_age_myr: 120.0
+  eclogitization_transition_myr: 120.0
+  eclogitization_relaxation_myr: 180.0
+  maximum_eclogite_fraction: 0.65
+  eclogite_density_kg_m3: 3450.0
+  delamination_onset_fraction: 0.42
+  delamination_timescale_myr: 120.0
+  mapped_track_volume_km3: 1.0e-9
 late_tectonics:
   enabled: true
   seam_relaxation_myr: 1800.0

@@ -223,6 +223,8 @@ def magmatic_topography_fields(
     state: PlumeMagmatismState,
     radius_km: float,
     params: PlumeMagmatismParameters,
+    *,
+    underplate_density_kg_m3: Array | None = None,
 ) -> tuple[Array, Array, Array, Array]:
     """Return extrusive thickness/load, intrusive support and total thickness.
 
@@ -239,12 +241,19 @@ def magmatic_topography_fields(
     dyke_h = scale * np.maximum(state.dyke_volume_km3, 0.0)
     underplate_h = scale * np.maximum(state.underplate_volume_km3, 0.0)
     rho_m = float(params.mantle_density_kg_m3)
+    underplate_density = (
+        np.full(mesh.cell_count, float(params.underplate_density_kg_m3))
+        if underplate_density_kg_m3 is None
+        else np.asarray(underplate_density_kg_m3, dtype=np.float64)
+    )
+    if underplate_density.shape != (mesh.cell_count,):
+        raise ValueError("underplate density field must match cell count")
+    if np.any(underplate_density <= 0.0):
+        raise ValueError("underplate density field must be positive")
     extrusive_load = -float(params.extrusive_density_kg_m3) / rho_m * extrusive_h
     intrusive_support = (
         (rho_m - float(params.dyke_density_kg_m3)) / rho_m * dyke_h
-        + (rho_m - float(params.underplate_density_kg_m3))
-        / rho_m
-        * underplate_h
+        + (rho_m - underplate_density) / rho_m * underplate_h
     )
     total_h = extrusive_h + dyke_h + underplate_h
     return extrusive_h, extrusive_load, intrusive_support, total_h
@@ -317,6 +326,9 @@ def advance_plume_magmatism(
     dt_myr: float,
     radius_km: float,
     params: PlumeMagmatismParameters,
+    *,
+    dyke_localization: Array | None = None,
+    maximum_dyke_fraction_gain: float = 0.0,
 ) -> tuple[PlumeMagmatismState, PlumeMagmatismDiagnostics]:
     """Emplace one permanent magmatic increment into the transported reservoirs."""
 
@@ -328,6 +340,15 @@ def advance_plume_magmatism(
     extension = np.clip(np.asarray(extension_forcing, dtype=np.float64), 0.0, 1.0)
     if productivity.shape != (n,) or extension.shape != (n,):
         raise ValueError("productivity and extension fields must match cell count")
+    localization = (
+        np.zeros(n, dtype=np.float64)
+        if dyke_localization is None
+        else np.clip(np.asarray(dyke_localization, dtype=np.float64), 0.0, 1.0)
+    )
+    if localization.shape != (n,):
+        raise ValueError("dyke_localization must match cell count")
+    if maximum_dyke_fraction_gain < 0.0:
+        raise ValueError("maximum_dyke_fraction_gain must be non-negative")
     if len(state.extrusive_volume_km3) != n:
         raise ValueError("plume-magmatism state must match cell count")
 
@@ -358,9 +379,19 @@ def advance_plume_magmatism(
         * effective
         * capacity
     )
+    # Active rifts provide preferential opening for dykes.  The localized
+    # fraction is transferred from underplate to dykes, so total generated
+    # material and the global igneous ledger remain exactly conservative.
+    available_underplate = max(float(params.underplate_fraction), 0.0)
+    dyke_gain = np.minimum(
+        float(maximum_dyke_fraction_gain) * localization,
+        available_underplate,
+    )
     generated_extrusive = generated_total * float(params.extrusive_fraction)
-    generated_dyke = generated_total * float(params.dyke_fraction)
-    generated_underplate = generated_total * float(params.underplate_fraction)
+    generated_dyke = generated_total * (float(params.dyke_fraction) + dyke_gain)
+    generated_underplate = generated_total * (
+        float(params.underplate_fraction) - dyke_gain
+    )
     state.extrusive_volume_km3 = (
         np.asarray(state.extrusive_volume_km3, dtype=np.float64) + generated_extrusive
     )

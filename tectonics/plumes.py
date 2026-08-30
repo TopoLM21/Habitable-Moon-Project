@@ -52,6 +52,17 @@ class MantlePlumeParameters:
     root_erosion_km_per_myr: float = 0.35
     minimum_continental_root_thickness_km: float = 60.0
     continental_fraction_epsilon: float = 1.0e-9
+    # v0.29 opt-in plume-head/plume-tail separation.  Older runners retain the
+    # original single broad Gaussian when this switch is false.
+    head_tail_separation_enabled: bool = False
+    head_duration_fraction: float = 0.18
+    head_rise_fraction: float = 0.25
+    head_decay_fraction: float = 0.50
+    tail_radius_fraction: float = 0.23
+    tail_flux_fraction: float = 0.55
+    tail_rise_time_fraction: float = 0.08
+    tail_decay_time_fraction: float = 0.15
+    component_flux_area_normalization_enabled: bool = False
 
 
 @dataclass(slots=True)
@@ -69,6 +80,8 @@ class MantlePlumeState:
     last_flux: Array
     cumulative_exposure_myr: Array
     cumulative_root_erosion_km: Array
+    last_head_flux: Array | None = None
+    last_tail_flux: Array | None = None
 
 
 @dataclass(slots=True)
@@ -88,6 +101,10 @@ class MantlePlumeDiagnostics:
     max_root_erosion_this_step_km: float
     cumulative_mean_surface_exposure_myr: float
     cumulative_max_surface_exposure_myr: float
+    mean_head_flux: float = 0.0
+    max_head_flux: float = 0.0
+    mean_tail_flux: float = 0.0
+    max_tail_flux: float = 0.0
 
 
 def _validate_parameters(params: MantlePlumeParameters) -> None:
@@ -113,6 +130,22 @@ def _validate_parameters(params: MantlePlumeParameters) -> None:
         raise ValueError("rise and decay fractions must sum to at most 1")
     if params.minimum_continental_root_thickness_km < 0.0:
         raise ValueError("minimum_continental_root_thickness_km must be non-negative")
+    if not (0.0 < params.head_duration_fraction < 1.0):
+        raise ValueError("head_duration_fraction must be in (0, 1)")
+    if not (0.0 < params.head_rise_fraction < 1.0):
+        raise ValueError("head_rise_fraction must be in (0, 1)")
+    if not (0.0 < params.head_decay_fraction < 1.0):
+        raise ValueError("head_decay_fraction must be in (0, 1)")
+    if params.head_rise_fraction + params.head_decay_fraction > 1.0:
+        raise ValueError("head rise and decay fractions must sum to at most 1")
+    if not (0.0 < params.tail_radius_fraction < 1.0):
+        raise ValueError("tail_radius_fraction must be in (0, 1)")
+    if not (0.0 <= params.tail_flux_fraction <= 1.0):
+        raise ValueError("tail_flux_fraction must be in [0, 1]")
+    if not (0.0 < params.tail_rise_time_fraction < 1.0):
+        raise ValueError("tail_rise_time_fraction must be in (0, 1)")
+    if not (0.0 < params.tail_decay_time_fraction < 1.0):
+        raise ValueError("tail_decay_time_fraction must be in (0, 1)")
 
 
 def _rng(params: MantlePlumeParameters, plume_id: int, stream: int = 0) -> np.random.Generator:
@@ -180,6 +213,8 @@ def initialize_mantle_plumes(
         last_flux=np.zeros(n, dtype=np.float64),
         cumulative_exposure_myr=np.zeros(n, dtype=np.float64),
         cumulative_root_erosion_km=np.zeros(n, dtype=np.float64),
+        last_head_flux=np.zeros(n, dtype=np.float64),
+        last_tail_flux=np.zeros(n, dtype=np.float64),
     )
     if not p.enabled:
         state.next_birth_time_myr = float("inf")
@@ -196,33 +231,110 @@ def _smoothstep(value: Array) -> Array:
     return x * x * (3.0 - 2.0 * x)
 
 
+def plume_component_flux_fields(
+    mesh: SphereMesh,
+    state: MantlePlumeState,
+    radius_km: float,
+    params: MantlePlumeParameters,
+) -> tuple[Array, Array]:
+    """Return broad-head and narrow-tail flux on mantle-fixed cells.
+
+    With head/tail separation disabled, the first array is exactly the legacy
+    v0.25 broad-plume field and the second is zero.  The v0.29 branch instead
+    gives each plume a short initial head pulse followed by a persistent,
+    narrower conduit.  Keeping the centers Eulerian lets plate transport make
+    the corresponding material track and age progression.
+    """
+
+    if not params.enabled or len(state.ages_myr) == 0:
+        zero = np.zeros(mesh.cell_count, dtype=np.float64)
+        return zero.copy(), zero.copy()
+    age = np.asarray(state.ages_myr, dtype=np.float64)
+    life = np.maximum(np.asarray(state.lifetimes_myr, dtype=np.float64), 1.0e-30)
+    alive = (age >= 0.0) & (age < life)
+    if not np.any(alive):
+        zero = np.zeros(mesh.cell_count, dtype=np.float64)
+        return zero.copy(), zero.copy()
+    age = age[alive]
+    life = life[alive]
+    centers = np.asarray(state.centers_unit, dtype=np.float64)[alive]
+    dots = np.clip(np.asarray(mesh.centroids, dtype=np.float64) @ centers.T, -1.0, 1.0)
+    distance_km = float(radius_km) * np.arccos(dots)
+    head_sigma = np.maximum(
+        np.asarray(state.head_radii_km, dtype=np.float64)[alive], 1.0e-30
+    )
+    peak = np.asarray(state.peak_fluxes, dtype=np.float64)[alive]
+
+    if not params.head_tail_separation_enabled:
+        rise = np.maximum(float(params.rise_time_fraction) * life, 1.0e-30)
+        decay = np.maximum(float(params.decay_time_fraction) * life, 1.0e-30)
+        envelope = _smoothstep(age / rise) * _smoothstep((life - age) / decay)
+        head = np.sum(
+            np.exp(-0.5 * (distance_km / head_sigma[None, :]) ** 2)
+            * (peak * envelope)[None, :],
+            axis=1,
+        )
+        return np.clip(head, 0.0, 1.5), np.zeros(mesh.cell_count, dtype=np.float64)
+
+    head_duration = np.maximum(
+        float(params.head_duration_fraction) * life, 1.0e-30
+    )
+    head_rise = np.maximum(
+        float(params.head_rise_fraction) * head_duration, 1.0e-30
+    )
+    head_decay = np.maximum(
+        float(params.head_decay_fraction) * head_duration, 1.0e-30
+    )
+    head_envelope = _smoothstep(age / head_rise) * _smoothstep(
+        (head_duration - age) / head_decay
+    )
+    head_kernel = np.exp(-0.5 * (distance_km / head_sigma[None, :]) ** 2)
+
+    tail_rise = np.maximum(
+        float(params.tail_rise_time_fraction) * life, 1.0e-30
+    )
+    tail_decay = np.maximum(
+        float(params.tail_decay_time_fraction) * life, 1.0e-30
+    )
+    tail_envelope = _smoothstep(age / tail_rise) * _smoothstep(
+        (life - age) / tail_decay
+    )
+    tail_sigma = np.maximum(
+        float(params.tail_radius_fraction) * head_sigma, 1.0e-30
+    )
+    tail_kernel = np.exp(-0.5 * (distance_km / tail_sigma[None, :]) ** 2)
+    if params.component_flux_area_normalization_enabled:
+        # A narrow tail may be smaller than a coarse mesh cell.  Treat sampled
+        # values as cell-average quadrature weights and preserve the continuous
+        # small-angle Gaussian integral (2*pi*sigma^2) on every resolution.
+        # This removes centroid-alignment bias without artificially widening
+        # the physical tail.
+        areas = mesh.physical_cell_areas_km2(float(radius_km))
+        for kernel, sigma in ((head_kernel, head_sigma), (tail_kernel, tail_sigma)):
+            sampled = np.sum(areas[:, None] * kernel, axis=0)
+            target = 2.0 * np.pi * np.square(sigma)
+            kernel *= (
+                target / np.maximum(sampled, 1.0e-30)
+            )[None, :]
+    head = np.sum(head_kernel * (peak * head_envelope)[None, :], axis=1)
+    tail = np.sum(
+        tail_kernel
+        * (peak * float(params.tail_flux_fraction) * tail_envelope)[None, :],
+        axis=1,
+    )
+    return np.clip(head, 0.0, 1.5), np.clip(tail, 0.0, 1.5)
+
+
 def plume_flux_field(
     mesh: SphereMesh,
     state: MantlePlumeState,
     radius_km: float,
     params: MantlePlumeParameters,
 ) -> Array:
-    """Return normalized superposed plume flux on fixed surface cells."""
+    """Return normalized superposed total plume flux on fixed surface cells."""
 
-    if not params.enabled or len(state.ages_myr) == 0:
-        return np.zeros(mesh.cell_count, dtype=np.float64)
-    age = np.asarray(state.ages_myr, dtype=np.float64)
-    life = np.maximum(np.asarray(state.lifetimes_myr, dtype=np.float64), 1.0e-30)
-    alive = (age >= 0.0) & (age < life)
-    if not np.any(alive):
-        return np.zeros(mesh.cell_count, dtype=np.float64)
-    age = age[alive]
-    life = life[alive]
-    rise = np.maximum(float(params.rise_time_fraction) * life, 1.0e-30)
-    decay = np.maximum(float(params.decay_time_fraction) * life, 1.0e-30)
-    envelope = _smoothstep(age / rise) * _smoothstep((life - age) / decay)
-    amplitudes = np.asarray(state.peak_fluxes, dtype=np.float64)[alive] * envelope
-    centers = np.asarray(state.centers_unit, dtype=np.float64)[alive]
-    dots = np.clip(np.asarray(mesh.centroids, dtype=np.float64) @ centers.T, -1.0, 1.0)
-    distance_km = float(radius_km) * np.arccos(dots)
-    sigma = np.maximum(np.asarray(state.head_radii_km, dtype=np.float64)[alive], 1.0e-30)
-    field = np.sum(np.exp(-0.5 * (distance_km / sigma[None, :]) ** 2) * amplitudes[None, :], axis=1)
-    return np.clip(field, 0.0, 1.5)
+    head, tail = plume_component_flux_fields(mesh, state, radius_km, params)
+    return np.clip(head + tail, 0.0, 1.5)
 
 
 def diagnose_mantle_plumes(
@@ -246,6 +358,16 @@ def diagnose_mantle_plumes(
     total_area = max(float(np.sum(areas)), 1.0e-30)
     total_cont = max(float(np.sum(weights)), 1.0e-30)
     flux = np.asarray(plume_state.last_flux, dtype=np.float64)
+    head_flux = (
+        np.zeros_like(flux)
+        if plume_state.last_head_flux is None
+        else np.asarray(plume_state.last_head_flux, dtype=np.float64)
+    )
+    tail_flux = (
+        np.zeros_like(flux)
+        if plume_state.last_tail_flux is None
+        else np.asarray(plume_state.last_tail_flux, dtype=np.float64)
+    )
     affected = flux >= float(params.affected_flux_threshold)
 
     def continental_mean(values: Array | None) -> float:
@@ -277,6 +399,10 @@ def diagnose_mantle_plumes(
         cumulative_max_surface_exposure_myr=float(
             np.max(plume_state.cumulative_exposure_myr)
         ) if len(plume_state.cumulative_exposure_myr) else 0.0,
+        mean_head_flux=float(np.sum(areas * head_flux) / total_area),
+        max_head_flux=float(np.max(head_flux)) if len(head_flux) else 0.0,
+        mean_tail_flux=float(np.sum(areas * tail_flux) / total_area),
+        max_tail_flux=float(np.max(tail_flux)) if len(tail_flux) else 0.0,
     )
 
 
@@ -315,8 +441,13 @@ def advance_mantle_plumes(
     plume_state.head_radii_km = plume_state.head_radii_km[alive]
     plume_state.peak_fluxes = plume_state.peak_fluxes[alive]
     plume_state.time_myr = end_time
-    flux = plume_flux_field(mesh, plume_state, radius_km, params)
+    head_flux, tail_flux = plume_component_flux_fields(
+        mesh, plume_state, radius_km, params
+    )
+    flux = np.clip(head_flux + tail_flux, 0.0, 1.5)
     plume_state.last_flux = flux
+    plume_state.last_head_flux = head_flux
+    plume_state.last_tail_flux = tail_flux
     plume_state.cumulative_exposure_myr = (
         np.asarray(plume_state.cumulative_exposure_myr, dtype=np.float64)
         + flux * float(dt_myr)
@@ -410,6 +541,7 @@ __all__ = [
     "MantlePlumeState",
     "MantlePlumeDiagnostics",
     "initialize_mantle_plumes",
+    "plume_component_flux_fields",
     "plume_flux_field",
     "diagnose_mantle_plumes",
     "advance_mantle_plumes",
