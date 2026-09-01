@@ -1,5 +1,58 @@
 # Moon Tectonics v0.31 — Mantle-Flow-Coupled Plume Sources
 
+## Desktop laboratory GUI
+
+The repository now includes a native PySide6 control surface for Windows and
+Ubuntu. It launches the production `run_long_evolution_v131.py` runner in a
+separate Python process, divides long integrations into deterministic
+checkpoint segments, previews newly written PNG/GIF artifacts, and reads live
+metrics from the latest safe checkpoint. The UI process never owns numerical
+simulation state, so closing or restarting the interface cannot corrupt the
+last completed checkpoint.
+
+Windows setup and launch:
+
+```text
+py -3 -m venv .venv
+.venv\Scripts\python.exe -m pip install -r requirements.txt
+launch_gui.bat
+```
+
+Ubuntu setup and launch (the numerical code and GUI contain no Windows-only
+paths or APIs):
+
+```text
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+python launch_gui.py
+```
+
+Install or refresh dependencies with `python -m pip install -r
+requirements.txt`. The lightweight `PySide6-Essentials` distribution supplies
+the Qt Core, GUI and Widgets modules used here without unrelated WebEngine/3D
+downloads. A fresh run must use an empty output directory. To continue
+a run, select one of its `gui_checkpoint_*_Myr` folders; the GUI reads its time
+and mesh resolution and resumes with the existing output directory. `Pause
+safely` finishes the current segment before stopping. `Stop now` interrupts the
+active process but leaves the previous checkpoint intact.
+
+The scenario selector intentionally enables only mature v0.31 tectonics. The
+three genesis histories (disk/quiet, disk/impact, capture/circularization) are
+visible as planned modes so their future orbital, thermal, and plate-onset
+parameters can enter without redesigning the application.
+
+The local resolution timing and the sub-5 decision for the first full run are
+recorded in `V131_GUI_RESOLUTION_BENCHMARK.md`. The completed 500 Myr
+subdivision-5 run and its numerical/scientific acceptance checks are recorded
+in `V131_GUI_CANONICAL_500MYR_FINDINGS.md`.
+
+The post-v0.31 genesis pipeline, including the independent 3 x 5 matrix of
+satellite-origin and plate-onset hypotheses, is specified in
+`GENESIS_ARCHITECTURE.md`.
+
+---
+
 v0.31 couples mobile deep plume sources to the checkpointed Eulerian mantle
 flow already present in the model. Each conduit continuously samples the
 fixed-grid field, follows `0.35` of its resolved tangent velocity and retains
