@@ -118,6 +118,10 @@ def write_comparison_csv(
                 "sector_plate_speed_p10_km_myr",
                 "sector_plate_speed_p90_km_myr",
                 "sector_area_below_2_km_myr",
+                "sector_continental_material_fraction",
+                "sector_share_of_global_continental_material",
+                "sector_continental_plate_speed_mean_km_myr",
+                "global_continental_plate_speed_mean_km_myr",
                 "dominant_angular_speed_deg_myr",
                 "nearest_euler_pole_lon_deg",
                 "nearest_euler_pole_lat_deg",
@@ -135,7 +139,7 @@ def main() -> int:
     parser.add_argument("--pair-root", required=True, type=Path)
     parser.add_argument("--initial-root", required=True, type=Path)
     parser.add_argument("--output", required=True, type=Path)
-    parser.add_argument("--map-time", type=float, default=380.0)
+    parser.add_argument("--map-time", type=float, default=500.0)
     parser.add_argument("--subdivisions", type=int, default=5)
     parser.add_argument("--radius-km", type=float, default=5287.0)
     args = parser.parse_args()
@@ -155,6 +159,14 @@ def main() -> int:
         rows_by_rule[rule] = [dict(initial_row), *rows]
         snapshots_by_rule[rule] = {300.0: initial_snapshot, **snapshots}
         events_by_rule[rule] = event_times(case)
+
+    all_times = [
+        float(row["time_myr"])
+        for rows in rows_by_rule.values()
+        for row in rows
+    ]
+    time_min = min(all_times)
+    time_max = max(all_times)
 
     output = args.output.resolve()
     output.mkdir(parents=True, exist_ok=True)
@@ -198,10 +210,10 @@ def main() -> int:
         speed_axis.fill_between(time, low, high, color=colors[rule], alpha=0.14)
         speed_axis.plot(time, mean, marker="o", color=colors[rule], label=RULE_LABELS[rule])
     speed_axis.set(
-        title="Sector speed: inertia weighting weakens but does not remove the quiet zone",
+        title="Sector speed after the low-motion interval",
         xlabel="Time, Myr",
         ylabel="Speed, km/Myr",
-        xlim=(300, 400),
+        xlim=(time_min, time_max),
     )
     speed_axis.grid(alpha=0.25)
     speed_axis.legend()
@@ -215,12 +227,12 @@ def main() -> int:
         plate_axis.step(time, plates, where="post", linestyle="--", color=colors[rule], alpha=0.8, label=f"{RULE_LABELS[rule]}: plates")
     for split_time in events_by_rule["inertia_tensor"][1]:
         topology_axis.axvline(split_time, color="black", linewidth=1.0, alpha=0.6)
-        topology_axis.text(split_time + 1.0, 37.0, "disconnect split", rotation=90, va="top")
+        topology_axis.text(split_time + 1.0, 39.0, "disconnect split", rotation=90, va="top")
     topology_axis.set(
-        title="The inertia branch creates a macroscopic seventh plate at 372 Myr",
+        title="Low-speed area and plate-count evolution",
         xlabel="Time, Myr",
         ylabel="Sector area below 2 km/Myr, %",
-        xlim=(300, 400),
+        xlim=(time_min, time_max),
         ylim=(0, 40),
     )
     plate_axis.set_ylabel("Plate count")
@@ -231,7 +243,7 @@ def main() -> int:
     topology_axis.legend(lines + lines2, labels + labels2, loc="upper right", fontsize=8)
 
     figure.suptitle(
-        "v0.31 paired replay from the same 300 Myr checkpoint",
+        f"v0.31 paired replay from the same 300 Myr checkpoint through {time_max:.0f} Myr",
         fontsize=15,
     )
     figure.savefig(output / "merge_kinematics_sector_comparison.png", dpi=180)

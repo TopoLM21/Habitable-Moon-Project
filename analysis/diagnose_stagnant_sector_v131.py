@@ -111,6 +111,13 @@ def analyze(
             )
             plate_velocity = np.cross(omega[owner], points) * radius_km
             plate_speed = np.linalg.norm(plate_velocity, axis=1)
+            continental_fraction = np.clip(
+                np.asarray(state["continental_fraction"], dtype=np.float64),
+                0.0,
+                1.0,
+            )
+            continental_weights = area * continental_fraction
+            sector_continental_weights = continental_weights[sector]
             mantle_velocity = (
                 np.cross(state["mantle_cell_omega_rad_per_myr"], points) * radius_km
             )
@@ -151,8 +158,23 @@ def analyze(
                         np.sum(sector_weights[sector_speed < 2.0])
                         / np.sum(sector_weights)
                     ),
+                    "sector_continental_material_fraction": float(
+                        np.sum(sector_continental_weights) / np.sum(sector_weights)
+                    ),
+                    "sector_share_of_global_continental_material": float(
+                        np.sum(sector_continental_weights)
+                        / max(float(np.sum(continental_weights)), 1.0e-30)
+                    ),
+                    "sector_continental_plate_speed_mean_km_myr": float(
+                        np.sum(sector_speed * sector_continental_weights)
+                        / max(float(np.sum(sector_continental_weights)), 1.0e-30)
+                    ),
                     "global_plate_speed_mean_km_myr": float(
                         np.average(plate_speed, weights=area)
+                    ),
+                    "global_continental_plate_speed_mean_km_myr": float(
+                        np.sum(plate_speed * continental_weights)
+                        / max(float(np.sum(continental_weights)), 1.0e-30)
                     ),
                     "sector_mantle_speed_mean_km_myr": float(
                         np.average(mantle_speed[sector], weights=sector_weights)
@@ -172,6 +194,7 @@ def analyze(
             snapshots[time_myr] = {
                 "owner": owner.copy(),
                 "plate_speed": plate_speed.copy(),
+                "continental_fraction": continental_fraction.copy(),
                 "longitude": longitude,
                 "latitude": latitude,
                 "sector": sector,
