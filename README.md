@@ -47,6 +47,11 @@ recorded in `V131_GUI_RESOLUTION_BENCHMARK.md`. The completed 500 Myr
 subdivision-5 run and its numerical/scientific acceptance checks are recorded
 in `V131_GUI_CANONICAL_500MYR_FINDINGS.md`.
 
+The apparent 340–500 Myr low-motion region at 0–90°E, 60°S–0° is traced to a
+merged plate's Euler pole—not a frozen renderer or transport queue—in
+`V131_STAGNANT_SECTOR_DIAGNOSIS.md`. Its reproducible checkpoint analysis is
+`analysis/diagnose_stagnant_sector_v131.py`.
+
 The post-v0.31 genesis pipeline, including the independent 3 x 5 matrix of
 satellite-origin and plate-onset hypotheses, is specified in
 `GENESIS_ARCHITECTURE.md`.
