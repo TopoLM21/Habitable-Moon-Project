@@ -70,6 +70,10 @@ class PlateTopologyParameters:
     weld_quiet_persistence_myr: float = 80.0
     weld_max_relative_speed_km_per_myr: float = 8.0
     weld_max_normal_divergence_km_per_myr: float = 1.5
+    # ``area_weighted`` is the historical effective rule. ``inertia_tensor``
+    # is an opt-in diagnostic alternative that conserves angular momentum for
+    # the actual cell geometry of both welded plates.
+    merge_kinematics_rule: str = "area_weighted"
 
     # v0.9.6: active continent-continent collision suppresses local extension.
     # This prevents a compressional weld zone from being thinned by a nearby
@@ -135,6 +139,49 @@ def _plate_cell_counts(cell_plate: Array, pcount: int) -> Array:
 def _plate_area_weights(mesh: SphereMesh, cell_plate: Array, radius_km: float, pcount: int) -> Array:
     areas = mesh.physical_cell_areas_km2(radius_km)
     return np.bincount(np.asarray(cell_plate, dtype=np.int32), weights=areas, minlength=pcount).astype(float)
+
+
+def _plate_inertia_tensor(
+    mesh: SphereMesh,
+    cells: Array,
+    cell_areas_km2: Array,
+) -> Array:
+    """Return a thin-shell inertia tensor up to a shared density/radius factor."""
+
+    indices = np.asarray(cells, dtype=np.int32)
+    points = np.asarray(mesh.centroids[indices], dtype=np.float64)
+    weights = np.asarray(cell_areas_km2[indices], dtype=np.float64)
+    second_moment = np.einsum("i,ij,ik->jk", weights, points, points)
+    return float(np.sum(weights)) * np.eye(3) - second_moment
+
+
+def _merged_angular_velocity(
+    mesh: SphereMesh,
+    owner: Array,
+    omega: Array,
+    a: int,
+    b: int,
+    radius_km: float,
+    rule: str,
+) -> Array:
+    areas = _plate_area_weights(mesh, owner, radius_km, len(omega))
+    if rule == "area_weighted":
+        return (areas[a] * omega[a] + areas[b] * omega[b]) / max(
+            float(areas[a] + areas[b]), 1e-30
+        )
+    if rule != "inertia_tensor":
+        raise ValueError(
+            "merge_kinematics_rule must be 'area_weighted' or 'inertia_tensor'"
+        )
+    cell_areas = mesh.physical_cell_areas_km2(radius_km)
+    inertia_a = _plate_inertia_tensor(mesh, np.flatnonzero(owner == a), cell_areas)
+    inertia_b = _plate_inertia_tensor(mesh, np.flatnonzero(owner == b), cell_areas)
+    inertia = inertia_a + inertia_b
+    angular_momentum = inertia_a @ omega[a] + inertia_b @ omega[b]
+    try:
+        return np.linalg.solve(inertia, angular_momentum)
+    except np.linalg.LinAlgError:
+        return np.linalg.pinv(inertia, rcond=1.0e-12) @ angular_momentum
 
 
 def _component_area_km2(component: list[int] | Array, cell_areas_km2: Array) -> float:
@@ -380,6 +427,8 @@ def _merge_pair(
     radius_km: float,
     kind: str,
     detail: str,
+    *,
+    velocity_rule: str = "area_weighted",
 ) -> tuple[PlateSystem, TopologyEvent]:
     if a == b:
         raise ValueError("Cannot merge a plate with itself")
@@ -390,9 +439,10 @@ def _merge_pair(
     if not len(cells_a) or not len(cells_b):
         raise ValueError("Cannot merge an empty plate")
 
-    areas = _plate_area_weights(mesh, owner, radius_km, len(system.plates))
     omega = angular_velocity_vectors(system)
-    merged_w = (areas[a] * omega[a] + areas[b] * omega[b]) / max(float(areas[a] + areas[b]), 1e-30)
+    merged_w = _merged_angular_velocity(
+        mesh, owner, omega, a, b, radius_km, velocity_rule
+    )
     owner[owner == b] = a
     group_omega: dict[int, Array] = {}
     for p in range(len(system.plates)):
@@ -407,7 +457,7 @@ def _merge_pair(
         parents=(a, b),
         children=(merged_new,),
         affected_cells=int(len(cells_a) + len(cells_b)),
-        detail=detail,
+        detail=f"{detail}; merge_kinematics_rule={velocity_rule}",
     )
     return out, event
 
@@ -861,6 +911,7 @@ class PlateTopologyManager:
                     "merge",
                     f"mature collision {collision_age:.1f} Myr + quiet weld phase {quiet_age:.1f} Myr; "
                     f"boundary={length:.0f} km; mean_rel_speed={speed:.1f} km/Myr; mean_normal={normal_rate:.1f} km/Myr",
+                    velocity_rule=self.params.merge_kinematics_rule,
                 )
                 state.cell_plate = current.cell_plate.copy()
                 events.append(ev); merge_n += 1
@@ -894,6 +945,7 @@ class PlateTopologyManager:
                 mesh, state, current, doomed, nb, radius_km,
                 "absorb",
                 (f"plate below min_plate_area_km2={self.params.min_plate_area_km2:.0f} for {self.small_plate_age_myr.get(doomed,0.0):.1f} Myr; absorbed into longest-boundary neighbour" if self.params.min_plate_area_km2 is not None else f"plate below min_plate_cells={self.params.min_plate_cells} for {self.small_plate_age_myr.get(doomed,0.0):.1f} Myr; absorbed into longest-boundary neighbour"),
+                velocity_rule=self.params.merge_kinematics_rule,
             )
             state.cell_plate = current.cell_plate.copy()
             events.append(ev); absorb_n += 1

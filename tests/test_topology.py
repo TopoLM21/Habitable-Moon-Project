@@ -3,7 +3,13 @@ import numpy as np
 from tectonics.lithosphere import CrustType, LithosphereState
 from tectonics.mesh import build_icosphere, connected_components
 from tectonics.plates import Plate, PlateSystem
-from tectonics.topology import PlateTopologyManager, PlateTopologyParameters, _attempt_split, _merge_pair
+from tectonics.topology import (
+    PlateTopologyManager,
+    PlateTopologyParameters,
+    _attempt_split,
+    _merge_pair,
+    _plate_inertia_tensor,
+)
 
 
 def _state(owner):
@@ -54,6 +60,46 @@ def test_merge_compacts_ids_and_area_weights_velocity():
     speed=np.rad2deg(out.plates[0].angular_speed_rad_per_myr)
     assert 0.2 < speed < 0.6
     assert event.parents==(0,1)
+
+
+def test_inertia_tensor_merge_conserves_geometry_weighted_angular_momentum():
+    mesh = build_icosphere(3)
+    owner = (mesh.centroids[:, 2] > 0.28).astype(np.int32)
+    omega_a = np.deg2rad(np.array([0.18, -0.07, 0.11]))
+    omega_b = np.deg2rad(np.array([-0.09, 0.34, -0.16]))
+
+    def plate(pid, omega):
+        speed = float(np.linalg.norm(omega))
+        return Plate(
+            pid,
+            int(np.flatnonzero(owner == pid)[0]),
+            omega / speed,
+            speed,
+        )
+
+    system = PlateSystem(owner.copy(), (plate(0, omega_a), plate(1, omega_b)))
+    state = _state(owner)
+    cell_areas = mesh.physical_cell_areas_km2(5287.0)
+    inertia_a = _plate_inertia_tensor(mesh, np.flatnonzero(owner == 0), cell_areas)
+    inertia_b = _plate_inertia_tensor(mesh, np.flatnonzero(owner == 1), cell_areas)
+    momentum_before = inertia_a @ omega_a + inertia_b @ omega_b
+
+    out, event = _merge_pair(
+        mesh,
+        state,
+        system,
+        0,
+        1,
+        5287.0,
+        "merge",
+        "test",
+        velocity_rule="inertia_tensor",
+    )
+    merged = (
+        out.plates[0].euler_axis * out.plates[0].angular_speed_rad_per_myr
+    )
+    assert np.allclose((inertia_a + inertia_b) @ merged, momentum_before, rtol=1e-12, atol=1e-6)
+    assert "merge_kinematics_rule=inertia_tensor" in event.detail
 
 
 def test_tiny_plate_is_absorbed_by_manager():

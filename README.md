@@ -52,6 +52,10 @@ merged plate's Euler pole—not a frozen renderer or transport queue—in
 `V131_STAGNANT_SECTOR_DIAGNOSIS.md`. Its reproducible checkpoint analysis is
 `analysis/diagnose_stagnant_sector_v131.py`.
 
+The paired 300–400 Myr replay comparing historical area-weighted welding with
+an opt-in full inertia-tensor rule is documented in
+`V131_MERGE_KINEMATICS_PAIR_FINDINGS.md`.
+
 The post-v0.31 genesis pipeline, including the independent 3 x 5 matrix of
 satellite-origin and plate-onset hypotheses, is specified in
 `GENESIS_ARCHITECTURE.md`.
