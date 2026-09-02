@@ -6,6 +6,7 @@ from datetime import datetime
 import os
 from pathlib import Path
 import sys
+from time import monotonic
 from typing import Any
 
 from PySide6.QtCore import (
@@ -65,6 +66,7 @@ from .backend import (
     write_runtime_config,
 )
 from .genesis_schema import ORIGIN_LABELS_RU, SatelliteOrigin
+from .timing import RunTiming, format_duration
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -111,6 +113,7 @@ class SimulationController(QObject):
         self.pause_requested = False
         self.cancel_requested = False
         self.state = "Idle"
+        self.timing = RunTiming()
 
     def _set_state(self, value: str) -> None:
         self.state = value
@@ -124,6 +127,7 @@ class SimulationController(QObject):
             raise RuntimeError("A simulation is already active")
         spec = spec.normalized()
         spec.validate()
+        self.timing = RunTiming(spec.start_time_myr(), spec.end_time_myr)
         self._set_state("Preparing")
         if spec.resume_checkpoint is not None and spec.runtime_config.is_file():
             runtime_config = spec.runtime_config
@@ -185,6 +189,7 @@ class SimulationController(QObject):
             f"Starting segment {self.target_index + 1}/{len(self.targets)} to t={target:g} Myr"
         )
         self.log_line.emit("$ " + " ".join([sys.executable, *command]))
+        self.timing.start_segment(target, monotonic())
         self._set_state("Running")
         self.process.start()
 
@@ -223,15 +228,18 @@ class SimulationController(QObject):
     def _process_finished(self, exit_code: int, _status: QProcess.ExitStatus) -> None:
         self._read_output()
         if self.cancel_requested:
+            self.timing.stop_segment(monotonic())
             self._set_state("Stopped")
             return
         if exit_code != 0:
+            self.timing.stop_segment(monotonic())
             message = f"Simulation segment exited with code {exit_code}."
             self._set_state("Error")
             self.run_failed.emit(message)
             return
         if self.spec is None or self.active_checkpoint is None:
             return
+        self.timing.finish_segment(monotonic())
         self.current_time = self.targets[self.target_index]
         self.resume_checkpoint = self.active_checkpoint
         self.target_index += 1
@@ -247,6 +255,7 @@ class SimulationController(QObject):
         if self.cancel_requested:
             return
         if error == QProcess.ProcessError.FailedToStart:
+            self.timing.stop_segment(monotonic())
             message = "The Python simulation process could not be started."
             self._set_state("Error")
             self.run_failed.emit(message)
@@ -305,6 +314,7 @@ class MoonWindow(QMainWindow):
         self._apply_style()
         self.refresh_timer = QTimer(self)
         self.refresh_timer.timeout.connect(self._refresh_results)
+        self.refresh_timer.timeout.connect(self._refresh_eta)
         self.refresh_timer.start(2000)
         self._resolution_changed()
         self._state_changed("Idle")
@@ -336,6 +346,17 @@ class MoonWindow(QMainWindow):
         self.progress.setValue(0)
         self.progress.setFormat("Прогон ещё не запущен")
         root_layout.addWidget(self.progress)
+
+        self.eta_label = QLabel()
+        self.eta_label.setObjectName("hint")
+        self.eta_label.setWordWrap(True)
+        self.eta_label.setToolTip(
+            "ETA по последним пяти завершённым сегментам, начиная со второго. "
+            "Учитываются запуск процесса, расчёт, кадры и checkpoint. "
+            "Паузы исключены; при продолжении отсчёт начинается с выбранного checkpoint. "
+            "Итоговая сборка GIF может потребовать дополнительного времени."
+        )
+        root_layout.addWidget(self.eta_label)
 
         splitter = QSplitter(Qt.Orientation.Horizontal)
         settings = self._settings_panel()
@@ -625,11 +646,37 @@ class MoonWindow(QMainWindow):
         self.pause_button.setEnabled(state == "Running")
         self.resume_button.setEnabled(state == "Paused")
         self.stop_button.setEnabled(state in {"Running", "Pausing", "Preparing"})
+        self._refresh_eta()
 
     def _progress_changed(self, current: float, end: float) -> None:
         value = 0 if end <= 0 else int(max(0.0, min(1.0, current / end)) * 1000)
         self.progress.setValue(value)
         self.progress.setFormat(f"t = {current:g} / {end:g} Myr   ·   {100 * current / end:.1f}%")
+        self._refresh_eta()
+
+    def _refresh_eta(self) -> None:
+        state = self.controller.state
+        if state == "Idle":
+            self.eta_label.setText("ETA появится после двух завершённых сегментов.")
+            return
+        estimate = self.controller.timing.estimate(monotonic())
+        elapsed = f"Прошло без пауз: {format_duration(estimate.elapsed_seconds)}"
+        if state == "Completed":
+            detail = "Готово"
+        elif state in {"Stopped", "Stopping", "Error"}:
+            detail = "ETA недоступно: расчёт остановлен или прерван"
+        elif estimate.segment_overdue:
+            detail = "ETA уточняется: текущий сегмент длится дольше прогноза"
+        elif estimate.remaining_seconds is None:
+            detail = f"ETA: собираю статистику ({estimate.sample_count}/2 сегмента)"
+        else:
+            prefix = "После возобновления" if state == "Paused" else "ETA расчёта"
+            detail = f"{prefix}: ≈ {format_duration(estimate.remaining_seconds)}"
+            if self.controller.spec is not None and self.controller.spec.finalize:
+                detail += " + итоговая сборка карт/GIF"
+        if state == "Paused" and estimate.remaining_seconds is None:
+            detail = "Пауза · " + detail
+        self.eta_label.setText(f"{elapsed} · {detail}")
 
     def _segment_completed(self, time_myr: float, checkpoint: str) -> None:
         self._append_log(f"Safe checkpoint completed at t={time_myr:g} Myr: {checkpoint}")

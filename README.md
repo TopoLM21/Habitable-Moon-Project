@@ -37,6 +37,16 @@ and mesh resolution and resumes with the existing output directory. `Pause
 safely` finishes the current segment before stopping. `Stop now` interrupts the
 active process but leaves the previous checkpoint intact.
 
+The GUI shows active elapsed time and an approximate ETA after two completed
+segments, using the latest five segment timings. Pauses are excluded and a
+checkpoint resume estimates only the remaining simulated interval. If a
+segment exceeds its prediction, the display explicitly recalibrates rather
+than claiming a false zero; final map/GIF assembly may take extra time. This is
+GUI-only bookkeeping, not a change to the numerical integrator. An already
+open GUI retains its loaded version: use the new display after the current
+run finishes and the GUI is restarted. Do not edit numerical modules or runtime
+configuration during a live run, because each segment starts a fresh process.
+
 The scenario selector intentionally enables only mature v0.31 tectonics. The
 three genesis histories (disk/quiet, disk/impact, capture/circularization) are
 visible as planned modes so their future orbital, thermal, and plate-onset
