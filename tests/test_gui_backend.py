@@ -185,3 +185,22 @@ def test_render_worker_command_validation_and_provenance(tmp_path):
         RunSpec(root, config, root / "results" / "bad", cpu_optimized=True, render_workers=3).validate()
     with pytest.raises(ValueError, match="experimental"):
         RunSpec(root, config, root / "out", render_workers=2).validate()
+
+
+@pytest.mark.parametrize("workers", [6, 8, 12])
+def test_larger_render_pools_and_priority_are_recorded(tmp_path, workers):
+    root, config = _project(tmp_path)
+    spec = RunSpec(root, config, root / "results" / "expanded", cpu_optimized=True,
+                   render_workers=workers, process_priority="below_normal").normalized()
+    spec.validate()
+    command = build_segment_command(spec, target_time_myr=20, checkpoint_dir=spec.output_dir / "checkpoint",
+                                    resume_checkpoint=None, final_segment=False)
+    assert command[command.index("--render-workers") + 1] == str(workers)
+    assert command[command.index("--process-priority") + 1] == "below_normal"
+    record = json.loads(write_run_record(spec, write_runtime_config(spec)).read_text())
+    assert record["render_workers"] == workers
+    assert record["process_priority"] == "below_normal"
+    with pytest.raises(ValueError, match="priority"):
+        RunSpec(root, config, root / "out", cpu_optimized=True, process_priority="high").validate()
+    with pytest.raises(ValueError, match="experimental"):
+        RunSpec(root, config, root / "out", process_priority="below_normal").validate()

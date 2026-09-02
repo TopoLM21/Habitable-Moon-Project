@@ -1,0 +1,41 @@
+{
+  "date": "2026-09-02",
+  "branch": "perf/cpu-parallel",
+  "previous_commit": "203419d",
+  "stable_main_commit_unchanged": "79dde63",
+  "render_worker_choices": [1, 2, 4, 6, 8, 12],
+  "gui_default_render_workers": 4,
+  "gui_default_process_priority": "below_normal",
+  "full_suite_passed": 247,
+  "benchmark_segment_myr": [700, 720],
+  "benchmark_cells": 20480,
+  "benchmark_endpoints_exact": 16,
+  "arrays_compared_bytewise_per_endpoint": 62,
+  "complete_metadata_and_history_compared": true,
+  "pngs_exact_per_endpoint": 40,
+  "requested_number_of_distinct_workers_observed": true,
+  "below_normal_os_priority_verified_for_coordinator_and_all_workers": true,
+  "owner_priority_unchanged_by_lower_priority_pool_test": true,
+  "gui_actual_qprocess_scenario": {
+    "render_workers": 12,
+    "process_priority": "below_normal",
+    "times_myr": [0, 4, 8, 12],
+    "safe_pause_resume_finalization_passed": true,
+    "checkpoint_exact": true,
+    "pngs_byte_exact": 127,
+    "gifs_byte_exact": 10
+  },
+  "gui_immediate_stop": {
+    "render_workers": 12,
+    "process_priority": "below_normal",
+    "last_completed_checkpoint_unchanged": true,
+    "reported_time_myr": 4
+  },
+  "gui_layout_visually_checked": true,
+  "stopping_a_safe_pause_unlocks_execution_controls": true,
+  "linux_priority_mock_tests_passed": true,
+  "linux_runtime_tested": false,
+  "foreground_latency_under_controlled_contention_benchmarked": false,
+  "global_os_settings_changed": false,
+  "merged_to_main": false
+}

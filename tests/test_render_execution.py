@@ -19,9 +19,26 @@ def test_render_context_is_opt_in_and_validates_limits(tmp_path):
         with pytest.raises(RuntimeError):
             with RenderExecution(2):
                 pass
-    for workers in (0, 3, 8, True, 1.5):
+    for workers in (0, 3, 13, 24, True, 1.5):
         with pytest.raises(ValueError):
             RenderExecution(workers)
+    for workers in (6, 8, 12):
+        candidate = RenderExecution(workers)
+        assert candidate.max_pending == 2 * workers
+        assert candidate.max_snapshot_bytes == 128 * 1024 * 1024
+    with pytest.raises(ValueError, match="priority"):
+        RenderExecution(4, process_priority="high")
+
+
+def test_lower_priority_applies_to_every_worker_but_not_owner(tmp_path):
+    from execution_policy import read_process_priority, is_lower_priority
+    before = read_process_priority()
+    with RenderExecution(2, process_priority="below_normal") as rendering:
+        rendering.submit(save_marker, [1], tmp_path / "a.json", barrier=tmp_path)
+        rendering.submit(save_marker, [2], tmp_path / "b.json", barrier=tmp_path)
+    assert read_process_priority() == before
+    assert len({job["pid"] for job in rendering.completed}) == 2
+    assert all(is_lower_priority(job["priority"]) for job in rendering.completed)
 
 
 def test_snapshot_is_captured_before_mutation_and_two_processes_work(tmp_path):

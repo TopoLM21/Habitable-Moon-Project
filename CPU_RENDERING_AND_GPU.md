@@ -4,6 +4,11 @@
 The scientific checkpoint version remains v0.31. No physics parameter, timestep,
 mesh resolution, image resolution, frame frequency or output count is reduced.
 
+This report records the stage at `203419d`. The subsequent extension to
+6/8/12 render processes and selectable lower CPU priority is documented in
+[CPU_RENDER_SCALING.md](CPU_RENDER_SCALING.md); the historical timings below
+remain unchanged.
+
 ## Ready to use in the experimental GUI
 
 Run `launch_gui.bat` in this worktree. Defaults now are:

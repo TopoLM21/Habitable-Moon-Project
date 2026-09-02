@@ -67,6 +67,7 @@ from .backend import (
 )
 from .genesis_schema import ORIGIN_LABELS_RU, SatelliteOrigin
 from .timing import RunTiming, format_duration
+from execution_policy import RENDER_WORKER_CHOICES
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -207,6 +208,11 @@ class SimulationController(QObject):
         self._start_next_segment()
 
     def stop_now(self) -> None:
+        if self.state == "Paused":
+            self.cancel_requested = True
+            self._set_state("Stopped")
+            self.log_line.emit("Paused run stopped; select its completed checkpoint to start with new settings.")
+            return
         if not self.is_active():
             return
         self.cancel_requested = True
@@ -433,28 +439,30 @@ class MoonWindow(QMainWindow):
             "Даже 1 использует кэш геометрии и пакетные вычисления. "
             "Больше работников не всегда быстрее."
         )
-        self.cpu_mode.currentIndexChanged.connect(
-            lambda: self.cpu_workers.setEnabled(bool(self.cpu_mode.currentData()))
-        )
         numerical_form.addRow("Работников переноса", self.cpu_workers)
         self.render_workers = QComboBox()
-        self.render_workers.addItems(["1", "2", "4"])
+        self.render_workers.addItems([str(value) for value in RENDER_WORKER_CHOICES])
         self.render_workers.setCurrentText("4")
         self.render_workers.setToolTip(
             "Отдельные процессы для карт и кадров. 1 — последовательное рисование. "
             "Численный результат и качество изображений не меняются. "
+            "Больше процессов требует больше памяти и не всегда быстрее. "
             "Безопасная пауза дождётся всех кадров текущего сегмента."
         )
-        self.cpu_mode.currentIndexChanged.connect(
-            lambda: self.render_workers.setEnabled(bool(self.cpu_mode.currentData()))
-        )
         numerical_form.addRow("Процессов для карт", self.render_workers)
+        self.low_priority = QCheckBox("Уступать CPU другим приложениям")
+        self.low_priority.setChecked(True)
+        self.low_priority.setToolTip(
+            "Пониженный CPU-приоритет расчёта и процессов карт; само окно GUI остаётся обычным. "
+            "При нагрузке от других программ расчёт может идти дольше. "
+            "Это не ограничение памяти, диска или процента загрузки CPU. "
+            "Доступно в оптимизированном режиме."
+        )
+        numerical_form.addRow("", self.low_priority)
         self.cell_kernels = QCheckBox("Пакетный перенос осадков")
         self.cell_kernels.setChecked(True)
         self.cell_kernels.setToolTip("Экспериментальное CPU-ядро с сохранением порядка сложения и точности float64.")
-        self.cpu_mode.currentIndexChanged.connect(
-            lambda: self.cell_kernels.setEnabled(bool(self.cpu_mode.currentData()))
-        )
+        self.cpu_mode.currentIndexChanged.connect(self._refresh_execution_controls)
         numerical_form.addRow("", self.cell_kernels)
         self.subdivisions = QComboBox()
         self.subdivisions.addItems(["3", "4", "5", "6"])
@@ -657,6 +665,7 @@ class MoonWindow(QMainWindow):
             cpu_workers=int(self.cpu_workers.currentText()),
             render_workers=int(self.render_workers.currentText()) if self.cpu_mode.currentData() else 1,
             cell_kernels=self.cell_kernels.isChecked() if self.cpu_mode.currentData() else False,
+            process_priority="below_normal" if self.cpu_mode.currentData() and self.low_priority.isChecked() else "normal",
         )
 
     def _start_run(self) -> None:
@@ -673,10 +682,12 @@ class MoonWindow(QMainWindow):
             QMessageBox.warning(self, "Cannot start simulation", str(exc))
 
     def _confirm_stop(self) -> None:
+        paused = self.controller.state == "Paused"
         answer = QMessageBox.question(
             self,
-            "Stop active segment?",
-            "The current segment will be interrupted. The previous completed checkpoint remains safe.",
+            "Остановить прогон?",
+            ("Прогон уже на безопасной паузе. Можно будет выбрать его чекпойнт и запустить продолжение с новыми настройками."
+             if paused else "Текущий сегмент будет прерван. Предыдущий готовый чекпойнт останется целым."),
         )
         if answer == QMessageBox.StandardButton.Yes:
             self.controller.stop_now()
@@ -697,8 +708,18 @@ class MoonWindow(QMainWindow):
         self.start_button.setEnabled(state in {"Idle", "Completed", "Error", "Stopped"})
         self.pause_button.setEnabled(state == "Running")
         self.resume_button.setEnabled(state == "Paused")
-        self.stop_button.setEnabled(state in {"Running", "Pausing", "Preparing"})
+        self.stop_button.setEnabled(state in {"Running", "Pausing", "Preparing", "Paused"})
+        self._refresh_execution_controls()
         self._refresh_eta()
+
+    def _refresh_execution_controls(self) -> None:
+        # RunSpec is captured at Start. Do not imply that editing a selector
+        # can reconfigure an existing worker pool, including across safe pause.
+        locked = self.controller.is_active() or self.controller.state == "Paused"
+        self.cpu_mode.setEnabled(not locked)
+        enabled = not locked and bool(self.cpu_mode.currentData())
+        for control in (self.cpu_workers, self.render_workers, self.low_priority, self.cell_kernels):
+            control.setEnabled(enabled)
 
     def _progress_changed(self, current: float, end: float) -> None:
         value = 0 if end <= 0 else int(max(0.0, min(1.0, current / end)) * 1000)

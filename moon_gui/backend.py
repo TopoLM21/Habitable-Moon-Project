@@ -15,6 +15,7 @@ from pathlib import Path
 from typing import Any, Iterable
 
 import yaml
+from execution_policy import RENDER_WORKER_CHOICES, PROCESS_PRIORITY_CHOICES
 
 
 RUNNER_NAME = "run_long_evolution_v131.py"
@@ -60,6 +61,7 @@ class RunSpec:
     cpu_workers: int = 1
     render_workers: int = 1
     cell_kernels: bool = False
+    process_priority: str = "normal"
 
     def normalized(self) -> "RunSpec":
         return RunSpec(
@@ -80,6 +82,7 @@ class RunSpec:
             cpu_workers=int(self.cpu_workers),
             render_workers=int(self.render_workers),
             cell_kernels=bool(self.cell_kernels),
+            process_priority=str(self.process_priority),
         )
 
     @property
@@ -102,8 +105,12 @@ class RunSpec:
             raise ValueError(f"v0.31 runner does not exist: {self.runner}")
         if not 1 <= self.cpu_workers <= 32:
             raise ValueError("CPU workers must be between 1 and 32")
-        if self.render_workers not in (1, 2, 4):
-            raise ValueError("Render workers must be 1, 2, or 4")
+        if self.render_workers not in RENDER_WORKER_CHOICES:
+            raise ValueError(f"Render workers must be one of {RENDER_WORKER_CHOICES}")
+        if self.process_priority not in PROCESS_PRIORITY_CHOICES:
+            raise ValueError(f"Process priority must be one of {PROCESS_PRIORITY_CHOICES}")
+        if self.process_priority != "normal" and not self.cpu_optimized:
+            raise ValueError("Lower process priority requires the experimental CPU runner")
         if self.render_workers != 1 and not self.cpu_optimized:
             raise ValueError("Parallel rendering requires the experimental CPU runner")
         if self.cell_kernels and not self.cpu_optimized:
@@ -273,6 +280,7 @@ def build_segment_command(
     if spec.cpu_optimized:
         command.extend(["--cpu-workers", str(spec.cpu_workers)])
         command.extend(["--render-workers", str(spec.render_workers)])
+        command.extend(["--process-priority", spec.process_priority])
         if spec.cell_kernels:
             command.append("--cell-kernels")
     if spec.surface_only_frames:

@@ -19,14 +19,31 @@ def test_gui_constructs_offscreen() -> None:
     assert window._make_spec().cpu_workers == 1
     assert window._make_spec().render_workers == 4
     assert window._make_spec().cell_kernels is True
-    window.render_workers.setCurrentText("4")
-    assert window._make_spec().render_workers == 4
+    assert window._make_spec().process_priority == "below_normal"
+    for workers in (6, 8, 12):
+        window.render_workers.setCurrentText(str(workers))
+        assert window._make_spec().render_workers == workers
+    window.low_priority.setChecked(False)
+    assert window._make_spec().process_priority == "normal"
+    window.low_priority.setChecked(True)
     window.cpu_mode.setCurrentIndex(0)
     assert not window.cpu_workers.isEnabled()
     assert not window.render_workers.isEnabled()
+    assert not window.low_priority.isEnabled()
     assert window._make_spec().render_workers == 1
     assert window._make_spec().cell_kernels is False
     assert window._make_spec().cpu_optimized is False
+    assert window._make_spec().process_priority == "normal"
+    window.cpu_mode.setCurrentIndex(1)
+    for state in ("Running", "Pausing", "Paused", "Stopping"):
+        window.controller._set_state(state)
+        assert not window.cpu_mode.isEnabled()
+        assert not window.render_workers.isEnabled()
+        assert not window.low_priority.isEnabled()
+    window.controller._set_state("Stopped")
+    assert window.cpu_mode.isEnabled()
+    assert window.render_workers.isEnabled()
+    assert window.low_priority.isEnabled()
     window.close()
     app.processEvents()
 
@@ -108,3 +125,22 @@ def test_old_stop_timer_cannot_kill_a_new_segment():
     assert not controller.process.killed
     SimulationController._kill_if_running(controller, 202)
     assert controller.process.killed
+
+
+def test_stopping_a_safe_pause_unlocks_settings_without_starting_or_killing_process():
+    os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+    from PySide6.QtWidgets import QApplication
+    from moon_gui.app import MoonWindow, QProcess
+    app = QApplication.instance() or QApplication([])
+    window = MoonWindow()
+    window.controller.current_time = 4.0
+    window.controller._set_state("Paused")
+    assert window.stop_button.isEnabled()
+    assert not window.render_workers.isEnabled()
+    window.controller.stop_now()
+    assert window.controller.state == "Stopped"
+    assert window.controller.current_time == 4.0
+    assert window.controller.process.state() == QProcess.ProcessState.NotRunning
+    assert window.render_workers.isEnabled()
+    window.close()
+    app.processEvents()

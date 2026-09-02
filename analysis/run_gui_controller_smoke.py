@@ -33,6 +33,7 @@ def main() -> int:
     parser.add_argument("--cpu-workers", type=int, default=1)
     parser.add_argument("--render-workers", type=int, default=1)
     parser.add_argument("--cell-kernels", action="store_true")
+    parser.add_argument("--process-priority", choices=("normal", "below_normal"), default="normal")
     parser.add_argument("--pause-once", action="store_true", help="Pause after the first checkpoint, then resume automatically")
     parser.add_argument("--stop-on-second-segment-frame", action="store_true")
     parser.add_argument(
@@ -130,6 +131,7 @@ def main() -> int:
             cpu_workers=int(args.cpu_workers),
             render_workers=int(args.render_workers),
             cell_kernels=bool(args.cell_kernels),
+            process_priority=args.process_priority,
         )
     )
     app.exec()

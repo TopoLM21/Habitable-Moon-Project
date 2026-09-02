@@ -21,6 +21,7 @@ import tempfile
 from time import perf_counter, process_time
 
 from .process_lifetime import WorkerLifetime, bind_worker_to_owner, process_diagnostics
+from execution_policy import RENDER_WORKER_CHOICES, PROCESS_PRIORITY_CHOICES, apply_process_priority, read_process_priority
 
 _active = None
 _worker_meshes = OrderedDict()
@@ -28,9 +29,10 @@ _worker_execution = None
 _synchronous_renderers = {("visualization.volcanic_arc", "save_volcanic_arc_maps")}
 
 
-def _initialize_worker(job_name, owner_pid):
+def _initialize_worker(job_name, owner_pid, process_priority):
     global _worker_execution
     bind_worker_to_owner(job_name, owner_pid)
+    apply_process_priority(process_priority)
     import matplotlib
     matplotlib.use("Agg")
     from matplotlib.figure import Figure
@@ -82,13 +84,16 @@ def _render_job(module_name, function_name, payload, mesh_slots):
         plt.close("all")
     return {"function": f"{module_name}.{function_name}", "pid": os.getpid(),
             "worker_seconds": perf_counter() - started, "cpu_seconds": process_time() - cpu_started,
-            "snapshot_bytes": len(payload), **process_diagnostics()}
+            "snapshot_bytes": len(payload), "priority": read_process_priority(), **process_diagnostics()}
 
 
 class RenderExecution(AbstractContextManager):
-    def __init__(self, workers=1, *, max_pending=None, max_snapshot_bytes=128 * 1024 * 1024):
-        if isinstance(workers, bool) or not isinstance(workers, int) or workers not in (1, 2, 4):
-            raise ValueError("Render workers must be 1, 2, or 4")
+    def __init__(self, workers=1, *, process_priority="normal", max_pending=None, max_snapshot_bytes=128 * 1024 * 1024):
+        if isinstance(workers, bool) or not isinstance(workers, int) or workers not in RENDER_WORKER_CHOICES:
+            raise ValueError(f"Render workers must be one of {RENDER_WORKER_CHOICES}")
+        if process_priority not in PROCESS_PRIORITY_CHOICES:
+            raise ValueError(f"Process priority must be one of {PROCESS_PRIORITY_CHOICES}")
+        self.process_priority = process_priority
         self.workers = workers
         self.max_pending = max_pending if max_pending is not None else 2 * workers
         if self.max_pending < 1 or max_snapshot_bytes < 1:
@@ -120,7 +125,7 @@ class RenderExecution(AbstractContextManager):
             try:
                 self.pool = ProcessPoolExecutor(max_workers=self.workers,
                     mp_context=multiprocessing.get_context("spawn"), initializer=_initialize_worker,
-                    initargs=(self.lifetime.name, os.getpid()))
+                    initargs=(self.lifetime.name, os.getpid(), self.process_priority))
             except BaseException:
                 self.lifetime.close()
                 raise
@@ -205,6 +210,7 @@ class RenderExecution(AbstractContextManager):
 
     def report(self):
         return {"render_workers": self.workers, "jobs_completed": len(self.completed),
+                "requested_priority": self.process_priority, "coordinator_priority": read_process_priority(),
                 "peak_pending": self.peak_pending, "peak_snapshot_bytes": self.peak_snapshot_bytes,
                 "serialization_seconds": self.serialization_seconds, "wait_seconds": self.wait_seconds,
                 "jobs": self.completed}

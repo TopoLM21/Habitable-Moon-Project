@@ -1,0 +1,5250 @@
+[
+  {
+    "render_workers": 4,
+    "cell_kernels": true,
+    "process_priority": "normal",
+    "priority_verified": true,
+    "repeat": 1,
+    "wall_seconds": 15.916225699998904,
+    "exact": true,
+    "arrays_compared": 62,
+    "differences": [],
+    "png_exact": true,
+    "png_count": 40,
+    "png_differences": [],
+    "render_report": {
+      "render_workers": 4,
+      "jobs_completed": 23,
+      "requested_priority": "normal",
+      "coordinator_priority": {
+        "kind": "windows_priority_class",
+        "value": 32
+      },
+      "peak_pending": 8,
+      "peak_snapshot_bytes": 46956044,
+      "serialization_seconds": 0.1288049999930081,
+      "wait_seconds": 4.227715100016212,
+      "jobs": [
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_frame",
+          "pid": 35036,
+          "worker_seconds": 0.7403132999970694,
+          "cpu_seconds": 0.75,
+          "snapshot_bytes": 6277825,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 168853504
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_frame",
+          "pid": 21460,
+          "worker_seconds": 0.7522945000018808,
+          "cpu_seconds": 0.765625,
+          "snapshot_bytes": 6277941,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 172175360
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_frame",
+          "pid": 30676,
+          "worker_seconds": 0.933519799997157,
+          "cpu_seconds": 0.9375,
+          "snapshot_bytes": 6605969,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 180908032
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_frame",
+          "pid": 19732,
+          "worker_seconds": 1.4289721000022837,
+          "cpu_seconds": 1.40625,
+          "snapshot_bytes": 7654049,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 210722816
+        },
+        {
+          "function": "visualization.topology.save_topology_frame",
+          "pid": 35036,
+          "worker_seconds": 0.362588500000129,
+          "cpu_seconds": 0.359375,
+          "snapshot_bytes": 5487133,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 175984640
+        },
+        {
+          "function": "visualization.topology.save_plate_history_frame",
+          "pid": 21460,
+          "worker_seconds": 0.28741940000327304,
+          "cpu_seconds": 0.28125,
+          "snapshot_bytes": 4884378,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 189456384
+        },
+        {
+          "function": "visualization.continental.save_continental_history_frame",
+          "pid": 35036,
+          "worker_seconds": 0.2702528000008897,
+          "cpu_seconds": 0.265625,
+          "snapshot_bytes": 4801425,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 175984640
+        },
+        {
+          "function": "visualization.hydrosphere.save_hydrosphere_frame",
+          "pid": 30676,
+          "worker_seconds": 0.8406176999997115,
+          "cpu_seconds": 0.84375,
+          "snapshot_bytes": 4967324,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 273670144
+        },
+        {
+          "function": "visualization.cratons.save_craton_history",
+          "pid": 21460,
+          "worker_seconds": 0.09811959999933606,
+          "cpu_seconds": 0.109375,
+          "snapshot_bytes": 27546,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 189456384
+        },
+        {
+          "function": "visualization.cratons.save_craton_maps",
+          "pid": 35036,
+          "worker_seconds": 0.9482207999972161,
+          "cpu_seconds": 0.953125,
+          "snapshot_bytes": 4801382,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 239091712
+        },
+        {
+          "function": "visualization.plumes.save_plume_history",
+          "pid": 21460,
+          "worker_seconds": 0.23579839999729302,
+          "cpu_seconds": 0.234375,
+          "snapshot_bytes": 55404,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 189456384
+        },
+        {
+          "function": "visualization.plumes.save_plume_maps",
+          "pid": 21460,
+          "worker_seconds": 0.8824781000002986,
+          "cpu_seconds": 0.890625,
+          "snapshot_bytes": 2897107,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 230735872
+        },
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_history",
+          "pid": 19732,
+          "worker_seconds": 0.20371890000387793,
+          "cpu_seconds": 0.203125,
+          "snapshot_bytes": 30081,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 210722816
+        },
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_maps",
+          "pid": 19732,
+          "worker_seconds": 1.1767694000009215,
+          "cpu_seconds": 1.1875,
+          "snapshot_bytes": 2732048,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 279244800
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_history",
+          "pid": 30676,
+          "worker_seconds": 0.29778909999731695,
+          "cpu_seconds": 0.296875,
+          "snapshot_bytes": 30080,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 273670144
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_maps",
+          "pid": 35036,
+          "worker_seconds": 0.8957135000018752,
+          "cpu_seconds": 0.875,
+          "snapshot_bytes": 2568179,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 302809088
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_history",
+          "pid": 30676,
+          "worker_seconds": 0.23445850000280188,
+          "cpu_seconds": 0.203125,
+          "snapshot_bytes": 42395,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 273670144
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_maps",
+          "pid": 30676,
+          "worker_seconds": 1.5032860999999684,
+          "cpu_seconds": 1.5,
+          "snapshot_bytes": 2896738,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 273670144
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_history",
+          "pid": 21460,
+          "worker_seconds": 0.26499950000288663,
+          "cpu_seconds": 0.265625,
+          "snapshot_bytes": 48923,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 231387136
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_maps",
+          "pid": 21460,
+          "worker_seconds": 1.4590413000041735,
+          "cpu_seconds": 1.453125,
+          "snapshot_bytes": 3879851,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 327073792
+        },
+        {
+          "function": "visualization.plume_drift.save_plume_drift_history",
+          "pid": 19732,
+          "worker_seconds": 0.2489687000052072,
+          "cpu_seconds": 0.25,
+          "snapshot_bytes": 35149,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 279244800
+        },
+        {
+          "function": "visualization.plume_drift.save_plume_source_paths",
+          "pid": 35036,
+          "worker_seconds": 0.2247466999979224,
+          "cpu_seconds": 0.21875,
+          "snapshot_bytes": 50575,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 302809088
+        },
+        {
+          "function": "visualization.plume_flow_coupling.save_plume_flow_coupling_history",
+          "pid": 19732,
+          "worker_seconds": 0.1832111999974586,
+          "cpu_seconds": 0.171875,
+          "snapshot_bytes": 22835,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 284995584
+        }
+      ]
+    }
+  },
+  {
+    "render_workers": 4,
+    "cell_kernels": true,
+    "process_priority": "below_normal",
+    "priority_verified": true,
+    "repeat": 1,
+    "wall_seconds": 15.921594599996752,
+    "exact": true,
+    "arrays_compared": 62,
+    "differences": [],
+    "png_exact": true,
+    "png_count": 40,
+    "png_differences": [],
+    "render_report": {
+      "render_workers": 4,
+      "jobs_completed": 23,
+      "requested_priority": "below_normal",
+      "coordinator_priority": {
+        "kind": "windows_priority_class",
+        "value": 16384
+      },
+      "peak_pending": 8,
+      "peak_snapshot_bytes": 46956092,
+      "serialization_seconds": 0.13056280000455445,
+      "wait_seconds": 4.297343000012916,
+      "jobs": [
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_frame",
+          "pid": 39968,
+          "worker_seconds": 0.7437886000043363,
+          "cpu_seconds": 0.75,
+          "snapshot_bytes": 6277831,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 168472576
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_frame",
+          "pid": 37956,
+          "worker_seconds": 0.751712100005534,
+          "cpu_seconds": 0.75,
+          "snapshot_bytes": 6277947,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 169930752
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_frame",
+          "pid": 560,
+          "worker_seconds": 0.9369065999999293,
+          "cpu_seconds": 0.9375,
+          "snapshot_bytes": 6605975,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 180121600
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_frame",
+          "pid": 37060,
+          "worker_seconds": 1.4656711999996332,
+          "cpu_seconds": 1.46875,
+          "snapshot_bytes": 7654055,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 209264640
+        },
+        {
+          "function": "visualization.topology.save_topology_frame",
+          "pid": 39968,
+          "worker_seconds": 0.3626552999994601,
+          "cpu_seconds": 0.359375,
+          "snapshot_bytes": 5487139,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 175271936
+        },
+        {
+          "function": "visualization.topology.save_plate_history_frame",
+          "pid": 37956,
+          "worker_seconds": 0.29289690000587143,
+          "cpu_seconds": 0.28125,
+          "snapshot_bytes": 4884384,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 189575168
+        },
+        {
+          "function": "visualization.continental.save_continental_history_frame",
+          "pid": 39968,
+          "worker_seconds": 0.2648531000013463,
+          "cpu_seconds": 0.265625,
+          "snapshot_bytes": 4801431,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 175271936
+        },
+        {
+          "function": "visualization.hydrosphere.save_hydrosphere_frame",
+          "pid": 560,
+          "worker_seconds": 0.8626751999981934,
+          "cpu_seconds": 0.875,
+          "snapshot_bytes": 4967330,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 273870848
+        },
+        {
+          "function": "visualization.cratons.save_craton_history",
+          "pid": 37956,
+          "worker_seconds": 0.1000754999986384,
+          "cpu_seconds": 0.09375,
+          "snapshot_bytes": 27552,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 189575168
+        },
+        {
+          "function": "visualization.cratons.save_craton_maps",
+          "pid": 39968,
+          "worker_seconds": 0.967359000002034,
+          "cpu_seconds": 0.96875,
+          "snapshot_bytes": 4801388,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 238817280
+        },
+        {
+          "function": "visualization.plumes.save_plume_history",
+          "pid": 37956,
+          "worker_seconds": 0.2505663999982062,
+          "cpu_seconds": 0.25,
+          "snapshot_bytes": 55410,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 189575168
+        },
+        {
+          "function": "visualization.plumes.save_plume_maps",
+          "pid": 37956,
+          "worker_seconds": 0.8980561999997008,
+          "cpu_seconds": 0.890625,
+          "snapshot_bytes": 2897113,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 231587840
+        },
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_history",
+          "pid": 37060,
+          "worker_seconds": 0.2074203000011039,
+          "cpu_seconds": 0.203125,
+          "snapshot_bytes": 30087,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 209264640
+        },
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_maps",
+          "pid": 37060,
+          "worker_seconds": 1.18245449999813,
+          "cpu_seconds": 1.1875,
+          "snapshot_bytes": 2732054,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 279072768
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_history",
+          "pid": 560,
+          "worker_seconds": 0.29745420000108425,
+          "cpu_seconds": 0.296875,
+          "snapshot_bytes": 30086,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 273870848
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_maps",
+          "pid": 39968,
+          "worker_seconds": 0.8853014999986044,
+          "cpu_seconds": 0.890625,
+          "snapshot_bytes": 2568185,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 304246784
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_history",
+          "pid": 560,
+          "worker_seconds": 0.23647599999821978,
+          "cpu_seconds": 0.234375,
+          "snapshot_bytes": 42401,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 273870848
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_maps",
+          "pid": 560,
+          "worker_seconds": 1.4981552999961423,
+          "cpu_seconds": 1.5,
+          "snapshot_bytes": 2896744,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 273870848
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_history",
+          "pid": 37956,
+          "worker_seconds": 0.2681871999957366,
+          "cpu_seconds": 0.234375,
+          "snapshot_bytes": 48929,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 231587840
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_maps",
+          "pid": 37956,
+          "worker_seconds": 1.4854123000041,
+          "cpu_seconds": 1.484375,
+          "snapshot_bytes": 3879857,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 326848512
+        },
+        {
+          "function": "visualization.plume_drift.save_plume_drift_history",
+          "pid": 37060,
+          "worker_seconds": 0.25100490000477294,
+          "cpu_seconds": 0.25,
+          "snapshot_bytes": 35155,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 279072768
+        },
+        {
+          "function": "visualization.plume_drift.save_plume_source_paths",
+          "pid": 39968,
+          "worker_seconds": 0.2264158000034513,
+          "cpu_seconds": 0.21875,
+          "snapshot_bytes": 50581,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 304246784
+        },
+        {
+          "function": "visualization.plume_flow_coupling.save_plume_flow_coupling_history",
+          "pid": 37060,
+          "worker_seconds": 0.1834880999958841,
+          "cpu_seconds": 0.1875,
+          "snapshot_bytes": 22841,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 283885568
+        }
+      ]
+    }
+  },
+  {
+    "render_workers": 6,
+    "cell_kernels": true,
+    "process_priority": "normal",
+    "priority_verified": true,
+    "repeat": 1,
+    "wall_seconds": 14.83026930000051,
+    "exact": true,
+    "arrays_compared": 62,
+    "differences": [],
+    "png_exact": true,
+    "png_count": 40,
+    "png_differences": [],
+    "render_report": {
+      "render_workers": 6,
+      "jobs_completed": 23,
+      "requested_priority": "normal",
+      "coordinator_priority": {
+        "kind": "windows_priority_class",
+        "value": 32
+      },
+      "peak_pending": 12,
+      "peak_snapshot_bytes": 54737483,
+      "serialization_seconds": 0.13082599998597289,
+      "wait_seconds": 3.418913599998632,
+      "jobs": [
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_frame",
+          "pid": 33784,
+          "worker_seconds": 0.7510347999996156,
+          "cpu_seconds": 0.734375,
+          "snapshot_bytes": 6277825,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 168660992
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_frame",
+          "pid": 39340,
+          "worker_seconds": 0.7605963000023621,
+          "cpu_seconds": 0.765625,
+          "snapshot_bytes": 6277941,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 170692608
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_frame",
+          "pid": 42868,
+          "worker_seconds": 0.9607004999998026,
+          "cpu_seconds": 0.953125,
+          "snapshot_bytes": 6605969,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 181190656
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_frame",
+          "pid": 14648,
+          "worker_seconds": 1.4822038000056637,
+          "cpu_seconds": 1.484375,
+          "snapshot_bytes": 7654049,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 210657280
+        },
+        {
+          "function": "visualization.topology.save_topology_frame",
+          "pid": 41552,
+          "worker_seconds": 0.43129059999773744,
+          "cpu_seconds": 0.40625,
+          "snapshot_bytes": 5487133,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 150650880
+        },
+        {
+          "function": "visualization.topology.save_plate_history_frame",
+          "pid": 9936,
+          "worker_seconds": 0.34753830000408925,
+          "cpu_seconds": 0.34375,
+          "snapshot_bytes": 4884378,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 143118336
+        },
+        {
+          "function": "visualization.continental.save_continental_history_frame",
+          "pid": 33784,
+          "worker_seconds": 0.2713147000031313,
+          "cpu_seconds": 0.28125,
+          "snapshot_bytes": 4801425,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 187850752
+        },
+        {
+          "function": "visualization.hydrosphere.save_hydrosphere_frame",
+          "pid": 9936,
+          "worker_seconds": 0.929790199996205,
+          "cpu_seconds": 0.9375,
+          "snapshot_bytes": 4967324,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 247386112
+        },
+        {
+          "function": "visualization.cratons.save_craton_history",
+          "pid": 41552,
+          "worker_seconds": 0.10021749999577878,
+          "cpu_seconds": 0.109375,
+          "snapshot_bytes": 27546,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 150650880
+        },
+        {
+          "function": "visualization.cratons.save_craton_maps",
+          "pid": 41552,
+          "worker_seconds": 1.0049436999979662,
+          "cpu_seconds": 0.984375,
+          "snapshot_bytes": 4801382,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 192622592
+        },
+        {
+          "function": "visualization.plumes.save_plume_history",
+          "pid": 33784,
+          "worker_seconds": 0.22103530000458704,
+          "cpu_seconds": 0.21875,
+          "snapshot_bytes": 55404,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 187850752
+        },
+        {
+          "function": "visualization.plumes.save_plume_maps",
+          "pid": 39340,
+          "worker_seconds": 0.9574171999993268,
+          "cpu_seconds": 0.953125,
+          "snapshot_bytes": 2897107,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 215261184
+        },
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_history",
+          "pid": 33784,
+          "worker_seconds": 0.22627630000351928,
+          "cpu_seconds": 0.234375,
+          "snapshot_bytes": 30081,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 187850752
+        },
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_maps",
+          "pid": 42868,
+          "worker_seconds": 1.232635599997593,
+          "cpu_seconds": 1.203125,
+          "snapshot_bytes": 2732048,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 205709312
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_history",
+          "pid": 33784,
+          "worker_seconds": 0.2872514000046067,
+          "cpu_seconds": 0.28125,
+          "snapshot_bytes": 30080,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 187850752
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_maps",
+          "pid": 9936,
+          "worker_seconds": 1.0059514999957173,
+          "cpu_seconds": 1.0,
+          "snapshot_bytes": 2568179,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 250384384
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_history",
+          "pid": 33784,
+          "worker_seconds": 0.24013440000271657,
+          "cpu_seconds": 0.234375,
+          "snapshot_bytes": 42395,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 187850752
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_maps",
+          "pid": 14648,
+          "worker_seconds": 1.5548208000036539,
+          "cpu_seconds": 1.546875,
+          "snapshot_bytes": 2896738,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 306262016
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_history",
+          "pid": 41552,
+          "worker_seconds": 0.2733628999994835,
+          "cpu_seconds": 0.265625,
+          "snapshot_bytes": 48923,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 192622592
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_maps",
+          "pid": 39340,
+          "worker_seconds": 1.5343668999994406,
+          "cpu_seconds": 1.53125,
+          "snapshot_bytes": 3879851,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 247046144
+        },
+        {
+          "function": "visualization.plume_drift.save_plume_drift_history",
+          "pid": 33784,
+          "worker_seconds": 0.257652499996766,
+          "cpu_seconds": 0.25,
+          "snapshot_bytes": 35149,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 187850752
+        },
+        {
+          "function": "visualization.plume_drift.save_plume_source_paths",
+          "pid": 41552,
+          "worker_seconds": 0.2386666000020341,
+          "cpu_seconds": 0.234375,
+          "snapshot_bytes": 50575,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 207151104
+        },
+        {
+          "function": "visualization.plume_flow_coupling.save_plume_flow_coupling_history",
+          "pid": 33784,
+          "worker_seconds": 0.18996380000317004,
+          "cpu_seconds": 0.203125,
+          "snapshot_bytes": 22835,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 187850752
+        }
+      ]
+    }
+  },
+  {
+    "render_workers": 6,
+    "cell_kernels": true,
+    "process_priority": "below_normal",
+    "priority_verified": true,
+    "repeat": 1,
+    "wall_seconds": 14.948409099997662,
+    "exact": true,
+    "arrays_compared": 62,
+    "differences": [],
+    "png_exact": true,
+    "png_count": 40,
+    "png_differences": [],
+    "render_report": {
+      "render_workers": 6,
+      "jobs_completed": 23,
+      "requested_priority": "below_normal",
+      "coordinator_priority": {
+        "kind": "windows_priority_class",
+        "value": 16384
+      },
+      "peak_pending": 12,
+      "peak_snapshot_bytes": 54737555,
+      "serialization_seconds": 0.13281110000389162,
+      "wait_seconds": 3.3440245000019786,
+      "jobs": [
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_frame",
+          "pid": 15308,
+          "worker_seconds": 0.7501293999957852,
+          "cpu_seconds": 0.75,
+          "snapshot_bytes": 6277831,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 168730624
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_frame",
+          "pid": 20628,
+          "worker_seconds": 0.7776911000037217,
+          "cpu_seconds": 0.78125,
+          "snapshot_bytes": 6277947,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 171544576
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_frame",
+          "pid": 30700,
+          "worker_seconds": 0.9652713000032236,
+          "cpu_seconds": 0.96875,
+          "snapshot_bytes": 6605975,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 181002240
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_frame",
+          "pid": 26548,
+          "worker_seconds": 1.481891800001904,
+          "cpu_seconds": 1.46875,
+          "snapshot_bytes": 7654055,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 211906560
+        },
+        {
+          "function": "visualization.topology.save_topology_frame",
+          "pid": 36044,
+          "worker_seconds": 0.43008630000258563,
+          "cpu_seconds": 0.4375,
+          "snapshot_bytes": 5487139,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 151068672
+        },
+        {
+          "function": "visualization.topology.save_plate_history_frame",
+          "pid": 34844,
+          "worker_seconds": 0.32591539999702945,
+          "cpu_seconds": 0.328125,
+          "snapshot_bytes": 4884384,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 142925824
+        },
+        {
+          "function": "visualization.continental.save_continental_history_frame",
+          "pid": 15308,
+          "worker_seconds": 0.27905900000041584,
+          "cpu_seconds": 0.265625,
+          "snapshot_bytes": 4801431,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 187936768
+        },
+        {
+          "function": "visualization.hydrosphere.save_hydrosphere_frame",
+          "pid": 34844,
+          "worker_seconds": 0.9130828999986988,
+          "cpu_seconds": 0.90625,
+          "snapshot_bytes": 4967330,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 246984704
+        },
+        {
+          "function": "visualization.cratons.save_craton_history",
+          "pid": 36044,
+          "worker_seconds": 0.1019455999994534,
+          "cpu_seconds": 0.109375,
+          "snapshot_bytes": 27552,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 151068672
+        },
+        {
+          "function": "visualization.cratons.save_craton_maps",
+          "pid": 36044,
+          "worker_seconds": 0.9941357999996399,
+          "cpu_seconds": 0.9375,
+          "snapshot_bytes": 4801388,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 192647168
+        },
+        {
+          "function": "visualization.plumes.save_plume_history",
+          "pid": 15308,
+          "worker_seconds": 0.22003460000269115,
+          "cpu_seconds": 0.203125,
+          "snapshot_bytes": 55410,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 187936768
+        },
+        {
+          "function": "visualization.plumes.save_plume_maps",
+          "pid": 20628,
+          "worker_seconds": 0.9385052000070573,
+          "cpu_seconds": 0.90625,
+          "snapshot_bytes": 2897113,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 215744512
+        },
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_history",
+          "pid": 15308,
+          "worker_seconds": 0.22907220000342932,
+          "cpu_seconds": 0.21875,
+          "snapshot_bytes": 30087,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 187936768
+        },
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_maps",
+          "pid": 30700,
+          "worker_seconds": 1.229983600002015,
+          "cpu_seconds": 1.21875,
+          "snapshot_bytes": 2732054,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 205516800
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_history",
+          "pid": 15308,
+          "worker_seconds": 0.2841675000017858,
+          "cpu_seconds": 0.28125,
+          "snapshot_bytes": 30086,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 187936768
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_maps",
+          "pid": 34844,
+          "worker_seconds": 0.9813651000004029,
+          "cpu_seconds": 0.921875,
+          "snapshot_bytes": 2568185,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 250781696
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_history",
+          "pid": 15308,
+          "worker_seconds": 0.2411844000016572,
+          "cpu_seconds": 0.234375,
+          "snapshot_bytes": 42401,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 187936768
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_maps",
+          "pid": 26548,
+          "worker_seconds": 1.5142393999994965,
+          "cpu_seconds": 1.46875,
+          "snapshot_bytes": 2896744,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 306991104
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_history",
+          "pid": 36044,
+          "worker_seconds": 0.27413240000169026,
+          "cpu_seconds": 0.265625,
+          "snapshot_bytes": 48929,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 193331200
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_maps",
+          "pid": 20628,
+          "worker_seconds": 1.4973622999968939,
+          "cpu_seconds": 1.46875,
+          "snapshot_bytes": 3879857,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 247668736
+        },
+        {
+          "function": "visualization.plume_drift.save_plume_drift_history",
+          "pid": 15308,
+          "worker_seconds": 0.25645929999882355,
+          "cpu_seconds": 0.25,
+          "snapshot_bytes": 35155,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 187936768
+        },
+        {
+          "function": "visualization.plume_drift.save_plume_source_paths",
+          "pid": 36044,
+          "worker_seconds": 0.23570849999669008,
+          "cpu_seconds": 0.234375,
+          "snapshot_bytes": 50581,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 207888384
+        },
+        {
+          "function": "visualization.plume_flow_coupling.save_plume_flow_coupling_history",
+          "pid": 15308,
+          "worker_seconds": 0.19076489999861224,
+          "cpu_seconds": 0.203125,
+          "snapshot_bytes": 22841,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 187936768
+        }
+      ]
+    }
+  },
+  {
+    "render_workers": 8,
+    "cell_kernels": true,
+    "process_priority": "normal",
+    "priority_verified": true,
+    "repeat": 1,
+    "wall_seconds": 14.687376699999731,
+    "exact": true,
+    "arrays_compared": 62,
+    "differences": [],
+    "png_exact": true,
+    "png_count": 40,
+    "png_differences": [],
+    "render_report": {
+      "render_workers": 8,
+      "jobs_completed": 23,
+      "requested_priority": "normal",
+      "coordinator_priority": {
+        "kind": "windows_priority_class",
+        "value": 32
+      },
+      "peak_pending": 16,
+      "peak_snapshot_bytes": 60097871,
+      "serialization_seconds": 0.1352465999807464,
+      "wait_seconds": 3.241948599999887,
+      "jobs": [
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_frame",
+          "pid": 15668,
+          "worker_seconds": 0.7769473000007565,
+          "cpu_seconds": 0.734375,
+          "snapshot_bytes": 6277825,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 168615936
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_frame",
+          "pid": 42852,
+          "worker_seconds": 0.7984514999989187,
+          "cpu_seconds": 0.796875,
+          "snapshot_bytes": 6277941,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 170569728
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_frame",
+          "pid": 7948,
+          "worker_seconds": 1.0015720999945188,
+          "cpu_seconds": 1.0,
+          "snapshot_bytes": 6605969,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 180838400
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_frame",
+          "pid": 40352,
+          "worker_seconds": 1.5118214000031003,
+          "cpu_seconds": 1.515625,
+          "snapshot_bytes": 7654049,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 210759680
+        },
+        {
+          "function": "visualization.topology.save_topology_frame",
+          "pid": 41452,
+          "worker_seconds": 0.4458442999966792,
+          "cpu_seconds": 0.421875,
+          "snapshot_bytes": 5487133,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 150028288
+        },
+        {
+          "function": "visualization.topology.save_plate_history_frame",
+          "pid": 31548,
+          "worker_seconds": 0.34110279999731574,
+          "cpu_seconds": 0.328125,
+          "snapshot_bytes": 4884378,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 142909440
+        },
+        {
+          "function": "visualization.continental.save_continental_history_frame",
+          "pid": 33676,
+          "worker_seconds": 0.3659563000037451,
+          "cpu_seconds": 0.375,
+          "snapshot_bytes": 4801425,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 145072128
+        },
+        {
+          "function": "visualization.hydrosphere.save_hydrosphere_frame",
+          "pid": 32832,
+          "worker_seconds": 1.0370477000033134,
+          "cpu_seconds": 1.03125,
+          "snapshot_bytes": 4967324,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 220168192
+        },
+        {
+          "function": "visualization.cratons.save_craton_history",
+          "pid": 31548,
+          "worker_seconds": 0.1053198000008706,
+          "cpu_seconds": 0.09375,
+          "snapshot_bytes": 27546,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 142909440
+        },
+        {
+          "function": "visualization.cratons.save_craton_maps",
+          "pid": 15668,
+          "worker_seconds": 1.020916400004353,
+          "cpu_seconds": 1.015625,
+          "snapshot_bytes": 4801382,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 239411200
+        },
+        {
+          "function": "visualization.plumes.save_plume_history",
+          "pid": 33676,
+          "worker_seconds": 0.22812339999654796,
+          "cpu_seconds": 0.21875,
+          "snapshot_bytes": 55404,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 145072128
+        },
+        {
+          "function": "visualization.plumes.save_plume_maps",
+          "pid": 41452,
+          "worker_seconds": 1.023523199997726,
+          "cpu_seconds": 1.03125,
+          "snapshot_bytes": 2897107,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 200695808
+        },
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_history",
+          "pid": 31548,
+          "worker_seconds": 0.216399699995236,
+          "cpu_seconds": 0.21875,
+          "snapshot_bytes": 30081,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 142909440
+        },
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_maps",
+          "pid": 33676,
+          "worker_seconds": 1.3449058999976842,
+          "cpu_seconds": 1.34375,
+          "snapshot_bytes": 2732048,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 210997248
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_history",
+          "pid": 31548,
+          "worker_seconds": 0.3220581999994465,
+          "cpu_seconds": 0.3125,
+          "snapshot_bytes": 30080,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 142909440
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_maps",
+          "pid": 42852,
+          "worker_seconds": 0.9831201999986661,
+          "cpu_seconds": 0.96875,
+          "snapshot_bytes": 2568179,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 214364160
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_history",
+          "pid": 7948,
+          "worker_seconds": 0.28040689999761526,
+          "cpu_seconds": 0.28125,
+          "snapshot_bytes": 42395,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 180838400
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_maps",
+          "pid": 31548,
+          "worker_seconds": 1.604273999997531,
+          "cpu_seconds": 1.59375,
+          "snapshot_bytes": 2896738,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 259248128
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_history",
+          "pid": 32832,
+          "worker_seconds": 0.28881140000157757,
+          "cpu_seconds": 0.296875,
+          "snapshot_bytes": 48923,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 220168192
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_maps",
+          "pid": 7948,
+          "worker_seconds": 1.5149205000052461,
+          "cpu_seconds": 1.515625,
+          "snapshot_bytes": 3879851,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 239751168
+        },
+        {
+          "function": "visualization.plume_drift.save_plume_drift_history",
+          "pid": 32832,
+          "worker_seconds": 0.26258319999760715,
+          "cpu_seconds": 0.265625,
+          "snapshot_bytes": 35149,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 220168192
+        },
+        {
+          "function": "visualization.plume_drift.save_plume_source_paths",
+          "pid": 15668,
+          "worker_seconds": 0.25690259999828413,
+          "cpu_seconds": 0.25,
+          "snapshot_bytes": 50575,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 239411200
+        },
+        {
+          "function": "visualization.plume_flow_coupling.save_plume_flow_coupling_history",
+          "pid": 41452,
+          "worker_seconds": 0.200617800001055,
+          "cpu_seconds": 0.203125,
+          "snapshot_bytes": 22835,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 200695808
+        }
+      ]
+    }
+  },
+  {
+    "render_workers": 8,
+    "cell_kernels": true,
+    "process_priority": "below_normal",
+    "priority_verified": true,
+    "repeat": 1,
+    "wall_seconds": 33.56169360000058,
+    "exact": true,
+    "arrays_compared": 62,
+    "differences": [],
+    "png_exact": true,
+    "png_count": 40,
+    "png_differences": [],
+    "render_report": {
+      "render_workers": 8,
+      "jobs_completed": 23,
+      "requested_priority": "below_normal",
+      "coordinator_priority": {
+        "kind": "windows_priority_class",
+        "value": 16384
+      },
+      "peak_pending": 16,
+      "peak_snapshot_bytes": 60097967,
+      "serialization_seconds": 0.28092079998896224,
+      "wait_seconds": 3.722111399998539,
+      "jobs": [
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_frame",
+          "pid": 7500,
+          "worker_seconds": 0.7535313999978825,
+          "cpu_seconds": 0.75,
+          "snapshot_bytes": 6277831,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 168546304
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_frame",
+          "pid": 7500,
+          "worker_seconds": 0.745042900001863,
+          "cpu_seconds": 0.71875,
+          "snapshot_bytes": 6277947,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 215130112
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_frame",
+          "pid": 7308,
+          "worker_seconds": 0.9926520000008168,
+          "cpu_seconds": 0.984375,
+          "snapshot_bytes": 6605975,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 181874688
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_frame",
+          "pid": 6996,
+          "worker_seconds": 1.515959300006216,
+          "cpu_seconds": 1.515625,
+          "snapshot_bytes": 7654055,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 209977344
+        },
+        {
+          "function": "visualization.topology.save_topology_frame",
+          "pid": 10684,
+          "worker_seconds": 0.45249039999907836,
+          "cpu_seconds": 0.453125,
+          "snapshot_bytes": 5487139,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 150331392
+        },
+        {
+          "function": "visualization.topology.save_plate_history_frame",
+          "pid": 34024,
+          "worker_seconds": 0.33255259999714326,
+          "cpu_seconds": 0.34375,
+          "snapshot_bytes": 4884384,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 142299136
+        },
+        {
+          "function": "visualization.continental.save_continental_history_frame",
+          "pid": 42032,
+          "worker_seconds": 0.36231840000255033,
+          "cpu_seconds": 0.34375,
+          "snapshot_bytes": 4801431,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 144424960
+        },
+        {
+          "function": "visualization.hydrosphere.save_hydrosphere_frame",
+          "pid": 40976,
+          "worker_seconds": 0.9820390000022599,
+          "cpu_seconds": 0.96875,
+          "snapshot_bytes": 4967330,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 219971584
+        },
+        {
+          "function": "visualization.cratons.save_craton_history",
+          "pid": 22216,
+          "worker_seconds": 0.12992530000337865,
+          "cpu_seconds": 0.109375,
+          "snapshot_bytes": 27552,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 103727104
+        },
+        {
+          "function": "visualization.cratons.save_craton_maps",
+          "pid": 22216,
+          "worker_seconds": 1.017529699995066,
+          "cpu_seconds": 1.0,
+          "snapshot_bytes": 4801388,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 203948032
+        },
+        {
+          "function": "visualization.plumes.save_plume_history",
+          "pid": 10684,
+          "worker_seconds": 0.23569639999914216,
+          "cpu_seconds": 0.25,
+          "snapshot_bytes": 55410,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 150331392
+        },
+        {
+          "function": "visualization.plumes.save_plume_maps",
+          "pid": 7500,
+          "worker_seconds": 1.00069529999746,
+          "cpu_seconds": 0.984375,
+          "snapshot_bytes": 2897113,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 221040640
+        },
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_history",
+          "pid": 34024,
+          "worker_seconds": 0.22573520000150893,
+          "cpu_seconds": 0.21875,
+          "snapshot_bytes": 30087,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 142299136
+        },
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_maps",
+          "pid": 42032,
+          "worker_seconds": 1.28881790000014,
+          "cpu_seconds": 1.296875,
+          "snapshot_bytes": 2732054,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 237264896
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_history",
+          "pid": 10684,
+          "worker_seconds": 0.33744080000178656,
+          "cpu_seconds": 0.328125,
+          "snapshot_bytes": 30086,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 150331392
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_maps",
+          "pid": 34024,
+          "worker_seconds": 0.9967916000023251,
+          "cpu_seconds": 1.0,
+          "snapshot_bytes": 2568185,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 229302272
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_history",
+          "pid": 7308,
+          "worker_seconds": 0.2729959000062081,
+          "cpu_seconds": 0.265625,
+          "snapshot_bytes": 42401,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 181874688
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_maps",
+          "pid": 10684,
+          "worker_seconds": 1.8932082000028458,
+          "cpu_seconds": 1.90625,
+          "snapshot_bytes": 2896744,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 242085888
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_history",
+          "pid": 40976,
+          "worker_seconds": 0.27472019999549957,
+          "cpu_seconds": 0.28125,
+          "snapshot_bytes": 48929,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 219971584
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_maps",
+          "pid": 7308,
+          "worker_seconds": 2.469390599995677,
+          "cpu_seconds": 2.4375,
+          "snapshot_bytes": 3879857,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 239001600
+        },
+        {
+          "function": "visualization.plume_drift.save_plume_drift_history",
+          "pid": 22216,
+          "worker_seconds": 0.2532615999953123,
+          "cpu_seconds": 0.25,
+          "snapshot_bytes": 35155,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 205549568
+        },
+        {
+          "function": "visualization.plume_drift.save_plume_source_paths",
+          "pid": 40976,
+          "worker_seconds": 0.22886550000112038,
+          "cpu_seconds": 0.234375,
+          "snapshot_bytes": 50581,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 219971584
+        },
+        {
+          "function": "visualization.plume_flow_coupling.save_plume_flow_coupling_history",
+          "pid": 7500,
+          "worker_seconds": 0.4036262000008719,
+          "cpu_seconds": 0.40625,
+          "snapshot_bytes": 22841,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 221040640
+        }
+      ]
+    }
+  },
+  {
+    "render_workers": 12,
+    "cell_kernels": true,
+    "process_priority": "normal",
+    "priority_verified": true,
+    "repeat": 1,
+    "wall_seconds": 29.544168399996124,
+    "exact": true,
+    "arrays_compared": 62,
+    "differences": [],
+    "png_exact": true,
+    "png_count": 40,
+    "png_differences": [],
+    "render_report": {
+      "render_workers": 12,
+      "jobs_completed": 23,
+      "requested_priority": "normal",
+      "coordinator_priority": {
+        "kind": "windows_priority_class",
+        "value": 32
+      },
+      "peak_pending": 23,
+      "peak_snapshot_bytes": 67074360,
+      "serialization_seconds": 0.29850070000247797,
+      "wait_seconds": 2.3625555000035092,
+      "jobs": [
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_frame",
+          "pid": 15976,
+          "worker_seconds": 0.7576369000016712,
+          "cpu_seconds": 0.75,
+          "snapshot_bytes": 6277826,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 168472576
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_frame",
+          "pid": 15976,
+          "worker_seconds": 0.8952642000003834,
+          "cpu_seconds": 0.890625,
+          "snapshot_bytes": 6277942,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 216023040
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_frame",
+          "pid": 31180,
+          "worker_seconds": 1.1772322000033455,
+          "cpu_seconds": 1.171875,
+          "snapshot_bytes": 6605970,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 181256192
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_frame",
+          "pid": 30600,
+          "worker_seconds": 1.7546522000047844,
+          "cpu_seconds": 1.734375,
+          "snapshot_bytes": 7654050,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 209694720
+        },
+        {
+          "function": "visualization.topology.save_topology_frame",
+          "pid": 42280,
+          "worker_seconds": 0.513925899998867,
+          "cpu_seconds": 0.515625,
+          "snapshot_bytes": 5487134,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 150806528
+        },
+        {
+          "function": "visualization.topology.save_plate_history_frame",
+          "pid": 41716,
+          "worker_seconds": 0.38413439999567345,
+          "cpu_seconds": 0.390625,
+          "snapshot_bytes": 4884379,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 142262272
+        },
+        {
+          "function": "visualization.continental.save_continental_history_frame",
+          "pid": 36812,
+          "worker_seconds": 0.3729821000015363,
+          "cpu_seconds": 0.375,
+          "snapshot_bytes": 4801426,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 144777216
+        },
+        {
+          "function": "visualization.hydrosphere.save_hydrosphere_frame",
+          "pid": 10372,
+          "worker_seconds": 1.1204244000036852,
+          "cpu_seconds": 1.109375,
+          "snapshot_bytes": 4967325,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 220053504
+        },
+        {
+          "function": "visualization.cratons.save_craton_history",
+          "pid": 32340,
+          "worker_seconds": 0.1476572000028682,
+          "cpu_seconds": 0.15625,
+          "snapshot_bytes": 27547,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 104148992
+        },
+        {
+          "function": "visualization.cratons.save_craton_maps",
+          "pid": 32340,
+          "worker_seconds": 1.1932339000049978,
+          "cpu_seconds": 1.1875,
+          "snapshot_bytes": 4801383,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 202547200
+        },
+        {
+          "function": "visualization.plumes.save_plume_history",
+          "pid": 42280,
+          "worker_seconds": 0.2682282999958261,
+          "cpu_seconds": 0.25,
+          "snapshot_bytes": 55405,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 150806528
+        },
+        {
+          "function": "visualization.plumes.save_plume_maps",
+          "pid": 41716,
+          "worker_seconds": 1.126152099997853,
+          "cpu_seconds": 1.0625,
+          "snapshot_bytes": 2897108,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 216715264
+        },
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_history",
+          "pid": 36812,
+          "worker_seconds": 0.2719945999997435,
+          "cpu_seconds": 0.28125,
+          "snapshot_bytes": 30082,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 144777216
+        },
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_maps",
+          "pid": 42280,
+          "worker_seconds": 1.4146471999993082,
+          "cpu_seconds": 1.40625,
+          "snapshot_bytes": 2732049,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 226394112
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_history",
+          "pid": 15976,
+          "worker_seconds": 0.4440085000023828,
+          "cpu_seconds": 0.421875,
+          "snapshot_bytes": 30081,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 216023040
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_maps",
+          "pid": 41200,
+          "worker_seconds": 1.2424326000036672,
+          "cpu_seconds": 1.234375,
+          "snapshot_bytes": 2568180,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 190885888
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_history",
+          "pid": 36812,
+          "worker_seconds": 0.2878179999970598,
+          "cpu_seconds": 0.28125,
+          "snapshot_bytes": 42396,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 159408128
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_maps",
+          "pid": 42812,
+          "worker_seconds": 1.7355823000034434,
+          "cpu_seconds": 1.734375,
+          "snapshot_bytes": 2896739,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 232468480
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_history",
+          "pid": 36464,
+          "worker_seconds": 0.357034400003613,
+          "cpu_seconds": 0.359375,
+          "snapshot_bytes": 48924,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 123645952
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_maps",
+          "pid": 10692,
+          "worker_seconds": 1.7220381000006455,
+          "cpu_seconds": 1.71875,
+          "snapshot_bytes": 3879852,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 233689088
+        },
+        {
+          "function": "visualization.plume_drift.save_plume_drift_history",
+          "pid": 31180,
+          "worker_seconds": 0.3582292999999481,
+          "cpu_seconds": 0.34375,
+          "snapshot_bytes": 35150,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 181256192
+        },
+        {
+          "function": "visualization.plume_drift.save_plume_source_paths",
+          "pid": 36812,
+          "worker_seconds": 0.34248520000255667,
+          "cpu_seconds": 0.3125,
+          "snapshot_bytes": 50576,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 172306432
+        },
+        {
+          "function": "visualization.plume_flow_coupling.save_plume_flow_coupling_history",
+          "pid": 15976,
+          "worker_seconds": 0.19216400000004796,
+          "cpu_seconds": 0.1875,
+          "snapshot_bytes": 22836,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 216023040
+        }
+      ]
+    }
+  },
+  {
+    "render_workers": 12,
+    "cell_kernels": true,
+    "process_priority": "below_normal",
+    "priority_verified": true,
+    "repeat": 1,
+    "wall_seconds": 22.29910939999536,
+    "exact": true,
+    "arrays_compared": 62,
+    "differences": [],
+    "png_exact": true,
+    "png_count": 40,
+    "png_differences": [],
+    "render_report": {
+      "render_workers": 12,
+      "jobs_completed": 23,
+      "requested_priority": "below_normal",
+      "coordinator_priority": {
+        "kind": "windows_priority_class",
+        "value": 16384
+      },
+      "peak_pending": 23,
+      "peak_snapshot_bytes": 67074498,
+      "serialization_seconds": 0.14287570000306005,
+      "wait_seconds": 3.033739799990144,
+      "jobs": [
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_frame",
+          "pid": 18724,
+          "worker_seconds": 1.0131350999945425,
+          "cpu_seconds": 1.015625,
+          "snapshot_bytes": 6277832,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 169439232
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_frame",
+          "pid": 43412,
+          "worker_seconds": 1.0113315999988117,
+          "cpu_seconds": 1.015625,
+          "snapshot_bytes": 6277948,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 169996288
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_frame",
+          "pid": 10400,
+          "worker_seconds": 1.235368000001472,
+          "cpu_seconds": 1.234375,
+          "snapshot_bytes": 6605976,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 181661696
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_frame",
+          "pid": 41456,
+          "worker_seconds": 1.8769823000038741,
+          "cpu_seconds": 1.875,
+          "snapshot_bytes": 7654056,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 210776064
+        },
+        {
+          "function": "visualization.topology.save_topology_frame",
+          "pid": 43560,
+          "worker_seconds": 0.5314654000030714,
+          "cpu_seconds": 0.53125,
+          "snapshot_bytes": 5487140,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 149876736
+        },
+        {
+          "function": "visualization.topology.save_plate_history_frame",
+          "pid": 43672,
+          "worker_seconds": 0.4062491000004229,
+          "cpu_seconds": 0.40625,
+          "snapshot_bytes": 4884385,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 142323712
+        },
+        {
+          "function": "visualization.continental.save_continental_history_frame",
+          "pid": 43188,
+          "worker_seconds": 0.4476701999956276,
+          "cpu_seconds": 0.4375,
+          "snapshot_bytes": 4801432,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 144461824
+        },
+        {
+          "function": "visualization.hydrosphere.save_hydrosphere_frame",
+          "pid": 43036,
+          "worker_seconds": 1.0739897000021301,
+          "cpu_seconds": 1.03125,
+          "snapshot_bytes": 4967331,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 219766784
+        },
+        {
+          "function": "visualization.cratons.save_craton_history",
+          "pid": 42176,
+          "worker_seconds": 0.144632300005469,
+          "cpu_seconds": 0.140625,
+          "snapshot_bytes": 27553,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 104022016
+        },
+        {
+          "function": "visualization.cratons.save_craton_maps",
+          "pid": 38340,
+          "worker_seconds": 1.2033488000015495,
+          "cpu_seconds": 1.1875,
+          "snapshot_bytes": 4801389,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 196538368
+        },
+        {
+          "function": "visualization.plumes.save_plume_history",
+          "pid": 40804,
+          "worker_seconds": 0.35518550000415416,
+          "cpu_seconds": 0.359375,
+          "snapshot_bytes": 55411,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 111247360
+        },
+        {
+          "function": "visualization.plumes.save_plume_maps",
+          "pid": 36020,
+          "worker_seconds": 1.186582800000906,
+          "cpu_seconds": 1.171875,
+          "snapshot_bytes": 2897114,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 191754240
+        },
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_history",
+          "pid": 43672,
+          "worker_seconds": 0.2938681000014185,
+          "cpu_seconds": 0.296875,
+          "snapshot_bytes": 30088,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 142323712
+        },
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_maps",
+          "pid": 42176,
+          "worker_seconds": 1.5055090999958338,
+          "cpu_seconds": 1.5,
+          "snapshot_bytes": 2732055,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 217505792
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_history",
+          "pid": 43188,
+          "worker_seconds": 0.3678947000007611,
+          "cpu_seconds": 0.375,
+          "snapshot_bytes": 30087,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 151740416
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_maps",
+          "pid": 18724,
+          "worker_seconds": 1.1417540999973426,
+          "cpu_seconds": 1.140625,
+          "snapshot_bytes": 2568186,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 234295296
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_history",
+          "pid": 43560,
+          "worker_seconds": 0.3406918999971822,
+          "cpu_seconds": 0.34375,
+          "snapshot_bytes": 42402,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 149876736
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_maps",
+          "pid": 43672,
+          "worker_seconds": 1.9374276000016835,
+          "cpu_seconds": 1.921875,
+          "snapshot_bytes": 2896745,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 231895040
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_history",
+          "pid": 40804,
+          "worker_seconds": 0.35679379999783123,
+          "cpu_seconds": 0.359375,
+          "snapshot_bytes": 48930,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 136617984
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_maps",
+          "pid": 43560,
+          "worker_seconds": 1.9286909000002197,
+          "cpu_seconds": 1.859375,
+          "snapshot_bytes": 3879858,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 248913920
+        },
+        {
+          "function": "visualization.plume_drift.save_plume_drift_history",
+          "pid": 43188,
+          "worker_seconds": 0.36920590000227094,
+          "cpu_seconds": 0.375,
+          "snapshot_bytes": 35156,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 151965696
+        },
+        {
+          "function": "visualization.plume_drift.save_plume_source_paths",
+          "pid": 43412,
+          "worker_seconds": 0.29549930000212044,
+          "cpu_seconds": 0.296875,
+          "snapshot_bytes": 50582,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 169996288
+        },
+        {
+          "function": "visualization.plume_flow_coupling.save_plume_flow_coupling_history",
+          "pid": 40804,
+          "worker_seconds": 0.2076560999994399,
+          "cpu_seconds": 0.203125,
+          "snapshot_bytes": 22842,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 145559552
+        }
+      ]
+    }
+  },
+  {
+    "render_workers": 12,
+    "cell_kernels": true,
+    "process_priority": "below_normal",
+    "priority_verified": true,
+    "repeat": 2,
+    "wall_seconds": 23.286076599993976,
+    "exact": true,
+    "arrays_compared": 62,
+    "differences": [],
+    "png_exact": true,
+    "png_count": 40,
+    "png_differences": [],
+    "render_report": {
+      "render_workers": 12,
+      "jobs_completed": 23,
+      "requested_priority": "below_normal",
+      "coordinator_priority": {
+        "kind": "windows_priority_class",
+        "value": 16384
+      },
+      "peak_pending": 23,
+      "peak_snapshot_bytes": 67074498,
+      "serialization_seconds": 0.30503710000630235,
+      "wait_seconds": 3.093781500014302,
+      "jobs": [
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_frame",
+          "pid": 23876,
+          "worker_seconds": 0.7357943999959389,
+          "cpu_seconds": 0.71875,
+          "snapshot_bytes": 6277832,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 168402944
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_frame",
+          "pid": 23876,
+          "worker_seconds": 0.7826387000022805,
+          "cpu_seconds": 0.78125,
+          "snapshot_bytes": 6277948,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 215666688
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_frame",
+          "pid": 42816,
+          "worker_seconds": 1.1998151000007056,
+          "cpu_seconds": 1.1875,
+          "snapshot_bytes": 6605976,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 181022720
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_frame",
+          "pid": 16264,
+          "worker_seconds": 1.7815723000021535,
+          "cpu_seconds": 1.78125,
+          "snapshot_bytes": 7654056,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 209551360
+        },
+        {
+          "function": "visualization.topology.save_topology_frame",
+          "pid": 31088,
+          "worker_seconds": 0.5359249000030104,
+          "cpu_seconds": 0.546875,
+          "snapshot_bytes": 5487140,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 150319104
+        },
+        {
+          "function": "visualization.topology.save_plate_history_frame",
+          "pid": 39020,
+          "worker_seconds": 0.433742400004121,
+          "cpu_seconds": 0.421875,
+          "snapshot_bytes": 4884385,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 142647296
+        },
+        {
+          "function": "visualization.continental.save_continental_history_frame",
+          "pid": 38032,
+          "worker_seconds": 0.4741770999971777,
+          "cpu_seconds": 0.453125,
+          "snapshot_bytes": 4801432,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 144441344
+        },
+        {
+          "function": "visualization.hydrosphere.save_hydrosphere_frame",
+          "pid": 32324,
+          "worker_seconds": 1.1672104999961448,
+          "cpu_seconds": 1.109375,
+          "snapshot_bytes": 4967331,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 219627520
+        },
+        {
+          "function": "visualization.cratons.save_craton_history",
+          "pid": 23876,
+          "worker_seconds": 0.15012130000104662,
+          "cpu_seconds": 0.140625,
+          "snapshot_bytes": 27553,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 215666688
+        },
+        {
+          "function": "visualization.cratons.save_craton_maps",
+          "pid": 31088,
+          "worker_seconds": 1.211687200004235,
+          "cpu_seconds": 1.203125,
+          "snapshot_bytes": 4801389,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 205615104
+        },
+        {
+          "function": "visualization.plumes.save_plume_history",
+          "pid": 23876,
+          "worker_seconds": 0.27282199999899603,
+          "cpu_seconds": 0.265625,
+          "snapshot_bytes": 55411,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 215666688
+        },
+        {
+          "function": "visualization.plumes.save_plume_maps",
+          "pid": 39020,
+          "worker_seconds": 1.1903073000066797,
+          "cpu_seconds": 1.125,
+          "snapshot_bytes": 2897114,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 217448448
+        },
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_history",
+          "pid": 38032,
+          "worker_seconds": 0.25789610000356333,
+          "cpu_seconds": 0.265625,
+          "snapshot_bytes": 30088,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 144441344
+        },
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_maps",
+          "pid": 23876,
+          "worker_seconds": 2.5969834999996237,
+          "cpu_seconds": 2.453125,
+          "snapshot_bytes": 2732055,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 239640576
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_history",
+          "pid": 43956,
+          "worker_seconds": 0.3847872999976971,
+          "cpu_seconds": 0.390625,
+          "snapshot_bytes": 30087,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 123834368
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_maps",
+          "pid": 39568,
+          "worker_seconds": 1.1355860999974539,
+          "cpu_seconds": 1.125,
+          "snapshot_bytes": 2568186,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 191553536
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_history",
+          "pid": 43976,
+          "worker_seconds": 0.38233129999571247,
+          "cpu_seconds": 0.375,
+          "snapshot_bytes": 42402,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 118616064
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_maps",
+          "pid": 38032,
+          "worker_seconds": 1.79954639999778,
+          "cpu_seconds": 1.78125,
+          "snapshot_bytes": 2896745,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 215171072
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_history",
+          "pid": 43996,
+          "worker_seconds": 0.42843140000331914,
+          "cpu_seconds": 0.421875,
+          "snapshot_bytes": 48930,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 123539456
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_maps",
+          "pid": 43800,
+          "worker_seconds": 1.7004863999973168,
+          "cpu_seconds": 1.6875,
+          "snapshot_bytes": 3879858,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 233725952
+        },
+        {
+          "function": "visualization.plume_drift.save_plume_drift_history",
+          "pid": 42816,
+          "worker_seconds": 0.3159150999999838,
+          "cpu_seconds": 0.3125,
+          "snapshot_bytes": 35156,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 181022720
+        },
+        {
+          "function": "visualization.plume_drift.save_plume_source_paths",
+          "pid": 43956,
+          "worker_seconds": 0.28635790000407724,
+          "cpu_seconds": 0.265625,
+          "snapshot_bytes": 50582,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 136515584
+        },
+        {
+          "function": "visualization.plume_flow_coupling.save_plume_flow_coupling_history",
+          "pid": 43976,
+          "worker_seconds": 0.2170468999975128,
+          "cpu_seconds": 0.21875,
+          "snapshot_bytes": 22842,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 129585152
+        }
+      ]
+    }
+  },
+  {
+    "render_workers": 12,
+    "cell_kernels": true,
+    "process_priority": "normal",
+    "priority_verified": true,
+    "repeat": 2,
+    "wall_seconds": 29.179776299999503,
+    "exact": true,
+    "arrays_compared": 62,
+    "differences": [],
+    "png_exact": true,
+    "png_count": 40,
+    "png_differences": [],
+    "render_report": {
+      "render_workers": 12,
+      "jobs_completed": 23,
+      "requested_priority": "normal",
+      "coordinator_priority": {
+        "kind": "windows_priority_class",
+        "value": 32
+      },
+      "peak_pending": 23,
+      "peak_snapshot_bytes": 67074360,
+      "serialization_seconds": 0.14715609997801948,
+      "wait_seconds": 2.745765299987397,
+      "jobs": [
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_frame",
+          "pid": 26336,
+          "worker_seconds": 0.944426599999133,
+          "cpu_seconds": 0.953125,
+          "snapshot_bytes": 6277826,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 168304640
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_frame",
+          "pid": 30272,
+          "worker_seconds": 0.9388094999958412,
+          "cpu_seconds": 0.90625,
+          "snapshot_bytes": 6277942,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 170508288
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_frame",
+          "pid": 35248,
+          "worker_seconds": 1.3685604999991483,
+          "cpu_seconds": 1.34375,
+          "snapshot_bytes": 6605970,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 182689792
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_frame",
+          "pid": 34044,
+          "worker_seconds": 1.792521700001089,
+          "cpu_seconds": 1.78125,
+          "snapshot_bytes": 7654050,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 209678336
+        },
+        {
+          "function": "visualization.topology.save_topology_frame",
+          "pid": 43368,
+          "worker_seconds": 0.5528334999980871,
+          "cpu_seconds": 0.5625,
+          "snapshot_bytes": 5487134,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 150155264
+        },
+        {
+          "function": "visualization.topology.save_plate_history_frame",
+          "pid": 7484,
+          "worker_seconds": 0.36488570000074105,
+          "cpu_seconds": 0.359375,
+          "snapshot_bytes": 4884379,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 141967360
+        },
+        {
+          "function": "visualization.continental.save_continental_history_frame",
+          "pid": 4380,
+          "worker_seconds": 0.3857041999945068,
+          "cpu_seconds": 0.390625,
+          "snapshot_bytes": 4801426,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 144289792
+        },
+        {
+          "function": "visualization.hydrosphere.save_hydrosphere_frame",
+          "pid": 33204,
+          "worker_seconds": 1.2069199999968987,
+          "cpu_seconds": 1.171875,
+          "snapshot_bytes": 4967325,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 220184576
+        },
+        {
+          "function": "visualization.cratons.save_craton_history",
+          "pid": 26336,
+          "worker_seconds": 0.11407639999379171,
+          "cpu_seconds": 0.109375,
+          "snapshot_bytes": 27547,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 168304640
+        },
+        {
+          "function": "visualization.cratons.save_craton_maps",
+          "pid": 26336,
+          "worker_seconds": 1.2465723999994225,
+          "cpu_seconds": 1.21875,
+          "snapshot_bytes": 4801383,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 220827648
+        },
+        {
+          "function": "visualization.plumes.save_plume_history",
+          "pid": 28644,
+          "worker_seconds": 0.3251735000012559,
+          "cpu_seconds": 0.3125,
+          "snapshot_bytes": 55405,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 111157248
+        },
+        {
+          "function": "visualization.plumes.save_plume_maps",
+          "pid": 7484,
+          "worker_seconds": 1.231715100002475,
+          "cpu_seconds": 1.203125,
+          "snapshot_bytes": 2897108,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 217628672
+        },
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_history",
+          "pid": 43388,
+          "worker_seconds": 0.3023419999954058,
+          "cpu_seconds": 0.28125,
+          "snapshot_bytes": 30082,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 110907392
+        },
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_maps",
+          "pid": 33660,
+          "worker_seconds": 1.5791743000008864,
+          "cpu_seconds": 1.578125,
+          "snapshot_bytes": 2732049,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 210145280
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_history",
+          "pid": 4380,
+          "worker_seconds": 0.4096581999983755,
+          "cpu_seconds": 0.390625,
+          "snapshot_bytes": 30081,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 151126016
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_maps",
+          "pid": 36280,
+          "worker_seconds": 1.2619169000026886,
+          "cpu_seconds": 1.21875,
+          "snapshot_bytes": 2568180,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 190664704
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_history",
+          "pid": 43368,
+          "worker_seconds": 0.3467813999959617,
+          "cpu_seconds": 0.328125,
+          "snapshot_bytes": 42396,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 150183936
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_maps",
+          "pid": 28644,
+          "worker_seconds": 1.8278185000017402,
+          "cpu_seconds": 1.828125,
+          "snapshot_bytes": 2896739,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 206749696
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_history",
+          "pid": 43388,
+          "worker_seconds": 0.41471939999610186,
+          "cpu_seconds": 0.40625,
+          "snapshot_bytes": 48924,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 136540160
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_maps",
+          "pid": 30272,
+          "worker_seconds": 1.6940688000031514,
+          "cpu_seconds": 1.703125,
+          "snapshot_bytes": 3879852,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 217763840
+        },
+        {
+          "function": "visualization.plume_drift.save_plume_drift_history",
+          "pid": 4380,
+          "worker_seconds": 0.4528602000063984,
+          "cpu_seconds": 0.453125,
+          "snapshot_bytes": 35150,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 151351296
+        },
+        {
+          "function": "visualization.plume_drift.save_plume_source_paths",
+          "pid": 43368,
+          "worker_seconds": 0.34394369999790797,
+          "cpu_seconds": 0.34375,
+          "snapshot_bytes": 50576,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 150183936
+        },
+        {
+          "function": "visualization.plume_flow_coupling.save_plume_flow_coupling_history",
+          "pid": 43388,
+          "worker_seconds": 0.2355357999986154,
+          "cpu_seconds": 0.234375,
+          "snapshot_bytes": 22836,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 145313792
+        }
+      ]
+    }
+  },
+  {
+    "render_workers": 8,
+    "cell_kernels": true,
+    "process_priority": "below_normal",
+    "priority_verified": true,
+    "repeat": 2,
+    "wall_seconds": 15.144638199999463,
+    "exact": true,
+    "arrays_compared": 62,
+    "differences": [],
+    "png_exact": true,
+    "png_count": 40,
+    "png_differences": [],
+    "render_report": {
+      "render_workers": 8,
+      "jobs_completed": 23,
+      "requested_priority": "below_normal",
+      "coordinator_priority": {
+        "kind": "windows_priority_class",
+        "value": 16384
+      },
+      "peak_pending": 16,
+      "peak_snapshot_bytes": 60097967,
+      "serialization_seconds": 0.13595120000536554,
+      "wait_seconds": 3.248614299991459,
+      "jobs": [
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_frame",
+          "pid": 45988,
+          "worker_seconds": 0.7891247000006842,
+          "cpu_seconds": 0.765625,
+          "snapshot_bytes": 6277831,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 168558592
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_frame",
+          "pid": 44664,
+          "worker_seconds": 0.8004730999964522,
+          "cpu_seconds": 0.8125,
+          "snapshot_bytes": 6277947,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 170614784
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_frame",
+          "pid": 42364,
+          "worker_seconds": 0.993842299998505,
+          "cpu_seconds": 0.953125,
+          "snapshot_bytes": 6605975,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 181022720
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_frame",
+          "pid": 44648,
+          "worker_seconds": 1.540968499997689,
+          "cpu_seconds": 1.53125,
+          "snapshot_bytes": 7654055,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 209887232
+        },
+        {
+          "function": "visualization.topology.save_topology_frame",
+          "pid": 44632,
+          "worker_seconds": 0.4529417000012472,
+          "cpu_seconds": 0.453125,
+          "snapshot_bytes": 5487139,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 149757952
+        },
+        {
+          "function": "visualization.topology.save_plate_history_frame",
+          "pid": 45184,
+          "worker_seconds": 0.343862400004582,
+          "cpu_seconds": 0.34375,
+          "snapshot_bytes": 4884384,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 142901248
+        },
+        {
+          "function": "visualization.continental.save_continental_history_frame",
+          "pid": 45288,
+          "worker_seconds": 0.3924766999989515,
+          "cpu_seconds": 0.390625,
+          "snapshot_bytes": 4801431,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 144457728
+        },
+        {
+          "function": "visualization.hydrosphere.save_hydrosphere_frame",
+          "pid": 32228,
+          "worker_seconds": 0.9635684000022593,
+          "cpu_seconds": 0.9375,
+          "snapshot_bytes": 4967330,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 220028928
+        },
+        {
+          "function": "visualization.cratons.save_craton_history",
+          "pid": 45988,
+          "worker_seconds": 0.11365260000457056,
+          "cpu_seconds": 0.109375,
+          "snapshot_bytes": 27552,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 168558592
+        },
+        {
+          "function": "visualization.cratons.save_craton_maps",
+          "pid": 45184,
+          "worker_seconds": 1.0145558000003803,
+          "cpu_seconds": 1.0,
+          "snapshot_bytes": 4801388,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 222343168
+        },
+        {
+          "function": "visualization.plumes.save_plume_history",
+          "pid": 45288,
+          "worker_seconds": 0.2468717999945511,
+          "cpu_seconds": 0.25,
+          "snapshot_bytes": 55410,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 144457728
+        },
+        {
+          "function": "visualization.plumes.save_plume_maps",
+          "pid": 44632,
+          "worker_seconds": 1.0281385000052978,
+          "cpu_seconds": 1.0,
+          "snapshot_bytes": 2897113,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 200404992
+        },
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_history",
+          "pid": 45988,
+          "worker_seconds": 0.22352710000268416,
+          "cpu_seconds": 0.234375,
+          "snapshot_bytes": 30087,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 168558592
+        },
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_maps",
+          "pid": 45288,
+          "worker_seconds": 1.3189599999968777,
+          "cpu_seconds": 1.296875,
+          "snapshot_bytes": 2732054,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 211386368
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_history",
+          "pid": 45988,
+          "worker_seconds": 0.31482079999841517,
+          "cpu_seconds": 0.296875,
+          "snapshot_bytes": 30086,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 168558592
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_maps",
+          "pid": 44664,
+          "worker_seconds": 0.9808555999989039,
+          "cpu_seconds": 0.953125,
+          "snapshot_bytes": 2568185,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 214409216
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_history",
+          "pid": 42364,
+          "worker_seconds": 0.2759842999948887,
+          "cpu_seconds": 0.28125,
+          "snapshot_bytes": 42401,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 181022720
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_maps",
+          "pid": 32228,
+          "worker_seconds": 1.621123600001738,
+          "cpu_seconds": 1.609375,
+          "snapshot_bytes": 2896744,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 258232320
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_history",
+          "pid": 45988,
+          "worker_seconds": 0.2933093999963603,
+          "cpu_seconds": 0.28125,
+          "snapshot_bytes": 48929,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 168558592
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_maps",
+          "pid": 42364,
+          "worker_seconds": 1.508738500000618,
+          "cpu_seconds": 1.484375,
+          "snapshot_bytes": 3879857,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 239558656
+        },
+        {
+          "function": "visualization.plume_drift.save_plume_drift_history",
+          "pid": 45988,
+          "worker_seconds": 0.2625356999997166,
+          "cpu_seconds": 0.265625,
+          "snapshot_bytes": 35155,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 172527616
+        },
+        {
+          "function": "visualization.plume_drift.save_plume_source_paths",
+          "pid": 45184,
+          "worker_seconds": 0.231719699993846,
+          "cpu_seconds": 0.234375,
+          "snapshot_bytes": 50581,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 222343168
+        },
+        {
+          "function": "visualization.plume_flow_coupling.save_plume_flow_coupling_history",
+          "pid": 44632,
+          "worker_seconds": 0.19753879999916535,
+          "cpu_seconds": 0.203125,
+          "snapshot_bytes": 22841,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 200404992
+        }
+      ]
+    }
+  },
+  {
+    "render_workers": 8,
+    "cell_kernels": true,
+    "process_priority": "normal",
+    "priority_verified": true,
+    "repeat": 2,
+    "wall_seconds": 14.836659900000086,
+    "exact": true,
+    "arrays_compared": 62,
+    "differences": [],
+    "png_exact": true,
+    "png_count": 40,
+    "png_differences": [],
+    "render_report": {
+      "render_workers": 8,
+      "jobs_completed": 23,
+      "requested_priority": "normal",
+      "coordinator_priority": {
+        "kind": "windows_priority_class",
+        "value": 32
+      },
+      "peak_pending": 16,
+      "peak_snapshot_bytes": 60097871,
+      "serialization_seconds": 0.13518700002896367,
+      "wait_seconds": 3.2212857000122312,
+      "jobs": [
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_frame",
+          "pid": 2916,
+          "worker_seconds": 0.8203846999967936,
+          "cpu_seconds": 0.828125,
+          "snapshot_bytes": 6277825,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 169127936
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_frame",
+          "pid": 11820,
+          "worker_seconds": 0.8309251000027871,
+          "cpu_seconds": 0.828125,
+          "snapshot_bytes": 6277941,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 169771008
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_frame",
+          "pid": 44008,
+          "worker_seconds": 1.0484493999974802,
+          "cpu_seconds": 1.03125,
+          "snapshot_bytes": 6605969,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 181764096
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_frame",
+          "pid": 44388,
+          "worker_seconds": 1.5543052000066382,
+          "cpu_seconds": 1.46875,
+          "snapshot_bytes": 7654049,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 209780736
+        },
+        {
+          "function": "visualization.topology.save_topology_frame",
+          "pid": 43152,
+          "worker_seconds": 0.469649800004845,
+          "cpu_seconds": 0.46875,
+          "snapshot_bytes": 5487133,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 150974464
+        },
+        {
+          "function": "visualization.topology.save_plate_history_frame",
+          "pid": 37444,
+          "worker_seconds": 0.3548217999996268,
+          "cpu_seconds": 0.359375,
+          "snapshot_bytes": 4884378,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 142503936
+        },
+        {
+          "function": "visualization.continental.save_continental_history_frame",
+          "pid": 39404,
+          "worker_seconds": 0.38889770000241697,
+          "cpu_seconds": 0.390625,
+          "snapshot_bytes": 4801425,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 143962112
+        },
+        {
+          "function": "visualization.hydrosphere.save_hydrosphere_frame",
+          "pid": 35868,
+          "worker_seconds": 0.9767422000004444,
+          "cpu_seconds": 0.96875,
+          "snapshot_bytes": 4967324,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 220024832
+        },
+        {
+          "function": "visualization.cratons.save_craton_history",
+          "pid": 37444,
+          "worker_seconds": 0.11104319999867585,
+          "cpu_seconds": 0.109375,
+          "snapshot_bytes": 27546,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 142503936
+        },
+        {
+          "function": "visualization.cratons.save_craton_maps",
+          "pid": 2916,
+          "worker_seconds": 1.0388581000006525,
+          "cpu_seconds": 1.03125,
+          "snapshot_bytes": 4801382,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 240218112
+        },
+        {
+          "function": "visualization.plumes.save_plume_history",
+          "pid": 39404,
+          "worker_seconds": 0.24174309999943944,
+          "cpu_seconds": 0.25,
+          "snapshot_bytes": 55404,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 143962112
+        },
+        {
+          "function": "visualization.plumes.save_plume_maps",
+          "pid": 43152,
+          "worker_seconds": 1.05356600000232,
+          "cpu_seconds": 1.0625,
+          "snapshot_bytes": 2897107,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 200970240
+        },
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_history",
+          "pid": 37444,
+          "worker_seconds": 0.21455799999966985,
+          "cpu_seconds": 0.21875,
+          "snapshot_bytes": 30081,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 142503936
+        },
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_maps",
+          "pid": 39404,
+          "worker_seconds": 1.3372114000012516,
+          "cpu_seconds": 1.328125,
+          "snapshot_bytes": 2732048,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 211263488
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_history",
+          "pid": 37444,
+          "worker_seconds": 0.3436115000004065,
+          "cpu_seconds": 0.34375,
+          "snapshot_bytes": 30080,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 142503936
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_maps",
+          "pid": 11820,
+          "worker_seconds": 0.9903070000000298,
+          "cpu_seconds": 0.96875,
+          "snapshot_bytes": 2568179,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 214155264
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_history",
+          "pid": 44008,
+          "worker_seconds": 0.2782708999948227,
+          "cpu_seconds": 0.28125,
+          "snapshot_bytes": 42395,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 181764096
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_maps",
+          "pid": 37444,
+          "worker_seconds": 1.5867668999999296,
+          "cpu_seconds": 1.59375,
+          "snapshot_bytes": 2896738,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 260526080
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_history",
+          "pid": 35868,
+          "worker_seconds": 0.2942962000015541,
+          "cpu_seconds": 0.28125,
+          "snapshot_bytes": 48923,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 220024832
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_maps",
+          "pid": 44008,
+          "worker_seconds": 1.4860869999974966,
+          "cpu_seconds": 1.484375,
+          "snapshot_bytes": 3879851,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 239132672
+        },
+        {
+          "function": "visualization.plume_drift.save_plume_drift_history",
+          "pid": 35868,
+          "worker_seconds": 0.26473260000057053,
+          "cpu_seconds": 0.265625,
+          "snapshot_bytes": 35149,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 220024832
+        },
+        {
+          "function": "visualization.plume_drift.save_plume_source_paths",
+          "pid": 2916,
+          "worker_seconds": 0.2629421000019647,
+          "cpu_seconds": 0.265625,
+          "snapshot_bytes": 50575,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 240218112
+        },
+        {
+          "function": "visualization.plume_flow_coupling.save_plume_flow_coupling_history",
+          "pid": 44388,
+          "worker_seconds": 0.2008884999959264,
+          "cpu_seconds": 0.1875,
+          "snapshot_bytes": 22835,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 209780736
+        }
+      ]
+    }
+  },
+  {
+    "render_workers": 6,
+    "cell_kernels": true,
+    "process_priority": "below_normal",
+    "priority_verified": true,
+    "repeat": 2,
+    "wall_seconds": 25.55933730000106,
+    "exact": true,
+    "arrays_compared": 62,
+    "differences": [],
+    "png_exact": true,
+    "png_count": 40,
+    "png_differences": [],
+    "render_report": {
+      "render_workers": 6,
+      "jobs_completed": 23,
+      "requested_priority": "below_normal",
+      "coordinator_priority": {
+        "kind": "windows_priority_class",
+        "value": 16384
+      },
+      "peak_pending": 12,
+      "peak_snapshot_bytes": 54737555,
+      "serialization_seconds": 0.28649619999487186,
+      "wait_seconds": 3.6784783999901265,
+      "jobs": [
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_frame",
+          "pid": 9008,
+          "worker_seconds": 0.7654320000001462,
+          "cpu_seconds": 0.765625,
+          "snapshot_bytes": 6277831,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 168968192
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_frame",
+          "pid": 9008,
+          "worker_seconds": 0.7289865999991889,
+          "cpu_seconds": 0.71875,
+          "snapshot_bytes": 6277947,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 215445504
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_frame",
+          "pid": 34016,
+          "worker_seconds": 0.968349800001306,
+          "cpu_seconds": 0.953125,
+          "snapshot_bytes": 6605975,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 181100544
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_frame",
+          "pid": 34568,
+          "worker_seconds": 1.474845999997342,
+          "cpu_seconds": 1.484375,
+          "snapshot_bytes": 7654055,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 209436672
+        },
+        {
+          "function": "visualization.topology.save_topology_frame",
+          "pid": 44608,
+          "worker_seconds": 0.4563737999997102,
+          "cpu_seconds": 0.46875,
+          "snapshot_bytes": 5487139,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 149917696
+        },
+        {
+          "function": "visualization.topology.save_plate_history_frame",
+          "pid": 42036,
+          "worker_seconds": 0.3349595000036061,
+          "cpu_seconds": 0.328125,
+          "snapshot_bytes": 4884384,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 142835712
+        },
+        {
+          "function": "visualization.continental.save_continental_history_frame",
+          "pid": 44512,
+          "worker_seconds": 0.37747059999674093,
+          "cpu_seconds": 0.390625,
+          "snapshot_bytes": 4801431,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 146472960
+        },
+        {
+          "function": "visualization.hydrosphere.save_hydrosphere_frame",
+          "pid": 9008,
+          "worker_seconds": 0.8973302000013064,
+          "cpu_seconds": 0.90625,
+          "snapshot_bytes": 4967330,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 252018688
+        },
+        {
+          "function": "visualization.cratons.save_craton_history",
+          "pid": 44608,
+          "worker_seconds": 0.10585590000118827,
+          "cpu_seconds": 0.078125,
+          "snapshot_bytes": 27552,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 149917696
+        },
+        {
+          "function": "visualization.cratons.save_craton_maps",
+          "pid": 42036,
+          "worker_seconds": 0.9760511999993469,
+          "cpu_seconds": 0.984375,
+          "snapshot_bytes": 4801388,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 222580736
+        },
+        {
+          "function": "visualization.plumes.save_plume_history",
+          "pid": 44512,
+          "worker_seconds": 0.22409219999826746,
+          "cpu_seconds": 0.21875,
+          "snapshot_bytes": 55410,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 146472960
+        },
+        {
+          "function": "visualization.plumes.save_plume_maps",
+          "pid": 44608,
+          "worker_seconds": 1.0088094999955501,
+          "cpu_seconds": 0.953125,
+          "snapshot_bytes": 2897113,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 187854848
+        },
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_history",
+          "pid": 44512,
+          "worker_seconds": 0.21678679999604356,
+          "cpu_seconds": 0.21875,
+          "snapshot_bytes": 30087,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 152637440
+        },
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_maps",
+          "pid": 34016,
+          "worker_seconds": 1.238581500001601,
+          "cpu_seconds": 1.234375,
+          "snapshot_bytes": 2732054,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 205586432
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_history",
+          "pid": 44512,
+          "worker_seconds": 0.30669160000252305,
+          "cpu_seconds": 0.3125,
+          "snapshot_bytes": 30086,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 154329088
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_maps",
+          "pid": 9008,
+          "worker_seconds": 2.2135989000016707,
+          "cpu_seconds": 2.09375,
+          "snapshot_bytes": 2568185,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 252018688
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_history",
+          "pid": 44512,
+          "worker_seconds": 0.2588843000048655,
+          "cpu_seconds": 0.25,
+          "snapshot_bytes": 42401,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 158388224
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_maps",
+          "pid": 34568,
+          "worker_seconds": 2.3836656999992556,
+          "cpu_seconds": 2.375,
+          "snapshot_bytes": 2896744,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 306511872
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_history",
+          "pid": 42036,
+          "worker_seconds": 0.3118990000002668,
+          "cpu_seconds": 0.296875,
+          "snapshot_bytes": 48929,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 222580736
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_maps",
+          "pid": 44608,
+          "worker_seconds": 2.3375190000006114,
+          "cpu_seconds": 2.296875,
+          "snapshot_bytes": 3879857,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 300380160
+        },
+        {
+          "function": "visualization.plume_drift.save_plume_drift_history",
+          "pid": 44512,
+          "worker_seconds": 0.2504135999988648,
+          "cpu_seconds": 0.25,
+          "snapshot_bytes": 35155,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 175435776
+        },
+        {
+          "function": "visualization.plume_drift.save_plume_source_paths",
+          "pid": 42036,
+          "worker_seconds": 0.225891900001443,
+          "cpu_seconds": 0.21875,
+          "snapshot_bytes": 50581,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 222580736
+        },
+        {
+          "function": "visualization.plume_flow_coupling.save_plume_flow_coupling_history",
+          "pid": 44512,
+          "worker_seconds": 0.18637850000231992,
+          "cpu_seconds": 0.1875,
+          "snapshot_bytes": 22841,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 183414784
+        }
+      ]
+    }
+  },
+  {
+    "render_workers": 6,
+    "cell_kernels": true,
+    "process_priority": "normal",
+    "priority_verified": true,
+    "repeat": 2,
+    "wall_seconds": 22.82370870000159,
+    "exact": true,
+    "arrays_compared": 62,
+    "differences": [],
+    "png_exact": true,
+    "png_count": 40,
+    "png_differences": [],
+    "render_report": {
+      "render_workers": 6,
+      "jobs_completed": 23,
+      "requested_priority": "normal",
+      "coordinator_priority": {
+        "kind": "windows_priority_class",
+        "value": 32
+      },
+      "peak_pending": 12,
+      "peak_snapshot_bytes": 54737483,
+      "serialization_seconds": 0.13321059999725549,
+      "wait_seconds": 3.3979059000193956,
+      "jobs": [
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_frame",
+          "pid": 45832,
+          "worker_seconds": 0.7821104000031482,
+          "cpu_seconds": 0.78125,
+          "snapshot_bytes": 6277825,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 170582016
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_frame",
+          "pid": 41704,
+          "worker_seconds": 0.8193207000003895,
+          "cpu_seconds": 0.828125,
+          "snapshot_bytes": 6277941,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 170430464
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_frame",
+          "pid": 40236,
+          "worker_seconds": 0.9915187999940827,
+          "cpu_seconds": 0.96875,
+          "snapshot_bytes": 6605969,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 181051392
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_frame",
+          "pid": 42256,
+          "worker_seconds": 1.5152425999986008,
+          "cpu_seconds": 1.484375,
+          "snapshot_bytes": 7654049,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 209457152
+        },
+        {
+          "function": "visualization.topology.save_topology_frame",
+          "pid": 19716,
+          "worker_seconds": 0.44561070000054315,
+          "cpu_seconds": 0.4375,
+          "snapshot_bytes": 5487133,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 150482944
+        },
+        {
+          "function": "visualization.topology.save_plate_history_frame",
+          "pid": 31564,
+          "worker_seconds": 0.3537422000008519,
+          "cpu_seconds": 0.359375,
+          "snapshot_bytes": 4884378,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 143380480
+        },
+        {
+          "function": "visualization.continental.save_continental_history_frame",
+          "pid": 45832,
+          "worker_seconds": 0.28964970000379253,
+          "cpu_seconds": 0.296875,
+          "snapshot_bytes": 4801425,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 187973632
+        },
+        {
+          "function": "visualization.hydrosphere.save_hydrosphere_frame",
+          "pid": 31564,
+          "worker_seconds": 0.8967906000034418,
+          "cpu_seconds": 0.90625,
+          "snapshot_bytes": 4967324,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 247427072
+        },
+        {
+          "function": "visualization.cratons.save_craton_history",
+          "pid": 19716,
+          "worker_seconds": 0.1025694999989355,
+          "cpu_seconds": 0.109375,
+          "snapshot_bytes": 27546,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 150482944
+        },
+        {
+          "function": "visualization.cratons.save_craton_maps",
+          "pid": 19716,
+          "worker_seconds": 1.0077235999997356,
+          "cpu_seconds": 1.015625,
+          "snapshot_bytes": 4801382,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 193187840
+        },
+        {
+          "function": "visualization.plumes.save_plume_history",
+          "pid": 45832,
+          "worker_seconds": 0.21988280000368832,
+          "cpu_seconds": 0.21875,
+          "snapshot_bytes": 55404,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 187973632
+        },
+        {
+          "function": "visualization.plumes.save_plume_maps",
+          "pid": 41704,
+          "worker_seconds": 0.9547130999999354,
+          "cpu_seconds": 0.9375,
+          "snapshot_bytes": 2897107,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 214544384
+        },
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_history",
+          "pid": 45832,
+          "worker_seconds": 0.24242770000273595,
+          "cpu_seconds": 0.25,
+          "snapshot_bytes": 30081,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 187973632
+        },
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_maps",
+          "pid": 40236,
+          "worker_seconds": 1.2420550999959232,
+          "cpu_seconds": 1.234375,
+          "snapshot_bytes": 2732048,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 208449536
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_history",
+          "pid": 45832,
+          "worker_seconds": 0.28897259999939706,
+          "cpu_seconds": 0.25,
+          "snapshot_bytes": 30080,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 187973632
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_maps",
+          "pid": 31564,
+          "worker_seconds": 0.9821511000045575,
+          "cpu_seconds": 0.984375,
+          "snapshot_bytes": 2568179,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 247427072
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_history",
+          "pid": 45832,
+          "worker_seconds": 0.24879430000146385,
+          "cpu_seconds": 0.234375,
+          "snapshot_bytes": 42395,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 187973632
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_maps",
+          "pid": 42256,
+          "worker_seconds": 1.5004677000033553,
+          "cpu_seconds": 1.484375,
+          "snapshot_bytes": 2896738,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 307269632
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_history",
+          "pid": 19716,
+          "worker_seconds": 0.2736002000019653,
+          "cpu_seconds": 0.265625,
+          "snapshot_bytes": 48923,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 193777664
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_maps",
+          "pid": 41704,
+          "worker_seconds": 1.478156700002728,
+          "cpu_seconds": 1.484375,
+          "snapshot_bytes": 3879851,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 265973760
+        },
+        {
+          "function": "visualization.plume_drift.save_plume_drift_history",
+          "pid": 45832,
+          "worker_seconds": 0.25565520000236575,
+          "cpu_seconds": 0.25,
+          "snapshot_bytes": 35149,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 187973632
+        },
+        {
+          "function": "visualization.plume_drift.save_plume_source_paths",
+          "pid": 19716,
+          "worker_seconds": 0.23809800000162795,
+          "cpu_seconds": 0.234375,
+          "snapshot_bytes": 50575,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 208097280
+        },
+        {
+          "function": "visualization.plume_flow_coupling.save_plume_flow_coupling_history",
+          "pid": 45832,
+          "worker_seconds": 0.18818560000363505,
+          "cpu_seconds": 0.1875,
+          "snapshot_bytes": 22835,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 187973632
+        }
+      ]
+    }
+  },
+  {
+    "render_workers": 4,
+    "cell_kernels": true,
+    "process_priority": "below_normal",
+    "priority_verified": true,
+    "repeat": 2,
+    "wall_seconds": 15.910541899997042,
+    "exact": true,
+    "arrays_compared": 62,
+    "differences": [],
+    "png_exact": true,
+    "png_count": 40,
+    "png_differences": [],
+    "render_report": {
+      "render_workers": 4,
+      "jobs_completed": 23,
+      "requested_priority": "below_normal",
+      "coordinator_priority": {
+        "kind": "windows_priority_class",
+        "value": 16384
+      },
+      "peak_pending": 8,
+      "peak_snapshot_bytes": 46956092,
+      "serialization_seconds": 0.12988010001572547,
+      "wait_seconds": 4.265033499999845,
+      "jobs": [
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_frame",
+          "pid": 22636,
+          "worker_seconds": 0.7339690000007977,
+          "cpu_seconds": 0.734375,
+          "snapshot_bytes": 6277831,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 168607744
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_frame",
+          "pid": 33928,
+          "worker_seconds": 0.7491147000037017,
+          "cpu_seconds": 0.734375,
+          "snapshot_bytes": 6277947,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 170221568
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_frame",
+          "pid": 3996,
+          "worker_seconds": 0.9347796000001836,
+          "cpu_seconds": 0.921875,
+          "snapshot_bytes": 6605975,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 181624832
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_frame",
+          "pid": 40128,
+          "worker_seconds": 1.443778500004555,
+          "cpu_seconds": 1.4375,
+          "snapshot_bytes": 7654055,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 210403328
+        },
+        {
+          "function": "visualization.topology.save_topology_frame",
+          "pid": 22636,
+          "worker_seconds": 0.3616055000020424,
+          "cpu_seconds": 0.34375,
+          "snapshot_bytes": 5487139,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 175714304
+        },
+        {
+          "function": "visualization.topology.save_plate_history_frame",
+          "pid": 33928,
+          "worker_seconds": 0.2939683000004152,
+          "cpu_seconds": 0.28125,
+          "snapshot_bytes": 4884384,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 188686336
+        },
+        {
+          "function": "visualization.continental.save_continental_history_frame",
+          "pid": 22636,
+          "worker_seconds": 0.27405459999863524,
+          "cpu_seconds": 0.265625,
+          "snapshot_bytes": 4801431,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 175714304
+        },
+        {
+          "function": "visualization.hydrosphere.save_hydrosphere_frame",
+          "pid": 3996,
+          "worker_seconds": 0.8455180000019027,
+          "cpu_seconds": 0.84375,
+          "snapshot_bytes": 4967330,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 274812928
+        },
+        {
+          "function": "visualization.cratons.save_craton_history",
+          "pid": 33928,
+          "worker_seconds": 0.10098600000492297,
+          "cpu_seconds": 0.109375,
+          "snapshot_bytes": 27552,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 188686336
+        },
+        {
+          "function": "visualization.cratons.save_craton_maps",
+          "pid": 22636,
+          "worker_seconds": 0.9668374999964726,
+          "cpu_seconds": 0.96875,
+          "snapshot_bytes": 4801388,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 238755840
+        },
+        {
+          "function": "visualization.plumes.save_plume_history",
+          "pid": 33928,
+          "worker_seconds": 0.23579379999864614,
+          "cpu_seconds": 0.234375,
+          "snapshot_bytes": 55410,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 188686336
+        },
+        {
+          "function": "visualization.plumes.save_plume_maps",
+          "pid": 33928,
+          "worker_seconds": 0.9054120000000694,
+          "cpu_seconds": 0.90625,
+          "snapshot_bytes": 2897113,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 230977536
+        },
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_history",
+          "pid": 40128,
+          "worker_seconds": 0.20732829999906244,
+          "cpu_seconds": 0.203125,
+          "snapshot_bytes": 30087,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 210403328
+        },
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_maps",
+          "pid": 40128,
+          "worker_seconds": 1.1975247000009404,
+          "cpu_seconds": 1.1875,
+          "snapshot_bytes": 2732054,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 279945216
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_history",
+          "pid": 3996,
+          "worker_seconds": 0.30505270000139717,
+          "cpu_seconds": 0.296875,
+          "snapshot_bytes": 30086,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 274812928
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_maps",
+          "pid": 22636,
+          "worker_seconds": 0.9174373999994714,
+          "cpu_seconds": 0.90625,
+          "snapshot_bytes": 2568185,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 303763456
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_history",
+          "pid": 3996,
+          "worker_seconds": 0.2373275000063586,
+          "cpu_seconds": 0.234375,
+          "snapshot_bytes": 42401,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 274812928
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_maps",
+          "pid": 3996,
+          "worker_seconds": 1.5079472000070382,
+          "cpu_seconds": 1.5,
+          "snapshot_bytes": 2896744,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 274812928
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_history",
+          "pid": 33928,
+          "worker_seconds": 0.2675431999959983,
+          "cpu_seconds": 0.265625,
+          "snapshot_bytes": 48929,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 231174144
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_maps",
+          "pid": 33928,
+          "worker_seconds": 1.4724095999990823,
+          "cpu_seconds": 1.46875,
+          "snapshot_bytes": 3879857,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 327876608
+        },
+        {
+          "function": "visualization.plume_drift.save_plume_drift_history",
+          "pid": 40128,
+          "worker_seconds": 0.25155870000162395,
+          "cpu_seconds": 0.25,
+          "snapshot_bytes": 35155,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 279945216
+        },
+        {
+          "function": "visualization.plume_drift.save_plume_source_paths",
+          "pid": 22636,
+          "worker_seconds": 0.22464539999782573,
+          "cpu_seconds": 0.234375,
+          "snapshot_bytes": 50581,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 303763456
+        },
+        {
+          "function": "visualization.plume_flow_coupling.save_plume_flow_coupling_history",
+          "pid": 40128,
+          "worker_seconds": 0.18388209999829996,
+          "cpu_seconds": 0.1875,
+          "snapshot_bytes": 22841,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 16384
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 284704768
+        }
+      ]
+    }
+  },
+  {
+    "render_workers": 4,
+    "cell_kernels": true,
+    "process_priority": "normal",
+    "priority_verified": true,
+    "repeat": 2,
+    "wall_seconds": 15.810899199997948,
+    "exact": true,
+    "arrays_compared": 62,
+    "differences": [],
+    "png_exact": true,
+    "png_count": 40,
+    "png_differences": [],
+    "render_report": {
+      "render_workers": 4,
+      "jobs_completed": 23,
+      "requested_priority": "normal",
+      "coordinator_priority": {
+        "kind": "windows_priority_class",
+        "value": 32
+      },
+      "peak_pending": 8,
+      "peak_snapshot_bytes": 46956044,
+      "serialization_seconds": 0.13553569998475723,
+      "wait_seconds": 4.264059600012843,
+      "jobs": [
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_frame",
+          "pid": 43004,
+          "worker_seconds": 0.7411322000043583,
+          "cpu_seconds": 0.734375,
+          "snapshot_bytes": 6277825,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 168357888
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_frame",
+          "pid": 34736,
+          "worker_seconds": 0.7573276000039186,
+          "cpu_seconds": 0.765625,
+          "snapshot_bytes": 6277941,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 170369024
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_frame",
+          "pid": 40268,
+          "worker_seconds": 0.94114499999705,
+          "cpu_seconds": 0.953125,
+          "snapshot_bytes": 6605969,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 180137984
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_frame",
+          "pid": 40460,
+          "worker_seconds": 1.4396497999987332,
+          "cpu_seconds": 1.421875,
+          "snapshot_bytes": 7654049,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 208941056
+        },
+        {
+          "function": "visualization.topology.save_topology_frame",
+          "pid": 43004,
+          "worker_seconds": 0.3656788999942364,
+          "cpu_seconds": 0.375,
+          "snapshot_bytes": 5487133,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 176320512
+        },
+        {
+          "function": "visualization.topology.save_plate_history_frame",
+          "pid": 34736,
+          "worker_seconds": 0.29107249999651685,
+          "cpu_seconds": 0.296875,
+          "snapshot_bytes": 4884378,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 188608512
+        },
+        {
+          "function": "visualization.continental.save_continental_history_frame",
+          "pid": 43004,
+          "worker_seconds": 0.2699011000004248,
+          "cpu_seconds": 0.265625,
+          "snapshot_bytes": 4801425,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 176320512
+        },
+        {
+          "function": "visualization.hydrosphere.save_hydrosphere_frame",
+          "pid": 40268,
+          "worker_seconds": 0.8361102999988361,
+          "cpu_seconds": 0.828125,
+          "snapshot_bytes": 4967324,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 274284544
+        },
+        {
+          "function": "visualization.cratons.save_craton_history",
+          "pid": 34736,
+          "worker_seconds": 0.10111319999850821,
+          "cpu_seconds": 0.09375,
+          "snapshot_bytes": 27546,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 188608512
+        },
+        {
+          "function": "visualization.cratons.save_craton_maps",
+          "pid": 43004,
+          "worker_seconds": 0.942076299994369,
+          "cpu_seconds": 0.9375,
+          "snapshot_bytes": 4801382,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 238948352
+        },
+        {
+          "function": "visualization.plumes.save_plume_history",
+          "pid": 34736,
+          "worker_seconds": 0.2428686999992351,
+          "cpu_seconds": 0.25,
+          "snapshot_bytes": 55404,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 188608512
+        },
+        {
+          "function": "visualization.plumes.save_plume_maps",
+          "pid": 34736,
+          "worker_seconds": 0.8917216999980155,
+          "cpu_seconds": 0.890625,
+          "snapshot_bytes": 2897107,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 233152512
+        },
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_history",
+          "pid": 40460,
+          "worker_seconds": 0.20094759999483358,
+          "cpu_seconds": 0.203125,
+          "snapshot_bytes": 30081,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 208941056
+        },
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_maps",
+          "pid": 40460,
+          "worker_seconds": 1.1669185999999172,
+          "cpu_seconds": 1.15625,
+          "snapshot_bytes": 2732048,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 278073344
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_history",
+          "pid": 40268,
+          "worker_seconds": 0.30249149999872316,
+          "cpu_seconds": 0.3125,
+          "snapshot_bytes": 30080,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 274284544
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_maps",
+          "pid": 43004,
+          "worker_seconds": 0.904927100003988,
+          "cpu_seconds": 0.890625,
+          "snapshot_bytes": 2568179,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 303882240
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_history",
+          "pid": 40268,
+          "worker_seconds": 0.23634669999592006,
+          "cpu_seconds": 0.234375,
+          "snapshot_bytes": 42395,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 274284544
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_maps",
+          "pid": 40268,
+          "worker_seconds": 1.498858699997072,
+          "cpu_seconds": 1.5,
+          "snapshot_bytes": 2896738,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 274284544
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_history",
+          "pid": 34736,
+          "worker_seconds": 0.2632845999978599,
+          "cpu_seconds": 0.265625,
+          "snapshot_bytes": 48923,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 233152512
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_maps",
+          "pid": 34736,
+          "worker_seconds": 1.4726108999966527,
+          "cpu_seconds": 1.453125,
+          "snapshot_bytes": 3879851,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 328486912
+        },
+        {
+          "function": "visualization.plume_drift.save_plume_drift_history",
+          "pid": 40460,
+          "worker_seconds": 0.2503071000028285,
+          "cpu_seconds": 0.25,
+          "snapshot_bytes": 35149,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 278073344
+        },
+        {
+          "function": "visualization.plume_drift.save_plume_source_paths",
+          "pid": 43004,
+          "worker_seconds": 0.22630510000453796,
+          "cpu_seconds": 0.234375,
+          "snapshot_bytes": 50575,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 303882240
+        },
+        {
+          "function": "visualization.plume_flow_coupling.save_plume_flow_coupling_history",
+          "pid": 40460,
+          "worker_seconds": 0.1850856999953976,
+          "cpu_seconds": 0.1875,
+          "snapshot_bytes": 22835,
+          "priority": {
+            "kind": "windows_priority_class",
+            "value": 32
+          },
+          "affinity_mask": "0xffffff",
+          "peak_working_set_bytes": 284733440
+        }
+      ]
+    }
+  }
+]
