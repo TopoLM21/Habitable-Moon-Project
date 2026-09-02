@@ -1,5 +1,18 @@
 # Moon Tectonics v0.31 — Mantle-Flow-Coupled Plume Sources
 
+## Experimental CPU performance worktree
+
+This is the `perf/cpu-parallel` branch. The validated numerical release remains
+at tag `v0.31-cpu-stable`; the original workspace and its Python environment
+are unchanged. This GUI can select the reference CPU mode or opt-in cached CPU
+execution with 1/2/4/8 plate workers. It also includes pause-aware ETA.
+
+See [CPU_PERFORMANCE.md](CPU_PERFORMANCE.md) for the isolation boundary,
+benchmarks, exact checkpoint checks, and the independent intermediate-GIF tool.
+Use this folder's own `launch_gui.bat` and `.venv`. Do not switch branches in a
+folder whose simulation is running, or point experimental output at a stable
+run. Higher worker counts are experimental, not a promise of higher speed.
+
 ## Desktop laboratory GUI
 
 The repository now includes a native PySide6 control surface for Windows and

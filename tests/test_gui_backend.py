@@ -19,6 +19,7 @@ from moon_gui.backend import (
     segment_targets,
     subdivision_for_cell_count,
     write_runtime_config,
+    write_run_record,
 )
 
 
@@ -26,6 +27,7 @@ def _project(tmp_path: Path) -> tuple[Path, Path]:
     root = tmp_path / "project"
     root.mkdir()
     (root / "run_long_evolution_v131.py").write_text("pass\n", encoding="utf-8")
+    (root / "run_long_evolution_v131_cpu.py").write_text("pass\n", encoding="utf-8")
     config = root / "canonical.yaml"
     config.write_text("mesh:\n  subdivisions: 5\nmoon:\n  name: Test\n", encoding="utf-8")
     return root, config
@@ -147,3 +149,22 @@ def test_artifact_discovery_and_checkpoint_metrics(tmp_path: Path) -> None:
     assert metrics["time_myr"] == 20.0
     assert metrics["plate_count"] == 3
     assert metrics["topology_events"] == 1
+
+
+def test_cpu_mode_is_explicit_and_cannot_write_to_stable_outputs(tmp_path):
+    root, config = _project(tmp_path)
+    spec = RunSpec(root, config, root / "results" / "experiment", cpu_optimized=True, cpu_workers=4).normalized()
+    spec.validate()
+    command = build_segment_command(spec, target_time_myr=20.0, checkpoint_dir=spec.output_dir / checkpoint_name(20.0),
+                                    resume_checkpoint=None, final_segment=False)
+    assert command[0].endswith("run_long_evolution_v131_cpu.py")
+    assert command[command.index("--cpu-workers") + 1] == "4"
+    with pytest.raises(ValueError, match="workspace"):
+        RunSpec(root, config, tmp_path / "stable", cpu_optimized=True).validate()
+    with pytest.raises(ValueError, match="workers"):
+        RunSpec(root, config, root / "results" / "experiment", cpu_workers=0).validate()
+    runtime = write_runtime_config(spec)
+    record = write_run_record(spec, runtime)
+    assert json.loads(record.read_text())["runner"] == "run_long_evolution_v131_cpu.py"
+    with pytest.raises(ValueError, match="empty"):
+        RunSpec(root, config, spec.output_dir, cpu_optimized=True, resume_checkpoint=tmp_path / "external_checkpoint").validate()

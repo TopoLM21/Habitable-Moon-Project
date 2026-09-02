@@ -26,6 +26,7 @@ from scipy.spatial import cKDTree
 from .lithosphere import CrustType, LithosphereState
 from .mesh import SphereMesh
 from .plates import PlateSystem
+from .cpu_runtime import current_execution, query_workers
 
 Array = np.ndarray
 
@@ -198,7 +199,7 @@ def _fit_rotation(source_points: Array, target_points: Array, max_pairs: int) ->
     return r
 
 
-def _optimal_assignment(mesh: SphereMesh, rotated_sources: Array, params: SubgridTransportParameters) -> Array:
+def _optimal_assignment(mesh: SphereMesh, rotated_sources: Array, params: SubgridTransportParameters, tree: cKDTree | None = None) -> Array:
     """Return one unique target cell for each rotated source point."""
     m = len(rotated_sources)
     n = mesh.cell_count
@@ -206,11 +207,12 @@ def _optimal_assignment(mesh: SphereMesh, rotated_sources: Array, params: Subgri
         return np.empty(0, dtype=np.int32)
     if m > n:
         raise ValueError("plate has more source cells than mesh targets")
-    tree = cKDTree(mesh.centroids)
+    if tree is None:
+        tree = cKDTree(mesh.centroids)
     k = min(max(int(params.initial_candidate_count), 2), n)
     last_error: Exception | None = None
     while True:
-        dist, cand = tree.query(rotated_sources, k=k, workers=-1)
+        dist, cand = tree.query(rotated_sources, k=k, workers=query_workers())
         if k == 1:
             dist = dist[:, None]; cand = cand[:, None]
         rows = np.repeat(np.arange(m, dtype=np.int32), k)
@@ -240,7 +242,7 @@ def _optimal_assignment(mesh: SphereMesh, rotated_sources: Array, params: Subgri
 def _changed_fraction(tree: cKDTree, source_cells: Array, rotated: Array) -> float:
     if not len(source_cells):
         return 0.0
-    _, nearest = tree.query(rotated, k=1, workers=-1)
+    _, nearest = tree.query(rotated, k=1, workers=query_workers())
     return float(np.mean(np.asarray(nearest, dtype=np.int32) != np.asarray(source_cells, dtype=np.int32)))
 
 
@@ -268,19 +270,27 @@ def build_transport_map(
     covered = np.zeros((pcount, n), dtype=bool)
     source = np.full((pcount, n), -1, dtype=np.int32)
     source_to_target: list[Array] = []
-    tree = cKDTree(mesh.centroids)
-    spacing = _median_cell_spacing_rad(mesh)
+    execution = current_execution()
+    if execution is None:
+        tree = cKDTree(mesh.centroids)
+        spacing = _median_cell_spacing_rad(mesh)
+    else:
+        geometry = execution.geometry(mesh)
+        tree = geometry.tree
+        if geometry.spacing is None:
+            geometry.spacing = _median_cell_spacing_rad(mesh)
+        spacing = geometry.spacing
     changed_values: list[float] = []
     commits = 0
 
     owner = np.asarray(lithosphere.cell_plate, dtype=np.int32)
     crust = np.asarray(lithosphere.crust_type, dtype=np.int8)
 
-    for pid, plate in enumerate(system.plates):
+    def prepare_plate(item):
+        pid, plate = item
         src_cells = np.flatnonzero(owner == pid).astype(np.int32)
         if not len(src_cells):
-            source_to_target.append(np.empty(0, dtype=np.int32))
-            continue
+            return pid, src_cells, src_cells.copy(), None, None, None, False
         q_step = quaternion_from_axis_angle(plate.euler_axis, plate.angular_speed_rad_per_myr * float(dt_myr))
         q_total = quaternion_multiply(q_step, transport_state.residual_quaternions[pid])
 
@@ -288,7 +298,6 @@ def build_transport_map(
         relevant = cont_cells if len(cont_cells) >= int(params.continental_preference_min_cells) else src_cells
         relevant_rot = rotate_by_quaternion(mesh.centroids[relevant], q_total)
         changed = _changed_fraction(tree, relevant, relevant_rot)
-        changed_values.append(changed)
         dot = np.clip(np.sum(mesh.centroids[relevant] * relevant_rot, axis=1), -1.0, 1.0)
         p75 = float(np.quantile(np.arccos(dot), 0.75)) if len(dot) else 0.0
         enough_motion = (
@@ -303,20 +312,31 @@ def build_transport_map(
 
         if not commit:
             target = src_cells.copy()
-            transport_state.residual_quaternions[pid] = q_total
-            transport_state.hold_age_myr[pid] += float(dt_myr)
-            transport_state.max_hold_age_myr = max(
-                float(transport_state.max_hold_age_myr), float(transport_state.hold_age_myr[pid])
-            )
+            residual = q_total
+            hold_age = float(transport_state.hold_age_myr[pid]) + float(dt_myr)
         else:
             desired = rotate_by_quaternion(mesh.centroids[src_cells], q_total)
-            target = _optimal_assignment(mesh, desired, params)
+            target = _optimal_assignment(mesh, desired, params, tree if execution is not None else None)
             represented_r = _fit_rotation(mesh.centroids[src_cells], mesh.centroids[target], params.max_fit_pairs)
             q_fit = quaternion_from_matrix(represented_r)
-            transport_state.residual_quaternions[pid] = quaternion_multiply(q_total, quaternion_conjugate(q_fit))
-            transport_state.hold_age_myr[pid] = 0.0
+            residual = quaternion_multiply(q_total, quaternion_conjugate(q_fit))
+            hold_age = 0.0
+        return pid, src_cells, target, residual, hold_age, changed, commit
+
+    items = enumerate(system.plates)
+    prepared = map(prepare_plate, items) if execution is None else execution.ordered_map(prepare_plate, items)
+    for pid, src_cells, target, residual, hold_age, changed, commit in prepared:
+        if residual is None:
+            source_to_target.append(target)
+            continue
+        changed_values.append(changed)
+        transport_state.residual_quaternions[pid] = residual
+        transport_state.hold_age_myr[pid] = hold_age
+        if commit:
             commits += 1
             transport_state.cumulative_commit_count += 1
+        else:
+            transport_state.max_hold_age_myr = max(float(transport_state.max_hold_age_myr), float(hold_age))
 
         # Full one-to-one within this plate by construction.
         covered[pid, target] = True

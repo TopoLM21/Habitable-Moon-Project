@@ -18,6 +18,7 @@ import yaml
 
 
 RUNNER_NAME = "run_long_evolution_v131.py"
+CPU_RUNNER_NAME = "run_long_evolution_v131_cpu.py"
 RUNTIME_CONFIG_NAME = "gui_runtime_config.yaml"
 RUN_RECORD_NAME = "gui_run.json"
 
@@ -55,6 +56,8 @@ class RunSpec:
     surface_only_frames: bool = False
     finalize: bool = True
     resume_checkpoint: Path | None = None
+    cpu_optimized: bool = False
+    cpu_workers: int = 1
 
     def normalized(self) -> "RunSpec":
         return RunSpec(
@@ -71,11 +74,13 @@ class RunSpec:
             resume_checkpoint=(
                 None if self.resume_checkpoint is None else self.resume_checkpoint.resolve()
             ),
+            cpu_optimized=bool(self.cpu_optimized),
+            cpu_workers=int(self.cpu_workers),
         )
 
     @property
     def runner(self) -> Path:
-        return self.project_root / RUNNER_NAME
+        return self.project_root / (CPU_RUNNER_NAME if self.cpu_optimized else RUNNER_NAME)
 
     @property
     def runtime_config(self) -> Path:
@@ -91,6 +96,14 @@ class RunSpec:
             raise ValueError(f"Project root does not exist: {self.project_root}")
         if not self.runner.is_file():
             raise ValueError(f"v0.31 runner does not exist: {self.runner}")
+        if not 1 <= self.cpu_workers <= 32:
+            raise ValueError("CPU workers must be between 1 and 32")
+        if self.cpu_optimized and not self.output_dir.resolve().is_relative_to((self.project_root / "results").resolve()):
+            raise ValueError("Experimental CPU results must stay inside this workspace's results folder")
+        if (self.cpu_optimized and self.resume_checkpoint is not None
+                and not self.resume_checkpoint.resolve().is_relative_to(self.output_dir.resolve())
+                and self.output_dir.exists() and any(self.output_dir.iterdir())):
+            raise ValueError("An external checkpoint needs an empty experimental output folder")
         if not self.source_config.is_file():
             raise ValueError(f"Configuration does not exist: {self.source_config}")
         if self.subdivisions not in {3, 4, 5, 6}:
@@ -210,7 +223,7 @@ def write_run_record(spec: RunSpec, runtime_config: Path) -> Path:
     payload.update(
         {
             "format": "moon_tectonics_gui_run",
-            "runner": RUNNER_NAME,
+            "runner": spec.runner.name,
             "runtime_config": str(runtime_config),
             "cell_count": cell_count(spec.subdivisions),
             "created_utc": datetime.now(timezone.utc).isoformat(),
@@ -247,6 +260,8 @@ def build_segment_command(
     ]
     if resume_checkpoint is not None:
         command.extend(["--resume", str(resume_checkpoint)])
+    if spec.cpu_optimized:
+        command.extend(["--cpu-workers", str(spec.cpu_workers)])
     if spec.surface_only_frames:
         command.append("--surface-only-frames")
     if final_segment and spec.finalize:

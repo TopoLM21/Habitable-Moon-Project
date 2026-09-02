@@ -27,6 +27,9 @@ def main() -> int:
     parser.add_argument("--frame-interval", type=float, default=4.0)
     parser.add_argument("--full-frames", action="store_true")
     parser.add_argument("--no-finalize", action="store_true")
+    parser.add_argument("--cpu-optimized", action="store_true")
+    parser.add_argument("--cpu-workers", type=int, default=1)
+    parser.add_argument("--pause-once", action="store_true", help="Pause after the first checkpoint, then resume automatically")
     parser.add_argument(
         "--resume",
         help="Resume from a completed checkpoint inside the selected output folder.",
@@ -62,6 +65,18 @@ def main() -> int:
 
     controller.run_completed.connect(complete)
     controller.run_failed.connect(failed)
+    if args.pause_once:
+        pause_done = {"value": False}
+        def checkpoint_done(_time: float, _path: str) -> None:
+            if not pause_done["value"]:
+                pause_done["value"] = True
+                controller.request_pause()
+        def state_changed(state: str) -> None:
+            if state == "Paused":
+                print("GUI CONTROLLER SAFE PAUSE VERIFIED")
+                QTimer.singleShot(100, controller.resume)
+        controller.segment_completed.connect(checkpoint_done)
+        controller.state_changed.connect(state_changed)
     if args.timeout_seconds > 0:
         def timeout() -> None:
             print("GUI CONTROLLER TIMEOUT; stopping the active segment safely.")
@@ -81,6 +96,8 @@ def main() -> int:
             surface_only_frames=not bool(args.full_frames),
             finalize=not bool(args.no_finalize),
             resume_checkpoint=resume,
+            cpu_optimized=bool(args.cpu_optimized),
+            cpu_workers=int(args.cpu_workers),
         )
     )
     app.exec()

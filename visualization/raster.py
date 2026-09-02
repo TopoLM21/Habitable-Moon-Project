@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import numpy as np
 from scipy.spatial import cKDTree
+from tectonics.cpu_runtime import current_execution, query_workers
 
 
 def _grid_unit_vectors(width: int = 480, height: int = 240):
@@ -18,8 +19,22 @@ def _grid_unit_vectors(width: int = 480, height: int = 240):
 
 def rasterize_cells(mesh, values, width: int = 480, height: int = 240):
     """Nearest-cell sample onto a regular lon/lat grid for filled Mollweide maps."""
-    lon_edges, lat_edges, xyz = _grid_unit_vectors(width, height)
-    tree = cKDTree(mesh.centroids)
-    _, idx = tree.query(xyz, k=1, workers=-1)
+    execution = current_execution()
+    geometry = None if execution is None else execution.geometry(mesh)
+    key = (int(width), int(height))
+    cached = None if geometry is None else geometry.rasters.get(key)
+    if cached is None:
+        lon_edges, lat_edges, xyz = _grid_unit_vectors(width, height)
+        tree = cKDTree(mesh.centroids) if geometry is None else geometry.tree
+        _, idx = tree.query(xyz, k=1, workers=query_workers())
+        if geometry is not None:
+            for array in (lon_edges, lat_edges, idx):
+                array.setflags(write=False)
+            geometry.rasters[key] = (lon_edges, lat_edges, idx)
+            if len(geometry.rasters) > 4:
+                geometry.rasters.popitem(last=False)
+    else:
+        lon_edges, lat_edges, idx = cached
+        geometry.rasters.move_to_end(key)
     data = np.asarray(values)[np.asarray(idx, dtype=np.int32)].reshape(int(height), int(width))
     return lon_edges, lat_edges, data

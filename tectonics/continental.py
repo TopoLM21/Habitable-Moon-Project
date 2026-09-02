@@ -27,6 +27,7 @@ from .evolution import rotate_points_by_plate
 from .kinematics import BoundaryRecord, BoundaryType
 from .lithosphere import CrustType, LithosphereState, continental_material_fields
 from .mesh import SphereMesh
+from .cpu_runtime import query_workers
 from .plates import PlateSystem
 
 Array = np.ndarray
@@ -138,7 +139,7 @@ def _advect_felsic_potential(
             continue
         pids = np.full(len(targets), plate_id, dtype=np.int32)
         back = rotate_points_by_plate(mesh.centroids[targets], pids, plate_system, -float(dt_myr))
-        _, src = tree.query(back, k=1, workers=-1)
+        _, src = tree.query(back, k=1, workers=query_workers())
         src = np.asarray(src, dtype=np.int32)
         valid = np.asarray(previous_lithosphere.cell_plate, dtype=np.int32)[src] == plate_id
         if np.any(valid):

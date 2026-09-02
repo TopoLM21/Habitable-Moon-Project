@@ -29,6 +29,7 @@ from scipy.spatial import cKDTree
 from .evolution import rotate_points_by_plate
 from .kinematics import BoundaryRecord, BoundaryType, classify_boundaries
 from .mesh import SphereMesh
+from .cpu_runtime import query_workers
 from .plates import PlateSystem
 from .tides import EccentricityHistory, tidal_strain_amplitude
 
@@ -517,7 +518,7 @@ def _backward_coverage(mesh: SphereMesh, system: PlateSystem, state: Lithosphere
     for plate_id in range(pcount):
         pids = np.full(n, plate_id, dtype=np.int32)
         back = rotate_points_by_plate(mesh.centroids, pids, system, -float(dt_myr))
-        _, src = tree.query(back, k=1, workers=-1)
+        _, src = tree.query(back, k=1, workers=query_workers())
         src = np.asarray(src, dtype=np.int32)
         source[plate_id] = src
         covered[plate_id] = np.asarray(state.cell_plate, dtype=np.int32)[src] == plate_id
@@ -1033,7 +1034,7 @@ def advance_lithosphere(
     # True divergent gaps receive newborn oceanic crust.
     if np.any(gap_mask):
         tree = cKDTree(mesh.centroids[~gap_mask])
-        _, near_local = tree.query(mesh.centroids[gap_mask], k=1, workers=-1)
+        _, near_local = tree.query(mesh.centroids[gap_mask], k=1, workers=query_workers())
         survivor_cells = np.flatnonzero(~gap_mask)
         near = survivor_cells[np.asarray(near_local, dtype=np.int32)]
         new_plate[gap_mask] = new_plate[near]

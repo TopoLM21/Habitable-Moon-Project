@@ -18,6 +18,7 @@ import numpy as np
 
 from .mesh import SphereMesh
 from .plates import PlateSystem
+from .cpu_runtime import current_execution
 
 Array = np.ndarray
 
@@ -95,12 +96,21 @@ def advance_mantle_flow(
     # Small explicit graph diffusion on the *fixed* mesh.
     smooth = float(np.clip(params.spatial_smoothing_fraction_per_myr * dt_myr, 0.0, 0.20))
     if smooth > 0.0:
-        neighbour_mean = np.empty_like(field)
-        for i, nbs in enumerate(mesh.neighbors):
-            if nbs:
-                neighbour_mean[i] = np.mean(field[np.asarray(nbs, dtype=np.int32)], axis=0)
-            else:
-                neighbour_mean[i] = field[i]
+        execution = current_execution()
+        # A closed triangular sphere has exactly three neighbours per cell.
+        # Preserve their order and NumPy's reduction order, batch the calls.
+        if execution is not None and all(len(nbs) == 3 for nbs in mesh.neighbors):
+            geometry = execution.geometry(mesh)
+            if geometry.neighbors is None:
+                geometry.neighbors = np.asarray(mesh.neighbors, dtype=np.int32)
+            neighbour_mean = np.mean(field[geometry.neighbors], axis=1)
+        else:
+            neighbour_mean = np.empty_like(field)
+            for i, nbs in enumerate(mesh.neighbors):
+                if nbs:
+                    neighbour_mean[i] = np.mean(field[np.asarray(nbs, dtype=np.int32)], axis=0)
+                else:
+                    neighbour_mean[i] = field[i]
         field += smooth * (neighbour_mean - field)
 
     activity = max(float(tectonic_activity_factor), 0.0)

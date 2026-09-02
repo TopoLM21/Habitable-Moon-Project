@@ -328,7 +328,7 @@ class MoonWindow(QMainWindow):
         title_row = QHBoxLayout()
         title = QLabel("Лаборатория тектоники спутника")
         title.setObjectName("title")
-        subtitle = QLabel("v0.31 · локальный расчёт с checkpoint · Windows / Ubuntu")
+        subtitle = QLabel("v0.31 · экспериментальная CPU-ветка · отдельная рабочая папка")
         subtitle.setObjectName("subtitle")
         title_box = QVBoxLayout()
         title_box.addWidget(title)
@@ -362,13 +362,13 @@ class MoonWindow(QMainWindow):
         settings = self._settings_panel()
         preview = self._preview_panel()
         information = self._information_panel()
-        settings.setMinimumWidth(430)
+        settings.setMinimumWidth(460)
         preview.setMinimumWidth(580)
         information.setMinimumWidth(340)
         splitter.addWidget(settings)
         splitter.addWidget(preview)
         splitter.addWidget(information)
-        splitter.setSizes([350, 780, 420])
+        splitter.setSizes([480, 650, 360])
         splitter.setStretchFactor(1, 1)
         root_layout.addWidget(splitter, 1)
         self.setCentralWidget(root)
@@ -384,6 +384,8 @@ class MoonWindow(QMainWindow):
         model_group = QGroupBox("Эксперимент")
         model_form = QFormLayout(model_group)
         self.scenario = QComboBox()
+        self.scenario.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLengthWithIcon)
+        self.scenario.setMinimumContentsLength(16)
         self.scenario.addItems(
             [
                 "Зрелая тектоника — v0.31",
@@ -415,6 +417,24 @@ class MoonWindow(QMainWindow):
 
         numerical_group = QGroupBox("Численная сетка и время")
         numerical_form = QFormLayout(numerical_group)
+        self.cpu_mode = QComboBox()
+        self.cpu_mode.addItem("CPU — исходный", False)
+        self.cpu_mode.addItem("CPU — оптимизированный", True)
+        self.cpu_mode.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLengthWithIcon)
+        self.cpu_mode.setMinimumContentsLength(16)
+        self.cpu_mode.setCurrentIndex(1)
+        numerical_form.addRow("Режим расчёта", self.cpu_mode)
+        self.cpu_workers = QComboBox()
+        self.cpu_workers.addItems(["1", "2", "4", "8"])
+        self.cpu_workers.setToolTip(
+            "Число работников переноса плит, не всех потоков программы. "
+            "Даже 1 использует кэш геометрии и пакетные вычисления. "
+            "Больше работников не всегда быстрее."
+        )
+        self.cpu_mode.currentIndexChanged.connect(
+            lambda: self.cpu_workers.setEnabled(bool(self.cpu_mode.currentData()))
+        )
+        numerical_form.addRow("Работников переноса", self.cpu_workers)
         self.subdivisions = QComboBox()
         self.subdivisions.addItems(["3", "4", "5", "6"])
         self.subdivisions.setCurrentText("5")
@@ -452,9 +472,9 @@ class MoonWindow(QMainWindow):
 
         output_group = QGroupBox("Вывод")
         output_layout = QVBoxLayout(output_group)
-        self.surface_only = QCheckBox("Быстрые базовые кадры только поверхности")
+        self.surface_only = QCheckBox("Быстрые кадры: только поверхность")
         self.surface_only.setChecked(False)
-        self.finalize = QCheckBox("Собрать итоговые карты, графики и GIF")
+        self.finalize = QCheckBox("Итоговые карты, графики и GIF")
         self.finalize.setChecked(True)
         output_layout.addWidget(self.surface_only)
         output_layout.addWidget(self.finalize)
@@ -585,9 +605,16 @@ class MoonWindow(QMainWindow):
             QMessageBox.warning(self, "Invalid checkpoint", str(exc))
             return
         self.resume_field.set_path(checkpoint)
-        self.output_field.set_path(checkpoint.parent)
-        if checkpoint.parent.name == "checkpoints":
-            self.output_field.set_path(checkpoint.parent.parent)
+        source_output = checkpoint.parent.parent if checkpoint.parent.name == "checkpoints" else checkpoint.parent
+        if source_output.resolve().is_relative_to((PROJECT_ROOT / "results").resolve()):
+            self.output_field.set_path(source_output)
+        else:
+            # Never default an experiment to writing into the stable run or backup.
+            self.output_field.set_path(PROJECT_ROOT / "results" / "gui_runs" / datetime.now().strftime("cpu_resume_%Y%m%d_%H%M%S"))
+            self._append_log("External checkpoint is read-only; new frames will start in this workspace. Copy the run here first to retain old animation frames.")
+        saved_config = source_output / "gui_runtime_config.yaml"
+        if saved_config.is_file():
+            self.config_field.set_path(saved_config)
         self.subdivisions.setCurrentText(str(subdivisions))
         self._append_log(f"Selected checkpoint at t={time_myr:g} Myr (sub-{subdivisions}).")
 
@@ -605,6 +632,8 @@ class MoonWindow(QMainWindow):
             surface_only_frames=self.surface_only.isChecked(),
             finalize=self.finalize.isChecked(),
             resume_checkpoint=Path(resume_text) if resume_text else None,
+            cpu_optimized=bool(self.cpu_mode.currentData()),
+            cpu_workers=int(self.cpu_workers.currentText()),
         )
 
     def _start_run(self) -> None:
