@@ -4,6 +4,8 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
+import json
 from pathlib import Path
 import sys
 
@@ -29,7 +31,10 @@ def main() -> int:
     parser.add_argument("--no-finalize", action="store_true")
     parser.add_argument("--cpu-optimized", action="store_true")
     parser.add_argument("--cpu-workers", type=int, default=1)
+    parser.add_argument("--render-workers", type=int, default=1)
+    parser.add_argument("--cell-kernels", action="store_true")
     parser.add_argument("--pause-once", action="store_true", help="Pause after the first checkpoint, then resume automatically")
+    parser.add_argument("--stop-on-second-segment-frame", action="store_true")
     parser.add_argument(
         "--resume",
         help="Resume from a completed checkpoint inside the selected output folder.",
@@ -52,6 +57,31 @@ def main() -> int:
     controller = SimulationController()
     result = {"code": 2}
     controller.log_line.connect(print)
+    saved_checkpoint = {}
+    if args.stop_on_second_segment_frame:
+        def record_checkpoint(time_myr, path):
+            folder = Path(path)
+            saved_checkpoint.update(time=time_myr, path=path, hashes={
+                name: hashlib.sha256((folder / name).read_bytes()).hexdigest()
+                for name in ("meta.json", "state.npz")})
+        def stop_on_frame(line):
+            if controller.target_index == 1 and controller.state == "Running" and "Surface frame:" in line:
+                controller.stop_now()
+        def stopped(state):
+            if state != "Stopped":
+                return
+            folder = Path(saved_checkpoint["path"])
+            hashes = {name: hashlib.sha256((folder / name).read_bytes()).hexdigest()
+                      for name in ("meta.json", "state.npz")}
+            valid = hashes == saved_checkpoint["hashes"] and controller.current_time == saved_checkpoint["time"]
+            (output / "stop_validation.json").write_text(json.dumps({
+                "last_completed_checkpoint_unchanged": valid, "time_myr": controller.current_time}, indent=2))
+            print("GUI STOP CHECK:", valid)
+            result["code"] = 0 if valid else 1
+            app.quit()
+        controller.segment_completed.connect(record_checkpoint)
+        controller.log_line.connect(stop_on_frame)
+        controller.state_changed.connect(stopped)
 
     def complete(path: str) -> None:
         print("GUI CONTROLLER COMPLETE:", path)
@@ -98,6 +128,8 @@ def main() -> int:
             resume_checkpoint=resume,
             cpu_optimized=bool(args.cpu_optimized),
             cpu_workers=int(args.cpu_workers),
+            render_workers=int(args.render_workers),
+            cell_kernels=bool(args.cell_kernels),
         )
     )
     app.exec()

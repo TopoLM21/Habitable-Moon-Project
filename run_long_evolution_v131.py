@@ -2,6 +2,7 @@
 """Moon Tectonics v0.31 mantle-flow-coupled mobile plume sources."""
 
 from __future__ import annotations
+from visualization.render_runtime import flush_rendering
 
 import csv
 import json
@@ -163,6 +164,8 @@ def _write_v131_outputs() -> None:
         save_plume_flow_coupling_history(
             _rows, _output / "plume_flow_coupling_history.png", _dpi
         )
+    if v129._finalize:
+        flush_rendering()
     frames = sorted(
         (_output / "hotspot_track_frames").glob("hotspot_tracks_*_Myr.png")
     )

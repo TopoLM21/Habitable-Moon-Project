@@ -212,11 +212,13 @@ class SimulationController(QObject):
         self.cancel_requested = True
         self._set_state("Stopping")
         self.log_line.emit("Stopping the active segment; the last completed checkpoint is preserved.")
+        process_id = int(self.process.processId())
         self.process.terminate()
-        QTimer.singleShot(3000, self._kill_if_running)
+        QTimer.singleShot(3000, lambda: self._kill_if_running(process_id))
 
-    def _kill_if_running(self) -> None:
-        if self.process.state() != QProcess.ProcessState.NotRunning:
+    def _kill_if_running(self, process_id: int) -> None:
+        if (self.process.state() != QProcess.ProcessState.NotRunning
+                and int(self.process.processId()) == process_id):
             self.process.kill()
 
     def _read_output(self) -> None:
@@ -435,6 +437,25 @@ class MoonWindow(QMainWindow):
             lambda: self.cpu_workers.setEnabled(bool(self.cpu_mode.currentData()))
         )
         numerical_form.addRow("Работников переноса", self.cpu_workers)
+        self.render_workers = QComboBox()
+        self.render_workers.addItems(["1", "2", "4"])
+        self.render_workers.setCurrentText("4")
+        self.render_workers.setToolTip(
+            "Отдельные процессы для карт и кадров. 1 — последовательное рисование. "
+            "Численный результат и качество изображений не меняются. "
+            "Безопасная пауза дождётся всех кадров текущего сегмента."
+        )
+        self.cpu_mode.currentIndexChanged.connect(
+            lambda: self.render_workers.setEnabled(bool(self.cpu_mode.currentData()))
+        )
+        numerical_form.addRow("Процессов для карт", self.render_workers)
+        self.cell_kernels = QCheckBox("Пакетный перенос осадков")
+        self.cell_kernels.setChecked(True)
+        self.cell_kernels.setToolTip("Экспериментальное CPU-ядро с сохранением порядка сложения и точности float64.")
+        self.cpu_mode.currentIndexChanged.connect(
+            lambda: self.cell_kernels.setEnabled(bool(self.cpu_mode.currentData()))
+        )
+        numerical_form.addRow("", self.cell_kernels)
         self.subdivisions = QComboBox()
         self.subdivisions.addItems(["3", "4", "5", "6"])
         self.subdivisions.setCurrentText("5")
@@ -634,6 +655,8 @@ class MoonWindow(QMainWindow):
             resume_checkpoint=Path(resume_text) if resume_text else None,
             cpu_optimized=bool(self.cpu_mode.currentData()),
             cpu_workers=int(self.cpu_workers.currentText()),
+            render_workers=int(self.render_workers.currentText()) if self.cpu_mode.currentData() else 1,
+            cell_kernels=self.cell_kernels.isChecked() if self.cpu_mode.currentData() else False,
         )
 
     def _start_run(self) -> None:

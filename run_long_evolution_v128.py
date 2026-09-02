@@ -2,6 +2,7 @@
 """Moon Tectonics v0.28 permanent plume-magmatism runner."""
 
 from __future__ import annotations
+from visualization.render_runtime import flush_rendering
 
 import csv
 import json
@@ -285,6 +286,8 @@ def _write_v128_outputs() -> None:
     )
     if _finalize and _last_lithosphere is not None and _last_topography is not None:
         _save_frame(_last_lithosphere, _last_topography)
+    if _finalize:
+        flush_rendering()
     frames = sorted(
         (_output / "plume_magmatism_frames").glob(
             "plume_magmatism_*_Myr.png"

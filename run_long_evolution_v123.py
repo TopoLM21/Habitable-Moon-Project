@@ -7,6 +7,7 @@ from those reports; several v0.9.8 mantle/GPE/collapse coefficients are
 explicit reconstruction assumptions because their original source was lost.
 """
 from __future__ import annotations
+from visualization.render_runtime import flush_rendering
 import argparse,csv,json
 from dataclasses import replace
 from pathlib import Path
@@ -299,6 +300,7 @@ def main():
         with (out/'topology_events.json').open('w',encoding='utf-8') as h:json.dump(events,h,ensure_ascii=False,indent=2)
         if hydrosphere_rows:
             with (out/'hydrosphere_history.csv').open('w',newline='',encoding='utf-8') as h:w=csv.DictWriter(h,fieldnames=list(hydrosphere_rows[0].keys()));w.writeheader();w.writerows(hydrosphere_rows)
+        flush_rendering()
         all_frames=sorted(frames.glob('frame_*_Myr.png'))
         all_plate_frames=sorted(plate_frames.glob('plate_*_Myr.png'))
         all_continental_frames=sorted(continental_frames.glob('continental_*_Myr.png'))

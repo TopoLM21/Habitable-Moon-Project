@@ -4,11 +4,14 @@
 
 This is the `perf/cpu-parallel` branch. The validated numerical release remains
 at tag `v0.31-cpu-stable`; the original workspace and its Python environment
-are unchanged. This GUI can select the reference CPU mode or opt-in cached CPU
-execution with 1/2/4/8 plate workers. It also includes pause-aware ETA.
+are unchanged. This GUI can select the reference CPU mode or cached CPU execution.
+The experimental defaults are 1 plate worker, 4 separate map-rendering processes,
+and exact-order batched sediment routing. It also includes pause-aware ETA.
 
-See [CPU_PERFORMANCE.md](CPU_PERFORMANCE.md) for the isolation boundary,
-benchmarks, exact checkpoint checks, and the independent intermediate-GIF tool.
+See [CPU_RENDERING_AND_GPU.md](CPU_RENDERING_AND_GPU.md) for current settings,
+whole-segment benchmarks, exact-result checks and the separate GPU feasibility
+prototype. GPU is not a full-model backend or a GUI option yet. The first-stage
+results and intermediate-GIF tool are in [CPU_PERFORMANCE.md](CPU_PERFORMANCE.md).
 Use this folder's own `launch_gui.bat` and `.venv`. Do not switch branches in a
 folder whose simulation is running, or point experimental output at a stable
 run. Higher worker counts are experimental, not a promise of higher speed.
@@ -31,8 +34,9 @@ py -3 -m venv .venv
 launch_gui.bat
 ```
 
-Ubuntu setup and launch (the numerical code and GUI contain no Windows-only
-paths or APIs):
+Ubuntu setup and launch (the numerical model is portable; optional render-worker
+lifetime handling has separate Windows and Linux implementations, with only
+Windows runtime-tested in this performance stage):
 
 ```text
 python3 -m venv .venv

@@ -34,10 +34,11 @@ class MeshGeometry:
 
 
 class CpuExecution(AbstractContextManager):
-    def __init__(self, workers: int = 1) -> None:
+    def __init__(self, workers: int = 1, *, cell_kernels: bool = False) -> None:
         if isinstance(workers, bool) or not isinstance(workers, int) or not 1 <= workers <= 32:
             raise ValueError("CPU workers must be an integer between 1 and 32")
         self.workers = workers
+        self.cell_kernels = bool(cell_kernels)
         self.pool: ThreadPoolExecutor | None = None
         self._meshes: OrderedDict[int, MeshGeometry] = OrderedDict()
 

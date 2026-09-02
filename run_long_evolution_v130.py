@@ -2,6 +2,7 @@
 """Moon Tectonics v0.30 mobile plume sources and bent hotspot tracks."""
 
 from __future__ import annotations
+from visualization.render_runtime import flush_rendering
 
 import csv
 import json
@@ -159,6 +160,8 @@ def _write_v130_outputs() -> None:
     _write_csv(_source_rows, _output / "plume_source_paths.csv")
     save_plume_drift_history(_rows, _output / "plume_drift_history.png", _dpi)
     save_plume_source_paths(_source_rows, _output / "plume_source_paths.png", _dpi)
+    if v129._finalize:
+        flush_rendering()
     frames = sorted(
         (_output / "hotspot_track_frames").glob("hotspot_tracks_*_Myr.png")
     )

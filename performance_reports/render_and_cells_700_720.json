@@ -1,0 +1,918 @@
+[
+  {
+    "render_workers": 4,
+    "cell_kernels": false,
+    "repeat": 1,
+    "wall_seconds": 17.58562340000026,
+    "exact": true,
+    "arrays_compared": 62,
+    "differences": [],
+    "png_exact": true,
+    "png_count": 40,
+    "png_differences": [],
+    "render_report": {
+      "render_workers": 4,
+      "jobs_completed": 23,
+      "peak_pending": 8,
+      "peak_snapshot_bytes": 46956036,
+      "serialization_seconds": 0.13110449999840057,
+      "wait_seconds": 4.001109300008466,
+      "jobs": [
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_frame",
+          "pid": 38824,
+          "worker_seconds": 0.7455079999999725,
+          "cpu_seconds": 0.71875,
+          "snapshot_bytes": 6277824,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 168628224
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_frame",
+          "pid": 25568,
+          "worker_seconds": 0.7528644000012719,
+          "cpu_seconds": 0.75,
+          "snapshot_bytes": 6277940,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 169889792
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_frame",
+          "pid": 37680,
+          "worker_seconds": 0.9547583999992639,
+          "cpu_seconds": 0.9375,
+          "snapshot_bytes": 6605968,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 182263808
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_frame",
+          "pid": 20328,
+          "worker_seconds": 1.4320717999999033,
+          "cpu_seconds": 1.4375,
+          "snapshot_bytes": 7654048,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 210784256
+        },
+        {
+          "function": "visualization.topology.save_topology_frame",
+          "pid": 38824,
+          "worker_seconds": 0.3676718000006076,
+          "cpu_seconds": 0.359375,
+          "snapshot_bytes": 5487132,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 175583232
+        },
+        {
+          "function": "visualization.topology.save_plate_history_frame",
+          "pid": 25568,
+          "worker_seconds": 0.2904710000002524,
+          "cpu_seconds": 0.28125,
+          "snapshot_bytes": 4884377,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 188727296
+        },
+        {
+          "function": "visualization.continental.save_continental_history_frame",
+          "pid": 38824,
+          "worker_seconds": 0.270836199999394,
+          "cpu_seconds": 0.265625,
+          "snapshot_bytes": 4801424,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 175583232
+        },
+        {
+          "function": "visualization.hydrosphere.save_hydrosphere_frame",
+          "pid": 37680,
+          "worker_seconds": 0.909764100000757,
+          "cpu_seconds": 0.90625,
+          "snapshot_bytes": 4967323,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 274235392
+        },
+        {
+          "function": "visualization.cratons.save_craton_history",
+          "pid": 25568,
+          "worker_seconds": 0.09827269999914279,
+          "cpu_seconds": 0.109375,
+          "snapshot_bytes": 27545,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 188727296
+        },
+        {
+          "function": "visualization.cratons.save_craton_maps",
+          "pid": 38824,
+          "worker_seconds": 0.955825700000787,
+          "cpu_seconds": 0.9375,
+          "snapshot_bytes": 4801381,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 239304704
+        },
+        {
+          "function": "visualization.plumes.save_plume_history",
+          "pid": 25568,
+          "worker_seconds": 0.2298136000008526,
+          "cpu_seconds": 0.21875,
+          "snapshot_bytes": 55403,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 188727296
+        },
+        {
+          "function": "visualization.plumes.save_plume_maps",
+          "pid": 25568,
+          "worker_seconds": 0.8959202000005462,
+          "cpu_seconds": 0.890625,
+          "snapshot_bytes": 2897106,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 230481920
+        },
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_history",
+          "pid": 20328,
+          "worker_seconds": 0.201241900000241,
+          "cpu_seconds": 0.1875,
+          "snapshot_bytes": 30080,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 210784256
+        },
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_maps",
+          "pid": 20328,
+          "worker_seconds": 1.17775679999977,
+          "cpu_seconds": 1.15625,
+          "snapshot_bytes": 2732047,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 276631552
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_history",
+          "pid": 37680,
+          "worker_seconds": 0.297183300001052,
+          "cpu_seconds": 0.296875,
+          "snapshot_bytes": 30079,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 274235392
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_maps",
+          "pid": 38824,
+          "worker_seconds": 0.8975155000007362,
+          "cpu_seconds": 0.90625,
+          "snapshot_bytes": 2568178,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 303185920
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_history",
+          "pid": 37680,
+          "worker_seconds": 0.23390029999973194,
+          "cpu_seconds": 0.234375,
+          "snapshot_bytes": 42394,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 274235392
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_maps",
+          "pid": 25568,
+          "worker_seconds": 1.5321017000005668,
+          "cpu_seconds": 1.515625,
+          "snapshot_bytes": 2896737,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 310984704
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_history",
+          "pid": 37680,
+          "worker_seconds": 0.2645620000002964,
+          "cpu_seconds": 0.265625,
+          "snapshot_bytes": 48922,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 274235392
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_maps",
+          "pid": 37680,
+          "worker_seconds": 1.5466200999999273,
+          "cpu_seconds": 1.546875,
+          "snapshot_bytes": 3879850,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 284250112
+        },
+        {
+          "function": "visualization.plume_drift.save_plume_drift_history",
+          "pid": 20328,
+          "worker_seconds": 0.2496387000010145,
+          "cpu_seconds": 0.25,
+          "snapshot_bytes": 35148,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 277577728
+        },
+        {
+          "function": "visualization.plume_drift.save_plume_source_paths",
+          "pid": 38824,
+          "worker_seconds": 0.22662450000098033,
+          "cpu_seconds": 0.234375,
+          "snapshot_bytes": 50574,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 303185920
+        },
+        {
+          "function": "visualization.plume_flow_coupling.save_plume_flow_coupling_history",
+          "pid": 20328,
+          "worker_seconds": 0.1875553999998374,
+          "cpu_seconds": 0.1875,
+          "snapshot_bytes": 22834,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 284594176
+        }
+      ]
+    }
+  },
+  {
+    "render_workers": 4,
+    "cell_kernels": true,
+    "repeat": 1,
+    "wall_seconds": 15.820510399998966,
+    "exact": true,
+    "arrays_compared": 62,
+    "differences": [],
+    "png_exact": true,
+    "png_count": 40,
+    "png_differences": [],
+    "render_report": {
+      "render_workers": 4,
+      "jobs_completed": 23,
+      "peak_pending": 8,
+      "peak_snapshot_bytes": 46956036,
+      "serialization_seconds": 0.13330359999963548,
+      "wait_seconds": 4.327529599997433,
+      "jobs": [
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_frame",
+          "pid": 35356,
+          "worker_seconds": 0.7340524000010191,
+          "cpu_seconds": 0.734375,
+          "snapshot_bytes": 6277824,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 170512384
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_frame",
+          "pid": 37588,
+          "worker_seconds": 0.7474662000004173,
+          "cpu_seconds": 0.75,
+          "snapshot_bytes": 6277940,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 169922560
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_frame",
+          "pid": 1792,
+          "worker_seconds": 0.932373199999347,
+          "cpu_seconds": 0.9375,
+          "snapshot_bytes": 6605968,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 182059008
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_frame",
+          "pid": 34524,
+          "worker_seconds": 1.4546747000003961,
+          "cpu_seconds": 1.453125,
+          "snapshot_bytes": 7654048,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 210731008
+        },
+        {
+          "function": "visualization.topology.save_topology_frame",
+          "pid": 35356,
+          "worker_seconds": 0.3637849999995524,
+          "cpu_seconds": 0.359375,
+          "snapshot_bytes": 5487132,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 175771648
+        },
+        {
+          "function": "visualization.topology.save_plate_history_frame",
+          "pid": 37588,
+          "worker_seconds": 0.29794529999890074,
+          "cpu_seconds": 0.296875,
+          "snapshot_bytes": 4884377,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 189050880
+        },
+        {
+          "function": "visualization.continental.save_continental_history_frame",
+          "pid": 35356,
+          "worker_seconds": 0.2713598999998794,
+          "cpu_seconds": 0.25,
+          "snapshot_bytes": 4801424,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 175771648
+        },
+        {
+          "function": "visualization.hydrosphere.save_hydrosphere_frame",
+          "pid": 1792,
+          "worker_seconds": 0.8516863999993802,
+          "cpu_seconds": 0.84375,
+          "snapshot_bytes": 4967323,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 273772544
+        },
+        {
+          "function": "visualization.cratons.save_craton_history",
+          "pid": 37588,
+          "worker_seconds": 0.09975480000139214,
+          "cpu_seconds": 0.09375,
+          "snapshot_bytes": 27545,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 189050880
+        },
+        {
+          "function": "visualization.cratons.save_craton_maps",
+          "pid": 35356,
+          "worker_seconds": 0.9544175999999425,
+          "cpu_seconds": 0.953125,
+          "snapshot_bytes": 4801381,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 239644672
+        },
+        {
+          "function": "visualization.plumes.save_plume_history",
+          "pid": 37588,
+          "worker_seconds": 0.24121179999929154,
+          "cpu_seconds": 0.25,
+          "snapshot_bytes": 55403,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 189050880
+        },
+        {
+          "function": "visualization.plumes.save_plume_maps",
+          "pid": 37588,
+          "worker_seconds": 0.9077914999998029,
+          "cpu_seconds": 0.90625,
+          "snapshot_bytes": 2897106,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 230387712
+        },
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_history",
+          "pid": 34524,
+          "worker_seconds": 0.20266029999947932,
+          "cpu_seconds": 0.203125,
+          "snapshot_bytes": 30080,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 210731008
+        },
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_maps",
+          "pid": 34524,
+          "worker_seconds": 1.1737997000000178,
+          "cpu_seconds": 1.15625,
+          "snapshot_bytes": 2732047,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 279339008
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_history",
+          "pid": 1792,
+          "worker_seconds": 0.3011514999998326,
+          "cpu_seconds": 0.296875,
+          "snapshot_bytes": 30079,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 273772544
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_maps",
+          "pid": 35356,
+          "worker_seconds": 0.8982739999992191,
+          "cpu_seconds": 0.875,
+          "snapshot_bytes": 2568178,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 304078848
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_history",
+          "pid": 1792,
+          "worker_seconds": 0.23271390000081738,
+          "cpu_seconds": 0.234375,
+          "snapshot_bytes": 42394,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 273772544
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_maps",
+          "pid": 1792,
+          "worker_seconds": 1.516635199999655,
+          "cpu_seconds": 1.5,
+          "snapshot_bytes": 2896737,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 273772544
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_history",
+          "pid": 37588,
+          "worker_seconds": 0.2689823000000615,
+          "cpu_seconds": 0.25,
+          "snapshot_bytes": 48922,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 230387712
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_maps",
+          "pid": 37588,
+          "worker_seconds": 1.4906771999994817,
+          "cpu_seconds": 1.46875,
+          "snapshot_bytes": 3879850,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 328044544
+        },
+        {
+          "function": "visualization.plume_drift.save_plume_drift_history",
+          "pid": 34524,
+          "worker_seconds": 0.25349979999919015,
+          "cpu_seconds": 0.25,
+          "snapshot_bytes": 35148,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 279339008
+        },
+        {
+          "function": "visualization.plume_drift.save_plume_source_paths",
+          "pid": 35356,
+          "worker_seconds": 0.2270650000009482,
+          "cpu_seconds": 0.234375,
+          "snapshot_bytes": 50574,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 304078848
+        },
+        {
+          "function": "visualization.plume_flow_coupling.save_plume_flow_coupling_history",
+          "pid": 34524,
+          "worker_seconds": 0.18506080000042857,
+          "cpu_seconds": 0.1875,
+          "snapshot_bytes": 22834,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 284581888
+        }
+      ]
+    }
+  },
+  {
+    "render_workers": 4,
+    "cell_kernels": true,
+    "repeat": 2,
+    "wall_seconds": 15.665836000000127,
+    "exact": true,
+    "arrays_compared": 62,
+    "differences": [],
+    "png_exact": true,
+    "png_count": 40,
+    "png_differences": [],
+    "render_report": {
+      "render_workers": 4,
+      "jobs_completed": 23,
+      "peak_pending": 8,
+      "peak_snapshot_bytes": 46956036,
+      "serialization_seconds": 0.13254080000479007,
+      "wait_seconds": 4.290149699996618,
+      "jobs": [
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_frame",
+          "pid": 24040,
+          "worker_seconds": 0.7390638000015315,
+          "cpu_seconds": 0.734375,
+          "snapshot_bytes": 6277824,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 168681472
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_frame",
+          "pid": 36996,
+          "worker_seconds": 0.7603601999999228,
+          "cpu_seconds": 0.765625,
+          "snapshot_bytes": 6277940,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 170115072
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_frame",
+          "pid": 36600,
+          "worker_seconds": 0.9390518000000156,
+          "cpu_seconds": 0.9375,
+          "snapshot_bytes": 6605968,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 180928512
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_frame",
+          "pid": 13172,
+          "worker_seconds": 1.4200716000013927,
+          "cpu_seconds": 1.40625,
+          "snapshot_bytes": 7654048,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 209575936
+        },
+        {
+          "function": "visualization.topology.save_topology_frame",
+          "pid": 24040,
+          "worker_seconds": 0.3657285999997839,
+          "cpu_seconds": 0.359375,
+          "snapshot_bytes": 5487132,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 175796224
+        },
+        {
+          "function": "visualization.topology.save_plate_history_frame",
+          "pid": 36996,
+          "worker_seconds": 0.2947764000000461,
+          "cpu_seconds": 0.296875,
+          "snapshot_bytes": 4884377,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 189005824
+        },
+        {
+          "function": "visualization.continental.save_continental_history_frame",
+          "pid": 24040,
+          "worker_seconds": 0.2691243999997823,
+          "cpu_seconds": 0.25,
+          "snapshot_bytes": 4801424,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 175796224
+        },
+        {
+          "function": "visualization.hydrosphere.save_hydrosphere_frame",
+          "pid": 36600,
+          "worker_seconds": 0.8628260999994382,
+          "cpu_seconds": 0.859375,
+          "snapshot_bytes": 4967323,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 274227200
+        },
+        {
+          "function": "visualization.cratons.save_craton_history",
+          "pid": 36996,
+          "worker_seconds": 0.10054820000004838,
+          "cpu_seconds": 0.09375,
+          "snapshot_bytes": 27545,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 189005824
+        },
+        {
+          "function": "visualization.cratons.save_craton_maps",
+          "pid": 24040,
+          "worker_seconds": 0.9486717999989196,
+          "cpu_seconds": 0.9375,
+          "snapshot_bytes": 4801381,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 238411776
+        },
+        {
+          "function": "visualization.plumes.save_plume_history",
+          "pid": 36996,
+          "worker_seconds": 0.2402001000009477,
+          "cpu_seconds": 0.234375,
+          "snapshot_bytes": 55403,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 189005824
+        },
+        {
+          "function": "visualization.plumes.save_plume_maps",
+          "pid": 36996,
+          "worker_seconds": 0.9011702000007062,
+          "cpu_seconds": 0.890625,
+          "snapshot_bytes": 2897106,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 231641088
+        },
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_history",
+          "pid": 13172,
+          "worker_seconds": 0.20196820000091975,
+          "cpu_seconds": 0.203125,
+          "snapshot_bytes": 30080,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 209575936
+        },
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_maps",
+          "pid": 13172,
+          "worker_seconds": 1.1843092999988585,
+          "cpu_seconds": 1.171875,
+          "snapshot_bytes": 2732047,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 278077440
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_history",
+          "pid": 36600,
+          "worker_seconds": 0.30376410000098986,
+          "cpu_seconds": 0.296875,
+          "snapshot_bytes": 30079,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 274227200
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_maps",
+          "pid": 24040,
+          "worker_seconds": 0.8998914999992849,
+          "cpu_seconds": 0.90625,
+          "snapshot_bytes": 2568178,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 303849472
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_history",
+          "pid": 36600,
+          "worker_seconds": 0.23922869999842078,
+          "cpu_seconds": 0.25,
+          "snapshot_bytes": 42394,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 274227200
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_maps",
+          "pid": 36600,
+          "worker_seconds": 1.5208634999999049,
+          "cpu_seconds": 1.515625,
+          "snapshot_bytes": 2896737,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 274227200
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_history",
+          "pid": 36996,
+          "worker_seconds": 0.2706826999983605,
+          "cpu_seconds": 0.28125,
+          "snapshot_bytes": 48922,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 231641088
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_maps",
+          "pid": 36996,
+          "worker_seconds": 1.5009373000011692,
+          "cpu_seconds": 1.484375,
+          "snapshot_bytes": 3879850,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 327688192
+        },
+        {
+          "function": "visualization.plume_drift.save_plume_drift_history",
+          "pid": 13172,
+          "worker_seconds": 0.2452528000012535,
+          "cpu_seconds": 0.234375,
+          "snapshot_bytes": 35148,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 278728704
+        },
+        {
+          "function": "visualization.plume_drift.save_plume_source_paths",
+          "pid": 24040,
+          "worker_seconds": 0.2261859000009281,
+          "cpu_seconds": 0.234375,
+          "snapshot_bytes": 50574,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 303849472
+        },
+        {
+          "function": "visualization.plume_flow_coupling.save_plume_flow_coupling_history",
+          "pid": 13172,
+          "worker_seconds": 0.18258640000021842,
+          "cpu_seconds": 0.1875,
+          "snapshot_bytes": 22834,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 285581312
+        }
+      ]
+    }
+  },
+  {
+    "render_workers": 4,
+    "cell_kernels": false,
+    "repeat": 2,
+    "wall_seconds": 17.18522529999973,
+    "exact": true,
+    "arrays_compared": 62,
+    "differences": [],
+    "png_exact": true,
+    "png_count": 40,
+    "png_differences": [],
+    "render_report": {
+      "render_workers": 4,
+      "jobs_completed": 23,
+      "peak_pending": 8,
+      "peak_snapshot_bytes": 46956036,
+      "serialization_seconds": 0.13373519999731798,
+      "wait_seconds": 3.906414400000358,
+      "jobs": [
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_frame",
+          "pid": 27728,
+          "worker_seconds": 0.7413875999991433,
+          "cpu_seconds": 0.75,
+          "snapshot_bytes": 6277824,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 169504768
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_frame",
+          "pid": 22232,
+          "worker_seconds": 0.7475317000007635,
+          "cpu_seconds": 0.75,
+          "snapshot_bytes": 6277940,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 170074112
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_frame",
+          "pid": 20308,
+          "worker_seconds": 0.9396832999991602,
+          "cpu_seconds": 0.890625,
+          "snapshot_bytes": 6605968,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 182190080
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_frame",
+          "pid": 31056,
+          "worker_seconds": 1.424366100000043,
+          "cpu_seconds": 1.421875,
+          "snapshot_bytes": 7654048,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 209567744
+        },
+        {
+          "function": "visualization.topology.save_topology_frame",
+          "pid": 27728,
+          "worker_seconds": 0.3600626999996166,
+          "cpu_seconds": 0.359375,
+          "snapshot_bytes": 5487132,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 175669248
+        },
+        {
+          "function": "visualization.topology.save_plate_history_frame",
+          "pid": 22232,
+          "worker_seconds": 0.2912426000002597,
+          "cpu_seconds": 0.28125,
+          "snapshot_bytes": 4884377,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 187928576
+        },
+        {
+          "function": "visualization.continental.save_continental_history_frame",
+          "pid": 27728,
+          "worker_seconds": 0.27018060000045807,
+          "cpu_seconds": 0.265625,
+          "snapshot_bytes": 4801424,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 175669248
+        },
+        {
+          "function": "visualization.hydrosphere.save_hydrosphere_frame",
+          "pid": 20308,
+          "worker_seconds": 0.8580234999990353,
+          "cpu_seconds": 0.859375,
+          "snapshot_bytes": 4967323,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 274055168
+        },
+        {
+          "function": "visualization.cratons.save_craton_history",
+          "pid": 22232,
+          "worker_seconds": 0.09695710000050894,
+          "cpu_seconds": 0.09375,
+          "snapshot_bytes": 27545,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 187928576
+        },
+        {
+          "function": "visualization.cratons.save_craton_maps",
+          "pid": 27728,
+          "worker_seconds": 0.9537045000015496,
+          "cpu_seconds": 0.9375,
+          "snapshot_bytes": 4801381,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 239759360
+        },
+        {
+          "function": "visualization.plumes.save_plume_history",
+          "pid": 22232,
+          "worker_seconds": 0.2326061000003392,
+          "cpu_seconds": 0.234375,
+          "snapshot_bytes": 55403,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 187928576
+        },
+        {
+          "function": "visualization.plumes.save_plume_maps",
+          "pid": 22232,
+          "worker_seconds": 0.894831499999782,
+          "cpu_seconds": 0.875,
+          "snapshot_bytes": 2897106,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 230711296
+        },
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_history",
+          "pid": 31056,
+          "worker_seconds": 0.20319999999992433,
+          "cpu_seconds": 0.203125,
+          "snapshot_bytes": 30080,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 209567744
+        },
+        {
+          "function": "visualization.plume_rifting.save_plume_rifting_maps",
+          "pid": 31056,
+          "worker_seconds": 1.1866798999999446,
+          "cpu_seconds": 1.1875,
+          "snapshot_bytes": 2732047,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 278528000
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_history",
+          "pid": 20308,
+          "worker_seconds": 0.3024840999987646,
+          "cpu_seconds": 0.296875,
+          "snapshot_bytes": 30079,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 274055168
+        },
+        {
+          "function": "visualization.plume_dynamic_topography.save_plume_dynamic_topography_maps",
+          "pid": 27728,
+          "worker_seconds": 0.8968817999993917,
+          "cpu_seconds": 0.890625,
+          "snapshot_bytes": 2568178,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 303702016
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_history",
+          "pid": 20308,
+          "worker_seconds": 0.2344535000011092,
+          "cpu_seconds": 0.234375,
+          "snapshot_bytes": 42394,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 274055168
+        },
+        {
+          "function": "visualization.plume_magmatism.save_plume_magmatism_maps",
+          "pid": 22232,
+          "worker_seconds": 1.4962665000002744,
+          "cpu_seconds": 1.4375,
+          "snapshot_bytes": 2896737,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 311480320
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_history",
+          "pid": 20308,
+          "worker_seconds": 0.26551800000015646,
+          "cpu_seconds": 0.265625,
+          "snapshot_bytes": 48922,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 274055168
+        },
+        {
+          "function": "visualization.hotspot_tracks.save_hotspot_track_maps",
+          "pid": 20308,
+          "worker_seconds": 1.5081180000015593,
+          "cpu_seconds": 1.453125,
+          "snapshot_bytes": 3879850,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 283381760
+        },
+        {
+          "function": "visualization.plume_drift.save_plume_drift_history",
+          "pid": 31056,
+          "worker_seconds": 0.2500120999993669,
+          "cpu_seconds": 0.25,
+          "snapshot_bytes": 35148,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 278528000
+        },
+        {
+          "function": "visualization.plume_drift.save_plume_source_paths",
+          "pid": 27728,
+          "worker_seconds": 0.2245018000012351,
+          "cpu_seconds": 0.21875,
+          "snapshot_bytes": 50574,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 303702016
+        },
+        {
+          "function": "visualization.plume_flow_coupling.save_plume_flow_coupling_history",
+          "pid": 31056,
+          "worker_seconds": 0.1849093000000721,
+          "cpu_seconds": 0.1875,
+          "snapshot_bytes": 22834,
+          "affinity_mask": "0xff",
+          "peak_working_set_bytes": 284442624
+        }
+      ]
+    }
+  }
+]

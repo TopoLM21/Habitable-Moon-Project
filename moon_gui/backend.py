@@ -58,6 +58,8 @@ class RunSpec:
     resume_checkpoint: Path | None = None
     cpu_optimized: bool = False
     cpu_workers: int = 1
+    render_workers: int = 1
+    cell_kernels: bool = False
 
     def normalized(self) -> "RunSpec":
         return RunSpec(
@@ -76,6 +78,8 @@ class RunSpec:
             ),
             cpu_optimized=bool(self.cpu_optimized),
             cpu_workers=int(self.cpu_workers),
+            render_workers=int(self.render_workers),
+            cell_kernels=bool(self.cell_kernels),
         )
 
     @property
@@ -98,6 +102,12 @@ class RunSpec:
             raise ValueError(f"v0.31 runner does not exist: {self.runner}")
         if not 1 <= self.cpu_workers <= 32:
             raise ValueError("CPU workers must be between 1 and 32")
+        if self.render_workers not in (1, 2, 4):
+            raise ValueError("Render workers must be 1, 2, or 4")
+        if self.render_workers != 1 and not self.cpu_optimized:
+            raise ValueError("Parallel rendering requires the experimental CPU runner")
+        if self.cell_kernels and not self.cpu_optimized:
+            raise ValueError("Cell kernels require the experimental CPU runner")
         if self.cpu_optimized and not self.output_dir.resolve().is_relative_to((self.project_root / "results").resolve()):
             raise ValueError("Experimental CPU results must stay inside this workspace's results folder")
         if (self.cpu_optimized and self.resume_checkpoint is not None
@@ -262,6 +272,9 @@ def build_segment_command(
         command.extend(["--resume", str(resume_checkpoint)])
     if spec.cpu_optimized:
         command.extend(["--cpu-workers", str(spec.cpu_workers)])
+        command.extend(["--render-workers", str(spec.render_workers)])
+        if spec.cell_kernels:
+            command.append("--cell-kernels")
     if spec.surface_only_frames:
         command.append("--surface-only-frames")
     if final_segment and spec.finalize:

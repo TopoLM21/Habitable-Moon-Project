@@ -8,6 +8,7 @@ owned by the stable lithosphere/topology implementation.
 """
 
 from __future__ import annotations
+from visualization.render_runtime import flush_rendering
 
 import csv
 import json
@@ -198,6 +199,8 @@ def _write_v126_outputs() -> None:
         )
     save_plume_rifting_maps(v124._mesh, _state, _output, _dpi)
 
+    if _finalize:
+        flush_rendering()
     frames = sorted((_output / "plume_rift_frames").glob("plume_rift_*_Myr.png"))
     if _finalize:
         build_plume_rifting_gif(

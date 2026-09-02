@@ -1,5 +1,11 @@
 # CPU performance branch — v0.31
 
+This document records the **first performance stage** at `c855361`. Current
+render-process and batched-cell improvements, the new GUI defaults, and the
+isolated GPU prototype are described in
+[CPU_RENDERING_AND_GPU.md](CPU_RENDERING_AND_GPU.md). The older timings below
+are retained as historical evidence, not used as the new speedup baseline.
+
 ## Safety boundary
 
 - Stable numerical release: `v0.31-cpu-stable` / `3c80eff`.
@@ -114,7 +120,7 @@ transport-plan timings, with fixed input copies and exact-result checks; they
 do not represent the whole integrator or include final map rendering. Cold
 initialization and timing variability remain visible in the raw measurements.
 
-## Scope and remaining limits
+## First-stage scope and remaining limits
 
 Only transport-plan preparation is distributed across the persistent pool.
 Inter-plate collision resolution, topology updates and final map rendering still
@@ -125,10 +131,12 @@ Do not infer 4.5-Gyr or cross-platform bitwise reproducibility solely from these
 short Windows integrations. Longer ensembles and Linux timing are
 separate validation work; package/native-library settings matter for rounding.
 
-Potential next steps after this isolated preview: remove duplicate prototype
-initialization, profile compiled per-cell kernels, and design bounded separate-
-process rendering from immutable snapshots. GPU support is not installed or
-implemented by this branch. None of these next steps changes the stable checkout.
+At the first-stage checkpoint, potential next steps were removing duplicate
+prototype initialization, profiling per-cell kernels, and bounded separate-
+process rendering from immutable snapshots. GPU support was not installed or
+implemented at that point. Rendering and a separate GPU feasibility probe are
+now implemented; see the current report linked above. Neither stage changes
+the stable checkout.
 
 ## Intermediate GIF without recomputation
 

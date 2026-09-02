@@ -2,6 +2,7 @@
 """Moon Tectonics v0.27 transient plume dynamic-topography runner."""
 
 from __future__ import annotations
+from visualization.render_runtime import flush_rendering
 
 import csv
 import json
@@ -249,6 +250,8 @@ def _write_v127_outputs() -> None:
 
     if _finalize and _last_lithosphere is not None and _last_topography is not None:
         _save_frame(_last_lithosphere, _last_topography)
+    if _finalize:
+        flush_rendering()
     frames = sorted(
         (_output / "plume_dynamic_topography_frames").glob(
             "plume_dynamic_topography_*_Myr.png"

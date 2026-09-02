@@ -21,6 +21,8 @@ def main() -> None:
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--stable-runner", type=Path, default=ROOT / "run_long_evolution_v131.py")
     parser.add_argument("--workers", type=int, default=4)
+    parser.add_argument("--render-workers", type=int, default=1)
+    parser.add_argument("--cell-kernels", action="store_true")
     args = parser.parse_args()
     output = args.output.resolve()
     output.mkdir(parents=True, exist_ok=False)
@@ -46,6 +48,9 @@ def main() -> None:
                    "--output", str(case), "--checkpoint", str(case / "checkpoint")]
         if name.startswith("optimized"):
             command += ["--cpu-workers", str(args.workers)]
+            command += ["--render-workers", str(args.render_workers)]
+            if args.cell_kernels:
+                command.append("--cell-kernels")
         # For the unmodified stable checkout, use its own module search root.
         case_env = environment.copy()
         case_env["PYTHONPATH"] = str(runner.parent)

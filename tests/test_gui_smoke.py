@@ -17,8 +17,15 @@ def test_gui_constructs_offscreen() -> None:
     assert "ETA" in window.eta_label.text()
     assert window.cpu_mode.currentData() is True
     assert window._make_spec().cpu_workers == 1
+    assert window._make_spec().render_workers == 4
+    assert window._make_spec().cell_kernels is True
+    window.render_workers.setCurrentText("4")
+    assert window._make_spec().render_workers == 4
     window.cpu_mode.setCurrentIndex(0)
     assert not window.cpu_workers.isEnabled()
+    assert not window.render_workers.isEnabled()
+    assert window._make_spec().render_workers == 1
+    assert window._make_spec().cell_kernels is False
     assert window._make_spec().cpu_optimized is False
     window.close()
     app.processEvents()
@@ -82,3 +89,22 @@ def test_external_checkpoint_gets_isolated_output_and_saved_config(tmp_path, mon
     assert saved_config.read_text() == "mesh: {subdivisions: 3}\n"
     window.close()
     app.processEvents()
+
+
+def test_old_stop_timer_cannot_kill_a_new_segment():
+    from moon_gui.app import SimulationController, QProcess
+    class Process:
+        killed = False
+        def state(self):
+            return QProcess.ProcessState.Running
+        def processId(self):
+            return 202
+        def kill(self):
+            self.killed = True
+    class Controller:
+        process = Process()
+    controller = Controller()
+    SimulationController._kill_if_running(controller, 101)
+    assert not controller.process.killed
+    SimulationController._kill_if_running(controller, 202)
+    assert controller.process.killed

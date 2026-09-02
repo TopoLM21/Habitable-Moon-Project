@@ -103,6 +103,11 @@ def _advect_surface_sediment(previous: LithosphereState, source_index: Array) ->
 
 def _route_mobile(mesh: SphereMesh, elevation_m: Array, stationary: Array, mobile: Array,
                   params: SedimentParameters, sea_level_m: float) -> Array:
+    from .cpu_runtime import current_execution
+    execution = current_execution()
+    if execution is not None and execution.cell_kernels:
+        from .sediment_kernels import route_mobile_batched
+        return route_mobile_batched(mesh, elevation_m, stationary, mobile, params, sea_level_m)
     z=np.asarray(elevation_m,dtype=np.float64)
     sed=np.asarray(stationary,dtype=np.float64).copy()
     mob=np.asarray(mobile,dtype=np.float64).copy()

@@ -2,6 +2,7 @@
 """Moon Tectonics v0.29 plume heads, tails and age-progressive tracks."""
 
 from __future__ import annotations
+from visualization.render_runtime import flush_rendering
 
 import csv
 import json
@@ -286,6 +287,8 @@ def _write_v129_outputs() -> None:
     )
     if _finalize and v128._last_lithosphere is not None and v128._last_topography is not None:
         _save_frame(v128._last_lithosphere, v128._last_topography)
+    if _finalize:
+        flush_rendering()
     frames = sorted(
         (_output / "hotspot_track_frames").glob("hotspot_tracks_*_Myr.png")
     )

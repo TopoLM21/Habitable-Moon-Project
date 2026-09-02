@@ -1,0 +1,362 @@
+{
+  "gpu": "NVIDIA GeForce RTX 4080",
+  "cupy": "14.2.0",
+  "numpy": "2.5.2",
+  "backend_is_integrated": false,
+  "float_dtype": "float64",
+  "cpu_environment": {
+    "pinned": true,
+    "cpu_sets": [
+      {
+        "id": 256,
+        "group": 0,
+        "logical": 0,
+        "core": 0,
+        "efficiency_class": 1,
+        "flags": 1
+      },
+      {
+        "id": 257,
+        "group": 0,
+        "logical": 1,
+        "core": 1,
+        "efficiency_class": 1,
+        "flags": 0
+      },
+      {
+        "id": 258,
+        "group": 0,
+        "logical": 2,
+        "core": 2,
+        "efficiency_class": 1,
+        "flags": 0
+      },
+      {
+        "id": 259,
+        "group": 0,
+        "logical": 3,
+        "core": 3,
+        "efficiency_class": 1,
+        "flags": 0
+      },
+      {
+        "id": 260,
+        "group": 0,
+        "logical": 4,
+        "core": 4,
+        "efficiency_class": 1,
+        "flags": 0
+      },
+      {
+        "id": 261,
+        "group": 0,
+        "logical": 5,
+        "core": 5,
+        "efficiency_class": 1,
+        "flags": 1
+      },
+      {
+        "id": 262,
+        "group": 0,
+        "logical": 6,
+        "core": 6,
+        "efficiency_class": 1,
+        "flags": 1
+      },
+      {
+        "id": 263,
+        "group": 0,
+        "logical": 7,
+        "core": 7,
+        "efficiency_class": 1,
+        "flags": 1
+      },
+      {
+        "id": 264,
+        "group": 0,
+        "logical": 8,
+        "core": 8,
+        "efficiency_class": 0,
+        "flags": 1
+      },
+      {
+        "id": 265,
+        "group": 0,
+        "logical": 9,
+        "core": 9,
+        "efficiency_class": 0,
+        "flags": 1
+      },
+      {
+        "id": 266,
+        "group": 0,
+        "logical": 10,
+        "core": 10,
+        "efficiency_class": 0,
+        "flags": 1
+      },
+      {
+        "id": 267,
+        "group": 0,
+        "logical": 11,
+        "core": 11,
+        "efficiency_class": 0,
+        "flags": 1
+      },
+      {
+        "id": 268,
+        "group": 0,
+        "logical": 12,
+        "core": 12,
+        "efficiency_class": 0,
+        "flags": 1
+      },
+      {
+        "id": 269,
+        "group": 0,
+        "logical": 13,
+        "core": 13,
+        "efficiency_class": 0,
+        "flags": 1
+      },
+      {
+        "id": 270,
+        "group": 0,
+        "logical": 14,
+        "core": 14,
+        "efficiency_class": 0,
+        "flags": 1
+      },
+      {
+        "id": 271,
+        "group": 0,
+        "logical": 15,
+        "core": 15,
+        "efficiency_class": 0,
+        "flags": 1
+      },
+      {
+        "id": 272,
+        "group": 0,
+        "logical": 16,
+        "core": 16,
+        "efficiency_class": 0,
+        "flags": 1
+      },
+      {
+        "id": 273,
+        "group": 0,
+        "logical": 17,
+        "core": 17,
+        "efficiency_class": 0,
+        "flags": 1
+      },
+      {
+        "id": 274,
+        "group": 0,
+        "logical": 18,
+        "core": 18,
+        "efficiency_class": 0,
+        "flags": 1
+      },
+      {
+        "id": 275,
+        "group": 0,
+        "logical": 19,
+        "core": 19,
+        "efficiency_class": 0,
+        "flags": 1
+      },
+      {
+        "id": 276,
+        "group": 0,
+        "logical": 20,
+        "core": 20,
+        "efficiency_class": 0,
+        "flags": 1
+      },
+      {
+        "id": 277,
+        "group": 0,
+        "logical": 21,
+        "core": 21,
+        "efficiency_class": 0,
+        "flags": 1
+      },
+      {
+        "id": 278,
+        "group": 0,
+        "logical": 22,
+        "core": 22,
+        "efficiency_class": 0,
+        "flags": 1
+      },
+      {
+        "id": 279,
+        "group": 0,
+        "logical": 23,
+        "core": 23,
+        "efficiency_class": 0,
+        "flags": 1
+      }
+    ],
+    "previous_mask": "0xffffff",
+    "selected_mask": "0xff"
+  },
+  "cases": [
+    {
+      "subdivisions": 5,
+      "cells": 20480,
+      "cpu_mesh_setup_seconds": 0.4439189000004262,
+      "original_cpu_seconds": 0.6043042000001151,
+      "batched_cpu_seconds": [
+        0.01124580000032438,
+        0.010442900000271038,
+        0.010436500000650994,
+        0.010336299999835319,
+        0.01024909999978263
+      ],
+      "gpu_cold_mesh_and_first_call_seconds": 0.006700300000375137,
+      "gpu_resident_seconds": [
+        0.0013223000005382346,
+        0.0005578000000241445,
+        0.000473000000056345,
+        0.00047590000031050295,
+        0.00043300000106683
+      ],
+      "gpu_with_field_transfers_seconds": [
+        0.0007831999992049532,
+        0.0006411999984266004,
+        0.0006214000004547415,
+        0.0006370999999489868,
+        0.0005788999987998977
+      ],
+      "comparison": {
+        "byte_exact": true,
+        "different_cells": 0,
+        "max_absolute_difference": 0.0,
+        "sum_difference": 0.0
+      },
+      "median_batched_cpu_seconds": 0.010436500000650994,
+      "median_gpu_with_transfers_seconds": 0.0006370999999489868
+    },
+    {
+      "subdivisions": 6,
+      "cells": 81920,
+      "cpu_mesh_setup_seconds": 1.7609591000000364,
+      "original_cpu_seconds": 1.9191197999989527,
+      "batched_cpu_seconds": [
+        0.039770199999111355,
+        0.04007590000037453,
+        0.040346399999179994,
+        0.04149599999982456,
+        0.03990929999963555
+      ],
+      "gpu_cold_mesh_and_first_call_seconds": 0.025954999999157735,
+      "gpu_resident_seconds": [
+        0.000665100000333041,
+        0.00045310000132303685,
+        0.0004430999997566687,
+        0.00043929999992542434,
+        0.00043419999929028563
+      ],
+      "gpu_with_field_transfers_seconds": [
+        0.0007628999992448371,
+        0.0007652999993297271,
+        0.0007738000003882917,
+        0.0007490000007237541,
+        0.0007485000005544862
+      ],
+      "comparison": {
+        "byte_exact": true,
+        "different_cells": 0,
+        "max_absolute_difference": 0.0,
+        "sum_difference": 0.0
+      },
+      "median_batched_cpu_seconds": 0.04007590000037453,
+      "median_gpu_with_transfers_seconds": 0.0007628999992448371
+    },
+    {
+      "subdivisions": 7,
+      "cells": 327680,
+      "cpu_mesh_setup_seconds": 7.145907199999783,
+      "original_cpu_seconds": 7.0390981000000465,
+      "batched_cpu_seconds": [
+        0.17134270000133256,
+        0.17127269999946293,
+        0.173061500001495,
+        0.17207369999960065,
+        0.1706707000012102
+      ],
+      "gpu_cold_mesh_and_first_call_seconds": 0.108163599999898,
+      "gpu_resident_seconds": [
+        0.005969100000584149,
+        0.0028935000009369105,
+        0.006456300001445925,
+        0.0031101000004127854,
+        0.00626159999956144
+      ],
+      "gpu_with_field_transfers_seconds": [
+        0.006967600000280072,
+        0.01601730000038515,
+        0.009545599999910337,
+        0.005715700001019286,
+        0.009474899999986519
+      ],
+      "comparison": {
+        "byte_exact": true,
+        "different_cells": 0,
+        "max_absolute_difference": 0.0,
+        "sum_difference": 0.0
+      },
+      "median_batched_cpu_seconds": 0.17134270000133256,
+      "median_gpu_with_transfers_seconds": 0.009474899999986519
+    }
+  ],
+  "small_validation_cases": [
+    {
+      "kind": "normal",
+      "byte_exact": true,
+      "different_cells": 0,
+      "max_absolute_difference": 0.0,
+      "sum_difference": 0.0
+    },
+    {
+      "kind": "flat",
+      "byte_exact": true,
+      "different_cells": 0,
+      "max_absolute_difference": 0.0,
+      "sum_difference": 0.0
+    },
+    {
+      "kind": "empty",
+      "byte_exact": true,
+      "different_cells": 0,
+      "max_absolute_difference": 0.0,
+      "sum_difference": 0.0
+    },
+    {
+      "kind": "tiny",
+      "byte_exact": true,
+      "different_cells": 0,
+      "max_absolute_difference": 0.0,
+      "sum_difference": 0.0
+    },
+    {
+      "kind": "no_sweeps",
+      "byte_exact": true,
+      "different_cells": 0,
+      "max_absolute_difference": 0.0,
+      "sum_difference": 0.0
+    },
+    {
+      "kind": "clipped_deposition",
+      "byte_exact": true,
+      "different_cells": 0,
+      "max_absolute_difference": 0.0,
+      "sum_difference": 0.0
+    }
+  ],
+  "startup_compilation_and_small_validation_seconds": 0.3326746999991883,
+  "first_case_elapsed_including_cpu_reference_seconds": 1.4422878999994282
+}

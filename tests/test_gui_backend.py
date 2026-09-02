@@ -168,3 +168,20 @@ def test_cpu_mode_is_explicit_and_cannot_write_to_stable_outputs(tmp_path):
     assert json.loads(record.read_text())["runner"] == "run_long_evolution_v131_cpu.py"
     with pytest.raises(ValueError, match="empty"):
         RunSpec(root, config, spec.output_dir, cpu_optimized=True, resume_checkpoint=tmp_path / "external_checkpoint").validate()
+
+
+def test_render_worker_command_validation_and_provenance(tmp_path):
+    root, config = _project(tmp_path)
+    spec = RunSpec(root, config, root / "results" / "render", cpu_optimized=True, render_workers=4, cell_kernels=True).normalized()
+    spec.validate()
+    command = build_segment_command(spec, target_time_myr=20, checkpoint_dir=spec.output_dir / "checkpoint",
+                                    resume_checkpoint=None, final_segment=False)
+    assert command[command.index("--render-workers") + 1] == "4"
+    assert "--cell-kernels" in command
+    record = write_run_record(spec, write_runtime_config(spec))
+    assert json.loads(record.read_text())["render_workers"] == 4
+    assert json.loads(record.read_text())["cell_kernels"] is True
+    with pytest.raises(ValueError, match="Render workers"):
+        RunSpec(root, config, root / "results" / "bad", cpu_optimized=True, render_workers=3).validate()
+    with pytest.raises(ValueError, match="experimental"):
+        RunSpec(root, config, root / "out", render_workers=2).validate()
