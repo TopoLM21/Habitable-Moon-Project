@@ -1,0 +1,1276 @@
+{
+  "date": "2026-09-03",
+  "base_commit": "0bfb810",
+  "scope": "New exact-order numerical paths on top of shared initialization; no physical changes",
+  "environment": {
+    "python": "3.12.13",
+    "numpy": "2.5.2",
+    "scipy": "1.18.1",
+    "platform": "Windows-11-10.0.26200-SP0"
+  },
+  "measurement_limitations": [
+    "Uncontrolled desktop background load; ComfyUI processes present",
+    "Only two uninstrumented repeats on subdivision 5; one on subdivision 6",
+    "No final long-GIF assembly in timing samples; no 4.5 Gyr timing claim"
+  ],
+  "plain_median_seconds": {
+    "legacy": 32.45239230000152,
+    "kernels": 30.91293255000346,
+    "cells1": 24.02136795000115,
+    "cells2": 23.716266799998266,
+    "cells4": 24.055257050000364,
+    "cells8": 23.701248550001765
+  },
+  "default_time_reduction_percent": 25.97966976382193,
+  "excluded_incompatible_test": {
+    "path": "results/cpu_performance/numeric_cells_sub6_20260903",
+    "reason": "Test command used frame interval 20, reference used 4; rerun with matching 4",
+    "state_exact": true,
+    "missing_pngs": 8,
+    "different_shared_pngs": 0
+  },
+  "studies": {
+    "numeric_cells_scaling_20260903": [
+      {
+        "case": "after_legacy_1",
+        "numeric_mode": "legacy",
+        "wall_seconds": 32.65349750000314,
+        "instrumented": false,
+        "cprofile": false,
+        "exclusive_wall_seconds": {
+          "imports_and_instrumentation": 0.9580806000012672,
+          "runner_other": 28.96615649999876,
+          "rendering/final_drain_and_shutdown": 2.5020875000045635
+        },
+        "numerical_execution": {
+          "numeric_kernels": false,
+          "single_source_cells": false,
+          "cell_workers": 1,
+          "cell_calls": 0,
+          "cell_tasks": 0,
+          "cells_prepared": 0,
+          "cell_thread_ids": []
+        },
+        "transport_coverage": [],
+        "checkpoint_comparison": {
+          "exact": true,
+          "arrays_compared": 62,
+          "differences": []
+        },
+        "png_comparison": {
+          "png_exact": true,
+          "png_count": 40,
+          "png_differences": []
+        }
+      },
+      {
+        "case": "after_kernels_1",
+        "numeric_mode": "kernels",
+        "wall_seconds": 30.730773500006762,
+        "instrumented": false,
+        "cprofile": false,
+        "exclusive_wall_seconds": {
+          "imports_and_instrumentation": 0.7939996000059182,
+          "runner_other": 26.446766599998227,
+          "rendering/final_drain_and_shutdown": 3.3051457999972627
+        },
+        "numerical_execution": {
+          "numeric_kernels": true,
+          "single_source_cells": false,
+          "cell_workers": 1,
+          "cell_calls": 0,
+          "cell_tasks": 0,
+          "cells_prepared": 0,
+          "cell_thread_ids": []
+        },
+        "transport_coverage": [],
+        "checkpoint_comparison": {
+          "exact": true,
+          "arrays_compared": 62,
+          "differences": []
+        },
+        "png_comparison": {
+          "png_exact": true,
+          "png_count": 40,
+          "png_differences": []
+        }
+      },
+      {
+        "case": "after_cells1_1",
+        "numeric_mode": "cells1",
+        "wall_seconds": 24.211078300002555,
+        "instrumented": false,
+        "cprofile": false,
+        "exclusive_wall_seconds": {
+          "imports_and_instrumentation": 0.7290097000004607,
+          "runner_other": 20.86426229999779,
+          "rendering/final_drain_and_shutdown": 2.4385536999980104
+        },
+        "numerical_execution": {
+          "numeric_kernels": true,
+          "single_source_cells": true,
+          "cell_workers": 1,
+          "cell_calls": 5,
+          "cell_tasks": 5,
+          "cells_prepared": 92508,
+          "cell_thread_ids": [
+            44496
+          ]
+        },
+        "transport_coverage": [],
+        "checkpoint_comparison": {
+          "exact": true,
+          "arrays_compared": 62,
+          "differences": []
+        },
+        "png_comparison": {
+          "png_exact": true,
+          "png_count": 40,
+          "png_differences": []
+        }
+      },
+      {
+        "case": "after_cells2_1",
+        "numeric_mode": "cells2",
+        "wall_seconds": 23.966844900001888,
+        "instrumented": false,
+        "cprofile": false,
+        "exclusive_wall_seconds": {
+          "imports_and_instrumentation": 0.7400660000057542,
+          "runner_other": 20.212435299996287,
+          "rendering/final_drain_and_shutdown": 2.7430468999955337
+        },
+        "numerical_execution": {
+          "numeric_kernels": true,
+          "single_source_cells": true,
+          "cell_workers": 2,
+          "cell_calls": 5,
+          "cell_tasks": 10,
+          "cells_prepared": 92508,
+          "cell_thread_ids": [
+            30732,
+            33064
+          ]
+        },
+        "transport_coverage": [],
+        "checkpoint_comparison": {
+          "exact": true,
+          "arrays_compared": 62,
+          "differences": []
+        },
+        "png_comparison": {
+          "png_exact": true,
+          "png_count": 40,
+          "png_differences": []
+        }
+      },
+      {
+        "case": "after_cells4_1",
+        "numeric_mode": "cells4",
+        "wall_seconds": 23.975414000000455,
+        "instrumented": false,
+        "cprofile": false,
+        "exclusive_wall_seconds": {
+          "imports_and_instrumentation": 0.8205162000012933,
+          "runner_other": 19.502289500000188,
+          "rendering/final_drain_and_shutdown": 3.373139800001809
+        },
+        "numerical_execution": {
+          "numeric_kernels": true,
+          "single_source_cells": true,
+          "cell_workers": 4,
+          "cell_calls": 5,
+          "cell_tasks": 20,
+          "cells_prepared": 92508,
+          "cell_thread_ids": [
+            4792,
+            25952,
+            30292,
+            44292
+          ]
+        },
+        "transport_coverage": [],
+        "checkpoint_comparison": {
+          "exact": true,
+          "arrays_compared": 62,
+          "differences": []
+        },
+        "png_comparison": {
+          "png_exact": true,
+          "png_count": 40,
+          "png_differences": []
+        }
+      },
+      {
+        "case": "after_cells8_1",
+        "numeric_mode": "cells8",
+        "wall_seconds": 24.025605599999835,
+        "instrumented": false,
+        "cprofile": false,
+        "exclusive_wall_seconds": {
+          "imports_and_instrumentation": 0.6932738000032259,
+          "runner_other": 18.754614099998435,
+          "rendering/final_drain_and_shutdown": 4.199867600000289
+        },
+        "numerical_execution": {
+          "numeric_kernels": true,
+          "single_source_cells": true,
+          "cell_workers": 8,
+          "cell_calls": 5,
+          "cell_tasks": 40,
+          "cells_prepared": 92508,
+          "cell_thread_ids": [
+            5836,
+            20336,
+            22748,
+            25812,
+            32540,
+            34184,
+            39508,
+            44768
+          ]
+        },
+        "transport_coverage": [],
+        "checkpoint_comparison": {
+          "exact": true,
+          "arrays_compared": 62,
+          "differences": []
+        },
+        "png_comparison": {
+          "png_exact": true,
+          "png_count": 40,
+          "png_differences": []
+        }
+      },
+      {
+        "case": "after_cells8_2",
+        "numeric_mode": "cells8",
+        "wall_seconds": 23.376891500003694,
+        "instrumented": false,
+        "cprofile": false,
+        "exclusive_wall_seconds": {
+          "imports_and_instrumentation": 0.6748444000040763,
+          "runner_other": 19.101457099997788,
+          "rendering/final_drain_and_shutdown": 3.428351200003817
+        },
+        "numerical_execution": {
+          "numeric_kernels": true,
+          "single_source_cells": true,
+          "cell_workers": 8,
+          "cell_calls": 5,
+          "cell_tasks": 40,
+          "cells_prepared": 92508,
+          "cell_thread_ids": [
+            7644,
+            29560,
+            29628,
+            30036,
+            38836,
+            41428,
+            44692,
+            44976
+          ]
+        },
+        "transport_coverage": [],
+        "checkpoint_comparison": {
+          "exact": true,
+          "arrays_compared": 62,
+          "differences": []
+        },
+        "png_comparison": {
+          "png_exact": true,
+          "png_count": 40,
+          "png_differences": []
+        }
+      },
+      {
+        "case": "after_cells4_2",
+        "numeric_mode": "cells4",
+        "wall_seconds": 24.135100100000273,
+        "instrumented": false,
+        "cprofile": false,
+        "exclusive_wall_seconds": {
+          "imports_and_instrumentation": 0.8202956000022823,
+          "runner_other": 19.63554799999838,
+          "rendering/final_drain_and_shutdown": 3.4162932000035653
+        },
+        "numerical_execution": {
+          "numeric_kernels": true,
+          "single_source_cells": true,
+          "cell_workers": 4,
+          "cell_calls": 5,
+          "cell_tasks": 20,
+          "cells_prepared": 92508,
+          "cell_thread_ids": [
+            16216,
+            21476,
+            22184,
+            34020
+          ]
+        },
+        "transport_coverage": [],
+        "checkpoint_comparison": {
+          "exact": true,
+          "arrays_compared": 62,
+          "differences": []
+        },
+        "png_comparison": {
+          "png_exact": true,
+          "png_count": 40,
+          "png_differences": []
+        }
+      },
+      {
+        "case": "after_cells2_2",
+        "numeric_mode": "cells2",
+        "wall_seconds": 23.465688699994644,
+        "instrumented": false,
+        "cprofile": false,
+        "exclusive_wall_seconds": {
+          "imports_and_instrumentation": 0.7182403000042541,
+          "runner_other": 19.991373099997872,
+          "rendering/final_drain_and_shutdown": 2.5010958999992
+        },
+        "numerical_execution": {
+          "numeric_kernels": true,
+          "single_source_cells": true,
+          "cell_workers": 2,
+          "cell_calls": 5,
+          "cell_tasks": 10,
+          "cells_prepared": 92508,
+          "cell_thread_ids": [
+            26056,
+            41572
+          ]
+        },
+        "transport_coverage": [],
+        "checkpoint_comparison": {
+          "exact": true,
+          "arrays_compared": 62,
+          "differences": []
+        },
+        "png_comparison": {
+          "png_exact": true,
+          "png_count": 40,
+          "png_differences": []
+        }
+      },
+      {
+        "case": "after_cells1_2",
+        "numeric_mode": "cells1",
+        "wall_seconds": 23.831657599999744,
+        "instrumented": false,
+        "cprofile": false,
+        "exclusive_wall_seconds": {
+          "imports_and_instrumentation": 0.6815573999920161,
+          "runner_other": 18.797307400003774,
+          "rendering/final_drain_and_shutdown": 4.116762600002403
+        },
+        "numerical_execution": {
+          "numeric_kernels": true,
+          "single_source_cells": true,
+          "cell_workers": 1,
+          "cell_calls": 5,
+          "cell_tasks": 5,
+          "cells_prepared": 92508,
+          "cell_thread_ids": [
+            37276
+          ]
+        },
+        "transport_coverage": [],
+        "checkpoint_comparison": {
+          "exact": true,
+          "arrays_compared": 62,
+          "differences": []
+        },
+        "png_comparison": {
+          "png_exact": true,
+          "png_count": 40,
+          "png_differences": []
+        }
+      },
+      {
+        "case": "after_kernels_2",
+        "numeric_mode": "kernels",
+        "wall_seconds": 31.09509160000016,
+        "instrumented": false,
+        "cprofile": false,
+        "exclusive_wall_seconds": {
+          "imports_and_instrumentation": 0.8798922000059974,
+          "runner_other": 26.52587769999809,
+          "rendering/final_drain_and_shutdown": 3.4804459999941173
+        },
+        "numerical_execution": {
+          "numeric_kernels": true,
+          "single_source_cells": false,
+          "cell_workers": 1,
+          "cell_calls": 0,
+          "cell_tasks": 0,
+          "cells_prepared": 0,
+          "cell_thread_ids": []
+        },
+        "transport_coverage": [],
+        "checkpoint_comparison": {
+          "exact": true,
+          "arrays_compared": 62,
+          "differences": []
+        },
+        "png_comparison": {
+          "png_exact": true,
+          "png_count": 40,
+          "png_differences": []
+        }
+      },
+      {
+        "case": "after_legacy_2",
+        "numeric_mode": "legacy",
+        "wall_seconds": 32.2512870999999,
+        "instrumented": false,
+        "cprofile": false,
+        "exclusive_wall_seconds": {
+          "imports_and_instrumentation": 0.6754950000031386,
+          "runner_other": 28.893175999997766,
+          "rendering/final_drain_and_shutdown": 2.495537599999807
+        },
+        "numerical_execution": {
+          "numeric_kernels": false,
+          "single_source_cells": false,
+          "cell_workers": 1,
+          "cell_calls": 0,
+          "cell_tasks": 0,
+          "cells_prepared": 0,
+          "cell_thread_ids": []
+        },
+        "transport_coverage": [],
+        "checkpoint_comparison": {
+          "exact": true,
+          "arrays_compared": 62,
+          "differences": []
+        },
+        "png_comparison": {
+          "png_exact": true,
+          "png_count": 40,
+          "png_differences": []
+        }
+      }
+    ],
+    "numeric_cells_merger_20260903": [
+      {
+        "case": "after_cells1_1",
+        "numeric_mode": "cells1",
+        "wall_seconds": 22.141220699995756,
+        "instrumented": true,
+        "cprofile": false,
+        "exclusive_wall_seconds": {
+          "imports_and_instrumentation": 0.7304005000041798,
+          "runner_other": 0.006110400005127303,
+          "initialization/other": 0.24293069999839645,
+          "initialization/mesh_request": 3.979999746661633e-05,
+          "initialization/mesh": 0.45416999999724794,
+          "initialization/prototype_other": 0.006511999999929685,
+          "initialization/initial_plates": 0.3224192000052426,
+          "initialization/rigid_residual": 0.8192110000018147,
+          "physics/other": 0.1050894999425509,
+          "physics/advance_thermal_state": 0.000512099992192816,
+          "physics/mantle": 0.042350099989562295,
+          "physics/boundaries": 0.0004690000059781596,
+          "physics/classify_boundaries": 0.7478830999971251,
+          "physics/advance_subduction_memory": 0.750459899987618,
+          "physics/advance_slab_breakoff": 0.049716900000930764,
+          "physics/advance_rollback": 0.07260360000509536,
+          "physics/plate_dynamics": 1.2935847000189824,
+          "physics/advance_plume_rifting": 0.011274499993305653,
+          "physics/plume_neighbor_contrast": 0.009448900003917515,
+          "physics/lithosphere_other": 0.08817469999485184,
+          "physics/transport": 2.3911908000009134,
+          "diagnostic/coverage": 0.0014418999926419929,
+          "physics/single_source_cells": 0.026922899996861815,
+          "physics/cell_owner_loop": 0.21476750000874745,
+          "physics/footprint_overflow": 0.13941810000687838,
+          "physics/volcanic_arcs": 2.823834100010572,
+          "physics/continental_cycle": 0.017496200001914985,
+          "physics/advance_craton_memory": 0.01729180000256747,
+          "physics/advance_mantle_plumes": 0.04721810000046389,
+          "physics/advance_hotspot_tracks": 0.029764299993985333,
+          "physics/advance_plume_magmatism": 0.016401700013375375,
+          "physics/refresh_mechanical_lithosphere": 0.013188400014769286,
+          "physics/advance_late_tectonics": 0.1560410000020056,
+          "physics/topology": 0.15301950000139186,
+          "physics/advance_plume_dynamic_topography": 0.0086758000034024,
+          "physics/topography": 1.2229134000081103,
+          "physics/sediments": 0.2745911999954842,
+          "physics/hydrosphere": 0.17746940000506584,
+          "rendering/during_steps": 0.2706012000053306,
+          "checkpoint_and_output": 0.3566884999818285,
+          "rendering/reports": 3.605650000012247,
+          "rendering/final_drain_and_shutdown": 4.167665900000429
+        },
+        "numerical_execution": {
+          "numeric_kernels": true,
+          "single_source_cells": true,
+          "cell_workers": 1,
+          "cell_calls": 5,
+          "cell_tasks": 5,
+          "cells_prepared": 95690,
+          "cell_thread_ids": [
+            11256
+          ]
+        },
+        "transport_coverage": [
+          {
+            "step": 1,
+            "cells": 20480,
+            "single_source": 19052,
+            "overlap": 710,
+            "gap": 718
+          },
+          {
+            "step": 2,
+            "cells": 20480,
+            "single_source": 19049,
+            "overlap": 711,
+            "gap": 720
+          },
+          {
+            "step": 3,
+            "cells": 20480,
+            "single_source": 19105,
+            "overlap": 683,
+            "gap": 692
+          },
+          {
+            "step": 4,
+            "cells": 20480,
+            "single_source": 19335,
+            "overlap": 571,
+            "gap": 574
+          },
+          {
+            "step": 5,
+            "cells": 20480,
+            "single_source": 19149,
+            "overlap": 663,
+            "gap": 668
+          }
+        ],
+        "checkpoint_comparison": {
+          "exact": true,
+          "arrays_compared": 62,
+          "differences": []
+        },
+        "png_comparison": {
+          "png_exact": true,
+          "png_count": 40,
+          "png_differences": []
+        }
+      },
+      {
+        "case": "after_cells8_1",
+        "numeric_mode": "cells8",
+        "wall_seconds": 21.331004500003473,
+        "instrumented": true,
+        "cprofile": false,
+        "exclusive_wall_seconds": {
+          "imports_and_instrumentation": 0.6874611000021105,
+          "runner_other": 0.006182999997690786,
+          "initialization/other": 0.2136581000086153,
+          "initialization/mesh_request": 3.809999907389283e-05,
+          "initialization/mesh": 0.4569679999985965,
+          "initialization/prototype_other": 0.006930599993211217,
+          "initialization/initial_plates": 0.3238319000010961,
+          "initialization/rigid_residual": 0.8397111000012956,
+          "physics/other": 0.09761680003430229,
+          "physics/advance_thermal_state": 0.0004645000008167699,
+          "physics/mantle": 0.03966769999533426,
+          "physics/boundaries": 0.0004441999553819187,
+          "physics/classify_boundaries": 0.6791162000154145,
+          "physics/advance_subduction_memory": 0.6129971000045771,
+          "physics/advance_slab_breakoff": 0.04457769999135053,
+          "physics/advance_rollback": 0.08394819999375613,
+          "physics/plate_dynamics": 1.407242800014501,
+          "physics/advance_plume_rifting": 0.011247000002185814,
+          "physics/plume_neighbor_contrast": 0.011980499999481253,
+          "physics/lithosphere_other": 0.0756416999938665,
+          "physics/transport": 2.5540660999977263,
+          "diagnostic/coverage": 0.0013075999959255569,
+          "physics/single_source_cells": 0.04216130000713747,
+          "physics/cell_owner_loop": 0.231935900003009,
+          "physics/footprint_overflow": 0.12137219999567606,
+          "physics/volcanic_arcs": 3.0158589000056963,
+          "physics/continental_cycle": 0.017128399995272048,
+          "physics/advance_craton_memory": 0.0206529999995837,
+          "physics/advance_mantle_plumes": 0.03655520000029355,
+          "physics/advance_hotspot_tracks": 0.028718899993691593,
+          "physics/advance_plume_magmatism": 0.020177899998088833,
+          "physics/refresh_mechanical_lithosphere": 0.012834399996791035,
+          "physics/advance_late_tectonics": 0.17487980000441894,
+          "physics/topology": 0.14994289998867316,
+          "physics/advance_plume_dynamic_topography": 0.009634400004870258,
+          "physics/topography": 1.2292219000009936,
+          "physics/sediments": 0.20192539999698056,
+          "physics/hydrosphere": 0.1702514000062365,
+          "rendering/during_steps": 0.2421132000090438,
+          "checkpoint_and_output": 0.3417276999898604,
+          "rendering/reports": 3.3621933000104036,
+          "rendering/final_drain_and_shutdown": 3.553128100000322
+        },
+        "numerical_execution": {
+          "numeric_kernels": true,
+          "single_source_cells": true,
+          "cell_workers": 8,
+          "cell_calls": 5,
+          "cell_tasks": 40,
+          "cells_prepared": 95690,
+          "cell_thread_ids": [
+            4620,
+            11484,
+            19092,
+            19404,
+            28252,
+            37512,
+            37516,
+            45808
+          ]
+        },
+        "transport_coverage": [
+          {
+            "step": 1,
+            "cells": 20480,
+            "single_source": 19052,
+            "overlap": 710,
+            "gap": 718
+          },
+          {
+            "step": 2,
+            "cells": 20480,
+            "single_source": 19049,
+            "overlap": 711,
+            "gap": 720
+          },
+          {
+            "step": 3,
+            "cells": 20480,
+            "single_source": 19105,
+            "overlap": 683,
+            "gap": 692
+          },
+          {
+            "step": 4,
+            "cells": 20480,
+            "single_source": 19335,
+            "overlap": 571,
+            "gap": 574
+          },
+          {
+            "step": 5,
+            "cells": 20480,
+            "single_source": 19149,
+            "overlap": 663,
+            "gap": 668
+          }
+        ],
+        "checkpoint_comparison": {
+          "exact": true,
+          "arrays_compared": 62,
+          "differences": []
+        },
+        "png_comparison": {
+          "png_exact": true,
+          "png_count": 40,
+          "png_differences": []
+        }
+      }
+    ],
+    "numeric_cells_split_20260903": [
+      {
+        "case": "after_cells1_1",
+        "numeric_mode": "cells1",
+        "wall_seconds": 22.968642400002864,
+        "instrumented": true,
+        "cprofile": false,
+        "exclusive_wall_seconds": {
+          "imports_and_instrumentation": 0.8708600999962073,
+          "runner_other": 0.006070499992347322,
+          "initialization/other": 0.26958839999861084,
+          "initialization/mesh_request": 4.170000465819612e-05,
+          "initialization/mesh": 0.46337250000215136,
+          "initialization/prototype_other": 0.007244300002639648,
+          "initialization/initial_plates": 0.3316075999973691,
+          "initialization/rigid_residual": 0.8376533999980893,
+          "physics/other": 0.1007607999999891,
+          "physics/advance_thermal_state": 0.0007737999985693023,
+          "physics/mantle": 0.041245800006436184,
+          "physics/boundaries": 0.00048150000657187775,
+          "physics/classify_boundaries": 0.7720230999839259,
+          "physics/advance_subduction_memory": 0.7095329000076163,
+          "physics/advance_slab_breakoff": 0.046346300005097874,
+          "physics/advance_rollback": 0.05421589999605203,
+          "physics/plate_dynamics": 1.6071674000049825,
+          "physics/advance_plume_rifting": 0.021918899976299144,
+          "physics/plume_neighbor_contrast": 0.01289000001270324,
+          "physics/lithosphere_other": 0.07635229998413706,
+          "physics/transport": 3.591495799999393,
+          "diagnostic/coverage": 0.0012231000000610948,
+          "physics/single_source_cells": 0.027270899998256937,
+          "physics/cell_owner_loop": 0.2457480000157375,
+          "physics/footprint_overflow": 0.08245220000389963,
+          "physics/volcanic_arcs": 2.798125600005733,
+          "physics/continental_cycle": 0.01691910000226926,
+          "physics/advance_craton_memory": 0.021242099996015895,
+          "physics/advance_mantle_plumes": 0.0497309999918798,
+          "physics/advance_hotspot_tracks": 0.029404400011117104,
+          "physics/advance_plume_magmatism": 0.023153299989644438,
+          "physics/refresh_mechanical_lithosphere": 0.006173799993121065,
+          "physics/advance_late_tectonics": 0.10497420000319835,
+          "physics/topology": 0.1369762999966042,
+          "physics/advance_plume_dynamic_topography": 0.010796800001116935,
+          "physics/topography": 1.336663000009139,
+          "physics/sediments": 0.20483120000426425,
+          "physics/hydrosphere": 0.13478650000615744,
+          "rendering/during_steps": 0.23475099998904625,
+          "checkpoint_and_output": 0.4512140000006184,
+          "rendering/reports": 2.999329000005673,
+          "rendering/final_drain_and_shutdown": 4.043019800003094
+        },
+        "numerical_execution": {
+          "numeric_kernels": true,
+          "single_source_cells": true,
+          "cell_workers": 1,
+          "cell_calls": 5,
+          "cell_tasks": 5,
+          "cells_prepared": 94881,
+          "cell_thread_ids": [
+            30208
+          ]
+        },
+        "transport_coverage": [
+          {
+            "step": 1,
+            "cells": 20480,
+            "single_source": 18853,
+            "overlap": 810,
+            "gap": 817
+          },
+          {
+            "step": 2,
+            "cells": 20480,
+            "single_source": 19175,
+            "overlap": 651,
+            "gap": 654
+          },
+          {
+            "step": 3,
+            "cells": 20480,
+            "single_source": 18946,
+            "overlap": 763,
+            "gap": 771
+          },
+          {
+            "step": 4,
+            "cells": 20480,
+            "single_source": 19121,
+            "overlap": 678,
+            "gap": 681
+          },
+          {
+            "step": 5,
+            "cells": 20480,
+            "single_source": 18786,
+            "overlap": 844,
+            "gap": 850
+          }
+        ],
+        "checkpoint_comparison": {
+          "exact": true,
+          "arrays_compared": 62,
+          "differences": []
+        },
+        "png_comparison": {
+          "png_exact": true,
+          "png_count": 40,
+          "png_differences": []
+        }
+      },
+      {
+        "case": "after_cells8_1",
+        "numeric_mode": "cells8",
+        "wall_seconds": 38.85838330000115,
+        "instrumented": true,
+        "cprofile": false,
+        "exclusive_wall_seconds": {
+          "imports_and_instrumentation": 0.6827877000032458,
+          "runner_other": 0.005433199992694426,
+          "initialization/other": 0.22443520000524586,
+          "initialization/mesh_request": 4.25000034738332e-05,
+          "initialization/mesh": 0.46090730000287294,
+          "initialization/prototype_other": 0.006703200000629295,
+          "initialization/initial_plates": 0.31917889999749605,
+          "initialization/rigid_residual": 0.8346858999939286,
+          "physics/other": 0.12329070000851061,
+          "physics/advance_thermal_state": 0.0005516000019269995,
+          "physics/mantle": 0.03724049999436829,
+          "physics/boundaries": 0.0004774999906658195,
+          "physics/classify_boundaries": 0.687030599998252,
+          "physics/advance_subduction_memory": 0.6911004000066896,
+          "physics/advance_slab_breakoff": 0.04234770000039134,
+          "physics/advance_rollback": 0.05122220000339439,
+          "physics/plate_dynamics": 1.5129850000012084,
+          "physics/advance_plume_rifting": 0.02446570000029169,
+          "physics/plume_neighbor_contrast": 0.011009699992428068,
+          "physics/lithosphere_other": 0.07908320000569802,
+          "physics/transport": 2.7620443000123487,
+          "diagnostic/coverage": 0.001239799996255897,
+          "physics/single_source_cells": 0.04161419998854399,
+          "physics/cell_owner_loop": 0.23172169999452308,
+          "physics/footprint_overflow": 0.0750873000069987,
+          "physics/volcanic_arcs": 3.009594500006642,
+          "physics/continental_cycle": 0.017047399996954482,
+          "physics/advance_craton_memory": 0.01975519999541575,
+          "physics/advance_mantle_plumes": 0.03665739999996731,
+          "physics/advance_hotspot_tracks": 0.034067899992805906,
+          "physics/advance_plume_magmatism": 0.019980700002633967,
+          "physics/refresh_mechanical_lithosphere": 0.005526200002350379,
+          "physics/advance_late_tectonics": 0.09522009999636794,
+          "physics/topology": 0.12444790000154171,
+          "physics/advance_plume_dynamic_topography": 0.0101178000040818,
+          "physics/topography": 1.296574199994211,
+          "physics/sediments": 0.23795820000668755,
+          "physics/hydrosphere": 0.15118189999338938,
+          "rendering/during_steps": 0.23882760000560666,
+          "checkpoint_and_output": 0.4864965999950073,
+          "rendering/reports": 20.391591600004176,
+          "rendering/final_drain_and_shutdown": 3.512074799997208
+        },
+        "numerical_execution": {
+          "numeric_kernels": true,
+          "single_source_cells": true,
+          "cell_workers": 8,
+          "cell_calls": 5,
+          "cell_tasks": 40,
+          "cells_prepared": 94881,
+          "cell_thread_ids": [
+            3064,
+            7220,
+            19368,
+            19712,
+            25768,
+            34808,
+            40308,
+            42168
+          ]
+        },
+        "transport_coverage": [
+          {
+            "step": 1,
+            "cells": 20480,
+            "single_source": 18853,
+            "overlap": 810,
+            "gap": 817
+          },
+          {
+            "step": 2,
+            "cells": 20480,
+            "single_source": 19175,
+            "overlap": 651,
+            "gap": 654
+          },
+          {
+            "step": 3,
+            "cells": 20480,
+            "single_source": 18946,
+            "overlap": 763,
+            "gap": 771
+          },
+          {
+            "step": 4,
+            "cells": 20480,
+            "single_source": 19121,
+            "overlap": 678,
+            "gap": 681
+          },
+          {
+            "step": 5,
+            "cells": 20480,
+            "single_source": 18786,
+            "overlap": 844,
+            "gap": 850
+          }
+        ],
+        "checkpoint_comparison": {
+          "exact": true,
+          "arrays_compared": 62,
+          "differences": []
+        },
+        "png_comparison": {
+          "png_exact": true,
+          "png_count": 40,
+          "png_differences": []
+        }
+      }
+    ],
+    "numeric_cells_stages_20260903": [
+      {
+        "case": "after_legacy_1",
+        "numeric_mode": "legacy",
+        "wall_seconds": 38.78831360000186,
+        "instrumented": true,
+        "cprofile": false,
+        "exclusive_wall_seconds": {
+          "imports_and_instrumentation": 2.4676682999997865,
+          "runner_other": 0.0060678999943775125,
+          "initialization/other": 0.5485012000135612,
+          "initialization/mesh_request": 5.319999036146328e-05,
+          "initialization/mesh": 0.48023680000187596,
+          "initialization/prototype_other": 0.018041399998764973,
+          "initialization/initial_plates": 1.16810109999642,
+          "initialization/rigid_residual": 2.5249483000006876,
+          "physics/other": 0.09238120001828065,
+          "physics/advance_thermal_state": 0.0007410000034724362,
+          "physics/mantle": 0.05596990000776714,
+          "physics/boundaries": 0.0005234000200289302,
+          "physics/classify_boundaries": 0.8153747999967891,
+          "physics/advance_subduction_memory": 1.82447780000075,
+          "physics/advance_slab_breakoff": 0.09394340000289958,
+          "physics/advance_rollback": 0.09763039999234024,
+          "physics/plate_dynamics": 2.435886199986271,
+          "physics/advance_plume_rifting": 0.012661300002946518,
+          "physics/plume_neighbor_contrast": 1.5492765999952098,
+          "physics/lithosphere_other": 0.07730409999203403,
+          "physics/transport": 3.3766316000110237,
+          "diagnostic/coverage": 0.0019089999987045303,
+          "physics/cell_owner_loop": 6.708310699999856,
+          "physics/footprint_overflow": 0.1326747999919462,
+          "physics/volcanic_arcs": 3.975314099989191,
+          "physics/continental_cycle": 0.033450799994170666,
+          "physics/advance_craton_memory": 0.023420199999236502,
+          "physics/advance_mantle_plumes": 0.08472970000730129,
+          "physics/advance_hotspot_tracks": 0.03884870000911178,
+          "physics/advance_plume_magmatism": 0.01937329999054782,
+          "physics/refresh_mechanical_lithosphere": 0.007983499992405996,
+          "physics/advance_late_tectonics": 0.120554599998286,
+          "physics/topology": 0.16103120000479976,
+          "physics/advance_plume_dynamic_topography": 0.0055402999932994135,
+          "physics/topography": 1.3855826999933925,
+          "physics/sediments": 0.27750100000412203,
+          "physics/hydrosphere": 0.1695947000043816,
+          "rendering/during_steps": 0.2253043999953661,
+          "checkpoint_and_output": 0.5045108999911463,
+          "rendering/reports": 3.077386800017848,
+          "rendering/final_drain_and_shutdown": 4.043241199993645
+        },
+        "numerical_execution": {
+          "numeric_kernels": false,
+          "single_source_cells": false,
+          "cell_workers": 1,
+          "cell_calls": 0,
+          "cell_tasks": 0,
+          "cells_prepared": 0,
+          "cell_thread_ids": []
+        },
+        "transport_coverage": [
+          {
+            "step": 1,
+            "cells": 20480,
+            "single_source": 18469,
+            "overlap": 1002,
+            "gap": 1009
+          },
+          {
+            "step": 2,
+            "cells": 20480,
+            "single_source": 18663,
+            "overlap": 906,
+            "gap": 911
+          },
+          {
+            "step": 3,
+            "cells": 20480,
+            "single_source": 18360,
+            "overlap": 1053,
+            "gap": 1067
+          },
+          {
+            "step": 4,
+            "cells": 20480,
+            "single_source": 18702,
+            "overlap": 885,
+            "gap": 893
+          },
+          {
+            "step": 5,
+            "cells": 20480,
+            "single_source": 18314,
+            "overlap": 1074,
+            "gap": 1092
+          }
+        ],
+        "checkpoint_comparison": {
+          "exact": true,
+          "arrays_compared": 62,
+          "differences": []
+        },
+        "png_comparison": {
+          "png_exact": true,
+          "png_count": 40,
+          "png_differences": []
+        }
+      },
+      {
+        "case": "after_cells1_1",
+        "numeric_mode": "cells1",
+        "wall_seconds": 22.328846400007023,
+        "instrumented": true,
+        "cprofile": false,
+        "exclusive_wall_seconds": {
+          "imports_and_instrumentation": 0.79481540001143,
+          "runner_other": 0.002877099977922626,
+          "initialization/other": 0.22596790000534384,
+          "initialization/mesh_request": 3.6299999919719994e-05,
+          "initialization/mesh": 0.45576769999752287,
+          "initialization/prototype_other": 0.006359599996358156,
+          "initialization/initial_plates": 0.3193043999999645,
+          "initialization/rigid_residual": 0.8387452000024496,
+          "physics/other": 0.0964922999846749,
+          "physics/advance_thermal_state": 0.0005085000084363855,
+          "physics/mantle": 0.036514599989459384,
+          "physics/boundaries": 0.0004814999920199625,
+          "physics/classify_boundaries": 0.7425629999997909,
+          "physics/advance_subduction_memory": 0.8019151999906171,
+          "physics/advance_slab_breakoff": 0.0654767000087304,
+          "physics/advance_rollback": 0.07201119999808725,
+          "physics/plate_dynamics": 1.8187352000168175,
+          "physics/advance_plume_rifting": 0.00965830000495771,
+          "physics/plume_neighbor_contrast": 0.025266599994210992,
+          "physics/lithosphere_other": 0.10033240002667299,
+          "physics/transport": 3.1979720999879646,
+          "diagnostic/coverage": 0.0015391999986604787,
+          "physics/single_source_cells": 0.028873399991425686,
+          "physics/cell_owner_loop": 0.3681153999932576,
+          "physics/footprint_overflow": 0.21168509999552043,
+          "physics/volcanic_arcs": 4.021220400019956,
+          "physics/continental_cycle": 0.018199900005129166,
+          "physics/advance_craton_memory": 0.018845700004021637,
+          "physics/advance_mantle_plumes": 0.08678730000247015,
+          "physics/advance_hotspot_tracks": 0.04520619999675546,
+          "physics/advance_plume_magmatism": 0.0170598999975482,
+          "physics/refresh_mechanical_lithosphere": 0.007818099998985417,
+          "physics/advance_late_tectonics": 0.12318559999403078,
+          "physics/topology": 0.23016330000245944,
+          "physics/advance_plume_dynamic_topography": 0.006874900012917351,
+          "physics/topography": 1.2297114999964833,
+          "physics/sediments": 0.20610379998834105,
+          "physics/hydrosphere": 0.1610454000037862,
+          "rendering/during_steps": 0.16535179999482352,
+          "checkpoint_and_output": 0.2739544999858481,
+          "rendering/reports": 3.0922137000306975,
+          "rendering/final_drain_and_shutdown": 2.1823329999970156
+        },
+        "numerical_execution": {
+          "numeric_kernels": true,
+          "single_source_cells": true,
+          "cell_workers": 1,
+          "cell_calls": 5,
+          "cell_tasks": 5,
+          "cells_prepared": 92508,
+          "cell_thread_ids": [
+            3464
+          ]
+        },
+        "transport_coverage": [
+          {
+            "step": 1,
+            "cells": 20480,
+            "single_source": 18469,
+            "overlap": 1002,
+            "gap": 1009
+          },
+          {
+            "step": 2,
+            "cells": 20480,
+            "single_source": 18663,
+            "overlap": 906,
+            "gap": 911
+          },
+          {
+            "step": 3,
+            "cells": 20480,
+            "single_source": 18360,
+            "overlap": 1053,
+            "gap": 1067
+          },
+          {
+            "step": 4,
+            "cells": 20480,
+            "single_source": 18702,
+            "overlap": 885,
+            "gap": 893
+          },
+          {
+            "step": 5,
+            "cells": 20480,
+            "single_source": 18314,
+            "overlap": 1074,
+            "gap": 1092
+          }
+        ],
+        "checkpoint_comparison": {
+          "exact": true,
+          "arrays_compared": 62,
+          "differences": []
+        },
+        "png_comparison": {
+          "png_exact": true,
+          "png_count": 40,
+          "png_differences": []
+        }
+      }
+    ],
+    "numeric_cells_sub6_frame4_20260903": [
+      {
+        "case": "after_legacy_1",
+        "numeric_mode": "legacy",
+        "wall_seconds": 63.82064199999877,
+        "instrumented": false,
+        "cprofile": false,
+        "exclusive_wall_seconds": {
+          "imports_and_instrumentation": 0.9490121000053477,
+          "runner_other": 58.758935899997596,
+          "rendering/final_drain_and_shutdown": 3.8909407000028295
+        },
+        "numerical_execution": {
+          "numeric_kernels": false,
+          "single_source_cells": false,
+          "cell_workers": 1,
+          "cell_calls": 0,
+          "cell_tasks": 0,
+          "cells_prepared": 0,
+          "cell_thread_ids": []
+        },
+        "transport_coverage": [],
+        "checkpoint_comparison": {
+          "exact": true,
+          "arrays_compared": 62,
+          "differences": []
+        },
+        "png_comparison": {
+          "png_exact": true,
+          "png_count": 47,
+          "png_differences": []
+        }
+      },
+      {
+        "case": "after_cells1_1",
+        "numeric_mode": "cells1",
+        "wall_seconds": 57.95800330000202,
+        "instrumented": false,
+        "cprofile": false,
+        "exclusive_wall_seconds": {
+          "imports_and_instrumentation": 1.01106389999768,
+          "runner_other": 52.83746429999883,
+          "rendering/final_drain_and_shutdown": 3.8476554000008036
+        },
+        "numerical_execution": {
+          "numeric_kernels": true,
+          "single_source_cells": true,
+          "cell_workers": 1,
+          "cell_calls": 1,
+          "cell_tasks": 1,
+          "cells_prepared": 78291,
+          "cell_thread_ids": [
+            3916
+          ]
+        },
+        "transport_coverage": [],
+        "checkpoint_comparison": {
+          "exact": true,
+          "arrays_compared": 62,
+          "differences": []
+        },
+        "png_comparison": {
+          "png_exact": true,
+          "png_count": 47,
+          "png_differences": []
+        }
+      },
+      {
+        "case": "after_cells8_1",
+        "numeric_mode": "cells8",
+        "wall_seconds": 57.82508420000522,
+        "instrumented": false,
+        "cprofile": false,
+        "exclusive_wall_seconds": {
+          "imports_and_instrumentation": 0.7268957999986014,
+          "runner_other": 52.8614333000005,
+          "rendering/final_drain_and_shutdown": 4.015948000000208
+        },
+        "numerical_execution": {
+          "numeric_kernels": true,
+          "single_source_cells": true,
+          "cell_workers": 8,
+          "cell_calls": 1,
+          "cell_tasks": 8,
+          "cells_prepared": 78291,
+          "cell_thread_ids": [
+            1896,
+            19292,
+            19712,
+            33856,
+            34808,
+            44920
+          ]
+        },
+        "transport_coverage": [],
+        "checkpoint_comparison": {
+          "exact": true,
+          "arrays_compared": 62,
+          "differences": []
+        },
+        "png_comparison": {
+          "png_exact": true,
+          "png_count": 47,
+          "png_differences": []
+        }
+      }
+    ]
+  },
+  "gui_exact_comparisons": {
+    "checkpoint_4": {
+      "exact": true,
+      "arrays_compared": 62,
+      "differences": []
+    },
+    "checkpoint_8": {
+      "exact": true,
+      "arrays_compared": 62,
+      "differences": []
+    },
+    "checkpoint_12": {
+      "exact": true,
+      "arrays_compared": 62,
+      "differences": []
+    },
+    "png": {
+      "png_exact": true,
+      "png_count": 127,
+      "png_differences": []
+    },
+    "gif": {
+      "exact": true,
+      "count": 10
+    }
+  },
+  "checkpoint_continuation": [
+    {
+      "case": "optimized_resume",
+      "exact": true,
+      "arrays_compared": 62,
+      "differences": []
+    },
+    {
+      "case": "stable_resume",
+      "exact": true,
+      "arrays_compared": 62,
+      "differences": []
+    }
+  ]
+}

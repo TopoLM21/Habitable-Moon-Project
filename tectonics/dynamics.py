@@ -157,8 +157,15 @@ def _choose_subducting_side(state: LithosphereState, b: BoundaryRecord) -> int |
         # v0.16: prefer the side with greater integrated negative buoyancy of
         # mantle lithosphere.  Fall back to crustal age for legacy states.
         if state.mantle_lithosphere_thickness_km is not None and state.mantle_lithosphere_density_anomaly_kg_m3 is not None:
-            proxy = mantle_lithosphere_negative_buoyancy_proxy(state)
-            aa = float(proxy[b.face_a]); ab = float(proxy[b.face_b])
+            from .cpu_runtime import current_execution
+            execution = current_execution()
+            if execution is not None and execution.numeric_kernels:
+                from .lithosphere import mantle_lithosphere_negative_buoyancy_at
+                aa = mantle_lithosphere_negative_buoyancy_at(state, b.face_a)
+                ab = mantle_lithosphere_negative_buoyancy_at(state, b.face_b)
+            else:
+                proxy = mantle_lithosphere_negative_buoyancy_proxy(state)
+                aa = float(proxy[b.face_a]); ab = float(proxy[b.face_b])
         else:
             aa = float(state.crust_age_myr[b.face_a]); ab = float(state.crust_age_myr[b.face_b])
         if aa > ab + 1e-9:

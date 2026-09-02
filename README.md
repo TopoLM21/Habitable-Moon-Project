@@ -10,6 +10,15 @@ exact-order batched sediment routing, and lower CPU priority for the simulation
 and render workers (not the GUI). It also includes pause-aware ETA. Render counts
 6/8/12 are available as manual choices; more workers are not always faster.
 
+Optimized mode also shares one initial mesh instead of building two full
+prototypes, batches single-source conservative cells, and uses exact-order
+neighbor means and local buoyancy lookups in the integrator. Cell preparation
+defaults to one worker: 2/4/8 threads have not justified a higher default.
+See [CPU_NUMERIC_KERNELS.md](CPU_NUMERIC_KERNELS.md) for paired whole-run timings,
+validation and diagnostic CLI opt-outs. The initialization work and earlier
+isolated candidates are documented in
+[CPU_INITIALIZATION_AND_NUMERIC_STUDY.md](CPU_INITIALIZATION_AND_NUMERIC_STUDY.md).
+
 See [CPU_RENDER_SCALING.md](CPU_RENDER_SCALING.md) for current controls, all
 4/6/8/12 timings, priority semantics and validation. The previous-stage report,
 [CPU_RENDERING_AND_GPU.md](CPU_RENDERING_AND_GPU.md), includes the separate GPU
@@ -42,11 +51,23 @@ lifetime handling has separate Windows and Linux implementations, with only
 Windows runtime-tested in this performance stage):
 
 ```text
+git clone --branch perf/cpu-parallel https://github.com/TopoLM21/Habitable-Moon-Project.git
+cd Habitable-Moon-Project
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements.txt
 python launch_gui.py
 ```
+
+For an existing clone, select `perf/cpu-parallel` instead of cloning again.
+Create a fresh Linux environment; do not copy the Windows `.venv`. The new
+numerical kernels use NumPy and standard Python threads, without a Windows-only
+dependency. Linux priority and render-worker lifetime paths are present, but a
+full Ubuntu runtime validation of this stage is still outstanding. Qt/PySide
+installation guidance is in the [official Qt for Python documentation](https://doc.qt.io/qtforpython-6/gettingstarted.html).
+The Windows performance lock file records benchmark versions, not a tested
+Ubuntu environment. Simulation results, checkpoint folders, and GIF history
+are excluded from Git and must be copied separately when moving computers.
 
 Install or refresh dependencies with `python -m pip install -r
 requirements.txt`. The lightweight `PySide6-Essentials` distribution supplies

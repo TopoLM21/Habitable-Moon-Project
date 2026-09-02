@@ -118,6 +118,11 @@ def _normal_ab(mesh: SphereMesh, b: BoundaryRecord) -> Array:
 
 def _local_proxy(state: LithosphereState, face: int) -> float:
     if state.mantle_lithosphere_thickness_km is not None and state.mantle_lithosphere_density_anomaly_kg_m3 is not None:
+        from .cpu_runtime import current_execution
+        execution = current_execution()
+        if execution is not None and execution.numeric_kernels:
+            from .lithosphere import mantle_lithosphere_negative_buoyancy_at
+            return max(mantle_lithosphere_negative_buoyancy_at(state, face), 0.0)
         p = mantle_lithosphere_negative_buoyancy_proxy(state)
         return max(float(p[face]), 0.0)
     return max(float(state.crust_age_myr[face]), 0.0)

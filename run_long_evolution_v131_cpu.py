@@ -15,6 +15,12 @@ def main() -> None:
     parser.add_argument("--render-workers", type=int, choices=RENDER_WORKER_CHOICES, default=1)
     parser.add_argument("--process-priority", choices=PROCESS_PRIORITY_CHOICES, default="normal")
     parser.add_argument("--cell-kernels", action="store_true", help="Use exact-order batched sediment routing")
+    parser.add_argument("--numeric-kernels", action=argparse.BooleanOptionalAction, default=True,
+                        help="Use exact-order neighbor means and per-face buoyancy lookups")
+    parser.add_argument("--single-source-cells", action=argparse.BooleanOptionalAction, default=True,
+                        help="Batch conservative cells with exactly one incoming plate")
+    parser.add_argument("--cell-workers", type=int, choices=(1, 2, 4, 8), default=1,
+                        help="Experimental cell-preparation threads, independent of plate workers")
     options, remaining = parser.parse_known_args()
     if not 1 <= options.cpu_workers <= 32:
         parser.error("--cpu-workers must be between 1 and 32")
@@ -28,18 +34,23 @@ def main() -> None:
 
     sys.argv = ["run_long_evolution_v131.py", *remaining]
     print(f"Experimental CPU mode: cached geometry, {options.cpu_workers} plate worker(s)", flush=True)
-    with CpuExecution(options.cpu_workers, cell_kernels=options.cell_kernels), RenderExecution(
+    with CpuExecution(options.cpu_workers, cell_kernels=options.cell_kernels,
+                      numeric_kernels=options.numeric_kernels, single_source_cells=options.single_source_cells,
+                      cell_workers=options.cell_workers) as execution, RenderExecution(
             options.render_workers, process_priority=options.process_priority) as rendering:
         import run_long_evolution_v131 as runner
         rendering.install_runner_hooks()
         print(f"Render mode: {options.render_workers} process(es)", flush=True)
+        print(f"Numerical kernels: {options.numeric_kernels}; single-source cells: "
+              f"{options.single_source_cells}; cell workers: {options.cell_workers}", flush=True)
         runner.main()
     output_parser = argparse.ArgumentParser(add_help=False)
     output_parser.add_argument("--output")
     output_options, _ = output_parser.parse_known_args(remaining)
     if output_options.output:
         report = Path(output_options.output) / "render_timings.json"
-        report.write_text(json.dumps(rendering.report(), indent=2), encoding="utf-8")
+        report.write_text(json.dumps({**rendering.report(), "numerical_execution": execution.numerical_report()},
+                                     indent=2), encoding="utf-8")
 
 
 if __name__ == "__main__":

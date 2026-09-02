@@ -106,6 +106,15 @@ def _neighbor_root_contrast(mesh: SphereMesh, lithosphere: LithosphereState) -> 
     if lithosphere.mantle_lithosphere_thickness_km is None:
         return np.zeros(n, dtype=np.float64)
     root = np.asarray(lithosphere.mantle_lithosphere_thickness_km, dtype=np.float64)
+    from .cpu_runtime import current_execution
+    execution = current_execution()
+    if n and execution is not None and execution.numeric_kernels and all(len(row) == 3 for row in mesh.neighbors):
+        geometry = execution.geometry(mesh)
+        if geometry.neighbors is None:
+            geometry.neighbors = np.asarray(mesh.neighbors, dtype=np.int32)
+        # Identical row order and three-element reduction as the scalar path.
+        # Cache indices only; roots remain the current evolving field.
+        return np.abs(root - np.mean(root[geometry.neighbors], axis=1))
     contrast = np.zeros(n, dtype=np.float64)
     for cell, neighbors in enumerate(mesh.neighbors):
         if neighbors:

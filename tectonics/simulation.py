@@ -30,13 +30,23 @@ def load_config(path: str | Path) -> dict[str, Any]:
     return data
 
 
+def build_initial_mesh(config: dict[str, Any]) -> SphereMesh:
+    """Build fixed geometry once per optimized execution, uncached otherwise."""
+    from .cpu_runtime import current_execution
+
+    subdivisions = int(config["mesh"]["subdivisions"])
+    execution = current_execution()
+    if execution is None:
+        return build_icosphere(subdivisions)
+    return execution.initial_mesh(subdivisions, build_icosphere)
+
+
 def build_prototype(config: dict[str, Any]) -> PrototypeResult:
     moon = config["moon"]
-    mesh_cfg = config["mesh"]
     plate_cfg = config["plates"]
     class_cfg = config["classification"]
 
-    mesh = build_icosphere(int(mesh_cfg["subdivisions"]))
+    mesh = build_initial_mesh(config)
     plates = random_plate_system(
         mesh=mesh,
         plate_count=int(plate_cfg["count"]),

@@ -1,0 +1,2093 @@
+{
+  "date": "2026-09-02",
+  "base_commit": "0bfb810",
+  "scope": "Experimental CPU initialization only; numerical candidates remain isolated",
+  "studies": {
+    "initial_mesh_stage_pair": [
+      {
+        "case": "before_1",
+        "mode": "before",
+        "wall_seconds": 35.71006159999524,
+        "instrumented": true,
+        "cprofile": false,
+        "exclusive_wall_seconds": {
+          "imports_and_instrumentation": 0.6781169999958365,
+          "runner_other": 0.005896099981328007,
+          "initialization/other": 0.2828722000049311,
+          "initialization/prototype_other": 0.023610000011103693,
+          "initialization/mesh_request": 0.00004659998376155272,
+          "initialization/mesh": 0.9134509000068647,
+          "initialization/initial_plates": 1.2967133999991347,
+          "initialization/rigid_residual": 3.123366799998621,
+          "physics/other": 3.4119281999737723,
+          "physics/advance_thermal_state": 0.00059710000641644,
+          "physics/mantle": 0.04502610000054119,
+          "physics/boundaries": 0.0004154000198468566,
+          "physics/classify_boundaries": 0.7562466000017594,
+          "physics/advance_subduction_memory": 1.629383899999084,
+          "physics/advance_slab_breakoff": 0.07615700001770165,
+          "physics/advance_rollback": 0.08038509999460075,
+          "physics/plate_dynamics": 2.0918399000001955,
+          "physics/advance_plume_rifting": 1.4622607999990578,
+          "physics/lithosphere_other": 6.5894159999952535,
+          "physics/transport": 3.0750645000007353,
+          "physics/footprint_overflow": 0.13829789999726927,
+          "physics/continental_cycle": 0.021162199998798314,
+          "physics/advance_craton_memory": 0.030453699997451622,
+          "physics/advance_mantle_plumes": 0.0752556000079494,
+          "physics/advance_hotspot_tracks": 0.04312539999227738,
+          "physics/advance_plume_magmatism": 0.033409399999072775,
+          "physics/refresh_mechanical_lithosphere": 0.005765299989434425,
+          "physics/advance_late_tectonics": 0.09039260000281502,
+          "physics/topology": 0.15470370000548428,
+          "physics/advance_plume_dynamic_topography": 0.008232799998950213,
+          "physics/topography": 1.1298297999965143,
+          "physics/sediments": 0.2248814999984461,
+          "physics/hydrosphere": 0.15818710000166902,
+          "rendering/during_steps": 0.2537490000031539,
+          "checkpoint_and_output": 0.5214697000410524,
+          "rendering/reports": 3.120097499973781,
+          "rendering/final_drain_and_shutdown": 4.014310200000182
+        },
+        "bucket_calls": {
+          "runner_other": 1,
+          "initialization/other": 1,
+          "initialization/prototype_other": 2,
+          "initialization/mesh_request": 2,
+          "initialization/mesh": 2,
+          "initialization/initial_plates": 2,
+          "initialization/rigid_residual": 2,
+          "physics/other": 1,
+          "physics/advance_thermal_state": 5,
+          "physics/mantle": 5,
+          "physics/boundaries": 20,
+          "physics/classify_boundaries": 25,
+          "physics/advance_subduction_memory": 5,
+          "physics/advance_slab_breakoff": 5,
+          "physics/advance_rollback": 5,
+          "physics/plate_dynamics": 5,
+          "physics/advance_plume_rifting": 5,
+          "physics/lithosphere_other": 5,
+          "physics/transport": 5,
+          "physics/footprint_overflow": 5,
+          "physics/continental_cycle": 5,
+          "physics/advance_craton_memory": 5,
+          "physics/advance_mantle_plumes": 5,
+          "physics/advance_hotspot_tracks": 5,
+          "physics/advance_plume_magmatism": 5,
+          "physics/refresh_mechanical_lithosphere": 5,
+          "physics/advance_late_tectonics": 5,
+          "physics/topology": 5,
+          "physics/advance_plume_dynamic_topography": 5,
+          "physics/topography": 5,
+          "physics/sediments": 5,
+          "physics/hydrosphere": 5,
+          "rendering/during_steps": 8,
+          "checkpoint_and_output": 9,
+          "rendering/reports": 15
+        },
+        "initialization_calls_inclusive_do_not_sum": [
+          {
+            "function": "tectonics.mesh.build_icosphere",
+            "parent": "initialization/mesh_request",
+            "inclusive_seconds": 0.4543441000059829
+          },
+          {
+            "function": "tectonics.simulation.build_initial_mesh",
+            "parent": "initialization/prototype_other",
+            "inclusive_seconds": 0.45436119999794755
+          },
+          {
+            "function": "tectonics.plates.random_plate_system",
+            "parent": "initialization/prototype_other",
+            "inclusive_seconds": 0.3207914000013261
+          },
+          {
+            "function": "tectonics.kinematics.rigid_motion_residual",
+            "parent": "initialization/prototype_other",
+            "inclusive_seconds": 0.8266305000070133
+          },
+          {
+            "function": "tectonics.simulation.build_prototype",
+            "parent": "initialization/other",
+            "inclusive_seconds": 1.6085305000015069
+          },
+          {
+            "function": "tectonics.mesh.build_icosphere",
+            "parent": "initialization/mesh_request",
+            "inclusive_seconds": 0.4591257000065525
+          },
+          {
+            "function": "tectonics.simulation.build_initial_mesh",
+            "parent": "initialization/prototype_other",
+            "inclusive_seconds": 0.45914129999437137
+          },
+          {
+            "function": "tectonics.plates.random_plate_system",
+            "parent": "initialization/prototype_other",
+            "inclusive_seconds": 0.9759431000056793
+          },
+          {
+            "function": "tectonics.kinematics.rigid_motion_residual",
+            "parent": "initialization/prototype_other",
+            "inclusive_seconds": 2.296765499995672
+          },
+          {
+            "function": "tectonics.simulation.build_prototype",
+            "parent": "initialization/other",
+            "inclusive_seconds": 3.7486723999973037
+          }
+        ],
+        "transport_coverage": null,
+        "checkpoint_comparison": {
+          "exact": true,
+          "arrays_compared": 62,
+          "differences": []
+        },
+        "png_comparison": {
+          "png_exact": true,
+          "png_count": 40,
+          "png_differences": []
+        },
+        "render_workers": 4,
+        "render_jobs": 23,
+        "requested_priority": "below_normal"
+      },
+      {
+        "case": "after_1",
+        "mode": "after",
+        "wall_seconds": 29.899010900000576,
+        "instrumented": true,
+        "cprofile": false,
+        "exclusive_wall_seconds": {
+          "imports_and_instrumentation": 0.6979028999994625,
+          "runner_other": 0.0053223999857436866,
+          "initialization/other": 0.22902800000156276,
+          "initialization/mesh_request": 0.00003470000228844583,
+          "initialization/mesh": 0.4683202000014717,
+          "initialization/prototype_other": 0.0069046999924466945,
+          "initialization/initial_plates": 0.32725439999921946,
+          "initialization/rigid_residual": 0.8541632000051322,
+          "physics/other": 3.411750099985511,
+          "physics/advance_thermal_state": 0.0005266000007395633,
+          "physics/mantle": 0.03471420000278158,
+          "physics/boundaries": 0.00043890001688851044,
+          "physics/classify_boundaries": 0.6431824000028428,
+          "physics/advance_subduction_memory": 1.3290522999959649,
+          "physics/advance_slab_breakoff": 0.0591874999954598,
+          "physics/advance_rollback": 0.06550620000780327,
+          "physics/plate_dynamics": 1.754860800014285,
+          "physics/advance_plume_rifting": 1.1290698000011616,
+          "physics/lithosphere_other": 6.277744499995606,
+          "physics/transport": 2.96461360000103,
+          "physics/footprint_overflow": 0.17798710000352003,
+          "physics/continental_cycle": 0.019331600007717498,
+          "physics/advance_craton_memory": 0.01824520000081975,
+          "physics/advance_mantle_plumes": 0.07669049999094568,
+          "physics/advance_hotspot_tracks": 0.03170880000834586,
+          "physics/advance_plume_magmatism": 0.014772999995329883,
+          "physics/refresh_mechanical_lithosphere": 0.005722399990190752,
+          "physics/advance_late_tectonics": 0.08359709999058396,
+          "physics/topology": 0.14484939999965718,
+          "physics/advance_plume_dynamic_topography": 0.008079799998085946,
+          "physics/topography": 1.1302186000029906,
+          "physics/sediments": 0.21215509999456117,
+          "physics/hydrosphere": 0.17508030000317376,
+          "rendering/during_steps": 0.2768383999937214,
+          "checkpoint_and_output": 0.5189953000153764,
+          "rendering/reports": 4.498488899997028,
+          "rendering/final_drain_and_shutdown": 2.0769833000013023
+        },
+        "bucket_calls": {
+          "runner_other": 1,
+          "initialization/other": 1,
+          "initialization/mesh_request": 2,
+          "initialization/mesh": 1,
+          "initialization/prototype_other": 1,
+          "initialization/initial_plates": 1,
+          "initialization/rigid_residual": 1,
+          "physics/other": 1,
+          "physics/advance_thermal_state": 5,
+          "physics/mantle": 5,
+          "physics/boundaries": 20,
+          "physics/classify_boundaries": 25,
+          "physics/advance_subduction_memory": 5,
+          "physics/advance_slab_breakoff": 5,
+          "physics/advance_rollback": 5,
+          "physics/plate_dynamics": 5,
+          "physics/advance_plume_rifting": 5,
+          "physics/lithosphere_other": 5,
+          "physics/transport": 5,
+          "physics/footprint_overflow": 5,
+          "physics/continental_cycle": 5,
+          "physics/advance_craton_memory": 5,
+          "physics/advance_mantle_plumes": 5,
+          "physics/advance_hotspot_tracks": 5,
+          "physics/advance_plume_magmatism": 5,
+          "physics/refresh_mechanical_lithosphere": 5,
+          "physics/advance_late_tectonics": 5,
+          "physics/topology": 5,
+          "physics/advance_plume_dynamic_topography": 5,
+          "physics/topography": 5,
+          "physics/sediments": 5,
+          "physics/hydrosphere": 5,
+          "rendering/during_steps": 8,
+          "checkpoint_and_output": 9,
+          "rendering/reports": 15
+        },
+        "initialization_calls_inclusive_do_not_sum": [
+          {
+            "function": "tectonics.mesh.build_icosphere",
+            "parent": "initialization/mesh_request",
+            "inclusive_seconds": 0.4683283999984269
+          },
+          {
+            "function": "tectonics.simulation.build_initial_mesh",
+            "parent": "initialization/other",
+            "inclusive_seconds": 0.4683530000038445
+          },
+          {
+            "function": "tectonics.simulation.build_initial_mesh",
+            "parent": "initialization/prototype_other",
+            "inclusive_seconds": 0.000012500000593718141
+          },
+          {
+            "function": "tectonics.plates.random_plate_system",
+            "parent": "initialization/prototype_other",
+            "inclusive_seconds": 0.3272595000016736
+          },
+          {
+            "function": "tectonics.kinematics.rigid_motion_residual",
+            "parent": "initialization/prototype_other",
+            "inclusive_seconds": 0.8541740000000573
+          },
+          {
+            "function": "tectonics.simulation.build_prototype",
+            "parent": "initialization/other",
+            "inclusive_seconds": 1.188339400003315
+          }
+        ],
+        "transport_coverage": null,
+        "checkpoint_comparison": {
+          "exact": true,
+          "arrays_compared": 62,
+          "differences": []
+        },
+        "png_comparison": {
+          "png_exact": true,
+          "png_count": 40,
+          "png_differences": []
+        },
+        "render_workers": 4,
+        "render_jobs": 23,
+        "requested_priority": "below_normal"
+      },
+      {
+        "case": "after_2",
+        "mode": "after",
+        "wall_seconds": 29.433999000000767,
+        "instrumented": true,
+        "cprofile": false,
+        "exclusive_wall_seconds": {
+          "imports_and_instrumentation": 0.6644448999941233,
+          "runner_other": 0.005258399985905271,
+          "initialization/other": 0.22749570000451058,
+          "initialization/mesh_request": 0.00003650000144261867,
+          "initialization/mesh": 0.4520258999982616,
+          "initialization/prototype_other": 0.007072400003380608,
+          "initialization/initial_plates": 0.3252767999947537,
+          "initialization/rigid_residual": 0.8311347999988357,
+          "physics/other": 3.353807899969979,
+          "physics/advance_thermal_state": 0.0005605000114883296,
+          "physics/mantle": 0.03409530000499217,
+          "physics/boundaries": 0.000413799993111752,
+          "physics/classify_boundaries": 0.6515404999954626,
+          "physics/advance_subduction_memory": 1.3003257000164012,
+          "physics/advance_slab_breakoff": 0.06901899998774752,
+          "physics/advance_rollback": 0.06975229999807198,
+          "physics/plate_dynamics": 1.815783600010036,
+          "physics/advance_plume_rifting": 1.1498363999999128,
+          "physics/lithosphere_other": 6.0617408999896725,
+          "physics/transport": 2.696624600008363,
+          "physics/footprint_overflow": 0.12967349999962607,
+          "physics/continental_cycle": 0.01717810000263853,
+          "physics/advance_craton_memory": 0.017953700000362005,
+          "physics/advance_mantle_plumes": 0.07022530000540428,
+          "physics/advance_hotspot_tracks": 0.04040300000633579,
+          "physics/advance_plume_magmatism": 0.018287799997779075,
+          "physics/refresh_mechanical_lithosphere": 0.006039899984898511,
+          "physics/advance_late_tectonics": 0.08456480000313604,
+          "physics/topology": 0.1457590999925742,
+          "physics/advance_plume_dynamic_topography": 0.006372900003043469,
+          "physics/topography": 1.1138743000046816,
+          "physics/sediments": 0.22299910001311218,
+          "physics/hydrosphere": 0.15295440001500538,
+          "rendering/during_steps": 0.2300484999868786,
+          "checkpoint_and_output": 0.5192600000082166,
+          "rendering/reports": 2.9698926000055508,
+          "rendering/final_drain_and_shutdown": 3.7964590000046883
+        },
+        "bucket_calls": {
+          "runner_other": 1,
+          "initialization/other": 1,
+          "initialization/mesh_request": 2,
+          "initialization/mesh": 1,
+          "initialization/prototype_other": 1,
+          "initialization/initial_plates": 1,
+          "initialization/rigid_residual": 1,
+          "physics/other": 1,
+          "physics/advance_thermal_state": 5,
+          "physics/mantle": 5,
+          "physics/boundaries": 20,
+          "physics/classify_boundaries": 25,
+          "physics/advance_subduction_memory": 5,
+          "physics/advance_slab_breakoff": 5,
+          "physics/advance_rollback": 5,
+          "physics/plate_dynamics": 5,
+          "physics/advance_plume_rifting": 5,
+          "physics/lithosphere_other": 5,
+          "physics/transport": 5,
+          "physics/footprint_overflow": 5,
+          "physics/continental_cycle": 5,
+          "physics/advance_craton_memory": 5,
+          "physics/advance_mantle_plumes": 5,
+          "physics/advance_hotspot_tracks": 5,
+          "physics/advance_plume_magmatism": 5,
+          "physics/refresh_mechanical_lithosphere": 5,
+          "physics/advance_late_tectonics": 5,
+          "physics/topology": 5,
+          "physics/advance_plume_dynamic_topography": 5,
+          "physics/topography": 5,
+          "physics/sediments": 5,
+          "physics/hydrosphere": 5,
+          "rendering/during_steps": 8,
+          "checkpoint_and_output": 9,
+          "rendering/reports": 15
+        },
+        "initialization_calls_inclusive_do_not_sum": [
+          {
+            "function": "tectonics.mesh.build_icosphere",
+            "parent": "initialization/mesh_request",
+            "inclusive_seconds": 0.4520344999982626
+          },
+          {
+            "function": "tectonics.simulation.build_initial_mesh",
+            "parent": "initialization/other",
+            "inclusive_seconds": 0.45205900000291876
+          },
+          {
+            "function": "tectonics.simulation.build_initial_mesh",
+            "parent": "initialization/prototype_other",
+            "inclusive_seconds": 0.000013299999409355223
+          },
+          {
+            "function": "tectonics.plates.random_plate_system",
+            "parent": "initialization/prototype_other",
+            "inclusive_seconds": 0.3252825000017765
+          },
+          {
+            "function": "tectonics.kinematics.rigid_motion_residual",
+            "parent": "initialization/prototype_other",
+            "inclusive_seconds": 0.8311468999963836
+          },
+          {
+            "function": "tectonics.simulation.build_prototype",
+            "parent": "initialization/other",
+            "inclusive_seconds": 1.1635034999999334
+          }
+        ],
+        "transport_coverage": null,
+        "checkpoint_comparison": {
+          "exact": true,
+          "arrays_compared": 62,
+          "differences": []
+        },
+        "png_comparison": {
+          "png_exact": true,
+          "png_count": 40,
+          "png_differences": []
+        },
+        "render_workers": 4,
+        "render_jobs": 23,
+        "requested_priority": "below_normal"
+      },
+      {
+        "case": "before_2",
+        "mode": "before",
+        "wall_seconds": 27.27797070000088,
+        "instrumented": true,
+        "cprofile": false,
+        "exclusive_wall_seconds": {
+          "imports_and_instrumentation": 0.6681309999912628,
+          "runner_other": 0.002869199997803662,
+          "initialization/other": 0.2839002999899094,
+          "initialization/prototype_other": 0.02511930000036955,
+          "initialization/mesh_request": 0.000042400002712383866,
+          "initialization/mesh": 0.9013889999987441,
+          "initialization/initial_plates": 1.305870900003356,
+          "initialization/rigid_residual": 3.1932560999994166,
+          "physics/other": 2.5986339000373846,
+          "physics/advance_thermal_state": 0.0005364000026020221,
+          "physics/mantle": 0.04028830000606831,
+          "physics/boundaries": 0.0005206000059843063,
+          "physics/classify_boundaries": 0.5595967999834102,
+          "physics/advance_subduction_memory": 1.2013588000045274,
+          "physics/advance_slab_breakoff": 0.046503700003086124,
+          "physics/advance_rollback": 0.05004249999910826,
+          "physics/plate_dynamics": 1.4895903000142425,
+          "physics/advance_plume_rifting": 0.978480199992191,
+          "physics/lithosphere_other": 4.4434543999959715,
+          "physics/transport": 2.6932882000037353,
+          "physics/footprint_overflow": 0.10560740000073565,
+          "physics/continental_cycle": 0.014112500000919681,
+          "physics/advance_craton_memory": 0.014842200012935791,
+          "physics/advance_mantle_plumes": 0.059675699994841125,
+          "physics/advance_hotspot_tracks": 0.021028299997851718,
+          "physics/advance_plume_magmatism": 0.012689899995166343,
+          "physics/refresh_mechanical_lithosphere": 0.006020299988449551,
+          "physics/advance_late_tectonics": 0.06883879999804776,
+          "physics/topology": 0.10744459999114042,
+          "physics/advance_plume_dynamic_topography": 0.0052718999941134825,
+          "physics/topography": 1.048348199998145,
+          "physics/sediments": 0.1870959999941988,
+          "physics/hydrosphere": 0.11440929998934735,
+          "rendering/during_steps": 0.11397600000054808,
+          "checkpoint_and_output": 0.2595381000210182,
+          "rendering/reports": 3.120541399985086,
+          "rendering/final_drain_and_shutdown": 1.3979921000063769
+        },
+        "bucket_calls": {
+          "runner_other": 1,
+          "initialization/other": 1,
+          "initialization/prototype_other": 2,
+          "initialization/mesh_request": 2,
+          "initialization/mesh": 2,
+          "initialization/initial_plates": 2,
+          "initialization/rigid_residual": 2,
+          "physics/other": 1,
+          "physics/advance_thermal_state": 5,
+          "physics/mantle": 5,
+          "physics/boundaries": 20,
+          "physics/classify_boundaries": 25,
+          "physics/advance_subduction_memory": 5,
+          "physics/advance_slab_breakoff": 5,
+          "physics/advance_rollback": 5,
+          "physics/plate_dynamics": 5,
+          "physics/advance_plume_rifting": 5,
+          "physics/lithosphere_other": 5,
+          "physics/transport": 5,
+          "physics/footprint_overflow": 5,
+          "physics/continental_cycle": 5,
+          "physics/advance_craton_memory": 5,
+          "physics/advance_mantle_plumes": 5,
+          "physics/advance_hotspot_tracks": 5,
+          "physics/advance_plume_magmatism": 5,
+          "physics/refresh_mechanical_lithosphere": 5,
+          "physics/advance_late_tectonics": 5,
+          "physics/topology": 5,
+          "physics/advance_plume_dynamic_topography": 5,
+          "physics/topography": 5,
+          "physics/sediments": 5,
+          "physics/hydrosphere": 5,
+          "rendering/during_steps": 8,
+          "checkpoint_and_output": 9,
+          "rendering/reports": 15
+        },
+        "initialization_calls_inclusive_do_not_sum": [
+          {
+            "function": "tectonics.mesh.build_icosphere",
+            "parent": "initialization/mesh_request",
+            "inclusive_seconds": 0.45586270000057993
+          },
+          {
+            "function": "tectonics.simulation.build_initial_mesh",
+            "parent": "initialization/prototype_other",
+            "inclusive_seconds": 0.4558794999975362
+          },
+          {
+            "function": "tectonics.plates.random_plate_system",
+            "parent": "initialization/prototype_other",
+            "inclusive_seconds": 0.3280979999981355
+          },
+          {
+            "function": "tectonics.kinematics.rigid_motion_residual",
+            "parent": "initialization/prototype_other",
+            "inclusive_seconds": 0.8432213999985834
+          },
+          {
+            "function": "tectonics.simulation.build_prototype",
+            "parent": "initialization/other",
+            "inclusive_seconds": 1.633854200001224
+          },
+          {
+            "function": "tectonics.mesh.build_icosphere",
+            "parent": "initialization/mesh_request",
+            "inclusive_seconds": 0.44554149999748915
+          },
+          {
+            "function": "tectonics.simulation.build_initial_mesh",
+            "parent": "initialization/prototype_other",
+            "inclusive_seconds": 0.44555640000180574
+          },
+          {
+            "function": "tectonics.plates.random_plate_system",
+            "parent": "initialization/prototype_other",
+            "inclusive_seconds": 0.9777940999993007
+          },
+          {
+            "function": "tectonics.kinematics.rigid_motion_residual",
+            "parent": "initialization/prototype_other",
+            "inclusive_seconds": 2.350064799997199
+          },
+          {
+            "function": "tectonics.simulation.build_prototype",
+            "parent": "initialization/other",
+            "inclusive_seconds": 3.791837500000838
+          }
+        ],
+        "transport_coverage": null,
+        "checkpoint_comparison": {
+          "exact": true,
+          "arrays_compared": 62,
+          "differences": []
+        },
+        "png_comparison": {
+          "png_exact": true,
+          "png_count": 40,
+          "png_differences": []
+        },
+        "render_workers": 4,
+        "render_jobs": 23,
+        "requested_priority": "below_normal"
+      }
+    ],
+    "initial_mesh_plain_pair": [
+      {
+        "case": "before_1",
+        "mode": "before",
+        "wall_seconds": 35.4781967999952,
+        "instrumented": false,
+        "cprofile": false,
+        "exclusive_wall_seconds": {
+          "imports_and_instrumentation": 0.6664815999974962,
+          "runner_other": 30.746768400000292,
+          "rendering/final_drain_and_shutdown": 3.8886501000015414
+        },
+        "bucket_calls": {
+          "runner_other": 1
+        },
+        "initialization_calls_inclusive_do_not_sum": [],
+        "transport_coverage": null,
+        "checkpoint_comparison": {
+          "exact": true,
+          "arrays_compared": 62,
+          "differences": []
+        },
+        "png_comparison": {
+          "png_exact": true,
+          "png_count": 40,
+          "png_differences": []
+        },
+        "render_workers": 4,
+        "render_jobs": 23,
+        "requested_priority": "below_normal"
+      },
+      {
+        "case": "after_1",
+        "mode": "after",
+        "wall_seconds": 30.92209449999791,
+        "instrumented": false,
+        "cprofile": false,
+        "exclusive_wall_seconds": {
+          "imports_and_instrumentation": 0.6530302999963169,
+          "runner_other": 27.764603600000555,
+          "rendering/final_drain_and_shutdown": 2.289921700001287
+        },
+        "bucket_calls": {
+          "runner_other": 1
+        },
+        "initialization_calls_inclusive_do_not_sum": [],
+        "transport_coverage": null,
+        "checkpoint_comparison": {
+          "exact": true,
+          "arrays_compared": 62,
+          "differences": []
+        },
+        "png_comparison": {
+          "png_exact": true,
+          "png_count": 40,
+          "png_differences": []
+        },
+        "render_workers": 4,
+        "render_jobs": 23,
+        "requested_priority": "below_normal"
+      },
+      {
+        "case": "after_2",
+        "mode": "after",
+        "wall_seconds": 14.664333599997917,
+        "instrumented": false,
+        "cprofile": false,
+        "exclusive_wall_seconds": {
+          "imports_and_instrumentation": 0.645140699998592,
+          "runner_other": 12.471218099999533,
+          "rendering/final_drain_and_shutdown": 1.4002903000000515
+        },
+        "bucket_calls": {
+          "runner_other": 1
+        },
+        "initialization_calls_inclusive_do_not_sum": [],
+        "transport_coverage": null,
+        "checkpoint_comparison": {
+          "exact": true,
+          "arrays_compared": 62,
+          "differences": []
+        },
+        "png_comparison": {
+          "png_exact": true,
+          "png_count": 40,
+          "png_differences": []
+        },
+        "render_workers": 4,
+        "render_jobs": 23,
+        "requested_priority": "below_normal"
+      },
+      {
+        "case": "before_2",
+        "mode": "before",
+        "wall_seconds": 35.729187900004035,
+        "instrumented": false,
+        "cprofile": false,
+        "exclusive_wall_seconds": {
+          "imports_and_instrumentation": 0.6684573999955319,
+          "runner_other": 31.239193900000828,
+          "rendering/final_drain_and_shutdown": 3.6389355000064825
+        },
+        "bucket_calls": {
+          "runner_other": 1
+        },
+        "initialization_calls_inclusive_do_not_sum": [],
+        "transport_coverage": null,
+        "checkpoint_comparison": {
+          "exact": true,
+          "arrays_compared": 62,
+          "differences": []
+        },
+        "png_comparison": {
+          "png_exact": true,
+          "png_count": 40,
+          "png_differences": []
+        },
+        "render_workers": 4,
+        "render_jobs": 23,
+        "requested_priority": "below_normal"
+      },
+      {
+        "case": "before_3",
+        "mode": "before",
+        "wall_seconds": 35.95633590000216,
+        "instrumented": false,
+        "cprofile": false,
+        "exclusive_wall_seconds": {
+          "imports_and_instrumentation": 0.6374986000009812,
+          "runner_other": 30.829562099999748,
+          "rendering/final_drain_and_shutdown": 3.791813200004981
+        },
+        "bucket_calls": {
+          "runner_other": 1
+        },
+        "initialization_calls_inclusive_do_not_sum": [],
+        "transport_coverage": [],
+        "checkpoint_comparison": {
+          "exact": true,
+          "arrays_compared": 62,
+          "differences": []
+        },
+        "png_comparison": {
+          "png_exact": true,
+          "png_count": 40,
+          "png_differences": []
+        },
+        "render_workers": 4,
+        "render_jobs": 23,
+        "requested_priority": "below_normal"
+      },
+      {
+        "case": "after_3",
+        "mode": "after",
+        "wall_seconds": 29.539415000006557,
+        "instrumented": false,
+        "cprofile": false,
+        "exclusive_wall_seconds": {
+          "imports_and_instrumentation": 0.6414722000117763,
+          "runner_other": 24.952091199993447,
+          "rendering/final_drain_and_shutdown": 3.738707799995609
+        },
+        "bucket_calls": {
+          "runner_other": 1
+        },
+        "initialization_calls_inclusive_do_not_sum": [],
+        "transport_coverage": [],
+        "checkpoint_comparison": {
+          "exact": true,
+          "arrays_compared": 62,
+          "differences": []
+        },
+        "png_comparison": {
+          "png_exact": true,
+          "png_count": 40,
+          "png_differences": []
+        },
+        "render_workers": 4,
+        "render_jobs": 23,
+        "requested_priority": "below_normal"
+      }
+    ],
+    "initial_mesh_sub6_pair": [
+      {
+        "case": "before_1",
+        "mode": "before",
+        "wall_seconds": 33.132094299995515,
+        "instrumented": true,
+        "cprofile": false,
+        "exclusive_wall_seconds": {
+          "imports_and_instrumentation": 0.7713667999996687,
+          "runner_other": 0.002872700002626516,
+          "initialization/other": 2.078951399998914,
+          "initialization/prototype_other": 0.050435199998901226,
+          "initialization/mesh_request": 0.00007499999628635123,
+          "initialization/mesh": 3.6440041000096244,
+          "initialization/initial_plates": 2.574009500000102,
+          "initialization/rigid_residual": 6.86779199999728,
+          "rendering/reports": 3.322690799999691,
+          "physics/other": 0.0570174000094994,
+          "physics/advance_thermal_state": 0.00008059999527176842,
+          "physics/mantle": 0.043544400003156625,
+          "physics/boundaries": 0.00007780001760693267,
+          "physics/classify_boundaries": 0.14666449999640463,
+          "physics/advance_subduction_memory": 0.19348640000680462,
+          "physics/advance_slab_breakoff": 0.015403800003696233,
+          "physics/advance_rollback": 0.00016029999824240804,
+          "physics/plate_dynamics": 0.13640979999763658,
+          "physics/advance_plume_rifting": 0.0050166999935754575,
+          "physics/plume_neighbor_contrast": 0.23048130000097444,
+          "physics/lithosphere_other": 0.027101200001197867,
+          "physics/transport": 7.512734799995087,
+          "diagnostic/coverage": 0.0007603999983984977,
+          "physics/cell_owner_loop": 1.3040856000006897,
+          "physics/footprint_overflow": 0.6162741000007372,
+          "rendering/during_steps": 0.9144195000044419,
+          "physics/volcanic_arcs": 0.031148800000664778,
+          "physics/continental_cycle": 0.0050781999962055124,
+          "physics/advance_craton_memory": 0.008252499996160623,
+          "physics/advance_mantle_plumes": 0.034013900003628805,
+          "physics/advance_hotspot_tracks": 0.01013519999833079,
+          "physics/advance_plume_magmatism": 0.00675279999995837,
+          "physics/refresh_mechanical_lithosphere": 0.0032349999964935705,
+          "physics/advance_late_tectonics": 0.01840000000083819,
+          "physics/topology": 0.03724629999487661,
+          "physics/advance_plume_dynamic_topography": 0.003113199993094895,
+          "physics/topography": 0.17171850000158884,
+          "physics/sediments": 0.09776919999421807,
+          "physics/hydrosphere": 0.04165410000132397,
+          "checkpoint_and_output": 0.3673103999972227,
+          "rendering/final_drain_and_shutdown": 1.6019867999930284
+        },
+        "bucket_calls": {
+          "runner_other": 1,
+          "initialization/other": 1,
+          "initialization/prototype_other": 2,
+          "initialization/mesh_request": 2,
+          "initialization/mesh": 2,
+          "initialization/initial_plates": 2,
+          "initialization/rigid_residual": 2,
+          "rendering/reports": 22,
+          "physics/other": 1,
+          "physics/advance_thermal_state": 1,
+          "physics/mantle": 1,
+          "physics/boundaries": 4,
+          "physics/classify_boundaries": 5,
+          "physics/advance_subduction_memory": 1,
+          "physics/advance_slab_breakoff": 1,
+          "physics/advance_rollback": 1,
+          "physics/plate_dynamics": 1,
+          "physics/advance_plume_rifting": 1,
+          "physics/plume_neighbor_contrast": 1,
+          "physics/lithosphere_other": 1,
+          "physics/transport": 1,
+          "diagnostic/coverage": 1,
+          "physics/cell_owner_loop": 1,
+          "physics/footprint_overflow": 1,
+          "rendering/during_steps": 8,
+          "physics/volcanic_arcs": 2,
+          "physics/continental_cycle": 1,
+          "physics/advance_craton_memory": 1,
+          "physics/advance_mantle_plumes": 1,
+          "physics/advance_hotspot_tracks": 1,
+          "physics/advance_plume_magmatism": 1,
+          "physics/refresh_mechanical_lithosphere": 1,
+          "physics/advance_late_tectonics": 1,
+          "physics/topology": 1,
+          "physics/advance_plume_dynamic_topography": 1,
+          "physics/topography": 1,
+          "physics/sediments": 1,
+          "physics/hydrosphere": 1,
+          "checkpoint_and_output": 9
+        },
+        "initialization_calls_inclusive_do_not_sum": [
+          {
+            "function": "tectonics.mesh.build_icosphere",
+            "parent": "initialization/mesh_request",
+            "inclusive_seconds": 1.8071855999951367
+          },
+          {
+            "function": "tectonics.simulation.build_initial_mesh",
+            "parent": "initialization/prototype_other",
+            "inclusive_seconds": 1.807218499998271
+          },
+          {
+            "function": "tectonics.plates.random_plate_system",
+            "parent": "initialization/prototype_other",
+            "inclusive_seconds": 1.2757196000020485
+          },
+          {
+            "function": "tectonics.kinematics.rigid_motion_residual",
+            "parent": "initialization/prototype_other",
+            "inclusive_seconds": 3.4551621999999043
+          },
+          {
+            "function": "tectonics.simulation.build_prototype",
+            "parent": "initialization/other",
+            "inclusive_seconds": 6.562101299998176
+          },
+          {
+            "function": "tectonics.mesh.build_icosphere",
+            "parent": "initialization/mesh_request",
+            "inclusive_seconds": 1.836851599997317
+          },
+          {
+            "function": "tectonics.simulation.build_initial_mesh",
+            "parent": "initialization/prototype_other",
+            "inclusive_seconds": 1.8368677999969805
+          },
+          {
+            "function": "tectonics.plates.random_plate_system",
+            "parent": "initialization/prototype_other",
+            "inclusive_seconds": 1.2983166000049096
+          },
+          {
+            "function": "tectonics.kinematics.rigid_motion_residual",
+            "parent": "initialization/prototype_other",
+            "inclusive_seconds": 3.412666199998057
+          },
+          {
+            "function": "tectonics.simulation.build_prototype",
+            "parent": "initialization/other",
+            "inclusive_seconds": 6.574236799999198
+          }
+        ],
+        "transport_coverage": [
+          {
+            "step": 1,
+            "cells": 81920,
+            "single_source": 78291,
+            "overlap": 1809,
+            "gap": 1820
+          }
+        ],
+        "checkpoint_comparison": {
+          "exact": true,
+          "arrays_compared": 62,
+          "differences": []
+        },
+        "png_comparison": {
+          "png_exact": true,
+          "png_count": 47,
+          "png_differences": []
+        },
+        "render_workers": 4,
+        "render_jobs": 30,
+        "requested_priority": "below_normal"
+      },
+      {
+        "case": "after_1",
+        "mode": "after",
+        "wall_seconds": 26.349046300005284,
+        "instrumented": true,
+        "cprofile": false,
+        "exclusive_wall_seconds": {
+          "imports_and_instrumentation": 0.7097167999963858,
+          "runner_other": 0.0038365999862435274,
+          "initialization/other": 2.0794593000100576,
+          "initialization/mesh_request": 0.00004389999958220869,
+          "initialization/mesh": 1.858471699997608,
+          "initialization/prototype_other": 0.025095500001043547,
+          "initialization/initial_plates": 1.3076717000003555,
+          "initialization/rigid_residual": 3.40120229999593,
+          "rendering/reports": 3.321437099992181,
+          "physics/other": 0.05607159999635769,
+          "physics/advance_thermal_state": 0.00008689999958733097,
+          "physics/mantle": 0.04282380000222474,
+          "physics/boundaries": 0.00007930000720079988,
+          "physics/classify_boundaries": 0.13245319999259664,
+          "physics/advance_subduction_memory": 0.1911577999999281,
+          "physics/advance_slab_breakoff": 0.014324499999929685,
+          "physics/advance_rollback": 0.00018039999849861488,
+          "physics/plate_dynamics": 0.1380570000037551,
+          "physics/advance_plume_rifting": 0.004383200001029763,
+          "physics/plume_neighbor_contrast": 0.23193389999505598,
+          "physics/lithosphere_other": 0.026522899999690708,
+          "physics/transport": 7.451453399997263,
+          "diagnostic/coverage": 0.0007175999999162741,
+          "physics/cell_owner_loop": 1.3112373000039952,
+          "physics/footprint_overflow": 0.6144069000001764,
+          "rendering/during_steps": 0.9357164000102784,
+          "physics/volcanic_arcs": 0.0311777999959304,
+          "physics/continental_cycle": 0.005465900001581758,
+          "physics/advance_craton_memory": 0.0077448000010917895,
+          "physics/advance_mantle_plumes": 0.03470780000498053,
+          "physics/advance_hotspot_tracks": 0.010651699994923547,
+          "physics/advance_plume_magmatism": 0.006391200004145503,
+          "physics/refresh_mechanical_lithosphere": 0.0031339000051957555,
+          "physics/advance_late_tectonics": 0.017882299995108042,
+          "physics/topology": 0.037726199996541254,
+          "physics/advance_plume_dynamic_topography": 0.002849600001354702,
+          "physics/topography": 0.1672956999973394,
+          "physics/sediments": 0.07536609999806387,
+          "physics/hydrosphere": 0.040781499999866355,
+          "checkpoint_and_output": 0.354753100014932,
+          "rendering/final_drain_and_shutdown": 1.53261499999644
+        },
+        "bucket_calls": {
+          "runner_other": 1,
+          "initialization/other": 1,
+          "initialization/mesh_request": 2,
+          "initialization/mesh": 1,
+          "initialization/prototype_other": 1,
+          "initialization/initial_plates": 1,
+          "initialization/rigid_residual": 1,
+          "rendering/reports": 22,
+          "physics/other": 1,
+          "physics/advance_thermal_state": 1,
+          "physics/mantle": 1,
+          "physics/boundaries": 4,
+          "physics/classify_boundaries": 5,
+          "physics/advance_subduction_memory": 1,
+          "physics/advance_slab_breakoff": 1,
+          "physics/advance_rollback": 1,
+          "physics/plate_dynamics": 1,
+          "physics/advance_plume_rifting": 1,
+          "physics/plume_neighbor_contrast": 1,
+          "physics/lithosphere_other": 1,
+          "physics/transport": 1,
+          "diagnostic/coverage": 1,
+          "physics/cell_owner_loop": 1,
+          "physics/footprint_overflow": 1,
+          "rendering/during_steps": 8,
+          "physics/volcanic_arcs": 2,
+          "physics/continental_cycle": 1,
+          "physics/advance_craton_memory": 1,
+          "physics/advance_mantle_plumes": 1,
+          "physics/advance_hotspot_tracks": 1,
+          "physics/advance_plume_magmatism": 1,
+          "physics/refresh_mechanical_lithosphere": 1,
+          "physics/advance_late_tectonics": 1,
+          "physics/topology": 1,
+          "physics/advance_plume_dynamic_topography": 1,
+          "physics/topography": 1,
+          "physics/sediments": 1,
+          "physics/hydrosphere": 1,
+          "checkpoint_and_output": 9
+        },
+        "initialization_calls_inclusive_do_not_sum": [
+          {
+            "function": "tectonics.mesh.build_icosphere",
+            "parent": "initialization/mesh_request",
+            "inclusive_seconds": 1.8584850999977789
+          },
+          {
+            "function": "tectonics.simulation.build_initial_mesh",
+            "parent": "initialization/other",
+            "inclusive_seconds": 1.8585133999949903
+          },
+          {
+            "function": "tectonics.simulation.build_initial_mesh",
+            "parent": "initialization/prototype_other",
+            "inclusive_seconds": 0.00001290000363951549
+          },
+          {
+            "function": "tectonics.plates.random_plate_system",
+            "parent": "initialization/prototype_other",
+            "inclusive_seconds": 1.3076789999977336
+          },
+          {
+            "function": "tectonics.kinematics.rigid_motion_residual",
+            "parent": "initialization/prototype_other",
+            "inclusive_seconds": 3.4012192000009236
+          },
+          {
+            "function": "tectonics.simulation.build_prototype",
+            "parent": "initialization/other",
+            "inclusive_seconds": 4.733985999999277
+          }
+        ],
+        "transport_coverage": [
+          {
+            "step": 1,
+            "cells": 81920,
+            "single_source": 78291,
+            "overlap": 1809,
+            "gap": 1820
+          }
+        ],
+        "checkpoint_comparison": {
+          "exact": true,
+          "arrays_compared": 62,
+          "differences": []
+        },
+        "png_comparison": {
+          "png_exact": true,
+          "png_count": 47,
+          "png_differences": []
+        },
+        "render_workers": 4,
+        "render_jobs": 30,
+        "requested_priority": "below_normal"
+      }
+    ],
+    "current_stages_merge": [
+      {
+        "case": "after_1",
+        "mode": "after",
+        "wall_seconds": 27.26365960000112,
+        "instrumented": true,
+        "cprofile": false,
+        "exclusive_wall_seconds": {
+          "imports_and_instrumentation": 0.6676187999983085,
+          "runner_other": 0.0027102000094600953,
+          "initialization/other": 0.21171249999315478,
+          "initialization/mesh_request": 0.00003310000465717167,
+          "initialization/mesh": 0.44446989999414654,
+          "initialization/prototype_other": 0.006735200004186481,
+          "initialization/initial_plates": 0.31803059999947436,
+          "initialization/rigid_residual": 0.8256235000008019,
+          "physics/other": 0.10461949999444187,
+          "physics/advance_thermal_state": 0.0005061999836470932,
+          "physics/mantle": 0.04102160000911681,
+          "physics/boundaries": 0.0023483999830204993,
+          "physics/classify_boundaries": 0.6054201000151807,
+          "physics/advance_subduction_memory": 1.050695400001132,
+          "physics/advance_slab_breakoff": 0.036727199993038084,
+          "physics/advance_rollback": 0.053945200008456595,
+          "physics/plate_dynamics": 1.3741805999889039,
+          "physics/advance_plume_rifting": 0.014750999995158054,
+          "physics/plume_neighbor_contrast": 1.0689037000047392,
+          "physics/lithosphere_other": 0.07602699999551987,
+          "physics/transport": 2.2842722999994294,
+          "diagnostic/coverage": 0.0013096999973640777,
+          "physics/cell_owner_loop": 6.081369600004109,
+          "physics/footprint_overflow": 0.10907620000216411,
+          "physics/volcanic_arcs": 2.7549181999856955,
+          "physics/continental_cycle": 0.01563480000186246,
+          "physics/advance_craton_memory": 0.02058890000625979,
+          "physics/advance_mantle_plumes": 0.03682169999956386,
+          "physics/advance_hotspot_tracks": 0.02817540002433816,
+          "physics/advance_plume_magmatism": 0.015022199986560736,
+          "physics/refresh_mechanical_lithosphere": 0.005342899989045691,
+          "physics/advance_late_tectonics": 0.14472950000345008,
+          "physics/topology": 0.1400534000058542,
+          "physics/advance_plume_dynamic_topography": 0.011588600005779881,
+          "physics/topography": 1.062677599999006,
+          "physics/sediments": 0.18813320001936518,
+          "physics/hydrosphere": 0.14797080000425922,
+          "rendering/during_steps": 0.22869129999162396,
+          "checkpoint_and_output": 0.3226084000125411,
+          "rendering/reports": 3.3018559999836725,
+          "rendering/final_drain_and_shutdown": 3.298456600001373
+        },
+        "bucket_calls": {
+          "runner_other": 1,
+          "initialization/other": 1,
+          "initialization/mesh_request": 2,
+          "initialization/mesh": 1,
+          "initialization/prototype_other": 1,
+          "initialization/initial_plates": 1,
+          "initialization/rigid_residual": 1,
+          "physics/other": 1,
+          "physics/advance_thermal_state": 5,
+          "physics/mantle": 5,
+          "physics/boundaries": 22,
+          "physics/classify_boundaries": 27,
+          "physics/advance_subduction_memory": 5,
+          "physics/advance_slab_breakoff": 5,
+          "physics/advance_rollback": 5,
+          "physics/plate_dynamics": 5,
+          "physics/advance_plume_rifting": 5,
+          "physics/plume_neighbor_contrast": 5,
+          "physics/lithosphere_other": 5,
+          "physics/transport": 5,
+          "diagnostic/coverage": 5,
+          "physics/cell_owner_loop": 5,
+          "physics/footprint_overflow": 5,
+          "physics/volcanic_arcs": 10,
+          "physics/continental_cycle": 5,
+          "physics/advance_craton_memory": 5,
+          "physics/advance_mantle_plumes": 5,
+          "physics/advance_hotspot_tracks": 5,
+          "physics/advance_plume_magmatism": 5,
+          "physics/refresh_mechanical_lithosphere": 5,
+          "physics/advance_late_tectonics": 5,
+          "physics/topology": 5,
+          "physics/advance_plume_dynamic_topography": 5,
+          "physics/topography": 5,
+          "physics/sediments": 5,
+          "physics/hydrosphere": 5,
+          "rendering/during_steps": 8,
+          "checkpoint_and_output": 9,
+          "rendering/reports": 15
+        },
+        "initialization_calls_inclusive_do_not_sum": [
+          {
+            "function": "tectonics.mesh.build_icosphere",
+            "parent": "initialization/mesh_request",
+            "inclusive_seconds": 0.44447829999990063
+          },
+          {
+            "function": "tectonics.simulation.build_initial_mesh",
+            "parent": "initialization/other",
+            "inclusive_seconds": 0.44450099999812664
+          },
+          {
+            "function": "tectonics.simulation.build_initial_mesh",
+            "parent": "initialization/prototype_other",
+            "inclusive_seconds": 0.000012600001355167478
+          },
+          {
+            "function": "tectonics.plates.random_plate_system",
+            "parent": "initialization/prototype_other",
+            "inclusive_seconds": 0.31803770000260556
+          },
+          {
+            "function": "tectonics.kinematics.rigid_motion_residual",
+            "parent": "initialization/prototype_other",
+            "inclusive_seconds": 0.8256357999998727
+          },
+          {
+            "function": "tectonics.simulation.build_prototype",
+            "parent": "initialization/other",
+            "inclusive_seconds": 1.1504060000006575
+          }
+        ],
+        "transport_coverage": [
+          {
+            "step": 1,
+            "cells": 20480,
+            "single_source": 19052,
+            "overlap": 710,
+            "gap": 718
+          },
+          {
+            "step": 2,
+            "cells": 20480,
+            "single_source": 19049,
+            "overlap": 711,
+            "gap": 720
+          },
+          {
+            "step": 3,
+            "cells": 20480,
+            "single_source": 19105,
+            "overlap": 683,
+            "gap": 692
+          },
+          {
+            "step": 4,
+            "cells": 20480,
+            "single_source": 19335,
+            "overlap": 571,
+            "gap": 574
+          },
+          {
+            "step": 5,
+            "cells": 20480,
+            "single_source": 19149,
+            "overlap": 663,
+            "gap": 668
+          }
+        ],
+        "checkpoint_comparison": {
+          "exact": true,
+          "arrays_compared": 62,
+          "differences": []
+        },
+        "png_comparison": {
+          "png_exact": true,
+          "png_count": 40,
+          "png_differences": []
+        },
+        "render_workers": 4,
+        "render_jobs": 23,
+        "requested_priority": "below_normal"
+      }
+    ],
+    "current_stages_split": [
+      {
+        "case": "after_1",
+        "mode": "after",
+        "wall_seconds": 28.50266130000091,
+        "instrumented": true,
+        "cprofile": false,
+        "exclusive_wall_seconds": {
+          "imports_and_instrumentation": 0.6731575999947381,
+          "runner_other": 0.005760000000009313,
+          "initialization/other": 0.2216887999966275,
+          "initialization/mesh_request": 0.00003390000347280875,
+          "initialization/mesh": 0.4505342999982531,
+          "initialization/prototype_other": 0.007046200000331737,
+          "initialization/initial_plates": 0.31379220000235364,
+          "initialization/rigid_residual": 0.8306230000016512,
+          "physics/other": 0.08517809997283621,
+          "physics/advance_thermal_state": 0.0005700999972759746,
+          "physics/mantle": 0.03629740000178572,
+          "physics/boundaries": 0.00044499998330138624,
+          "physics/classify_boundaries": 0.636494100021082,
+          "physics/advance_subduction_memory": 1.1498154000000795,
+          "physics/advance_slab_breakoff": 0.04325129999779165,
+          "physics/advance_rollback": 0.05177580000599846,
+          "physics/plate_dynamics": 1.5475437999921269,
+          "physics/advance_plume_rifting": 0.01947520001704106,
+          "physics/plume_neighbor_contrast": 1.1398465999955079,
+          "physics/lithosphere_other": 0.07116029999451712,
+          "physics/transport": 2.727721500006737,
+          "diagnostic/coverage": 0.0012952000033692457,
+          "physics/cell_owner_loop": 6.172750500001712,
+          "physics/footprint_overflow": 0.08142129999760073,
+          "physics/volcanic_arcs": 2.5463257000083104,
+          "physics/continental_cycle": 0.017094500006351154,
+          "physics/advance_craton_memory": 0.01896199999464443,
+          "physics/advance_mantle_plumes": 0.03391220000048634,
+          "physics/advance_hotspot_tracks": 0.02343970000219997,
+          "physics/advance_plume_magmatism": 0.019811900005151983,
+          "physics/refresh_mechanical_lithosphere": 0.00604159999784315,
+          "physics/advance_late_tectonics": 0.10133389999100473,
+          "physics/topology": 0.10610000000451691,
+          "physics/advance_plume_dynamic_topography": 0.008813500004180241,
+          "physics/topography": 1.088899999995192,
+          "physics/sediments": 0.22799010000017006,
+          "physics/hydrosphere": 0.1531503999940469,
+          "rendering/during_steps": 0.23114750000240747,
+          "checkpoint_and_output": 0.3939187000214588,
+          "rendering/reports": 3.279600299982121,
+          "rendering/final_drain_and_shutdown": 3.804544300000998
+        },
+        "bucket_calls": {
+          "runner_other": 1,
+          "initialization/other": 1,
+          "initialization/mesh_request": 2,
+          "initialization/mesh": 1,
+          "initialization/prototype_other": 1,
+          "initialization/initial_plates": 1,
+          "initialization/rigid_residual": 1,
+          "physics/other": 1,
+          "physics/advance_thermal_state": 5,
+          "physics/mantle": 5,
+          "physics/boundaries": 22,
+          "physics/classify_boundaries": 27,
+          "physics/advance_subduction_memory": 5,
+          "physics/advance_slab_breakoff": 5,
+          "physics/advance_rollback": 5,
+          "physics/plate_dynamics": 5,
+          "physics/advance_plume_rifting": 5,
+          "physics/plume_neighbor_contrast": 5,
+          "physics/lithosphere_other": 5,
+          "physics/transport": 5,
+          "diagnostic/coverage": 5,
+          "physics/cell_owner_loop": 5,
+          "physics/footprint_overflow": 5,
+          "physics/volcanic_arcs": 10,
+          "physics/continental_cycle": 5,
+          "physics/advance_craton_memory": 5,
+          "physics/advance_mantle_plumes": 5,
+          "physics/advance_hotspot_tracks": 5,
+          "physics/advance_plume_magmatism": 5,
+          "physics/refresh_mechanical_lithosphere": 5,
+          "physics/advance_late_tectonics": 5,
+          "physics/topology": 5,
+          "physics/advance_plume_dynamic_topography": 5,
+          "physics/topography": 5,
+          "physics/sediments": 5,
+          "physics/hydrosphere": 5,
+          "rendering/during_steps": 8,
+          "checkpoint_and_output": 9,
+          "rendering/reports": 15
+        },
+        "initialization_calls_inclusive_do_not_sum": [
+          {
+            "function": "tectonics.mesh.build_icosphere",
+            "parent": "initialization/mesh_request",
+            "inclusive_seconds": 0.45054330000129994
+          },
+          {
+            "function": "tectonics.simulation.build_initial_mesh",
+            "parent": "initialization/other",
+            "inclusive_seconds": 0.45056489999842597
+          },
+          {
+            "function": "tectonics.simulation.build_initial_mesh",
+            "parent": "initialization/prototype_other",
+            "inclusive_seconds": 0.000012999997125007212
+          },
+          {
+            "function": "tectonics.plates.random_plate_system",
+            "parent": "initialization/prototype_other",
+            "inclusive_seconds": 0.3137992999982089
+          },
+          {
+            "function": "tectonics.kinematics.rigid_motion_residual",
+            "parent": "initialization/prototype_other",
+            "inclusive_seconds": 0.8306346999961534
+          },
+          {
+            "function": "tectonics.simulation.build_prototype",
+            "parent": "initialization/other",
+            "inclusive_seconds": 1.1514786999978242
+          }
+        ],
+        "transport_coverage": [
+          {
+            "step": 1,
+            "cells": 20480,
+            "single_source": 18853,
+            "overlap": 810,
+            "gap": 817
+          },
+          {
+            "step": 2,
+            "cells": 20480,
+            "single_source": 19175,
+            "overlap": 651,
+            "gap": 654
+          },
+          {
+            "step": 3,
+            "cells": 20480,
+            "single_source": 18946,
+            "overlap": 763,
+            "gap": 771
+          },
+          {
+            "step": 4,
+            "cells": 20480,
+            "single_source": 19121,
+            "overlap": 678,
+            "gap": 681
+          },
+          {
+            "step": 5,
+            "cells": 20480,
+            "single_source": 18786,
+            "overlap": 844,
+            "gap": 850
+          }
+        ],
+        "checkpoint_comparison": {
+          "exact": true,
+          "arrays_compared": 62,
+          "differences": []
+        },
+        "png_comparison": {
+          "png_exact": true,
+          "png_count": 40,
+          "png_differences": []
+        },
+        "render_workers": 4,
+        "render_jobs": 23,
+        "requested_priority": "below_normal"
+      }
+    ],
+    "current_stages_ordinary": [
+      {
+        "case": "after_1",
+        "mode": "after",
+        "wall_seconds": 30.522509100002935,
+        "instrumented": true,
+        "cprofile": false,
+        "exclusive_wall_seconds": {
+          "imports_and_instrumentation": 0.6744018000026699,
+          "runner_other": 0.0052404000016395,
+          "initialization/other": 0.22721190000447677,
+          "initialization/mesh_request": 0.00004460000491235405,
+          "initialization/mesh": 0.4703239999944344,
+          "initialization/prototype_other": 0.007077099995512981,
+          "initialization/initial_plates": 0.3174781999987317,
+          "initialization/rigid_residual": 0.8831149000034202,
+          "physics/other": 0.0777611999947112,
+          "physics/advance_thermal_state": 0.0005076999950688332,
+          "physics/mantle": 0.03732700000546174,
+          "physics/boundaries": 0.0004064000095240772,
+          "physics/classify_boundaries": 0.6306194000062533,
+          "physics/advance_subduction_memory": 1.393411199998809,
+          "physics/advance_slab_breakoff": 0.06464589999086456,
+          "physics/advance_rollback": 0.06774200000654673,
+          "physics/plate_dynamics": 1.809011899997131,
+          "physics/advance_plume_rifting": 0.011232600008952431,
+          "physics/plume_neighbor_contrast": 1.2112580999892089,
+          "physics/lithosphere_other": 0.08223640002688626,
+          "physics/transport": 3.031645299990487,
+          "diagnostic/coverage": 0.001556999995955266,
+          "physics/cell_owner_loop": 6.43586260000302,
+          "physics/footprint_overflow": 0.12624919999507256,
+          "physics/volcanic_arcs": 3.2082183999955305,
+          "physics/continental_cycle": 0.025006299998494796,
+          "physics/advance_craton_memory": 0.019975099989096634,
+          "physics/advance_mantle_plumes": 0.07244199998967815,
+          "physics/advance_hotspot_tracks": 0.03035599998838734,
+          "physics/advance_plume_magmatism": 0.017582500004209578,
+          "physics/refresh_mechanical_lithosphere": 0.005476899998029694,
+          "physics/advance_late_tectonics": 0.08778210000309628,
+          "physics/topology": 0.12906300000759074,
+          "physics/advance_plume_dynamic_topography": 0.006023699999786913,
+          "physics/topography": 1.1363749000011012,
+          "physics/sediments": 0.22141130000090925,
+          "physics/hydrosphere": 0.13782609999907436,
+          "rendering/during_steps": 0.2533027000099537,
+          "checkpoint_and_output": 0.47338859999581473,
+          "rendering/reports": 3.3960533999998006,
+          "rendering/final_drain_and_shutdown": 3.552353300001414
+        },
+        "bucket_calls": {
+          "runner_other": 1,
+          "initialization/other": 1,
+          "initialization/mesh_request": 2,
+          "initialization/mesh": 1,
+          "initialization/prototype_other": 1,
+          "initialization/initial_plates": 1,
+          "initialization/rigid_residual": 1,
+          "physics/other": 1,
+          "physics/advance_thermal_state": 5,
+          "physics/mantle": 5,
+          "physics/boundaries": 20,
+          "physics/classify_boundaries": 25,
+          "physics/advance_subduction_memory": 5,
+          "physics/advance_slab_breakoff": 5,
+          "physics/advance_rollback": 5,
+          "physics/plate_dynamics": 5,
+          "physics/advance_plume_rifting": 5,
+          "physics/plume_neighbor_contrast": 5,
+          "physics/lithosphere_other": 5,
+          "physics/transport": 5,
+          "diagnostic/coverage": 5,
+          "physics/cell_owner_loop": 5,
+          "physics/footprint_overflow": 5,
+          "physics/volcanic_arcs": 10,
+          "physics/continental_cycle": 5,
+          "physics/advance_craton_memory": 5,
+          "physics/advance_mantle_plumes": 5,
+          "physics/advance_hotspot_tracks": 5,
+          "physics/advance_plume_magmatism": 5,
+          "physics/refresh_mechanical_lithosphere": 5,
+          "physics/advance_late_tectonics": 5,
+          "physics/topology": 5,
+          "physics/advance_plume_dynamic_topography": 5,
+          "physics/topography": 5,
+          "physics/sediments": 5,
+          "physics/hydrosphere": 5,
+          "rendering/during_steps": 8,
+          "checkpoint_and_output": 9,
+          "rendering/reports": 15
+        },
+        "initialization_calls_inclusive_do_not_sum": [
+          {
+            "function": "tectonics.mesh.build_icosphere",
+            "parent": "initialization/mesh_request",
+            "inclusive_seconds": 0.47033809999993537
+          },
+          {
+            "function": "tectonics.simulation.build_initial_mesh",
+            "parent": "initialization/other",
+            "inclusive_seconds": 0.4703674999982468
+          },
+          {
+            "function": "tectonics.simulation.build_initial_mesh",
+            "parent": "initialization/prototype_other",
+            "inclusive_seconds": 0.00001200000406242907
+          },
+          {
+            "function": "tectonics.plates.random_plate_system",
+            "parent": "initialization/prototype_other",
+            "inclusive_seconds": 0.3174843999950099
+          },
+          {
+            "function": "tectonics.kinematics.rigid_motion_residual",
+            "parent": "initialization/prototype_other",
+            "inclusive_seconds": 0.8831274999974994
+          },
+          {
+            "function": "tectonics.simulation.build_prototype",
+            "parent": "initialization/other",
+            "inclusive_seconds": 1.20768610000232
+          }
+        ],
+        "transport_coverage": [
+          {
+            "step": 1,
+            "cells": 20480,
+            "single_source": 18469,
+            "overlap": 1002,
+            "gap": 1009
+          },
+          {
+            "step": 2,
+            "cells": 20480,
+            "single_source": 18663,
+            "overlap": 906,
+            "gap": 911
+          },
+          {
+            "step": 3,
+            "cells": 20480,
+            "single_source": 18360,
+            "overlap": 1053,
+            "gap": 1067
+          },
+          {
+            "step": 4,
+            "cells": 20480,
+            "single_source": 18702,
+            "overlap": 885,
+            "gap": 893
+          },
+          {
+            "step": 5,
+            "cells": 20480,
+            "single_source": 18314,
+            "overlap": 1074,
+            "gap": 1092
+          }
+        ],
+        "checkpoint_comparison": {
+          "exact": true,
+          "arrays_compared": 62,
+          "differences": []
+        },
+        "png_comparison": {
+          "png_exact": true,
+          "png_count": 40,
+          "png_differences": []
+        },
+        "render_workers": 4,
+        "render_jobs": 23,
+        "requested_priority": "below_normal"
+      }
+    ],
+    "current_numeric_profile_700": [
+      {
+        "case": "after_1",
+        "mode": "after",
+        "wall_seconds": 42.85873990000255,
+        "instrumented": true,
+        "cprofile": true,
+        "exclusive_wall_seconds": {
+          "imports_and_instrumentation": 0.6890893999952823,
+          "runner_other": 0.005588000007264782,
+          "initialization/other": 0.66658379999717,
+          "initialization/mesh_request": 0.000057000004744622856,
+          "initialization/mesh": 0.9599825999976019,
+          "initialization/prototype_other": 0.00815800000418676,
+          "initialization/initial_plates": 0.479244900001504,
+          "initialization/rigid_residual": 4.37010979999468,
+          "physics/other": 4.566982699980144,
+          "physics/advance_thermal_state": 0.0010011999984271824,
+          "physics/mantle": 0.08844639999006176,
+          "physics/boundaries": 0.0008651999960420653,
+          "physics/classify_boundaries": 0.937037000003329,
+          "physics/advance_subduction_memory": 2.0151621000040905,
+          "physics/advance_slab_breakoff": 0.09192780000739731,
+          "physics/advance_rollback": 0.09355709999363171,
+          "physics/plate_dynamics": 3.2869855999961146,
+          "physics/advance_plume_rifting": 2.114052199998696,
+          "physics/lithosphere_other": 0.09338699999352684,
+          "physics/transport": 3.4090496999997413,
+          "diagnostic/coverage": 0.0018575000067357905,
+          "physics/cell_owner_loop": 8.562436899999739,
+          "physics/footprint_overflow": 0.35117790000367677,
+          "physics/continental_cycle": 0.024738200001593214,
+          "physics/advance_craton_memory": 0.01838560000032885,
+          "physics/advance_mantle_plumes": 0.07486240000434918,
+          "physics/advance_hotspot_tracks": 0.03328420000616461,
+          "physics/advance_plume_magmatism": 0.016146900001331232,
+          "physics/refresh_mechanical_lithosphere": 0.005691099999239668,
+          "physics/advance_late_tectonics": 0.1077722000045469,
+          "physics/topology": 0.3318493999977363,
+          "physics/advance_plume_dynamic_topography": 0.007251400005770847,
+          "physics/topography": 1.6085581000006641,
+          "physics/sediments": 0.22689209999953164,
+          "physics/hydrosphere": 0.16549079999822425,
+          "rendering/during_steps": 0.24498510001285467,
+          "checkpoint_and_output": 1.1180835999839474,
+          "rendering/reports": 2.1495395000092685,
+          "rendering/final_drain_and_shutdown": 3.6905535999976564,
+          "diagnostic/profile_report": 0.03330930000083754
+        },
+        "bucket_calls": {
+          "runner_other": 1,
+          "initialization/other": 1,
+          "initialization/mesh_request": 2,
+          "initialization/mesh": 1,
+          "initialization/prototype_other": 1,
+          "initialization/initial_plates": 1,
+          "initialization/rigid_residual": 1,
+          "physics/other": 1,
+          "physics/advance_thermal_state": 5,
+          "physics/mantle": 5,
+          "physics/boundaries": 20,
+          "physics/classify_boundaries": 25,
+          "physics/advance_subduction_memory": 5,
+          "physics/advance_slab_breakoff": 5,
+          "physics/advance_rollback": 5,
+          "physics/plate_dynamics": 5,
+          "physics/advance_plume_rifting": 5,
+          "physics/lithosphere_other": 5,
+          "physics/transport": 5,
+          "diagnostic/coverage": 5,
+          "physics/cell_owner_loop": 5,
+          "physics/footprint_overflow": 5,
+          "physics/continental_cycle": 5,
+          "physics/advance_craton_memory": 5,
+          "physics/advance_mantle_plumes": 5,
+          "physics/advance_hotspot_tracks": 5,
+          "physics/advance_plume_magmatism": 5,
+          "physics/refresh_mechanical_lithosphere": 5,
+          "physics/advance_late_tectonics": 5,
+          "physics/topology": 5,
+          "physics/advance_plume_dynamic_topography": 5,
+          "physics/topography": 5,
+          "physics/sediments": 5,
+          "physics/hydrosphere": 5,
+          "rendering/during_steps": 8,
+          "checkpoint_and_output": 9,
+          "rendering/reports": 15
+        },
+        "initialization_calls_inclusive_do_not_sum": [
+          {
+            "function": "tectonics.mesh.build_icosphere",
+            "parent": "initialization/mesh_request",
+            "inclusive_seconds": 0.9599961999992956
+          },
+          {
+            "function": "tectonics.simulation.build_initial_mesh",
+            "parent": "initialization/other",
+            "inclusive_seconds": 0.9600348999956623
+          },
+          {
+            "function": "tectonics.simulation.build_initial_mesh",
+            "parent": "initialization/prototype_other",
+            "inclusive_seconds": 0.00002390000008745119
+          },
+          {
+            "function": "tectonics.plates.random_plate_system",
+            "parent": "initialization/prototype_other",
+            "inclusive_seconds": 0.47925499999837484
+          },
+          {
+            "function": "tectonics.kinematics.rigid_motion_residual",
+            "parent": "initialization/prototype_other",
+            "inclusive_seconds": 4.370132300005935
+          },
+          {
+            "function": "tectonics.simulation.build_prototype",
+            "parent": "initialization/other",
+            "inclusive_seconds": 4.857546100000036
+          }
+        ],
+        "transport_coverage": [
+          {
+            "step": 1,
+            "cells": 20480,
+            "single_source": 18469,
+            "overlap": 1002,
+            "gap": 1009
+          },
+          {
+            "step": 2,
+            "cells": 20480,
+            "single_source": 18663,
+            "overlap": 906,
+            "gap": 911
+          },
+          {
+            "step": 3,
+            "cells": 20480,
+            "single_source": 18360,
+            "overlap": 1053,
+            "gap": 1067
+          },
+          {
+            "step": 4,
+            "cells": 20480,
+            "single_source": 18702,
+            "overlap": 885,
+            "gap": 893
+          },
+          {
+            "step": 5,
+            "cells": 20480,
+            "single_source": 18314,
+            "overlap": 1074,
+            "gap": 1092
+          }
+        ],
+        "checkpoint_comparison": {
+          "exact": true,
+          "arrays_compared": 62,
+          "differences": []
+        },
+        "png_comparison": {
+          "png_exact": true,
+          "png_count": 40,
+          "png_differences": []
+        },
+        "render_workers": 4,
+        "render_jobs": 23,
+        "requested_priority": "below_normal"
+      }
+    ]
+  },
+  "numeric_candidates": {
+    "production_enabled": false,
+    "rows": [
+      {
+        "kind": "real_checkpoint",
+        "age_myr": 320,
+        "cells": 20480,
+        "root_contrast": {
+          "exact_bytes": true,
+          "values": 20480,
+          "seconds": {
+            "reference": [
+              0.05720360000123037,
+              0.0578559000059613,
+              0.05621370000153547
+            ],
+            "candidate": [
+              0.004133200003707316,
+              0.003693300001032185,
+              0.0039700999986962415
+            ]
+          },
+          "median_seconds": {
+            "reference": 0.05720360000123037,
+            "candidate": 0.0039700999986962415
+          }
+        },
+        "local_proxy_4096_faces": {
+          "exact_bytes": true,
+          "values": 4096,
+          "seconds": {
+            "reference": [
+              0.0664254000002984,
+              0.06633719999808818,
+              0.06510159999743337
+            ],
+            "candidate": [
+              0.008280400004878175,
+              0.00817280000046594,
+              0.008302700000058394
+            ]
+          },
+          "median_seconds": {
+            "reference": 0.06633719999808818,
+            "candidate": 0.008280400004878175
+          }
+        },
+        "inputs_unchanged": true
+      },
+      {
+        "kind": "real_checkpoint",
+        "age_myr": 620,
+        "cells": 20480,
+        "root_contrast": {
+          "exact_bytes": true,
+          "values": 20480,
+          "seconds": {
+            "reference": [
+              0.05635009999969043,
+              0.05780909999884898,
+              0.05823940000118455
+            ],
+            "candidate": [
+              0.0038430999993579462,
+              0.003745800000615418,
+              0.0038800000038463622
+            ]
+          },
+          "median_seconds": {
+            "reference": 0.05780909999884898,
+            "candidate": 0.0038430999993579462
+          }
+        },
+        "local_proxy_4096_faces": {
+          "exact_bytes": true,
+          "values": 4096,
+          "seconds": {
+            "reference": [
+              0.06694750000315253,
+              0.06639670000004116,
+              0.0680826000025263
+            ],
+            "candidate": [
+              0.008285799995064735,
+              0.008114500000374392,
+              0.008321599998453166
+            ]
+          },
+          "median_seconds": {
+            "reference": 0.06694750000315253,
+            "candidate": 0.008285799995064735
+          }
+        },
+        "inputs_unchanged": true
+      },
+      {
+        "kind": "real_checkpoint",
+        "age_myr": 700,
+        "cells": 20480,
+        "root_contrast": {
+          "exact_bytes": true,
+          "values": 20480,
+          "seconds": {
+            "reference": [
+              0.05656280000403058,
+              0.058482799999183044,
+              0.058457999999518506
+            ],
+            "candidate": [
+              0.004035699996165931,
+              0.0037893999979132786,
+              0.004061400002683513
+            ]
+          },
+          "median_seconds": {
+            "reference": 0.058457999999518506,
+            "candidate": 0.004035699996165931
+          }
+        },
+        "local_proxy_4096_faces": {
+          "exact_bytes": true,
+          "values": 4096,
+          "seconds": {
+            "reference": [
+              0.06427309999708086,
+              0.06392780000169296,
+              0.06381189999956405
+            ],
+            "candidate": [
+              0.00847280000016326,
+              0.008224199998949189,
+              0.00838550000480609
+            ]
+          },
+          "median_seconds": {
+            "reference": 0.06392780000169296,
+            "candidate": 0.00838550000480609
+          }
+        },
+        "inputs_unchanged": true
+      },
+      {
+        "kind": "synthetic_three_neighbor_scaling",
+        "cells": 81920,
+        "root_contrast": {
+          "exact_bytes": true,
+          "values": 81920,
+          "seconds": {
+            "reference": [
+              0.2259364999990794,
+              0.22761899999750312,
+              0.22557049999886658
+            ],
+            "candidate": [
+              0.01571900000271853,
+              0.01506909999443451,
+              0.014808300002187025
+            ]
+          },
+          "median_seconds": {
+            "reference": 0.2259364999990794,
+            "candidate": 0.01506909999443451
+          }
+        },
+        "local_proxy_4096_faces": {
+          "exact_bytes": true,
+          "values": 4096,
+          "seconds": {
+            "reference": [
+              0.295306600004551,
+              0.2970428999979049,
+              0.30187149999983376
+            ],
+            "candidate": [
+              0.008555599997635,
+              0.008478699994157068,
+              0.008542299998225644
+            ]
+          },
+          "median_seconds": {
+            "reference": 0.2970428999979049,
+            "candidate": 0.008542299998225644
+          }
+        }
+      },
+      {
+        "kind": "synthetic_three_neighbor_scaling",
+        "cells": 327680,
+        "root_contrast": {
+          "exact_bytes": true,
+          "values": 327680,
+          "seconds": {
+            "reference": [
+              0.9075910999963526,
+              0.9061976000011782,
+              0.9096811999988859
+            ],
+            "candidate": [
+              0.06070140000520041,
+              0.06028309999965131,
+              0.060396399996534456
+            ]
+          },
+          "median_seconds": {
+            "reference": 0.9075910999963526,
+            "candidate": 0.060396399996534456
+          }
+        },
+        "local_proxy_4096_faces": {
+          "exact_bytes": true,
+          "values": 4096,
+          "seconds": {
+            "reference": [
+              6.296790399996098,
+              6.265818100000615,
+              6.318157499998051
+            ],
+            "candidate": [
+              0.008280999994894955,
+              0.008311300000059418,
+              0.008416099997702986
+            ]
+          },
+          "median_seconds": {
+            "reference": 6.296790399996098,
+            "candidate": 0.008311300000059418
+          }
+        }
+      }
+    ],
+    "source_files_unchanged": true,
+    "source_sha256": {
+      "D:\\Moon Project\\cpu-parallel\\results\\gui_runs\\stable_copy_0_700\\gui_runtime_config.yaml": "7e252120ac761d55afe5b323115886d7a9d4a677528f84c1a2b7ae84f7e11b66",
+      "D:\\Moon Project\\cpu-parallel\\results\\gui_runs\\stable_copy_0_700\\gui_checkpoint_000320_Myr\\meta.json": "9b57de0d02be44f70b0fe7a0cef9e837057a19c15aaea3abda15a52deda00f5d",
+      "D:\\Moon Project\\cpu-parallel\\results\\gui_runs\\stable_copy_0_700\\gui_checkpoint_000320_Myr\\state.npz": "74a23c0bfbf00f2d33bf087e34577c274d94d7b3c18275a58bdbc0b5635c8c41",
+      "D:\\Moon Project\\cpu-parallel\\results\\gui_runs\\stable_copy_0_700\\gui_checkpoint_000620_Myr\\meta.json": "218cbfa26760b1e3f0374a0ea3292bfd0956972a36a539df186f6b3f18a64752",
+      "D:\\Moon Project\\cpu-parallel\\results\\gui_runs\\stable_copy_0_700\\gui_checkpoint_000620_Myr\\state.npz": "7f7747cd90bcd7a52d9b5abdef632f9d254304595fa4d4af0e995515e8f8d174",
+      "D:\\Moon Project\\cpu-parallel\\results\\gui_runs\\stable_copy_0_700\\gui_checkpoint_000700_Myr\\meta.json": "3a82f8b8af88809e48fcb66f623ce5af73009e3d351fc6b57ef77f6b6de659c7",
+      "D:\\Moon Project\\cpu-parallel\\results\\gui_runs\\stable_copy_0_700\\gui_checkpoint_000700_Myr\\state.npz": "2d525f5402170502685617faf30acce453cd3f673a2d2edd287aeae3c896c6b4"
+    }
+  },
+  "resume_validation": [
+    {
+      "case": "optimized_resume",
+      "exact": true,
+      "arrays_compared": 62,
+      "differences": []
+    },
+    {
+      "case": "stable_resume",
+      "exact": true,
+      "arrays_compared": 62,
+      "differences": []
+    }
+  ],
+  "tests": {
+    "count": 258,
+    "failures": 0,
+    "errors": 0,
+    "seconds": 16.645
+  },
+  "output_validation": {
+    "gui_checkpoints": {
+      "4": {
+        "exact": true,
+        "arrays_compared": 62,
+        "differences": []
+      },
+      "8": {
+        "exact": true,
+        "arrays_compared": 62,
+        "differences": []
+      },
+      "12": {
+        "exact": true,
+        "arrays_compared": 62,
+        "differences": []
+      }
+    },
+    "gui_png": {
+      "png_exact": true,
+      "png_count": 127,
+      "png_differences": []
+    },
+    "merge_png": {
+      "png_exact": true,
+      "png_count": 40,
+      "png_differences": []
+    },
+    "split_png": {
+      "png_exact": true,
+      "png_count": 40,
+      "png_differences": []
+    }
+  },
+  "gui_gifs_sha256": [
+    {
+      "Name": "continental_history.gif",
+      "Exact": true
+    },
+    {
+      "Name": "flow_coupled_hotspot_evolution.gif",
+      "Exact": true
+    },
+    {
+      "Name": "history.gif",
+      "Exact": true
+    },
+    {
+      "Name": "hotspot_track_evolution.gif",
+      "Exact": true
+    },
+    {
+      "Name": "mobile_hotspot_evolution.gif",
+      "Exact": true
+    },
+    {
+      "Name": "plate_history.gif",
+      "Exact": true
+    },
+    {
+      "Name": "plume_dynamic_topography_history.gif",
+      "Exact": true
+    },
+    {
+      "Name": "plume_magmatism_history.gif",
+      "Exact": true
+    },
+    {
+      "Name": "plume_rift_history.gif",
+      "Exact": true
+    },
+    {
+      "Name": "surface_history.gif",
+      "Exact": true
+    }
+  ]
+}

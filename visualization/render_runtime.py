@@ -37,7 +37,8 @@ def _initialize_worker(job_name, owner_pid, process_priority):
     matplotlib.use("Agg")
     from matplotlib.figure import Figure
     from tectonics.cpu_runtime import CpuExecution
-    _worker_execution = CpuExecution(1)
+    # Rendering needs geometry caches, not alternative physics dispatch.
+    _worker_execution = CpuExecution(1, numeric_kernels=False, single_source_cells=False)
     _worker_execution.__enter__()
     original_save = Figure.savefig
 

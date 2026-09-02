@@ -305,6 +305,15 @@ def mantle_lithosphere_negative_buoyancy_proxy(state: LithosphereState) -> Array
     return h * drho
 
 
+def mantle_lithosphere_negative_buoyancy_at(state: LithosphereState, face: int) -> float:
+    """One element of the float64 proxy, without building a whole-grid array."""
+    if state.mantle_lithosphere_thickness_km is None or state.mantle_lithosphere_density_anomaly_kg_m3 is None:
+        return 0.0
+    h = np.maximum(np.float64(state.mantle_lithosphere_thickness_km[face]), 0.0)
+    drho = np.maximum(np.float64(state.mantle_lithosphere_density_anomaly_kg_m3[face]), 0.0)
+    return float(h * drho)
+
+
 def initialize_lithosphere(
     mesh: SphereMesh,
     initial_system: PlateSystem,
@@ -928,8 +937,40 @@ def advance_lithosphere(
     subducted_ocean = 0.0
     collision_area = 0.0
 
+    from .cpu_runtime import current_execution
+    execution = current_execution()
+    scalar_targets = np.flatnonzero(~gap_mask)
+    if conservative_transport and execution is not None and execution.single_source_cells:
+        from .lithosphere_kernels import fill_single_source_cells
+        copied_fields = {
+            "damage": state.tidal_damage, "extension": old_extension,
+            "extension_age": old_extension_age, "seam": old_seam,
+            "stress": old_stress, "superheat": old_superheat,
+        }
+        outputs = {
+            "plate": new_plate, "type": new_type, "age": new_age,
+            "thickness": new_thickness, "fraction": new_cont_fraction,
+            "volume": new_cont_volume, "source": material_source_index,
+            "damage": new_damage, "extension": new_extension,
+            "extension_age": new_extension_age, "seam": new_seam,
+            "stress": new_stress, "superheat": new_superheat,
+        }
+        if track_craton_memory:
+            copied_fields.update(cont_lith_age=old_cont_lith_age, depletion=old_mantle_depletion,
+                                 craton_strength=old_craton_strength)
+            outputs.update(cont_lith_age=new_cont_lith_age, depletion=new_mantle_depletion,
+                           craton_strength=new_craton_strength)
+        if track_mechanical_lithosphere:
+            copied_fields.update(mantle_h=old_mantle_lith_h, mantle_drho=old_mantle_lith_drho)
+            outputs.update(mantle_h=new_mantle_lith_h, mantle_drho=new_mantle_lith_drho)
+        fill_single_source_cells(execution, np.flatnonzero(multiplicity == 1),
+                                 covered=covered, source=source, areas=areas, state=state,
+                                 fraction=old_cont_fraction, volume=old_cont_volume, dt_myr=dt_myr,
+                                 copied_fields=copied_fields, outputs=outputs)
+        scalar_targets = np.flatnonzero(overlap_mask)
+
     # Resolve all targets covered by one or more rigidly moved plates.
-    for target in np.flatnonzero(~gap_mask):
+    for target in scalar_targets:
         plates = np.flatnonzero(covered[:, target]).astype(np.int32)
         src = source[plates, target]
         ctype = state.crust_type[src]
@@ -1389,6 +1430,7 @@ __all__ = [
     "target_mantle_lithosphere_fields",
     "refresh_mechanical_lithosphere",
     "mantle_lithosphere_negative_buoyancy_proxy",
+    "mantle_lithosphere_negative_buoyancy_at",
     "state_as_plate_system",
     "boundary_records_for_state",
     "advance_lithosphere",

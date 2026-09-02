@@ -16,6 +16,8 @@ from pathlib import Path
 import numpy as np
 
 import run_long_evolution_v123 as base
+from tectonics.cpu_runtime import current_execution
+from tectonics.simulation import build_initial_mesh
 from tectonics.cratons import (
     CratonParameters,
     advance_craton_memory,
@@ -57,7 +59,12 @@ def _parse_args_v124():
     _radius_km = float(config["moon"]["radius_km"])
     _output = Path(args.output)
     _dpi = int(config.get("output", {}).get("dpi", 180))
-    _mesh = base.build_prototype(config).mesh
+    execution = current_execution()
+    # This wrapper only needs geometry, not a discarded initial plate system.
+    # Keep the reference path available; optimized main reuses this same mesh.
+    _mesh = (build_initial_mesh(config)
+             if execution is not None and execution.reuse_initial_mesh
+             else base.build_prototype(config).mesh)
     _craton_rows = []
     _last_state = None
     return args
