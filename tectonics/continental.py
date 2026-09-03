@@ -152,22 +152,33 @@ def _gravitational_collapse(
     params: ContinentalCycleParameters,
     dt_myr: float,
 ) -> float:
-    """Conservatively move excess thick-crust volume laterally within a plate."""
+    """Conservatively move excess continental material within a plate.
+
+    Thickness describes the continental part of a cell, while
+    ``continental_fraction`` describes how much of its footprint that material
+    occupies.  Collapse therefore has to transfer ``area * fraction *
+    thickness`` rather than the full geometric column volume.  The distinction
+    matters at mixed coastline cells.
+    """
     if not params.gravitational_collapse_enabled:
         return 0.0
     threshold = float(params.gravitational_collapse_threshold_km)
     target = min(float(params.gravitational_collapse_target_km), threshold)
-    frac = 1.0 - np.exp(-float(params.gravitational_collapse_rate_per_myr) * float(dt_myr))
-    if frac <= 0.0:
+    relaxation = 1.0 - np.exp(-float(params.gravitational_collapse_rate_per_myr) * float(dt_myr))
+    if relaxation <= 0.0:
         return 0.0
+    material_fraction, _ = continental_material_fields(state, areas)
     cont = state.crust_type == int(CrustType.CONTINENTAL)
-    sources = np.flatnonzero(cont & (state.crust_thickness_km > threshold))
+    sources = np.flatnonzero(
+        cont & (material_fraction > 0.0) & (state.crust_thickness_km > threshold)
+    )
     moved_total = 0.0
     # Thickest columns act first; deterministic index tie-break keeps resume stable.
     sources = np.asarray(sorted((int(x) for x in sources), key=lambda x: (-float(state.crust_thickness_km[x]), x)), dtype=np.int32)
     for src in sources:
         h = float(state.crust_thickness_km[src])
-        movable = max(h - target, 0.0) * float(areas[src]) * frac
+        source_fraction = float(material_fraction[src])
+        movable = max(h - target, 0.0) * float(areas[src]) * source_fraction * relaxation
         if movable <= 0.0:
             continue
         remaining = movable
@@ -182,7 +193,11 @@ def _gravitational_collapse(
                     if nb in seen:
                         continue
                     seen.add(nb)
-                    if not cont[nb] or int(state.cell_plate[nb]) != int(state.cell_plate[src]):
+                    if (
+                        not cont[nb]
+                        or material_fraction[nb] <= 0.0
+                        or int(state.cell_plate[nb]) != int(state.cell_plate[src])
+                    ):
                         continue
                     nxt.append(nb)
                     candidates.append(nb)
@@ -194,15 +209,24 @@ def _gravitational_collapse(
         for dst in candidates:
             if remaining <= 1e-9:
                 break
-            capacity = max(threshold - float(state.crust_thickness_km[dst]), 0.0) * float(areas[dst])
+            destination_fraction = float(material_fraction[dst])
+            capacity = (
+                max(threshold - float(state.crust_thickness_km[dst]), 0.0)
+                * float(areas[dst])
+                * destination_fraction
+            )
             if capacity <= 0.0:
                 continue
             amount = min(capacity, remaining)
-            state.crust_thickness_km[dst] += amount / float(areas[dst])
+            state.crust_thickness_km[dst] += amount / (
+                float(areas[dst]) * destination_fraction
+            )
             remaining -= amount
             actually_moved += amount
         if actually_moved > 0.0:
-            state.crust_thickness_km[src] -= actually_moved / float(areas[src])
+            state.crust_thickness_km[src] -= actually_moved / (
+                float(areas[src]) * source_fraction
+            )
             moved_total += actually_moved
     return float(moved_total)
 
