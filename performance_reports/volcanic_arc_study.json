@@ -1,0 +1,41 @@
+{
+  "date": "2026-09-04",
+  "branch": "perf/cpu-parallel",
+  "segment": {
+    "start_myr": 740.0,
+    "end_myr": 760.0,
+    "dt_myr": 4.0,
+    "cells": 20480,
+    "zones_at_first_call": 48,
+    "boundaries_at_first_call": 2509
+  },
+  "function_benchmark_seconds_per_call": {
+    "legacy": 0.304414,
+    "batched_workers_1": 0.207561,
+    "batched_workers_2": 0.206890,
+    "batched_workers_4": 0.201438,
+    "batched_workers_8": 0.198314,
+    "repeats_after_warmup": 8
+  },
+  "cprofile_stage_seconds": {
+    "legacy_volcanic_arcs": 5.467709200005629,
+    "batched_volcanic_arcs": 2.6015511999976297,
+    "calls_per_segment": 10
+  },
+  "paired_full_wall_seconds": {
+    "legacy_arc_path": [19.2331021, 20.6537771],
+    "batched_arc_path": [19.2928191, 20.8949856],
+    "render_workers": 12,
+    "cpu_workers": 1,
+    "interpretation": "Short-run total is dominated by process startup and report rendering; no measurable whole-segment gain claimed."
+  },
+  "validation": {
+    "pytest_passed": 276,
+    "checkpoint_arrays_compared": 62,
+    "metadata_history_exact": true,
+    "png_count": 32,
+    "png_bytes_exact": true,
+    "integration_worker_counts": [1, 8],
+    "unit_worker_counts": [1, 2, 4]
+  }
+}

@@ -435,11 +435,11 @@ class MoonWindow(QMainWindow):
         self.cpu_workers = QComboBox()
         self.cpu_workers.addItems(["1", "2", "4", "8"])
         self.cpu_workers.setToolTip(
-            "Число работников переноса плит, не всех потоков программы. "
-            "Даже 1 использует кэш геометрии и пакетные вычисления. "
-            "Больше работников не всегда быстрее."
+            "Число работников переноса плит и пакетного пространственного поиска вулканических дуг. "
+            "Это не общее число потоков всей программы. Даже 1 использует кэш геометрии "
+            "и пакетные вычисления; 4 обычно разумный компромисс, а больше не всегда быстрее."
         )
-        numerical_form.addRow("Работников переноса", self.cpu_workers)
+        numerical_form.addRow("Работников расчёта", self.cpu_workers)
         self.render_workers = QComboBox()
         self.render_workers.addItems([str(value) for value in RENDER_WORKER_CHOICES])
         self.render_workers.setCurrentText("4")

@@ -1,6 +1,8 @@
 import numpy as np
 
 from tectonics.continental import ContinentalCycleParameters, advance_continental_cycle, initialize_continental_cycle
+from tectonics.cpu_runtime import CpuExecution
+from tectonics.kinematics import BoundaryRecord, BoundaryType
 from tectonics.lithosphere import CrustType, LithosphereState
 from tectonics.mesh import build_icosphere
 from tectonics.subduction_memory import SlabZone, initialize_subduction_memory
@@ -67,6 +69,37 @@ def test_post_breakoff_magmatic_pulse_decays():
     a,d0=peak(0.0);b,d1=peak(20.0)
     assert d0.post_breakoff_pulses==1 and d1.post_breakoff_pulses==1
     assert a>b>0.0
+
+
+def test_parallel_arc_zone_preparation_matches_reference_exactly():
+    mesh=build_icosphere(3);state=_state(mesh);mem=initialize_subduction_memory();p=VolcanicArcParameters()
+    first=_zone();mem.zones[first.key()]=first
+    second=_zone();second.subducting_plate=1;second.overriding_plate=0
+    second.trench_midpoint=np.array([-1.0,0.0,0.0]);second.torque_axis=np.array([0.0,0.0,-1.0])
+    second.active=False;second.broken_off=True;second.post_breakoff_age_myr=8.0
+    mem.zones[second.key()]=second
+    boundaries=[]
+    for a in range(mesh.cell_count):
+        for b in mesh.neighbors[a]:
+            b=int(b)
+            if a >= b or state.cell_plate[a] == state.cell_plate[b]:
+                continue
+            midpoint=mesh.centroids[a]+mesh.centroids[b]
+            midpoint=midpoint/np.linalg.norm(midpoint)
+            boundaries.append(BoundaryRecord(
+                a,b,0,1,int(state.cell_plate[a]),int(state.cell_plate[b]),midpoint,
+                -50.0,0.0,50.0,BoundaryType.CONVERGENT,
+            ))
+
+    expected,expected_diag=compute_volcanic_arc_forcing(mesh,state,mem,R,p,boundaries)
+    for workers in (1,2,4):
+        with CpuExecution(workers=workers,arc_kernels=True) as execution:
+            actual,actual_diag=compute_volcanic_arc_forcing(mesh,state,mem,R,p,boundaries)
+            assert np.array_equal(actual,expected)
+            assert actual_diag == expected_diag
+            assert execution.arc_calls == 1
+            assert execution.arc_tasks == len(boundaries)+1
+            assert execution.numerical_report()["arc_query_workers"] == workers
 
 
 def test_external_arc_topography_places_uplift_where_field_is_nonzero():

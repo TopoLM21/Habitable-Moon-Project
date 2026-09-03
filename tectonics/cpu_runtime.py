@@ -36,7 +36,8 @@ class MeshGeometry:
 class CpuExecution(AbstractContextManager):
     def __init__(self, workers: int = 1, *, cell_kernels: bool = False,
                  reuse_initial_mesh: bool = True, numeric_kernels: bool = True,
-                 single_source_cells: bool = True, cell_workers: int = 1) -> None:
+                 single_source_cells: bool = True, cell_workers: int = 1,
+                 arc_kernels: bool = True) -> None:
         if isinstance(workers, bool) or not isinstance(workers, int) or not 1 <= workers <= 32:
             raise ValueError("CPU workers must be an integer between 1 and 32")
         if isinstance(cell_workers, bool) or cell_workers not in (1, 2, 4, 8) or not isinstance(cell_workers, int):
@@ -47,10 +48,12 @@ class CpuExecution(AbstractContextManager):
         self.numeric_kernels = bool(numeric_kernels)
         self.single_source_cells = bool(single_source_cells)
         self.cell_workers = cell_workers
+        self.arc_kernels = bool(arc_kernels)
         self.pool: ThreadPoolExecutor | None = None
         self.cell_pool: ThreadPoolExecutor | None = None
         self.cell_calls = self.cell_tasks = self.cells_prepared = 0
         self.cell_thread_ids: set[int] = set()
+        self.arc_calls = self.arc_tasks = 0
         self._meshes: OrderedDict[int, MeshGeometry] = OrderedDict()
         self._initial_mesh: tuple[int, SphereMesh] | None = None
 
@@ -126,7 +129,9 @@ class CpuExecution(AbstractContextManager):
         return {"numeric_kernels": self.numeric_kernels, "single_source_cells": self.single_source_cells,
                 "cell_workers": self.cell_workers, "cell_calls": self.cell_calls,
                 "cell_tasks": self.cell_tasks, "cells_prepared": self.cells_prepared,
-                "cell_thread_ids": sorted(self.cell_thread_ids)}
+                "cell_thread_ids": sorted(self.cell_thread_ids), "arc_kernels": self.arc_kernels,
+                "arc_calls": self.arc_calls, "arc_tasks": self.arc_tasks,
+                "arc_query_workers": self.workers if self.arc_kernels else 1}
 
 
 def current_execution() -> CpuExecution | None:
