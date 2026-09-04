@@ -54,6 +54,7 @@ class CpuExecution(AbstractContextManager):
         self.cell_calls = self.cell_tasks = self.cells_prepared = 0
         self.cell_thread_ids: set[int] = set()
         self.arc_calls = self.arc_tasks = 0
+        self.spacing_kernel_calls = 0
         self._meshes: OrderedDict[int, MeshGeometry] = OrderedDict()
         self._initial_mesh: tuple[int, SphereMesh] | None = None
 
@@ -131,7 +132,8 @@ class CpuExecution(AbstractContextManager):
                 "cell_tasks": self.cell_tasks, "cells_prepared": self.cells_prepared,
                 "cell_thread_ids": sorted(self.cell_thread_ids), "arc_kernels": self.arc_kernels,
                 "arc_calls": self.arc_calls, "arc_tasks": self.arc_tasks,
-                "arc_query_workers": self.workers if self.arc_kernels else 1}
+                "arc_query_workers": self.workers if self.arc_kernels else 1,
+                "spacing_kernel_calls": self.spacing_kernel_calls}
 
 
 def current_execution() -> CpuExecution | None:

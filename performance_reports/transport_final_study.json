@@ -1,0 +1,63 @@
+{
+  "date": "2026-09-04",
+  "branch": "perf/cpu-parallel",
+  "assignment_profile_740_744": {
+    "calls": 9,
+    "plate_cell_counts": [13456, 1235, 1835, 1179, 300, 630, 738, 611, 496],
+    "total_seconds": 0.5686294000042835,
+    "query_seconds": 0.026606699993863003,
+    "graph_seconds": 0.010530100007599685,
+    "matching_seconds": 0.5314658000097552,
+    "candidate_count": 8,
+    "retries": 0
+  },
+  "assignment_profile_740_760": {
+    "calls": 43,
+    "total_seconds": 2.1761939999996684,
+    "candidate_counts": [8],
+    "retries": 0,
+    "maximum_plate_cells": 13456
+  },
+  "transport_warm_median_seconds": {
+    "subdivision_5": {
+      "baseline": 0.7416355999994266,
+      "cpu1": 0.676204700001108,
+      "cpu2": 0.6659974999965925,
+      "cpu4": 0.6403226000002178,
+      "cpu8": 0.6261187999989488
+    },
+    "subdivision_6": {
+      "baseline": 19.125170100000105,
+      "cpu1": 7.110958400000527,
+      "cpu2": 14.131622500000958,
+      "cpu4": 10.64038779999828,
+      "cpu8": 16.970004299997527,
+      "note": "High variance and memory contention; additional workers were not reliably faster."
+    }
+  },
+  "spacing_kernel_seconds": {
+    "subdivision_5": {
+      "scalar": 0.196828899999673,
+      "batched": 0.001818299999285955,
+      "exact": true
+    },
+    "subdivision_6": {
+      "scalar": 0.7863061999996717,
+      "batched": 0.0073908000013034325,
+      "exact": true
+    }
+  },
+  "direct_sorted_csr_candidate": {
+    "exact": true,
+    "implemented": false,
+    "reason": "No measurable end-to-end assignment speedup."
+  },
+  "validation": {
+    "pytest_passed": 277,
+    "checkpoint_arrays_compared": 62,
+    "metadata_history_exact": true,
+    "png_count": 32,
+    "png_bytes_exact": true
+  },
+  "conclusion": "Current safe CPU optimization cycle is complete; changing the matching solver would alter the transport algorithm or add disproportionate complexity."
+}

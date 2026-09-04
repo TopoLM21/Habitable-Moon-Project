@@ -1,7 +1,9 @@
 # CPU: численные ускорения и цикл ячеек
 
-Актуальное продолжение этого этапа — пакетный и частично параллельный расчёт
-вулканических дуг: [CPU_VOLCANIC_ARC_OPTIMIZATION.md](CPU_VOLCANIC_ARC_OPTIMIZATION.md).
+Финальный этап текущего цикла — исследование транспорта плит и пакетный расчёт
+масштаба сетки: [CPU_TRANSPORT_OPTIMIZATION.md](CPU_TRANSPORT_OPTIMIZATION.md).
+Предыдущий этап — пакетный и частично параллельный расчёт вулканических дуг:
+[CPU_VOLCANIC_ARC_OPTIMIZATION.md](CPU_VOLCANIC_ARC_OPTIMIZATION.md).
 
 2026-09-03. Экспериментальный worktree `perf/cpu-parallel`, поверх `0bfb810`
 и однократной подготовки сетки. Физическая модель и чекпойнты остаются v0.31.

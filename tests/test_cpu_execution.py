@@ -9,7 +9,13 @@ from tectonics.lithosphere import initialize_lithosphere
 from tectonics.mantle import advance_mantle_flow, initialize_mantle_flow
 from tectonics.mesh import build_icosphere
 from tectonics.plates import random_plate_system
-from tectonics.transport import SubgridTransportParameters, build_transport_map, initialize_transport_state
+from tectonics.transport import (
+    SubgridTransportParameters,
+    _median_cell_spacing_rad,
+    _median_cell_spacing_rad_batched,
+    build_transport_map,
+    initialize_transport_state,
+)
 from visualization.raster import rasterize_cells
 
 
@@ -34,6 +40,13 @@ def test_parallel_transport_is_exact_including_ordered_diagnostics(workers):
             np.testing.assert_array_equal(actual.state.residual_quaternions, expected.state.residual_quaternions)
             np.testing.assert_array_equal(actual.state.hold_age_myr, expected.state.hold_age_myr)
             assert asdict(actual.diagnostics) == asdict(expected.diagnostics)
+
+
+def test_batched_regular_mesh_spacing_matches_scalar_exactly():
+    for subdivisions in (1, 3, 5):
+        mesh = build_icosphere(subdivisions)
+        neighbors = np.asarray(mesh.neighbors, dtype=np.int32)
+        assert _median_cell_spacing_rad_batched(mesh, neighbors) == _median_cell_spacing_rad(mesh)
 
 
 def test_failed_parallel_preparation_does_not_partly_commit(monkeypatch):

@@ -178,6 +178,21 @@ def _median_cell_spacing_rad(mesh: SphereMesh) -> float:
     return float(np.median(vals)) if vals else 1.0
 
 
+def _median_cell_spacing_rad_batched(mesh: SphereMesh, neighbors: Array) -> float:
+    """Exact regular-mesh equivalent without one Python call per edge."""
+    if mesh.cell_count == 0:
+        return 1.0
+    nbs = np.asarray(neighbors, dtype=np.int32)
+    if nbs.ndim != 2 or nbs.shape[0] != mesh.cell_count or nbs.shape[1] == 0:
+        return _median_cell_spacing_rad(mesh)
+    centroids = np.asarray(mesh.centroids, dtype=np.float64)
+    # einsum preserves the three-product reduction used by np.dot in the
+    # scalar path on the triangular icosphere; tests cover exact equality.
+    dots = np.einsum("ij,ikj->ik", centroids, centroids[nbs])
+    distances = np.arccos(np.clip(dots, -1.0, 1.0))
+    return float(np.median(np.min(distances, axis=1)))
+
+
 def _fit_rotation(source_points: Array, target_points: Array, max_pairs: int) -> Array:
     n = len(source_points)
     if n < 3:
@@ -278,7 +293,16 @@ def build_transport_map(
         geometry = execution.geometry(mesh)
         tree = geometry.tree
         if geometry.spacing is None:
-            geometry.spacing = _median_cell_spacing_rad(mesh)
+            regular = bool(mesh.cell_count) and all(
+                len(row) == len(mesh.neighbors[0]) for row in mesh.neighbors
+            )
+            if execution.numeric_kernels and regular and len(mesh.neighbors[0]) > 0:
+                if geometry.neighbors is None:
+                    geometry.neighbors = np.asarray(mesh.neighbors, dtype=np.int32)
+                geometry.spacing = _median_cell_spacing_rad_batched(mesh, geometry.neighbors)
+                execution.spacing_kernel_calls += 1
+            else:
+                geometry.spacing = _median_cell_spacing_rad(mesh)
         spacing = geometry.spacing
     changed_values: list[float] = []
     commits = 0
