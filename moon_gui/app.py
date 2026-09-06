@@ -9,6 +9,8 @@ import sys
 from time import monotonic
 from typing import Any
 
+import yaml
+
 from PySide6.QtCore import (
     QProcess,
     QProcessEnvironment,
@@ -52,6 +54,7 @@ from PySide6.QtWidgets import (
 
 from .backend import (
     RunSpec,
+    SUBDIVISION_CHOICES,
     build_segment_command,
     checkpoint_cell_count,
     checkpoint_name,
@@ -416,14 +419,21 @@ class MoonWindow(QMainWindow):
         numerical_group = QGroupBox("Численная сетка и время")
         numerical_form = QFormLayout(numerical_group)
         self.subdivisions = QComboBox()
-        self.subdivisions.addItems(["3", "4", "5", "6"])
+        self.subdivisions.addItems([str(value) for value in SUBDIVISION_CHOICES])
         self.subdivisions.setCurrentText("5")
+        self.subdivisions.setToolTip(
+            "5 — стандартная сетка; 7/8 — экспериментальная высокая детализация. "
+            "Каждый уровень увеличивает число ячеек в 4 раза. "
+            "Размер в км — √средней площади, не длина ребра и не гарантия точности. "
+            "Изменение сетки требует нового расчёта, не продолжения checkpoint."
+        )
         self.subdivisions.currentTextChanged.connect(self._resolution_changed)
         numerical_form.addRow("Subdivision", self.subdivisions)
         self.resolution_label = QLabel()
         self.resolution_label.setWordWrap(True)
         self.resolution_label.setObjectName("hint")
         numerical_form.addRow("", self.resolution_label)
+        self.config_field.edit.textChanged.connect(self._resolution_changed)
         self.end_time = QDoubleSpinBox()
         self.end_time.setRange(4.0, 20_000.0)
         self.end_time.setDecimals(1)
@@ -581,6 +591,8 @@ class MoonWindow(QMainWindow):
         try:
             time_myr = read_checkpoint_time(checkpoint)
             subdivisions = subdivision_for_cell_count(checkpoint_cell_count(checkpoint))
+            if subdivisions not in SUBDIVISION_CHOICES:
+                raise ValueError(f"Checkpoint subdivision {subdivisions} is not supported by this GUI")
         except Exception as exc:
             QMessageBox.warning(self, "Invalid checkpoint", str(exc))
             return
@@ -616,6 +628,19 @@ class MoonWindow(QMainWindow):
                     raise ValueError(
                         "Fresh runs require an empty output folder. Choose a new folder or select a checkpoint to resume."
                     )
+            if spec.subdivisions >= 7:
+                spec.validate()
+                answer = QMessageBox.question(
+                    self,
+                    "Высокая детализация сетки",
+                    self.resolution_label.text()
+                    + "\n\nДлительный расчёт и построение карт могут потребовать много RAM и времени. "
+                    "Тесты оптимизации остаются на subdivision 5. Запустить выбранную сетку?",
+                    QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                    QMessageBox.StandardButton.No,
+                )
+                if answer != QMessageBox.StandardButton.Yes:
+                    return
             self.controller.start(spec)
         except Exception as exc:
             QMessageBox.warning(self, "Cannot start simulation", str(exc))
@@ -699,7 +724,14 @@ class MoonWindow(QMainWindow):
         scrollbar.setValue(scrollbar.maximum())
 
     def _resolution_changed(self) -> None:
-        self.resolution_label.setText(resolution_note(int(self.subdivisions.currentText())))
+        subdivisions = int(self.subdivisions.currentText())
+        try:
+            with self.config_field.path().open("r", encoding="utf-8") as handle:
+                config = yaml.safe_load(handle)
+            note = resolution_note(subdivisions, float(config["moon"]["radius_km"]))
+        except (OSError, ValueError, TypeError, KeyError, yaml.YAMLError):
+            note = resolution_note(subdivisions)
+        self.resolution_label.setText(note)
 
     def _refresh_results(self) -> None:
         output = self.output_field.path()
