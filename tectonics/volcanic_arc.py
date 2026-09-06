@@ -188,6 +188,9 @@ def compute_volcanic_arc_forcing(
         return field,d
     execution=current_execution()
     optimized=execution is not None and execution.arc_kernels
+    from .gpu_runtime import current_execution as current_gpu_execution
+    gpu_execution=current_gpu_execution()
+    gpu_painting=optimized and gpu_execution is not None and gpu_execution.arc_painting
     tree=execution.geometry(mesh).tree if optimized else cKDTree(mesh.centroids)
     # A physical volcanic front can be narrower than a coarse diagnostic mesh.
     # Represent it as an unresolved sub-grid band instead of silently losing it.
@@ -235,10 +238,19 @@ def compute_volcanic_arc_forcing(
                 active_centers.append(center);active_plates.append(int(z.overriding_plate));active_amplitudes.append(amp)
             active+=1;depths.append(depth);distances.append(distance)
 
-        _paint_gaussian_batch(mesh,tree,active_centers,active_plates,active_amplitudes,state,
-                              radius_km,active_sigma,active_outer,field,execution.workers)
-        _paint_gaussian_batch(mesh,tree,break_centers,break_plates,break_amplitudes,state,
-                              radius_km,break_sigma,break_outer,field,execution.workers)
+        if gpu_painting:
+            field=gpu_execution.paint_volcanic_arcs(
+                mesh,state.cell_plate,radius_km,[
+                    {"centers":active_centers,"plates":active_plates,"amplitudes":active_amplitudes,
+                     "sigma_km":active_sigma,"outer_km":active_outer},
+                    {"centers":break_centers,"plates":break_plates,"amplitudes":break_amplitudes,
+                     "sigma_km":break_sigma,"outer_km":break_outer},
+                ])
+        else:
+            _paint_gaussian_batch(mesh,tree,active_centers,active_plates,active_amplitudes,state,
+                                  radius_km,active_sigma,active_outer,field,execution.workers)
+            _paint_gaussian_batch(mesh,tree,break_centers,break_plates,break_amplitudes,state,
+                                  radius_km,break_sigma,break_outer,field,execution.workers)
         execution.arc_calls+=1
         execution.arc_tasks+=len(active_centers)+len(break_centers)
     else:

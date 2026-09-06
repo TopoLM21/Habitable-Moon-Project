@@ -103,6 +103,10 @@ def _advect_surface_sediment(previous: LithosphereState, source_index: Array) ->
 
 def _route_mobile(mesh: SphereMesh, elevation_m: Array, stationary: Array, mobile: Array,
                   params: SedimentParameters, sea_level_m: float) -> Array:
+    from .gpu_runtime import current_execution as current_gpu_execution
+    gpu_execution = current_gpu_execution()
+    if gpu_execution is not None:
+        return gpu_execution.route_mobile(mesh, elevation_m, stationary, mobile, params, sea_level_m)
     from .cpu_runtime import current_execution
     execution = current_execution()
     if execution is not None and execution.cell_kernels:
@@ -190,8 +194,8 @@ def advance_sediments(
     A=mesh.physical_cell_areas_km2(float(radius_km))
     before_surface=float(np.sum(sediment_volume_field(previous_lithosphere)))
     advected,deep_step=_advect_surface_sediment(previous_lithosphere,source_index)
-    state.sediment_volume_km3=advected
     if not bool(params.enabled):
+        state.sediment_volume_km3=advected
         nb=SedimentBudgetState(float(state.time_myr),budget.cumulative_eroded_bedrock_volume_km3,
             budget.cumulative_reworked_sediment_volume_km3,budget.deep_recycled_sediment_volume_km3+deep_step,
             budget.cumulative_rift_recycled_volume_km3+float(rift_recycled_volume_km3))
@@ -200,51 +204,53 @@ def advance_sediments(
         return state,topography,nb,d
 
     z=np.asarray(topography.elevation_m,dtype=np.float64)
-    neigh=np.asarray(mesh.neighbors,dtype=np.int32)
-    neigh_mean=np.mean(z[neigh],axis=1)
-    local_excess=np.maximum(z-neigh_mean,0.0)
-    frac=min(float(params.erosion_diffusion_per_myr)*float(dt_myr),float(params.max_erosion_fraction_per_step))
     eros=np.ones(mesh.cell_count,dtype=np.float64) if erosivity_field is None else np.clip(np.asarray(erosivity_field,dtype=np.float64),0.0,None)
     if eros.shape!=(mesh.cell_count,): raise ValueError('erosivity_field must match cell count')
 
     cf,cv=continental_material_fields(state,A)
-    bedrock_h=effective_continental_thickness_km(cf,cv,A)
-    remove_m=np.minimum(frac*float(params.bedrock_volume_multiplier)*local_excess*eros,float(params.max_bedrock_erosion_km_per_step)*1000.0)
-    remove_m=np.where((z>0.0)&(cf>1e-12),remove_m,0.0)
-    # Erode that thickness only over the continental footprint.
-    requested=A*cf*(remove_m/1000.0)
-    removed=np.minimum(requested,cv)
-    cv=np.maximum(cv-removed,0.0)
+    from .gpu_runtime import current_execution as current_gpu_execution
+    gpu=current_gpu_execution()
+    if gpu is not None and gpu.surface_pipeline:
+        cv,eff,removed,reworked,routed,new_z=gpu.surface_workspace(mesh).calculate(
+            z,advected,A,cf,cv,dt_myr,params,eros,float(sea_level_m))
+    else:
+        neigh=np.asarray(mesh.neighbors,dtype=np.int32)
+        neigh_mean=np.mean(z[neigh],axis=1)
+        local_excess=np.maximum(z-neigh_mean,0.0)
+        frac=min(float(params.erosion_diffusion_per_myr)*float(dt_myr),float(params.max_erosion_fraction_per_step))
+        remove_m=np.minimum(frac*float(params.bedrock_volume_multiplier)*local_excess*eros,float(params.max_bedrock_erosion_km_per_step)*1000.0)
+        remove_m=np.where((z>0.0)&(cf>1e-12),remove_m,0.0)
+        # Erode that thickness only over the continental footprint.
+        requested=A*cf*(remove_m/1000.0)
+        removed=np.minimum(requested,cv)
+        cv=np.maximum(cv-removed,0.0)
+        eff=effective_continental_thickness_km(cf,cv,A)
+
+        # Remobilize a bounded fraction of loose sediment, controlled by relief.
+        sed=advected.copy()
+        slope_signal=np.clip(local_excess/500.0,0.0,1.0)
+        rework_frac=np.clip(float(params.sediment_reworking_rate_per_myr)*float(dt_myr)*slope_signal,0.0,0.65)
+        reworked=sed*rework_frac
+        sed-=reworked
+        routed=_route_mobile(mesh,z,sed,removed+reworked,params,float(sea_level_m))
+        routed=_spill_overthick_sediment(mesh,z,routed,A,params)
+
+        # Local compensated relief; elastic response follows on the next step.
+        mean_remove=np.zeros_like(remove_m)
+        nz=requested>1e-30
+        mean_remove[nz]=remove_m[nz]*(removed[nz]/requested[nz])*cf[nz]
+        delta_sed_h=1000.0*(routed-advected)/np.maximum(A,1e-30)
+        net=sediment_net_surface_factor(params)
+        new_z=z-mean_remove+net*delta_sed_h
+
+    # Commit only after the entire numerical block succeeds. Use identical host
+    # reductions for budgets/diagnostics in both backends.
     state.continental_volume_km3=cv
-    eff=effective_continental_thickness_km(cf,cv,A)
     visible=np.asarray(state.crust_type)==int(CrustType.CONTINENTAL)
     state.crust_thickness_km[visible]=eff[visible]
-    eroded=float(np.sum(removed))
-
-    # Existing loose sediment is easier to remobilize than bedrock, but only a
-    # bounded fraction is moved each step. Relief contrast suppresses reworking
-    # on flat basin floors automatically.
-    sed=advected.copy()
-    sed_h=1000.0*sed/np.maximum(A,1e-30)
-    slope_signal=np.clip(local_excess/500.0,0.0,1.0)
-    rework_frac=np.clip(float(params.sediment_reworking_rate_per_myr)*float(dt_myr)*slope_signal,0.0,0.65)
-    reworked=sed*rework_frac
-    sed-=reworked
-    reworked_total=float(np.sum(reworked))
-    routed=_route_mobile(mesh,z,sed,removed+reworked,params,float(sea_level_m))
-    routed=_spill_overthick_sediment(mesh,z,routed,A,params)
     state.sediment_volume_km3=routed
-
-    # Preserve the old erosion's direct geomorphic response while now giving the
-    # removed mass an explicit destination. Sediment redistribution changes the
-    # surface by its locally compensated thickness; the full elastic response is
-    # captured by the next topographic equilibrium solve.
-    mean_remove=np.zeros_like(remove_m)
-    nz=requested>1e-30
-    mean_remove[nz]=remove_m[nz]*(removed[nz]/requested[nz])*cf[nz]
-    delta_sed_h=1000.0*(routed-advected)/np.maximum(A,1e-30)
-    net=sediment_net_surface_factor(params)
-    new_z=z-mean_remove+net*delta_sed_h
+    eroded=float(np.sum(removed))
+    reworked_total=float(np.sum(reworked))
     new_topo=TopographyState(time_myr=float(state.time_myr),elevation_m=new_z)
 
     after_surface=float(np.sum(routed))

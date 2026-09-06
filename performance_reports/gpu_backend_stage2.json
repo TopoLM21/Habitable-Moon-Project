@@ -1,0 +1,50 @@
+{
+  "date": "2026-09-05",
+  "branch": "perf/gpu-compute",
+  "flexure_candidate": {
+    "cells": 20480,
+    "cpu_median_seconds": 0.01591279999774997,
+    "gpu_median_seconds": 0.036878900002193404,
+    "speedup": 0.43148792390238166,
+    "cpu_iterations": 29,
+    "gpu_iterations": 29,
+    "max_absolute_difference_m": 3.637978807091713e-12,
+    "integrated": false,
+    "decision": "reject for sub-5 because CUDA is 2.3x slower"
+  },
+  "volcanic_arc_candidate": {
+    "cells": 20480,
+    "boundaries": 2465,
+    "tasks": 2056,
+    "cpu_full_arc_median_seconds": 0.06198159999985364,
+    "cpu_task_preparation_median_seconds": 0.027594899998803157,
+    "gpu_paint_only_median_seconds": 0.0007369999984803144,
+    "estimated_hybrid_median_seconds": 0.028331899997283472,
+    "estimated_hybrid_speedup": 2.1876965542655658,
+    "max_absolute_field_difference": 2.1116441928370477e-13,
+    "forced_mask_equal": true,
+    "integrated": true,
+    "default_enabled": false,
+    "flag": "--gpu-arcs"
+  },
+  "integration_700_720": {
+    "steps": 5,
+    "gpu_arc_calls": 10,
+    "gpu_arc_tasks": 23206,
+    "gpu_arc_seconds": 0.06722089999675518,
+    "topology_and_integer_arrays_exact": true,
+    "max_elevation_difference_m": 1.7053025658242404e-10,
+    "max_continental_volume_difference_km3": 8.149072527885437e-10,
+    "max_sediment_volume_difference_km3": 3.5652192309498787e-10,
+    "hydrosphere_volume_error_diagnostic_difference_km3": 2.384185791015625e-7,
+    "within_rtol_1e_12_atol_1e_6": true,
+    "observed_whole_segment_gain_seconds_approximate": null,
+    "wall_time_audit": "Previous 0.3s/1% estimate withdrawn: complete subprocess wall samples were not recorded. Tool wait durations do not establish process elapsed time.",
+    "decision": "keep optional; whole-run speedup is unverified and this path is not byte-exact"
+  },
+  "tests": {
+    "cpu_environment_passed": 278,
+    "cpu_environment_cuda_skipped": 3,
+    "cuda_gpu_tests_passed": 4
+  }
+}

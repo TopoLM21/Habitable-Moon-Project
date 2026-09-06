@@ -1,0 +1,97 @@
+{
+  "date": "2026-09-05",
+  "branch": "perf/gpu-compute",
+  "cpu_reference": "separate unchanged perf/cpu-parallel worktree at eb755683d52b35222e80a0e97ed575c1d601b3ae",
+  "scope": "Opt-in resident FP64 erosion, reworking, routing, basin spill and relief response within one surface block",
+  "flag": "--gpu-surface",
+  "gpu_arcs_enabled": false,
+  "hardware": {
+    "os": "Windows",
+    "gpu": "NVIDIA GeForce RTX 4080",
+    "driver": "616.56",
+    "compute_capability": "8.9",
+    "cupy": "14.2.0",
+    "cuda_runtime": 13020
+  },
+  "residency": {
+    "across_full_time_steps": false,
+    "scratch_bytes_at_20480_cells": 3276800,
+    "immutable_mesh_table_bytes": 491520,
+    "packed_upload_bytes_per_step": 983040,
+    "packed_download_bytes_per_step": 983040,
+    "routing_stop_checks": "One scalar download per sweep; near threshold, original NumPy reduction on a downloaded mobile field",
+    "state_commit": "After successful block completion; detached NumPy outputs and original host diagnostic reductions"
+  },
+  "correctness": {
+    "checkpoint_comparison": "Same names, dtypes, shapes and array bytes, plus complete parsed metadata/history",
+    "arrays_per_checkpoint": 62,
+    "all_checkpoints_exact": true,
+    "all_input_config_and_checkpoint_hashes_unchanged": true,
+    "segments_myr": [[700, 720], [320, 340], [620, 640], [700, 900]],
+    "gpu_to_cpu_resume_myr": [700, 708, 720],
+    "merges_tested_myr": [328, 332],
+    "disconnected_component_splits_tested_myr": [628, 640, 844],
+    "png_files_byte_exact_in_first_700_720_pair": 40,
+    "dense_synthetic_public_step_cells": 81920,
+    "dense_synthetic_public_step_byte_exact": true,
+    "cpu_suite": {"passed": 327, "cuda_skipped": 15},
+    "gpu_specific_and_contract_suite": {"passed": 65}
+  },
+  "isolated_public_surface_step": {
+    "source": "results/gpu_surface/stage3_surface_probe_700.json",
+    "cells": 20480,
+    "checkpoint_myr": 700,
+    "warm_repetitions": 15,
+    "identity_advection": true,
+    "uniform_erosivity": true,
+    "whole_tectonic_timestep": false,
+    "transfers_and_cpu_diagnostics_included": true,
+    "deepcopy_context_entry_and_loading_excluded": true,
+    "all_outputs_byte_exact": true,
+    "median_seconds": {
+      "cpu": 0.017479399997682776,
+      "gpu_routing_only": 0.009972699997888412,
+      "gpu_surface": 0.001785200001904741
+    },
+    "cpu_over_surface_ratio": 9.791283878015301
+  },
+  "whole_subprocess_700_720": {
+    "source": "results/gpu_surface/stage3_700_720/summary.json",
+    "steps": 5,
+    "periodic_maps": true,
+    "cpu_workers": 1,
+    "render_workers": 4,
+    "repetitions_per_backend": 3,
+    "median_seconds": {"cpu": 11.727403199998662, "gpu_surface": 12.09744739999951},
+    "cpu_over_gpu_ratio": 0.9694113817762198,
+    "conclusion": "No whole-run speedup in this short map-producing workflow"
+  },
+  "whole_subprocess_700_900": {
+    "sources": [
+      "results/gpu_surface/stage3_700_900/summary.json",
+      "results/gpu_surface/stage3_700_900_followup/summary.json"
+    ],
+    "steps": 50,
+    "periodic_maps": false,
+    "final_report_rendering_included": true,
+    "cpu_workers": 1,
+    "render_workers": 4,
+    "orders": [["cpu", "gpu"], ["gpu", "cpu"], ["cpu", "gpu"]],
+    "cpu_seconds": [49.31034890000592, 44.98731119999866, 45.8572439999989],
+    "gpu_seconds": [44.35441200000059, 44.25373899999977, 44.42255689999729],
+    "median_seconds": {"cpu": 45.8572439999989, "gpu_surface": 44.35441200000059},
+    "observed_median_time_reduction_percent": 3.2771965101050182,
+    "cpu_over_gpu_ratio": 1.0338823565060065,
+    "supplemental_pair": "Third pair reused the first study's Matplotlib cache; CPU endpoint additionally checked against the first CPU endpoint",
+    "conclusion": "Small observed overall benefit; not a statistically isolated estimate or a promised full-run ETA"
+  },
+  "measurement_caveats": [
+    "Whole-process wall time measured with perf_counter around subprocess.run, including imports, CUDA startup, checkpoint I/O and final rendering.",
+    "Runs were sequential. Background GPU utilization remained nonzero in driver snapshots despite no competing research GPU jobs.",
+    "The initial CPU samples were slower; all samples are retained. Cache effects and background load were not fully controlled.",
+    "The isolated probe batches backends and retains contexts; its per-context cold timings are not independent cold-process startup measurements.",
+    "Surface-field uploads/downloads are larger than routing-only transfers; phase fusion removes CPU work, not all host-device communication.",
+    "Stage-2's earlier 0.3-second/1% whole-run improvement estimate remains withdrawn."
+  ],
+  "decision": "Keep the exact surface mode as an optional CLI research backend. Do not change GUI/CPU defaults or promise a large full-model acceleration."
+}

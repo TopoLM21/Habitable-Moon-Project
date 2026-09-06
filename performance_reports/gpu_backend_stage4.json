@@ -1,0 +1,168 @@
+{
+  "date": "2026-09-06",
+  "branch": "perf/gpu-compute",
+  "scope": "Fresh profile and research-only dynamics/topography candidates atop the exact GPU surface mode",
+  "new_candidates_enabled_in_ordinary_runner_or_gui": false,
+  "cpu_reference_commit": "eb755683d52b35222e80a0e97ed575c1d601b3ae",
+  "cpu_reference_worktree_unchanged": true,
+  "hardware": {
+    "os": "Windows",
+    "gpu": "NVIDIA GeForce RTX 4080",
+    "driver": "616.56",
+    "cupy": "14.2.0",
+    "cuda_runtime": 13020
+  },
+  "fresh_profile": {
+    "source": "results/cpu_performance/gpu_stage4_surface_700_900/measurements.json",
+    "interval_myr": [700, 900],
+    "steps": 50,
+    "cells": 20480,
+    "cpu_workers": 1,
+    "render_workers": 4,
+    "gpu_surface": true,
+    "gpu_arcs": false,
+    "periodic_frames": false,
+    "instrumented_wall_seconds_rounded": 61.983,
+    "instrumented_wall_is_not_a_speedup_measurement": true,
+    "exclusive_physics_seconds": 38.0518629000144,
+    "selected_exclusive_physics_seconds": {
+      "transport_assignment": 12.442244399964693,
+      "volcanic_arcs": 6.718077199984691,
+      "dynamics_boundary_loop": 5.359650700018392,
+      "classify_boundaries": 2.702329200030363,
+      "advance_subduction_memory": 2.430290999975114,
+      "flexure": 1.056754699995508,
+      "topography_forcing": 0.571482000021206,
+      "sediments_including_gpu": 0.268961599998875,
+      "dynamics_gpe_loop": 0.086998300008418
+    },
+    "checkpoint_arrays_byte_exact": 62,
+    "full_metadata_history_exact": true,
+    "png_byte_exact": 32,
+    "additional_cpu_profile": "results/cpu_performance/gpu_stage4_cpu_700_720/measurements.json"
+  },
+  "boundary_candidate": {
+    "source": "results/gpu_stage4/boundary_320_620_700_guarded.json",
+    "backend_selected_for_full_run": "prepared_cpu_boundary_forces",
+    "gpu_reduction_faster_than_prepared_cpu": false,
+    "reference": "AST-extracted unchanged original boundary loop plus ridge factors",
+    "geometry_policy": "Lazy exact scalar NumPy edge geometry for one immutable mesh; new edges pay preparation cost",
+    "dynamic_policy": "Refresh current owners, fields, radius and parameters every call; preserve boundary/side reduction order",
+    "supported_field_contract": "Finite FP64 cell arrays as in tested checkpoints",
+    "warm_repetitions": 9,
+    "first_and_all_warm_outputs_byte_exact": 12,
+    "input_files_loaded_arrays_and_sources_unchanged": true,
+    "median_seconds": [
+      {
+        "checkpoint_myr": 320,
+        "reference": 0.0946774999997615,
+        "prepared_cpu": 0.003311999999823456,
+        "gpu_inclusive": 0.0034881000001405482,
+        "first_cpu_including_geometry": 0.09069010000030175
+      },
+      {
+        "checkpoint_myr": 620,
+        "reference": 0.09284080000043105,
+        "prepared_cpu": 0.003246599999783939,
+        "gpu_inclusive": 0.0034341000000495114,
+        "first_cpu_including_geometry": 0.07256280000001425
+      },
+      {
+        "checkpoint_myr": 700,
+        "reference": 0.10744530000010855,
+        "prepared_cpu": 0.003716499999882217,
+        "gpu_inclusive": 0.003918000000339816,
+        "first_cpu_including_geometry": 0.07275279999976192
+      }
+    ]
+  },
+  "full_process_boundary_comparison": {
+    "source": "results/gpu_surface/stage4_boundary_700_900/summary.json",
+    "reference": "results/gpu_surface/stage3_700_900/cpu_1/checkpoint",
+    "scope": "Same GPU surface mode with original vs prepared CPU boundary forces; fresh sequential processes, alternating order",
+    "interval_myr": [700, 900],
+    "dt_myr": 4,
+    "steps": 50,
+    "periodic_frames": false,
+    "final_rendering_startup_cuda_io_and_geometry_included": true,
+    "baseline_seconds": [45.9283362000001, 45.266240599999946, 44.95589969999992],
+    "candidate_seconds": [40.85542029999988, 40.46143090000032, 40.713666600000124],
+    "baseline_median_seconds": 45.266240599999946,
+    "candidate_median_seconds": 40.713666600000124,
+    "observed_time_reduction_percent": 10.05732735843724,
+    "new_gpu_speedup_claim": false,
+    "strict_machine_isolation_or_statistical_significance_claim": false,
+    "all_six_checkpoints_exact": true,
+    "arrays_per_checkpoint": 62,
+    "all_metadata_history_exact": true,
+    "all_six_png_sets_byte_exact_against_independent_cpu": true,
+    "png_per_run": 32,
+    "surface_calls_per_run": 50,
+    "boundary_candidate_calls_per_candidate_run": 50,
+    "inputs_reference_and_checked_sources_unchanged": true,
+    "candidate_cached_edges": 14711,
+    "candidate_geometry_numeric_bytes_excluding_python_objects": 823816,
+    "first_candidate_inclusive_boundary_seconds": 0.8161242999995011
+  },
+  "topology_validation": {
+    "sources": [
+      "results/gpu_surface/stage4_boundary_320_340/summary.json",
+      "results/gpu_surface/stage4_boundary_620_640/summary.json"
+    ],
+    "intervals_myr": [[320, 340], [620, 640]],
+    "independent_cpu_checkpoint_reference": true,
+    "all_four_checkpoints_exact": true,
+    "arrays_per_checkpoint": 62,
+    "full_metadata_history_exact": true,
+    "surface_and_candidate_calls_per_candidate_run": 5,
+    "inputs_reference_and_checked_sources_unchanged": true,
+    "merges_tested_myr": [328, 332],
+    "splits_tested_myr_including_long_run": [628, 640, 844],
+    "all_40_png_per_segment_byte_exact_candidate_vs_current_gpu_surface": true,
+    "all_32_final_png_per_run_byte_exact_vs_independent_cpu": true,
+    "additional_8_periodic_frames_absent_from_old_independent_reference": true,
+    "short_single_pairs_not_a_reliable_speed_estimate": true
+  },
+  "topography_candidate": {
+    "sources": [
+      "results/gpu_surface/stage4_topography_320.json",
+      "results/gpu_surface/stage4_topography_620.json",
+      "results/gpu_surface/stage4_topography_700.json"
+    ],
+    "scope": "CPU seed/trench preparation plus exact neighbor maximum on CPU or CUDA, transfers included",
+    "all_five_arrays_and_cell_tags_byte_exact": true,
+    "warm_repetitions": 15,
+    "median_milliseconds_rounded": [
+      {"checkpoint_myr": 320, "reference": 9.609, "cpu_hybrid": 7.843, "gpu_hybrid": 7.296},
+      {"checkpoint_myr": 620, "reference": 9.746, "cpu_hybrid": 8.066, "gpu_hybrid": 7.493},
+      {"checkpoint_myr": 700, "reference": 10.747, "cpu_hybrid": 8.700, "gpu_hybrid": 8.486}
+    ],
+    "decision": "Keep isolated prototype; only 1.50% of profiled physics is in this function"
+  },
+  "gpe_candidate": {
+    "source": "results/gpu_surface/stage4_gpe_320_620_700.json",
+    "checkpoint_states_myr": [320, 620, 700],
+    "byte_exact": true,
+    "geometry_preparation_seconds_rounded": 1.069,
+    "cuda_initialization_seconds_rounded": 0.265,
+    "reference_milliseconds_range_rounded": [1.66, 1.68],
+    "gpu_inclusive_milliseconds_range_rounded": [0.13, 0.25],
+    "nonzero_plates_at_700": 0,
+    "nonzero_plates_at_320_and_620": 1,
+    "decision": "Keep isolated prototype; only 0.23% of profiled physics and hundreds of calls needed to amortize preparation"
+  },
+  "tests": {
+    "full_cpu_suite": {"passed": 390, "cuda_skipped": 19},
+    "gpu_specific_contracts_and_new_harnesses": {"passed": 132},
+    "mocked_boundary_benchmark_subset": {"passed": 10},
+    "full_suite_attempt_in_optional_gpu_environment": {
+      "passed": 408,
+      "failed": 1,
+      "test": "tests/test_render_execution.py::test_forced_owner_exit_terminates_workers",
+      "cause": "Existing test overwrites PYTHONPATH, dropping the bridge to CPU-site-packages; renderer child cannot import matplotlib",
+      "same_test_passed_in_full_cpu_suite": true,
+      "unrelated_test_and_environments_unchanged": true
+    }
+  },
+  "decision": "Next integrate prepared CPU boundary forces explicitly into the experimental CPU runtime, then revalidate and reprofile; no ordinary runner or GUI change in this study"
+}

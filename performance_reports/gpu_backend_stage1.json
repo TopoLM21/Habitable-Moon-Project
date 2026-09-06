@@ -1,0 +1,40 @@
+{
+  "date": "2026-09-05",
+  "branch": "perf/gpu-compute",
+  "base_commit": "eb755683d52b35222e80a0e97ed575c1d601b3ae",
+  "backend_scope": "deterministic FP64 sediment routing",
+  "gpu": {
+    "name": "NVIDIA GeForce RTX 4080",
+    "memory_mib": 16376,
+    "compute_capability": "8.9",
+    "cupy": "14.2.0",
+    "cuda_runtime": 13020
+  },
+  "warm_routing_benchmark": {
+    "cells": 20480,
+    "repetitions": 7,
+    "cpu_batched_median_seconds": 0.009609900000214111,
+    "gpu_transfer_inclusive_median_seconds": 0.0006271000020205975,
+    "isolated_kernel_speedup": 15.324350134348219,
+    "byte_exact": true
+  },
+  "integration": {
+    "start_myr": 700.0,
+    "end_myr": 704.0,
+    "dt_myr": 4.0,
+    "cells": 20480,
+    "checkpoint_arrays_compared": 62,
+    "checkpoint_exact": true
+  },
+  "tests": {
+    "cpu_environment_passed": 278,
+    "cpu_environment_cuda_skipped": 2,
+    "cuda_environment_passed": 3
+  },
+  "limitations": [
+    "This speedup applies only to the isolated routing operation, not the full simulation.",
+    "The first cold CUDA call measured about 68 ms and is amortized only by longer runs.",
+    "Evolving simulation fields are not yet retained on the GPU between physics phases.",
+    "The GPU runner is CLI-only in this stage."
+  ]
+}

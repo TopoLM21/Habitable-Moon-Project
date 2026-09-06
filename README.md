@@ -1,10 +1,12 @@
 # Moon Tectonics v0.31 — Mantle-Flow-Coupled Plume Sources
 
-## Experimental CPU performance worktree
+## Experimental GPU performance worktree
 
-This is the `perf/cpu-parallel` branch. The validated numerical release remains
+This is the `perf/gpu-compute` branch, based on the validated CPU optimizations
+from `perf/cpu-parallel`. The validated numerical release remains
 at tag `v0.31-cpu-stable`; the original workspace and its Python environment
-are unchanged. This GUI can select the reference CPU mode or cached CPU execution.
+are unchanged. The GUI still selects the reference CPU mode or cached CPU execution;
+the first CUDA integration is intentionally CLI-only while its scope is expanded.
 The experimental defaults are 1 plate worker, 4 separate map-rendering processes,
 exact-order batched sediment routing, and lower CPU priority for the simulation
 and render workers (not the GUI). It also includes pause-aware ETA. Render counts
@@ -21,8 +23,20 @@ isolated candidates are documented in
 
 See [CPU_RENDER_SCALING.md](CPU_RENDER_SCALING.md) for current controls, all
 4/6/8/12 timings, priority semantics and validation. The previous-stage report,
-[CPU_RENDERING_AND_GPU.md](CPU_RENDERING_AND_GPU.md), includes the separate GPU
-feasibility prototype. GPU is not a full-model backend or a GUI option yet. The first-stage
+[CPU_RENDERING_AND_GPU.md](CPU_RENDERING_AND_GPU.md), includes the original GPU
+feasibility prototype. The deterministic production CUDA slice and its current
+limitations are documented in [GPU_BACKEND.md](GPU_BACKEND.md). The opt-in
+`--gpu-surface` mode keeps erosion, reworking, routing, basin spill and relief
+response on CUDA within one block, with byte-exact checkpoint validation.
+The measured ~9.8× surface-block speedup is not a full-simulation speedup:
+the short 20-Myr workflow is still slightly slower on GPU in current measurements.
+GPU is not yet a full-model backend or a GUI option. The
+[fresh dynamics/topography study](GPU_DYNAMICS_TOPOGRAPHY_STUDY.md) found a
+research-only **CPU boundary-force candidate**: on 700→900 Myr, three paired
+full-process measurements reduced median time by a further 10.06% relative to
+the same GPU-surface mode, with exact checkpoint validation. It is not yet
+enabled in the ordinary runner or GUI; this additional gain is not due to CUDA.
+The first-stage
 results and intermediate-GIF tool are in [CPU_PERFORMANCE.md](CPU_PERFORMANCE.md).
 Use this folder's own `launch_gui.bat` and `.venv`. Do not switch branches in a
 folder whose simulation is running, or point experimental output at a stable
@@ -51,7 +65,7 @@ lifetime handling has separate Windows and Linux implementations, with only
 Windows runtime-tested in this performance stage):
 
 ```text
-git clone --branch perf/cpu-parallel https://github.com/TopoLM21/Habitable-Moon-Project.git
+git clone --branch perf/gpu-compute https://github.com/TopoLM21/Habitable-Moon-Project.git
 cd Habitable-Moon-Project
 python3 -m venv .venv
 source .venv/bin/activate
@@ -59,7 +73,7 @@ python -m pip install -r requirements.txt
 python launch_gui.py
 ```
 
-For an existing clone, select `perf/cpu-parallel` instead of cloning again.
+For an existing clone, select `perf/gpu-compute` instead of cloning again.
 Create a fresh Linux environment; do not copy the Windows `.venv`. The new
 numerical kernels use NumPy and standard Python threads, without a Windows-only
 dependency. Linux priority and render-worker lifetime paths are present, but a
@@ -77,6 +91,14 @@ a run, select one of its `gui_checkpoint_*_Myr` folders; the GUI reads its time
 and mesh resolution and resumes with the existing output directory. `Pause
 safely` finishes the current segment before stopping. `Stop now` interrupts the
 active process but leaves the previous checkpoint intact.
+
+The **Subdivision** selector supports levels **3–8**, with **5** still the
+default. At the canonical radius, level 7 has 327,680 cells (characteristic
+size ≈33 km), and level 8 has 1,310,720 cells (≈16 km). Both are explicitly
+experimental and require confirmation; their full-run time, memory usage and
+convergence have not been validated. Existing checkpoints must retain their
+original resolution. See [mesh resolution options](MESH_RESOLUTION.md) for the
+size definition, costs and safe use. Optimization benchmarks remain on level 5.
 
 The GUI shows active elapsed time and an approximate ETA after two completed
 segments, using the latest five segment timings. Pauses are excluded and a

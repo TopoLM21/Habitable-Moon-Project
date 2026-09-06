@@ -9,7 +9,7 @@ from __future__ import annotations
 import argparse
 import ast
 from collections import defaultdict
-from contextlib import contextmanager
+from contextlib import contextmanager, nullcontext
 import functools
 import inspect
 import json
@@ -178,6 +178,69 @@ def install_timers(runner, budget):
     instrument_main(runner.base, budget)
 
 
+def install_detailed_physics_timers(budget):
+    """Time whole loops/helper calls, never individual boundary iterations.
+
+    Diagnostic-process-only AST wrapping preserves every original statement and
+    arithmetic operation. Nested categories are exclusive in Budget.seconds.
+    """
+    import tectonics.dynamics as dynamics
+
+    modules = [module for name, module in list(sys.modules.items()) if module and
+               name.startswith(("tectonics.", "visualization.", "run_long_evolution_v"))]
+    # install_timers may already wrap this function; instrument the original then
+    # put the outer dynamics timer back so uncategorized dynamics remains visible.
+    wrapped = dynamics.update_plate_dynamics
+    original = inspect.unwrap(wrapped)
+    tree = ast.parse(inspect.getsource(original))
+    definition = tree.body[0]
+    targets = {"b": "physics/dynamics_boundary_loop", "cell": "physics/dynamics_gpe_loop"}
+    counts = dict.fromkeys(targets, 0)
+    for index, node in enumerate(definition.body):
+        if isinstance(node, ast.For) and isinstance(node.target, ast.Name) and node.target.id in targets:
+            name = node.target.id
+            counts[name] += 1
+            definition.body[index] = ast.With(items=[ast.withitem(context_expr=ast.Call(
+                func=ast.Name(id="_gpu_profile_scope", ctx=ast.Load()),
+                args=[ast.Constant(value=targets[name])], keywords=[]))], body=[node])
+    if any(count != 1 for count in counts.values()):
+        raise RuntimeError(f"Expected one boundary and one GPE loop, got {counts}")
+    ast.fix_missing_locations(tree)
+    dynamics.__dict__["_gpu_profile_scope"] = budget.scope
+    namespace = dict(dynamics.__dict__)
+    exec(compile(tree, "<gpu-profile-dynamics>", "exec"), namespace)
+    measured = types.FunctionType(namespace[original.__name__].__code__, dynamics.__dict__,
+                                  original.__name__, original.__defaults__)
+    measured.__kwdefaults__ = original.__kwdefaults__
+    functools.update_wrapper(measured, original)
+    replacement = budget.wrap(measured, "physics/plate_dynamics", physics_only=True)
+    for module in modules:
+        for alias, value in list(vars(module).items()):
+            if value is wrapped:
+                setattr(module, alias, replacement)
+
+    detail_names = {
+        ("tectonics.dynamics", "plate_ridge_push_factors"): "dynamics_ridge_factors",
+        ("tectonics.topography", "tectonic_forcing"): "topography_forcing",
+        ("tectonics.topography", "_equilibrium_build"): "topography_equilibrium_other",
+        ("tectonics.topography", "material_topography_endmembers"): "material_endmembers",
+        ("tectonics.topography", "_erode_positive_relief"): "topography_erosion",
+        ("tectonics.flexure", "solve_flexural_response"): "flexure",
+        ("tectonics.transport", "_optimal_assignment"): "transport_assignment",
+    }
+    replacements = {}
+    for module in modules:
+        for function in list(vars(module).values()):
+            if inspect.isfunction(function) and function not in replacements:
+                category = detail_names.get((function.__module__, function.__name__))
+                if category:
+                    replacements[function] = budget.wrap(function, "physics/" + category, physics_only=True)
+    for module in modules:
+        for alias, value in list(vars(module).items()):
+            if inspect.isfunction(value) and value in replacements:
+                setattr(module, alias, replacements[value])
+
+
 def child(args):
     budget = Budget()
     from execution_policy import apply_process_priority
@@ -207,7 +270,12 @@ def child(args):
         sys.argv += ["--resume", str(args.resume)]
     if args.finalize:
         sys.argv.append("--finalize")
-    with CpuExecution(1, cell_kernels=True, reuse_initial_mesh=args.mode == "after",
+    if args.gpu_surface:
+        from tectonics.gpu_runtime import GpuExecution
+        gpu_context = GpuExecution(args.gpu_device, surface_pipeline=True)
+    else:
+        gpu_context = nullcontext(None)
+    with gpu_context as gpu, CpuExecution(1, cell_kernels=True, reuse_initial_mesh=args.mode == "after",
                       numeric_kernels=args.numeric_mode != "legacy",
                       single_source_cells=args.numeric_mode.startswith("cells"),
                       cell_workers=int(args.numeric_mode[5:]) if args.numeric_mode.startswith("cells") else 1
@@ -216,6 +284,8 @@ def child(args):
         rendering.install_runner_hooks()
         if not args.plain:
             install_timers(runner, budget)
+            if args.detailed_physics:
+                install_detailed_physics_timers(budget)
         profiler = None
         if args.cprofile:
             import cProfile
@@ -224,7 +294,8 @@ def child(args):
         with budget.scope("runner_other"):
             runner.main()
         # Account explicitly for the barrier and worker shutdown, outside physics.
-        budget.switch("rendering/final_drain_and_shutdown")
+        budget.switch("execution/final_drain_and_shutdown")
+        gpu_report = gpu.report() if gpu is not None else None
     if profiler is not None:
         profiler.disable()
         budget.switch("diagnostic/profile_report")
@@ -237,6 +308,11 @@ def child(args):
     budget.switch("finished")
     data = {"mode": args.mode, "numeric_mode": args.numeric_mode,
             "instrumented": not args.plain, "cprofile": args.cprofile,
+            "detailed_physics": args.detailed_physics, "gpu_execution": gpu_report,
+            "timing_notes": ["Exclusive buckets must not be added to inclusive function times.",
+                             "Render worker times overlap the coordinator.",
+                             "GPU surface timings include its synchronous final host download.",
+                             "Instrumented and cProfile runs are attribution, not speedup benchmarks."],
             "exclusive_wall_seconds": dict(budget.seconds), "bucket_calls": dict(budget.calls),
             "inclusive_function_seconds_do_not_sum": dict(budget.functions),
             "initialization_calls_inclusive_do_not_sum": budget.initialization_calls,
@@ -263,6 +339,10 @@ def main():
     parser.add_argument("--process-priority", choices=["normal", "below_normal"], default="below_normal")
     parser.add_argument("--plain", action="store_true", help="Uninstrumented A/B wall times")
     parser.add_argument("--cprofile", action="store_true", help="Attribution only, not speed benchmarking")
+    parser.add_argument("--detailed-physics", action="store_true",
+                        help="Also isolate dynamics loops, topographic forcing and flexure")
+    parser.add_argument("--gpu-surface", action="store_true", help="Profile the current exact CUDA surface backend")
+    parser.add_argument("--gpu-device", type=int, default=0)
     parser.add_argument("--finalize", action="store_true")
     parser.add_argument("--child", action="store_true")
     parser.add_argument("--mode", choices=["before", "after"], default="after")
@@ -274,6 +354,10 @@ def main():
         parser.error("repeat and time settings must be positive")
     if args.resume and args.subdivisions is not None:
         parser.error("Cannot change a checkpoint's mesh resolution")
+    if args.gpu_device < 0:
+        parser.error("GPU device must be non-negative")
+    if args.plain and args.detailed_physics:
+        parser.error("Detailed physics timers require instrumentation (omit --plain)")
     for name in ("config", "resume", "output", "reference", "reference_pngs"):
         value = getattr(args, name)
         if value is not None:
@@ -289,6 +373,9 @@ def main():
     from analysis.benchmark_cpu_modes import compare_checkpoints
     from analysis.benchmark_render_modes import compare_pngs
     reference, reference_pngs = args.reference, args.reference_pngs
+    from analysis.validate_gpu_surface import checkpoint_hashes, sha256_file
+    input_hashes = {"config": sha256_file(args.config),
+                    "checkpoint": checkpoint_hashes(args.resume) if args.resume else None}
     rows = []
     for repeat in range(args.repeat):
         modes = [(mode, numeric) for mode in args.modes for numeric in args.numeric_modes]
@@ -296,6 +383,8 @@ def main():
             modes.reverse()
         for mode, numeric in modes:
             label = mode if args.numeric_modes == ["legacy"] else f"{mode}_{numeric}"
+            if args.gpu_surface:
+                label += "_gpu_surface"
             case = args.output / f"{label}_{repeat + 1}"
             case.mkdir()
             command = [sys.executable, str(Path(__file__).resolve()), "--child", "--mode", mode,
@@ -307,10 +396,15 @@ def main():
                 command += ["--resume", str(args.resume)]
             if args.subdivisions is not None:
                 command += ["--subdivisions", str(args.subdivisions)]
-            command += ["--" + flag for flag in ("plain", "cprofile", "finalize") if getattr(args, flag)]
+            command += ["--" + flag.replace("_", "-") for flag in
+                        ("plain", "cprofile", "finalize", "detailed_physics", "gpu_surface") if getattr(args, flag)]
+            command += ["--gpu-device", str(args.gpu_device)]
             print(f"START {label} repeat {repeat + 1}", flush=True)
             began = perf_counter()
-            environment = dict(os.environ, PYTHONPATH=str(ROOT), MPLBACKEND="Agg", PYTHONUNBUFFERED="1")
+            inherited_path = os.environ.get("PYTHONPATH")
+            pythonpath = str(ROOT) + (os.pathsep + inherited_path if inherited_path else "")
+            environment = dict(os.environ, PYTHONPATH=pythonpath, MPLBACKEND="Agg", PYTHONUNBUFFERED="1")
+            environment.setdefault("MPLCONFIGDIR", str(args.output / "matplotlib_cache"))
             with (case / "run.log").open("w", encoding="utf-8") as log:
                 subprocess.run(command, cwd=ROOT, env=environment, stdout=log, stderr=subprocess.STDOUT, check=True)
             wall = perf_counter() - began
@@ -318,6 +412,9 @@ def main():
             reference = reference or case / "checkpoint"
             reference_pngs = reference_pngs or case
             row = {"case": case.name, "wall_seconds": wall, **data,
+                   "input_sha256_before": input_hashes,
+                   "input_sha256_after": {"config": sha256_file(args.config),
+                                          "checkpoint": checkpoint_hashes(args.resume) if args.resume else None},
                    "checkpoint_comparison": compare_checkpoints(reference, case / "checkpoint"),
                    "png_comparison": compare_pngs(reference_pngs, case)}
             rows.append(row)
@@ -326,6 +423,11 @@ def main():
             print(f"DONE {label}: {wall:.3f}s; state+PNG exact={exact}", flush=True)
             if not exact:
                 raise RuntimeError("Diagnostic changed the reference result")
+            if row["input_sha256_before"] != row["input_sha256_after"]:
+                raise RuntimeError("Input configuration or checkpoint changed during profiling")
+            if args.gpu_surface:
+                from analysis.validate_gpu_surface import require_surface_execution
+                require_surface_execution(row["gpu_execution"] or {})
 
 
 if __name__ == "__main__":
