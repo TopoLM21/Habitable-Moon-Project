@@ -11,6 +11,7 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 import json
+import math
 from pathlib import Path
 from typing import Any, Iterable
 
@@ -22,6 +23,7 @@ RUNNER_NAME = "run_long_evolution_v131.py"
 CPU_RUNNER_NAME = "run_long_evolution_v131_cpu.py"
 RUNTIME_CONFIG_NAME = "gui_runtime_config.yaml"
 RUN_RECORD_NAME = "gui_run.json"
+SUBDIVISION_CHOICES = (3, 4, 5, 6, 7, 8)
 
 
 def cell_count(subdivisions: int) -> int:
@@ -32,10 +34,26 @@ def cell_count(subdivisions: int) -> int:
     return 20 * 4**int(subdivisions)
 
 
-def resolution_note(subdivisions: int) -> str:
+def characteristic_cell_size_km(subdivisions: int, radius_km: float) -> float:
+    """Square root of mean cell area, not triangle edge length or accuracy."""
+
+    radius = float(radius_km)
+    if not math.isfinite(radius) or radius <= 0:
+        raise ValueError("Moon radius must be finite and positive")
+    return radius * math.sqrt(4.0 * math.pi / cell_count(subdivisions))
+
+
+def resolution_note(subdivisions: int, radius_km: float | None = None) -> str:
     cells = cell_count(subdivisions)
-    relative = (cells / 20_480) ** 1.35
-    return f"{cells:,} cells | estimated compute load {relative:.2f}x canonical sub-5"
+    note = f"{cells:,} ячеек | {cells / cell_count(5):g}× ячеек относительно sub-5"
+    if radius_km is not None:
+        size = characteristic_cell_size_km(subdivisions, radius_km)
+        note += f"\n≈ {size:.1f} км: √средней площади ячейки, R = {radius_km:g} км."
+    else:
+        note += "\nРазмер в км недоступен: проверьте moon.radius_km в конфигурации."
+    if subdivisions >= 7:
+        note += "\nЭкспериментальная сетка: время и память не измерены. Начните с короткого нового прогона."
+    return note
 
 
 def _is_multiple(value: float, step: float, tolerance: float = 1.0e-9) -> bool:
@@ -123,8 +141,8 @@ class RunSpec:
             raise ValueError("An external checkpoint needs an empty experimental output folder")
         if not self.source_config.is_file():
             raise ValueError(f"Configuration does not exist: {self.source_config}")
-        if self.subdivisions not in {3, 4, 5, 6}:
-            raise ValueError("GUI supports subdivisions 3, 4, 5, or 6")
+        if self.subdivisions not in SUBDIVISION_CHOICES:
+            raise ValueError(f"GUI supports subdivisions {SUBDIVISION_CHOICES}")
         if self.dt_myr <= 0:
             raise ValueError("Time step must be positive")
         if self.checkpoint_interval_myr <= 0:
@@ -147,6 +165,24 @@ class RunSpec:
                 raise ValueError("Resume checkpoint has no meta.json")
             if not (self.resume_checkpoint / "state.npz").is_file():
                 raise ValueError("Resume checkpoint has no state.npz")
+            actual_cells = checkpoint_cell_count(self.resume_checkpoint)
+            if actual_cells != cell_count(self.subdivisions):
+                raise ValueError(
+                    f"Checkpoint mesh has {actual_cells:,} cells, but subdivision "
+                    f"{self.subdivisions} requires {cell_count(self.subdivisions):,}. "
+                    "Changing subdivision requires a new run, not checkpoint resume."
+                )
+            # The controller reuses this file when resuming. Validate it before
+            # writing provenance or starting an expensive mesh initialization.
+            if self.runtime_config.is_file():
+                with self.runtime_config.open("r", encoding="utf-8") as handle:
+                    saved = yaml.safe_load(handle)
+                if (not isinstance(saved, dict) or not isinstance(saved.get("mesh"), dict)
+                        or saved["mesh"].get("subdivisions") != self.subdivisions):
+                    raise ValueError(
+                        "Saved runtime configuration subdivision does not match the checkpoint "
+                        "and selected subdivision. Choose a new output folder or the matching run."
+                    )
 
 
 def read_checkpoint_time(checkpoint: Path) -> float:

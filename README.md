@@ -93,6 +93,12 @@ three genesis histories (disk/quiet, disk/impact, capture/circularization) are
 visible as planned modes so their future orbital, thermal, and plate-onset
 parameters can enter without redesigning the application.
 
+The GUI now offers **Subdivision 3–8**, with **5** still the default. At the
+canonical radius, 7 means 327,680 cells (characteristic size ≈33 km), and 8
+means 1,310,720 cells (≈16 km). Levels 7/8 are experimental, require confirmation,
+and have not been benchmarked for complete runs. A checkpoint must keep its
+original mesh resolution. See [mesh resolution options](MESH_RESOLUTION.md).
+
 The local resolution timing and the sub-5 decision for the first full run are
 recorded in `V131_GUI_RESOLUTION_BENCHMARK.md`. The completed 500 Myr
 subdivision-5 run and its numerical/scientific acceptance checks are recorded
