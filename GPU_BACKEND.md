@@ -5,6 +5,11 @@ The stable `main` checkout and the `perf/cpu-parallel` worktree are unchanged.
 
 ## Current scope
 
+As of 2026-09-09, the exact surface mode and native CPU optimization switches
+are also available in the GUI. Use `setup_gui.bat` once, then `launch_gui.bat`;
+see [GUI_GPU_SETUP.md](GUI_GPU_SETUP.md). CUDA remains opt-in, not a whole-model
+GPU backend, and tolerance-based arc painting remains CLI-only.
+
 `run_long_evolution_v131_gpu.py` wraps the optimized CPU runner in one
 `GpuExecution` context. The context imports CuPy lazily, selects one CUDA device,
 compiles FP64 kernels and keeps immutable mesh connectivity on the device.
@@ -258,4 +263,5 @@ step would require migrating more consumers and defining synchronization at
 frame, checkpoint and topology boundaries. Residency alone does not guarantee a
 speedup: the earlier reports do not establish transfer time as the dominant cost.
 Each newly migrated phase must pass an endpoint correctness audit before timing
-comparisons are used for decisions. GPU mode is CLI-only and remains opt-in.
+comparisons are used for decisions. Exact GPU surface mode is available in the
+GUI and CLI and remains opt-in; tolerance-based arc painting stays CLI-only.

@@ -5,8 +5,8 @@
 This is the `perf/gpu-compute` branch, based on the validated CPU optimizations
 from `perf/cpu-parallel`. The validated numerical release remains
 at tag `v0.31-cpu-stable`; the original workspace and its Python environment
-are unchanged. The GUI still selects the reference CPU mode or cached CPU execution;
-the first CUDA integration is intentionally CLI-only while its scope is expanded.
+are unchanged. The GUI selects reference CPU, optimized CPU, or the partial
+CUDA surface mode. See [GPU GUI setup and controls](GUI_GPU_SETUP.md).
 The experimental defaults are 1 plate worker, 4 separate map-rendering processes,
 exact-order batched sediment routing, and lower CPU priority for the simulation
 and render workers (not the GUI). It also includes pause-aware ETA. Render counts
@@ -30,7 +30,7 @@ limitations are documented in [GPU_BACKEND.md](GPU_BACKEND.md). The opt-in
 response on CUDA within one block, with byte-exact checkpoint validation.
 The measured ~9.8× surface-block speedup is not a full-simulation speedup:
 the short 20-Myr workflow is still slightly slower on GPU in current measurements.
-GPU is not yet a full-model backend or a GUI option. The
+GPU is not yet a full-model backend; its surface mode is available in the GUI. The
 [fresh dynamics/topography study](GPU_DYNAMICS_TOPOGRAPHY_STUDY.md) found a
 **CPU boundary-force candidate**: on 700→900 Myr, three paired
 full-process measurements reduced median time by a further 10.06% relative to
@@ -38,8 +38,9 @@ the same GPU-surface mode, with exact checkpoint validation. Together with
 assignment-column compaction it is now available through ordinary CPU/GPU
 runner flags `--assignment-columns` and `--boundary-forces` in this branch.
 Both are opt-in; `--no-assignment-columns` and `--no-boundary-forces` disable
-them independently. No new GUI controls were added. These improvements run on
-CPU, not CUDA. See [native options and validation](NATIVE_CPU_OPTIMIZATIONS.md).
+them independently. Matching independent checkboxes are also available in the
+GUI. These improvements run on CPU, not CUDA. See
+[native options and validation](NATIVE_CPU_OPTIMIZATIONS.md).
 The first-stage
 results and intermediate-GIF tool are in [CPU_PERFORMANCE.md](CPU_PERFORMANCE.md).
 Use this folder's own `launch_gui.bat` and `.venv`. Do not switch branches in a
@@ -59,10 +60,15 @@ last completed checkpoint.
 Windows setup and launch:
 
 ```text
-py -3 -m venv .venv
-.venv\Scripts\python.exe -m pip install -r requirements.txt
+setup_gui.bat
 launch_gui.bat
 ```
+
+The setup helper expects Python 3.12 (`py -3.12`), or accepts an explicit Python
+path as its first argument. It installs the local GUI/CUDA environment with the
+tested CPU dependency versions. The `.venv` directory is not included in Git.
+Select "CPU + GPU — поверхность (CUDA)" and enable the two new CPU checkboxes
+when desired; the default remains optimized CPU with those checkboxes off.
 
 Ubuntu setup and launch (the numerical model is portable; optional render-worker
 lifetime handling has separate Windows and Linux implementations, with only

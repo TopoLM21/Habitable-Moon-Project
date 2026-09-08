@@ -12,6 +12,7 @@ from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 import json
 import math
+from numbers import Integral
 from pathlib import Path
 from typing import Any, Iterable
 
@@ -21,6 +22,7 @@ from execution_policy import RENDER_WORKER_CHOICES, PROCESS_PRIORITY_CHOICES
 
 RUNNER_NAME = "run_long_evolution_v131.py"
 CPU_RUNNER_NAME = "run_long_evolution_v131_cpu.py"
+GPU_RUNNER_NAME = "run_long_evolution_v131_gpu.py"
 RUNTIME_CONFIG_NAME = "gui_runtime_config.yaml"
 RUN_RECORD_NAME = "gui_run.json"
 SUBDIVISION_CHOICES = (3, 4, 5, 6, 7, 8)
@@ -62,6 +64,13 @@ def _is_multiple(value: float, step: float, tolerance: float = 1.0e-9) -> bool:
     return abs(round(value / step) * step - value) <= tolerance
 
 
+def _gpu_device_index(value: int) -> int:
+    # Do not silently truncate a fractional index when normalizing a RunSpec.
+    if isinstance(value, bool) or not isinstance(value, Integral) or value < 0:
+        raise ValueError("GPU device must be a non-negative integer")
+    return int(value)
+
+
 @dataclass(frozen=True, slots=True)
 class RunSpec:
     project_root: Path
@@ -80,6 +89,10 @@ class RunSpec:
     render_workers: int = 1
     cell_kernels: bool = False
     process_priority: str = "normal"
+    gpu_surface: bool = False
+    gpu_device: int = 0
+    assignment_columns: bool = False
+    boundary_forces: bool = False
 
     def normalized(self) -> "RunSpec":
         return RunSpec(
@@ -101,10 +114,16 @@ class RunSpec:
             render_workers=int(self.render_workers),
             cell_kernels=bool(self.cell_kernels),
             process_priority=str(self.process_priority),
+            gpu_surface=bool(self.gpu_surface),
+            gpu_device=_gpu_device_index(self.gpu_device),
+            assignment_columns=bool(self.assignment_columns),
+            boundary_forces=bool(self.boundary_forces),
         )
 
     @property
     def runner(self) -> Path:
+        if self.gpu_surface:
+            return self.project_root / GPU_RUNNER_NAME
         return self.project_root / (CPU_RUNNER_NAME if self.cpu_optimized else RUNNER_NAME)
 
     @property
@@ -119,6 +138,11 @@ class RunSpec:
     def validate(self) -> None:
         if not self.project_root.is_dir():
             raise ValueError(f"Project root does not exist: {self.project_root}")
+        _gpu_device_index(self.gpu_device)
+        if self.gpu_surface and not self.cpu_optimized:
+            raise ValueError("GPU surface requires the optimized CPU runner")
+        if (self.assignment_columns or self.boundary_forces) and not self.cpu_optimized:
+            raise ValueError("Assignment columns and boundary forces require the optimized CPU or GPU runner")
         if not self.runner.is_file():
             raise ValueError(f"v0.31 runner does not exist: {self.runner}")
         if not 1 <= self.cpu_workers <= 32:
@@ -317,8 +341,12 @@ def build_segment_command(
         command.extend(["--cpu-workers", str(spec.cpu_workers)])
         command.extend(["--render-workers", str(spec.render_workers)])
         command.extend(["--process-priority", spec.process_priority])
+        command.append("--assignment-columns" if spec.assignment_columns else "--no-assignment-columns")
+        command.append("--boundary-forces" if spec.boundary_forces else "--no-boundary-forces")
         if spec.cell_kernels:
             command.append("--cell-kernels")
+    if spec.gpu_surface:
+        command.extend(["--gpu-surface", "--gpu-device", str(spec.gpu_device)])
     if spec.surface_only_frames:
         command.append("--surface-only-frames")
     if final_segment and spec.finalize:

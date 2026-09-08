@@ -30,6 +30,10 @@ def main() -> int:
     parser.add_argument("--full-frames", action="store_true")
     parser.add_argument("--no-finalize", action="store_true")
     parser.add_argument("--cpu-optimized", action="store_true")
+    parser.add_argument("--gpu-surface", action="store_true")
+    parser.add_argument("--gpu-device", type=int, default=0)
+    parser.add_argument("--assignment-columns", action="store_true")
+    parser.add_argument("--boundary-forces", action="store_true")
     parser.add_argument("--cpu-workers", type=int, default=1)
     parser.add_argument("--render-workers", type=int, default=1)
     parser.add_argument("--cell-kernels", action="store_true")
@@ -127,7 +131,11 @@ def main() -> int:
             surface_only_frames=not bool(args.full_frames),
             finalize=not bool(args.no_finalize),
             resume_checkpoint=resume,
-            cpu_optimized=bool(args.cpu_optimized),
+            cpu_optimized=bool(args.cpu_optimized or args.gpu_surface),
+            gpu_surface=bool(args.gpu_surface),
+            gpu_device=args.gpu_device,
+            assignment_columns=bool(args.assignment_columns),
+            boundary_forces=bool(args.boundary_forces),
             cpu_workers=int(args.cpu_workers),
             render_workers=int(args.render_workers),
             cell_kernels=bool(args.cell_kernels),

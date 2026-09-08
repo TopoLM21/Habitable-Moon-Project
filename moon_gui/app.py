@@ -77,6 +77,32 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_CONFIG = PROJECT_ROOT / "configs" / "canonical_moon.yaml"
 
 
+def simulation_environment(spec: RunSpec) -> QProcessEnvironment:
+    """Prepare a child environment without importing or initializing CUDA."""
+
+    environment = QProcessEnvironment.systemEnvironment()
+    environment.insert("PYTHONUNBUFFERED", "1")
+    environment.insert("MPLBACKEND", "Agg")
+    old_pythonpath = environment.value("PYTHONPATH")
+    environment.insert(
+        "PYTHONPATH",
+        str(spec.project_root)
+        if not old_pythonpath
+        else str(spec.project_root) + os.pathsep + old_pythonpath,
+    )
+    if spec.gpu_surface:
+        for variable, directory in (
+            ("CUPY_CACHE_DIR", "cupy"),
+            ("CUDA_CACHE_PATH", "cuda"),
+            ("MPLCONFIGDIR", "matplotlib"),
+        ):
+            if not environment.value(variable):
+                cache = spec.output_dir / ".cache" / directory
+                cache.mkdir(parents=True, exist_ok=True)
+                environment.insert(variable, str(cache))
+    return environment
+
+
 def install_application_font(app: QApplication) -> None:
     """Install a bundled Unicode font when the host default is unavailable."""
 
@@ -155,6 +181,15 @@ class SimulationController(QObject):
             f"Prepared v0.31 run: t={self.current_time:g} -> {spec.end_time_myr:g} Myr, "
             f"sub-{spec.subdivisions}, {len(self.targets)} checkpoint segment(s)."
         )
+        mode = (
+            f"CPU + GPU surface (CUDA device {spec.gpu_device})"
+            if spec.gpu_surface
+            else "optimized CPU" if spec.cpu_optimized else "reference CPU"
+        )
+        self.log_line.emit(
+            f"Execution: {mode}; CPU assignment columns={spec.assignment_columns}, "
+            f"CPU boundary forces={spec.boundary_forces}."
+        )
         self._start_next_segment()
 
     def _start_next_segment(self) -> None:
@@ -175,17 +210,7 @@ class SimulationController(QObject):
             final_segment=final_segment,
         )
         self.active_checkpoint = checkpoint
-        environment = QProcessEnvironment.systemEnvironment()
-        environment.insert("PYTHONUNBUFFERED", "1")
-        environment.insert("MPLBACKEND", "Agg")
-        old_pythonpath = environment.value("PYTHONPATH")
-        environment.insert(
-            "PYTHONPATH",
-            str(self.spec.project_root)
-            if not old_pythonpath
-            else str(self.spec.project_root) + os.pathsep + old_pythonpath,
-        )
-        self.process.setProcessEnvironment(environment)
+        self.process.setProcessEnvironment(simulation_environment(self.spec))
         self.process.setWorkingDirectory(str(self.spec.project_root))
         self.process.setProgram(sys.executable)
         self.process.setArguments(command)
@@ -244,7 +269,10 @@ class SimulationController(QObject):
             return
         if exit_code != 0:
             self.timing.stop_segment(monotonic())
-            message = f"Simulation segment exited with code {exit_code}."
+            message = (
+                f"Simulation segment exited with code {exit_code}. "
+                "Подробности ошибки — во вкладке «Журнал»."
+            )
             self._set_state("Error")
             self.run_failed.emit(message)
             return
@@ -339,7 +367,7 @@ class MoonWindow(QMainWindow):
         title_row = QHBoxLayout()
         title = QLabel("Лаборатория тектоники спутника")
         title.setObjectName("title")
-        subtitle = QLabel("v0.31 · экспериментальная CPU-ветка · отдельная рабочая папка")
+        subtitle = QLabel("v0.31 · экспериментальная CPU/GPU-ветка · отдельная рабочая папка")
         subtitle.setObjectName("subtitle")
         title_box = QVBoxLayout()
         title_box.addWidget(title)
@@ -431,10 +459,26 @@ class MoonWindow(QMainWindow):
         self.cpu_mode = QComboBox()
         self.cpu_mode.addItem("CPU — исходный", False)
         self.cpu_mode.addItem("CPU — оптимизированный", True)
+        self.cpu_mode.addItem("CPU + GPU — поверхность (CUDA)", "gpu_surface")
+        self.cpu_mode.setToolTip(
+            "GPU-режим переносит только блок поверхностных процессов на NVIDIA CUDA; "
+            "остальная физика и новые оптимизации остаются на CPU. "
+            "Требуется установленное GPU-окружение. При ошибке CUDA расчёт остановится "
+            "с сообщением в журнале, без скрытого переключения на CPU."
+        )
         self.cpu_mode.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLengthWithIcon)
         self.cpu_mode.setMinimumContentsLength(16)
         self.cpu_mode.setCurrentIndex(1)
         numerical_form.addRow("Режим расчёта", self.cpu_mode)
+        self.gpu_device = QSpinBox()
+        self.gpu_device.setRange(0, 31)
+        self.gpu_device.setValue(0)
+        self.gpu_device.setToolTip(
+            "Индекс CUDA-устройства, начиная с 0. Для единственной видеокарты оставьте 0. "
+            "Наличие устройства проверяется при запуске расчёта."
+        )
+        self.gpu_device_label = QLabel("CUDA-устройство")
+        numerical_form.addRow(self.gpu_device_label, self.gpu_device)
         self.cpu_workers = QComboBox()
         self.cpu_workers.addItems(["1", "2", "4", "8"])
         self.cpu_workers.setToolTip(
@@ -465,8 +509,20 @@ class MoonWindow(QMainWindow):
         self.cell_kernels = QCheckBox("Пакетный перенос осадков")
         self.cell_kernels.setChecked(True)
         self.cell_kernels.setToolTip("Экспериментальное CPU-ядро с сохранением порядка сложения и точности float64.")
-        self.cpu_mode.currentIndexChanged.connect(self._refresh_execution_controls)
         numerical_form.addRow("", self.cell_kernels)
+        self.assignment_columns = QCheckBox("Компактный подбор соответствий (CPU)")
+        self.assignment_columns.setToolTip(
+            "Уменьшает задачу переноса материала, убирая неиспользуемые столбцы. "
+            "Оптимизация CPU, независимая от GPU и граничных сил; выключена по умолчанию."
+        )
+        numerical_form.addRow("", self.assignment_columns)
+        self.boundary_forces = QCheckBox("Пакетные граничные силы (CPU)")
+        self.boundary_forces.setToolTip(
+            "Кэширует геометрию границ и пакетно вычисляет силы на CPU. "
+            "Независима от GPU и подбора соответствий; выключена по умолчанию."
+        )
+        numerical_form.addRow("", self.boundary_forces)
+        self.cpu_mode.currentIndexChanged.connect(self._refresh_execution_controls)
         self.subdivisions = QComboBox()
         self.subdivisions.addItems([str(value) for value in SUBDIVISION_CHOICES])
         self.subdivisions.setCurrentText("5")
@@ -661,6 +717,8 @@ class MoonWindow(QMainWindow):
 
     def _make_spec(self) -> RunSpec:
         resume_text = self.resume_field.edit.text().strip()
+        gpu_surface = self.cpu_mode.currentData() == "gpu_surface"
+        optimized = self.cpu_mode.currentData() is True or gpu_surface
         return RunSpec(
             project_root=PROJECT_ROOT,
             source_config=self.config_field.path(),
@@ -673,11 +731,15 @@ class MoonWindow(QMainWindow):
             surface_only_frames=self.surface_only.isChecked(),
             finalize=self.finalize.isChecked(),
             resume_checkpoint=Path(resume_text) if resume_text else None,
-            cpu_optimized=bool(self.cpu_mode.currentData()),
+            cpu_optimized=optimized,
             cpu_workers=int(self.cpu_workers.currentText()),
-            render_workers=int(self.render_workers.currentText()) if self.cpu_mode.currentData() else 1,
-            cell_kernels=self.cell_kernels.isChecked() if self.cpu_mode.currentData() else False,
-            process_priority="below_normal" if self.cpu_mode.currentData() and self.low_priority.isChecked() else "normal",
+            render_workers=int(self.render_workers.currentText()) if optimized else 1,
+            cell_kernels=self.cell_kernels.isChecked() if optimized else False,
+            process_priority="below_normal" if optimized and self.low_priority.isChecked() else "normal",
+            gpu_surface=gpu_surface,
+            gpu_device=self.gpu_device.value() if gpu_surface else 0,
+            assignment_columns=optimized and self.assignment_columns.isChecked(),
+            boundary_forces=optimized and self.boundary_forces.isChecked(),
         )
 
     def _start_run(self) -> None:
@@ -742,9 +804,16 @@ class MoonWindow(QMainWindow):
         # can reconfigure an existing worker pool, including across safe pause.
         locked = self.controller.is_active() or self.controller.state == "Paused"
         self.cpu_mode.setEnabled(not locked)
-        enabled = not locked and bool(self.cpu_mode.currentData())
-        for control in (self.cpu_workers, self.render_workers, self.low_priority, self.cell_kernels):
+        gpu_surface = self.cpu_mode.currentData() == "gpu_surface"
+        enabled = not locked and (self.cpu_mode.currentData() is True or gpu_surface)
+        for control in (
+            self.cpu_workers, self.render_workers, self.low_priority, self.cell_kernels,
+            self.assignment_columns, self.boundary_forces,
+        ):
             control.setEnabled(enabled)
+        self.gpu_device.setVisible(gpu_surface)
+        self.gpu_device_label.setVisible(gpu_surface)
+        self.gpu_device.setEnabled(not locked and gpu_surface)
 
     def _progress_changed(self, current: float, end: float) -> None:
         value = 0 if end <= 0 else int(max(0.0, min(1.0, current / end)) * 1000)

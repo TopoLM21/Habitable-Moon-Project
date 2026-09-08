@@ -1,0 +1,68 @@
+{
+  "date": "2026-09-09",
+  "branch": "perf/gpu-compute",
+  "scope": "Local GUI/CUDA environment and GUI launch integration; not a new performance study",
+  "launcher": "launch_gui.bat",
+  "setup_helper": "setup_gui.bat",
+  "local_environment": ".venv",
+  "external_pythonpath_required": false,
+  "environment_tracked_in_git": false,
+  "controls": {
+    "gpu_mode": "CPU + GPU — поверхность (CUDA)",
+    "gpu_device_default": 0,
+    "assignment_columns": "Компактный подбор соответствий (CPU)",
+    "boundary_forces": "Пакетные граничные силы (CPU)",
+    "default_mode": "optimized CPU",
+    "new_cpu_options_default": false,
+    "approximate_gpu_arcs_exposed": false,
+    "hidden_cpu_fallback": false
+  },
+  "environment": {
+    "python_series": "3.12",
+    "numpy": "2.5.2",
+    "scipy": "1.18.1",
+    "matplotlib": "3.11.1",
+    "PySide6": "6.11.2",
+    "cupy": "14.2.0",
+    "pip_check": "passed",
+    "setup_rerun_offline": "passed"
+  },
+  "validation": {
+    "bat_smoke_from_another_directory": "passed",
+    "full_suite": {
+      "passed": 552,
+      "skipped": 0
+    },
+    "qt_controller": "real QProcess with two checkpoint segments",
+    "interval_myr": [
+      0,
+      8
+    ],
+    "subdivision": 3,
+    "dt_myr": 4,
+    "checkpoint_interval_myr": 4,
+    "frame_interval_myr": 4,
+    "cpu_workers": 1,
+    "render_workers": 4,
+    "safe_pause_and_resume_myr": 4,
+    "gpu_device_name": "NVIDIA GeForce RTX 4080",
+    "gpu_surface_and_both_native_options": true,
+    "cpu_reference": "Same GUI controller, optimized CPU without either new native option",
+    "checkpoint_times_exact": [
+      4,
+      8
+    ],
+    "arrays_per_checkpoint": 62,
+    "complete_metadata_and_history_exact": true,
+    "png_exact": true,
+    "png_count": 46,
+    "last_segment_report": {
+      "gpu_surface_calls": 1,
+      "assignment_calls": 5,
+      "boundary_calls": 1
+    },
+    "artifacts": "results/gui_gpu_setup_20260909/",
+    "gui_layout_preview": "results/gui_gpu_setup_20260909/gui_preview.png",
+    "main_cpu_branches_and_environments_unchanged": true
+  }
+}
