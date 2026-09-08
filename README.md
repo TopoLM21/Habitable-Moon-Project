@@ -32,10 +32,14 @@ The measured ~9.8× surface-block speedup is not a full-simulation speedup:
 the short 20-Myr workflow is still slightly slower on GPU in current measurements.
 GPU is not yet a full-model backend or a GUI option. The
 [fresh dynamics/topography study](GPU_DYNAMICS_TOPOGRAPHY_STUDY.md) found a
-research-only **CPU boundary-force candidate**: on 700→900 Myr, three paired
+**CPU boundary-force candidate**: on 700→900 Myr, three paired
 full-process measurements reduced median time by a further 10.06% relative to
-the same GPU-surface mode, with exact checkpoint validation. It is not yet
-enabled in the ordinary runner or GUI; this additional gain is not due to CUDA.
+the same GPU-surface mode, with exact checkpoint validation. Together with
+assignment-column compaction it is now available through ordinary CPU/GPU
+runner flags `--assignment-columns` and `--boundary-forces` in this branch.
+Both are opt-in; `--no-assignment-columns` and `--no-boundary-forces` disable
+them independently. No new GUI controls were added. These improvements run on
+CPU, not CUDA. See [native options and validation](NATIVE_CPU_OPTIMIZATIONS.md).
 The first-stage
 results and intermediate-GIF tool are in [CPU_PERFORMANCE.md](CPU_PERFORMANCE.md).
 Use this folder's own `launch_gui.bat` and `.venv`. Do not switch branches in a

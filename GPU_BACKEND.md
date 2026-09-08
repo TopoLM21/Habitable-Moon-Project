@@ -51,6 +51,21 @@ The GPU runner fails clearly if CuPy, the CUDA runtime or the requested device i
 unavailable; it never silently labels a CPU calculation as GPU work. Use
 `run_long_evolution_v131_cpu.py` as the fallback runner.
 
+## Native CPU optimization options (2026-09-08)
+
+The two validated CPU candidates now have ordinary integration in this branch.
+Add `--assignment-columns --boundary-forces` to the CPU or GPU runner to enable
+them. Both default off; `--no-assignment-columns` and `--no-boundary-forces`
+disable them independently. GUI defaults remain unchanged. These optimizations
+do not require CUDA themselves and do not change checkpoint formats or physics
+parameters. Native execution uses no research AST/function replacement.
+
+`render_timings.json` records flags, actual calls and inclusive timings under
+`numerical_execution.assignment_columns` and `.boundary_forces`. For the full
+instructions and post-integration validation see
+[NATIVE_CPU_OPTIMIZATIONS.md](NATIVE_CPU_OPTIMIZATIONS.md). The stage4/stage6
+sections below describe historical research runs, not current availability.
+
 ## Determinism and ownership
 
 - Inputs and results remain NumPy-owned at the current integration boundary.
@@ -213,6 +228,25 @@ for GPU-specific and new harness suites in the CUDA environment. See the
 [complete study](GPU_DYNAMICS_TOPOGRAPHY_STUDY.md) for raw timings, exactness
 scope, the optional environment's full-suite limitation and next steps; compact
 results are in `performance_reports/gpu_backend_stage4.json`.
+
+## Combined CPU candidates (stage 6, research only)
+
+The assignment-column compaction and prepared boundary-force candidates were
+measured together on 2026-09-08. Three fresh alternating full-process pairs
+reduced median 700→900 Myr time from **44.910 to 34.215 s (23.81% less time)**.
+The reference mode already uses the exact GPU surface pipeline; these two new
+improvements run on CPU. This is neither a comparison against main/CPU Parallel
+nor a sum of earlier isolated percentages. All six endpoints, complete histories
+and 32 PNG per run were exact; combined merge/split continuations were also exact.
+
+Use `analysis/run_assignment_candidate.py --with-boundary` only as an isolated
+research runner, or `analysis/validate_assignment_candidate.py --with-boundary`
+for guarded paired trials. Ordinary runner/GUI defaults remain unchanged.
+Tests: 439 passed / 19 CUDA skips in the full CPU suite, and 161 passed in the
+overlapping GPU-specific/research suites. The first baseline was slower and
+background GPU activity was present; this is a local observation, not a forecast
+for subdivision 7/8. See [the combined study](COMBINED_OPTIMIZATION_STUDY.md) and
+`performance_reports/gpu_backend_stage6.json` for exactness scope and raw sources.
 
 ## Architectural limits and next decisions
 

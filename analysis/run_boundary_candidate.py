@@ -59,12 +59,19 @@ class BoundaryCandidateContext(AbstractContextManager):
             raise RuntimeError("Another boundary candidate is active")
         tree = ast.parse(inspect.getsource(original))
         definition = tree.body[0]
-        matches = [i for i, node in enumerate(definition.body)
-                   if isinstance(node, ast.For) and isinstance(node.target, ast.Name)
-                   and node.target.id == "b" and isinstance(node.iter, ast.Name)
-                   and node.iter.id == "boundaries"]
+        # Production now has an explicit opt-in dispatch. The historical
+        # research wrapper still replaces this one block inside its process,
+        # independently of CpuExecution's default-disabled production option.
+        matches = [
+            i for i, node in enumerate(definition.body)
+            if isinstance(node, ast.If) and any(
+                isinstance(call, ast.Call) and isinstance(call.func, ast.Name)
+                and call.func.id == "_boundary_force_terms_reference"
+                for call in ast.walk(node)
+            )
+        ]
         if len(matches) != 1:
-            raise RuntimeError("Expected exactly one original boundary loop")
+            raise RuntimeError("Expected exactly one production boundary dispatch")
         arguments = ("mesh", "state", "boundaries", "radius_km", "pcount", "params",
                      "mantle_flow", "thermal_lithosphere_thickness_km", "subduction_memory")
         definition.body[matches[0]] = ast.Assign(

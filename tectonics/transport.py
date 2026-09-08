@@ -222,6 +222,7 @@ def _optimal_assignment(mesh: SphereMesh, rotated_sources: Array, params: Subgri
         return np.empty(0, dtype=np.int32)
     if m > n:
         raise ValueError("plate has more source cells than mesh targets")
+    execution = current_execution()
     if tree is None:
         tree = cKDTree(mesh.centroids)
     k = min(max(int(params.initial_candidate_count), 2), n)
@@ -238,7 +239,10 @@ def _optimal_assignment(mesh: SphereMesh, rotated_sources: Array, params: Subgri
         cost = np.maximum(cost, 1e-14) + 1e-15 * (cols % 997)
         graph = csr_matrix((cost, (rows, cols)), shape=(m, n))
         try:
-            r, c = min_weight_full_bipartite_matching(graph)
+            if execution is not None and execution.assignment_columns_enabled:
+                r, c = execution.match_assignment(graph)
+            else:
+                r, c = min_weight_full_bipartite_matching(graph)
             if len(r) == m:
                 order = np.argsort(r)
                 return np.asarray(c[order], dtype=np.int32)

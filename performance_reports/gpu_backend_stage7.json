@@ -1,0 +1,127 @@
+{
+  "date": "2026-09-08",
+  "branch": "perf/gpu-compute",
+  "scope": "Native opt-in CPU assignment columns and prepared boundary forces in ordinary CPU/GPU runners of this branch",
+  "native_options_available": true,
+  "default_enabled": false,
+  "new_gui_controls": false,
+  "main_and_cpu_parallel_unchanged": true,
+  "new_gpu_solver": false,
+  "native_execution_uses_research_ast_or_function_replacement": false,
+  "enable_flags": [
+    "--assignment-columns",
+    "--boundary-forces"
+  ],
+  "disable_flags": [
+    "--no-assignment-columns",
+    "--no-boundary-forces"
+  ],
+  "reference_path_retained_when_disabled": true,
+  "checkpoint_format_changed": false,
+  "canonical_subdivision": 5,
+  "cells": 20480,
+  "full_process_validation": {
+    "source": "results/gpu_surface/stage7_production_700_900/summary.json",
+    "interval_myr": [
+      700,
+      900
+    ],
+    "dt_myr": 4,
+    "steps": 50,
+    "cpu_workers": 1,
+    "render_workers": 4,
+    "cell_kernels": true,
+    "gpu_surface_in_both_modes": true,
+    "gpu_arcs": false,
+    "periodic_frames": false,
+    "final_png_per_run": 32,
+    "orders": [
+      [
+        "original",
+        "candidate"
+      ],
+      [
+        "candidate",
+        "original"
+      ],
+      [
+        "original",
+        "candidate"
+      ]
+    ],
+    "original_wall_seconds": [
+      45.16848129999994,
+      44.70246670000006,
+      45.220788200000015
+    ],
+    "candidate_wall_seconds": [
+      33.32616329999996,
+      34.32972500000005,
+      34.02629830000001
+    ],
+    "original_median_seconds": 45.16848129999994,
+    "candidate_median_seconds": 34.02629830000001,
+    "observed_time_reduction_percent": 24.66804877940394,
+    "faster_in_each_pair": true,
+    "measurement": "perf_counter around fresh ordinary GPU-runner subprocesses including startup, CUDA, computation, I/O and final maps; independent comparison outside timed process",
+    "shared_local_matplotlib_cache": true,
+    "strict_machine_isolation_or_statistical_significance_claim": false,
+    "baseline": "Same GPU-surface mode with both new options explicitly disabled, not main or CPU Parallel",
+    "reference": "results/gpu_surface/stage3_700_900/cpu_1/checkpoint",
+    "all_six_checkpoints_and_full_histories_exact": true,
+    "arrays_per_checkpoint": 62,
+    "all_six_png_sets_exact": true,
+    "surface_calls_per_run": 50,
+    "boundary_calls_per_enabled_run": 50,
+    "assignment_calls_per_enabled_run": 439,
+    "new_algorithm_calls_per_disabled_run": 0,
+    "inputs_reference_and_checked_sources_unchanged": true
+  },
+  "topology_validation": {
+    "sources": [
+      "results/gpu_surface/stage7_production_merges_320_340/summary.json",
+      "results/gpu_surface/stage7_production_splits_620_640/summary.json"
+    ],
+    "intervals_myr": [
+      [
+        320,
+        340
+      ],
+      [
+        620,
+        640
+      ]
+    ],
+    "cpu_workers_by_interval": [
+      1,
+      2
+    ],
+    "arrays_per_checkpoint_byte_exact": 62,
+    "complete_metadata_history_exact": true,
+    "png_per_run_byte_exact": 32,
+    "independent_cpu_reference": true,
+    "both_native_options_enabled": true,
+    "inputs_reference_and_checked_sources_unchanged": true,
+    "performance_comparison": false
+  },
+  "tests": {
+    "full_cpu_suite": {
+      "passed": 490,
+      "cuda_skipped": 19
+    },
+    "gpu_specific_and_research_suites": {
+      "passed": 212
+    },
+    "new_assignment_tests": 13,
+    "new_boundary_tests": 11,
+    "new_cli_tests": 17,
+    "new_production_validation_tests": 8,
+    "suite_counts_overlap": true
+  },
+  "limits": [
+    "Mesh geometry remains immutable inside the execution context",
+    "Prepared boundary dynamic fields must be finite FP64 arrays",
+    "SciPy selected-optimum tie parity is empirical, not a cross-version guarantee",
+    "No performance or memory forecast for subdivision 7/8"
+  ]
+}

@@ -183,6 +183,10 @@ def install_detailed_physics_timers(budget):
 
     Diagnostic-process-only AST wrapping preserves every original statement and
     arithmetic operation. Nested categories are exclusive in Budget.seconds.
+    After production boundary integration, dynamics_boundary_loop times the
+    dispatch including boundary initialisation (ridge factors remain a separate
+    nested exclusive category). Stage4 measured only the scalar for-loop, so
+    those historical per-category percentages are not directly comparable.
     """
     import tectonics.dynamics as dynamics
 
@@ -197,14 +201,24 @@ def install_detailed_physics_timers(budget):
     targets = {"b": "physics/dynamics_boundary_loop", "cell": "physics/dynamics_gpe_loop"}
     counts = dict.fromkeys(targets, 0)
     for index, node in enumerate(definition.body):
-        if isinstance(node, ast.For) and isinstance(node.target, ast.Name) and node.target.id in targets:
-            name = node.target.id
+        name = None
+        if isinstance(node, ast.For) and isinstance(node.target, ast.Name) and node.target.id == "cell":
+            name = "cell"
+        elif isinstance(node, ast.If) and any(
+            isinstance(call, ast.Call) and isinstance(call.func, ast.Name)
+            and call.func.id == "_boundary_force_terms_reference"
+            for call in ast.walk(node)
+        ):
+            # Time either production branch, including boundary initialisation.
+            # Ridge-factor work remains its own nested exclusive category.
+            name = "b"
+        if name is not None:
             counts[name] += 1
             definition.body[index] = ast.With(items=[ast.withitem(context_expr=ast.Call(
                 func=ast.Name(id="_gpu_profile_scope", ctx=ast.Load()),
                 args=[ast.Constant(value=targets[name])], keywords=[]))], body=[node])
     if any(count != 1 for count in counts.values()):
-        raise RuntimeError(f"Expected one boundary and one GPE loop, got {counts}")
+        raise RuntimeError(f"Expected one boundary dispatch and one GPE loop, got {counts}")
     ast.fix_missing_locations(tree)
     dynamics.__dict__["_gpu_profile_scope"] = budget.scope
     namespace = dict(dynamics.__dict__)

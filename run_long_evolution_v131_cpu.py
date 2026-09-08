@@ -23,6 +23,10 @@ def main() -> None:
                         help="Experimental cell-preparation threads, independent of plate workers")
     parser.add_argument("--arc-kernels", action=argparse.BooleanOptionalAction, default=True,
                         help="Group volcanic-arc boundaries and batch their spatial queries across CPU workers")
+    parser.add_argument("--assignment-columns", action=argparse.BooleanOptionalAction, default=False,
+                        help="Compact unused assignment columns on CPU (opt-in)")
+    parser.add_argument("--boundary-forces", action=argparse.BooleanOptionalAction, default=False,
+                        help="Use cached geometry and exact-order CPU boundary forces (opt-in)")
     options, remaining = parser.parse_known_args()
     if not 1 <= options.cpu_workers <= 32:
         parser.error("--cpu-workers must be between 1 and 32")
@@ -38,14 +42,17 @@ def main() -> None:
     print(f"Experimental CPU mode: cached geometry, {options.cpu_workers} plate worker(s)", flush=True)
     with CpuExecution(options.cpu_workers, cell_kernels=options.cell_kernels,
                       numeric_kernels=options.numeric_kernels, single_source_cells=options.single_source_cells,
-                      cell_workers=options.cell_workers, arc_kernels=options.arc_kernels) as execution, RenderExecution(
+                      cell_workers=options.cell_workers, arc_kernels=options.arc_kernels,
+                      assignment_columns=options.assignment_columns,
+                      boundary_forces=options.boundary_forces) as execution, RenderExecution(
             options.render_workers, process_priority=options.process_priority) as rendering:
         import run_long_evolution_v131 as runner
         rendering.install_runner_hooks()
         print(f"Render mode: {options.render_workers} process(es)", flush=True)
         print(f"Numerical kernels: {options.numeric_kernels}; single-source cells: "
               f"{options.single_source_cells}; cell workers: {options.cell_workers}; "
-              f"arc kernels: {options.arc_kernels}", flush=True)
+              f"arc kernels: {options.arc_kernels}; assignment columns: {options.assignment_columns}; "
+              f"boundary forces: {options.boundary_forces}", flush=True)
         runner.main()
     output_parser = argparse.ArgumentParser(add_help=False)
     output_parser.add_argument("--output")

@@ -274,42 +274,15 @@ def center_net_rotation(mesh: SphereMesh, state: LithosphereState, system: Plate
     mean = np.sum(omega * weights[:, None], axis=0) / total
     return system_from_omega(state.cell_plate, system, omega - mean[None, :])
 
-def update_plate_dynamics(
-    mesh: SphereMesh,
-    state: LithosphereState,
-    current_system: PlateSystem,
-    baseline_system: PlateSystem,
-    radius_km: float,
-    dt_myr: float,
-    normal_threshold_km_per_myr: float,
-    inactive_speed_km_per_myr: float,
-    params: DynamicsParameters,
-    *,
+def _boundary_force_terms_reference(
+    mesh: SphereMesh, state: LithosphereState, boundaries: list[BoundaryRecord],
+    radius_km: float, pcount: int, params: DynamicsParameters,
     mantle_flow: MantleFlowState | None = None,
     thermal_lithosphere_thickness_km: float | None = None,
     subduction_memory: SubductionMemoryState | None = None,
-    subduction_memory_params: SubductionMemoryParameters | None = None,
-    rollback_omega_rad_per_myr: Array | None = None,
-) -> tuple[PlateSystem, DynamicsDiagnostics, list[BoundaryRecord], Array]:
-    """Update Euler vectors from effective boundary-force proxies.
-
-    Returns (new_system, diagnostics, current_boundaries, drive_vectors).
-    """
-    if dt_myr <= 0.0:
-        raise ValueError("dt_myr must be positive")
-    pcount = len(current_system.plates)
-    current_for_state = PlateSystem(cell_plate=state.cell_plate.copy(), plates=current_system.plates)
-    boundaries = classify_boundaries(
-        mesh,
-        current_for_state,
-        radius_km,
-        normal_threshold_km_per_myr,
-        inactive_speed_km_per_myr,
-    )
-
+) -> tuple:
+    """Original scalar boundary calculation; execution-policy-independent."""
     drive = np.zeros((pcount, 3), dtype=np.float64)
-    gpe_drive = np.zeros((pcount, 3), dtype=np.float64)
-    gpe_weight = np.zeros(pcount, dtype=np.float64)
     boundary_weight = np.zeros(pcount, dtype=np.float64)
     collision_length = np.zeros(pcount, dtype=np.float64)
     transform_length = np.zeros(pcount, dtype=np.float64)
@@ -428,6 +401,63 @@ def update_plate_dynamics(
             trans_len += length
             transform_length[pa] += length * resistance_scale
             transform_length[pb] += length * resistance_scale
+
+    return (drive, boundary_weight, collision_length, transform_length,
+            ridge_len, slab_len, coll_len, trans_len, ridge_factor_sum,
+            ridge_factor_weight, ridge_factor_min, ridge_factor_max)
+
+
+def update_plate_dynamics(
+    mesh: SphereMesh,
+    state: LithosphereState,
+    current_system: PlateSystem,
+    baseline_system: PlateSystem,
+    radius_km: float,
+    dt_myr: float,
+    normal_threshold_km_per_myr: float,
+    inactive_speed_km_per_myr: float,
+    params: DynamicsParameters,
+    *,
+    mantle_flow: MantleFlowState | None = None,
+    thermal_lithosphere_thickness_km: float | None = None,
+    subduction_memory: SubductionMemoryState | None = None,
+    subduction_memory_params: SubductionMemoryParameters | None = None,
+    rollback_omega_rad_per_myr: Array | None = None,
+) -> tuple[PlateSystem, DynamicsDiagnostics, list[BoundaryRecord], Array]:
+    """Update Euler vectors from effective boundary-force proxies.
+
+    Returns (new_system, diagnostics, current_boundaries, drive_vectors).
+    """
+    if dt_myr <= 0.0:
+        raise ValueError("dt_myr must be positive")
+    pcount = len(current_system.plates)
+    current_for_state = PlateSystem(cell_plate=state.cell_plate.copy(), plates=current_system.plates)
+    boundaries = classify_boundaries(
+        mesh,
+        current_for_state,
+        radius_km,
+        normal_threshold_km_per_myr,
+        inactive_speed_km_per_myr,
+    )
+
+    from .cpu_runtime import current_execution
+    execution = current_execution()
+    if execution is not None and execution.boundary_forces_enabled:
+        (drive, boundary_weight, collision_length, transform_length,
+         ridge_len, slab_len, coll_len, trans_len, ridge_factor_sum,
+         ridge_factor_weight, ridge_factor_min, ridge_factor_max) = execution.calculate_boundary_forces(
+            mesh, state, boundaries, radius_km, pcount, params,
+            mantle_flow, thermal_lithosphere_thickness_km, subduction_memory,
+        )
+    else:
+        (drive, boundary_weight, collision_length, transform_length,
+         ridge_len, slab_len, coll_len, trans_len, ridge_factor_sum,
+         ridge_factor_weight, ridge_factor_min, ridge_factor_max) = _boundary_force_terms_reference(
+            mesh, state, boundaries, radius_km, pcount, params,
+            mantle_flow, thermal_lithosphere_thickness_km, subduction_memory,
+        )
+    gpe_drive = np.zeros((pcount, 3), dtype=np.float64)
+    gpe_weight = np.zeros(pcount, dtype=np.float64)
 
     # v0.9.8-style gravitational-potential-energy spreading: thick
     # continental columns push laterally toward thinner same-plate neighbours.

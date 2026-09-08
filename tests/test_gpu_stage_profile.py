@@ -34,12 +34,14 @@ def assert_exact(left, right):
 
 
 @pytest.mark.parametrize("outer_timers", [False, True])
-def test_detailed_timers_preserve_dynamics_and_relief(monkeypatch, outer_timers):
+@pytest.mark.parametrize("boundary_enabled", [False, True])
+def test_detailed_timers_preserve_dynamics_and_relief(monkeypatch, outer_timers, boundary_enabled):
     # Load runner aliases before installation, exactly as the diagnostic child.
     import run_long_evolution_v131 as runner
     import tectonics.dynamics as dynamics
     import tectonics.lithosphere as lithosphere
     import tectonics.topography as topography
+    from tectonics.cpu_runtime import CpuExecution
     from tectonics.flexure import FlexureParameters
     from tectonics.mesh import build_icosphere
     from tectonics.plates import random_plate_system
@@ -53,14 +55,16 @@ def test_detailed_timers_preserve_dynamics_and_relief(monkeypatch, outer_timers)
     state.crust_thickness_km[continental] = np.linspace(40.0, 80.0, np.count_nonzero(continental))
     params = dynamics.DynamicsParameters()
     dynamics_args = (mesh, state, system, system, 5287.0, 4.0, 4.0, 1.0, params)
-    expected_dynamics = dynamics.update_plate_dynamics(*dynamics_args)
+    with CpuExecution(boundary_forces=boundary_enabled):
+        expected_dynamics = dynamics.update_plate_dynamics(*dynamics_args)
     assert expected_dynamics[1].mean_gpe_drive > 0.0
     bounds = expected_dynamics[2]
     topo_params = topography.TopographyParameters()
     previous = topography.initialize_topography(mesh, state, bounds, topo_params)
     topo_args = (mesh, state, bounds, previous, 4.0, 5287.0, topo_params)
     topo_keywords = {"flexure_params": FlexureParameters(), "gravity_m_s2": 1.62}
-    expected_topo = topography.advance_topography(*topo_args, **topo_keywords)
+    with CpuExecution(boundary_forces=boundary_enabled):
+        expected_topo = topography.advance_topography(*topo_args, **topo_keywords)
     saved_state = deepcopy(state)
 
     # Register no-op patches before instrumentation so teardown restores every
@@ -79,9 +83,10 @@ def test_detailed_timers_preserve_dynamics_and_relief(monkeypatch, outer_timers)
     if outer_timers:
         install_timers(runner, budget)
     install_detailed_physics_timers(budget)
-    with budget.scope("physics/other"):
+    with CpuExecution(boundary_forces=boundary_enabled) as execution, budget.scope("physics/other"):
         actual_dynamics = dynamics.update_plate_dynamics(*dynamics_args)
         actual_topo = topography.advance_topography(*topo_args, **topo_keywords)
+        assert execution.boundary_calls == int(boundary_enabled)
     assert_exact(expected_dynamics, actual_dynamics)
     assert_exact(expected_topo, actual_topo)
     assert_exact(saved_state, state)
