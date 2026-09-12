@@ -76,6 +76,7 @@ class RunSpec:
     finalize: bool = True
     resume_checkpoint: Path | None = None
     cpu_optimized: bool = False
+    assignment_optimized: bool = True
     cpu_workers: int = 1
     render_workers: int = 1
     cell_kernels: bool = False
@@ -97,6 +98,7 @@ class RunSpec:
                 None if self.resume_checkpoint is None else self.resume_checkpoint.resolve()
             ),
             cpu_optimized=bool(self.cpu_optimized),
+            assignment_optimized=bool(self.assignment_optimized),
             cpu_workers=int(self.cpu_workers),
             render_workers=int(self.render_workers),
             cell_kernels=bool(self.cell_kernels),
@@ -133,9 +135,9 @@ class RunSpec:
             raise ValueError("Parallel rendering requires the experimental CPU runner")
         if self.cell_kernels and not self.cpu_optimized:
             raise ValueError("Cell kernels require the experimental CPU runner")
-        if self.cpu_optimized and not self.output_dir.resolve().is_relative_to((self.project_root / "results").resolve()):
-            raise ValueError("Experimental CPU results must stay inside this workspace's results folder")
-        if (self.cpu_optimized and self.resume_checkpoint is not None
+        if (self.cpu_optimized or self.assignment_optimized) and not self.output_dir.resolve().is_relative_to((self.project_root / "results").resolve()):
+            raise ValueError("Optimized results must stay inside this workspace's results folder")
+        if ((self.cpu_optimized or self.assignment_optimized) and self.resume_checkpoint is not None
                 and not self.resume_checkpoint.resolve().is_relative_to(self.output_dir.resolve())
                 and self.output_dir.exists() and any(self.output_dir.iterdir())):
             raise ValueError("An external checkpoint needs an empty experimental output folder")
@@ -314,6 +316,7 @@ def build_segment_command(
     if resume_checkpoint is not None:
         command.extend(["--resume", str(resume_checkpoint)])
     if spec.cpu_optimized:
+        command.append("--assignment-optimized" if spec.assignment_optimized else "--no-assignment-optimized")
         command.extend(["--cpu-workers", str(spec.cpu_workers)])
         command.extend(["--render-workers", str(spec.render_workers)])
         command.extend(["--process-priority", spec.process_priority])

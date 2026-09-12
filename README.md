@@ -1,5 +1,10 @@
 # Moon Tectonics v0.31 — Mantle-Flow-Coupled Plume Sources
 
+The fast assignment solver and stage/worker diagnostics are now integrated.
+Fast assignment is enabled by default in the GUI and optimized CPU entry point;
+the previous solver remains selectable. See [integration and controls](ASSIGNMENT_INTEGRATION.md).
+This integration has received static review only; no new runs were performed.
+
 ## Experimental CPU performance worktree
 
 This is the `perf/cpu-parallel` branch. The validated numerical release remains

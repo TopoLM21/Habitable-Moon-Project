@@ -12,6 +12,8 @@ from collections import OrderedDict
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import AbstractContextManager
 from dataclasses import dataclass, field
+from threading import Lock
+from time import perf_counter
 from typing import Callable, Iterable, TypeVar
 
 import numpy as np
@@ -37,7 +39,7 @@ class CpuExecution(AbstractContextManager):
     def __init__(self, workers: int = 1, *, cell_kernels: bool = False,
                  reuse_initial_mesh: bool = True, numeric_kernels: bool = True,
                  single_source_cells: bool = True, cell_workers: int = 1,
-                 arc_kernels: bool = True) -> None:
+                 arc_kernels: bool = True, assignment_optimized: bool = True) -> None:
         if isinstance(workers, bool) or not isinstance(workers, int) or not 1 <= workers <= 32:
             raise ValueError("CPU workers must be an integer between 1 and 32")
         if isinstance(cell_workers, bool) or cell_workers not in (1, 2, 4, 8) or not isinstance(cell_workers, int):
@@ -49,6 +51,10 @@ class CpuExecution(AbstractContextManager):
         self.single_source_cells = bool(single_source_cells)
         self.cell_workers = cell_workers
         self.arc_kernels = bool(arc_kernels)
+        self.assignment_optimized_enabled = bool(assignment_optimized)
+        self.assignment_calls = 0
+        self.assignment_seconds = 0.0
+        self._assignment_stats_lock = Lock()
         self.pool: ThreadPoolExecutor | None = None
         self.cell_pool: ThreadPoolExecutor | None = None
         self.cell_calls = self.cell_tasks = self.cells_prepared = 0
@@ -89,6 +95,20 @@ class CpuExecution(AbstractContextManager):
             self._initial_mesh = None
             _active = None
 
+    def match_assignment(self, graph, progress=None):
+        """Worker-safe matching with private graph, search state and callback."""
+        if _active is not self or not self.assignment_optimized_enabled:
+            raise RuntimeError("Assignment acceleration is not enabled in an active CPU context")
+        started = perf_counter()
+        try:
+            from .assignment_sparse import sparse_minimum_matching
+            return sparse_minimum_matching(graph, progress=progress)
+        finally:
+            elapsed = perf_counter() - started
+            with self._assignment_stats_lock:
+                self.assignment_calls += 1
+                self.assignment_seconds += elapsed
+
     def initial_mesh(self, subdivisions: int, builder: Callable[[int], SphereMesh]) -> SphereMesh:
         """Share only fixed geometry during this process, never evolving state.
 
@@ -127,13 +147,22 @@ class CpuExecution(AbstractContextManager):
         return list(self.cell_pool.map(function, items))
 
     def numerical_report(self) -> dict:
+        with self._assignment_stats_lock:
+            assignment_calls = self.assignment_calls
+            assignment_seconds = self.assignment_seconds
         return {"numeric_kernels": self.numeric_kernels, "single_source_cells": self.single_source_cells,
                 "cell_workers": self.cell_workers, "cell_calls": self.cell_calls,
                 "cell_tasks": self.cell_tasks, "cells_prepared": self.cells_prepared,
                 "cell_thread_ids": sorted(self.cell_thread_ids), "arc_kernels": self.arc_kernels,
                 "arc_calls": self.arc_calls, "arc_tasks": self.arc_tasks,
                 "arc_query_workers": self.workers if self.arc_kernels else 1,
-                "spacing_kernel_calls": self.spacing_kernel_calls}
+                "spacing_kernel_calls": self.spacing_kernel_calls,
+                "assignment_optimized": {
+                    "enabled": self.assignment_optimized_enabled, "backend": "sparse_ssp",
+                    "solver_revision": "no_cardinality_precheck_v2",
+                    "calls": assignment_calls,
+                    "inclusive_seconds": assignment_seconds,
+                    "timing_scope": "preparation, sparse search and certificate; sum across plate workers"}}
 
 
 def current_execution() -> CpuExecution | None:
