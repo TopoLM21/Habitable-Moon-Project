@@ -1,11 +1,15 @@
 # Moon Tectonics v0.31 — Mantle-Flow-Coupled Plume Sources
 
+The current GPU + CPU workspace includes the user-validated fast assignment
+solver and stage/worker diagnostics. Fast assignment is enabled by default in
+the GUI and CPU/GPU entry points. See [integration and controls](ASSIGNMENT_INTEGRATION.md).
+This integration has received static review only; no new runs were performed.
+
 ## Experimental GPU performance worktree
 
 This is the `perf/gpu-compute` branch, based on the validated CPU optimizations
 from `perf/cpu-parallel`. The validated numerical release remains
-at tag `v0.31-cpu-stable`; the original workspace and its Python environment
-are unchanged. The GUI selects reference CPU, optimized CPU, or the partial
+at tag `v0.31-cpu-stable`. The GUI selects reference CPU, optimized CPU, or the partial
 CUDA surface mode. See [GPU GUI setup and controls](GUI_GPU_SETUP.md).
 The experimental defaults are 1 plate worker, 4 separate map-rendering processes,
 exact-order batched sediment routing, and lower CPU priority for the simulation

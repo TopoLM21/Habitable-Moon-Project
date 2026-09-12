@@ -40,6 +40,7 @@ class CpuExecution(AbstractContextManager):
                  reuse_initial_mesh: bool = True, numeric_kernels: bool = True,
                  single_source_cells: bool = True, cell_workers: int = 1,
                  arc_kernels: bool = True, assignment_columns: bool = False,
+                 assignment_optimized: bool = True,
                  boundary_forces: bool = False) -> None:
         if isinstance(workers, bool) or not isinstance(workers, int) or not 1 <= workers <= 32:
             raise ValueError("CPU workers must be an integer between 1 and 32")
@@ -53,6 +54,7 @@ class CpuExecution(AbstractContextManager):
         self.cell_workers = cell_workers
         self.arc_kernels = bool(arc_kernels)
         self.assignment_columns_enabled = bool(assignment_columns)
+        self.assignment_optimized_enabled = bool(assignment_optimized)
         self.boundary_forces_enabled = bool(boundary_forces)
         self.assignment_calls = 0
         self.assignment_seconds = 0.0
@@ -103,13 +105,21 @@ class CpuExecution(AbstractContextManager):
             self._boundary_geometry = None
             _active = None
 
-    def match_assignment(self, graph):
-        """Worker-safe compact matching; graph/result ownership stays local."""
-        if _active is not self or not self.assignment_columns_enabled:
-            raise RuntimeError("Assignment columns are not enabled in an active CPU context")
-        from .assignment_kernels import compact_matching
+    def match_assignment(self, graph, progress=None):
+        """Worker-safe matching; graph, search state and callback stay local.
+
+        The optimized solver takes precedence over optional SciPy compaction.
+        Disabling it retains the previous compact solver for comparisons.
+        """
+        if _active is not self or not (
+                self.assignment_optimized_enabled or self.assignment_columns_enabled):
+            raise RuntimeError("Assignment acceleration is not enabled in an active CPU context")
         started = perf_counter()
         try:
+            if self.assignment_optimized_enabled:
+                from .assignment_sparse import sparse_minimum_matching
+                return sparse_minimum_matching(graph, progress=progress)
+            from .assignment_kernels import compact_matching
             return compact_matching(graph)
         finally:
             elapsed = perf_counter() - started
@@ -170,6 +180,9 @@ class CpuExecution(AbstractContextManager):
         return list(self.cell_pool.map(function, items))
 
     def numerical_report(self) -> dict:
+        with self._assignment_stats_lock:
+            assignment_calls = self.assignment_calls
+            assignment_seconds = self.assignment_seconds
         return {"numeric_kernels": self.numeric_kernels, "single_source_cells": self.single_source_cells,
                 "cell_workers": self.cell_workers, "cell_calls": self.cell_calls,
                 "cell_tasks": self.cell_tasks, "cells_prepared": self.cells_prepared,
@@ -177,9 +190,17 @@ class CpuExecution(AbstractContextManager):
                 "arc_calls": self.arc_calls, "arc_tasks": self.arc_tasks,
                 "arc_query_workers": self.workers if self.arc_kernels else 1,
                 "spacing_kernel_calls": self.spacing_kernel_calls,
+                "assignment_optimized": {
+                    "enabled": self.assignment_optimized_enabled, "backend": "sparse_ssp",
+                    "solver_revision": "no_cardinality_precheck_v2",
+                    "calls": assignment_calls if self.assignment_optimized_enabled else 0,
+                    "inclusive_seconds": assignment_seconds if self.assignment_optimized_enabled else 0.0,
+                    "timing_scope": "preparation, sparse search and certificate; sum across plate workers"},
                 "assignment_columns": {
-                    "enabled": self.assignment_columns_enabled, "backend": "cpu_compact_columns",
-                    "calls": self.assignment_calls, "inclusive_seconds": self.assignment_seconds,
+                    "enabled": self.assignment_columns_enabled and not self.assignment_optimized_enabled,
+                    "requested": self.assignment_columns_enabled, "backend": "cpu_compact_columns",
+                    "calls": assignment_calls if not self.assignment_optimized_enabled else 0,
+                    "inclusive_seconds": assignment_seconds if not self.assignment_optimized_enabled else 0.0,
                     "timing_scope": "compaction, solver and inverse mapping; sum across plate workers"},
                 "boundary_forces": {
                     "enabled": self.boundary_forces_enabled, "backend": "prepared_cpu_boundary_forces",

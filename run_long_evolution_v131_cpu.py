@@ -24,7 +24,9 @@ def main() -> None:
     parser.add_argument("--arc-kernels", action=argparse.BooleanOptionalAction, default=True,
                         help="Group volcanic-arc boundaries and batch their spatial queries across CPU workers")
     parser.add_argument("--assignment-columns", action=argparse.BooleanOptionalAction, default=False,
-                        help="Compact unused assignment columns on CPU (opt-in)")
+                        help="Compact unused SciPy columns when --no-assignment-optimized is selected")
+    parser.add_argument("--assignment-optimized", action=argparse.BooleanOptionalAction, default=True,
+                        help="Use certified sparse assignment without the cardinality precheck (default: on)")
     parser.add_argument("--boundary-forces", action=argparse.BooleanOptionalAction, default=False,
                         help="Use cached geometry and exact-order CPU boundary forces (opt-in)")
     options, remaining = parser.parse_known_args()
@@ -44,6 +46,7 @@ def main() -> None:
                       numeric_kernels=options.numeric_kernels, single_source_cells=options.single_source_cells,
                       cell_workers=options.cell_workers, arc_kernels=options.arc_kernels,
                       assignment_columns=options.assignment_columns,
+                      assignment_optimized=options.assignment_optimized,
                       boundary_forces=options.boundary_forces) as execution, RenderExecution(
             options.render_workers, process_priority=options.process_priority) as rendering:
         import run_long_evolution_v131 as runner
@@ -51,7 +54,8 @@ def main() -> None:
         print(f"Render mode: {options.render_workers} process(es)", flush=True)
         print(f"Numerical kernels: {options.numeric_kernels}; single-source cells: "
               f"{options.single_source_cells}; cell workers: {options.cell_workers}; "
-              f"arc kernels: {options.arc_kernels}; assignment columns: {options.assignment_columns}; "
+              f"arc kernels: {options.arc_kernels}; assignment optimized: {options.assignment_optimized}; "
+              f"assignment columns (SciPy fallback): {options.assignment_columns}; "
               f"boundary forces: {options.boundary_forces}", flush=True)
         runner.main()
     output_parser = argparse.ArgumentParser(add_help=False)

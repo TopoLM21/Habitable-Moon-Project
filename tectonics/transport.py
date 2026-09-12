@@ -27,6 +27,7 @@ from .lithosphere import CrustType, LithosphereState
 from .mesh import SphereMesh
 from .plates import PlateSystem
 from .cpu_runtime import current_execution, query_workers
+from .assignment_runtime import current_execution as assignment_execution, plate_context
 
 Array = np.ndarray
 
@@ -227,7 +228,10 @@ def _optimal_assignment(mesh: SphereMesh, rotated_sources: Array, params: Subgri
         tree = cKDTree(mesh.centroids)
     k = min(max(int(params.initial_candidate_count), 2), n)
     last_error: Exception | None = None
+    diagnostics = assignment_execution()
+    attempt = 0
     while True:
+        attempt += 1
         dist, cand = tree.query(rotated_sources, k=k, workers=query_workers())
         if k == 1:
             dist = dist[:, None]; cand = cand[:, None]
@@ -239,7 +243,17 @@ def _optimal_assignment(mesh: SphereMesh, rotated_sources: Array, params: Subgri
         cost = np.maximum(cost, 1e-14) + 1e-15 * (cols % 997)
         graph = csr_matrix((cost, (rows, cols)), shape=(m, n))
         try:
-            if execution is not None and execution.assignment_columns_enabled:
+            if diagnostics is not None:
+                backend = None
+                solver = None
+                if execution is not None:
+                    backend = ("sparse_ssp" if execution.assignment_optimized_enabled else
+                               "cpu_compact_columns" if execution.assignment_columns_enabled else "scipy_reference")
+                    if execution.assignment_optimized_enabled or execution.assignment_columns_enabled:
+                        solver = execution.match_assignment
+                r, c = diagnostics.match(graph, candidates=k, attempt=attempt, solver=solver, backend=backend)
+            elif execution is not None and (
+                    execution.assignment_optimized_enabled or execution.assignment_columns_enabled):
                 r, c = execution.match_assignment(graph)
             else:
                 r, c = min_weight_full_bipartite_matching(graph)
@@ -344,7 +358,8 @@ def build_transport_map(
             hold_age = float(transport_state.hold_age_myr[pid]) + float(dt_myr)
         else:
             desired = rotate_by_quaternion(mesh.centroids[src_cells], q_total)
-            target = _optimal_assignment(mesh, desired, params, tree if execution is not None else None)
+            with plate_context(pid, src_cells, lithosphere.time_myr):
+                target = _optimal_assignment(mesh, desired, params, tree if execution is not None else None)
             represented_r = _fit_rotation(mesh.centroids[src_cells], mesh.centroids[target], params.max_fit_pairs)
             q_fit = quaternion_from_matrix(represented_r)
             residual = quaternion_multiply(q_total, quaternion_conjugate(q_fit))

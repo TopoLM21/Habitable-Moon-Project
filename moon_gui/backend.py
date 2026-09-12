@@ -92,6 +92,7 @@ class RunSpec:
     gpu_surface: bool = False
     gpu_device: int = 0
     assignment_columns: bool = False
+    assignment_optimized: bool = True
     boundary_forces: bool = False
 
     def normalized(self) -> "RunSpec":
@@ -116,7 +117,8 @@ class RunSpec:
             process_priority=str(self.process_priority),
             gpu_surface=bool(self.gpu_surface),
             gpu_device=_gpu_device_index(self.gpu_device),
-            assignment_columns=bool(self.assignment_columns),
+            assignment_columns=bool(self.assignment_columns) and not self.assignment_optimized,
+            assignment_optimized=bool(self.assignment_optimized),
             boundary_forces=bool(self.boundary_forces),
         )
 
@@ -157,9 +159,9 @@ class RunSpec:
             raise ValueError("Parallel rendering requires the experimental CPU runner")
         if self.cell_kernels and not self.cpu_optimized:
             raise ValueError("Cell kernels require the experimental CPU runner")
-        if self.cpu_optimized and not self.output_dir.resolve().is_relative_to((self.project_root / "results").resolve()):
-            raise ValueError("Experimental CPU results must stay inside this workspace's results folder")
-        if (self.cpu_optimized and self.resume_checkpoint is not None
+        if (self.cpu_optimized or self.assignment_optimized) and not self.output_dir.resolve().is_relative_to((self.project_root / "results").resolve()):
+            raise ValueError("Optimized results must stay inside this workspace's results folder")
+        if ((self.cpu_optimized or self.assignment_optimized) and self.resume_checkpoint is not None
                 and not self.resume_checkpoint.resolve().is_relative_to(self.output_dir.resolve())
                 and self.output_dir.exists() and any(self.output_dir.iterdir())):
             raise ValueError("An external checkpoint needs an empty experimental output folder")
@@ -341,6 +343,7 @@ def build_segment_command(
         command.extend(["--cpu-workers", str(spec.cpu_workers)])
         command.extend(["--render-workers", str(spec.render_workers)])
         command.extend(["--process-priority", spec.process_priority])
+        command.append("--assignment-optimized" if spec.assignment_optimized else "--no-assignment-optimized")
         command.append("--assignment-columns" if spec.assignment_columns else "--no-assignment-columns")
         command.append("--boundary-forces" if spec.boundary_forces else "--no-boundary-forces")
         if spec.cell_kernels:

@@ -27,7 +27,9 @@ def main() -> None:
         help="Enable resident CUDA erosion, sediment and relief pipeline",
     )
     parser.add_argument("--assignment-columns", action=argparse.BooleanOptionalAction, default=False,
-                        help="Compact unused assignment columns on CPU (opt-in)")
+                        help="Compact unused SciPy columns when --no-assignment-optimized is selected")
+    parser.add_argument("--assignment-optimized", action=argparse.BooleanOptionalAction, default=True,
+                        help="Use certified sparse assignment without the cardinality precheck (default: on)")
     parser.add_argument("--boundary-forces", action=argparse.BooleanOptionalAction, default=False,
                         help="Use cached geometry and exact-order CPU boundary forces (opt-in)")
     options, remaining = parser.parse_known_args()
@@ -39,6 +41,7 @@ def main() -> None:
 
     sys.argv = ["run_long_evolution_v131_cpu.py",
                 "--assignment-columns" if options.assignment_columns else "--no-assignment-columns",
+                "--assignment-optimized" if options.assignment_optimized else "--no-assignment-optimized",
                 "--boundary-forces" if options.boundary_forces else "--no-boundary-forces", *remaining]
     with GpuExecution(options.gpu_device, arc_painting=options.gpu_arcs,
                       surface_pipeline=options.gpu_surface) as gpu:

@@ -114,7 +114,7 @@ def test_opt_in_switches_forward_and_report(monkeypatch, tmp_path, entrypoint,
     base_options = ["--output", str(tmp_path), "--resume", "input-checkpoint"]
     execution_options = ["--cpu-workers", "1", "--render-workers", "4"]
     gpu_options = ["--gpu-device", "2", "--gpu-surface"] if entrypoint == "gpu" else []
-    monkeypatch.setattr(sys, "argv", [entrypoint, *flags, *execution_options,
+    monkeypatch.setattr(sys, "argv", [entrypoint, "--no-assignment-optimized", *flags, *execution_options,
                                      *gpu_options, *base_options])
     (gpu_runner if entrypoint == "gpu" else cpu_runner).main()
 
@@ -144,6 +144,7 @@ def test_opt_in_switches_forward_and_report(monkeypatch, tmp_path, entrypoint,
         assert observed["cpu_argv"] == [
             "run_long_evolution_v131_cpu.py",
             "--assignment-columns" if assignment else "--no-assignment-columns",
+            "--no-assignment-optimized",
             "--boundary-forces" if boundary else "--no-boundary-forces",
             *execution_options, *base_options,
         ]
@@ -157,7 +158,8 @@ def test_opt_in_switches_forward_and_report(monkeypatch, tmp_path, entrypoint,
 def test_runner_error_cleans_execution_contexts(monkeypatch, tmp_path, entrypoint):
     assert cpu_runtime.current_execution() is None
     observed = _mock_runner_dependencies(monkeypatch, fail=True)
-    monkeypatch.setattr(sys, "argv", [entrypoint, "--assignment-columns", "--boundary-forces",
+    monkeypatch.setattr(sys, "argv", [entrypoint, "--no-assignment-optimized",
+                                     "--assignment-columns", "--boundary-forces",
                                      "--output", str(tmp_path)])
     with pytest.raises(RuntimeError, match="mock simulation failed"):
         (gpu_runner if entrypoint == "gpu" else cpu_runner).main()

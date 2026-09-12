@@ -66,7 +66,7 @@ def test_transport_dispatch_is_opt_in_and_retains_original_solver(monkeypatch, m
         actual = transport._optimal_assignment(mesh, sources, params)
     else:
         options = {} if mode == 'default' else {'assignment_columns': mode == 'enabled'}
-        with CpuExecution(**options) as execution:
+        with CpuExecution(assignment_optimized=False, **options) as execution:
             calculate = execution.match_assignment
 
             def compact(graph):
@@ -95,12 +95,12 @@ def test_compact_transport_matches_original_across_ordered_plate_workers(workers
     params = transport.SubgridTransportParameters(
         min_changed_fraction=0., min_p75_cell_spacing_fraction=0.)
     expected = []
-    with CpuExecution(workers, assignment_columns=False):
+    with CpuExecution(workers, assignment_columns=False, assignment_optimized=False):
         for _ in range(4):
             expected.append(deepcopy(transport.build_transport_map(
                 mesh, system, state, 4., original_memory, params)))
     original_solver = transport.min_weight_full_bipartite_matching
-    with CpuExecution(workers, assignment_columns=True) as execution:
+    with CpuExecution(workers, assignment_columns=True, assignment_optimized=False) as execution:
         for reference in expected:
             actual = transport.build_transport_map(mesh, system, state, 4., compact_memory, params)
             for name in ('covered', 'source'):
@@ -131,7 +131,7 @@ def test_assignment_expands_candidates_on_matching_failure(enabled):
             return np.ones_like(targets, dtype=float), targets
 
     tree = CandidateTree()
-    with CpuExecution(assignment_columns=enabled) as execution:
+    with CpuExecution(assignment_columns=enabled, assignment_optimized=False) as execution:
         actual = transport._optimal_assignment(
             mesh, sources, transport.SubgridTransportParameters(initial_candidate_count=2), tree)
         assert execution.assignment_calls == (2 if enabled else 0)
@@ -144,7 +144,7 @@ def test_assignment_expands_candidates_on_matching_failure(enabled):
 def test_matching_statistics_count_concurrent_attempts_and_are_context_local(workers):
     graph = csr_matrix(([1., 2.], ([0, 1], [3, 8])), shape=(2, 20))
     expected = min_weight_full_bipartite_matching(graph)
-    with CpuExecution(workers, assignment_columns=True) as execution:
+    with CpuExecution(workers, assignment_columns=True, assignment_optimized=False) as execution:
         results = execution.ordered_map(execution.match_assignment, [graph] * 64)
         for actual in results:
             for left, right in zip(actual, expected, strict=True):
@@ -158,6 +158,6 @@ def test_matching_statistics_count_concurrent_attempts_and_are_context_local(wor
         assert report['backend'] == 'cpu_compact_columns'
         assert report['calls'] == 65
         assert report['inclusive_seconds'] >= 0.
-    with CpuExecution(assignment_columns=True) as fresh:
+    with CpuExecution(assignment_columns=True, assignment_optimized=False) as fresh:
         assert fresh.assignment_calls == 0
         assert fresh.assignment_seconds == 0.
