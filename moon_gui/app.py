@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from dataclasses import asdict, replace
 from datetime import datetime
 import os
 from pathlib import Path
@@ -69,6 +70,7 @@ from .backend import (
     write_runtime_config,
 )
 from .genesis_schema import ORIGIN_LABELS_RU, SatelliteOrigin
+from .diagnostics_monitor import DiagnosticsMonitor
 from .timing import RunTiming, format_duration
 
 
@@ -99,12 +101,15 @@ class SimulationController(QObject):
     segment_completed = Signal(float, str)
     run_completed = Signal(str)
     run_failed = Signal(str)
+    diagnostics_changed = Signal()
+    diagnostics_notice = Signal(str)
 
     def __init__(self, parent: QObject | None = None) -> None:
         super().__init__(parent)
         self.process = QProcess(self)
         self.process.setProcessChannelMode(QProcess.ProcessChannelMode.MergedChannels)
         self.process.readyReadStandardOutput.connect(self._read_output)
+        self.process.started.connect(self._process_started)
         self.process.finished.connect(self._process_finished)
         self.process.errorOccurred.connect(self._process_error)
         self.spec: RunSpec | None = None
@@ -117,10 +122,21 @@ class SimulationController(QObject):
         self.cancel_requested = False
         self.state = "Idle"
         self.timing = RunTiming()
+        self.diagnostics = DiagnosticsMonitor()
+        self.log_line.connect(self._record_diagnostic_log)
+        self._segment_identity = 0
+        self._active_segment_index = 0
+        self._pending_dump: dict[str, Any] | None = None
+        self._stop_started_at: float | None = None
+        self._termination_sent = False
+        self.diagnostics_timer = QTimer(self)
+        self.diagnostics_timer.timeout.connect(self._poll_diagnostics)
+        self.diagnostics_timer.start(200)
 
     def _set_state(self, value: str) -> None:
         self.state = value
         self.state_changed.emit(value)
+        self.diagnostics_changed.emit()
 
     def is_active(self) -> bool:
         return self.state in {"Preparing", "Running", "Pausing", "Stopping"}
@@ -131,13 +147,19 @@ class SimulationController(QObject):
         spec = spec.normalized()
         spec.validate()
         self.timing = RunTiming(spec.start_time_myr(), spec.end_time_myr)
-        self._set_state("Preparing")
-        if spec.resume_checkpoint is not None and spec.runtime_config.is_file():
-            runtime_config = spec.runtime_config
-        else:
-            runtime_config = write_runtime_config(spec)
-        write_run_record(spec, runtime_config)
+        self.diagnostics = DiagnosticsMonitor()
         self.spec = spec
+        self._set_state("Preparing")
+        try:
+            if spec.resume_checkpoint is not None and spec.runtime_config.is_file():
+                runtime_config = spec.runtime_config
+            else:
+                runtime_config = write_runtime_config(spec)
+            write_run_record(spec, runtime_config)
+            self.diagnostics.start_session(spec.output_dir, asdict(spec))
+        except Exception:
+            self._set_state("Error")
+            raise
         self.current_time = spec.start_time_myr()
         self.resume_checkpoint = spec.resume_checkpoint
         self.targets = segment_targets(
@@ -149,6 +171,10 @@ class SimulationController(QObject):
         self.target_index = 0
         self.pause_requested = False
         self.cancel_requested = False
+        self._pending_dump = None
+        self._stop_started_at = None
+        self._termination_sent = False
+        self.diagnostics_notice.emit(f"Диагностика: {self.diagnostics.session_dir}")
         self.progress_changed.emit(self.current_time, spec.end_time_myr)
         self.log_line.emit(
             f"Prepared v0.31 run: t={self.current_time:g} -> {spec.end_time_myr:g} Myr, "
@@ -157,7 +183,7 @@ class SimulationController(QObject):
         self._start_next_segment()
 
     def _start_next_segment(self) -> None:
-        if self.spec is None:
+        if self.spec is None or self.cancel_requested:
             return
         if self.target_index >= len(self.targets):
             self._set_state("Completed")
@@ -173,10 +199,28 @@ class SimulationController(QObject):
             resume_checkpoint=self.resume_checkpoint,
             final_segment=final_segment,
         )
+        try:
+            segment_dir = self.diagnostics.start_segment(self.target_index + 1, [])
+        except OSError as exc:
+            self._set_state("Error")
+            self.run_failed.emit(f"Не удалось подготовить папку диагностики: {exc}")
+            return
+        command = [
+            str(self.spec.project_root / "run_with_diagnostics.py"),
+            "--diagnostics-dir", str(segment_dir),
+            *(["--optimize-assignment"] if self.spec.assignment_optimized else []),
+            *command,
+        ]
+        self.diagnostics.argv = [sys.executable, *command]
+        self._segment_identity += 1
+        self._active_segment_index = self.target_index + 1
+        self._termination_sent = False
         self.active_checkpoint = checkpoint
         environment = QProcessEnvironment.systemEnvironment()
         environment.insert("PYTHONUNBUFFERED", "1")
+        environment.insert("PYTHONIOENCODING", "utf-8")
         environment.insert("MPLBACKEND", "Agg")
+        environment.insert("MOON_DIAGNOSTICS_SESSION_TOKEN", self.diagnostics.session_token)
         old_pythonpath = environment.value("PYTHONPATH")
         environment.insert(
             "PYTHONPATH",
@@ -210,34 +254,165 @@ class SimulationController(QObject):
         self._start_next_segment()
 
     def stop_now(self) -> None:
-        if not self.is_active():
+        if not self.is_active() or self.cancel_requested:
             return
         self.cancel_requested = True
+        self._stop_started_at = monotonic()
         self._set_state("Stopping")
-        self.log_line.emit("Stopping the active segment; the last completed checkpoint is preserved.")
-        self.process.terminate()
-        QTimer.singleShot(3000, self._kill_if_running)
+        self.log_line.emit(
+            "Остановка: сохраняю диагностику; ожидание дампа — до 1,5 с. "
+            "Последний завершённый checkpoint сохраняется."
+        )
+        self.request_diagnostics("user_stop")
+        self._poll_diagnostics()
 
-    def _kill_if_running(self) -> None:
-        if self.process.state() != QProcess.ProcessState.NotRunning:
+    def _process_started(self) -> None:
+        self.diagnostics.launcher_pid = int(self.process.processId())
+        self.diagnostics_changed.emit()
+        # A stop may be requested while QProcess is still Starting (PID = 0).
+        # Its first terminate was then ineffectual; target the now known PID.
+        if self.cancel_requested and self._termination_sent:
+            self._termination_sent = False
+            self._terminate_current(self._segment_identity)
+
+    def _terminate_current(self, identity: int) -> None:
+        if identity != self._segment_identity or not self.cancel_requested or self._termination_sent:
+            return
+        if self.process.state() == QProcess.ProcessState.NotRunning:
+            self.timing.stop_segment(monotonic())
+            self.diagnostics.finish_segment()
+            self._set_state("Stopped")
+            return
+        self._termination_sent = True
+        pid = int(self.process.processId())
+        self.log_line.emit(f"Прерываю процесс PID {pid or 'ожидается'}.")
+        self.process.terminate()
+        if pid:
+            QTimer.singleShot(3000, lambda: self._kill_if_running(identity, pid))
+
+    def _kill_if_running(self, identity: int, pid: int) -> None:
+        if (
+            identity == self._segment_identity
+            and self.cancel_requested
+            and int(self.process.processId()) == pid
+            and self.process.state() != QProcess.ProcessState.NotRunning
+        ):
+            self.log_line.emit(f"PID {pid} не завершился после terminate; выполняю kill.")
             self.process.kill()
 
-    def _read_output(self) -> None:
-        text = bytes(self.process.readAllStandardOutput()).decode("utf-8", errors="replace")
-        for line in text.replace("\r\n", "\n").replace("\r", "\n").splitlines():
-            if line.strip():
-                self.log_line.emit(line)
+    def _record_diagnostic_log(self, line: str) -> None:
+        error = self.diagnostics.record_log(line)
+        if error:
+            self.diagnostics_notice.emit(error)
 
-    def _process_finished(self, exit_code: int, _status: QProcess.ExitStatus) -> None:
+    def _diagnostic_context(self) -> dict[str, Any]:
+        return {
+            "state": self.state,
+            "segment": self._active_segment_index,
+            "segment_count": len(self.targets),
+            "last_completed_time_myr": self.current_time,
+            "last_completed_checkpoint": self.resume_checkpoint,
+            "active_checkpoint_incomplete_until_success": self.active_checkpoint,
+            "pause_requested": self.pause_requested,
+            "cancel_requested": self.cancel_requested,
+            "worker_running": self.process.state() != QProcess.ProcessState.NotRunning,
+        }
+
+    def request_diagnostics(self, reason: str = "user_snapshot") -> None:
+        """Save GUI evidence first; ask the worker without blocking the event loop."""
+        existing_id = self._pending_dump["request_id"] if self._pending_dump else None
+        try:
+            request_id, report = self.diagnostics.save_report(reason, self._diagnostic_context(), existing_id)
+        except (OSError, ValueError, RuntimeError) as exc:
+            message = f"Не удалось сохранить диагностику GUI: {exc}"
+            self.diagnostics.last_error = message
+            self.log_line.emit(message)
+            self.diagnostics_notice.emit(message)
+            return
+        self.log_line.emit(f"Отчёт GUI сохранён: {report}")
+        self.diagnostics_notice.emit(f"Сохранён отчёт GUI: {report}")
+        if self._pending_dump:
+            return
+        if self.process.state() == QProcess.ProcessState.NotRunning:
+            self.diagnostics_changed.emit()
+            return
+        try:
+            self.diagnostics.request_worker_dump(request_id, reason)
+        except OSError as exc:
+            message = f"Отчёт GUI сохранён, запрос дампа не записан: {exc}"
+            self.diagnostics.last_error = message
+            self.log_line.emit(message)
+            self.diagnostics_notice.emit(message)
+            return
+        self._pending_dump = {
+            "request_id": request_id, "report": report,
+            "identity": self._segment_identity, "started_at": monotonic(),
+        }
+        self.diagnostics_notice.emit(f"Отчёт GUI сохранён; ожидаю дамп процесса: {report}")
+        self.diagnostics_changed.emit()
+
+    def _finish_dump(self, status: str, response: dict[str, Any] | None = None) -> None:
+        pending, self._pending_dump = self._pending_dump, None
+        if pending is None:
+            return
+        complete = bool(response and response.get("report") and response.get("stack") and not response.get("error"))
+        if response is not None and not complete:
+            status = "partial_or_failed"
+        try:
+            self.diagnostics.finish_report(pending["report"], status, response)
+        except (OSError, ValueError) as exc:
+            self.diagnostics.last_error = f"Не удалось обновить отчёт GUI: {exc}"
+            self.log_line.emit(f"Не удалось обновить отчёт GUI: {exc}")
+            self.diagnostics_notice.emit(f"Не удалось обновить отчёт GUI: {exc}")
+            return
+        if complete:
+            message = f"Диагностика сохранена: {pending['report']} · дамп: {response.get('stack', 'см. отчёт')}"
+        else:
+            detail = str(response.get("error") or "дамп записан не полностью") if response else "процесс не ответил вовремя"
+            message = f"Отчёт GUI сохранён: {pending['report']}; {detail}. Автодамп: {self.diagnostics.segment_dir / 'stacks.txt'}"
+        self.log_line.emit(message)
+        self.diagnostics_notice.emit(message)
+
+    def _poll_diagnostics(self) -> None:
+        if self._pending_dump:
+            pending = self._pending_dump
+            if pending["identity"] != self._segment_identity:
+                self._pending_dump = None
+            else:
+                response = self.diagnostics.read_response(pending["request_id"])
+                if response is not None:
+                    self._finish_dump("error" if response.get("error") else "received", response)
+                elif monotonic() - pending["started_at"] >= 3.0:
+                    self._finish_dump("no_response_yet")
+        if self.state == "Stopping" and self._stop_started_at is not None:
+            if self._pending_dump is None or monotonic() - self._stop_started_at >= 1.5:
+                if self._pending_dump is not None:
+                    self._finish_dump("stop_timeout")
+                self._terminate_current(self._segment_identity)
+        self.diagnostics_changed.emit()
+
+    def _read_output(self) -> None:
+        for line in self.diagnostics.feed(bytes(self.process.readAllStandardOutput())):
+            self.log_line.emit(line)
+        self.diagnostics_changed.emit()
+
+    def _process_finished(self, exit_code: int, status: QProcess.ExitStatus) -> None:
         self._read_output()
+        for line in self.diagnostics.feed(final=True):
+            self.log_line.emit(line)
+        self.diagnostics.finish_segment()
+        if self._pending_dump:
+            response = self.diagnostics.read_response(self._pending_dump["request_id"])
+            self._finish_dump("received" if response and not response.get("error") else "worker_exited", response)
         if self.cancel_requested:
             self.timing.stop_segment(monotonic())
             self._set_state("Stopped")
             return
-        if exit_code != 0:
+        if exit_code != 0 or status == QProcess.ExitStatus.CrashExit:
             self.timing.stop_segment(monotonic())
-            message = f"Simulation segment exited with code {exit_code}."
+            message = f"Simulation segment exited with code {exit_code} ({status.name})."
             self._set_state("Error")
+            self.request_diagnostics("worker_failure")
             self.run_failed.emit(message)
             return
         if self.spec is None or self.active_checkpoint is None:
@@ -255,12 +430,17 @@ class SimulationController(QObject):
         self._start_next_segment()
 
     def _process_error(self, error: QProcess.ProcessError) -> None:
-        if self.cancel_requested:
-            return
         if error == QProcess.ProcessError.FailedToStart:
             self.timing.stop_segment(monotonic())
+            self.diagnostics.finish_segment()
+            if self._pending_dump:
+                self._finish_dump("failed_to_start")
+            if self.cancel_requested:
+                self._set_state("Stopped")
+                return
             message = "The Python simulation process could not be started."
             self._set_state("Error")
+            self.request_diagnostics("failed_to_start")
             self.run_failed.emit(message)
 
 
@@ -313,7 +493,10 @@ class MoonWindow(QMainWindow):
         self.controller.run_failed.connect(self._run_failed)
         self.current_artifact: Path | None = None
         self.current_movie: QMovie | None = None
+        self._close_pending = False
         self._build_ui()
+        self.controller.diagnostics_changed.connect(self._refresh_diagnostics)
+        self.controller.diagnostics_notice.connect(self.diagnostics_notice.setText)
         self._apply_style()
         self.refresh_timer = QTimer(self)
         self.refresh_timer.timeout.connect(self._refresh_results)
@@ -360,6 +543,7 @@ class MoonWindow(QMainWindow):
             "Итоговая сборка GIF может потребовать дополнительного времени."
         )
         root_layout.addWidget(self.eta_label)
+        root_layout.addWidget(self._diagnostics_panel())
 
         splitter = QSplitter(Qt.Orientation.Horizontal)
         settings = self._settings_panel()
@@ -375,6 +559,118 @@ class MoonWindow(QMainWindow):
         splitter.setStretchFactor(1, 1)
         root_layout.addWidget(splitter, 1)
         self.setCentralWidget(root)
+
+    def _diagnostics_panel(self) -> QWidget:
+        group = QGroupBox("Сейчас выполняется")
+        layout = QGridLayout(group)
+        layout.setVerticalSpacing(3)
+        self.stage_label = QLabel("Этап появится после запуска")
+        self.stage_label.setTextFormat(Qt.TextFormat.PlainText)
+        self.stage_label.setWordWrap(True)
+        self.stage_label.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
+        self.stage_details = QLabel()
+        self.stage_details.setTextFormat(Qt.TextFormat.PlainText)
+        self.stage_details.setWordWrap(True)
+        self.stage_details.setObjectName("hint")
+        self.stage_clock = QLabel()
+        self.stage_clock.setWordWrap(True)
+        self.stage_clock.setObjectName("hint")
+        self.save_diagnostics_button = QPushButton("Сохранить диагностику")
+        self.save_diagnostics_button.setToolTip(
+            "Сохраняет этап, параметры, последние сообщения и стеки потоков без остановки расчёта."
+        )
+        self.save_diagnostics_button.clicked.connect(lambda: self.controller.request_diagnostics())
+        self.open_diagnostics_button = QPushButton("Открыть диагностику")
+        self.open_diagnostics_button.setObjectName("secondaryButton")
+        self.open_diagnostics_button.clicked.connect(self._open_diagnostics_folder)
+        self.diagnostics_recent = QPlainTextEdit()
+        self.diagnostics_recent.setReadOnly(True)
+        self.diagnostics_recent.setMaximumBlockCount(8)
+        self.diagnostics_recent.setFixedHeight(58)
+        self.diagnostics_recent.setPlaceholderText("Последние этапы и сообщения процесса")
+        self.diagnostics_notice = QLabel()
+        self.diagnostics_notice.setTextFormat(Qt.TextFormat.PlainText)
+        self.diagnostics_notice.setWordWrap(True)
+        self.diagnostics_notice.setObjectName("hint")
+        self.diagnostics_notice.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
+        layout.addWidget(self.stage_label, 0, 0)
+        layout.addWidget(self.save_diagnostics_button, 0, 1)
+        layout.addWidget(self.stage_details, 1, 0)
+        layout.addWidget(self.open_diagnostics_button, 1, 1)
+        layout.addWidget(self.stage_clock, 2, 0, 1, 2)
+        layout.addWidget(self.diagnostics_recent, 3, 0, 1, 2)
+        layout.addWidget(self.diagnostics_notice, 4, 0, 1, 2)
+        layout.setColumnStretch(0, 1)
+        return group
+
+    def _refresh_diagnostics(self) -> None:
+        monitor = self.controller.diagnostics
+        available = monitor.segment_dir is not None
+        self.save_diagnostics_button.setEnabled(available and self.controller._pending_dump is None)
+        self.open_diagnostics_button.setEnabled(monitor.session_dir is not None)
+        if not available:
+            self.stage_label.setText("Этап появится после запуска")
+            self.stage_details.setText("")
+            self.stage_clock.setText("Сигнал процесса подтверждает связь; продвижение видно по этапам и счётчикам.")
+            return
+        stage = monitor.stage
+        stage_path = monitor.stage_path
+        if self.controller.state == "Error" and monitor.failure:
+            stage = monitor.failure.get("stage") or stage
+            stage_path = monitor.failure.get("stage_path") or stage_path
+        stage_name = " → ".join(stage_path) or str(stage.get("name", "Запуск процесса"))
+        endings = {"Paused": " · безопасная пауза", "Completed": " · расчёт завершён",
+                   "Stopped": " · остановлено", "Error": " · ошибка"}
+        suffix = endings.get(self.controller.state, "")
+        self.stage_label.setText(stage_name + suffix)
+        details = stage.get("details", {})
+        if isinstance(details, dict):
+            labels = {"step": "Шаг", "step_count": "Всего шагов", "time_myr": "t, Myr",
+                      "target_time_myr": "Цель, Myr", "dt_myr": "dt, Myr", "function": "Функция",
+                      "runner": "Программа", "path": "Файл", "matched": "Назначено ячеек",
+                      "rows": "Всего ячеек", "scanned_edges": "Проверено связей",
+                      "assignment_phase": "Фаза подбора", "searched_rows": "Просмотрено ячеек",
+                      "current_search_rows": "Ячеек в текущем поиске", "frontier_entries": "Связей в очереди",
+                      "plate_id": "Плита", "candidates": "Кандидатов на ячейку",
+                      "source_count": "Исходных ячеек", "used_targets": "Целевых ячеек",
+                      "graph_file": "Граф подбора"}
+            priority_keys = ("plate_id", "assignment_phase", "matched", "rows", "scanned_edges",
+                             "current_search_rows", "frontier_entries", "searched_rows",
+                             "candidates", "source_count", "used_targets", "graph_file")
+            visible_details = [(key, details[key]) for key in priority_keys if key in details]
+            visible_details.extend((key, value) for key, value in details.items() if key not in priority_keys)
+            phase_labels = {"prepare": "Подготовка", "warm_start": "Начальное назначение",
+                            "feasibility": "Проверка возможности полного назначения",
+                            "augment": "Разрешение конфликтов", "certificate": "Проверка оптимальности",
+                            "complete": "Подбор завершён", "expand_candidates": "Расширение списка кандидатов"}
+            detail_text = " · ".join(
+                f"{labels.get(key, key)}: "
+                + (phase_labels.get(str(value), str(value)) if key == "assignment_phase" else str(value))[:180]
+                for key, value in visible_details[:12]
+            )
+        else:
+            detail_text = str(details)[:1000]
+        self.stage_details.setText(detail_text or "Подробности этапа пока не переданы")
+        elapsed = monitor.stage_elapsed()
+        if self.controller.state == "Error" and monitor.failure:
+            elapsed = float(stage.get("elapsed_seconds", elapsed))
+        heartbeat_age = monitor.heartbeat_age()
+        if not self.controller.is_active():
+            heartbeat = "процесс не активен"
+        elif heartbeat_age is None:
+            heartbeat = "сигнал процесса ещё не получен"
+        else:
+            heartbeat = f"сигнал процесса {heartbeat_age:.0f} с назад"
+        warning = " · долгий этап" if elapsed >= 30 and self.controller.is_active() else ""
+        self.stage_clock.setText(
+            f"Этап: {format_duration(elapsed)} · PID расчёта {monitor.worker_pid or 'ожидается'} · {heartbeat}{warning}. "
+            "Сигнал подтверждает связь; продвижение видно по этапам и счётчикам."
+        )
+
+    def _open_diagnostics_folder(self) -> None:
+        path = self.controller.diagnostics.segment_dir or self.controller.diagnostics.session_dir
+        if path is not None and path.is_dir():
+            QDesktopServices.openUrl(QUrl.fromLocalFile(str(path.resolve())))
 
     def _settings_panel(self) -> QWidget:
         scroll = QScrollArea()
@@ -458,6 +754,13 @@ class MoonWindow(QMainWindow):
         self.frame_interval.setValue(20.0)
         self.frame_interval.setSuffix(" Myr")
         numerical_form.addRow("Частота кадров", self.frame_interval)
+        self.assignment_optimized = QCheckBox("Быстрый подбор ячеек")
+        self.assignment_optimized.setChecked(True)
+        self.assignment_optimized.setToolTip(
+            "Сохраняет взаимно однозначный перенос материала. При равной стоимости "
+            "соответствия могут отличаться. Продолжение исходного прогона сохраняется в новую папку."
+        )
+        numerical_form.addRow("", self.assignment_optimized)
         layout.addWidget(numerical_group)
 
         output_group = QGroupBox("Вывод")
@@ -617,11 +920,27 @@ class MoonWindow(QMainWindow):
             surface_only_frames=self.surface_only.isChecked(),
             finalize=self.finalize.isChecked(),
             resume_checkpoint=Path(resume_text) if resume_text else None,
+            assignment_optimized=self.assignment_optimized.isChecked(),
         )
 
     def _start_run(self) -> None:
         try:
             spec = self._make_spec().normalized()
+            if spec.assignment_optimized and spec.resume_checkpoint is not None:
+                source_run = spec.resume_checkpoint.parent
+                if source_run.name == "checkpoints":
+                    source_run = source_run.parent
+                if spec.output_dir == source_run:
+                    stamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
+                    output_dir = PROJECT_ROOT / "results" / "gui_runs" / f"assignment_{stamp}"
+                    spec = replace(spec, output_dir=output_dir)
+                    self.output_field.set_path(output_dir)
+                    self._append_log(f"Продолжение с оптимизацией будет сохранено в новую папку: {output_dir}")
+                saved_config = source_run / "gui_runtime_config.yaml"
+                if saved_config.is_file():
+                    spec = replace(spec, source_config=saved_config)
+                    self.config_field.set_path(saved_config)
+                    self._append_log(f"Используется сохранённая конфигурация исходного прогона: {saved_config}")
             if spec.resume_checkpoint is None and spec.output_dir.exists():
                 existing = list(spec.output_dir.iterdir())
                 if existing:
@@ -648,8 +967,9 @@ class MoonWindow(QMainWindow):
     def _confirm_stop(self) -> None:
         answer = QMessageBox.question(
             self,
-            "Stop active segment?",
-            "The current segment will be interrupted. The previous completed checkpoint remains safe.",
+            "Остановить расчёт и сохранить диагностику?",
+            "Будут сохранены текущий этап и доступный дамп, затем сегмент будет прерван. "
+            "Предыдущий готовый чекпойнт останется доступен.",
         )
         if answer == QMessageBox.StandardButton.Yes:
             self.controller.stop_now()
@@ -671,7 +991,11 @@ class MoonWindow(QMainWindow):
         self.pause_button.setEnabled(state == "Running")
         self.resume_button.setEnabled(state == "Paused")
         self.stop_button.setEnabled(state in {"Running", "Pausing", "Preparing"})
+        self.assignment_optimized.setEnabled(state in {"Idle", "Completed", "Error", "Stopped"})
         self._refresh_eta()
+        self._refresh_diagnostics()
+        if self._close_pending and not self.controller.is_active():
+            QTimer.singleShot(0, self.close)
 
     def _progress_changed(self, current: float, end: float) -> None:
         value = 0 if end <= 0 else int(max(0.0, min(1.0, current / end)) * 1000)
@@ -712,14 +1036,17 @@ class MoonWindow(QMainWindow):
         self._append_log(f"Run complete: {output}")
         self._refresh_results()
         self._show_latest()
-        QMessageBox.information(self, "Run complete", f"All requested segments completed.\n\n{output}")
+        if not self._close_pending:
+            QMessageBox.information(self, "Run complete", f"All requested segments completed.\n\n{output}")
 
     def _run_failed(self, message: str) -> None:
         self._append_log("ERROR: " + message)
-        QMessageBox.critical(self, "Simulation failed", message)
+        if not self._close_pending:
+            QMessageBox.critical(self, "Simulation failed", message)
 
     def _append_log(self, line: str) -> None:
         self.log.appendPlainText(line)
+        self.diagnostics_recent.appendPlainText(line)
         scrollbar = self.log.verticalScrollBar()
         scrollbar.setValue(scrollbar.maximum())
 
@@ -818,15 +1145,25 @@ class MoonWindow(QMainWindow):
 
     def closeEvent(self, event: QCloseEvent) -> None:
         if self.controller.is_active():
+            if self._close_pending:
+                event.ignore()
+                return
             answer = QMessageBox.question(
                 self,
                 "Simulation is running",
-                "Stop the active segment and close? The last completed checkpoint remains safe.",
+                "Сохранить диагностику, остановить сегмент и закрыть окно? "
+                "Последний завершённый checkpoint останется доступен.",
             )
             if answer != QMessageBox.StandardButton.Yes:
                 event.ignore()
                 return
+            if not self.controller.is_active():
+                event.accept()
+                return
+            self._close_pending = True
             self.controller.stop_now()
+            event.ignore()
+            return
         event.accept()
 
 

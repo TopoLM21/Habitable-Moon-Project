@@ -1,5 +1,10 @@
 # Moon Tectonics v0.31 — Mantle-Flow-Coupled Plume Sources
 
+The GUI now includes fast cell assignment, live stages and diagnostic reports.
+Fast assignment is enabled by default; the original direct CLI remains available.
+See [integration and controls](ASSIGNMENT_INTEGRATION.md). This integration
+has received static review only; no new runs were performed.
+
 ## Desktop laboratory GUI
 
 The repository now includes a native PySide6 control surface for Windows and

@@ -26,6 +26,7 @@ from scipy.spatial import cKDTree
 from .lithosphere import CrustType, LithosphereState
 from .mesh import SphereMesh
 from .plates import PlateSystem
+from .assignment_runtime import current_execution, plate_context
 
 Array = np.ndarray
 
@@ -209,7 +210,10 @@ def _optimal_assignment(mesh: SphereMesh, rotated_sources: Array, params: Subgri
     tree = cKDTree(mesh.centroids)
     k = min(max(int(params.initial_candidate_count), 2), n)
     last_error: Exception | None = None
+    execution = current_execution()
+    attempt = 0
     while True:
+        attempt += 1
         dist, cand = tree.query(rotated_sources, k=k, workers=-1)
         if k == 1:
             dist = dist[:, None]; cand = cand[:, None]
@@ -221,7 +225,10 @@ def _optimal_assignment(mesh: SphereMesh, rotated_sources: Array, params: Subgri
         cost = np.maximum(cost, 1e-14) + 1e-15 * (cols % 997)
         graph = csr_matrix((cost, (rows, cols)), shape=(m, n))
         try:
-            r, c = min_weight_full_bipartite_matching(graph)
+            if execution is None:
+                r, c = min_weight_full_bipartite_matching(graph)
+            else:
+                r, c = execution.match(graph, candidates=k, attempt=attempt)
             if len(r) == m:
                 order = np.argsort(r)
                 return np.asarray(c[order], dtype=np.int32)
@@ -310,7 +317,8 @@ def build_transport_map(
             )
         else:
             desired = rotate_by_quaternion(mesh.centroids[src_cells], q_total)
-            target = _optimal_assignment(mesh, desired, params)
+            with plate_context(pid, src_cells, lithosphere.time_myr):
+                target = _optimal_assignment(mesh, desired, params)
             represented_r = _fit_rotation(mesh.centroids[src_cells], mesh.centroids[target], params.max_fit_pairs)
             q_fit = quaternion_from_matrix(represented_r)
             transport_state.residual_quaternions[pid] = quaternion_multiply(q_total, quaternion_conjugate(q_fit))

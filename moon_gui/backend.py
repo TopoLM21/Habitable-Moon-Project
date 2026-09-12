@@ -73,6 +73,7 @@ class RunSpec:
     surface_only_frames: bool = False
     finalize: bool = True
     resume_checkpoint: Path | None = None
+    assignment_optimized: bool = True
 
     def normalized(self) -> "RunSpec":
         return RunSpec(
@@ -89,6 +90,7 @@ class RunSpec:
             resume_checkpoint=(
                 None if self.resume_checkpoint is None else self.resume_checkpoint.resolve()
             ),
+            assignment_optimized=bool(self.assignment_optimized),
         )
 
     @property
