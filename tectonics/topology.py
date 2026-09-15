@@ -17,7 +17,7 @@ indexing assumptions of the kinematics/dynamics modules.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from collections import defaultdict, deque
 
 import numpy as np
@@ -27,6 +27,7 @@ from .kinematics import BoundaryRecord, BoundaryType, classify_boundaries
 from .lithosphere import CrustType, LithosphereState, continental_material_fields, effective_continental_thickness_km
 from .mesh import SphereMesh, connected_components
 from .plates import Plate, PlateSystem
+from .connectivity import repair_plate_connectivity
 
 Array = np.ndarray
 
@@ -53,6 +54,11 @@ class PlateTopologyParameters:
     split_cooldown_myr: float = 12.0
     disconnect_min_child_cells: int = 180
     disconnect_min_child_area_km2: float | None = None
+    # Repair ownership at the end of every topology update. Large detached
+    # domains use the surviving microplate threshold, not the old rift threshold.
+    repair_fragmented_plates: bool = True
+    connected_collision_contacts: bool = True
+    collision_min_convergent_fraction: float = 0.5
 
     # v0.9.5 progressive continent-continent collision.  A collision first
     # forms a deforming mechanical coupling zone while the two plate IDs remain
@@ -124,6 +130,9 @@ class TopologyDiagnostics:
     mean_plate_area_km2: float
     max_plate_area_km2: float
     topology_changed: bool
+    disconnected_components_before_repair: int = 0
+    connectivity_reassigned_cells: int = 0
+    connectivity_promoted_components: int = 0
 
 
 def _edge_length_km(mesh: SphereMesh, b: BoundaryRecord, radius_km: float) -> float:
@@ -182,6 +191,33 @@ def _merged_angular_velocity(
         return np.linalg.solve(inertia, angular_momentum)
     except np.linalg.LinAlgError:
         return np.linalg.pinv(inertia, rcond=1.0e-12) @ angular_momentum
+
+
+def _repaired_angular_velocities(mesh, old_system, new_owner, radius_km):
+    """Carry fragment momentum into receiving domains; pure splits inherit omega.
+
+    This is the same uniform thin-shell approximation as inertia_tensor welding.
+    It avoids discarding a fragment's motion merely because its ID was cleaned.
+    """
+    old_omega = angular_velocity_vectors(old_system)
+    cell_areas = mesh.physical_cell_areas_km2(radius_km)
+    velocities = {}
+    for pid in np.unique(new_owner):
+        cells = np.flatnonzero(new_owner == pid)
+        origins = np.unique(old_system.cell_plate[cells])
+        if len(origins) == 1:
+            velocities[int(pid)] = old_omega[int(origins[0])].copy()
+            continue
+        inertia = _plate_inertia_tensor(mesh, cells, cell_areas)
+        momentum = np.zeros(3)
+        for source in origins:
+            parcel = cells[old_system.cell_plate[cells] == source]
+            momentum += _plate_inertia_tensor(mesh, parcel, cell_areas) @ old_omega[source]
+        try:
+            velocities[int(pid)] = np.linalg.solve(inertia, momentum)
+        except np.linalg.LinAlgError:
+            velocities[int(pid)] = np.linalg.pinv(inertia, rcond=1e-12) @ momentum
+    return velocities
 
 
 def _component_area_km2(component: list[int] | Array, cell_areas_km2: Array) -> float:
@@ -359,28 +395,46 @@ def _attempt_split(
             elif len(cc)<int(params.split_min_rift_cells): continue
             candidates.append((span,area,cc))
         candidates.sort(key=lambda x:(-x[0],-x[1],min(x[2])))
+        # Transport can already have disconnected this ID. A rift must split
+        # its own original component; two pre-existing islands are not evidence
+        # that cutting a damaged strip created a new boundary.
+        original_component = {}
+        if params.repair_fragmented_plates and candidates:
+            for component_id, cells in enumerate(connected_components(plate_cells, mesh.neighbors)):
+                original_component.update((int(cell), component_id) for cell in cells)
         chosen=None
         for span,rift_area,cc in candidates:
             cut=set(map(int,cc)); remaining=[int(x) for x in plate_cells if int(x) not in cut]
             components=connected_components(remaining,mesh.neighbors)
+            split_cells = plate_cells
+            if original_component:
+                cut_component = original_component[cc[0]]
+                components = [c for c in components if original_component[c[0]] == cut_component]
+                split_cells = np.asarray([cell for cell in plate_cells
+                                          if original_component[cell] == cut_component], dtype=np.int32)
             large=[c for c in components if _large_component(c,cell_areas,min_cells=params.split_min_child_cells,min_area_km2=params.split_min_child_area_km2)]
             if len(large)<2: continue
             large.sort(key=lambda c:(-_component_area_km2(c,cell_areas),-len(c),min(c)))
-            chosen=(cut,components,large[:2],span,rift_area); break
+            chosen=(cut,components,large[:2],span,rift_area,split_cells); break
         if chosen is None: continue
-        cut,components,seeds,rift_span_km,rift_area_km2=chosen
-        child_label = _assign_cut_band_to_components(mesh, plate_cells, cut, components, seeds)
+        cut,components,seeds,rift_span_km,rift_area_km2,split_cells=chosen
+        child_label = _assign_cut_band_to_components(mesh, split_cells, cut, components, seeds)
 
         raw_owner = np.asarray(state.cell_plate, dtype=np.int64).copy()
         next_raw = int(np.max(raw_owner)) + 1
-        raw_owner[(state.cell_plate == parent) & (child_label == 0)] = parent
-        raw_owner[(state.cell_plate == parent) & (child_label == 1)] = next_raw
+        # Preserve unrelated components under the old ID and rotation. Only the
+        # two blocks actually separated by this rift receive a differential kick.
+        has_detached = len(split_cells) != len(plate_cells)
+        first_raw = next_raw if has_detached else parent
+        second_raw = next_raw + int(has_detached)
+        raw_owner[child_label == 0] = first_raw
+        raw_owner[child_label == 1] = second_raw
 
         # Unchanged plates inherit their omega.  Children get a small differential
         # rotation around the axis through their two area-centroid directions.
-        group_omega: dict[int, Array] = {p: omega[p].copy() for p in range(len(system.plates)) if p != parent}
-        c0 = np.sum(mesh.centroids[np.flatnonzero(raw_owner == parent)], axis=0)
-        c1 = np.sum(mesh.centroids[np.flatnonzero(raw_owner == next_raw)], axis=0)
+        group_omega: dict[int, Array] = {p: omega[p].copy() for p in range(len(system.plates))}
+        c0 = np.sum(mesh.centroids[np.flatnonzero(raw_owner == first_raw)], axis=0)
+        c1 = np.sum(mesh.centroids[np.flatnonzero(raw_owner == second_raw)], axis=0)
         c0 /= max(float(np.linalg.norm(c0)), 1e-30)
         c1 /= max(float(np.linalg.norm(c1)), 1e-30)
         axis = np.cross(c0, c1)
@@ -390,28 +444,28 @@ def _attempt_split(
         else:
             axis /= an
         delta = np.deg2rad(float(params.split_differential_speed_deg_per_myr)) * axis
-        group_omega[parent] = omega[parent] - 0.5 * delta
-        group_omega[next_raw] = omega[parent] + 0.5 * delta
+        group_omega[first_raw] = omega[parent] - 0.5 * delta
+        group_omega[second_raw] = omega[parent] + 0.5 * delta
 
         trial = _make_system_from_groups(mesh, system, raw_owner, group_omega)
         # Ensure the freshly created child contact is, on average, not closing.
         bounds = classify_boundaries(mesh, trial, radius_km, 0.0, 0.0)
-        child_ids = sorted(set(int(trial.cell_plate[x]) for x in np.flatnonzero(state.cell_plate == parent)))
+        child_ids = sorted(set(int(trial.cell_plate[x]) for x in split_cells))
         if len(child_ids) == 2:
             rates = [b.normal_rate_km_per_myr for b in bounds if {b.plate_a, b.plate_b} == set(child_ids)]
             if rates and float(np.mean(rates)) < 0.0:
-                group_omega[parent] = omega[parent] + 0.5 * delta
-                group_omega[next_raw] = omega[parent] - 0.5 * delta
+                group_omega[first_raw] = omega[parent] + 0.5 * delta
+                group_omega[second_raw] = omega[parent] - 0.5 * delta
                 trial = _make_system_from_groups(mesh, system, raw_owner, group_omega)
 
         # Parent/child ids after compaction are inferred from ownership.
-        children = tuple(sorted(set(int(trial.cell_plate[x]) for x in plate_cells)))
+        children = tuple(sorted(set(int(trial.cell_plate[x]) for x in split_cells)))
         event = TopologyEvent(
             time_myr=float(state.time_myr),
             kind="split",
             parents=(int(parent),),
             children=children,
-            affected_cells=int(len(plate_cells)),
+            affected_cells=int(len(split_cells)),
             detail=f"rift_cells={len(cut)}; rift_span={rift_span_km:.0f} km; rift_area={rift_area_km2:.0f} km2; child_areas_km2="+",".join(f"{float(np.sum(cell_areas[trial.cell_plate==c])):.0f}" for c in children),
         )
         return trial, event
@@ -591,6 +645,7 @@ class PlateTopologyManager:
     quiet_weld_age_myr: dict[tuple[int, int], float] = field(default_factory=dict)
     small_plate_age_myr: dict[int, float] = field(default_factory=dict)
     last_split_time_myr: float = -1e30
+    collision_contact_faces: dict[tuple[int, int], tuple[int, ...]] = field(default_factory=dict)
 
     def _update_small_plate_memory(
         self,
@@ -661,6 +716,9 @@ class PlateTopologyManager:
         plates.  Only after their relative motion becomes genuinely quiet does
         the weld clock begin.
         """
+        if self.params.connected_collision_contacts:
+            return self._update_connected_collision_memory(mesh, state, boundaries, radius_km, dt_myr)
+        self.collision_contact_faces.clear()
         length = defaultdict(float)
         speed_sum = defaultdict(float)
         normal_sum = defaultdict(float)
@@ -720,6 +778,52 @@ class PlateTopologyManager:
         self.quiet_weld_age_myr = new_quiet
         return active
 
+    def _update_connected_collision_memory(self, mesh, state, boundaries, radius_km, dt_myr):
+        from .collision_contacts import strongest_connected_continental_contacts
+
+        contacts = strongest_connected_continental_contacts(
+            mesh, boundaries, _continental_fraction_field(state, mesh, radius_km),
+            radius_km, min_continental_fraction=self.params.collision_min_continental_fraction,
+        )
+        active, ages, quiet_ages, footprints = {}, {}, {}, {}
+        for pair, contact in contacts.items():
+            old_age = float(self.collision_age_myr.get(pair, 0.))
+            previous_faces = self.collision_contact_faces.get(pair)
+            # Persist a physical contact rather than transferring its maturity
+            # to a disconnected segment elsewhere on the same pair of plates.
+            if previous_faces:
+                neighborhood = set(previous_faces)
+                for face in previous_faces:
+                    neighborhood.update(mesh.neighbors[face])
+                if not neighborhood.intersection(contact.faces):
+                    old_age = 0.
+            else:
+                old_age = 0.
+            initiating = contact.can_initiate(
+                self.params.merge_min_continental_boundary_km,
+                self.params.collision_initial_max_relative_speed_km_per_myr,
+                self.params.collision_min_convergent_fraction,
+            )
+            maintaining = old_age > 0. and contact.can_maintain(
+                self.params.merge_min_continental_boundary_km,
+                self.params.collision_contact_max_divergence_km_per_myr,
+            )
+            if not (initiating or maintaining):
+                continue
+            age = old_age + float(dt_myr)
+            ages[pair] = age
+            footprints[pair] = tuple(contact.faces)
+            active[pair] = (contact.length_km, contact.mean_relative_speed_km_per_myr,
+                            contact.mean_normal_rate_km_per_myr)
+            if (age >= self.params.weld_min_collision_age_myr
+                    and contact.is_quiet(self.params.weld_max_relative_speed_km_per_myr,
+                                         self.params.weld_max_normal_divergence_km_per_myr)):
+                quiet_ages[pair] = (self.quiet_weld_age_myr.get(pair, 0.) if old_age > 0. else 0.) + float(dt_myr)
+        self.collision_age_myr = ages
+        self.quiet_weld_age_myr = quiet_ages
+        self.collision_contact_faces = footprints
+        return active
+
     def extension_suppression_field(
         self,
         mesh: SphereMesh,
@@ -744,11 +848,16 @@ class PlateTopologyManager:
         cont_frac=(np.asarray(state.crust_type)==int(CrustType.CONTINENTAL)).astype(float) if state.continental_fraction is None else np.asarray(state.continental_fraction,dtype=float)
         min_frac=float(self.params.collision_min_continental_fraction)
         direct: set[int] = set()
+        footprints = {pair: set(faces) for pair, faces in self.collision_contact_faces.items()}
         for b in boundaries:
             pair = tuple(sorted((int(b.plate_a), int(b.plate_b))))
             age = float(self.collision_age_myr.get(pair, 0.0))
             if age < start:
                 continue
+            if self.params.connected_collision_contacts:
+                faces = footprints.get(pair, set())
+                if int(b.face_a) not in faces or int(b.face_b) not in faces:
+                    continue
             if float(cont_frac[b.face_a])<min_frac or float(cont_frac[b.face_b])<min_frac:
                 continue
             maturity = min(1.0, (age - start) / max(float(self.params.weld_min_collision_age_myr) - start, 1e-9))
@@ -847,8 +956,28 @@ class PlateTopologyManager:
             new_id = mapping[old_id]
             new_small[new_id] = max(float(age), float(new_small.get(new_id, 0.0)))
         self.small_plate_age_myr = new_small
-        self.collision_age_myr = remap(self.collision_age_myr)
-        self.quiet_weld_age_myr = remap(self.quiet_weld_age_myr)
+        # Select the footprint belonging to the same oldest contact as its
+        # collision clock when multiple old pairs collapse into one new pair.
+        next_faces, next_ages, next_quiet = {}, {}, {}
+        for (a, b), age in sorted(self.collision_age_myr.items()):
+            if a not in mapping or b not in mapping or mapping[a] == mapping[b]:
+                continue
+            pair = tuple(sorted((mapping[a], mapping[b])))
+            if pair not in next_ages or age > next_ages[pair]:
+                next_ages[pair] = age
+                next_faces.pop(pair, None)
+                if (a, b) in self.collision_contact_faces:
+                    next_faces[pair] = self.collision_contact_faces[(a, b)]
+                next_quiet.pop(pair, None)
+                if (a, b) in self.quiet_weld_age_myr:
+                    next_quiet[pair] = self.quiet_weld_age_myr[(a, b)]
+        self.collision_contact_faces = next_faces
+        if self.params.connected_collision_contacts:
+            self.collision_age_myr = next_ages
+            self.quiet_weld_age_myr = next_quiet
+        else:
+            self.collision_age_myr = remap(self.collision_age_myr)
+            self.quiet_weld_age_myr = remap(self.quiet_weld_age_myr)
 
     def update(
         self,
@@ -874,12 +1003,21 @@ class PlateTopologyManager:
             state.cell_plate=current.cell_plate.copy()
             events.append(vev)
             self._remap_collision_memory(old_current,current)
+            # Only IDs changed; retain measured rates and classifications while
+            # aligning contact memory with the compacted velocity arrays.
+            boundaries = [replace(b, plate_a=int(current.cell_plate[b.face_a]),
+                                  plate_b=int(current.cell_plate[b.face_b]))
+                          for b in boundaries
+                          if current.cell_plate[b.face_a] != current.cell_plate[b.face_b]]
 
         self._update_small_plate_memory(mesh, current, radius_km, dt_myr)
 
         # Topology invariant first: if one plate ID already occupies two large
         # disconnected surface domains, detach one before evaluating new welds.
-        disconnected, dev = _attempt_disconnected_split(mesh, state, current, self.params, radius_km)
+        # The new invariant barrier repairs all components together after the
+        # physical events. It does not consume their budget or reset rift clocks.
+        disconnected, dev = ((None, None) if self.params.repair_fragmented_plates
+                             else _attempt_disconnected_split(mesh, state, current, self.params, radius_km))
         if disconnected is not None and dev is not None and len(events) < int(self.params.max_events_per_step):
             old_current = current
             current = disconnected
@@ -951,6 +1089,33 @@ class PlateTopologyManager:
             events.append(ev); absorb_n += 1
             self._remap_collision_memory(old_current, current)
 
+        repair = None
+        if self.params.repair_fragmented_plates:
+            repair = repair_plate_connectivity(
+                mesh, current.cell_plate, radius_km,
+                minimum_independent_area_km2=self.params.min_plate_area_km2,
+                minimum_independent_cells=max(1, int(self.params.min_plate_cells)),
+            )
+            if not np.array_equal(repair.cell_plate, current.cell_plate):
+                old_current = current
+                current = _make_system_from_groups(
+                    mesh, current, repair.cell_plate,
+                    _repaired_angular_velocities(mesh, current, repair.cell_plate, radius_km),
+                )
+                state.cell_plate = current.cell_plate.copy()
+                self._remap_collision_memory(old_current, current)
+                split_n += repair.promoted_components
+                events.append(TopologyEvent(
+                    time_myr=float(state.time_myr), kind="connectivity_repair",
+                    parents=tuple(range(len(old_current.plates))),
+                    children=tuple(range(len(current.plates))),
+                    affected_cells=int(np.count_nonzero(current.cell_plate != old_current.cell_plate)),
+                    detail=(f"connected components {repair.components_before}->{len(current.plates)}; "
+                            f"promoted={repair.promoted_components}; reassigned={repair.reassigned_cells}; "
+                            "material unchanged; detached domains inherit rotation; "
+                            "reassigned fragments conserve thin-shell angular momentum"),
+                ))
+
         counts = _plate_cell_counts(current.cell_plate, len(current.plates))
         plate_areas=_plate_area_weights(mesh,current.cell_plate,radius_km,len(current.plates))
         diag = TopologyDiagnostics(
@@ -972,6 +1137,9 @@ class PlateTopologyManager:
             mean_plate_area_km2=float(np.mean(plate_areas)) if len(plate_areas) else 0.0,
             max_plate_area_km2=float(np.max(plate_areas)) if len(plate_areas) else 0.0,
             topology_changed=bool(events),
+            disconnected_components_before_repair=(repair.components_before if repair is not None else 0),
+            connectivity_reassigned_cells=(repair.reassigned_cells if repair is not None else 0),
+            connectivity_promoted_components=(repair.promoted_components if repair is not None else 0),
         )
         return current, diag, events
 

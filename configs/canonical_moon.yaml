@@ -143,6 +143,7 @@ dynamics_evolution:
   time_step_myr: 2.0
   gif_frame_duration_ms: 350
 topography:
+  material_transport_enabled: true
   continental_reference_thickness_km: 35.0
   continental_reference_elevation_m: 350.0
   continental_density_kg_m3: 2800.0
@@ -208,6 +209,9 @@ topography_evolution:
   time_step_myr: 4.0
   gif_frame_duration_ms: 350
 plate_topology:
+  repair_fragmented_plates: true
+  connected_collision_contacts: true
+  collision_min_convergent_fraction: 0.5
   split_enabled: true
   split_young_ocean_age_myr: 16.0
   split_min_postrift_damage: 0.035

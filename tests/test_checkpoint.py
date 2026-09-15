@@ -1,4 +1,5 @@
 from pathlib import Path
+import json
 import numpy as np
 from tectonics.checkpoint import RunCheckpoint,save_checkpoint,load_checkpoint
 from tectonics.continental import initialize_continental_cycle
@@ -28,6 +29,7 @@ def test_checkpoint_roundtrip(tmp_path: Path):
     topo=initialize_topography(mesh,state,bounds,TopographyParameters())
     manager=PlateTopologyManager(PlateTopologyParameters())
     manager.collision_age_myr[(1,2)]=12.0;manager.quiet_weld_age_myr[(1,2)]=4.0;manager.small_plate_age_myr[2]=8.0;manager.last_split_time_myr=4.0
+    manager.collision_contact_faces[(1,2)]=(1,2,3)
     cp=RunCheckpoint(state,cycle,thermal,topo,system,system,manager,0.2,123.0,[{'time_myr':4.0}],[],[],[],[],[{'kind':'x'}])
     cp.arc_rows=[{'time_myr':4.0,'active_arc_zones':3,'mean_trench_arc_distance_km':110.0}]
     save_checkpoint(tmp_path/'cp',cp)
@@ -43,10 +45,34 @@ def test_checkpoint_roundtrip(tmp_path: Path):
     assert np.allclose(got.system.plates[0].euler_axis,system.plates[0].euler_axis)
     assert manager2.collision_age_myr=={(1,2):12.0}
     assert manager2.quiet_weld_age_myr=={(1,2):4.0}
+    assert manager2.collision_contact_faces=={(1,2):(1,2,3)}
     assert manager2.small_plate_age_myr=={2:8.0}
     assert manager2.last_split_time_myr==4.0
     assert got.events==[{'kind':'x'}]
     assert got.arc_rows==cp.arc_rows
+
+    # Old checkpoints remain readable, but only the legacy contact model may
+    # inherit clocks accumulated by pooling geographically unrelated seams.
+    meta_path=tmp_path/'cp'/'meta.json'
+    meta=json.loads(meta_path.read_text(encoding='utf-8'))
+    del meta['topology_manager']['collision_contact_faces']
+    meta_path.write_text(json.dumps(meta),encoding='utf-8')
+    load_checkpoint(tmp_path/'cp',manager2)
+    assert manager2.collision_age_myr=={}
+    assert manager2.quiet_weld_age_myr=={}
+    assert manager2.collision_contact_faces=={}
+    assert manager2.small_plate_age_myr=={2:8.0}
+    legacy=PlateTopologyManager(PlateTopologyParameters(connected_collision_contacts=False))
+    load_checkpoint(tmp_path/'cp',legacy)
+    assert legacy.collision_age_myr=={(1,2):12.0}
+    assert legacy.quiet_weld_age_myr=={(1,2):4.0}
+    # New checkpoints made with the legacy model have the key, but no verified
+    # footprint. Switching modes must not inherit those pair-wide clocks either.
+    for faces in ([], [[1,2,[]]]):
+        meta['topology_manager']['collision_contact_faces']=faces
+        meta_path.write_text(json.dumps(meta),encoding='utf-8')
+        load_checkpoint(tmp_path/'cp',manager2)
+        assert manager2.collision_age_myr==manager2.quiet_weld_age_myr=={}
 
 
 def test_checkpoint_roundtrip_reconstructed_transport_and_mantle(tmp_path: Path):

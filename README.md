@@ -1,5 +1,10 @@
 # Moon Tectonics v0.31 — Mantle-Flow-Coupled Plume Sources
 
+Plate connectivity, connected collision contacts, and material-following relief
+are enabled in the canonical configuration. See the
+[repair results and validation limits](TECTONIC_REPAIRS.md), including paired
+GPU continuations from the historical 4480 Myr checkpoint.
+
 The current GPU + CPU workspace includes the user-validated fast assignment
 solver and stage/worker diagnostics. Fast assignment is enabled by default in
 the GUI and CPU/GPU entry points. See [integration and controls](ASSIGNMENT_INTEGRATION.md).

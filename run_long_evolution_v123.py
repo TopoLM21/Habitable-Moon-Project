@@ -64,6 +64,11 @@ DEFAULT_OUTPUT='outputs_v123_sediments'
 
 def dc(cls,cfg): return cls(**{k:cfg[k] for k in cls.__dataclass_fields__ if k in cfg})
 
+
+def history_fieldnames(rows):
+    """Preserve old columns and include diagnostics introduced after resume."""
+    return list(dict.fromkeys(key for row in rows for key in row))
+
 def parse_args():
     p=argparse.ArgumentParser(description=RUN_DESCRIPTION)
     p.add_argument('--config',default='configs/canonical_moon.yaml')
@@ -251,7 +256,7 @@ def main():
             for ev in new_events:
                 rec={'time_myr':ev.time_myr,'kind':ev.kind,'parents':list(ev.parents),'children':list(ev.children),'affected_cells':ev.affected_cells,'detail':ev.detail};events.append(rec);print(f"TOPOLOGY t={ev.time_myr:.1f}: {ev.kind} parents={ev.parents} children={ev.children}")
         topo_arc_forcing,_=compute_volcanic_arc_forcing(proto.mesh,state,subduction_memory,radius,arcp,boundaries)
-        topo,last_relief,target=advance_topography(proto.mesh,state,boundaries,topo,dti,radius,topop,arc_uplift_forcing=topo_arc_forcing,flexure_params=flexp,gravity_m_s2=grav)
+        topo,last_relief,target=advance_topography(proto.mesh,state,boundaries,topo,dti,radius,topop,arc_uplift_forcing=topo_arc_forcing,flexure_params=flexp,gravity_m_s2=grav,previous_lithosphere=previous_state,transport_source_index=lith_diag.material_source_index)
         state,topo,sediment_budget,seddiag=advance_sediments(proto.mesh,previous_state,state,topo,lith_diag.material_source_index,sediment_budget,dti,radius,sedp,rift_recycled_volume_km3=float(lith_diag.rift_recycled_volume_km3),sea_level_m=float(last_hydro_diag.sea_level_m))
         _ledger=continental_material_ledger_error_km3(initial_cont_vol,cycle.cumulative_generated_volume_km3,state,sediment_budget,cycle.cumulative_recycled_volume_km3)
         _sr={k:getattr(seddiag,k) for k in seddiag.__dataclass_fields__};_sr['global_continental_ledger_error_km3']=float(_ledger);sediment_rows.append(_sr)
@@ -284,22 +289,22 @@ def main():
         save_late_tectonic_maps(proto.mesh,state,out,int(cfg['output'].get('dpi',180)));save_late_history(late_rows,out/'late_tectonics_history.png');save_nucleation_history(late_rows,out/'late_rift_nucleation_history.png')
         save_final_hydrosphere_maps(proto.mesh,state,topo,hydrosphere,radius,hydrop,out,int(cfg['output'].get('dpi',180)),topop);save_hydrosphere_history(hydrosphere_rows,out/'hydrosphere_history.png')
         save_sediment_maps(proto.mesh,state,radius,out,int(cfg['output'].get('dpi',180)));save_sediment_history(sediment_rows,out/'sediment_history.png');save_lithosphere_split_maps(proto.mesh,state,out,int(cfg['output'].get('dpi',180)));save_lithosphere_split_history(lithosphere_rows,out/'lithosphere_split_history.png');save_ridge_push_maps(proto.mesh,state,radius,len(system.plates),dyn0,out,int(cfg['output'].get('dpi',180)));save_ridge_push_history(lithosphere_rows,out/'ridge_push_history.png');save_ridge_push_age_calibration(out/'ridge_push_age_calibration.png',dyn0);save_subduction_memory_maps(proto.mesh,subduction_memory,out,int(cfg['output'].get('dpi',180)));save_subduction_memory_history(subduction_memory_rows,out/'subduction_memory_history.png');save_rollback_history(rollback_rows,out/'rollback_history.png');save_backarc_history(rollback_rows,out/'backarc_extension_history.png');save_rollback_maps(proto.mesh,subduction_memory,backarc_forcing,out,int(cfg['output'].get('dpi',180)));save_breakoff_history(breakoff_rows,out/'slab_breakoff_history.png');save_breakoff_maps(proto.mesh,subduction_memory,out,int(cfg['output'].get('dpi',180)));save_volcanic_arc_history(arc_rows,out/'volcanic_arc_history.png');save_volcanic_arc_maps(proto.mesh,state,subduction_memory,radius,arcp,out,int(cfg['output'].get('dpi',180)),boundaries)
-        with (out/'thermal_history.csv').open('w',newline='',encoding='utf-8') as h:w=csv.DictWriter(h,fieldnames=list(thermal_rows[0].keys()));w.writeheader();w.writerows(thermal_rows)
+        with (out/'thermal_history.csv').open('w',newline='',encoding='utf-8') as h:w=csv.DictWriter(h,fieldnames=history_fieldnames(thermal_rows));w.writeheader();w.writerows(thermal_rows)
         if lithosphere_rows:
-            with (out/'rift_history.csv').open('w',newline='',encoding='utf-8') as h:w=csv.DictWriter(h,fieldnames=list(lithosphere_rows[0].keys()));w.writeheader();w.writerows(lithosphere_rows)
+            with (out/'rift_history.csv').open('w',newline='',encoding='utf-8') as h:w=csv.DictWriter(h,fieldnames=history_fieldnames(lithosphere_rows));w.writeheader();w.writerows(lithosphere_rows)
         if late_rows:
-            with (out/'late_tectonics_history.csv').open('w',newline='',encoding='utf-8') as h:w=csv.DictWriter(h,fieldnames=list(late_rows[0].keys()));w.writeheader();w.writerows(late_rows)
+            with (out/'late_tectonics_history.csv').open('w',newline='',encoding='utf-8') as h:w=csv.DictWriter(h,fieldnames=history_fieldnames(late_rows));w.writeheader();w.writerows(late_rows)
         if subduction_memory_rows:
-            with (out/'subduction_memory_history.csv').open('w',newline='',encoding='utf-8') as h:w=csv.DictWriter(h,fieldnames=list(subduction_memory_rows[0].keys()));w.writeheader();w.writerows(subduction_memory_rows)
+            with (out/'subduction_memory_history.csv').open('w',newline='',encoding='utf-8') as h:w=csv.DictWriter(h,fieldnames=history_fieldnames(subduction_memory_rows));w.writeheader();w.writerows(subduction_memory_rows)
         if rollback_rows:
-            with (out/'rollback_history.csv').open('w',newline='',encoding='utf-8') as h:w=csv.DictWriter(h,fieldnames=list(rollback_rows[0].keys()));w.writeheader();w.writerows(rollback_rows)
+            with (out/'rollback_history.csv').open('w',newline='',encoding='utf-8') as h:w=csv.DictWriter(h,fieldnames=history_fieldnames(rollback_rows));w.writeheader();w.writerows(rollback_rows)
         if breakoff_rows:
-            with (out/'slab_breakoff_history.csv').open('w',newline='',encoding='utf-8') as h:w=csv.DictWriter(h,fieldnames=list(breakoff_rows[0].keys()));w.writeheader();w.writerows(breakoff_rows)
+            with (out/'slab_breakoff_history.csv').open('w',newline='',encoding='utf-8') as h:w=csv.DictWriter(h,fieldnames=history_fieldnames(breakoff_rows));w.writeheader();w.writerows(breakoff_rows)
         if arc_rows:
-            with (out/'volcanic_arc_history.csv').open('w',newline='',encoding='utf-8') as h:w=csv.DictWriter(h,fieldnames=list(arc_rows[0].keys()));w.writeheader();w.writerows(arc_rows)
+            with (out/'volcanic_arc_history.csv').open('w',newline='',encoding='utf-8') as h:w=csv.DictWriter(h,fieldnames=history_fieldnames(arc_rows));w.writeheader();w.writerows(arc_rows)
         with (out/'topology_events.json').open('w',encoding='utf-8') as h:json.dump(events,h,ensure_ascii=False,indent=2)
         if hydrosphere_rows:
-            with (out/'hydrosphere_history.csv').open('w',newline='',encoding='utf-8') as h:w=csv.DictWriter(h,fieldnames=list(hydrosphere_rows[0].keys()));w.writeheader();w.writerows(hydrosphere_rows)
+            with (out/'hydrosphere_history.csv').open('w',newline='',encoding='utf-8') as h:w=csv.DictWriter(h,fieldnames=history_fieldnames(hydrosphere_rows));w.writeheader();w.writerows(hydrosphere_rows)
         flush_rendering()
         all_frames=sorted(frames.glob('frame_*_Myr.png'))
         all_plate_frames=sorted(plate_frames.glob('plate_*_Myr.png'))

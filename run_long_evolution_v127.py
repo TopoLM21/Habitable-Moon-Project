@@ -173,6 +173,17 @@ def _advance_topography_v127(*args, **kwargs):
         _state = initialize_plume_dynamic_topography(
             mesh, lithosphere.time_myr - dt_myr
         )
+    # Mantle support stays on the fixed grid while lithospheric relief moves.
+    # This field is already persisted with the plume checkpoint, so resumed
+    # runs use the same decomposition as uninterrupted runs.
+    previous_dynamic = np.asarray(_state.realized_dynamic_topography_m, dtype=np.float64).copy()
+    existing_previous = kwargs.get("previous_dynamic_topography_m")
+    if existing_previous is not None:
+        existing_previous = np.asarray(existing_previous, dtype=np.float64)
+        if existing_previous.shape != (mesh.cell_count,):
+            raise ValueError("existing previous dynamic topography must have shape (cell_count,)")
+        previous_dynamic += existing_previous
+    kwargs["previous_dynamic_topography_m"] = previous_dynamic
     _state, diagnostics = advance_plume_dynamic_topography(
         mesh,
         v125._plume_state,

@@ -238,6 +238,10 @@ def save_checkpoint(path: str | Path, cp: RunCheckpoint) -> Path:
         "topology_manager":{
             "collision_age_myr":collision,
             "quiet_weld_age_myr":quiet_weld,
+            "collision_contact_faces":[
+                [int(a), int(b), [int(face) for face in faces]]
+                for (a,b),faces in sorted(cp.manager.collision_contact_faces.items())
+            ],
             "small_plate_age_myr":[[int(pid),float(age)] for pid,age in sorted(cp.manager.small_plate_age_myr.items())],
             "last_split_time_myr":float(cp.manager.last_split_time_myr),
         },
@@ -468,6 +472,17 @@ def load_checkpoint(path: str | Path, manager: PlateTopologyManager) -> RunCheck
     manager.quiet_weld_age_myr={
         (int(a),int(b)):float(age) for a,b,age in meta["topology_manager"].get("quiet_weld_age_myr", [])
     }
+    manager.collision_contact_faces={
+        (int(a),int(b)):tuple(int(face) for face in faces)
+        for a,b,faces in meta["topology_manager"].get("collision_contact_faces", [])
+    }
+    # Legacy pair-wide clocks have no geographic identity. They cannot certify
+    # the age of a connected seam when resuming with the new contact model.
+    if manager.params.connected_collision_contacts:
+        manager.collision_age_myr={pair:age for pair,age in manager.collision_age_myr.items()
+                                   if manager.collision_contact_faces.get(pair)}
+        manager.quiet_weld_age_myr={pair:age for pair,age in manager.quiet_weld_age_myr.items()
+                                  if pair in manager.collision_age_myr}
     manager.small_plate_age_myr={
         int(pid):float(age) for pid,age in meta["topology_manager"].get("small_plate_age_myr", [])
     }

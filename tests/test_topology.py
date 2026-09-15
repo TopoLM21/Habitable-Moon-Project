@@ -194,8 +194,15 @@ def test_microplate_persistence_resets_if_plate_recovers_area():
         min_plate_persistence_myr=12.0,max_events_per_step=2))
     current,_,events=manager.update(mesh,state,system,[],5287.0,4.0)
     assert not events and manager.small_plate_age_myr.get(1)==4.0
-    # Give plate 1 enough cells to rise above threshold for one step.
-    recovered=current.cell_plate.copy(); recovered[:8]=1
+    # Grow a connected patch: the first eight array indices need not be adjacent.
+    grown=[0]
+    for cell in grown:
+        for neighbor in mesh.neighbors[cell]:
+            if neighbor not in grown and len(grown)<8:
+                grown.append(neighbor)
+        if len(grown)==8:
+            break
+    recovered=current.cell_plate.copy(); recovered[grown]=1
     current=PlateSystem(recovered,current.plates); state.cell_plate=recovered.copy(); state.time_myr+=4.0
     current,_,events=manager.update(mesh,state,current,[],5287.0,4.0)
     assert not events and 1 not in manager.small_plate_age_myr
@@ -357,6 +364,8 @@ def test_v095_collision_memory_survives_unrelated_plate_id_compaction():
     manager.collision_age_myr[(0,1)]=120.0
     manager.quiet_weld_age_myr[(0,1)]=12.0
     quiet=_continental_interface_records(mesh,owner,relative_speed=2.0,normal_rate=0.0,kind=BoundaryType.INACTIVE)
+    manager.collision_contact_faces[(0,1)]=tuple(sorted({face for b in quiet
+        if {b.plate_a,b.plate_b}=={0,1} for face in (b.face_a,b.face_b)}))
     out,diag,events=manager.update(mesh,state,system,quiet,5287.0,4.0)
     assert events and events[0].kind=='absorb'
     assert len(out.plates)==2
@@ -384,3 +393,117 @@ def test_v096_collision_zone_builds_local_extension_suppression():
     boundary_cells={int(b.face_a) for b in records}|{int(b.face_b) for b in records}
     assert any(field[c] > 0.0 for c in boundary_cells)
     assert np.all((field >= 0.0) & (field <= 1.0))
+
+
+def test_collision_records_follow_empty_plate_id_compaction():
+    mesh=build_icosphere(2)
+    owner=(mesh.centroids[:,0]>0).astype(np.int32)*2
+    system=PlateSystem(owner.copy(),tuple(
+        Plate(pid,0,np.array([0.,0.,1.]),0.002+pid*0.001) for pid in range(3)))
+    state=_state(owner)
+    records=_continental_interface_records(mesh,owner)
+    manager=PlateTopologyManager(PlateTopologyParameters(
+        split_enabled=False,merge_enabled=False,min_plate_cells=1,
+        merge_min_continental_boundary_km=1.0))
+    out,_,events=manager.update(mesh,state,system,records,5287.,4.)
+    assert events[0].kind=='vanish'
+    assert len(out.plates)==2
+    assert manager.collision_age_myr=={(0,1):4.0}
+    assert set(manager.collision_contact_faces)=={(0,1)}
+
+
+def test_preexisting_islands_do_not_make_a_local_damaged_patch_a_rift():
+    mesh=build_icosphere(3)
+    owner=(np.abs(mesh.centroids[:,2])<=0.6).astype(np.int32)
+    system=PlateSystem(owner.copy(),tuple(
+        Plate(pid,int(np.flatnonzero(owner==pid)[0]),np.array([0.,0.,1.]),.002)
+        for pid in range(2)))
+    state=_state(owner)
+    cell=int(np.argmax(mesh.centroids[:,2]))
+    state.crust_type[cell]=int(CrustType.OCEANIC)
+    state.crust_age_myr[cell]=0.
+    state.tidal_damage[cell]=1.
+    params=PlateTopologyParameters(split_min_rift_cells=1,split_min_child_cells=10)
+    out,event=_attempt_split(mesh,state,system,params,5287.)
+    assert out is None and event is None
+    params.repair_fragmented_plates=False
+    legacy,_=_attempt_split(mesh,state,system,params,5287.)
+    assert legacy is not None
+
+
+def test_remap_keeps_quiet_clock_and_footprint_of_the_selected_collision():
+    mesh=build_icosphere(2)
+    owner=np.where(mesh.centroids[:,0]<0,0,np.where(mesh.centroids[:,2]<0,1,2))
+    old=PlateSystem(owner.copy(),tuple(
+        Plate(pid,0,np.array([0.,0.,1.]),.002) for pid in range(3)))
+    new=PlateSystem(np.minimum(owner,1),old.plates[:2])
+    manager=PlateTopologyManager(PlateTopologyParameters())
+    manager.collision_age_myr={(0,1):100.,(0,2):80.}
+    manager.quiet_weld_age_myr={(0,1):4.,(0,2):40.}
+    manager.collision_contact_faces={(0,1):(1,2),(0,2):(3,4)}
+    manager._remap_collision_memory(old,new)
+    assert manager.collision_age_myr=={(0,1):100.}
+    assert manager.quiet_weld_age_myr=={(0,1):4.}
+    assert manager.collision_contact_faces=={(0,1):(1,2)}
+
+
+def test_rift_rotation_is_limited_to_its_connected_parent_component():
+    mesh=build_icosphere(3)
+    owner=(np.abs(mesh.centroids[:,2])<=.6).astype(np.int32)
+    system=PlateSystem(owner.copy(),tuple(
+        Plate(pid,int(np.flatnonzero(owner==pid)[0]),np.array([0.,0.,1.]),.002)
+        for pid in range(2)))
+    state=_state(owner)
+    north=mesh.centroids[:,2]>.6
+    south=mesh.centroids[:,2]<-.6
+    cut=north & (np.abs(mesh.centroids[:,0])<.12)
+    state.crust_type[cut]=int(CrustType.OCEANIC)
+    state.crust_age_myr[cut]=0.
+    state.tidal_damage[cut]=1.
+    manager=PlateTopologyManager(PlateTopologyParameters(
+        merge_enabled=False,split_min_child_cells=30,split_min_rift_cells=1,min_plate_cells=30))
+    out,_,events=manager.update(mesh,state,system,[],5287.,4.)
+    split=next(event for event in events if event.kind=='split')
+    assert split.affected_cells==int(np.sum(north))
+    assert len(np.unique(out.cell_plate[north]))==2
+    assert len(np.unique(out.cell_plate[south]))==1
+    south_plate=out.plates[int(out.cell_plate[np.flatnonzero(south)[0]])]
+    assert np.array_equal(south_plate.euler_axis*south_plate.angular_speed_rad_per_myr,
+                          np.array([0.,0.,.002]))
+    for pid in np.unique(out.cell_plate):
+        assert len(connected_components(np.flatnonzero(out.cell_plate==pid),mesh.neighbors))==1
+
+
+def test_legacy_contact_maturity_cannot_trigger_a_weld_without_a_footprint():
+    from tectonics.kinematics import BoundaryType
+    mesh=build_icosphere(2)
+    owner,system=_two_hemisphere_system(mesh)
+    state=_state(owner)
+    records=_continental_interface_records(mesh,owner,relative_speed=0.,normal_rate=0.,kind=BoundaryType.INACTIVE)
+    manager=PlateTopologyManager(PlateTopologyParameters(split_enabled=False,min_plate_cells=1))
+    manager.collision_age_myr={(0,1):1000.}
+    manager.quiet_weld_age_myr={(0,1):1000.}
+    out,_,events=manager.update(mesh,state,system,records,5287.,4.)
+    assert len(out.plates)==2
+    assert not events
+    assert manager.collision_age_myr==manager.quiet_weld_age_myr=={}
+
+
+def test_remote_contact_restarts_clocks_and_does_not_suppress_other_seams():
+    mesh=build_icosphere(3)
+    owner=(np.abs(mesh.centroids[:,2])<=.6).astype(np.int32)
+    state=_state(owner)
+    records=_continental_interface_records(mesh,owner,relative_speed=2.,normal_rate=-1.)
+    north=[b for b in records if b.midpoint[2]>.3]
+    south=[b for b in records if b.midpoint[2]<-.3]
+    assert north and south
+    manager=PlateTopologyManager(PlateTopologyParameters(
+        merge_min_continental_boundary_km=1.,weld_min_collision_age_myr=0.,
+        collision_rift_suppression_start_myr=0.))
+    manager._update_collision_memory(mesh,state,north,5287.,12.)
+    manager._update_collision_memory(mesh,state,south,5287.,4.)
+    assert manager.collision_age_myr=={(0,1):4.}
+    assert manager.quiet_weld_age_myr=={(0,1):4.}
+    suppression=manager.extension_suppression_field(mesh,state,records)
+    assert max(suppression[b.face_a] for b in south)>0
+    assert all(suppression[b.face_a]==suppression[b.face_b]==0 for b in north)

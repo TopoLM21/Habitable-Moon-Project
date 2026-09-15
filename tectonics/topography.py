@@ -78,6 +78,9 @@ class TopographyParameters:
     material_aware_isostasy: bool = True
     material_aware_boundary_forcing: bool = True
     material_fraction_epsilon: float = 1.0e-9
+    # Carry relief with the exact material remap when its old state/map are
+    # supplied.  Omission retains the historical standalone API behaviour.
+    material_transport_enabled: bool = True
 
     # Backwards-compatible aliases used by older validation code.  In v0.9.3
     # they mean numerical safety rails, not physical bathymetric limits.
@@ -241,6 +244,60 @@ def _base_elevation(
         mesh, state, float(radius_km), params
     )
     return (1.0 - frac) * ocean_endmember + frac * continental_endmember
+
+
+def transport_topography_with_material(
+    mesh: SphereMesh,
+    previous_lithosphere: LithosphereState,
+    lithosphere: LithosphereState,
+    previous: TopographyState,
+    transport_source_index: Array,
+    radius_km: float,
+    params: TopographyParameters,
+    previous_dynamic_topography_m: Array | None = None,
+) -> Array:
+    """Reconstruct relief on the destination material before relaxation.
+
+    The parcel map moves the residual above its old material-aware isostatic
+    base, not the absolute height left at the destination cell.  At moved
+    destinations rebuilding the base from the new footprint and volume also
+    handles mixed cells, whose composition need not equal the winning parcel's
+    composition.  A newly opened gap (source -1) has zero inherited residual
+    and starts at its newborn material base.  Stationary parcels retain their
+    old height: cooling, thickening and other local changes still pass through
+    the ordinary mechanical relaxation instead of being applied instantly.
+
+    Known mantle support is removed before transport and restored at its old
+    Eulerian location; the normal time step subsequently relaxes toward the
+    new mantle forcing.  The remaining scalar residual includes unresolved
+    tectonic/flexural and relaxation history.  It is an effective parcel
+    memory, not an independently conserved volume or a resolved elastic field.
+    """
+    source = np.asarray(transport_source_index)
+    n = mesh.cell_count
+    if source.shape != (n,) or not np.issubdtype(source.dtype, np.integer):
+        raise ValueError("transport_source_index must be an integer cell field")
+    if np.any(source < -1) or np.any(source >= n):
+        raise ValueError("transport_source_index must contain -1 or valid source cells")
+    old_elevation = np.asarray(previous.elevation_m, dtype=np.float64)
+    if old_elevation.shape != (n,) or not np.all(np.isfinite(old_elevation)):
+        raise ValueError("previous elevation must be a finite cell field")
+    fixed_support = np.zeros(n, dtype=np.float64)
+    if previous_dynamic_topography_m is not None:
+        fixed_support = np.asarray(previous_dynamic_topography_m, dtype=np.float64)
+        if fixed_support.shape != (n,) or not np.all(np.isfinite(fixed_support)):
+            raise ValueError("previous_dynamic_topography_m must be a finite cell field")
+    old_base = _base_elevation(mesh, previous_lithosphere, params, radius_km)
+    new_base = _base_elevation(mesh, lithosphere, params, radius_km)
+    residual = old_elevation - old_base - fixed_support
+    carried = np.zeros(n, dtype=np.float64)
+    valid = source >= 0
+    carried[valid] = residual[source[valid]]
+    reconstructed = new_base + carried + fixed_support
+    moved = source != np.arange(n)
+    elevation = old_elevation.copy()
+    elevation[moved] = reconstructed[moved]
+    return elevation
 
 
 def _subducting_face(state: LithosphereState, b: BoundaryRecord) -> tuple[int | None, int | None]:
@@ -619,13 +676,24 @@ def advance_topography(
     magmatic_extrusive_thickness_m: Array | None = None,
     magmatic_extrusive_load_m: Array | None = None,
     magmatic_intrusive_support_m: Array | None = None,
+    previous_lithosphere: LithosphereState | None = None,
+    transport_source_index: Array | None = None,
+    previous_dynamic_topography_m: Array | None = None,
 ) -> tuple[TopographyState, TopographyDiagnostics, Array]:
     if dt_myr <= 0.0:
         raise ValueError("dt_myr must be positive")
     target,tags,components,fdiag=_equilibrium_build(
         mesh,lithosphere,boundaries,params,radius_km,arc_uplift_forcing,flexure_params,gravity_m_s2,dynamic_topography_m,magmatic_extrusive_thickness_m,magmatic_extrusive_load_m,magmatic_intrusive_support_m)
+    old_elevation=np.asarray(previous.elevation_m,dtype=np.float64)
+    if bool(params.material_transport_enabled):
+        if (previous_lithosphere is None) != (transport_source_index is None):
+            raise ValueError("material relief transport requires both previous_lithosphere and transport_source_index")
+        if previous_lithosphere is not None:
+            old_elevation=transport_topography_with_material(
+                mesh,previous_lithosphere,lithosphere,previous,transport_source_index,
+                radius_km,params,previous_dynamic_topography_m)
     alpha=1.0-np.exp(-float(dt_myr)/max(float(params.isostatic_relaxation_myr),1e-9))
-    elev=np.asarray(previous.elevation_m,dtype=np.float64)+alpha*(target-np.asarray(previous.elevation_m,dtype=np.float64))
+    elev=old_elevation+alpha*(target-old_elevation)
     areas=mesh.physical_cell_areas_km2(radius_km)
     elev,eroded=_erode_positive_relief(mesh,elev,areas,dt_myr,params)
 
