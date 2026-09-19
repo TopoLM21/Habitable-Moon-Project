@@ -448,6 +448,17 @@ class SimulationController(QObject):
                 f"Simulation segment exited with code {exit_code} ({status.name}). "
                 "Подробности ошибки — во вкладке «Журнал»."
             )
+            # A native crash cannot send a Python exception packet. Preserve
+            # the process exit alongside the last stage before writing reports.
+            failure = dict(self.diagnostics.failure or {})
+            failure.setdefault("exception_type", "ProcessExit")
+            failure.setdefault("exception_message", message)
+            failure.setdefault("stage", self.diagnostics.stage)
+            failure.setdefault("stage_path", self.diagnostics.stage_path)
+            failure.update(exit_code=int(exit_code), exit_status=status.name,
+                           exit_code_hex=f"0x{int(exit_code) & 0xffffffff:08X}")
+            self.diagnostics.failure = failure
+            self.log_line.emit(message)
             self._set_state("Error")
             self.request_diagnostics("worker_failure")
             self.run_failed.emit(message)

@@ -1,8 +1,10 @@
 """Small, best-effort diagnostics for an isolated numerical worker.
 
 Only stage labels and small metadata are recorded: simulation arrays and frame
-locals are deliberately excluded. The watchdog is implemented by faulthandler,
-so a stuck native call holding the GIL can still leave a Python stack trace.
+locals are deliberately excluded. Stack snapshots run on a Python service
+thread with the GIL. A native call holding the GIL delays snapshots/heartbeats;
+the parent can still report their absence. Never walk live frames from the
+native faulthandler timer: that crashed the Windows numerical worker.
 """
 
 from __future__ import annotations
@@ -10,7 +12,6 @@ from __future__ import annotations
 from collections import deque
 from contextlib import contextmanager
 from datetime import datetime, timezone
-import faulthandler
 import json
 from pathlib import Path
 import re
@@ -57,6 +58,30 @@ def _rotate(path: Path, additional_bytes: int = 0) -> None:
         path.replace(path.with_name(path.name + ".1"))
 
 
+def _python_thread_stacks() -> str:
+    """Bounded frame metadata under the GIL, without inspecting frame locals."""
+    names = {thread.ident: thread.name for thread in threading.enumerate()}
+    frames = sys._current_frames()
+    lines = ["Cooperative Python thread stacks (no frame locals; native stacks unavailable).\n"]
+    try:
+        for ident in sorted(frames)[:64]:
+            lines.append(f"\nThread 0x{ident:x} ({names.get(ident, 'unknown')})\n")
+            frame = frames[ident]
+            depth = 0
+            while frame is not None and depth < 64:
+                code = frame.f_code
+                lines.append(f'  File "{code.co_filename}", line {frame.f_lineno} in {code.co_name}\n')
+                frame = frame.f_back
+                depth += 1
+            if frame is not None:
+                lines.append("  ... stack truncated after 64 frames\n")
+        if len(frames) > 64:
+            lines.append("\n... thread list truncated after 64 threads\n")
+    finally:
+        frames.clear()
+    return ''.join(lines)
+
+
 class WorkerDiagnostics:
     def __init__(self, directory: Path) -> None:
         self.directory = Path(directory).resolve()
@@ -76,7 +101,7 @@ class WorkerDiagnostics:
         self._next_stage_id = 0
         self._stop = threading.Event()
         self._thread: threading.Thread | None = None
-        self._watchdog_file = None
+        self._watchdog_deadline: float | None = None
         self._started = False
         self._closed = False
         self._last_request_id = ""
@@ -159,22 +184,31 @@ class WorkerDiagnostics:
             with self._watchdog_lock:
                 if self._closed:
                     return
-                faulthandler.cancel_dump_traceback_later()
                 path = self.directory / "stacks.txt"
-                if self._watchdog_file is not None and path.stat().st_size > MAX_LOG_BYTES:
-                    self._watchdog_file.close()
-                    self._watchdog_file = None
-                if self._watchdog_file is None:
-                    _rotate(path)
-                    self._watchdog_file = path.open("a", encoding="utf-8")
                 packet = self._snapshot("watchdog")
-                self._watchdog_file.write("\n" + json.dumps(packet, ensure_ascii=False) + "\n")
-                self._watchdog_file.flush()
-                faulthandler.dump_traceback_later(
-                    WATCHDOG_SECONDS, repeat=False, file=self._watchdog_file,
-                )
+                _rotate(path)
+                with path.open("a", encoding="utf-8") as stream:
+                    stream.write("\n" + json.dumps(packet, ensure_ascii=False) + "\n")
+                self._watchdog_deadline = time.monotonic() + WATCHDOG_SECONDS
         except Exception as error:
             self._error("arm stack watchdog", error)
+
+    def _poll_watchdog(self) -> None:
+        """Write once per stalled stage/progress update from the Python thread."""
+        try:
+            with self._watchdog_lock:
+                if (self._closed or self._watchdog_deadline is None
+                        or time.monotonic() < self._watchdog_deadline):
+                    return
+                self._watchdog_deadline = None
+                packet = self._snapshot("watchdog")
+                text = "\n" + json.dumps(packet, ensure_ascii=False) + "\n" + _python_thread_stacks()
+                path = self.directory / "stacks.txt"
+                _rotate(path, len(text.encode("utf-8")))
+                with path.open("a", encoding="utf-8") as stream:
+                    stream.write(text)
+        except Exception as error:
+            self._error("write watchdog stacks", error)
 
     def start(self) -> None:
         if self._started or self._closed:
@@ -339,7 +373,7 @@ class WorkerDiagnostics:
                 with stack.open("w", encoding="utf-8") as stream:
                     stream.write(f"{packet['timestamp']} | {packet['reason']}\n")
                     stream.flush()
-                    faulthandler.dump_traceback(file=stream, all_threads=True)
+                    stream.write(_python_thread_stacks())
                 response["stack"] = str(stack)
             except Exception as error:
                 self._error("write requested stacks", error)
@@ -359,6 +393,7 @@ class WorkerDiagnostics:
     def _service(self) -> None:
         last_heartbeat = time.monotonic()
         while not self._stop.wait(0.5):
+            self._poll_watchdog()
             if time.monotonic() - last_heartbeat >= 2.0:
                 self._emit("heartbeat")
                 last_heartbeat = time.monotonic()
@@ -390,16 +425,7 @@ class WorkerDiagnostics:
         self._closed = True
         self._stop.set()
         with self._watchdog_lock:
-            try:
-                faulthandler.cancel_dump_traceback_later()
-            except Exception as error:
-                self._error("cancel stack watchdog", error)
-            if self._watchdog_file is not None:
-                try:
-                    self._watchdog_file.close()
-                except Exception as error:
-                    self._error("close stack watchdog", error)
-                self._watchdog_file = None
+            self._watchdog_deadline = None
         if self._thread is not None and self._thread is not threading.current_thread():
             self._thread.join(timeout=1.0)
         with self._lock:

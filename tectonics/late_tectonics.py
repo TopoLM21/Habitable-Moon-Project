@@ -129,15 +129,54 @@ def _dijkstra_path(
     radius_km: float,
 ) -> list[int]:
     """Shortest material path biased toward high weakness/stress preference."""
+    return _dijkstra_paths(
+        mesh, owner, plate, start, [goal], preference, max_cells, radius_km,
+    )[int(goal)]
+
+
+def _dijkstra_paths(
+    mesh: SphereMesh,
+    owner: Array,
+    plate: int,
+    start: int,
+    goals: list[int],
+    preference: Array,
+    max_cells: int,
+    radius_km: float,
+) -> dict[int, list[int]]:
+    """Share one search between goals while preserving single-goal paths.
+
+    The scalar costs, neighbor order and heap ordering are unchanged.  Capture
+    each settled goal before extending the search so its result is exactly the
+    same as an independent search stopped at that goal.  If the work guard is
+    reached, preserve the legacy tentative paths for goals already discovered.
+    """
+    pending=set(map(int,goals))
+    paths: dict[int,list[int]]={}
+    if not pending:
+        return paths
     dist={int(start):0.0}; prev: dict[int,int]={}; heap=[(0.0,int(start))]
+
+    def reconstruct(goal: int) -> list[int]:
+        if goal not in dist:
+            return []
+        path=[goal];cur=goal
+        while cur != start:
+            cur=prev[cur];path.append(cur)
+        path.reverse()
+        return path if len(path) <= int(max_cells) else []
+
     visited=0
     while heap:
         d,c=heapq.heappop(heap)
         if d != dist.get(c):
             continue
         visited += 1
-        if c == goal:
-            break
+        if c in pending:
+            paths[c]=reconstruct(c)
+            pending.remove(c)
+            if not pending:
+                break
         # Hard guard only prevents pathological graph work; it is not a path cap.
         if visited > max(5000, 30*max_cells):
             break
@@ -151,15 +190,9 @@ def _dijkstra_path(
             nd=d+local*_edge_center_distance_km(mesh,c,nb,radius_km)
             if nd < dist.get(int(nb),1e100):
                 dist[int(nb)]=nd;prev[int(nb)]=c;heapq.heappush(heap,(nd,int(nb)))
-    if goal not in dist:
-        return []
-    path=[int(goal)];cur=int(goal)
-    while cur != start:
-        cur=prev[cur];path.append(cur)
-    path.reverse()
-    if len(path) > int(max_cells):
-        return []
-    return path
+    for goal in pending:
+        paths[goal]=reconstruct(goal)
+    return paths
 
 
 def _choose_cross_plate_path(
@@ -181,11 +214,12 @@ def _choose_cross_plate_path(
     # Opposite boundary point gives a plate-crossing band rather than a small notch.
     dots2=mesh.centroids[np.asarray(boundary)] @ mesh.centroids[start]
     order=np.argsort(dots2)  # most angularly distant first
+    goals=[int(boundary[int(idx)]) for idx in order[:min(40,len(order))]]
+    max_cells=int(params.rift_max_path_cells) if params.rift_max_path_length_km is None else int(mesh.cell_count)
+    paths=_dijkstra_paths(mesh,owner,plate,start,goals,score,max_cells,radius_km)
     best=[];best_value=-1e30
-    for idx in order[:min(40,len(order))]:
-        goal=int(boundary[int(idx)])
-        max_cells=int(params.rift_max_path_cells) if params.rift_max_path_length_km is None else int(mesh.cell_count)
-        path=_dijkstra_path(mesh,owner,plate,start,goal,score,max_cells,radius_km)
+    for goal in goals:
+        path=paths[goal]
         plen=_path_length_km(mesh,path,radius_km)
         if params.rift_min_path_length_km is not None:
             if plen < float(params.rift_min_path_length_km): continue
