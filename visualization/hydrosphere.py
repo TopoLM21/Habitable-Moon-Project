@@ -10,6 +10,7 @@ from tectonics.hydrosphere import HydrosphereDiagnostics, HydrosphereState, Hydr
 from tectonics.lithosphere import LithosphereState, continental_material_fields
 from tectonics.topography import TopographyState, TopographyParameters, material_subgrid_surface_elevations
 from .raster import rasterize_cells
+from .plate_boundaries import draw_plate_boundaries
 
 
 def _surface_cmap():
@@ -68,15 +69,16 @@ def save_hydrosphere_frame(mesh, lithosphere: LithosphereState, topography: Topo
     lon_c = 0.5*(lon_edges[:-1]+lon_edges[1:])
     lat_c = 0.5*(lat_edges[:-1]+lat_edges[1:])
     _,_,land_field = rasterize_cells(mesh, land_fraction, width=720, height=360)
-    try:
-        ax.contour(lon_c, lat_c, land_field, levels=[0.5], linewidths=0.65)
-    except ValueError:
-        pass
+    if np.min(land_field) < 0.5 < np.max(land_field):
+        ax.contour(lon_c, lat_c, land_field, levels=[0.5], linewidths=0.65, colors="#203d30")
+    draw_plate_boundaries(ax, mesh, lithosphere.cell_plate)
+    plate_count = len(np.unique(lithosphere.cell_plate))
     ax.grid(True, alpha=0.22)
     ax.set_title(
-        f"v0.15 material-aware surface — t={topography.time_myr:g} Myr | sea level {diag.sea_level_m:+.1f} m | "
+        f"Surface — t={topography.time_myr:g} Myr | sea level {diag.sea_level_m:+.1f} m | "
         f"land {100*diag.land_area_fraction:.1f}%\n"
-        f"mean ocean depth {diag.mean_ocean_depth_m/1000:.2f} km | max {diag.max_ocean_depth_m/1000:.2f} km"
+        f"mean ocean depth {diag.mean_ocean_depth_m/1000:.2f} km | max {diag.max_ocean_depth_m/1000:.2f} km | "
+        f"{plate_count} plates (light boundaries)"
     )
     cb=fig.colorbar(im, ax=ax, orientation='horizontal', pad=0.08, shrink=0.72)
     cb.set_label('Topography relative to sea level, m')

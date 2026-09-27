@@ -327,6 +327,86 @@ def _assign_cut_band_to_components(
     return out
 
 
+def _split_prepared_plate_cut(
+    mesh: SphereMesh,
+    system: PlateSystem,
+    parent: int,
+    cut: set[int],
+    components: list[list[int]],
+    seeds: list[list[int]],
+    split_cells: Array,
+    radius_km: float,
+    *,
+    time_myr: float,
+    differential_speed_deg_per_myr: float,
+    rift_span_km: float,
+    rift_area_km2: float,
+    source_owner: Array | None = None,
+) -> tuple[PlateSystem, TopologyEvent]:
+    """Apply an already validated separating cut, shared by mature and starter models.
+
+    The caller owns the physical eligibility and size criteria. This operator
+    changes ownership and velocities only; it does not manufacture crust ages,
+    extension, damage, or thermal state. A zero differential speed preserves
+    the parent's rotation for both children.
+    """
+    omega = angular_velocity_vectors(system)
+    cell_areas = mesh.physical_cell_areas_km2(radius_km)
+    owner = system.cell_plate if source_owner is None else source_owner
+    plate_cells = np.flatnonzero(owner == parent)
+    child_label = _assign_cut_band_to_components(mesh, split_cells, cut, components, seeds)
+
+    raw_owner = np.asarray(owner, dtype=np.int64).copy()
+    next_raw = int(np.max(raw_owner)) + 1
+    # Preserve unrelated components under the old ID and rotation. Only the
+    # two blocks actually separated by this rift receive a differential kick.
+    has_detached = len(split_cells) != len(plate_cells)
+    first_raw = next_raw if has_detached else parent
+    second_raw = next_raw + int(has_detached)
+    raw_owner[child_label == 0] = first_raw
+    raw_owner[child_label == 1] = second_raw
+
+    # Unchanged plates inherit their omega.  Children get a small differential
+    # rotation around the axis through their two area-centroid directions.
+    group_omega: dict[int, Array] = {p: omega[p].copy() for p in range(len(system.plates))}
+    c0 = np.sum(mesh.centroids[np.flatnonzero(raw_owner == first_raw)], axis=0)
+    c1 = np.sum(mesh.centroids[np.flatnonzero(raw_owner == second_raw)], axis=0)
+    c0 /= max(float(np.linalg.norm(c0)), 1e-30)
+    c1 /= max(float(np.linalg.norm(c1)), 1e-30)
+    axis = np.cross(c0, c1)
+    an = float(np.linalg.norm(axis))
+    if an < 1e-12:
+        axis = np.asarray(system.plates[parent].euler_axis, dtype=float)
+    else:
+        axis /= an
+    delta = np.deg2rad(float(differential_speed_deg_per_myr)) * axis
+    group_omega[first_raw] = omega[parent] - 0.5 * delta
+    group_omega[second_raw] = omega[parent] + 0.5 * delta
+
+    trial = _make_system_from_groups(mesh, system, raw_owner, group_omega)
+    # Ensure the freshly created child contact is, on average, not closing.
+    bounds = classify_boundaries(mesh, trial, radius_km, 0.0, 0.0)
+    child_ids = sorted(set(int(trial.cell_plate[x]) for x in split_cells))
+    if len(child_ids) == 2:
+        rates = [b.normal_rate_km_per_myr for b in bounds if {b.plate_a, b.plate_b} == set(child_ids)]
+        if rates and float(np.mean(rates)) < 0.0:
+            group_omega[first_raw] = omega[parent] + 0.5 * delta
+            group_omega[second_raw] = omega[parent] - 0.5 * delta
+            trial = _make_system_from_groups(mesh, system, raw_owner, group_omega)
+
+    # Parent/child ids after compaction are inferred from ownership.
+    children = tuple(sorted(set(int(trial.cell_plate[x]) for x in split_cells)))
+    event = TopologyEvent(
+        time_myr=float(time_myr),
+        kind="split",
+        parents=(int(parent),),
+        children=children,
+        affected_cells=int(len(split_cells)),
+        detail=f"rift_cells={len(cut)}; rift_span={rift_span_km:.0f} km; rift_area={rift_area_km2:.0f} km2; child_areas_km2="+",".join(f"{float(np.sum(cell_areas[trial.cell_plate==c])):.0f}" for c in children),
+    )
+    return trial, event
+
+
 def _attempt_split(
     mesh: SphereMesh,
     state: LithosphereState,
@@ -337,7 +417,6 @@ def _attempt_split(
     if not params.split_enabled or len(system.plates) < 1:
         return None, None
 
-    omega = angular_velocity_vectors(system)
     cell_areas=mesh.physical_cell_areas_km2(radius_km)
     cont_frac,cont_volume=continental_material_fields(state,cell_areas)
     cont_thickness=effective_continental_thickness_km(cont_frac,cont_volume,cell_areas)
@@ -418,57 +497,13 @@ def _attempt_split(
             chosen=(cut,components,large[:2],span,rift_area,split_cells); break
         if chosen is None: continue
         cut,components,seeds,rift_span_km,rift_area_km2,split_cells=chosen
-        child_label = _assign_cut_band_to_components(mesh, split_cells, cut, components, seeds)
-
-        raw_owner = np.asarray(state.cell_plate, dtype=np.int64).copy()
-        next_raw = int(np.max(raw_owner)) + 1
-        # Preserve unrelated components under the old ID and rotation. Only the
-        # two blocks actually separated by this rift receive a differential kick.
-        has_detached = len(split_cells) != len(plate_cells)
-        first_raw = next_raw if has_detached else parent
-        second_raw = next_raw + int(has_detached)
-        raw_owner[child_label == 0] = first_raw
-        raw_owner[child_label == 1] = second_raw
-
-        # Unchanged plates inherit their omega.  Children get a small differential
-        # rotation around the axis through their two area-centroid directions.
-        group_omega: dict[int, Array] = {p: omega[p].copy() for p in range(len(system.plates))}
-        c0 = np.sum(mesh.centroids[np.flatnonzero(raw_owner == first_raw)], axis=0)
-        c1 = np.sum(mesh.centroids[np.flatnonzero(raw_owner == second_raw)], axis=0)
-        c0 /= max(float(np.linalg.norm(c0)), 1e-30)
-        c1 /= max(float(np.linalg.norm(c1)), 1e-30)
-        axis = np.cross(c0, c1)
-        an = float(np.linalg.norm(axis))
-        if an < 1e-12:
-            axis = np.asarray(system.plates[parent].euler_axis, dtype=float)
-        else:
-            axis /= an
-        delta = np.deg2rad(float(params.split_differential_speed_deg_per_myr)) * axis
-        group_omega[first_raw] = omega[parent] - 0.5 * delta
-        group_omega[second_raw] = omega[parent] + 0.5 * delta
-
-        trial = _make_system_from_groups(mesh, system, raw_owner, group_omega)
-        # Ensure the freshly created child contact is, on average, not closing.
-        bounds = classify_boundaries(mesh, trial, radius_km, 0.0, 0.0)
-        child_ids = sorted(set(int(trial.cell_plate[x]) for x in split_cells))
-        if len(child_ids) == 2:
-            rates = [b.normal_rate_km_per_myr for b in bounds if {b.plate_a, b.plate_b} == set(child_ids)]
-            if rates and float(np.mean(rates)) < 0.0:
-                group_omega[first_raw] = omega[parent] + 0.5 * delta
-                group_omega[second_raw] = omega[parent] - 0.5 * delta
-                trial = _make_system_from_groups(mesh, system, raw_owner, group_omega)
-
-        # Parent/child ids after compaction are inferred from ownership.
-        children = tuple(sorted(set(int(trial.cell_plate[x]) for x in split_cells)))
-        event = TopologyEvent(
+        return _split_prepared_plate_cut(
+            mesh, system, parent, cut, components, seeds, split_cells, radius_km,
             time_myr=float(state.time_myr),
-            kind="split",
-            parents=(int(parent),),
-            children=children,
-            affected_cells=int(len(split_cells)),
-            detail=f"rift_cells={len(cut)}; rift_span={rift_span_km:.0f} km; rift_area={rift_area_km2:.0f} km2; child_areas_km2="+",".join(f"{float(np.sum(cell_areas[trial.cell_plate==c])):.0f}" for c in children),
+            differential_speed_deg_per_myr=params.split_differential_speed_deg_per_myr,
+            rift_span_km=rift_span_km, rift_area_km2=rift_area_km2,
+            source_owner=state.cell_plate,
         )
-        return trial, event
     return None, None
 
 

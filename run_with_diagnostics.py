@@ -241,7 +241,9 @@ def main():
                         hooks.defer(runner)
                 from tectonics.assignment_runtime import AssignmentExecution
                 with AssignmentExecution(diagnostics, optimized=options.optimize_assignment):
-                    runner.main()
+                    result = runner.main()
+                    if isinstance(result, int) and result != 0:
+                        raise SystemExit(result)
             except BaseException:
                 hooks.failure()
                 raise

@@ -6,6 +6,7 @@ import numpy as np
 from PIL import Image
 from tectonics.kinematics import BoundaryType
 from .raster import rasterize_cells
+from .plate_boundaries import draw_plate_boundaries
 
 
 def _lon_lat(points):
@@ -35,6 +36,7 @@ def save_plate_history_frame(mesh,state,system,path,dpi=120):
     fig=plt.figure(figsize=(12,6.8));ax=fig.add_subplot(111,projection='mollweide')
     xe,ye,grid=rasterize_cells(mesh,state.cell_plate)
     ax.pcolormesh(xe,ye,grid,cmap='tab20',shading='auto',rasterized=True)
+    draw_plate_boundaries(ax,mesh,state.cell_plate)
     qx=[];qy=[];qu=[];qv=[];speeds=[]
     for pid,plate in enumerate(system.plates):
         cells=np.flatnonzero(state.cell_plate==pid)

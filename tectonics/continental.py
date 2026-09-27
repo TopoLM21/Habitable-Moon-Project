@@ -25,7 +25,8 @@ from scipy.spatial import cKDTree
 
 from .evolution import rotate_points_by_plate
 from .kinematics import BoundaryRecord, BoundaryType
-from .lithosphere import CrustType, LithosphereState, continental_material_fields
+from .lithosphere import (CrustType, LithosphereState, continental_material_fields,
+                         effective_oceanic_thickness_km)
 from .mesh import SphereMesh
 from .cpu_runtime import query_workers
 from .plates import PlateSystem
@@ -57,6 +58,12 @@ class ContinentalCycleDiagnostics:
     gravitational_collapse_redistributed_volume_km3: float
     mean_felsic_potential_oceanic: float
     max_felsic_potential: float
+    # Optional basalt-reservoir terms. Existing felsic diagnostics above keep
+    # their original meaning; juvenile formation replaces basalt explicitly.
+    oceanic_replaced_by_juvenile_volume_km3: float = 0.0
+    oceanic_recycled_volume_km3: float = 0.0
+    oceanic_generated_volume_km3: float = 0.0
+    oceanic_volume_balance_error_km3: float = 0.0
 
 
 @dataclass(slots=True, frozen=True)
@@ -113,6 +120,7 @@ def _copy_lithosphere(state: LithosphereState) -> LithosphereState:
         continental_lithosphere_age_myr=None if state.continental_lithosphere_age_myr is None else np.asarray(state.continental_lithosphere_age_myr, dtype=np.float64).copy(),
         mantle_depletion_fraction=None if state.mantle_depletion_fraction is None else np.asarray(state.mantle_depletion_fraction, dtype=np.float64).copy(),
         craton_strength=None if state.craton_strength is None else np.asarray(state.craton_strength, dtype=np.float64).copy(),
+        oceanic_volume_km3=None if state.oceanic_volume_km3 is None else np.asarray(state.oceanic_volume_km3, dtype=np.float64).copy(),
     )
 
 
@@ -257,6 +265,11 @@ def advance_continental_cycle(
     material_fraction, material_volume = continental_material_fields(state, areas)
     state.continental_fraction = material_fraction
     state.continental_volume_km3 = material_volume
+    oceanic_before = 0.0
+    oceanic_juvenile_replaced = oceanic_recycled = oceanic_generated = 0.0
+    if state.oceanic_volume_km3 is not None:
+        effective_oceanic_thickness_km(material_fraction, state.oceanic_volume_km3, areas)
+        oceanic_before = float(np.sum(state.oceanic_volume_km3))
     if transport_source_index is not None:
         src = np.asarray(transport_source_index, dtype=np.int32)
         if src.shape != (mesh.cell_count,):
@@ -333,6 +346,9 @@ def advance_continental_cycle(
     juvenile_volume = 0.0
     if np.any(mature):
         old_material_volume = material_volume[mature].copy()
+        if state.oceanic_volume_km3 is not None:
+            oceanic_juvenile_replaced = float(np.sum(state.oceanic_volume_km3[mature]))
+            state.oceanic_volume_km3[mature] = 0.0
         state.crust_type[mature] = int(CrustType.CONTINENTAL)
         state.crust_age_myr[mature] = float(params.juvenile_seed_age_myr)
         state.crust_thickness_km[mature] = float(params.juvenile_continental_thickness_km)
@@ -408,6 +424,10 @@ def advance_continental_cycle(
 
         recycle = idx[state.crust_thickness_km[idx] < params.recycle_below_thickness_km]
         if len(recycle):
+            if state.oceanic_volume_km3 is not None:
+                oceanic_recycled = float(np.sum(state.oceanic_volume_km3[recycle]))
+                state.oceanic_volume_km3[recycle] = areas[recycle] * float(oceanic_thickness_km)
+                oceanic_generated = float(np.sum(state.oceanic_volume_km3[recycle]))
             recycled_area = float(np.sum(areas[recycle] * material_fraction[recycle]))
             # Remaining thin felsic crust is assumed tectonically removed and
             # replaced by newly formed oceanic lithosphere at the surface.
@@ -475,6 +495,13 @@ def advance_continental_cycle(
         gravitational_collapse_redistributed_volume_km3=collapse_redistributed_volume,
         mean_felsic_potential_oceanic=float(np.mean(potential[ocean_mask])) if np.any(ocean_mask) else 0.0,
         max_felsic_potential=float(np.max(potential)) if len(potential) else 0.0,
+        oceanic_replaced_by_juvenile_volume_km3=oceanic_juvenile_replaced,
+        oceanic_recycled_volume_km3=oceanic_recycled,
+        oceanic_generated_volume_km3=oceanic_generated,
+        oceanic_volume_balance_error_km3=(0.0 if state.oceanic_volume_km3 is None else float(
+            np.sum(state.oceanic_volume_km3) - oceanic_before
+            + oceanic_juvenile_replaced + oceanic_recycled - oceanic_generated
+        )),
     )
     return state, new_cycle, diag
 

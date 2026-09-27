@@ -8,6 +8,7 @@ explicit reconstruction assumptions because their original source was lost.
 """
 from __future__ import annotations
 from visualization.render_runtime import flush_rendering
+from visualization.frame_schedule import frame_due_at_step
 import argparse,csv,json
 from dataclasses import replace
 from pathlib import Path
@@ -79,6 +80,7 @@ def parse_args():
     p.add_argument('--checkpoint',default=None,help='Checkpoint directory to write at segment end')
     p.add_argument('--save-frame',action='store_true')
     p.add_argument('--frame-interval',type=float,default=None,help='Save diagnostic animation frames every N Myr (must align to dt)')
+    p.add_argument('--frame-origin',type=float,default=None,help='Optional absolute frame phase; capture on the first step reaching each scheduled age')
     p.add_argument('--finalize',action='store_true',help='Write final maps/plots/summary and GIF from saved frames')
     p.add_argument('--surface-only-frames',action='store_true',help='When saving animation frames, render only the hydrosphere surface map (faster long visual runs)')
     return p.parse_args()
@@ -171,26 +173,37 @@ def main():
         d0=diagnose_thermal_state(thermal,mass,radius,grav,period,pmj,ecc.at(0.0),thp);thermal_rows=[{k:getattr(d0,k) for k in d0.__dataclass_fields__}]
     end=float(a.end_time);last_td=None;last_relief=None
     frame_interval=None if a.frame_interval is None else float(a.frame_interval)
+    frame_origin = a.frame_origin
+    if frame_origin is not None and not np.isfinite(frame_origin):
+        raise ValueError('frame-origin must be finite')
     if frame_interval is not None:
         if frame_interval <= 0 or abs(round(frame_interval/dt)*dt-frame_interval)>1e-9:
             raise ValueError(f'frame-interval={frame_interval} must be a positive integer multiple of dt={dt}')
 
+    last_frame_time = None
+
     def save_animation_frames():
-        fp=frames/f'frame_{state.time_myr:08.1f}_Myr.png'
-        pp=plate_frames/f'plate_{state.time_myr:08.1f}_Myr.png'
-        cpng=continental_frames/f'continental_{state.time_myr:08.1f}_Myr.png'
-        hpng=hydro_frames/f'surface_{state.time_myr:08.1f}_Myr.png'
+        nonlocal last_frame_time
+        if last_frame_time == state.time_myr:
+            return
+        time_token = f'{state.time_myr:08.1f}' if frame_origin is None else f'{state.time_myr:013.4f}'
+        fp=frames/f'frame_{time_token}_Myr.png'
+        pp=plate_frames/f'plate_{time_token}_Myr.png'
+        cpng=continental_frames/f'continental_{time_token}_Myr.png'
+        hpng=hydro_frames/f'surface_{time_token}_Myr.png'
         if not a.surface_only_frames:
             save_topology_frame(proto.mesh,state,topo,system,boundaries,last_td,fp,int(cfg['output'].get('thermal_dpi',120)))
             save_plate_history_frame(proto.mesh,state,system,pp,int(cfg['output'].get('thermal_dpi',120)))
             save_continental_history_frame(proto.mesh,state,cpng,int(cfg['output'].get('thermal_dpi',120)))
         save_hydrosphere_frame(proto.mesh,state,topo,hydrosphere,last_hydro_diag,radius,hpng,int(cfg['output'].get('thermal_dpi',120)),hydrop,topop)
+        last_frame_time = state.time_myr
         print('Surface frame:',hpng.resolve())
 
     # Include t=0 in fresh animation sets. Resumed segments inherit prior frames.
     if frame_interval is not None and not a.resume:
         save_animation_frames()
     for dti in step_sizes(float(state.time_myr),end,dt):
+        frame_step_start = float(state.time_myr)
         assert_plate_consistency(state,system,"step start")
         thermal,thdiag=advance_thermal_state(thermal,dti,mass,radius,grav,period,pmj,ecc,thp);thermal_rows.append({k:getattr(thdiag,k) for k in thdiag.__dataclass_fields__})
         activity=thermal.tectonic_activity_factor
@@ -265,7 +278,7 @@ def main():
         hydrosphere,last_hydro_diag=advance_hydrosphere(proto.mesh,state,topo,hydrosphere,radius,hydrop,topop)
         hydrosphere_rows.append({k:getattr(last_hydro_diag,k) for k in last_hydro_diag.__dataclass_fields__})
         topo_rows.append({k:getattr(last_td,k) for k in last_td.__dataclass_fields__});relief_rows.append({k:getattr(last_relief,k) for k in last_relief.__dataclass_fields__});cycle_rows.append({k:getattr(cycle_diag,k) for k in cycle_diag.__dataclass_fields__})
-        if frame_interval is not None and abs((state.time_myr/frame_interval)-round(state.time_myr/frame_interval))<1e-9:
+        if frame_interval is not None and frame_due_at_step(frame_step_start, state.time_myr, frame_interval, frame_origin):
             save_animation_frames()
     boundaries=boundary_records_for_state(proto.mesh,state,system,radius,normal,inactive)
     contf=100*float(np.sum(areas[state.crust_type==int(CrustType.CONTINENTAL)])/np.sum(areas))

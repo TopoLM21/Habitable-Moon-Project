@@ -10,11 +10,14 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
+import hashlib
 import json
 import math
 from numbers import Integral
 from pathlib import Path
+import re
 from typing import Any, Iterable
+import zipfile
 
 import yaml
 from execution_policy import RENDER_WORKER_CHOICES, PROCESS_PRIORITY_CHOICES
@@ -23,6 +26,13 @@ from execution_policy import RENDER_WORKER_CHOICES, PROCESS_PRIORITY_CHOICES
 RUNNER_NAME = "run_long_evolution_v131.py"
 CPU_RUNNER_NAME = "run_long_evolution_v131_cpu.py"
 GPU_RUNNER_NAME = "run_long_evolution_v131_gpu.py"
+GENESIS_CONTINUATION_RUNNER_NAME = "run_genesis_starter_continuation.py"
+GENESIS_CONTINUATION_FORMAT = "genesis-starter-continuation-0.2"
+GENESIS_CHECKPOINT_FILES = (
+    "mature_checkpoint/meta.json", "mature_checkpoint/state.npz", "mature_config.yaml",
+    "young_context/starter_checkpoint.npz", "young_context/parameters.json",
+    "young_context/fracture_memory.npz",
+)
 RUNTIME_CONFIG_NAME = "gui_runtime_config.yaml"
 RUN_RECORD_NAME = "gui_run.json"
 SUBDIVISION_CHOICES = (3, 4, 5, 6, 7, 8)
@@ -94,6 +104,7 @@ class RunSpec:
     assignment_columns: bool = False
     assignment_optimized: bool = True
     boundary_forces: bool = False
+    genesis_continuation: Path | None = None
 
     def normalized(self) -> "RunSpec":
         return RunSpec(
@@ -120,19 +131,27 @@ class RunSpec:
             assignment_columns=bool(self.assignment_columns) and not self.assignment_optimized,
             assignment_optimized=bool(self.assignment_optimized),
             boundary_forces=bool(self.boundary_forces),
+            genesis_continuation=(None if self.genesis_continuation is None else
+                                  _genesis_continuation_root(self.genesis_continuation)),
         )
 
     @property
     def runner(self) -> Path:
+        if self.genesis_continuation is not None:
+            return self.project_root / GENESIS_CONTINUATION_RUNNER_NAME
         if self.gpu_surface:
             return self.project_root / GPU_RUNNER_NAME
         return self.project_root / (CPU_RUNNER_NAME if self.cpu_optimized else RUNNER_NAME)
 
     @property
     def runtime_config(self) -> Path:
+        if self.genesis_continuation is not None:
+            return _genesis_continuation_root(self.genesis_continuation) / "mature_config.yaml"
         return self.output_dir / RUNTIME_CONFIG_NAME
 
     def start_time_myr(self) -> float:
+        if self.genesis_continuation is not None:
+            return read_genesis_continuation(self.genesis_continuation, verify_integrity=False).time_myr
         if self.resume_checkpoint is None:
             return 0.0
         return read_checkpoint_time(self.resume_checkpoint)
@@ -140,6 +159,12 @@ class RunSpec:
     def validate(self) -> None:
         if not self.project_root.is_dir():
             raise ValueError(f"Project root does not exist: {self.project_root}")
+        if self.genesis_continuation is not None:
+            self._validate_genesis_continuation()
+            return
+        if (self.resume_checkpoint is not None
+                and _belongs_to_genesis_continuation(self.resume_checkpoint)):
+            raise ValueError("Resume the whole Genesis continuation folder to retain young heat and fracture state")
         _gpu_device_index(self.gpu_device)
         if self.gpu_surface and not self.cpu_optimized:
             raise ValueError("GPU surface requires the optimized CPU runner")
@@ -210,6 +235,148 @@ class RunSpec:
                         "and selected subdivision. Choose a new output folder or the matching run."
                     )
 
+    def _validate_genesis_continuation(self) -> None:
+        if self.resume_checkpoint is not None:
+            raise ValueError("Genesis continuation must retain its paired young and mature checkpoints")
+        source = read_genesis_continuation(self.genesis_continuation)
+        if not self.runner.is_file():
+            raise ValueError(f"Genesis continuation runner does not exist: {self.runner}")
+        if self.source_config.resolve() != source.config:
+            raise ValueError("Genesis continuation retains its saved configuration")
+        if self.subdivisions not in (2, *SUBDIVISION_CHOICES):
+            raise ValueError("Unsupported Genesis target mesh subdivision")
+        if self.subdivisions < source.subdivisions:
+            raise ValueError("Coarsening the Genesis checkpoint mesh is not supported; keep or refine it")
+        if self.gpu_surface:
+            raise ValueError("Genesis continuation does not yet support GPU surface execution")
+        if not 1 <= self.cpu_workers <= 32:
+            raise ValueError("CPU workers must be between 1 and 32")
+        if self.render_workers not in RENDER_WORKER_CHOICES:
+            raise ValueError(f"Render workers must be one of {RENDER_WORKER_CHOICES}")
+        if self.process_priority not in PROCESS_PRIORITY_CHOICES:
+            raise ValueError(f"Process priority must be one of {PROCESS_PRIORITY_CHOICES}")
+        if not self.output_dir.resolve().is_relative_to((self.project_root / "results").resolve()):
+            raise ValueError("Genesis results must stay inside this workspace's results folder")
+        if self.output_dir.resolve() == source.root or source.root.is_relative_to(self.output_dir.resolve()):
+            raise ValueError("Choose a new output folder outside the saved Genesis continuation")
+        if self.output_dir.exists() and (not self.output_dir.is_dir() or any(self.output_dir.iterdir())):
+            raise ValueError("Genesis continuation needs an empty output folder")
+        if not all(math.isfinite(value) and value > 0 for value in
+                   (self.end_time_myr, self.dt_myr, self.checkpoint_interval_myr, self.frame_interval_myr)):
+            raise ValueError("Genesis duration, step and checkpoint interval must be finite and positive")
+        if not _is_multiple(self.checkpoint_interval_myr, self.dt_myr):
+            raise ValueError("Checkpoint interval must be an integer multiple of dt")
+        if not _is_multiple(self.frame_interval_myr, self.dt_myr):
+            raise ValueError("Frame interval must be an integer multiple of dt")
+        if self.end_time_myr <= source.time_myr:
+            raise ValueError("Genesis end time must be after the saved checkpoint")
+        if not _is_multiple(self.end_time_myr - source.time_myr, self.dt_myr):
+            raise ValueError("Run duration must be an integer multiple of dt")
+
+
+@dataclass(frozen=True, slots=True)
+class GenesisContinuation:
+    root: Path
+    config: Path
+    mature_checkpoint: Path
+    time_myr: float
+    origin_time_myr: float
+    step_myr: float
+    subdivisions: int
+    report: dict[str, Any]
+
+    @property
+    def plate_count(self) -> int:
+        return int(self.report["final_plate_count"])
+
+
+def _genesis_continuation_root(path: Path) -> Path:
+    root = Path(path).resolve()
+    if root.name == "continuation.json" or root.name == "mature_checkpoint":
+        root = root.parent
+    return root
+
+
+def _belongs_to_genesis_continuation(checkpoint: Path) -> bool:
+    """All intermediate mature snapshots inside a paired run need its young model."""
+    resolved = Path(checkpoint).resolve()
+    return any((ancestor / "continuation.json").is_file()
+               for ancestor in (resolved, *resolved.parents))
+
+
+def read_genesis_continuation(path: Path, *, verify_integrity: bool = True) -> GenesisContinuation:
+    """Inspect a complete paired save without importing the simulation engine."""
+    import numpy as np
+
+    root = _genesis_continuation_root(path)
+    try:
+        report = json.loads((root / "continuation.json").read_text(encoding="utf-8"))
+        if report.get("format") != GENESIS_CONTINUATION_FORMAT:
+            raise ValueError("Expected Genesis continuation 0.2; older continuations must restart from the starter")
+        if report.get("status") != "completed" or not report.get("checks") or not all(report["checks"].values()):
+            raise ValueError("Genesis continuation did not complete its validation")
+        plate_count = report.get("final_plate_count")
+        if (report.get("mature_engine_executed") is not True or isinstance(plate_count, bool)
+                or not isinstance(plate_count, int) or plate_count < 1):
+            raise ValueError("Genesis continuation has invalid mature execution or plate metadata")
+        digests = report.get("checkpoint_sha256") or {}
+        if set(digests) != set(GENESIS_CHECKPOINT_FILES):
+            raise ValueError("Genesis continuation is missing a paired checkpoint or configuration digest")
+        for relative in GENESIS_CHECKPOINT_FILES:
+            file = root / relative
+            if not file.is_file() or not file.resolve().is_relative_to(root):
+                raise ValueError(f"Genesis continuation is missing its linked file: {relative}")
+            if verify_integrity:
+                with file.open("rb") as stream:
+                    digest = hashlib.file_digest(stream, "sha256").hexdigest()
+                if digest != digests[relative]:
+                    raise ValueError(f"Genesis checkpoint/configuration integrity mismatch: {relative}")
+        time_myr = float(report["final_time_myr"])
+        origin = float(report["import"]["origin_time_myr"])
+        step = float(report["step_myr"])
+        duration = float(report["duration_myr"])
+        if (not all(math.isfinite(x) for x in (time_myr, origin, step, duration))
+                or origin < 0 or step <= 0 or duration <= 0
+                or not math.isclose(time_myr, origin + duration, rel_tol=0., abs_tol=1e-9)):
+            raise ValueError("Genesis continuation has invalid time metadata")
+        mature = root / "mature_checkpoint"
+        if not math.isclose(read_checkpoint_time(mature), time_myr, rel_tol=0., abs_tol=1e-9):
+            raise ValueError("Genesis paired checkpoints disagree in time")
+        with np.load(root / "young_context" / "starter_checkpoint.npz", allow_pickle=False) as saved:
+            young_meta = json.loads(str(saved["metadata"]))
+        with np.load(root / "young_context" / "fracture_memory.npz", allow_pickle=False) as saved:
+            fracture_meta = json.loads(str(saved["metadata"]))
+        if any(not math.isclose(float(value), time_myr, rel_tol=0., abs_tol=1e-9) for value in
+               (young_meta["thermal"]["time_myr"], fracture_meta["time_myr"])):
+            raise ValueError("Genesis paired checkpoints disagree in time")
+        if young_meta["fingerprint"] != fracture_meta["fingerprint"]:
+            raise ValueError("Genesis fracture memory belongs to another starter model")
+        subdivisions = subdivision_for_cell_count(checkpoint_cell_count(mature))
+        config = root / "mature_config.yaml"
+        configuration = yaml.safe_load(config.read_text(encoding="utf-8"))
+        if configuration["mesh"]["subdivisions"] != subdivisions:
+            raise ValueError("Genesis saved configuration mesh disagrees with its checkpoint")
+        return GenesisContinuation(root, config, mature, time_myr, origin, step, subdivisions, report)
+    except (KeyError, TypeError, json.JSONDecodeError, yaml.YAMLError,
+            zipfile.BadZipFile, EOFError) as exc:
+        raise ValueError(f"Invalid Genesis continuation metadata: {root}") from exc
+
+
+def latest_genesis_continuation(output_dir: Path) -> Path | None:
+    """Return the latest completed pair; ignore interrupted segment folders."""
+    root = Path(output_dir)
+    candidates = [root, *root.glob("gui_checkpoint_*_Myr")]
+    completed = []
+    for candidate in candidates:
+        if not (candidate / "continuation.json").is_file():
+            continue
+        try:
+            info = read_genesis_continuation(candidate, verify_integrity=False)
+        except (ValueError, OSError):
+            continue
+        completed.append(info)
+    return max(completed, key=lambda info: info.time_myr).root if completed else None
+
 
 def read_checkpoint_time(checkpoint: Path) -> float:
     with (Path(checkpoint) / "meta.json").open("r", encoding="utf-8") as handle:
@@ -269,6 +436,11 @@ def write_runtime_config(spec: RunSpec) -> Path:
     """Copy the selected YAML and override only GUI-owned mesh settings."""
 
     spec = spec.normalized()
+    if spec.genesis_continuation is not None:
+        # The coupled runner validates the saved configuration against its
+        # digest and owns the allowed time-step override in the new segment.
+        spec.output_dir.mkdir(parents=True, exist_ok=True)
+        return read_genesis_continuation(spec.genesis_continuation).config
     with spec.source_config.open("r", encoding="utf-8") as handle:
         config = yaml.safe_load(handle)
     if not isinstance(config, dict):
@@ -322,6 +494,33 @@ def build_segment_command(
     resume_checkpoint: Path | None,
     final_segment: bool,
 ) -> list[str]:
+    if spec.genesis_continuation is not None:
+        source = read_genesis_continuation(resume_checkpoint or spec.genesis_continuation)
+        if (not math.isfinite(target_time_myr) or target_time_myr <= source.time_myr
+                or not _is_multiple(target_time_myr - source.time_myr, spec.dt_myr)):
+            raise ValueError("Genesis segment target must advance by an integer number of steps")
+        if Path(checkpoint_dir).resolve() == source.root:
+            raise ValueError("Genesis segment must not overwrite its paired source checkpoint")
+        command = [
+            str(spec.runner), "--resume", str(source.root), "--output", str(checkpoint_dir),
+            "--duration-myr", repr(float(target_time_myr - source.origin_time_myr)),
+            "--step-myr", repr(float(spec.dt_myr)),
+            "--cpu-workers", str(spec.cpu_workers), "--render-workers", str(spec.render_workers),
+            "--process-priority", spec.process_priority,
+            "--frame-interval", repr(float(spec.frame_interval_myr)),
+            "--assignment-optimized" if spec.assignment_optimized else "--no-assignment-optimized",
+            "--assignment-columns" if spec.assignment_columns else "--no-assignment-columns",
+            "--boundary-forces" if spec.boundary_forces else "--no-boundary-forces",
+        ]
+        if spec.cell_kernels:
+            command.append("--cell-kernels")
+        if spec.subdivisions != source.subdivisions:
+            command.extend(["--subdivisions", str(spec.subdivisions)])
+        if spec.surface_only_frames:
+            command.append("--surface-only-frames")
+        if final_segment and spec.finalize:
+            command.append("--finalize")
+        return command
     command = [
         str(spec.runner),
         "--config",
@@ -369,15 +568,72 @@ def discover_artifacts(output_dir: Path, suffixes: Iterable[str] = (".png", ".gi
     )
 
 
-def preferred_preview(output_dir: Path) -> Path | None:
+def _frame_age(path: Path) -> tuple[float, float] | None:
+    """Return the represented age and its filename-rounding tolerance."""
+    match = re.search(r"_(-?\d+(?:[.p]\d+)?)_Myr$", path.stem)
+    if match is None:
+        return None
+    token = match.group(1).replace("p", ".")
+    decimals = len(token.partition(".")[2])
+    return float(token), .5 * 10.**(-decimals) + 1e-9
+
+
+def _map_preview(root: Path, view: str, *, expected_time: float | None = None) -> Path | None:
+    patterns = (("hydrosphere_frames/surface_*_Myr.png", "hotspot_track_frames/hotspot_tracks_*_Myr.png")
+                if view == "surface" else ("plate_frames/plate_*_Myr.png",))
+    candidates: list[tuple[float, int, Path]] = []
+    for priority, pattern in enumerate(patterns, start=1):
+        for path in root.glob(pattern):
+            frame = _frame_age(path)
+            if frame is None:
+                continue
+            age, tolerance = frame
+            if expected_time is not None:
+                if not math.isclose(age, expected_time, rel_tol=0., abs_tol=tolerance):
+                    continue
+                age = expected_time
+            candidates.append((age, -priority, path))
+    if not candidates:
+        return None
+    return max(candidates, key=lambda candidate: (candidate[0], candidate[1], str(candidate[2])))[2]
+
+
+def preferred_preview(output_dir: Path, *, view: str | None = None) -> Path | None:
+    """Choose physical maps by saved age; explicit views never change meaning.
+
+    Default mode prefers the current surface map, with Genesis diagnostics as
+    a fallback. Explicit surface/plates/genesis modes return None when absent.
+    """
+    if view not in (None, "surface", "plates", "genesis"):
+        raise ValueError(f"Unknown preview view: {view}")
     root = Path(output_dir)
+    paired = latest_genesis_continuation(root)
+    if paired is not None:
+        info = read_genesis_continuation(paired, verify_integrity=False)
+        if view != "genesis":
+            preview = _map_preview(paired / "mature_run", view or "surface", expected_time=info.time_myr)
+            if preview is not None:
+                return preview
+        if view in (None, "genesis"):
+            preview = paired / "continuation.png"
+            return preview if preview.is_file() else None
+        return None
+    if view == "genesis":
+        return None
+    preview = _map_preview(root, view or "surface")
+    if preview is not None:
+        return preview
+    if view is not None:
+        # Standalone mature final maps retain their existing file contract.
+        names = (("plate_map_final.png",) if view == "plates" else
+                 ("surface_relative_sea_level.png", "elevation_final.png"))
+        return next((root / name for name in names if (root / name).is_file()), None)
     patterns = (
-        "hotspot_track_frames/hotspot_tracks_*_Myr.png",
-        "hydrosphere_frames/surface_*_Myr.png",
         "frames/frame_*_Myr.png",
         "*evolution.gif",
         "history.gif",
         "plate_map_final.png",
+        "surface_relative_sea_level.png",
         "elevation_final.png",
     )
     candidates: list[Path] = []
@@ -385,6 +641,9 @@ def preferred_preview(output_dir: Path) -> Path | None:
         candidates.extend(root.glob(pattern))
     if not candidates:
         return None
+    dated = [(age[0], path) for path in candidates if (age := _frame_age(path)) is not None]
+    if dated:
+        return max(dated, key=lambda item: (item[0], str(item[1])))[1]
     return max(candidates, key=lambda path: path.stat().st_mtime)
 
 
@@ -392,6 +651,28 @@ def load_run_metrics(output_dir: Path) -> dict[str, Any]:
     """Return a compact, user-facing snapshot from summary or checkpoint data."""
 
     root = Path(output_dir)
+    paired = latest_genesis_continuation(root)
+    if paired is not None:
+        info = read_genesis_continuation(paired, verify_integrity=False)
+        report = info.report
+        latest = report.get("history", [{}])[-1] if report.get("history") else {}
+        metrics = load_run_metrics(paired / "mature_run")
+        with (info.mature_checkpoint / "meta.json").open("r", encoding="utf-8") as handle:
+            metadata = json.load(handle)
+        hydro_rows = metadata.get("hydrosphere_rows") or []
+        hydro = hydro_rows[-1] if hydro_rows else {}
+        metrics.update({
+            "time_myr": info.time_myr,
+            "plate_count": info.plate_count,
+            "mesh_cells": cell_count(info.subdivisions),
+            "mantle_temperature_k": latest.get("mantle_temperature_k"),
+            "sea_level_m": hydro.get("sea_level_m"),
+            "land_area_fraction": hydro.get("land_area_fraction"),
+            "topology_events": len(metadata.get("events") or []),
+            "ocean_fraction": report.get("ocean_fraction"),
+            "mean_surface_speed_km_myr": report.get("final_mean_surface_speed_km_myr"),
+        })
+        return metrics
     summary = root / "summary_v131.json"
     if summary.is_file():
         with summary.open("r", encoding="utf-8") as handle:

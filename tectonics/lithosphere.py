@@ -84,6 +84,10 @@ class LithosphereState:
     continental_lithosphere_age_myr: Array | None = None
     mantle_depletion_fraction: Array | None = None
     craton_strength: Array | None = None
+    # Optional young-crust reservoir. None retains the historical fixed basalt
+    # thickness. A populated array stores actual oceanic volume, including the
+    # oceanic part of mixed cells whose visible raster is continental.
+    oceanic_volume_km3: Array | None = None
 
 
 @dataclass(slots=True)
@@ -130,6 +134,10 @@ class LithosphereStepDiagnostics:
     material_source_index: Array | None = None
     continental_breakup_recycled_volume_km3: float = 0.0
     rift_recycled_volume_km3: float = 0.0
+    oceanic_created_volume_km3: float = 0.0
+    oceanic_subducted_volume_km3: float = 0.0
+    oceanic_rift_recycled_volume_km3: float = 0.0
+    oceanic_volume_balance_error_km3: float = 0.0
 
 
 @dataclass(slots=True)
@@ -495,6 +503,36 @@ def effective_continental_thickness_km(
     mask = f > float(eps)
     out[mask] = v[mask] / np.maximum(a[mask] * f[mask], float(eps))
     return out
+
+
+def effective_oceanic_thickness_km(
+    fraction: Array, volume_km3: Array, areas_km2: Array,
+) -> Array:
+    """Oceanic endmember thickness from its own extensive material reservoir.
+
+    This is not an area-mean total crust thickness. The visible legacy raster
+    uses this endmember below 50% continental coverage and the continental
+    endmember above it. Neither threshold crossing deletes hidden material.
+    A completely continental footprint cannot also hold oceanic volume in
+    this two-endmember representation; fail rather than silently deleting it.
+    """
+    f = np.asarray(fraction, dtype=np.float64)
+    v = np.asarray(volume_km3, dtype=np.float64)
+    a = np.asarray(areas_km2, dtype=np.float64)
+    if f.shape != a.shape or v.shape != a.shape:
+        raise ValueError("oceanic material fields must match mesh cell count")
+    if (not np.all(np.isfinite(f)) or np.any(f < 0.0) or np.any(f > 1.0)
+            or not np.all(np.isfinite(v)) or np.any(v < 0.0)
+            or not np.all(np.isfinite(a)) or np.any(a <= 0.0)):
+        raise ValueError("oceanic material requires finite nonnegative volume and fractions in [0, 1]")
+    ocean_area = a * (1.0 - f)
+    if np.any((ocean_area == 0.0) & (v > 0.0)):
+        raise ValueError("oceanic volume has no remaining oceanic footprint; continental displacement needs an explicit material rule")
+    h = np.zeros_like(v)
+    np.divide(v, ocean_area, out=h, where=ocean_area > 0.0)
+    if not np.all(np.isfinite(h)):
+        raise ValueError("oceanic endmember thickness is not representable")
+    return h
 
 def state_as_plate_system(state: LithosphereState, initial_system: PlateSystem) -> PlateSystem:
     return PlateSystem(cell_plate=np.asarray(state.cell_plate, dtype=np.int32), plates=initial_system.plates)
@@ -877,6 +915,13 @@ def advance_lithosphere(
         raise ValueError("dt_myr must be positive")
     n = mesh.cell_count
     areas = mesh.physical_cell_areas_km2(radius_km)
+    old_ocean_volume = None
+    if state.oceanic_volume_km3 is not None:
+        if transport_state is None:
+            raise ValueError("tracked oceanic volume requires conservative transport")
+        old_ocean_volume = np.asarray(state.oceanic_volume_km3, dtype=np.float64).copy()
+        old_fraction, _ = continental_material_fields(state, areas)
+        effective_oceanic_thickness_km(old_fraction, old_ocean_volume, areas)
     transport_diag = None
     conservative_transport = transport_state is not None
     if conservative_transport:
@@ -1102,6 +1147,23 @@ def advance_lithosphere(
         new_cont_volume[gap_mask] = 0.0
         material_source_index[gap_mask] = -1
 
+    # Keep basalt independent from the visible raster, just as felsic material
+    # already is. Only the winning parcel survives inter-plate convergence;
+    # losing basalt goes into the explicit subduction volume diagnostic.
+    new_ocean_volume = None
+    oceanic_created_volume = oceanic_subducted_volume = 0.0
+    oceanic_rift_recycled_volume = 0.0
+    if old_ocean_volume is not None:
+        new_ocean_volume = np.zeros(n, dtype=np.float64)
+        inherited = material_source_index >= 0
+        winner_sources = material_source_index[inherited]
+        new_ocean_volume[inherited] = old_ocean_volume[winner_sources]
+        survived = np.zeros(n, dtype=bool)
+        survived[winner_sources] = True
+        oceanic_subducted_volume = float(np.sum(old_ocean_volume[~survived]))
+        new_ocean_volume[gap_mask] = areas[gap_mask] * float(oceanic_thickness_km)
+        oceanic_created_volume = float(np.sum(new_ocean_volume[gap_mask]))
+
     collision_redistributed = 0.0
     collision_raw_max = float(np.max(new_thickness[new_type == int(CrustType.CONTINENTAL)])) if np.any(new_type == int(CrustType.CONTINENTAL)) else 0.0
     collision_post_max = collision_raw_max
@@ -1138,7 +1200,11 @@ def advance_lithosphere(
         new_type[:] = int(CrustType.OCEANIC)
         new_type[visible_cont] = int(CrustType.CONTINENTAL)
         effective_h = effective_continental_thickness_km(new_cont_fraction, new_cont_volume, areas)
-        new_thickness[~visible_cont] = float(oceanic_thickness_km)
+        if new_ocean_volume is None:
+            new_thickness[~visible_cont] = float(oceanic_thickness_km)
+        else:
+            ocean_h = effective_oceanic_thickness_km(new_cont_fraction, new_ocean_volume, areas)
+            new_thickness[~visible_cont] = ocean_h[~visible_cont]
         new_thickness[visible_cont] = effective_h[visible_cont]
 
         after_transport_area = float(np.sum(areas * new_cont_fraction))
@@ -1307,6 +1373,12 @@ def advance_lithosphere(
     rifted_area = float(np.sum(areas[breakup] * new_cont_fraction[breakup]))
     breakup_recycled_volume = float(np.sum(new_cont_volume[breakup])) if np.any(breakup) else 0.0
     if np.any(breakup):
+        if new_ocean_volume is not None:
+            # Existing basalt in a mixed rift cell is replaced along with its
+            # continental portion. Account for both outgoing and newborn mass.
+            oceanic_rift_recycled_volume = float(np.sum(new_ocean_volume[breakup]))
+            new_ocean_volume[breakup] = areas[breakup] * float(oceanic_thickness_km)
+            oceanic_created_volume += float(np.sum(new_ocean_volume[breakup]))
         new_type[breakup] = int(CrustType.OCEANIC)
         new_age[breakup] = 0.0
         new_thickness[breakup] = float(oceanic_thickness_km)
@@ -1349,7 +1421,11 @@ def advance_lithosphere(
         new_type[:] = int(CrustType.OCEANIC)
         new_type[visible_cont] = int(CrustType.CONTINENTAL)
         effective_h = effective_continental_thickness_km(new_cont_fraction, new_cont_volume, areas)
-        new_thickness[~visible_cont] = float(oceanic_thickness_km)
+        if new_ocean_volume is None:
+            new_thickness[~visible_cont] = float(oceanic_thickness_km)
+        else:
+            ocean_h = effective_oceanic_thickness_km(new_cont_fraction, new_ocean_volume, areas)
+            new_thickness[~visible_cont] = ocean_h[~visible_cont]
         new_thickness[visible_cont] = effective_h[visible_cont]
 
     new_state = LithosphereState(
@@ -1372,6 +1448,7 @@ def advance_lithosphere(
         continental_lithosphere_age_myr=None if not track_craton_memory else new_cont_lith_age,
         mantle_depletion_fraction=None if not track_craton_memory else new_mantle_depletion,
         craton_strength=None if not track_craton_memory else new_craton_strength,
+        oceanic_volume_km3=new_ocean_volume,
     )
 
     ocean_mask = new_type == int(CrustType.OCEANIC)
@@ -1416,6 +1493,13 @@ def advance_lithosphere(
         collision_post_redistribution_max_thickness_km=float(collision_post_max),
         collision_overflow_unresolved_volume_km3=float(collision_unresolved),
         material_source_index=material_source_index,
+        oceanic_created_volume_km3=oceanic_created_volume,
+        oceanic_subducted_volume_km3=oceanic_subducted_volume,
+        oceanic_rift_recycled_volume_km3=oceanic_rift_recycled_volume,
+        oceanic_volume_balance_error_km3=(0.0 if new_ocean_volume is None else float(
+            np.sum(new_ocean_volume) - np.sum(old_ocean_volume) - oceanic_created_volume
+            + oceanic_subducted_volume + oceanic_rift_recycled_volume
+        )),
     )
     return new_state, strain, weakening, diag
 

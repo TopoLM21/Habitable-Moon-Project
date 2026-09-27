@@ -140,6 +140,12 @@ def save_checkpoint(path: str | Path, cp: RunCheckpoint) -> Path:
         arrays["continental_fraction"] = np.asarray(cp.state.continental_fraction, dtype=np.float64)
     if cp.state.continental_volume_km3 is not None:
         arrays["continental_volume_km3"] = np.asarray(cp.state.continental_volume_km3, dtype=np.float64)
+    if cp.state.oceanic_volume_km3 is not None:
+        oceanic_volume = np.asarray(cp.state.oceanic_volume_km3, dtype=np.float64)
+        if (oceanic_volume.shape != cp.state.crust_thickness_km.shape
+                or not np.all(np.isfinite(oceanic_volume)) or np.any(oceanic_volume < 0.0)):
+            raise ValueError("invalid checkpoint oceanic_volume_km3")
+        arrays["oceanic_volume_km3"] = oceanic_volume
     if cp.state.mantle_lithosphere_thickness_km is not None:
         arrays["mantle_lithosphere_thickness_km"] = np.asarray(cp.state.mantle_lithosphere_thickness_km, dtype=np.float64)
     if cp.state.mantle_lithosphere_density_anomaly_kg_m3 is not None:
@@ -321,6 +327,11 @@ def save_checkpoint(path: str | Path, cp: RunCheckpoint) -> Path:
         meta["version"] = "0.30-mobile-plumes"
     if cp.plume_flow_coupling_rows:
         meta["version"] = "0.31-flow-coupled-plumes"
+    if cp.state.oceanic_volume_km3 is not None:
+        # Older readers silently ignore unfamiliar arrays. A distinct version
+        # makes those readers reject the import instead of deleting its basalt
+        # reservoir on the first resumed step.
+        meta["version"] = "0.31-oceanic-volume"
     with (root/"meta.json").open("w",encoding="utf-8") as h:
         json.dump(meta,h,ensure_ascii=False,indent=2)
     return root
@@ -332,9 +343,11 @@ def load_checkpoint(path: str | Path, manager: PlateTopologyManager) -> RunCheck
         meta=json.load(h)
     if meta.get("format")!="moon_tectonics_checkpoint":
         raise ValueError("Not a moon tectonics checkpoint")
-    if meta.get("version") not in {"0.9.1", "0.9.2", "0.9.3", "0.9.4", "0.9.5", "0.10-reconstructed", "0.11-material", "0.14-hydrosphere", "0.16-lithosphere-split", "0.18-subduction-memory", "0.19-rollback", "0.20-slab-breakoff", "0.21-slab-geometry-arcs", "0.22-flexural-isostasy", "0.23-conservative-sediments", "0.24-cratonic-memory", "0.25-mantle-plumes", "0.26-plume-rifting", "0.27-plume-dynamic-topography", "0.28-plume-magmatism", "0.29-hotspot-tracks", "0.30-mobile-plumes", "0.31-flow-coupled-plumes"}:
+    if meta.get("version") not in {"0.9.1", "0.9.2", "0.9.3", "0.9.4", "0.9.5", "0.10-reconstructed", "0.11-material", "0.14-hydrosphere", "0.16-lithosphere-split", "0.18-subduction-memory", "0.19-rollback", "0.20-slab-breakoff", "0.21-slab-geometry-arcs", "0.22-flexural-isostasy", "0.23-conservative-sediments", "0.24-cratonic-memory", "0.25-mantle-plumes", "0.26-plume-rifting", "0.27-plume-dynamic-topography", "0.28-plume-magmatism", "0.29-hotspot-tracks", "0.30-mobile-plumes", "0.31-flow-coupled-plumes", "0.31-oceanic-volume"}:
         raise ValueError(f"Unsupported checkpoint version: {meta.get('version')}")
     with np.load(root/"state.npz", allow_pickle=False) as z:
+        if meta.get("version") == "0.31-oceanic-volume" and "oceanic_volume_km3" not in z.files:
+            raise ValueError("oceanic-volume checkpoint is missing oceanic_volume_km3")
         state=LithosphereState(
             time_myr=float(meta["lithosphere_time_myr"]),
             cell_plate=z["state_cell_plate"].copy(),
@@ -349,6 +362,7 @@ def load_checkpoint(path: str | Path, manager: PlateTopologyManager) -> RunCheck
             supercontinent_heat=z["supercontinent_heat"].copy() if "supercontinent_heat" in z.files else np.zeros_like(z["crust_thickness_km"], dtype=np.float64),
             continental_fraction=z["continental_fraction"].copy() if "continental_fraction" in z.files else None,
             continental_volume_km3=z["continental_volume_km3"].copy() if "continental_volume_km3" in z.files else None,
+            oceanic_volume_km3=z["oceanic_volume_km3"].copy() if "oceanic_volume_km3" in z.files else None,
             mantle_lithosphere_thickness_km=z["mantle_lithosphere_thickness_km"].copy() if "mantle_lithosphere_thickness_km" in z.files else None,
             mantle_lithosphere_density_anomaly_kg_m3=z["mantle_lithosphere_density_anomaly_kg_m3"].copy() if "mantle_lithosphere_density_anomaly_kg_m3" in z.files else None,
             sediment_volume_km3=z["sediment_volume_km3"].copy() if "sediment_volume_km3" in z.files else np.zeros_like(z["crust_thickness_km"],dtype=np.float64),
@@ -356,6 +370,11 @@ def load_checkpoint(path: str | Path, manager: PlateTopologyManager) -> RunCheck
             mantle_depletion_fraction=z["mantle_depletion_fraction"].copy() if "mantle_depletion_fraction" in z.files else None,
             craton_strength=z["craton_strength"].copy() if "craton_strength" in z.files else None,
         )
+        if state.oceanic_volume_km3 is not None:
+            oceanic_volume = np.asarray(state.oceanic_volume_km3, dtype=np.float64)
+            if (oceanic_volume.shape != state.crust_thickness_km.shape
+                    or not np.all(np.isfinite(oceanic_volume)) or np.any(oceanic_volume < 0.0)):
+                raise ValueError("invalid checkpoint oceanic_volume_km3")
         cc=meta["continental_cycle"]
         cycle=ContinentalCycleState(
             time_myr=float(cc["time_myr"]),

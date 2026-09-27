@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import asdict, replace
 from datetime import datetime
+import math
 import os
 from pathlib import Path
 import sys
@@ -61,8 +62,10 @@ from .backend import (
     checkpoint_name,
     discover_artifacts,
     load_run_metrics,
+    latest_genesis_continuation,
     preferred_preview,
     read_checkpoint_time,
+    read_genesis_continuation,
     resolution_note,
     segment_targets,
     subdivision_for_cell_count,
@@ -77,6 +80,7 @@ from execution_policy import RENDER_WORKER_CHOICES
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_CONFIG = PROJECT_ROOT / "configs" / "canonical_moon.yaml"
+MATURE_SCENARIO_ID = "mature_v031"
 
 
 def simulation_environment(spec: RunSpec) -> QProcessEnvironment:
@@ -188,7 +192,7 @@ class SimulationController(QObject):
             self._set_state("Error")
             raise
         self.current_time = spec.start_time_myr()
-        self.resume_checkpoint = spec.resume_checkpoint
+        self.resume_checkpoint = spec.genesis_continuation or spec.resume_checkpoint
         self.targets = segment_targets(
             self.current_time,
             spec.end_time_myr,
@@ -204,7 +208,7 @@ class SimulationController(QObject):
         self.diagnostics_notice.emit(f"Диагностика: {self.diagnostics.session_dir}")
         self.progress_changed.emit(self.current_time, spec.end_time_myr)
         self.log_line.emit(
-            f"Prepared v0.31 run: t={self.current_time:g} -> {spec.end_time_myr:g} Myr, "
+            f"Prepared {'Genesis continuation' if spec.genesis_continuation else 'v0.31 run'}: t={self.current_time:g} -> {spec.end_time_myr:g} Myr, "
             f"sub-{spec.subdivisions}, {len(self.targets)} checkpoint segment(s)."
         )
         mode = (
@@ -465,6 +469,16 @@ class SimulationController(QObject):
             return
         if self.spec is None or self.active_checkpoint is None:
             return
+        if self.spec.genesis_continuation is not None:
+            try:
+                completed = read_genesis_continuation(self.active_checkpoint)
+                if not math.isclose(completed.time_myr, self.targets[self.target_index], rel_tol=0., abs_tol=1e-9):
+                    raise ValueError("Возраст сохранённого генезиса не совпадает с концом сегмента")
+            except (OSError, ValueError, KeyError, TypeError) as exc:
+                self.timing.stop_segment(monotonic())
+                self._set_state("Error")
+                self.run_failed.emit(f"Продолжение не сохранило полное согласованное состояние: {exc}")
+                return
         self.timing.finish_segment(monotonic())
         self.current_time = self.targets[self.target_index]
         self.resume_checkpoint = self.active_checkpoint
@@ -541,6 +555,12 @@ class MoonWindow(QMainWindow):
         self.controller.run_failed.connect(self._run_failed)
         self.current_artifact: Path | None = None
         self.current_movie: QMovie | None = None
+        self._preview_manual = False
+        self.genesis_continuation = None
+        self._mature_form_snapshot = None
+        self._genesis_time_settings = (10., 1., 10., 10.)
+        self._genesis_execution_settings = None
+        self._genesis_subdivision = None
         self._close_pending = False
         self._build_ui()
         self.controller.diagnostics_changed.connect(self._refresh_diagnostics)
@@ -734,17 +754,38 @@ class MoonWindow(QMainWindow):
         self.scenario = QComboBox()
         self.scenario.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLengthWithIcon)
         self.scenario.setMinimumContentsLength(16)
-        self.scenario.addItems(
-            [
-                "Зрелая тектоника — v0.31",
-                *(f"{ORIGIN_LABELS_RU[origin]} (в плане)" for origin in SatelliteOrigin),
-            ]
+        self.scenario.addItem("Зрелая тектоника — v0.31", MATURE_SCENARIO_ID)
+        self.scenario.addItem(f"{ORIGIN_LABELS_RU[SatelliteOrigin.DISK_QUIET]} (стартер)", SatelliteOrigin.DISK_QUIET.value)
+        self.scenario.addItem(f"{ORIGIN_LABELS_RU[SatelliteOrigin.DISK_IMPACT]} (в плане)", SatelliteOrigin.DISK_IMPACT.value)
+        self.scenario.addItem(f"{ORIGIN_LABELS_RU[SatelliteOrigin.CAPTURE_CIRCULARIZATION]} (в плане)", SatelliteOrigin.CAPTURE_CIRCULARIZATION.value)
+        self._selected_scenario_id = MATURE_SCENARIO_ID
+        tips = (
+            "Зрелая тектоническая модель: параметры сетки, времени и checkpoint задаются ниже.",
+            "Стартер остывания уже сформированного расплавленного спутника. Аккреция в диске не рассчитывается; первое разделение и пробное продолжение доступны в отдельном окне.",
+            "Планируется: отдельная история импакта и его влияния на раннюю оболочку. Сейчас этот сценарий не реализован.",
+            "Планируется: захват спутника и эволюция орбиты при циркуляризации. Сейчас этот сценарий не реализован.",
         )
-        for index in range(1, self.scenario.count()):
+        for index, tip in enumerate(tips):
+            self.scenario.setItemData(index, tip, Qt.ItemDataRole.ToolTipRole)
+        for index in (2, 3):
             item = self.scenario.model().item(index)
             if item is not None:
                 item.setEnabled(False)
         model_form.addRow("Сценарий", self.scenario)
+        self.scenario_explanation = QLabel()
+        self.scenario_explanation.setWordWrap(True)
+        self.scenario_explanation.setObjectName("hint")
+        model_form.addRow(self.scenario_explanation)
+        self.genesis_starter_button = QPushButton("Стартер: первые плиты…")
+        self.genesis_starter_button.clicked.connect(self._open_genesis_starter)
+        model_form.addRow(self.genesis_starter_button)
+        self.load_genesis_button = QPushButton("Открыть сохранённый генезис…")
+        self.load_genesis_button.clicked.connect(self._browse_genesis_continuation)
+        model_form.addRow(self.load_genesis_button)
+        self.genesis_button = QPushButton("Генезис: подробные эксперименты…")
+        self.genesis_button.clicked.connect(self._open_genesis)
+        model_form.addRow(self.genesis_button)
+        self.model_form = model_form
         self.config_field = PathField(str(DEFAULT_CONFIG), directory=False)
         model_form.addRow("Конфигурация", self.config_field)
         stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -761,6 +802,7 @@ class MoonWindow(QMainWindow):
         clear_resume.setObjectName("secondaryButton")
         clear_resume.clicked.connect(lambda: self.resume_field.edit.clear())
         model_form.addRow("", clear_resume)
+        self.clear_resume_button = clear_resume
         layout.addWidget(model_group)
 
         numerical_group = QGroupBox("Численная сетка и время")
@@ -779,6 +821,11 @@ class MoonWindow(QMainWindow):
         self.cpu_mode.setMinimumContentsLength(16)
         self.cpu_mode.setCurrentIndex(1)
         numerical_form.addRow("Режим расчёта", self.cpu_mode)
+        self.execution_hint = QLabel("GPU для продолжения мира из генезиса пока не поддерживается. Доступны обычные настройки CPU и построения карт.")
+        self.execution_hint.setWordWrap(True)
+        self.execution_hint.setObjectName("hint")
+        numerical_form.addRow(self.execution_hint)
+        self.execution_hint.setVisible(False)
         self.gpu_device = QSpinBox()
         self.gpu_device.setRange(0, 31)
         self.gpu_device.setValue(0)
@@ -850,6 +897,7 @@ class MoonWindow(QMainWindow):
             "Размер в км — √средней площади, не длина ребра и не гарантия точности. "
             "Изменение сетки требует нового расчёта, не продолжения checkpoint."
         )
+        self._mature_subdivision_tooltip = self.subdivisions.toolTip()
         self.subdivisions.currentTextChanged.connect(self._resolution_changed)
         numerical_form.addRow("Subdivision", self.subdivisions)
         self.resolution_label = QLabel()
@@ -862,7 +910,8 @@ class MoonWindow(QMainWindow):
         self.end_time.setDecimals(1)
         self.end_time.setValue(500.0)
         self.end_time.setSuffix(" Myr")
-        numerical_form.addRow("Конечное время", self.end_time)
+        self.end_time_label = QLabel("Конечное время")
+        numerical_form.addRow(self.end_time_label, self.end_time)
         self.dt = QDoubleSpinBox()
         self.dt.setRange(0.25, 100.0)
         self.dt.setDecimals(2)
@@ -881,6 +930,7 @@ class MoonWindow(QMainWindow):
         self.frame_interval.setValue(20.0)
         self.frame_interval.setSuffix(" Myr")
         numerical_form.addRow("Частота кадров", self.frame_interval)
+        self.numerical_form = numerical_form
         layout.addWidget(numerical_group)
 
         output_group = QGroupBox("Вывод")
@@ -915,15 +965,32 @@ class MoonWindow(QMainWindow):
         buttons.addWidget(self.pause_button, 1, 0)
         buttons.addWidget(self.resume_button, 1, 1)
         buttons.addWidget(self.stop_button, 2, 0, 1, 2)
-        layout.addLayout(buttons)
         layout.addStretch(1)
+        self._mature_scenario_widgets = (self.config_field, self.output_field, self.resume_field,
+                                         clear_resume, numerical_group, output_group)
+        self.numerical_group = numerical_group
+        self.output_group = output_group
+        self.scenario.currentIndexChanged.connect(self._scenario_changed)
         scroll.setWidget(panel)
-        return scroll
+        controls = QWidget()
+        controls_layout = QVBoxLayout(controls)
+        controls_layout.setContentsMargins(0, 0, 0, 0)
+        controls_layout.addWidget(scroll, 1)
+        controls_layout.addLayout(buttons)
+        return controls
 
     def _preview_panel(self) -> QWidget:
         group = QGroupBox("Живая карта / выбранный результат")
         layout = QVBoxLayout(group)
         toolbar = QHBoxLayout()
+        self.preview_view = QComboBox()
+        self.preview_view.addItem("Поверхность", "surface")
+        self.preview_view.addItem("Плиты", "plates")
+        self.preview_view.addItem("Диагностика генезиса", "genesis")
+        self.preview_view.setToolTip("Выберите карту. Отдельный сохранённый файл можно открыть на вкладке «Файлы».")
+        self.preview_view.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLengthWithIcon)
+        self.preview_view.setMinimumContentsLength(14)
+        self.preview_view.currentIndexChanged.connect(self._preview_view_changed)
         self.preview_name = QLabel("Ожидание первого кадра")
         self.preview_name.setObjectName("hint")
         latest_button = QPushButton("Показать последний")
@@ -932,10 +999,11 @@ class MoonWindow(QMainWindow):
         folder_button = QPushButton("Открыть папку")
         folder_button.setObjectName("secondaryButton")
         folder_button.clicked.connect(self._open_output_folder)
-        toolbar.addWidget(self.preview_name, 1)
+        toolbar.addWidget(self.preview_view, 1)
         toolbar.addWidget(latest_button)
         toolbar.addWidget(folder_button)
         layout.addLayout(toolbar)
+        layout.addWidget(self.preview_name)
         self.preview = QLabel("Кадры и GIF появятся здесь во время прогона.")
         self.preview.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.preview.setMinimumSize(560, 430)
@@ -1011,6 +1079,14 @@ class MoonWindow(QMainWindow):
         if not selected:
             return
         checkpoint = Path(selected)
+        # A young checkpoint is only one part of a coupled world. Recognize it
+        # even if the user reached it through the ordinary checkpoint picker.
+        if (checkpoint / "continuation.json").is_file() or (checkpoint.parent / "continuation.json").is_file():
+            try:
+                self._adopt_genesis_continuation(checkpoint)
+            except (OSError, ValueError, KeyError, TypeError) as exc:
+                QMessageBox.warning(self, "Не удалось открыть генезис", str(exc))
+            return
         try:
             time_myr = read_checkpoint_time(checkpoint)
             subdivisions = subdivision_for_cell_count(checkpoint_cell_count(checkpoint))
@@ -1033,10 +1109,153 @@ class MoonWindow(QMainWindow):
         self.subdivisions.setCurrentText(str(subdivisions))
         self._append_log(f"Selected checkpoint at t={time_myr:g} Myr (sub-{subdivisions}).")
 
+    def _browse_genesis_continuation(self) -> None:
+        if self.controller.is_active() or self.controller.state == "Paused":
+            return
+        selected = QFileDialog.getExistingDirectory(self, "Открыть сохранённый расчёт генезиса",
+                                                     str(PROJECT_ROOT / "results"))
+        if selected:
+            try:
+                root = Path(selected)
+                if (root / "continuation" / "continuation.json").is_file():
+                    root = root / "continuation"
+                self._adopt_genesis_continuation(latest_genesis_continuation(root) or root)
+            except (OSError, ValueError, KeyError, TypeError) as exc:
+                QMessageBox.warning(self, "Не удалось открыть генезис", str(exc))
+
+    def _capture_mature_form(self) -> None:
+        self._mature_form_snapshot = (self.config_field.edit.text(), self.output_field.edit.text(),
+            self.resume_field.edit.text(), self.subdivisions.currentText(), self.end_time.value(),
+            self.dt.value(), self.checkpoint_interval.value(), self.frame_interval.value(),
+            self._execution_form_values())
+
+    def _execution_form_values(self) -> dict[str, Any]:
+        return {
+            "mode": self.cpu_mode.currentData(), "workers": self.cpu_workers.currentText(),
+            "render_workers": self.render_workers.currentText(), "gpu_device": self.gpu_device.value(),
+            "low_priority": self.low_priority.isChecked(), "cell_kernels": self.cell_kernels.isChecked(),
+            "assignment_optimized": self.assignment_optimized.isChecked(),
+            "assignment_columns": self.assignment_columns.isChecked(),
+            "boundary_forces": self.boundary_forces.isChecked(),
+            "surface_only": self.surface_only.isChecked(), "finalize": self.finalize.isChecked(),
+        }
+
+    def _restore_execution_form(self, settings: dict[str, Any]) -> None:
+        self.cpu_mode.setCurrentIndex(self.cpu_mode.findData(settings["mode"]))
+        self.cpu_workers.setCurrentText(settings["workers"])
+        self.render_workers.setCurrentText(settings["render_workers"])
+        self.gpu_device.setValue(settings["gpu_device"])
+        for name in ("low_priority", "cell_kernels", "assignment_optimized", "assignment_columns",
+                     "boundary_forces", "surface_only", "finalize"):
+            getattr(self, name).setChecked(settings[name])
+
+    def _restore_mature_form(self) -> None:
+        if self._mature_form_snapshot is None:
+            return
+        config, output, resume, subdivision, end, dt, checkpoint, frame, execution = self._mature_form_snapshot
+        self.config_field.edit.setText(config)
+        self.output_field.edit.setText(output)
+        self.resume_field.edit.setText(resume)
+        self.subdivisions.setCurrentText(subdivision)
+        for index in range(self.subdivisions.count() - 1, -1, -1):
+            if int(self.subdivisions.itemText(index)) not in SUBDIVISION_CHOICES:
+                self.subdivisions.removeItem(index)
+        self.end_time.setDecimals(1)
+        self.end_time.setRange(4., 20000.)
+        self.dt.setDecimals(2)
+        self.dt.setRange(.25, 100.)
+        self.checkpoint_interval.setDecimals(1)
+        self.checkpoint_interval.setRange(1., 1000.)
+        self.frame_interval.setDecimals(1)
+        self.frame_interval.setRange(1., 1000.)
+        self.end_time.setValue(end)
+        self.dt.setValue(dt)
+        self.checkpoint_interval.setValue(checkpoint)
+        self.frame_interval.setValue(frame)
+        self._restore_execution_form(execution)
+
+    def _show_genesis_form(self) -> None:
+        info = self.genesis_continuation
+        if info is None:
+            return
+        self.config_field.set_path(info.config)
+        self.output_field.set_path(info.root)
+        self.resume_field.set_path(info.root)
+        level = str(self._genesis_subdivision if self._genesis_subdivision is not None else info.subdivisions)
+        for choice in (str(info.subdivisions), level):
+            if self.subdivisions.findText(choice) < 0:
+                self.subdivisions.addItem(choice)
+        self.subdivisions.setCurrentText(level)
+        for widget in (self.end_time, self.dt, self.checkpoint_interval, self.frame_interval):
+            widget.setDecimals(4)
+        self.end_time.setRange(.0001, 20000.)
+        self.dt.setRange(.0001, 20.)
+        self.checkpoint_interval.setRange(.0001, 1000.)
+        self.frame_interval.setRange(.0001, 1000.)
+        for widget, value in zip((self.end_time, self.dt, self.checkpoint_interval, self.frame_interval), self._genesis_time_settings):
+            widget.setValue(value)
+        if self._genesis_execution_settings is not None:
+            self._restore_execution_form(self._genesis_execution_settings)
+
+    def _adopt_genesis_continuation(self, path: Path) -> None:
+        if self.controller.is_active() or self.controller.state == "Paused":
+            raise ValueError("Завершите текущий прогон перед открытием другого расчёта")
+        info = read_genesis_continuation(path)
+        if self.scenario.currentData() == MATURE_SCENARIO_ID or self._mature_form_snapshot is None:
+            self._capture_mature_form()
+        self.genesis_continuation = info
+        self._genesis_subdivision = info.subdivisions
+        span = max(info.step_myr, round(10. / info.step_myr)*info.step_myr)
+        self._genesis_time_settings = (span, info.step_myr, span, span)
+        self._genesis_execution_settings = self._execution_form_values()
+        if self._genesis_execution_settings["mode"] == "gpu_surface":
+            self._genesis_execution_settings["mode"] = True
+        previous = self.scenario.blockSignals(True)
+        self.scenario.setCurrentIndex(self.scenario.findData(SatelliteOrigin.DISK_QUIET.value))
+        self.scenario.blockSignals(previous)
+        self._selected_scenario_id = SatelliteOrigin.DISK_QUIET.value
+        self._show_genesis_form()
+        self.controller.spec = None
+        self.controller.current_time = info.time_myr
+        self.controller.resume_checkpoint = info.root
+        self.controller.active_checkpoint = None
+        self.controller.timing = RunTiming(info.time_myr, info.time_myr)
+        self.controller.diagnostics = DiagnosticsMonitor()
+        self.controller._set_state("Completed")
+        self._progress_changed(info.time_myr, info.time_myr)
+        self._append_log(f"Генезис открыт в основном окне: возраст {info.time_myr:.6f} млн лет. "
+                         "Задайте, на сколько продлить расчёт, и нажмите «Продолжить расчёт».")
+        blocked = self.preview_view.blockSignals(True)
+        self.preview_view.setCurrentIndex(self.preview_view.findData("surface"))
+        self.preview_view.blockSignals(blocked)
+        self._preview_manual = False
+        self._refresh_results()
+        self._show_latest()
+
     def _make_spec(self) -> RunSpec:
-        resume_text = self.resume_field.edit.text().strip()
         gpu_surface = self.cpu_mode.currentData() == "gpu_surface"
         optimized = self.cpu_mode.currentData() is True or gpu_surface
+        execution = dict(
+            cpu_optimized=optimized,
+            cpu_workers=int(self.cpu_workers.currentText()) if optimized else 1,
+            render_workers=int(self.render_workers.currentText()) if optimized else 1,
+            cell_kernels=self.cell_kernels.isChecked() if optimized else False,
+            process_priority="below_normal" if optimized and self.low_priority.isChecked() else "normal",
+            gpu_surface=gpu_surface, gpu_device=self.gpu_device.value() if gpu_surface else 0,
+            assignment_columns=optimized and not self.assignment_optimized.isChecked() and self.assignment_columns.isChecked(),
+            boundary_forces=optimized and self.boundary_forces.isChecked(),
+            assignment_optimized=self.assignment_optimized.isChecked(),
+        )
+        if self.scenario.currentData() == SatelliteOrigin.DISK_QUIET.value and self.genesis_continuation is not None:
+            info = self.genesis_continuation
+            stamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
+            return RunSpec(project_root=PROJECT_ROOT, source_config=info.config,
+                output_dir=PROJECT_ROOT / "results" / "gui_runs" / f"genesis_{stamp}",
+                subdivisions=int(self.subdivisions.currentText()), end_time_myr=info.time_myr+self.end_time.value(),
+                dt_myr=self.dt.value(), checkpoint_interval_myr=self.checkpoint_interval.value(),
+                frame_interval_myr=self.frame_interval.value(), surface_only_frames=self.surface_only.isChecked(),
+                finalize=self.finalize.isChecked(), genesis_continuation=info.root, **execution)
+        resume_text = self.resume_field.edit.text().strip()
         return RunSpec(
             project_root=PROJECT_ROOT,
             source_config=self.config_field.path(),
@@ -1049,19 +1268,27 @@ class MoonWindow(QMainWindow):
             surface_only_frames=self.surface_only.isChecked(),
             finalize=self.finalize.isChecked(),
             resume_checkpoint=Path(resume_text) if resume_text else None,
-            cpu_optimized=optimized,
-            cpu_workers=int(self.cpu_workers.currentText()),
-            render_workers=int(self.render_workers.currentText()) if optimized else 1,
-            cell_kernels=self.cell_kernels.isChecked() if optimized else False,
-            process_priority="below_normal" if optimized and self.low_priority.isChecked() else "normal",
-            gpu_surface=gpu_surface,
-            gpu_device=self.gpu_device.value() if gpu_surface else 0,
-            assignment_columns=optimized and not self.assignment_optimized.isChecked() and self.assignment_columns.isChecked(),
-            boundary_forces=optimized and self.boundary_forces.isChecked(),
-            assignment_optimized=self.assignment_optimized.isChecked(),
+            **execution,
         )
 
     def _start_run(self) -> None:
+        if self.controller.is_active() or self.controller.state == "Paused":
+            return
+        scenario = self.scenario.currentData()
+        if scenario == SatelliteOrigin.DISK_QUIET.value:
+            if self.genesis_continuation is None:
+                self._open_genesis_starter()
+            else:
+                try:
+                    spec = self._make_spec().normalized()
+                    self.controller.start(spec)
+                    self.output_field.set_path(spec.output_dir)
+                except (OSError, ValueError, RuntimeError, KeyError, TypeError) as exc:
+                    QMessageBox.warning(self, "Не удалось продолжить генезис", str(exc))
+            return
+        if scenario != MATURE_SCENARIO_ID:
+            self._append_log("Выбранный сценарий генезиса пока не реализован. Расчёт не запущен.")
+            return
         try:
             spec = self._make_spec().normalized()
             if spec.assignment_optimized and spec.resume_checkpoint is not None:
@@ -1141,19 +1368,105 @@ class MoonWindow(QMainWindow):
         # RunSpec is captured at Start. Do not imply that editing a selector
         # can reconfigure an existing worker pool, including across safe pause.
         locked = self.controller.is_active() or self.controller.state == "Paused"
-        self.cpu_mode.setEnabled(not locked)
+        self.scenario.setEnabled(not locked)
+        scenario = self.scenario.currentData()
+        mature = scenario == MATURE_SCENARIO_ID
+        starter = scenario == SatelliteOrigin.DISK_QUIET.value
+        continuing = starter and self.genesis_continuation is not None
+        available = mature or continuing
+        for widget in self._mature_scenario_widgets:
+            widget.setEnabled(mature and not locked)
+        self.numerical_group.setEnabled(available)
+        self.output_group.setEnabled(available and not locked)
+        for widget in (self.config_field, self.resume_field, self.clear_resume_button):
+            self.model_form.setRowVisible(widget, not continuing)
+        for widget in (self.cpu_mode, self.gpu_device, self.cpu_workers, self.render_workers,
+                       self.low_priority, self.cell_kernels, self.assignment_optimized,
+                       self.assignment_columns, self.boundary_forces, self.frame_interval):
+            self.numerical_form.setRowVisible(widget, True)
+        self.numerical_form.setRowVisible(self.execution_hint, continuing)
+        self.output_group.setVisible(True)
+        for widget in (self.end_time, self.dt, self.checkpoint_interval):
+            widget.setEnabled(not locked and available)
+        self.subdivisions.setEnabled(not locked and available)
+        for index in range(self.subdivisions.count()):
+            item = self.subdivisions.model().item(index)
+            item.setEnabled(not continuing or int(self.subdivisions.itemText(index)) >= self.genesis_continuation.subdivisions)
+        self.subdivisions.setToolTip(
+            "Можно сохранить сетку или увеличить детализацию. Смена сетки переносит сохранённый мир; "
+            "новые детали не восстанавливаются. Уменьшение детализации пока не поддерживается."
+            if continuing else
+            self._mature_subdivision_tooltip
+        )
+        self.frame_interval.setEnabled(not locked and available)
+        self.end_time_label.setText("Продлить на" if continuing else "Конечное время")
+        self.end_time.setToolTip("Дополнительное время от текущего возраста сохранённого мира."
+                                 if continuing else "Конечный возраст обычного зрелого прогона.")
+        self.start_button.setText("Продолжить расчёт" if continuing else "Открыть стартер…" if starter else "Запустить прогон")
+        self.start_button.setEnabled(not locked and (mature or starter)
+                                     and self.controller.state in {"Idle", "Completed", "Error", "Stopped"})
+        if mature:
+            explanation = "Зрелая тектоника. Параметры сетки, времени и продолжения checkpoint задаются ниже."
+        elif continuing:
+            info = self.genesis_continuation
+            explanation = (f"Тектоника мира из генезиса A: {info.time_myr:.4f} млн лет, областей: {info.plate_count}. "
+                           "Остывание и разрушение молодой оболочки продолжаются автоматически. "
+                           "Настройки длительного расчёта — ниже.")
+        elif starter:
+            explanation = ("Остывание, конденсация океана и первые разломы. После разделения — по желанию зрелая динамика. "
+                           "Параметры стартера и продолжения задаются в отдельном окне.")
+        else:
+            explanation = "Этот сценарий пока в плане. Для расплавленного старта доступен генезис A."
+        self.scenario_explanation.setText(explanation)
+        if self.genesis_continuation is not None:
+            self.scenario.setItemText(self.scenario.findData(SatelliteOrigin.DISK_QUIET.value), "Тектоника — мир из генезиса A")
+        self.scenario.setToolTip(self.scenario.currentData(Qt.ItemDataRole.ToolTipRole) or "")
+        self.genesis_button.setEnabled(not locked)
+        self.genesis_starter_button.setEnabled(not locked)
+        self.genesis_starter_button.setText("Новый расплавленный старт…" if continuing else "Стартер: первые плиты…")
+        self.load_genesis_button.setEnabled(not locked)
+        gpu_index = self.cpu_mode.findData("gpu_surface")
+        self.cpu_mode.model().item(gpu_index).setEnabled(not continuing)
+        self.cpu_mode.setItemData(gpu_index,
+            "GPU пока не поддерживает продолжение мира из генезиса. Используйте CPU."
+            if continuing else "Поверхностные процессы на NVIDIA CUDA; остальная физика на CPU.", Qt.ItemDataRole.ToolTipRole)
+        if continuing and self.cpu_mode.currentData() == "gpu_surface":
+            blocked = self.cpu_mode.blockSignals(True)
+            self.cpu_mode.setCurrentIndex(self.cpu_mode.findData(True))
+            self.cpu_mode.blockSignals(blocked)
+        self.cpu_mode.setEnabled(not locked and available)
         gpu_surface = self.cpu_mode.currentData() == "gpu_surface"
-        enabled = not locked and (self.cpu_mode.currentData() is True or gpu_surface)
+        enabled = not locked and available and (self.cpu_mode.currentData() is True or gpu_surface)
         for control in (
             self.cpu_workers, self.render_workers, self.low_priority, self.cell_kernels,
             self.boundary_forces,
         ):
             control.setEnabled(enabled)
-        self.assignment_optimized.setEnabled(not locked)
+        self.assignment_optimized.setEnabled(not locked and available)
         self.assignment_columns.setEnabled(enabled and not self.assignment_optimized.isChecked())
-        self.gpu_device.setVisible(gpu_surface)
-        self.gpu_device_label.setVisible(gpu_surface)
-        self.gpu_device.setEnabled(not locked and gpu_surface)
+        self.gpu_device.setVisible(gpu_surface and mature)
+        self.gpu_device_label.setVisible(gpu_surface and mature)
+        self.gpu_device.setEnabled(not locked and mature and gpu_surface)
+
+    def _scenario_changed(self, _index: int) -> None:
+        if self.controller.is_active() or self.controller.state == "Paused":
+            # Programmatic selection changes cannot retarget an active run.
+            previous = self.scenario.blockSignals(True)
+            self.scenario.setCurrentIndex(self.scenario.findData(self._selected_scenario_id))
+            self.scenario.blockSignals(previous)
+        else:
+            next_scenario = self.scenario.currentData()
+            if self.genesis_continuation is not None:
+                if self._selected_scenario_id == SatelliteOrigin.DISK_QUIET.value and next_scenario != self._selected_scenario_id:
+                    self._genesis_time_settings = (self.end_time.value(), self.dt.value(), self.checkpoint_interval.value(), self.frame_interval.value())
+                    self._genesis_execution_settings = self._execution_form_values()
+                    self._genesis_subdivision = int(self.subdivisions.currentText())
+                    self._restore_mature_form()
+                elif next_scenario == SatelliteOrigin.DISK_QUIET.value and self._selected_scenario_id != next_scenario:
+                    self._capture_mature_form()
+                    self._show_genesis_form()
+            self._selected_scenario_id = self.scenario.currentData()
+        self._refresh_execution_controls()
 
     def _progress_changed(self, current: float, end: float) -> None:
         value = 0 if end <= 0 else int(max(0.0, min(1.0, current / end)) * 1000)
@@ -1186,15 +1499,27 @@ class MoonWindow(QMainWindow):
         self.eta_label.setText(f"{elapsed} · {detail}")
 
     def _segment_completed(self, time_myr: float, checkpoint: str) -> None:
+        if self.controller.spec is not None and self.controller.spec.genesis_continuation is not None:
+            self.genesis_continuation = read_genesis_continuation(Path(checkpoint))
+            self._genesis_subdivision = self.genesis_continuation.subdivisions
+            level = str(self._genesis_subdivision)
+            if self.subdivisions.findText(level) < 0:
+                self.subdivisions.addItem(level)
+            self.subdivisions.setCurrentText(level)
+            self.resume_field.set_path(self.genesis_continuation.root)
+            self.config_field.set_path(self.genesis_continuation.config)
+            self._refresh_execution_controls()
         self._append_log(f"Safe checkpoint completed at t={time_myr:g} Myr: {checkpoint}")
         self._refresh_results()
-        self._show_latest()
+        if not self._preview_manual:
+            self._show_latest()
 
     def _run_completed(self, output: str) -> None:
         self._append_log(f"Run complete: {output}")
         self._refresh_results()
-        self._show_latest()
-        if not self._close_pending:
+        if not self._preview_manual:
+            self._show_latest()
+        if not self._close_pending and not (self.controller.spec and self.controller.spec.genesis_continuation):
             QMessageBox.information(self, "Run complete", f"All requested segments completed.\n\n{output}")
 
     def _run_failed(self, message: str) -> None:
@@ -1221,6 +1546,9 @@ class MoonWindow(QMainWindow):
     def _refresh_results(self) -> None:
         output = self.output_field.path()
         metrics = load_run_metrics(output)
+        if not metrics and self.scenario.currentData() == SatelliteOrigin.DISK_QUIET.value and self.genesis_continuation is not None:
+            output = self.genesis_continuation.root
+            metrics = load_run_metrics(output)
         self.metrics.setRowCount(len(metrics))
         for row, (key, value) in enumerate(metrics.items()):
             self.metrics.setItem(row, 0, QTableWidgetItem(str(key)))
@@ -1249,22 +1577,52 @@ class MoonWindow(QMainWindow):
                 if selected == str(path):
                     self.artifacts.setCurrentItem(item)
 
-        if self.current_artifact is None:
-            latest = preferred_preview(output)
-            if latest is not None:
-                self._display_artifact(latest)
+        if not self._preview_manual:
+            self._update_selected_preview()
 
     def _artifact_activated(self, item: QListWidgetItem) -> None:
         path = Path(item.data(Qt.ItemDataRole.UserRole))
+        self._preview_manual = True
         self._display_artifact(path)
 
     def _show_latest(self) -> None:
-        path = preferred_preview(self.output_field.path())
+        self._preview_manual = False
+        self._update_selected_preview(force=True)
+
+    def _preview_view_changed(self, _index: int) -> None:
+        self._show_latest()
+
+    def _update_selected_preview(self, *, force: bool = False) -> None:
+        view = self.preview_view.currentData()
+        output = self.output_field.path()
+        path = preferred_preview(output, view=view)
+        if (path is None and self.scenario.currentData() == SatelliteOrigin.DISK_QUIET.value
+                and self.genesis_continuation is not None and latest_genesis_continuation(output) is None):
+            path = preferred_preview(self.genesis_continuation.root, view=view)
         if path is not None:
-            self._display_artifact(path)
+            if force or self.current_artifact != path:
+                self._display_artifact(path)
+            return
+        self.current_artifact = None
+        if self.current_movie is not None:
+            self.current_movie.stop()
+            self.current_movie.deleteLater()
+            self.current_movie = None
+        self.preview_name.setText(self.preview_view.currentText())
+        self.preview.clear()
+        self.preview.setText({
+            "surface": "Карта поверхности появится после сохранения результата.",
+            "plates": "Карта плит для этого результата ещё не построена.",
+            "genesis": "Диагностика доступна для мира, начатого из генезиса.",
+        }.get(view, "Выберите карту или сохранённый файл."))
 
     def _display_artifact(self, path: Path) -> None:
         if not path.is_file():
+            return
+        pixmap = None if path.suffix.lower() == ".gif" else QPixmap(str(path))
+        if pixmap is not None and pixmap.isNull():
+            # A renderer can still be writing this image. Leave the previous
+            # selection intact so the next refresh retries the new path.
             return
         self.current_artifact = path
         self.preview_name.setText(path.name)
@@ -1281,15 +1639,41 @@ class MoonWindow(QMainWindow):
             self.current_movie = movie
             movie.start()
         else:
-            pixmap = QPixmap(str(path))
-            if not pixmap.isNull():
-                self.preview.setPixmap(
-                    pixmap.scaled(
-                        self.preview.size() - QSize(20, 20),
-                        Qt.AspectRatioMode.KeepAspectRatio,
-                        Qt.TransformationMode.SmoothTransformation,
-                    )
+            self.preview.setPixmap(
+                pixmap.scaled(
+                    self.preview.size() - QSize(20, 20),
+                    Qt.AspectRatioMode.KeepAspectRatio,
+                    Qt.TransformationMode.SmoothTransformation,
                 )
+            )
+
+    def _open_genesis(self) -> None:
+        from .genesis_dialog import GenesisDialog
+
+        if self.controller.is_active():
+            return
+        self.genesis_dialog = GenesisDialog(self)
+        self.genesis_dialog.exec()
+        self.genesis_dialog.deleteLater()
+
+    def _open_genesis_starter(self) -> None:
+        from .genesis_starter_dialog import GenesisStarterDialog
+
+        if self.controller.is_active() or self.controller.state == "Paused":
+            return
+        dialog = GenesisStarterDialog(self)
+        def accept_continuation(path):
+            try:
+                self._adopt_genesis_continuation(Path(path))
+            except (OSError, ValueError, KeyError, TypeError) as exc:
+                QMessageBox.warning(self, "Не удалось открыть продолжение", str(exc))
+                return
+            # Successful completion returns directly to the now populated main
+            # window. Closing a cancelled/failed starter never adopts anything.
+            QTimer.singleShot(0, dialog.accept)
+        dialog.continuation_ready.connect(accept_continuation)
+        dialog.exec()
+        dialog.deleteLater()
 
     def _open_output_folder(self) -> None:
         path = self.output_field.path()
@@ -1299,7 +1683,8 @@ class MoonWindow(QMainWindow):
     def resizeEvent(self, event: Any) -> None:
         super().resizeEvent(event)
         if self.current_artifact is not None and self.current_artifact.suffix.lower() != ".gif":
-            QTimer.singleShot(100, lambda: self._display_artifact(self.current_artifact))
+            path = self.current_artifact
+            QTimer.singleShot(100, lambda: self._display_artifact(path) if self.current_artifact == path else None)
 
     def closeEvent(self, event: QCloseEvent) -> None:
         if self.controller.is_active():

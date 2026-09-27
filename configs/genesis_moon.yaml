@@ -1,0 +1,100 @@
+moon:
+  name: Canonical Habitable Moon — thermal genesis experiment
+  mass_earth: 0.5
+  radius_km: 5287.0
+  surface_gravity_m_s2: 7.12
+
+genesis:
+  schema_version: 1
+  description: Two-reservoir thermal experiment; does not initialize mobile plates or continents.
+  # Freeze the reference inventory, not its pre-existing continents or relief.
+  water_volume_km3: 1126719620.5563111
+  water_inventory_source: results/gui_runs/v031_20260913_212557/hydrosphere_history.csv, time_myr=0, subdivision=5
+  # TOA flux on a surface NORMAL to the rays; the model applies (1-A)/4.
+  stellar_flux_w_m2: 1284.1486427638265
+  stellar_flux_source: orbital_dynamics/v6_3_local_insolation/system_config.py; L=0.65 Lsun, a=0.83 AU; 1361*0.65/0.83^2
+  initial_temperature_k: 2300.0
+  initial_surface_temperature_k: 2300.0
+  bond_albedo: 0.30
+  eclipse_fraction: 0.0
+  # Prescribed global means. Spin/orbit evolution and young-giant luminosity
+  # are not calculated by this stage; zero is an experiment assumption.
+  giant_absorbed_flux_w_m2: 0.0
+  tidal_heat_flux_w_m2: 0.0
+  system_age_at_start_myr: 0.0
+  steam_olr_limit_w_m2: 282.0
+  hot_window_temperature_k: 1600.0
+  critical_transition_width_k: 5.0
+
+# Passive spatial response to the thermal history above. These are explicit
+# experiment parameters, not measured properties or preassigned plate borders.
+genesis_shell:
+  schema_version: 1
+  subdivisions: 3
+  seed: 20260920
+  column_layers: 32
+  column_depth_km: 40.0
+  initial_temperature_anomaly_k: 120.0
+  anomaly_depth_km: 8.0
+  convective_traction_pa: 20000.0
+  traction_coupling_depth_km: 2.0
+  tensile_strength_pa: 12000000.0
+  damage_threshold: 0.65
+
+# Used by onset and mobile modes. These orbital values come from the saved
+# satellite system, while Love coefficients are explicit response assumptions.
+genesis_tides:
+  schema_version: 1
+  enabled: true
+  spin_state: synchronous_zero_obliquity
+  primary_mass_kg: 9.49065e+27
+  semimajor_axis_km: 773185.98
+  eccentricity: 0.0002
+  love_h2: 0.6
+  love_l2: 0.08
+  k2_over_q: 0.003
+  phase_samples: 16
+  orbit_source: orbital_dynamics/v6_3_local_insolation/system_config.py; giant=5 Mj, radius=1.03 Rj, moon a=10.5 Rp, e=0.0002. Synchronous zero-obliquity response is an explicit experiment assumption.
+
+genesis_onset:
+  schema_version: 1
+  regularization_km: 800.0
+  water_weakening: true
+  wet_strength_fraction: 0.4
+  access_timescale_myr: 0.1
+  loss_timescale_myr: 0.5
+  intact_permeability_fraction: 0.05
+  persistence_time_myr: 0.05
+
+# Updated material geometry. These are numerical acceptance limits, not
+# physical thresholds for creating plates. The old shell 5% guard is unchanged.
+genesis_mobile:
+  schema_version: 1
+  max_incremental_strain: 0.005
+  max_vertex_motion_rad: 0.01
+  max_damage_increment: 0.02
+  max_elastic_strain: 0.03
+  equilibrium_tolerance: 0.000001
+  max_newton_iterations: 30
+  min_step_myr: 0.000001
+  min_face_quality: 0.15
+  min_area_ratio: 0.15
+  max_area_ratio: 6.0
+  max_radius_change_fraction: 0.1
+
+# Persistent material weak planes with finite-width, nondilatant shear.
+# Illustrative constitutive parameters, not calibrated rock measurements.
+# Width converts shear strain into equivalent slip; the mesh remains connected.
+genesis_faults:
+  schema_version: 1
+  enabled: true
+  cohesion_pa: 4000000.0
+  residual_cohesion_fraction: 0.1
+  friction_dry: 0.6
+  friction_wet: 0.2
+  wet_cohesion_fraction: 0.5
+  viscosity_pa_s: 1.0e+20
+  band_width_km: 100.0
+  activation_damage: 0.65
+  activation_persistence_myr: 0.05
+  max_shear_increment: 0.002
