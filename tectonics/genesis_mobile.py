@@ -17,6 +17,7 @@ from pathlib import Path
 import numpy as np
 
 from .genesis import GenesisParameters, GenesisState, SECONDS_PER_MYR, M_EARTH, initial_state, temperatures, diagnose
+from .genesis_checkpoint_compat import MODEL_VERSION, require_thermal_model_version
 from .genesis_shell import (ShellParameters, Membrane, initialize_shell, rock_temperature,
     lid_geometry, maxwell_factors, mantle_traction, principal_tensile, maximum_total_strain)
 from .genesis_onset import OnsetParameters, update_water_access, advance_orbit_thermal
@@ -465,7 +466,7 @@ def save_mobile_checkpoint(path, model, state, thermal, orbit, controls, provena
     scalars = {f.name: getattr(state, f.name) for f in fields(state) if f.name not in arrays}
     parameters = {"shell": asdict(model.p), "thermal": asdict(model.thermal), "onset": asdict(model.onset_p),
                   "tides": asdict(model.tides_p), "mobile": asdict(model.mobile_p)}
-    meta = {"format": MOBILE_VERSION, "parameters": parameters,
+    meta = {"format": MOBILE_VERSION, "thermal_model_version": MODEL_VERSION, "parameters": parameters,
         "parameter_hash": hashlib.sha256(json.dumps(parameters, sort_keys=True).encode()).hexdigest(),
         "state": scalars, "thermal_state": asdict(thermal), "orbit": asdict(orbit),
         "controls": controls, "provenance": provenance}
@@ -483,6 +484,7 @@ def load_mobile_checkpoint(path):
             p = meta["parameters"]
             if meta["format"] != MOBILE_VERSION or hashlib.sha256(json.dumps(p, sort_keys=True).encode()).hexdigest() != meta["parameter_hash"]:
                 raise ValueError("Mobile checkpoint version/parameter hash mismatch")
+            require_thermal_model_version(meta)
             model = MobileModel(ShellParameters(**p["shell"]), GenesisParameters(**p["thermal"]),
                 OnsetParameters(**p["onset"]), TidalParameters(**p["tides"]), MobileParameters(**p["mobile"]))
             state = MobileState(**meta["state"], **{k: archive[k].copy() for k in archive.files if k != "metadata"})

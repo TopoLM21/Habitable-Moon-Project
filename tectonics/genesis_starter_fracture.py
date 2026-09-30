@@ -22,7 +22,9 @@ import tempfile
 
 import numpy as np
 
-from .genesis_starter_topology import select_starter_cut, split_starter_band
+from .genesis_starter_topology import (
+    canonicalize_plate_seeds, select_starter_cut, split_starter_band,
+)
 from .mesh import connected_components
 from .topology import _component_span_km
 
@@ -174,6 +176,10 @@ class YoungShellFracture:
         if time_myr is not None and not math.isclose(
                 float(time_myr), self.time_myr, rel_tol=0., abs_tol=1e-10):
             raise ValueError("Young fracture event must use the accepted clock")
+        # Transport moves ownership while Plate.seed_cell is only a raster
+        # representative. Refresh that metadata without changing the cut or
+        # either independent plate's motion.
+        system = canonicalize_plate_seeds(self.model.mesh, system)
         p = self.model.parameters
         # Previously ruptured cells can anchor a new cross-plate cut at the
         # existing boundary. Excluding their entire broad raster band would

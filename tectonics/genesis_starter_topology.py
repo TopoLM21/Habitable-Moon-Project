@@ -8,6 +8,8 @@ establish a separating cut and are therefore left unsplit.
 """
 from __future__ import annotations
 
+from dataclasses import replace
+
 import numpy as np
 
 from .mesh import SphereMesh, connected_components
@@ -44,6 +46,35 @@ def _validate_system(mesh: SphereMesh, system: PlateSystem) -> np.ndarray:
                 or not np.isfinite(plate.angular_speed_rad_per_myr)):
             raise ValueError("plate rotations must have finite speeds and unit Euler axes")
     return owner
+
+
+def canonicalize_plate_seeds(mesh: SphereMesh, system: PlateSystem) -> PlateSystem:
+    """Refresh stale geometric representatives after material transport.
+
+    Seeds identify an owned raster cell; they are not material markers. A
+    transport commit can move a plate away from its old seed without changing
+    its ID or rotation. Only those stale representatives are replaced, using
+    the lowest owned cell just as the mature topology constructor does. The
+    input system, ownership and Euler arrays are never modified. Invalid
+    labels, disconnected domains and invalid rotations still fail validation.
+    """
+    owner = np.asarray(system.cell_plate)
+    if owner.shape != (mesh.cell_count,) or owner.dtype.kind not in "iu":
+        raise ValueError("plate ownership must be an integer field matching the mesh")
+    if not len(system.plates) or not np.array_equal(np.unique(owner), np.arange(len(system.plates))):
+        raise ValueError("plate labels must be compact and every plate must own cells")
+    plates = []
+    changed = False
+    for index, plate in enumerate(system.plates):
+        cells = np.flatnonzero(owner == index)
+        if plate.seed_cell in cells:
+            plates.append(plate)
+        else:
+            plates.append(replace(plate, seed_cell=int(cells[0])))
+            changed = True
+    result = replace(system, plates=tuple(plates)) if changed else system
+    _validate_system(mesh, result)
+    return result
 
 
 def _separated_parts(mesh, owner, cut, cell_areas, minimum_area):
@@ -164,4 +195,4 @@ def split_starter_band(
     return result, event
 
 
-__all__ = ["select_starter_cut", "split_starter_band"]
+__all__ = ["canonicalize_plate_seeds", "select_starter_cut", "split_starter_band"]

@@ -19,7 +19,9 @@ from scipy import sparse
 from scipy.sparse.linalg import spsolve
 
 from .genesis import GenesisParameters, GenesisState, SECONDS_PER_MYR, parameter_hash, diagnose
+from .genesis_checkpoint_compat import MODEL_VERSION, require_thermal_model_version
 from .mesh import SphereMesh, build_icosphere
+from .basal_coupling import prescribed_vertex_traction
 
 SHELL_VERSION = "genesis-shell-0.1"
 
@@ -321,21 +323,9 @@ def initialize_shell(mesh: SphereMesh, p: ShellParameters, thermal: GenesisParam
 
 def mantle_traction(mesh: SphereMesh, p: ShellParameters, thickness_km):
     """Prescribed, smooth potential-flow basal shear; not a solved mantle flow."""
-    rng = np.random.default_rng(int(p.seed))
-    matrix = rng.normal(size=(3, 3))
-    matrix = (matrix+matrix.T)/2
-    matrix -= np.eye(3)*np.trace(matrix)/3
-    x = mesh.vertices
-    gradient = 2*(x@matrix.T)
-    gradient -= x*np.sum(gradient*x, axis=1)[:, None]
-    gradient /= max(2*np.linalg.norm(matrix, 2), 1e-12)
-    coupling = -np.expm1(-np.asarray(thickness_km)/p.traction_coupling_depth_km)
-    vertex_coupling = np.zeros(mesh.vertex_count)
-    vertex_area = np.zeros(mesh.vertex_count)
-    np.add.at(vertex_coupling, mesh.faces.ravel(), np.repeat(coupling*mesh.areas_unit_sphere, 3))
-    np.add.at(vertex_area, mesh.faces.ravel(), np.repeat(mesh.areas_unit_sphere, 3))
-    vertex_coupling /= vertex_area
-    return p.convective_traction_pa*vertex_coupling[:, None]*gradient
+    return prescribed_vertex_traction(mesh, seed=p.seed,
+        convective_traction_pa=p.convective_traction_pa, thickness_km=thickness_km,
+        traction_coupling_depth_km=p.traction_coupling_depth_km)
 
 
 def lid_geometry(column_temperature, surface_temperature, mantle_temperature, p: ShellParameters, thermal: GenesisParameters):
@@ -506,7 +496,8 @@ def save_shell_checkpoint(path: Path, state: ShellState, thermal_state: GenesisS
     """One atomically replaced NPZ contains metadata and both complete states."""
     arrays = {f.name: getattr(state, f.name) for f in fields(state) if isinstance(getattr(state, f.name), np.ndarray)}
     scalars = {f.name: getattr(state, f.name) for f in fields(state) if f.name not in arrays}
-    meta = {"format": SHELL_VERSION, "shell_parameters": asdict(p), "thermal_parameters": asdict(thermal),
+    meta = {"format": SHELL_VERSION, "thermal_model_version": MODEL_VERSION,
+            "shell_parameters": asdict(p), "thermal_parameters": asdict(thermal),
             "thermal_parameter_hash": parameter_hash(thermal), "shell_state": scalars,
             "thermal_state": asdict(thermal_state), "controls": controls, "provenance": provenance}
     meta["shell_parameter_hash"] = hashlib.sha256(json.dumps(asdict(p), sort_keys=True).encode()).hexdigest()
@@ -522,6 +513,7 @@ def load_shell_checkpoint(path: Path):
             meta = json.loads(str(archive["metadata"]))
             if meta["format"] != SHELL_VERSION:
                 raise ValueError("Unsupported shell checkpoint")
+            require_thermal_model_version(meta)
             p, thermal = ShellParameters(**meta["shell_parameters"]), GenesisParameters(**meta["thermal_parameters"])
             p.validate(thermal)
             thermal.validate()

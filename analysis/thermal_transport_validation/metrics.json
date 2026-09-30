@@ -1,0 +1,421 @@
+{
+  "parameters": {
+    "radius_km": 5287.0,
+    "mass_earth": 0.5,
+    "surface_gravity_m_s2": 7.12,
+    "water_volume_km3": 1126719620.5563111,
+    "water_density_kg_m3": 1000.0,
+    "initial_temperature_k": 2300.0,
+    "initial_surface_temperature_k": 2300.0,
+    "mantle_mass_fraction": 0.68,
+    "silicate_heat_capacity_j_kg_k": 1200.0,
+    "silicate_latent_heat_j_kg": 400000.0,
+    "solidus_k": 1400.0,
+    "liquidus_k": 2000.0,
+    "surface_layer_depth_m": 1000.0,
+    "surface_layer_density_kg_m3": 3000.0,
+    "water_heat_capacity_j_kg_k": 4200.0,
+    "water_latent_heat_j_kg": 2260000.0,
+    "critical_transition_width_k": 5.0,
+    "stellar_flux_w_m2": 1284.1486427638265,
+    "bond_albedo": 0.3,
+    "eclipse_fraction": 0.0,
+    "giant_absorbed_flux_w_m2": 0.0,
+    "tidal_heat_flux_w_m2": 0.0,
+    "radiogenic_specific_power_w_kg": 5e-12,
+    "radiogenic_half_life_myr": 2400.0,
+    "system_age_at_start_myr": 0.0,
+    "dry_optical_depth": 0.8,
+    "steam_opacity_m2_kg": 0.01,
+    "steam_olr_limit_w_m2": 282.0,
+    "hot_window_temperature_k": 1600.0,
+    "magma_transfer_w_m2_k": 100.0,
+    "solid_transfer_w_m2_k": 0.0005,
+    "rheology_transition_low_melt": 0.25,
+    "rheology_transition_high_melt": 0.55,
+    "lid_melt_threshold": 0.4,
+    "thermal_diffusivity_m2_s": 1e-06,
+    "mantle_depth_fraction_radius": 0.45,
+    "mantle_density_kg_m3": 4000.0,
+    "thermal_conductivity_w_m_k": 4.0,
+    "thermal_expansivity_per_k": 3e-05,
+    "viscosity_reference_pa_s": 1e+21,
+    "viscosity_reference_temperature_k": 1600.0,
+    "activation_energy_j_mol": 300000.0,
+    "viscosity_min_pa_s": 1e+18,
+    "viscosity_max_pa_s": 1e+24,
+    "critical_rayleigh": 1000.0,
+    "nusselt_prefactor": 0.27,
+    "nusselt_exponent": 0.3333333333333333
+  },
+  "parameter_hash": "16f1367eeb3db2a435fd67487ef72081e9bb311412b035b29ba023173a726ea4",
+  "tidal_parameters": {
+    "enabled": true,
+    "spin_state": "synchronous_zero_obliquity",
+    "primary_mass_kg": 9.49065e+27,
+    "semimajor_axis_km": 773185.98,
+    "eccentricity": 0.0002,
+    "satellite_mass_kg": 2.9861e+24,
+    "satellite_radius_km": 5287.0,
+    "surface_gravity_m_s2": 7.12,
+    "love_h2": 0.6,
+    "love_l2": 0.08,
+    "k2_over_q": 0.003,
+    "phase_samples": 16
+  },
+  "requested_times_myr": [
+    0.0,
+    1.0,
+    10.0,
+    50.0,
+    100.0,
+    200.0,
+    400.0,
+    640.0,
+    1000.0,
+    4500.0
+  ],
+  "runs": {
+    "old_zero_tide_step1": {
+      "run": "old_zero_tide_step1",
+      "max_thermal_step_myr": 1.0,
+      "early_max_thermal_step_myr": 0.01,
+      "external_segmentation": false,
+      "orbital": false,
+      "events_myr": {
+        "surface_lid": 0.8060638097495405,
+        "mantle_rheology": 0.9510766551367451,
+        "ocean_start": 1.0452435936879767
+      },
+      "stopped_reason": null,
+      "final_time_myr": 4500.0,
+      "max_abs_relative_energy_residual": 1.6280591329043749e-12,
+      "max_abs_relative_water_mass_residual": 0.0,
+      "orbit_heat_transfer_relative_residual": null,
+      "wall_seconds": 3.3115635999999995
+    },
+    "old_zero_tide_step0.5": {
+      "run": "old_zero_tide_step0.5",
+      "max_thermal_step_myr": 0.5,
+      "early_max_thermal_step_myr": 0.005,
+      "external_segmentation": false,
+      "orbital": false,
+      "events_myr": {
+        "surface_lid": 0.8060638201831282,
+        "mantle_rheology": 0.9510766532111595,
+        "ocean_start": 1.0452435953009962
+      },
+      "stopped_reason": null,
+      "final_time_myr": 4500.0,
+      "max_abs_relative_energy_residual": 1.6280591329043749e-12,
+      "max_abs_relative_water_mass_residual": 0.0,
+      "orbit_heat_transfer_relative_residual": null,
+      "wall_seconds": 6.473101200000087
+    },
+    "old_zero_tide_step1_segmented": {
+      "run": "old_zero_tide_step1_segmented",
+      "max_thermal_step_myr": 1.0,
+      "early_max_thermal_step_myr": 0.01,
+      "external_segmentation": true,
+      "orbital": false,
+      "events_myr": {
+        "surface_lid": 0.8060638363763761,
+        "mantle_rheology": 0.9510766510586952,
+        "ocean_start": 1.0452435937455848
+      },
+      "stopped_reason": null,
+      "final_time_myr": 4500.0,
+      "max_abs_relative_energy_residual": 3.6631330490348435e-12,
+      "max_abs_relative_water_mass_residual": 0.0,
+      "orbit_heat_transfer_relative_residual": null,
+      "wall_seconds": 3.3489285000000564
+    },
+    "old_orbit_step1": {
+      "run": "old_orbit_step1",
+      "max_thermal_step_myr": 1.0,
+      "early_max_thermal_step_myr": 0.01,
+      "external_segmentation": false,
+      "orbital": true,
+      "events_myr": {
+        "surface_lid": 0.8060936807727956,
+        "mantle_rheology": 0.9511083385887792,
+        "ocean_start": 1.045275801393355
+      },
+      "stopped_reason": null,
+      "final_time_myr": 4500.0,
+      "max_abs_relative_energy_residual": 5.291192181939218e-12,
+      "max_abs_relative_water_mass_residual": 0.0,
+      "orbit_heat_transfer_relative_residual": 1.0533896234322833e-15,
+      "wall_seconds": 14.391913299999942
+    },
+    "new_zero_tide_step1": {
+      "run": "new_zero_tide_step1",
+      "max_thermal_step_myr": 1.0,
+      "early_max_thermal_step_myr": 0.01,
+      "external_segmentation": false,
+      "orbital": false,
+      "events_myr": {
+        "surface_lid": 0.7551578981561927,
+        "ocean_start": 0.9448170889356148,
+        "mantle_rheology": 0.96474112169217
+      },
+      "stopped_reason": null,
+      "final_time_myr": 4500.0,
+      "max_abs_relative_energy_residual": 5.698206965165312e-12,
+      "max_abs_relative_water_mass_residual": 0.0,
+      "orbit_heat_transfer_relative_residual": null,
+      "wall_seconds": 3.3157201000000214
+    },
+    "new_zero_tide_step0.5": {
+      "run": "new_zero_tide_step0.5",
+      "max_thermal_step_myr": 0.5,
+      "early_max_thermal_step_myr": 0.005,
+      "external_segmentation": false,
+      "orbital": false,
+      "events_myr": {
+        "surface_lid": 0.7551579144847743,
+        "ocean_start": 0.9448170852799825,
+        "mantle_rheology": 0.9647411198114595
+      },
+      "stopped_reason": null,
+      "final_time_myr": 4500.0,
+      "max_abs_relative_energy_residual": 1.2210443496782812e-12,
+      "max_abs_relative_water_mass_residual": 0.0,
+      "orbit_heat_transfer_relative_residual": null,
+      "wall_seconds": 11.04555819999996
+    },
+    "new_zero_tide_step1_segmented": {
+      "run": "new_zero_tide_step1_segmented",
+      "max_thermal_step_myr": 1.0,
+      "early_max_thermal_step_myr": 0.01,
+      "external_segmentation": true,
+      "orbital": false,
+      "events_myr": {
+        "surface_lid": 0.7551579338440111,
+        "ocean_start": 0.9448170883886184,
+        "mantle_rheology": 0.9647411214469911
+      },
+      "stopped_reason": null,
+      "final_time_myr": 4500.0,
+      "max_abs_relative_energy_residual": 2.849103482582656e-12,
+      "max_abs_relative_water_mass_residual": 0.0,
+      "orbit_heat_transfer_relative_residual": null,
+      "wall_seconds": 3.275491000000102
+    },
+    "new_orbit_step1": {
+      "run": "new_orbit_step1",
+      "max_thermal_step_myr": 1.0,
+      "early_max_thermal_step_myr": 0.01,
+      "external_segmentation": false,
+      "orbital": true,
+      "events_myr": {
+        "surface_lid": 0.7551869189006684,
+        "ocean_start": 0.9448486861266199,
+        "mantle_rheology": 0.9647730285654881
+      },
+      "stopped_reason": null,
+      "final_time_myr": 4500.0,
+      "max_abs_relative_energy_residual": 9.971862189039296e-12,
+      "max_abs_relative_water_mass_residual": 1.163306270776433e-16,
+      "orbit_heat_transfer_relative_residual": 1.0533896234322833e-15,
+      "wall_seconds": 14.17571190000001
+    }
+  },
+  "convergence": [
+    {
+      "reference": "old_zero_tide_step1",
+      "candidate": "old_zero_tide_step0.5",
+      "sample_count": 10,
+      "max_absolute_differences": {
+        "mantle_temperature_k": 1.823514230636647e-05,
+        "surface_temperature_k": 1.3694135304831434e-05,
+        "mantle_melt_fraction": 3.039190385467627e-08,
+        "mantle_to_surface_flux_w_m2": 2.7961121418229595e-08,
+        "net_mantle_flux_w_m2": 2.7961121418229595e-08
+      },
+      "event_time_absolute_differences_myr": {
+        "ocean_start": 1.6130194957497679e-09,
+        "mantle_rheology": 1.925585579876099e-09,
+        "surface_lid": 1.0433587660507726e-08
+      }
+    },
+    {
+      "reference": "old_zero_tide_step1",
+      "candidate": "old_zero_tide_step1_segmented",
+      "sample_count": 10,
+      "max_absolute_differences": {
+        "mantle_temperature_k": 9.361656339024194e-09,
+        "surface_temperature_k": 7.552371243946254e-07,
+        "mantle_melt_fraction": 1.5602796832325794e-11,
+        "mantle_to_surface_flux_w_m2": 2.584479119605021e-08,
+        "net_mantle_flux_w_m2": 2.584479119605021e-08
+      },
+      "event_time_absolute_differences_myr": {
+        "ocean_start": 5.760814048016982e-11,
+        "mantle_rheology": 4.078049897771052e-09,
+        "surface_lid": 2.6626835625265244e-08
+      }
+    },
+    {
+      "reference": "new_zero_tide_step1",
+      "candidate": "new_zero_tide_step0.5",
+      "sample_count": 10,
+      "max_absolute_differences": {
+        "mantle_temperature_k": 1.5763589544803835e-07,
+        "surface_temperature_k": 1.2011097965114459e-06,
+        "mantle_melt_fraction": 2.627264517052197e-10,
+        "mantle_to_surface_flux_w_m2": 6.013574633811913e-07,
+        "net_mantle_flux_w_m2": 6.013574633811913e-07
+      },
+      "event_time_absolute_differences_myr": {
+        "ocean_start": 3.6556322413616726e-09,
+        "mantle_rheology": 1.8807104762430527e-09,
+        "surface_lid": 1.6328581597946368e-08
+      }
+    },
+    {
+      "reference": "new_zero_tide_step1",
+      "candidate": "new_zero_tide_step1_segmented",
+      "sample_count": 10,
+      "max_absolute_differences": {
+        "mantle_temperature_k": 1.6088051779661328e-08,
+        "surface_temperature_k": 1.3766550637228647e-06,
+        "mantle_melt_fraction": 2.6813440356932006e-11,
+        "mantle_to_surface_flux_w_m2": 1.739391208843699e-08,
+        "net_mantle_flux_w_m2": 1.739391208843699e-08
+      },
+      "event_time_absolute_differences_myr": {
+        "ocean_start": 5.469963371140807e-10,
+        "mantle_rheology": 2.45178877200658e-10,
+        "surface_lid": 3.5687818367158286e-08
+      }
+    }
+  ],
+  "early_times_myr": [
+    0.0,
+    0.001,
+    0.01,
+    0.1,
+    0.5,
+    1.0
+  ],
+  "early_runs": [
+    {
+      "run": "old_zero_tide_step1_early",
+      "max_thermal_step_myr": 1.0,
+      "early_max_thermal_step_myr": 0.01,
+      "external_segmentation": false,
+      "orbital": false,
+      "events_myr": {
+        "surface_lid": 0.8060638366804284,
+        "mantle_rheology": 0.951076651357702
+      },
+      "stopped_reason": null,
+      "final_time_myr": 1.0,
+      "max_abs_relative_energy_residual": 7.483716030692183e-16,
+      "max_abs_relative_water_mass_residual": 0.0,
+      "orbit_heat_transfer_relative_residual": null,
+      "wall_seconds": 0.11384139999995568
+    },
+    {
+      "run": "new_zero_tide_step1_early",
+      "max_thermal_step_myr": 1.0,
+      "early_max_thermal_step_myr": 0.01,
+      "external_segmentation": false,
+      "orbital": false,
+      "events_myr": {
+        "surface_lid": 0.7551579343656422,
+        "ocean_start": 0.9448170880388149,
+        "mantle_rheology": 0.9647411213250233
+      },
+      "stopped_reason": null,
+      "final_time_myr": 1.0,
+      "max_abs_relative_energy_residual": 1.2917949662937545e-15,
+      "max_abs_relative_water_mass_residual": 0.0,
+      "orbit_heat_transfer_relative_residual": null,
+      "wall_seconds": 0.17906859999993685
+    }
+  ],
+  "same_state_probe": {
+    "mantle_temperature_k": 1560.0,
+    "surface_temperature_k": 282.0,
+    "old": {
+      "mantle_to_surface_flux_w_m2": 0.712469959800791,
+      "effective_heat_transfer_w_m2_k": 0.000557488231456018,
+      "magma_transport_weight": 0.008916323731138537,
+      "legacy_solid_flux_w_m2": 0.639,
+      "legacy_equivalent_resistance_length_km": 8.0,
+      "counterfactual_viscosity_pa_s": 1.7828843535314584e+21,
+      "counterfactual_rayleigh_number": 8247729.184699514,
+      "counterfactual_nusselt_number": 5.455173423197245,
+      "counterfactual_conductive_heat_flux_w_m2": 0.0021486665405712124,
+      "counterfactual_solid_convective_heat_flux_w_m2": 0.011721348607437242,
+      "counterfactual_thermal_boundary_layer_thickness_km": 436.1272897178756
+    },
+    "new": {
+      "mantle_to_surface_flux_w_m2": 0.013543368204940015,
+      "viscosity_pa_s": 1.7828843535314584e+21,
+      "rayleigh_number": 8247729.184699514,
+      "nusselt_number": 5.455173423197245,
+      "conductive_heat_flux_w_m2": 0.0021486665405712124,
+      "solid_convective_heat_flux_w_m2": 0.011721348607437242,
+      "thermal_boundary_layer_thickness_km": 436.1272897178756,
+      "effective_heat_transfer_w_m2_k": 1.059731471435056e-05,
+      "magma_transport_weight": 0.008916323731138537
+    },
+    "budget_at_system_age_10_myr": {
+      "radiogenic_flux_w_m2": 0.028820432115306497,
+      "tidal_flux_w_m2": 0.0,
+      "old_net_mantle_flux_w_m2": -0.6836495276854845,
+      "new_net_mantle_flux_w_m2": 0.015277063910366482
+    }
+  },
+  "hot_window_probe": [
+    {
+      "surface_temperature_k": 2300.0,
+      "outgoing_longwave_w_m2": 13896.568980019,
+      "absorbed_stellar_flux_w_m2": 224.72601248366962,
+      "hot_window_w_m2": 13614.568980019
+    },
+    {
+      "surface_temperature_k": 2000.0,
+      "outgoing_longwave_w_m2": 1733.615851264,
+      "absorbed_stellar_flux_w_m2": 224.72601248366962,
+      "hot_window_w_m2": 1451.615851264
+    },
+    {
+      "surface_temperature_k": 1800.0,
+      "outgoing_longwave_w_m2": 372.72599070399997,
+      "absorbed_stellar_flux_w_m2": 224.72601248366962,
+      "hot_window_w_m2": 90.725990704
+    },
+    {
+      "surface_temperature_k": 1600.0,
+      "outgoing_longwave_w_m2": 282.0,
+      "absorbed_stellar_flux_w_m2": 224.72601248366962,
+      "hot_window_w_m2": 0.0
+    }
+  ],
+  "checks": {
+    "all_histories_reach_4500_myr": true,
+    "energy_ledger_relative_error_below_1e-7": true,
+    "water_mass_relative_error_below_1e-14": true,
+    "step_and_segmentation_temperature_differences_below_0_01_k": true,
+    "orbit_heat_transfer_relative_error_below_1e-12": true
+  },
+  "source_sha256": {
+    "tectonics/genesis.py": "11e6d61c3ad0d3dcd0992d99990b038c64eae1ea8944eaff8f99814e1b4f0744",
+    "tectonics/mantle_convection.py": "5c2356bff232b56c7488be5c7921eeeeb650bdd469866d9198743493eb27bde3",
+    "tectonics/genesis_onset.py": "dfcfff0b85fbc24236b586c34a8f0bd186ee323f2b1c50997b6f85f83d42fb4f",
+    "tectonics/genesis_tides.py": "54bfc97aa6bbbf5a959a8ba0295bbd30bcc1f1d584b100828149076aa110f3a7",
+    "analysis/genesis_mantle_transport_validation.py": "6fe7af52f6dc9406062d0810c9e4f017b430315765ec171ace4cc93d738c8a9e"
+  },
+  "limitations": [
+    "Legacy histories replace only mantle exchange with the exact previous log blend; all other current Genesis laws are shared.",
+    "Legacy eta/Ra/Nu/solid-convection fields are explicitly counterfactual diagnostics, not terms in the old energy balance.",
+    "The optional orbit path is the Starter global heat/orbit solver with isolated eccentricity damping; it excludes passive columns and mechanics.",
+    "Partially molten trajectories remain governed by the inherited empirical melt interval and geometric conductance blend, not a resolved melt-flow model.",
+    "The hot-window OLR is unchanged and is an approximate atmosphere parameterization, not a radiative-transfer calculation.",
+    "No stagnant/mobile-lid regime classification or tectonic onset is inferred from the heat-transport scaling."
+  ]
+}

@@ -1,0 +1,131 @@
+{
+  "scope": "Read-only source and heat-owner baseline; basal-only initial equilibrium, not a plate-speed prediction.",
+  "source_sha256": {
+    "D:\\Moon Project\\mantle-convection\\results\\genesis_runs\\starter_20260928_192306_547551\\starter_checkpoint.npz": "b4584dd66208ff80aea18a178c38da2b96e353c723663251091886dee49e87f6",
+    "D:\\Moon Project\\mantle-convection\\results\\genesis_runs\\starter_20260928_192306_547551\\parameters.json": "01eec3e1cb40b5f71b6b52aec5e1c6d9bc0c40c04587a797729e09e420b30877"
+  },
+  "source_time_myr": 0.8781219482421875,
+  "plate_count": 2,
+  "cell_count": 5120,
+  "radius_km": 5287.0,
+  "source_import": {
+    "origin_time_myr": 0.8781219482421875,
+    "mechanics_model_version": "young-mechanics-0.5",
+    "primary_density_kg_m3": 3000.0,
+    "initial_mantle_material_mass_kg": 2.02949422051479e+24,
+    "initial_primary_mass_kg": 1.053779485209973e+21,
+    "initial_primary_thickness_km": 1.0,
+    "initial_mechanical_lid_thickness_km": 0.2161622569084551,
+    "initial_liquid_water_volume_km3": 0.0,
+    "initial_starter_fit_residual": 0.9999984729964919,
+    "material_closure": "existing surface reservoir assumed primary mafic, not mechanical lid",
+    "initial_material_mass_relative_residual": -2.643970553761841e-16,
+    "initial_energy_partition_relative_residual": -2.572227929747918e-16
+  },
+  "basal": {
+    "total_lid_thickness_km": 0.2161622569084551,
+    "omega_rad_myr": [
+      [
+        -2.556185936106103e-07,
+        1.7643180369506822e-07,
+        5.068580957918894e-07
+      ],
+      [
+        2.5023764058167305e-07,
+        -1.7467583775390182e-07,
+        -4.96164211255477e-07
+      ]
+    ],
+    "least_squares_omega_rad_myr": [
+      [
+        -2.5561859361057665e-07,
+        1.7643180369503185e-07,
+        5.068580957920444e-07
+      ],
+      [
+        2.5023764058162805e-07,
+        -1.746758377539132e-07,
+        -4.961642112554576e-07
+      ]
+    ],
+    "oracle_max_absolute_error_rad_myr": 1.5500702934753696e-19,
+    "mean_speed_mm_yr": 0.0024433756327430427,
+    "max_speed_mm_yr": 0.0031428717726614923,
+    "source_power_w": 227.59412188590977,
+    "drag_dissipation_w": 227.59412188589056,
+    "relative_power_residual": 8.441815375435924e-14,
+    "convention": "Pure uniform primordial H; old cell-to-vertex coupling is exact here. No slab/ridge force."
+  },
+  "heat": {
+    "duration_myr": 0.25,
+    "context": {
+      "thermal": {
+        "time_myr": 1.1281219482421876,
+        "energy": [
+          12180.475539489622,
+          4.880889573310743,
+          8001.596016363222,
+          14121.669522470715
+        ],
+        "initial_total_energy": 18305.429935170403,
+        "events": {
+          "surface_lid": 0.7551869624996964,
+          "ocean_start": 0.9448487295790463,
+          "mantle_rheology": 0.9647730722917853
+        },
+        "stopped_reason": null
+      },
+      "orbit": {
+        "time_myr": 1.1281219482421876,
+        "semimajor_axis_km": 773185.9496706903,
+        "eccentricity": 2.781349869675668e-05,
+        "dissipated_energy_j": 4.798114808426688e+25
+      },
+      "column_enthalpy": [
+        648213.6470854544,
+        1229257.532168987,
+        1764431.8496527728,
+        2310353.559976476,
+        2648701.8157701306,
+        2828100.6767401034,
+        2914954.354018469,
+        2977365.262527288,
+        3023726.2109495574,
+        3058823.3183547393,
+        3085477.5775277773,
+        3105495.3993386696,
+        3120139.0672353636,
+        3130337.5465174927,
+        3136769.1787685975,
+        3139886.1659542597,
+        3139917.4405712676,
+        3136867.95902603,
+        3130522.593746173,
+        3120458.3848367054,
+        3106067.2623906806,
+        3086590.505804657,
+        3061165.0058835996,
+        3028879.4180059573,
+        2988835.933276085,
+        2940211.9318586374,
+        2882317.110490932,
+        2814647.360565506,
+        2701916.4659104147,
+        2556969.878609626,
+        2389919.574056066,
+        2205265.3840812724
+      ],
+      "boundary_energy_j_m2": -47652804856125.95,
+      "initial_column_energy_j_m2": 379200000000000.0,
+      "last_tidal_heat_flux_w_m2": 0.0003026731343026723
+    },
+    "sample_count": 37,
+    "energy_relative_residual": 1.1924261227326965e-15,
+    "partition_energy_relative_residual": 0.0,
+    "silicate_mass_relative_residual": -2.643970553761841e-16,
+    "water_mass_relative_residual": -2.326612541552866e-16,
+    "input_context_unchanged": true,
+    "heat_owner": "Genesis only; parcel deficits and reference column remain passive."
+  },
+  "source_unchanged": true
+}

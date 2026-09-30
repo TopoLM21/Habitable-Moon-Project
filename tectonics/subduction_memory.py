@@ -37,6 +37,12 @@ class SubductionMemoryParameters:
     polarity_hysteresis_enabled: bool = False
     polarity_advantage_ratio: float = 1.10
     polarity_memory_myr: float = 24.0
+    # Opt-in young path consumes accepted transport events, not speed labels.
+    model: str = "legacy"
+    young_slab_thermal_diffusivity_m2_s: float = 1e-6
+    young_slab_mantle_depth_km: float | None = None
+    young_slab_connectivity_model: str = "legacy_fixed_contacts"
+    young_slab_buoyancy_model: str = "uniform_thermal_mass_v1"
 
 
 @dataclass(slots=True)
@@ -79,6 +85,7 @@ class SubductionMemoryState:
     detachments: int = 0
     breakoffs: int = 0
     cumulative_subducted_area_km2: float = 0.0
+    young_boundary_state: object | None = None
 
 
 @dataclass(slots=True)
@@ -178,6 +185,26 @@ def advance_subduction_memory(
     if not params.enabled:
         memory.time_myr = float(state.time_myr)
         return memory, diagnose_subduction_memory(memory, params)
+
+    if params.model == "accepted_material_v1":
+        from .young_boundary import YoungBoundaryState, advance_contact_geometry, synchronize_young_zones
+        if memory.young_boundary_state is None:
+            if memory.zones:
+                raise ValueError("Cannot infer accepted young slab inventory from legacy slab lengths")
+            memory.young_boundary_state = YoungBoundaryState(
+                connectivity_model=params.young_slab_connectivity_model,
+                buoyancy_geometry_model=params.young_slab_buoyancy_model)
+        memory.young_boundary_state.thermal_diffusivity_m2_s = float(params.young_slab_thermal_diffusivity_m2_s)
+        memory.young_boundary_state.mantle_depth_km = params.young_slab_mantle_depth_km
+        if memory.young_boundary_state.connectivity_model != params.young_slab_connectivity_model:
+            raise ValueError("Saved slab connectivity differs from configured mechanics")
+        if memory.young_boundary_state.buoyancy_geometry_model != params.young_slab_buoyancy_model:
+            raise ValueError("Saved slab buoyancy geometry differs from configured mechanics")
+        advance_contact_geometry(mesh,boundaries,radius_km,dt_myr,memory.young_boundary_state)
+        synchronize_young_zones(memory,state,params)
+        return memory, diagnose_subduction_memory(memory,params)
+    if params.model != "legacy":
+        raise ValueError("Unknown subduction memory model")
 
     # Aggregate current mesh-edge segments by oriented plate pair.
     agg: dict[tuple[int, int], dict[str, object]] = {}
@@ -303,6 +330,9 @@ def remap_subduction_memory(
     """
     old_owner = np.asarray(old_system.cell_plate, dtype=np.int32)
     new_owner = np.asarray(new_system.cell_plate, dtype=np.int32)
+    if memory.young_boundary_state is not None:
+        from .young_boundary import remap_young_inventory
+        remap_young_inventory(mesh,old_owner,new_owner,memory.young_boundary_state)
     out: dict[tuple[int,int], SlabZone] = {}
     for z in memory.zones.values():
         mapped=[]
@@ -338,6 +368,9 @@ def remap_subduction_memory(
             old.torque_axis=(old.torque_axis*old.trench_length_km+nz.torque_axis*nz.trench_length_km)/total; old.torque_axis/=max(np.linalg.norm(old.torque_axis),1e-30)
             old.trench_length_km=total
     memory.zones=out
+    if memory.young_boundary_state is not None:
+        from .young_boundary import update_young_zone_moments
+        update_young_zone_moments(memory)
     return memory
 
 
@@ -357,8 +390,11 @@ def diagnose_subduction_memory(memory: SubductionMemoryState, params: Subduction
 
 def memory_to_json(memory: SubductionMemoryState | None) -> dict | None:
     if memory is None: return None
+    from .young_boundary import boundary_state_to_json
     return {
         "time_myr":float(memory.time_myr),"births":int(memory.births),"detachments":int(memory.detachments),"breakoffs":int(getattr(memory,"breakoffs",0)),"cumulative_subducted_area_km2":float(memory.cumulative_subducted_area_km2),
+        **({"young_boundary_state": boundary_state_to_json(memory.young_boundary_state)}
+           if memory.young_boundary_state is not None else {}),
         "zones":[{
             "subducting_plate":int(z.subducting_plate),"overriding_plate":int(z.overriding_plate),"active":bool(z.active),"active_age_myr":float(z.active_age_myr),"inactive_age_myr":float(z.inactive_age_myr),
             "slab_length_km":float(z.slab_length_km),"slab_depth_km":float(z.slab_depth_km),"dip_deg":float(z.dip_deg),"trench_length_km":float(z.trench_length_km),"convergence_rate_km_per_myr":float(z.convergence_rate_km_per_myr),"buoyancy_factor":float(z.buoyancy_factor),
@@ -372,7 +408,9 @@ def memory_to_json(memory: SubductionMemoryState | None) -> dict | None:
 
 def memory_from_json(data: dict | None) -> SubductionMemoryState | None:
     if data is None: return None
+    from .young_boundary import boundary_state_from_json
     m=SubductionMemoryState(time_myr=float(data.get("time_myr",0.0)),births=int(data.get("births",0)),detachments=int(data.get("detachments",0)),breakoffs=int(data.get("breakoffs",0)),cumulative_subducted_area_km2=float(data.get("cumulative_subducted_area_km2",0.0)))
+    m.young_boundary_state = boundary_state_from_json(data.get('young_boundary_state'))
     for d in data.get("zones",[]):
         z=SlabZone(subducting_plate=int(d["subducting_plate"]),overriding_plate=int(d["overriding_plate"]),active=bool(d.get("active",True)),active_age_myr=float(d.get("active_age_myr",0.0)),inactive_age_myr=float(d.get("inactive_age_myr",0.0)),slab_length_km=float(d.get("slab_length_km",0.0)),slab_depth_km=float(d.get("slab_depth_km",0.0)),dip_deg=float(d.get("dip_deg",35.0)),trench_length_km=float(d.get("trench_length_km",0.0)),convergence_rate_km_per_myr=float(d.get("convergence_rate_km_per_myr",0.0)),buoyancy_factor=float(d.get("buoyancy_factor",1.0)),cumulative_subducted_area_km2=float(d.get("cumulative_subducted_area_km2",0.0)),rollback_distance_km=float(d.get("rollback_distance_km",0.0)),rollback_rate_km_per_myr=float(d.get("rollback_rate_km_per_myr",0.0)),continental_collision_age_myr=float(d.get("continental_collision_age_myr",0.0)),breakoff_damage=float(d.get("breakoff_damage",0.0)),last_front_continental_fraction=float(d.get("last_front_continental_fraction",0.0)),broken_off=bool(d.get("broken_off",False)),post_breakoff_age_myr=float(d.get("post_breakoff_age_myr",0.0)),breakoff_time_myr=float(d.get("breakoff_time_myr",-1.0)),trench_midpoint=np.asarray(d.get("trench_midpoint",[1,0,0]),dtype=np.float64),torque_axis=np.asarray(d.get("torque_axis",[0,0,1]),dtype=np.float64))
         m.zones[z.key()]=z

@@ -8,7 +8,7 @@ Run in a dedicated CLI process: the legacy runner installs process-global hooks.
 from __future__ import annotations
 
 from copy import deepcopy
-from dataclasses import asdict, replace
+from dataclasses import asdict, dataclass, replace
 import hashlib
 import json
 import math
@@ -20,19 +20,24 @@ import yaml
 
 from .checkpoint import load_checkpoint, save_checkpoint
 from .genesis import GenesisParameters
+from .genesis_checkpoint_compat import require_thermal_model_version
 from .genesis_mature import (build_experimental_genesis_mature_import,
                              save_experimental_genesis_mature_import)
 from .genesis_shell import ShellParameters
 from .genesis_long_term_support import begin_mechanical_transition, mechanical_sample, refresh_matched_mechanics
 from .genesis_starter import StarterModel, StarterParameters
 from .genesis_starter_fracture import YoungShellFracture
-from .genesis_starter_material import primary_material_inventory, independent_mantle_omega
+from .genesis_starter_material import (primary_material_inventory, independent_mantle_omega,
+    independent_mantle_source_omega, mantle_source_parameters)
+from .genesis_young_mechanics import (MECHANICS_MODEL_VERSION, mechanics_version,
+    corrected_mechanics, sinking_mechanics, transmitted_mantle_flow, advance_prescribed_source)
+from .genesis_starter_loading import thermal_budget_fields
 from .genesis_tides import (TidalParameters, advance_tidal_orbit, mean_motion_rad_s)
 from .kinematics import classify_boundaries
 from .mesh import build_icosphere
 from .simulation import load_config, PrototypeResult
 from .subduction_memory import SubductionMemoryParameters
-from .thermal import ThermalParameters, ThermalState, ThermalDiagnostics, convective_state
+from .thermal import ThermalParameters, ThermalState, ThermalDiagnostics
 from .topology import PlateTopologyManager, PlateTopologyParameters
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -51,6 +56,42 @@ LIMITATIONS = [
     "Long-run execution is tested; geological realism, resolution/time convergence and sustained mobile tectonics are not established.",
 ]
 
+NEW_MECHANICS_LIMITATIONS = [
+    *LIMITATIONS[:4],
+    "Basal torque balance uses prescribed traction and linear drag; convection itself is not solved.",
+    "Ridge push uses a passive local cooling profile and a plate-mean flank contrast, not a resolved pressure field.",
+    "Accepted slab material and finite-sheet warming are tracked; default slab force is disabled pending a validated transmission/resistance law.",
+    "Full-transmission slab forcing is an explicit upper-bound experiment, not a calibrated physical prediction.",
+    "Material transport is still raster based; accumulated signed closure does not yet create conservative fractional parcels.",
+    "SI collision/transform contact reactions and continental GPE are not implemented in this young force mode.",
+    "Live damage still uses the shared prescribed Starter loading; the separate free-edge membrane diagnostic is not a Maxwell evolution solver.",
+    "Local cooling and slab warming are passive mechanical diagnostics; Genesis owns global heat without a second heat sink.",
+    "Legacy CPU/GPU boundary-force kernels are bypassed by the NumPy SI solve; material kernels remain available.",
+    LIMITATIONS[-1],
+]
+
+
+def mechanics_limitations(config):
+    """Describe the saved force law without relabeling older model reports."""
+    if not sinking_mechanics(config):
+        return NEW_MECHANICS_LIMITATIONS if corrected_mechanics(config) else LIMITATIONS
+    version = mechanics_version(config).split('-')[-1]
+    mode = config.get("plate_dynamics", {}).get("young_slab_force_model")
+    force = {
+        "viscous_sinking_v1": "Connected accepted slabs exert thermal-buoyancy forces with viscous bending and mantle drag; shape and ambient flow remain prescribed reduced-order approximations.",
+        "disabled_pending_closure": f"Slab forces are explicitly disabled in this {version} control configuration; accepted material and finite-sheet warming remain tracked.",
+        "full_transmission_upper_bound": f"This {version} configuration explicitly selects full-transmission slab forcing as an upper-bound experiment, not the default viscous-sinking closure.",
+    }.get(mode, f"Configured young slab force closure: {mode}.")
+    layers = (["Thermal buoyancy follows retained acceptance-age layers, newest at the trench; each cohort remains uniform internally and the dip/shape is prescribed.",
+               "Instantaneous neck severing still uses a surface-derived scalar tensile strength; a depth-resolved, conservative viscous neck and pressure-dependent yielding are not yet implemented."]
+              if config.get("plate_dynamics", {}).get("young_slab_buoyancy_model") == "ordered_thermal_cohorts_v1" else [])
+    return [*NEW_MECHANICS_LIMITATIONS[:6], force, *layers,
+        "The attached branch forbids eduction; finite live tensile strength can detach a neck, but gradual neck deformation and return of buried material to the surface are not resolved.",
+        "Only thermal mantle buoyancy is included; compositional crust buoyancy, free trench rollback, and dynamically evolved slab dip are not resolved.",
+        "Slab connectivity follows local raster-edge transfers; frequent detachment or unresolved connections cannot establish sustained Earth-like subduction.",
+        "Mechanical dissipation is diagnosed but is not fed back as heat to the authoritative global Genesis reservoirs.",
+        *NEW_MECHANICS_LIMITATIONS[8:]]
+
 
 def _json(path, value):
     Path(path).write_text(json.dumps(value, ensure_ascii=False, indent=2, allow_nan=False)+"\n", encoding="utf-8")
@@ -61,6 +102,7 @@ def load_starter_source(path):
     metadata = json.loads((path.parent/"parameters.json").read_text(encoding="utf-8"))
     if metadata.get("format") != "genesis-starter-run-0.1":
         raise ValueError("Expected starter checkpoint with its parameters.json")
+    require_thermal_model_version(metadata)
     shell = ShellParameters(**metadata["shell"])
     model = StarterModel(build_icosphere(shell.subdivisions), GenesisParameters(**metadata["thermal"]),
                          TidalParameters(**metadata["tides"]), shell, StarterParameters(**metadata["starter"]))
@@ -73,25 +115,52 @@ def _period(model, orbit):
     return 2*math.pi/mean_motion_rad_s(parameters)/3600.
 
 
+@dataclass(slots=True)
+class GenesisThermalDiagnostics(ThermalDiagnostics):
+    """Genesis budget in mature history, without changing ordinary mature output.
+
+    The inherited thermal_lithosphere_thickness_km is a legacy mechanics input
+    in this adapter. thermal_boundary_layer_thickness_km is the solid-convection
+    D/Nu resistance scale; neither quantity is chemical crust thickness.
+    """
+    surface_temperature_k: float
+    mantle_melt_fraction: float
+    solid_convective_heat_flux_w_m2: float
+    conductive_heat_flux_w_m2: float
+    mantle_to_surface_flux_w_m2: float
+    thermal_boundary_layer_thickness_km: float
+    effective_heat_transfer_w_m2_k: float
+    magma_transport_weight: float
+    net_mantle_flux_w_m2: float
+    mechanical_lithosphere_thickness_km: float
+
+
 def project_thermal(model, state, parameters, reference_flux=None, mechanical_transition=None):
     sample = mechanical_sample(model.loading.sample(state.thermal_context), mechanical_transition)
     row = sample.thermal
-    effective = replace(parameters, surface_temperature_k=row["surface_temperature_k"])
-    eta, ra, nu, _, _ = convective_state(row["mantle_temperature_k"], model.thermal.radius_km,
-                                        model.thermal.surface_gravity_m_s2, effective)
+    # These describe the same transport law that actually advanced enthalpy,
+    # even if the supplied mature thermal configuration uses other constants.
+    eta, ra, nu = (row[name] for name in ("viscosity_pa_s", "rayleigh_number", "nusselt_number"))
     flux = row["mantle_to_surface_flux_w_m2"]
     reference = max(float(flux if reference_flux is None else reference_flux), 1e-12)
     activity = float(np.clip(flux/reference, parameters.min_tectonic_activity_factor,
                             parameters.max_tectonic_activity_factor))
     time = state.time_myr
     age = time+model.thermal.system_age_at_start_myr
+    # The mature runner consumes this legacy slot in force calculations. Keep
+    # its existing mechanical-column meaning; never feed it back into heat loss.
     thermal = ThermalState(time, age, row["mantle_temperature_k"], reference, activity,
                            max(sample.lid_thickness_km, model.shell.min_load_bearing_thickness_km))
     area = model.thermal.area_m2
     qrad, qtide = row["radiogenic_flux_w_m2"], row["tidal_flux_w_m2"]
-    diag = ThermalDiagnostics(time, age, thermal.mantle_temperature_k, eta, ra, nu, flux,
+    diag = GenesisThermalDiagnostics(time, age, thermal.mantle_temperature_k, eta, ra, nu, flux,
         qrad, qtide, qrad+qtide-flux, qrad*area/1e12, qtide*area/1e12, flux*area/1e12,
-        thermal.thermal_lithosphere_thickness_km, activity, sample.orbit.eccentricity)
+        thermal.thermal_lithosphere_thickness_km, activity, sample.orbit.eccentricity,
+        row["surface_temperature_k"], row["mantle_melt_fraction"],
+        row["solid_convective_heat_flux_w_m2"], row["conductive_heat_flux_w_m2"], flux,
+        row["thermal_boundary_layer_thickness_km"], row["effective_heat_transfer_w_m2_k"],
+        row["magma_transport_weight"], row["net_mantle_flux_w_m2"],
+        thermal.thermal_lithosphere_thickness_km)
     return thermal, diag
 
 
@@ -123,9 +192,45 @@ def build_starter_continuation(model, state, mature_config):
     # Keep the requested mature slab weight: a runtime length gate below gives
     # zero pull before a real slab exists. Young ridges have no finite-age floor.
     cfg["plate_dynamics"]["ridge_gpe_min_factor"] = 0.
+    cfg["plate_dynamics"].setdefault("mantle_projection", "velocity_least_squares")
     cfg["plate_topology"]["split_differential_speed_deg_per_myr"] = 0.
+    young_options = dict(cfg.get("young_shell", {}))
     cfg["young_shell"] = {"damage_law": "shared_starter", "fracture_memory_version": 1,
-        "slab_activation": "convergence_integrated_length", "max_fractures_per_step": 1}
+        "slab_activation": "convergence_integrated_length", "max_fractures_per_step": 1,
+        "mechanics_model_version": MECHANICS_MODEL_VERSION, **young_options,
+        "origin_time_myr": float(state.time_myr)}
+    new_mechanics = corrected_mechanics(cfg)
+    if new_mechanics:
+        cfg["young_shell"].update(basal_source=mantle_source_parameters(model).metadata(),
+            source_evolution="prescribed_constant", mechanical_activity="explicit_material_fields",
+            slab_activation="accepted_material_v1", local_cooling="passive_material_age_v1")
+        cfg["plate_dynamics"].update(force_model="young_si_v1",
+            basal_drag_pa_s_m=model.parameters.basal_drag_pa_s_m,
+            gravity_m_s2=p.surface_gravity_m_s2)
+        sinking = sinking_mechanics(cfg)
+        buoyancy_model = ("ordered_thermal_cohorts_v1" if mechanics_version(cfg) == MECHANICS_MODEL_VERSION
+                          else "uniform_thermal_mass_v1")
+        cfg["plate_dynamics"].setdefault("young_slab_force_model",
+            "viscous_sinking_v1" if sinking else "disabled_pending_closure")
+        cfg["plate_dynamics"].setdefault("young_velocity_response_model",
+            "quasistatic" if sinking else "relaxed")
+        if sinking:
+            cfg["plate_dynamics"].setdefault("young_slab_buoyancy_model", buoyancy_model)
+            from .mantle_convection import mantle_viscosity_pa_s
+            cfg["plate_dynamics"].setdefault("young_slab_viscosity_contrast", 100.)
+            cfg["plate_dynamics"].setdefault("young_slab_bend_radius_thickness_ratio", 3.)
+            cfg["plate_dynamics"].setdefault("young_slab_mantle_shear_length_fraction", .5)
+            cfg["plate_dynamics"].update(
+                young_slab_mantle_viscosity_pa_s=mantle_viscosity_pa_s(material.mantle_temperature_k, p),
+                young_slab_mantle_depth_km=p.radius_km*p.mantle_depth_fraction_radius)
+        cfg["subduction_memory"]["model"] = "accepted_material_v1"
+        cfg["subduction_memory"].update(
+            young_slab_thermal_diffusivity_m2_s=p.thermal_diffusivity_m2_s,
+            young_slab_mantle_depth_km=p.radius_km*p.mantle_depth_fraction_radius,
+            young_slab_connectivity_model=("local_edge_transfer_v1" if sinking else "legacy_fixed_contacts"))
+        if sinking:
+            cfg["subduction_memory"].setdefault("young_slab_buoyancy_model",
+                cfg["plate_dynamics"]["young_slab_buoyancy_model"])
     cfg["hydrosphere"]["water_volume_km3"] = float(material.liquid_water_mass_kg.sum()/p.water_density_kg_m3/1e9)
     cfg.setdefault("mantle_plumes", {})["initial_plume_count"] = 0
     thermal, _ = project_thermal(model, state, ThermalParameters(**cfg["thermal"]))
@@ -138,7 +243,8 @@ def build_starter_continuation(model, state, mature_config):
         tidal_damage=state.damage, mantle_lithosphere_thickness_km=h,
         mantle_lithosphere_density_anomaly_kg_m3=np.full(n, density), thermal=thermal,
         elevation_m=np.zeros(n), water_volume_km3=cfg["hydrosphere"]["water_volume_km3"],
-        mantle_cell_omega_rad_per_myr=independent_mantle_omega(model, state),
+        mantle_cell_omega_rad_per_myr=(independent_mantle_source_omega(model) if new_mechanics
+                                     else independent_mantle_omega(model, state)),
         source_mass_kg=material.source_silicate_mass_kg, source_enthalpy_j=material.source_enthalpy_j,
         next_plume_birth_time_myr=state.time_myr+float(cfg.get("mantle_plumes", {}).get("mean_birth_interval_myr", 160.)),
         source_metadata={"kind": FORMAT, "physical_handoff_certified": False,
@@ -148,8 +254,14 @@ def build_starter_continuation(model, state, mature_config):
             "starter_fingerprint": model.fingerprint},
         topology_parameters=PlateTopologyParameters(**cfg["plate_topology"]))
     bundle.checkpoint.manager.last_split_time_myr = state.time_myr
+    if new_mechanics:
+        from .young_boundary import YoungBoundaryState
+        bundle.checkpoint.subduction_memory.young_boundary_state = YoungBoundaryState(
+            connectivity_model=cfg["subduction_memory"]["young_slab_connectivity_model"],
+            buoyancy_geometry_model=cfg["subduction_memory"].get("young_slab_buoyancy_model", "uniform_thermal_mass_v1"))
     bundle.checkpoint.events += deepcopy(state.events)
     report = {"origin_time_myr": state.time_myr,
+        "mechanics_model_version": mechanics_version(cfg),
         "primary_density_kg_m3": material.primary_density_kg_m3,
         "initial_mantle_material_mass_kg": float(material.mantle_mass_kg.sum()),
         "initial_primary_mass_kg": float(material.primary_mass_kg.sum()),
@@ -166,6 +278,37 @@ def build_starter_continuation(model, state, mature_config):
 class YoungWorldCoupling:
     def __init__(self, model, source_state, cfg, initial_checkpoint, history=None, fracture=None):
         self.model, self.source_state, self.cfg = model, deepcopy(source_state), cfg
+        self.new_mechanics = corrected_mechanics(cfg)
+        if self.new_mechanics:
+            if cfg["young_shell"].get("basal_source") != mantle_source_parameters(model).metadata():
+                raise ValueError("Young basal source provenance does not match the Starter")
+            if cfg["plate_dynamics"].get("force_model") != "young_si_v1":
+                raise ValueError("Versioned young mechanics requires its explicit SI force model")
+            if (cfg["plate_dynamics"].get("young_slab_force_model") == "viscous_sinking_v1"
+                    and not sinking_mechanics(cfg)):
+                raise ValueError("Sinking mechanics requires version 0.4 or later; rebuild from Starter")
+            inventory = initial_checkpoint.subduction_memory.young_boundary_state
+            expected_connectivity = cfg["subduction_memory"].get(
+                "young_slab_connectivity_model", "legacy_fixed_contacts")
+            if (cfg["plate_dynamics"].get("young_slab_force_model") == "viscous_sinking_v1"
+                    and expected_connectivity != "local_edge_transfer_v1"):
+                raise ValueError("Sinking mechanics requires local_edge_transfer_v1 connectivity")
+            if inventory is None or inventory.connectivity_model != expected_connectivity:
+                raise ValueError("Saved slab connectivity differs from its configured model")
+            buoyancy_model = cfg["plate_dynamics"].get("young_slab_buoyancy_model", "uniform_thermal_mass_v1")
+            if buoyancy_model not in ("uniform_thermal_mass_v1", "ordered_thermal_cohorts_v1"):
+                raise ValueError("Unknown young slab buoyancy geometry")
+            if (buoyancy_model == "ordered_thermal_cohorts_v1"
+                    and mechanics_version(cfg) != MECHANICS_MODEL_VERSION):
+                raise ValueError("Ordered slab buoyancy requires version 0.5; rebuild from Starter")
+            if (cfg["subduction_memory"].get("young_slab_buoyancy_model", "uniform_thermal_mass_v1") != buoyancy_model
+                    or inventory.buoyancy_geometry_model != buoyancy_model):
+                raise ValueError("Saved slab buoyancy geometry differs from its configured model")
+            expected_source = independent_mantle_source_omega(model)
+            if (initial_checkpoint.mantle_flow is None or not np.allclose(
+                    initial_checkpoint.mantle_flow.cell_omega_rad_per_myr,
+                    expected_source, rtol=5e-13, atol=1e-18)):
+                raise ValueError("Saved prescribed source field differs from its provenance; rebuild from Starter")
         self.before_orbit = self.source_state.thermal_context.orbit
         self.initial_checkpoint = initial_checkpoint
         self.history = list(history or [])
@@ -179,6 +322,22 @@ class YoungWorldCoupling:
         self.fracture.set_damage(initial_checkpoint.state.tidal_damage)
         self.previous_mechanical_sample = mechanical_sample(model.loading.sample(source_state.thermal_context),
             cfg.get("young_shell", {}).get("mechanical_transition"))
+
+    def dynamics_parameters(self, params):
+        """Use the current thermal owner's rheology without editing its energy.
+
+        The configured initial viscosity is checkpoint provenance; a continuing
+        world must not freeze ambient mantle resistance at first partition.
+        """
+        if params is None or params.young_slab_force_model != "viscous_sinking_v1":
+            return params
+        from .mantle_convection import mantle_viscosity_pa_s
+        sample = self.model.loading.sample(self.source_state.thermal_context)
+        return replace(params,
+            young_slab_mantle_viscosity_pa_s=mantle_viscosity_pa_s(
+                sample.thermal["mantle_temperature_k"], self.model.thermal),
+            young_slab_mantle_depth_km=(self.model.thermal.radius_km
+                *self.model.thermal.mantle_depth_fraction_radius))
 
     def at(self, time_myr):
         # Mature tidal damage queries both endpoints and the midpoint.
@@ -252,6 +411,31 @@ class YoungWorldCoupling:
             dt = args[0] if args else options.pop("dt_myr", 0.)
             refresh_matched_mechanics(state, dt, age_cap,
                 max(previous["mantle_temperature_k"]-previous["surface_temperature_k"], 0.), **options)
+            if self.new_mechanics:
+                from .lithosphere import oceanic_thermal_lithosphere_total_thickness_km
+                ocean_total = oceanic_thermal_lithosphere_total_thickness_km(
+                    np.minimum(state.crust_age_myr, age_cap),
+                    thermal_diffusivity_m2_s=float(options.get("thermal_diffusivity_m2_s", 1e-6)),
+                    cooling_coefficient=float(options.get("cooling_coefficient", 2.)),
+                    max_total_thickness_km=float(options.get("oceanic_max_total_thickness_km", 155.)))
+                fraction = (np.clip(state.continental_fraction, 0., 1.) if state.continental_fraction is not None
+                    else (state.crust_type == 1).astype(float))
+                # A chemically present newborn oceanic crust is not already
+                # a cold load-bearing lid. Mixed/continental roots retain
+                # their existing evolved H plus the chemical crust.
+                total = np.where(fraction == 0., ocean_total,
+                    np.maximum(state.mantle_lithosphere_thickness_km+crust, 0.))
+                self.local_mechanical_diagnostics = {"model_version": "young-mechanics-0.3",
+                    "local_total_lid_thickness_km": total,
+                    "thermal_owner": "Genesis; matched mature material-age mechanics after column exhaustion"}
+            return state
+        if self.new_mechanics:
+            from .genesis_local_mechanics import refresh_young_material_mechanics
+            self.local_mechanical_diagnostics = refresh_young_material_mechanics(
+                state, sample, self.model,
+                origin_time_myr=self.cfg["young_shell"]["origin_time_myr"],
+                thermal_diffusivity_m2_s=float(self.cfg.get("mechanical_lithosphere", {}).get(
+                    "thermal_diffusivity_m2_s", 1e-6)))
             return state
         state.mantle_lithosphere_thickness_km = np.maximum(sample.lid_thickness_km-crust, 0.)
         deficit = max(sample.thermal["mantle_temperature_k"]-sample.mean_lid_temperature_k, 0.)
@@ -266,6 +450,9 @@ class YoungWorldCoupling:
             self.cfg.get("young_shell", {}).get("mechanical_transition"))
         self.fracture.set_damage(state.tidal_damage)
         row = {"time_myr": state.time_myr, "plate_count": len(system.plates),
+            "mechanics_model_version": mechanics_version(self.cfg),
+            "mechanical_activity_factor": 1. if self.new_mechanics else None,
+            **thermal_budget_fields(sample.thermal),
             "mean_surface_speed_km_myr": float(self.model.areas@speed/self.model.areas.sum()),
             "max_surface_speed_km_myr": float(speed.max()),
             "transport_commits": transport.cumulative_commit_count,
@@ -293,13 +480,46 @@ class YoungWorldCoupling:
         old_lith = runner.v124._original_advance_lithosphere
         old_hydro = base.advance_hydrosphere
         old_dynamics = base.update_plate_dynamics
-        current = {"system": self.initial_checkpoint.system, "transport": self.initial_checkpoint.transport_state}
+        if self.new_mechanics:
+            # Keep the v0.31 wrapper so plume diagnostics still observe source
+            # updates. Only its source evolution is replaced in this process.
+            if hasattr(runner, "_original_advance_mantle_flow"):
+                runner._original_advance_mantle_flow = advance_prescribed_source
+            else:
+                base.advance_mantle_flow = advance_prescribed_source
+        current = {"system": self.initial_checkpoint.system,
+                   "transport": self.initial_checkpoint.transport_state,
+                   "subduction_memory": self.initial_checkpoint.subduction_memory}
+        if self.new_mechanics:
+            from .subduction_memory import advance_subduction_memory
+            old_subduction = getattr(base, "advance_subduction_memory", advance_subduction_memory)
+
+            def subduction(*args, **kwargs):
+                arguments = list(args)
+                if sinking_mechanics(cfg):
+                    incoming = arguments[1] if len(arguments) > 1 else kwargs["state"]
+                    # Heat and live material strength already represent the
+                    # accepted endpoint. Warm retained cohorts and evaluate
+                    # their dip/depth at that same time; signed contact-area
+                    # integration still receives the original dt unchanged.
+                    endpoint = replace(incoming, time_myr=self.source_state.time_myr)
+                    if len(arguments) > 1:
+                        arguments[1] = endpoint
+                    else:
+                        kwargs["state"] = endpoint
+                result = old_subduction(*arguments, **kwargs)
+                current["subduction_memory"] = result[0]
+                return result
+
+            base.advance_subduction_memory = subduction
         old_manager = base.PlateTopologyManager
         old_remap = base.remap_transport_state
 
         class TrackingManager(old_manager):
             def update(manager, mesh, state, system, boundaries, radius_km, dt_myr):
                 updated, diag, events = super().update(mesh, state, system, boundaries, radius_km, dt_myr)
+                from .genesis_starter_topology import canonicalize_plate_seeds
+                updated = canonicalize_plate_seeds(mesh, updated)
                 # Run after the normal connectivity repair, inside its event
                 # transaction. The runner will remap transport and slab memory
                 # once for the combined topology change.
@@ -330,6 +550,55 @@ class YoungWorldCoupling:
 
         def dynamics(*args, **kwargs):
             from .genesis_starter_slab import young_slab_pull
+            if self.new_mechanics:
+                arguments = list(args)
+                incoming = arguments[1] if len(arguments) > 1 else kwargs["state"]
+                # Heat precedes dynamics. Compute current mechanical fields on
+                # an independent view without changing the material time step.
+                age_step = self.source_state.time_myr - incoming.time_myr
+                current_material = replace(incoming, time_myr=self.source_state.time_myr,
+                    crust_age_myr=incoming.crust_age_myr + age_step)
+                self.local_mechanical_diagnostics = None
+                self.mechanical_fields(current_material)
+                if len(arguments) > 1:
+                    arguments[1] = current_material
+                else:
+                    kwargs["state"] = current_material
+                h = (current_material.mantle_lithosphere_thickness_km
+                     + np.maximum(current_material.crust_thickness_km, 0.))
+                if self.local_mechanical_diagnostics is not None:
+                    h = self.local_mechanical_diagnostics["local_total_lid_thickness_km"]
+                kwargs["mantle_flow"] = transmitted_mantle_flow(model, kwargs["mantle_flow"], h)
+                if len(arguments) > 8:
+                    arguments[8] = self.dynamics_parameters(arguments[8])
+                    force_parameters = arguments[8]
+                elif "params" in kwargs:
+                    kwargs["params"] = self.dynamics_parameters(kwargs["params"])
+                    force_parameters = kwargs["params"]
+                else:
+                    force_parameters = None
+                if (force_parameters is not None and
+                        force_parameters.young_slab_force_model == "viscous_sinking_v1"):
+                    # Neck failure uses the transported, evolved material
+                    # strength already owned by the live young fracture law.
+                    # A separate array keeps the pure force solve read-only.
+                    kwargs["young_slab_strength_pa"] = self.fracture.memory.strength_pa.copy()
+                    if kwargs.get("trace") is None:
+                        kwargs["trace"] = {}
+                result = old_dynamics(*arguments, **kwargs)
+                if (force_parameters is not None and
+                        force_parameters.young_slab_force_model == "viscous_sinking_v1"):
+                    failures = kwargs["trace"].get("slab_neck_failures", ())
+                    if failures:
+                        from .young_boundary import commit_slab_neck_failures, synchronize_young_zones
+                        memory = kwargs.get("subduction_memory")
+                        commit_slab_neck_failures(memory, failures, current_material.time_myr)
+                        sub_params = kwargs.get("subduction_memory_params")
+                        if sub_params is None:
+                            sub_params = SubductionMemoryParameters(**cfg["subduction_memory"])
+                        synchronize_young_zones(memory, current_material, sub_params)
+                current["system"] = result[0]
+                return result
             with young_slab_pull(SubductionMemoryParameters(**cfg["subduction_memory"])):
                 result = old_dynamics(*args, **kwargs)
             current["system"] = result[0]
@@ -353,6 +622,17 @@ class YoungWorldCoupling:
                 kwargs["state"] = working
             kwargs["tidal_damage_rate_per_myr"] = 0.
             kwargs["tidal_damage_relaxation_myr"] = math.inf
+            if self.new_mechanics:
+                from .young_boundary import accept_slab_material, synchronize_young_zones
+
+                def accepted_material(events, new_state):
+                    memory = current["subduction_memory"]
+                    accept_slab_material(model.mesh, memory.young_boundary_state,
+                                         events, new_state.time_myr)
+                    synchronize_young_zones(memory, new_state,
+                                           SubductionMemoryParameters(**cfg["subduction_memory"]))
+
+                kwargs["young_subduction_sink"] = accepted_material
             result = old_lith(*arguments, **kwargs)
             self.fracture.transport(result[3].material_source_index)
             # The mature loading law is disabled, but real material replacement
@@ -419,6 +699,12 @@ def run_starter_continuation(source, output, duration_myr=10., step_myr=1., resu
         model, state, metadata = load_starter_source(source/"young_context"/"starter_checkpoint.npz")
         fracture = YoungShellFracture.load(model, source/"young_context"/"fracture_memory.npz")
         cfg = load_config(source/"mature_config.yaml")
+        mechanics_version(cfg)  # Reject unknown semantics; absent means legacy.
+        # Older young checkpoints contain tangent local omega fields but did
+        # not record a projection method. Upgrade their mapping explicitly in
+        # the new output configuration, preserving every physical coefficient
+        # and the source archive. An explicit saved legacy mode is respected.
+        cfg["plate_dynamics"].setdefault("mantle_projection", "velocity_least_squares")
         cp = _load_cp(source/"mature_checkpoint", cfg)
         provenance = previous["import"]
         history = previous["history"]
@@ -511,14 +797,33 @@ def run_starter_continuation(source, output, duration_myr=10., step_myr=1., resu
         "liquid_water_matches_condensation": math.isclose(final.hydrosphere.water_volume_km3,
             sample.thermal["ocean_fraction"]*model.thermal.water_volume_km3, rel_tol=1e-12, abs_tol=1e-6),
         "positive_remaining_material": provenance["initial_mantle_material_mass_kg"]+transfer > 0.}
+    slab_inventory = None
+    if coupling.new_mechanics:
+        from .young_boundary import accepted_slab_inventory_diagnostics
+        slab_inventory = accepted_slab_inventory_diagnostics(final.subduction_memory)
+        initial_slab = accepted_slab_inventory_diagnostics(initial_cp.subduction_memory)
+        accepted_delta = (slab_inventory["cumulative_accepted_oceanic_volume_km3"]
+                          - initial_slab["cumulative_accepted_oceanic_volume_km3"])
+        partitioned = sum(slab_inventory[name] for name in (
+            "attached_oceanic_volume_km3", "deep_oceanic_volume_km3",
+            "unresolved_or_detached_oceanic_volume_km3"))
+        checks["slab_material_inventory"] = (
+            math.isclose(accepted_delta, ledger["sink_components_km3"]["oceanic_subduction"],
+                         rel_tol=5e-12, abs_tol=1e-6)
+            and math.isclose(partitioned, slab_inventory["cumulative_accepted_oceanic_volume_km3"],
+                             rel_tol=5e-12, abs_tol=1e-6))
     from .transport import quaternion_angle_deg
     from .dynamics import angular_velocity_vectors
     omega = angular_velocity_vectors(final.system)
     speed = np.linalg.norm(np.cross(omega[final.state.cell_plate], model.mesh.centroids), axis=1)*model.thermal.radius_km
     report = {"format": FORMAT, "status": "completed" if all(checks.values()) else "validation_failed",
+        "mechanics_model_version": mechanics_version(cfg),
         "physical_handoff_certified": False, "mature_engine_executed": True,
         "import": provenance, "duration_myr": duration_myr, "step_myr": step_myr,
         "final_time_myr": end, "clocks": clocks, "checks": checks, "material_ledger": ledger,
+        "accepted_slab_inventory": slab_inventory,
+        "young_slab_force_model": cfg["plate_dynamics"].get("young_slab_force_model"),
+        "young_slab_buoyancy_model": cfg["plate_dynamics"].get("young_slab_buoyancy_model", "uniform_thermal_mass_v1"),
         "cumulative_mantle_material_transfer_kg": transfer,
         "remaining_mantle_material_mass_kg": provenance["initial_mantle_material_mass_kg"]+transfer,
         "history": coupling.history, "final_plate_count": len(final.system.plates),
@@ -528,10 +833,12 @@ def run_starter_continuation(source, output, duration_myr=10., step_myr=1., resu
         "maximum_residual_rotation_deg": max(quaternion_angle_deg(q) for q in final.transport_state.residual_quaternions),
         "final_mean_surface_speed_km_myr": float(model.areas@speed/model.areas.sum()),
         "final_max_surface_speed_km_myr": float(speed.max()),
-        "ocean_fraction": sample.thermal["ocean_fraction"], "limitations": LIMITATIONS,
+        "ocean_fraction": sample.thermal["ocean_fraction"],
+        "limitations": mechanics_limitations(cfg),
         "mechanical_transition": cfg.get("young_shell", {}).get("mechanical_transition"),
         "mesh_history": mesh_history,
         "execution": {"cpu_workers": cpu_workers, "render_workers": render_workers,
+            "plate_force_backend": "numpy_si" if coupling.new_mechanics else "legacy_effective",
             "process_priority": process_priority, "applied_priority": applied_priority,
             "cell_kernels": cell_kernels, "numeric_kernels": numeric_kernels,
             "single_source_cells": single_source_cells, "cell_workers": cell_workers,

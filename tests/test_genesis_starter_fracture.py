@@ -156,6 +156,31 @@ def test_new_cross_plate_cut_uses_old_boundary_as_anchor_without_replaying_it(ge
     assert len(fracture.events) == 2
 
 
+def test_transported_stale_seeds_do_not_change_cut_or_independent_motion(geometry):
+    model, source, fracture = geometry
+    old_band = np.abs(model.mesh.centroids[:, 0]) < .12
+    new_band = np.abs(model.mesh.centroids[:, 2]) < .12
+    fracture.set_damage(.8*old_band)
+    divided, _ = fracture.attempt(source.system)
+    divided.plates[1].euler_axis = np.array([1., 0., 0.])
+    divided.plates[1].angular_speed_rad_per_myr = np.deg2rad(.4)
+    fracture.set_damage(.8*(old_band | new_band))
+    expected_fracture = deepcopy(fracture)
+    expected, expected_event = expected_fracture.attempt(deepcopy(divided))
+    for pid, plate in enumerate(divided.plates):
+        plate.seed_cell = int(np.flatnonzero(divided.cell_plate != pid)[0])
+    original = deepcopy(divided)
+    result, event = fracture.attempt(divided)
+    assert event == expected_event
+    assert event is not None
+    np.testing.assert_array_equal(result.cell_plate, expected.cell_plate)
+    np.testing.assert_array_equal(angular_velocity_vectors(result), angular_velocity_vectors(expected))
+    np.testing.assert_array_equal(divided.cell_plate, original.cell_plate)
+    np.testing.assert_array_equal(angular_velocity_vectors(divided), angular_velocity_vectors(original))
+    assert [p.seed_cell for p in divided.plates] == [p.seed_cell for p in original.plates]
+    assert_equal(fracture, expected_fracture)
+
+
 def test_used_band_rearms_only_after_healing_and_new_loading(geometry):
     model, source, fracture = geometry
     weak = np.abs(model.mesh.centroids[:, 0]) < .12

@@ -25,10 +25,10 @@ import math
 
 import numpy as np
 
+from .mantle_convection import R_GAS, mantle_convection_state, mantle_viscosity_pa_s
 from .tides import EccentricityHistory, G, M_JUPITER, semi_major_axis_from_period
 
 M_EARTH = 5.9722e24
-R_GAS = 8.31446261815324
 SECONDS_PER_MYR = 1.0e6 * 365.25 * 86400.0
 
 
@@ -98,45 +98,27 @@ def _geometry(mass_earth: float, radius_km: float, params: ThermalParameters) ->
     return mass_kg, mantle_mass_kg, surface_area_m2, mantle_depth_m
 
 
-def mantle_viscosity_pa_s(temperature_k: float, params: ThermalParameters) -> float:
-    t = max(float(temperature_k), 1.0)
-    tref = max(float(params.viscosity_reference_temperature_k), 1.0)
-    exponent = float(params.activation_energy_j_mol) / R_GAS * (1.0 / t - 1.0 / tref)
-    exponent = float(np.clip(exponent, -60.0, 60.0))
-    eta = float(params.viscosity_reference_pa_s) * math.exp(exponent)
-    return float(np.clip(eta, params.viscosity_min_pa_s, params.viscosity_max_pa_s))
-
-
 def convective_state(
     temperature_k: float,
     radius_km: float,
     surface_gravity_m_s2: float,
     params: ThermalParameters,
-) -> tuple[float, float, float, float]:
-    """Return (viscosity, Ra, Nu, surface convective heat flux W/m2)."""
-    radius_m = float(radius_km) * 1000.0
-    depth = radius_m * float(params.mantle_depth_fraction_radius)
-    delta_t = max(float(temperature_k) - float(params.surface_temperature_k), 1.0)
-    eta = mantle_viscosity_pa_s(temperature_k, params)
-    ra = (
-        float(params.mantle_density_kg_m3)
-        * float(surface_gravity_m_s2)
-        * float(params.thermal_expansivity_per_k)
-        * delta_t
-        * depth**3
-        / (float(params.thermal_diffusivity_m2_s) * eta)
+) -> tuple[float, float, float, float, float]:
+    """Return viscosity, Ra, Nu, total surface heat flux W/m2 and depth/Nu km."""
+    diagnostics = mantle_convection_state(
+        temperature_k,
+        radius_km,
+        surface_gravity_m_s2,
+        params,
+        surface_temperature_k=params.surface_temperature_k,
     )
-    if ra <= float(params.critical_rayleigh):
-        nu = 1.0
-    else:
-        nu = float(params.nusselt_prefactor) * (
-            ra / float(params.critical_rayleigh)
-        ) ** float(params.nusselt_exponent)
-        nu = max(nu, 1.0)
-    conductive = float(params.thermal_conductivity_w_m_k) * delta_t / depth
-    flux = conductive * nu
-    thermal_lithosphere_km = depth / nu / 1000.0
-    return eta, float(ra), float(nu), float(flux), float(thermal_lithosphere_km)
+    return (
+        diagnostics.viscosity_pa_s,
+        diagnostics.rayleigh_number,
+        diagnostics.nusselt_number,
+        diagnostics.convective_heat_flux_w_m2,
+        diagnostics.thermal_lithosphere_thickness_km,
+    )
 
 
 def radiogenic_power_w(

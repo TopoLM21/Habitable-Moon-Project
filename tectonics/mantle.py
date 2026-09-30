@@ -49,6 +49,24 @@ class MantleFlowDiagnostics:
     realised_amplitude_fraction: float
 
 
+@dataclass(slots=True, frozen=True)
+class MantleRigidFit:
+    """Area-weighted rigid fit to physical mantle velocities on each plate.
+
+    The kinetic fraction is a velocity-squared proxy, not thermodynamic energy.
+    Empty plates have zero values and rank zero. A one-cell patch cannot identify
+    rotation about that cell's normal; its fit is the minimum-norm solution.
+    """
+    omega_rad_per_myr: Array
+    plate_area_km2: Array
+    local_rms_speed_km_per_myr: Array
+    fitted_rms_speed_km_per_myr: Array
+    residual_rms_speed_km_per_myr: Array
+    relative_residual: Array
+    represented_kinetic_fraction: Array
+    moment_rank: Array
+
+
 def _plate_omega(system: PlateSystem) -> Array:
     return np.asarray(
         [p.euler_axis * p.angular_speed_rad_per_myr for p in system.plates],
@@ -162,12 +180,93 @@ def plate_mean_mantle_omega(
     return out
 
 
+def plate_rigid_mantle_fit(
+    mesh: SphereMesh,
+    cell_plate: Array,
+    plate_count: int,
+    radius_km: float,
+    mantle: MantleFlowState,
+) -> MantleRigidFit:
+    """Minimize sum(A_i * |R * omega_p x r_i - u_i|**2) per plate.
+
+    A cell's stored omega is not a uniquely defined Euler vector: adding any
+    multiple of its radial unit vector leaves its tangential velocity unchanged.
+    In particular Genesis stores the minimum-norm, tangential representation.
+    Averaging these vectors is not a least-squares fit to their velocities.
+
+    With v_i=u_i/R=omega_i x r_i, the normal equations are
+    M_p omega_p = b_p, M_p=sum A_i(I-r_i r_i^T), b_p=sum A_i(r_i x v_i).
+    Cell areas are normalized by plate area before solving to avoid radius or
+    patch-size dependent numerical conditioning. No amplitude calibration,
+    net-rotation subtraction, relaxation, or speed floor is applied here.
+
+    This helper is deliberately separate from the legacy omega average so
+    existing mature reconstructions can preserve their original projection.
+    """
+    owner = np.asarray(cell_plate)
+    field = np.asarray(mantle.cell_omega_rad_per_myr, dtype=np.float64)
+    if (isinstance(plate_count, (bool, np.bool_))
+            or not isinstance(plate_count, (int, np.integer)) or plate_count <= 0):
+        raise ValueError("plate_count must be a positive integer")
+    count = int(plate_count)
+    radius = float(radius_km)
+    if not np.isfinite(radius) or radius <= 0.0:
+        raise ValueError("radius_km must be positive and finite")
+    if (owner.shape != (mesh.cell_count,) or owner.dtype.kind not in "iu"
+            or np.any(owner < 0) or np.any(owner >= count)
+            or field.shape != (mesh.cell_count, 3) or not np.isfinite(field).all()):
+        raise ValueError("mantle/current plate field does not match mesh")
+    positions = np.asarray(mesh.centroids, dtype=np.float64)
+    areas = mesh.physical_cell_areas_km2(radius)
+    weights = np.bincount(owner, weights=areas, minlength=count)
+    angular_velocity = np.cross(field, positions)
+    local_torque = np.cross(positions, angular_velocity)
+    moment = np.zeros((count, 3, 3), dtype=np.float64)
+    torque = np.zeros((count, 3), dtype=np.float64)
+    for axis in range(3):
+        torque[:, axis] = np.bincount(
+            owner, weights=areas * local_torque[:, axis], minlength=count)
+        for other in range(3):
+            moment[:, axis, other] = np.bincount(
+                owner, weights=areas * ((axis == other)
+                    - positions[:, axis] * positions[:, other]), minlength=count)
+    omega = np.zeros((count, 3), dtype=np.float64)
+    rank = np.zeros(count, dtype=np.int8)
+    for pid in np.flatnonzero(weights > 0.0):
+        omega[pid], _, rank[pid], _ = np.linalg.lstsq(
+            moment[pid] / weights[pid], torque[pid] / weights[pid], rcond=None)
+
+    fitted = np.cross(omega[owner], positions)
+    residual = angular_velocity - fitted
+
+    def squared_sum(values):
+        return np.bincount(owner,
+            weights=areas * np.sum(values * values, axis=1), minlength=count)
+
+    local_square = squared_sum(angular_velocity)
+    fitted_square = squared_sum(fitted)
+    residual_square = squared_sum(residual)
+
+    def rms(square):
+        return radius * np.sqrt(np.divide(square, weights,
+            out=np.zeros(count), where=weights > 0.0))
+
+    relative = np.sqrt(np.divide(residual_square, local_square,
+        out=np.zeros(count), where=local_square > 0.0))
+    represented = np.clip(np.divide(fitted_square, local_square,
+        out=np.zeros(count), where=local_square > 0.0), 0.0, 1.0)
+    return MantleRigidFit(omega, weights, rms(local_square), rms(fitted_square),
+        rms(residual_square), relative, represented, rank)
+
+
 __all__ = [
     "MantleFlowParameters",
     "MantleFlowState",
     "MantleFlowDiagnostics",
+    "MantleRigidFit",
     "initialize_mantle_flow",
     "advance_mantle_flow",
     "mantle_flow_rms_rad_per_myr",
     "plate_mean_mantle_omega",
+    "plate_rigid_mantle_fit",
 ]

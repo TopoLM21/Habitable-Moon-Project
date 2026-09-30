@@ -910,9 +910,12 @@ def advance_lithosphere(
     craton_min_extension_factor: float = 0.28,
     transport_state=None,
     transport_parameters=None,
+    young_subduction_sink=None,
 ) -> tuple[LithosphereState, Array, Array, LithosphereStepDiagnostics]:
     if dt_myr <= 0.0:
         raise ValueError("dt_myr must be positive")
+    if young_subduction_sink is not None and (transport_state is None or state.oceanic_volume_km3 is None):
+        raise ValueError("Young accepted-material sink requires conservative tracked ocean volume")
     n = mesh.cell_count
     areas = mesh.physical_cell_areas_km2(radius_km)
     old_ocean_volume = None
@@ -1090,7 +1093,11 @@ def advance_lithosphere(
         else:
             # Ocean-ocean overlap: preferentially consume older oceanic crust.
             ages = state.crust_age_myr[src]
-            order = np.lexsort((plates, ages))  # youngest first
+            if young_subduction_sink is None:
+                order = np.lexsort((plates, ages))  # youngest first, historical mode
+            else:
+                from .young_boundary import young_ocean_overlap_order
+                order = young_ocean_overlap_order(mesh,state,src,int(target))
             winner = int(order[0])
             winner_src = int(src[winner])
             new_plate[target] = int(plates[winner])
@@ -1153,7 +1160,12 @@ def advance_lithosphere(
     new_ocean_volume = None
     oceanic_created_volume = oceanic_subducted_volume = 0.0
     oceanic_rift_recycled_volume = 0.0
+    young_acceptance_snapshot = None
     if old_ocean_volume is not None:
+        if young_subduction_sink is not None:
+            # Preserve the exact basalt-loss transaction before later
+            # continental redistribution modifies material donor metadata.
+            young_acceptance_snapshot = (new_plate.copy(),material_source_index.copy())
         new_ocean_volume = np.zeros(n, dtype=np.float64)
         inherited = material_source_index >= 0
         winner_sources = material_source_index[inherited]
@@ -1501,6 +1513,11 @@ def advance_lithosphere(
             + oceanic_subducted_volume + oceanic_rift_recycled_volume
         )),
     )
+    if young_subduction_sink is not None:
+        from .young_boundary import raster_acceptance_events
+        events = raster_acceptance_events(mesh,state,*young_acceptance_snapshot,
+            tmap,initial_system,radius_km)
+        young_subduction_sink(events,new_state)
     return new_state, strain, weakening, diag
 
 

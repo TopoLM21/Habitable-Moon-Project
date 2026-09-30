@@ -1,0 +1,329 @@
+{
+  "scope": "Local polarity memory and passive slab cohorts; no initiation or force feedback",
+  "tests": {
+    "passed": 317,
+    "seconds": 406.13,
+    "log_sha256": "2a9a2f3b59555575c8c76cae09043beb028f508b82aff15c548eb536aa036211"
+  },
+  "baseline": {
+    "production_sha256": {
+      "unchanged_count": 176,
+      "changed": {},
+      "missing": []
+    },
+    "source_sha256": {
+      "unchanged_count": 54,
+      "changed": {},
+      "missing": []
+    },
+    "previous_geometry_sha256": {
+      "unchanged_count": 4,
+      "changed": {
+        "tectonics/geometric_transport.py": {
+          "before": "bb79aa0e4f770f12a91ccecdfb167e948fa30265816e287b2a54d91f6a55ac83",
+          "after": "c89783695afd823abcb6fd5840597fd6dc7253cfc3aa9f74444551e91ac63d39"
+        }
+      },
+      "missing": []
+    },
+    "previous_geometry_tests_sha256": {
+      "unchanged_count": 4,
+      "changed": {},
+      "missing": []
+    }
+  },
+  "synthetic_case": {
+    "status": "complete",
+    "elapsed_seconds": 4.57303420000062,
+    "scenario": {
+      "experiment": "synthetic geometric passive slab connection",
+      "dt_myr": 0.1,
+      "thermal_evolution": "endpoint archival properties; no surface warming",
+      "forces_active": false,
+      "motions": {
+        "differential": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.01
+          ]
+        ],
+        "common": [
+          [
+            0.002,
+            -0.003,
+            0.001
+          ],
+          [
+            0.002,
+            -0.003,
+            0.001
+          ]
+        ]
+      }
+    },
+    "source_mesh_cells": 20,
+    "initial_time_myr": 0.0,
+    "accepted_time_myr": 0.1,
+    "final_time_myr": 0.2,
+    "initial": {
+      "area_km2": 125663.70614359171,
+      "oceanic_volume_km3": 311017.6727053895,
+      "cold_mantle_volume_km3": 1124690.1699851458,
+      "density_excess_mass_kg": 2.0106192982974675e+17
+    },
+    "remaining": {
+      "area_km2": 125663.70614359171,
+      "oceanic_volume_km3": 311015.35153151717,
+      "cold_mantle_volume_km3": 1124525.5276374011,
+      "density_excess_mass_kg": 2.0102192982974675e+17
+    },
+    "removed": {
+      "area_km2": 20.00000000000164,
+      "oceanic_volume_km3": 42.32117387233048,
+      "cold_mantle_volume_km3": 164.64234774466752,
+      "density_excess_mass_kg": 40000000000003.28
+    },
+    "born": {
+      "area_km2": 19.999999999999087,
+      "oceanic_volume_km3": 39.999999999998174,
+      "cold_mantle_volume_km3": 0.0,
+      "density_excess_mass_kg": 0.0
+    },
+    "maximum_relative_material_ledger_residuals": {
+      "area_km2": 1.4475057750305073e-16,
+      "oceanic_volume_km3": 1.2587006739395718e-16,
+      "cold_mantle_volume_km3": 1.3951862891860312e-16,
+      "density_excess_mass_kg": 1.5915494309189536e-16
+    },
+    "accepted_boundary": {
+      "version": "geometric-boundary-1",
+      "time_myr": 0.1,
+      "cohort_count": 12,
+      "transaction_count": 1,
+      "accepted": {
+        "area_km2": 20.00000000000164,
+        "oceanic_volume_km3": 42.32117387233048,
+        "cold_mantle_volume_km3": 164.64234774466752,
+        "density_excess_mass_kg": 40000000000003.28
+      },
+      "by_attachment": {
+        "geometric_contact": {
+          "area_km2": 18.500854616796243,
+          "oceanic_volume_km3": 38.72515766717927,
+          "cold_mantle_volume_km3": 151.45373380154348,
+          "density_excess_mass_kg": 37001709233592.484
+        },
+        "unresolved_attachment": {
+          "area_km2": 1.4991453832054005,
+          "oceanic_volume_km3": 3.5960162051512197,
+          "cold_mantle_volume_km3": 13.188613943124043,
+          "density_excess_mass_kg": 2998290766410.8013
+        },
+        "unresolved_connectivity": {
+          "area_km2": 0.0,
+          "oceanic_volume_km3": 0.0,
+          "cold_mantle_volume_km3": 0.0,
+          "density_excess_mass_kg": 0.0
+        },
+        "unresolved_lateral_allocation": {
+          "area_km2": 0.0,
+          "oceanic_volume_km3": 0.0,
+          "cold_mantle_volume_km3": 0.0,
+          "density_excess_mass_kg": 0.0
+        }
+      },
+      "attachment_counts": {
+        "geometric_contact": 7,
+        "unresolved_attachment": 5,
+        "unresolved_connectivity": 0,
+        "unresolved_lateral_allocation": 0
+      },
+      "forces_active": false,
+      "thermal_evolution": "archival values frozen; optional passive warming diagnostic only"
+    },
+    "final_boundary": {
+      "version": "geometric-boundary-1",
+      "time_myr": 0.2,
+      "cohort_count": 12,
+      "transaction_count": 2,
+      "accepted": {
+        "area_km2": 20.00000000000164,
+        "oceanic_volume_km3": 42.32117387233048,
+        "cold_mantle_volume_km3": 164.64234774466752,
+        "density_excess_mass_kg": 40000000000003.28
+      },
+      "by_attachment": {
+        "geometric_contact": {
+          "area_km2": 18.500854616796243,
+          "oceanic_volume_km3": 38.72515766717927,
+          "cold_mantle_volume_km3": 151.45373380154348,
+          "density_excess_mass_kg": 37001709233592.484
+        },
+        "unresolved_attachment": {
+          "area_km2": 1.4991453832054005,
+          "oceanic_volume_km3": 3.5960162051512197,
+          "cold_mantle_volume_km3": 13.188613943124043,
+          "density_excess_mass_kg": 2998290766410.8013
+        },
+        "unresolved_connectivity": {
+          "area_km2": 0.0,
+          "oceanic_volume_km3": 0.0,
+          "cold_mantle_volume_km3": 0.0,
+          "density_excess_mass_kg": 0.0
+        },
+        "unresolved_lateral_allocation": {
+          "area_km2": 0.0,
+          "oceanic_volume_km3": 0.0,
+          "cold_mantle_volume_km3": 0.0,
+          "density_excess_mass_kg": 0.0
+        }
+      },
+      "attachment_counts": {
+        "geometric_contact": 7,
+        "unresolved_attachment": 5,
+        "unresolved_connectivity": 0,
+        "unresolved_lateral_allocation": 0
+      },
+      "forces_active": false,
+      "thermal_evolution": "archival values frozen; optional passive warming diagnostic only"
+    },
+    "accepted_event_ids": [
+      "geometric-loss:03233e7721c623d1ea8c18dcb9ca199a0659aedff36727549d16a95eacd578e2",
+      "geometric-loss:2a9b5c157c91a4fdbd0fff4e51d8bf377cf27666e840d523ea41100ed9c76869",
+      "geometric-loss:3ad767bc3bf2f7aee7593a3a176194cbf920a5c240537ce3159c7f1158bee2ec",
+      "geometric-loss:4e15385c601a7f170b1476218c80327270c37713e32dc6df13459509030b5fd1",
+      "geometric-loss:62e6ce6d1caec5761643752ed11c1e6d3ac637c622ccd0532d403ddfdeb8ae64",
+      "geometric-loss:65593b678d5e7787d99a260369c72a38bd8642d275d6470dd0bcfe4a86661fdc",
+      "geometric-loss:83147acda90d7c803d94fddf0afabf9671a42e34fc1ed9ae4761c3ca12ba5229",
+      "geometric-loss:86635b9e838d94293f14c4a21750c0ec3f25277f78391a151c2757cef2b37cc1",
+      "geometric-loss:96c0cbb8374f83b3083a155c455695958ef6c844747bedc8a72ce13cd5b8bec6",
+      "geometric-loss:99967d2e7cb8742e8218c51a3d2f6b42697c9314d28bc2dc4afda1f571f8e5fe",
+      "geometric-loss:e54ec584445e283a8d12675c0d4c81bcb1f7869492edbd619111c43ea6251104",
+      "geometric-loss:ec4c41a9a9757b404f2a3e1c65c4bc52487e3a73cdca8d0c0523213e4007a6aa"
+    ],
+    "final_event_ids": [
+      "geometric-loss:03233e7721c623d1ea8c18dcb9ca199a0659aedff36727549d16a95eacd578e2",
+      "geometric-loss:2a9b5c157c91a4fdbd0fff4e51d8bf377cf27666e840d523ea41100ed9c76869",
+      "geometric-loss:3ad767bc3bf2f7aee7593a3a176194cbf920a5c240537ce3159c7f1158bee2ec",
+      "geometric-loss:4e15385c601a7f170b1476218c80327270c37713e32dc6df13459509030b5fd1",
+      "geometric-loss:62e6ce6d1caec5761643752ed11c1e6d3ac637c622ccd0532d403ddfdeb8ae64",
+      "geometric-loss:65593b678d5e7787d99a260369c72a38bd8642d275d6470dd0bcfe4a86661fdc",
+      "geometric-loss:83147acda90d7c803d94fddf0afabf9671a42e34fc1ed9ae4761c3ca12ba5229",
+      "geometric-loss:86635b9e838d94293f14c4a21750c0ec3f25277f78391a151c2757cef2b37cc1",
+      "geometric-loss:96c0cbb8374f83b3083a155c455695958ef6c844747bedc8a72ce13cd5b8bec6",
+      "geometric-loss:99967d2e7cb8742e8218c51a3d2f6b42697c9314d28bc2dc4afda1f571f8e5fe",
+      "geometric-loss:e54ec584445e283a8d12675c0d4c81bcb1f7869492edbd619111c43ea6251104",
+      "geometric-loss:ec4c41a9a9757b404f2a3e1c65c4bc52487e3a73cdca8d0c0523213e4007a6aa"
+    ],
+    "source_preserved": true,
+    "exact_restart": true,
+    "checkpoint_bytes_identical": true,
+    "cohort_payloads_preserved": true,
+    "attachment_statuses_preserved": true,
+    "support_lineages_preserved": true,
+    "replay": {
+      "rejected": true,
+      "reason": "Slab inventory does not belong to the supplied before surface"
+    },
+    "final_polarity_evidence": [
+      {
+        "contact_id": "contact:84f488377aa6dca54eef87a8b400108d",
+        "subducting_plate": 0,
+        "overriding_plate": 1,
+        "evidence_id": "geometric-loss:03233e7721c623d1ea8c18dcb9ca199a0659aedff36727549d16a95eacd578e2",
+        "provenance": "accepted_geometric_slab"
+      },
+      {
+        "contact_id": "contact:f94f4b6958bf0c7edec62e742d7bff0e",
+        "subducting_plate": 0,
+        "overriding_plate": 1,
+        "evidence_id": "geometric-loss:3ad767bc3bf2f7aee7593a3a176194cbf920a5c240537ce3159c7f1158bee2ec",
+        "provenance": "accepted_geometric_slab"
+      },
+      {
+        "contact_id": "contact:e325eb7df0e00a56df3314ec419f7016",
+        "subducting_plate": 0,
+        "overriding_plate": 1,
+        "evidence_id": "geometric-loss:4e15385c601a7f170b1476218c80327270c37713e32dc6df13459509030b5fd1",
+        "provenance": "accepted_geometric_slab"
+      },
+      {
+        "contact_id": "contact:bb37714d0ea2a6d7a111159c3c1147b4",
+        "subducting_plate": 0,
+        "overriding_plate": 1,
+        "evidence_id": "geometric-loss:65593b678d5e7787d99a260369c72a38bd8642d275d6470dd0bcfe4a86661fdc",
+        "provenance": "accepted_geometric_slab"
+      },
+      {
+        "contact_id": "contact:672e2885ce596e0bfd4a1ac31ec637b0",
+        "subducting_plate": 0,
+        "overriding_plate": 1,
+        "evidence_id": "geometric-loss:83147acda90d7c803d94fddf0afabf9671a42e34fc1ed9ae4761c3ca12ba5229",
+        "provenance": "accepted_geometric_slab"
+      },
+      {
+        "contact_id": "contact:0f916d6011d0e5b12e46cc74b25ce7dd",
+        "subducting_plate": 0,
+        "overriding_plate": 1,
+        "evidence_id": "geometric-loss:96c0cbb8374f83b3083a155c455695958ef6c844747bedc8a72ce13cd5b8bec6",
+        "provenance": "accepted_geometric_slab"
+      },
+      {
+        "contact_id": "contact:df3f6bdf303e3a8747f3fdf133206a8d",
+        "subducting_plate": 0,
+        "overriding_plate": 1,
+        "evidence_id": "geometric-loss:ec4c41a9a9757b404f2a3e1c65c4bc52487e3a73cdca8d0c0523213e4007a6aa",
+        "provenance": "accepted_geometric_slab"
+      }
+    ],
+    "checkpoint_sha256": {
+      "accepted.json": "023018dedcfa16ca6abbf72d45addb7d5bddbb8b6f4deacad2e60afc02639ec5",
+      "direct_final.json": "fbe36bd16fe14b438434f786bd0077d912fc9feffa7b790299d67552dddc1d0f",
+      "resumed_final.json": "fbe36bd16fe14b438434f786bd0077d912fc9feffa7b790299d67552dddc1d0f"
+    },
+    "code_unchanged": true,
+    "code_sha256": {
+      "tectonics/fractional_surface.py": "a3a74c371d1e930bc750f6d00b54ee1c8cc2538f637dcb5f20e863bffa7dd360",
+      "tectonics/geometric_surface.py": "e3ecf79aec7eeb1efb8d92d31beee349c86e275e1f0ae6c11747ea9763985494",
+      "tectonics/geometric_contacts.py": "ea9448e7b86667a57d2bb9e773648b3008016dc71d001e5eb787e6d098aa0e5c",
+      "tectonics/geometric_transport.py": "c89783695afd823abcb6fd5840597fd6dc7253cfc3aa9f74444551e91ac63d39",
+      "tectonics/geometric_polarity.py": "aa43316722b513af50f53a9d3eb975cbf577fcf96120066618278cbdb65dca9a",
+      "tectonics/geometric_boundary.py": "aca2332ff807a2b599192f345bc5e06f5030b9b2ffedf6509b8f62387d8b45b6",
+      "tectonics/geometric_boundary_io.py": "2ae3af3ab8f804675345757c7842a57b8c3c6d6d0b6d7e26cfa33a52f5b69f13",
+      "tectonics/spherical_polygons.py": "dd0085bd40f9bc7ec0e94d9eef3018929064f2bf405cdae3ad363870170face9",
+      "tectonics/mesh.py": "860b0559798efe69ecb04014a0a3ee37234523f613cd352dccf76ba75508ac31",
+      "analysis/geometric_slab_validation/passive_connection_case.py": "ca72d46eff54051191cbd10a9a6c47b79b7d1156a0a09e088212958f2b64e023"
+    }
+  },
+  "actual_source_case": {
+    "path": "saved50_inherited_final/report.json",
+    "sha256": "6a0640317b9611898e02053cd7e0f3d8516e065591551cc7d9807c81c42b9946",
+    "status": "unresolved_polarity",
+    "completed_steps": 0,
+    "unresolved_reasons": {
+      "conflicting_local_history": 39,
+      "equal_buoyancy_and_age": 310
+    },
+    "source_unchanged": true,
+    "code_changed_during_run": false,
+    "wall_seconds": 198.02370220000012
+  },
+  "source_audit_sha256": "ff5b3d90f4e034fffcfa5cb4d3f9f2c960fd9bf779de6b9355e0c27ae7d3ab77",
+  "source_mapping_sha256": "6234b47ceb9d8da2b8cd917a6dc0defbfd40079deb7998719d1a75c6070197b9",
+  "production_sha256": {
+    "run_geometric_slab_probe.py": "9ab05baf052ca33eb7d5cbd049ceb8579f20c95821cfb50a7143d5728fd3c4e3",
+    "tectonics/geometric_boundary.py": "aca2332ff807a2b599192f345bc5e06f5030b9b2ffedf6509b8f62387d8b45b6",
+    "tectonics/geometric_boundary_io.py": "2ae3af3ab8f804675345757c7842a57b8c3c6d6d0b6d7e26cfa33a52f5b69f13",
+    "tectonics/geometric_contacts.py": "ea9448e7b86667a57d2bb9e773648b3008016dc71d001e5eb787e6d098aa0e5c",
+    "tectonics/geometric_polarity.py": "aa43316722b513af50f53a9d3eb975cbf577fcf96120066618278cbdb65dca9a",
+    "tectonics/geometric_polarity_source.py": "c27f97cd8de8a4dfe65582754c14062887e8b7e46c13ae9d8aec65e0ae78288e",
+    "tectonics/geometric_surface.py": "e3ecf79aec7eeb1efb8d92d31beee349c86e275e1f0ae6c11747ea9763985494",
+    "tectonics/geometric_transport.py": "c89783695afd823abcb6fd5840597fd6dc7253cfc3aa9f74444551e91ac63d39"
+  }
+}

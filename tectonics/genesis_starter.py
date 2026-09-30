@@ -23,15 +23,18 @@ import tempfile
 import numpy as np
 
 from .genesis import GenesisParameters, GenesisState, SECONDS_PER_MYR
+from .genesis_checkpoint_compat import MODEL_VERSION, require_thermal_model_version
 from .genesis_shell import (ShellParameters, mantle_traction, maxwell_factors,
                             smooth_anomaly)
 from .genesis_onset_support import NonlocalLoading
 from .genesis_starter_loading import (StarterLoadingModel, StarterThermalState,
-                                      smooth_mantle_tensor, tidal_stress_cycle)
+                                      smooth_mantle_tensor, tidal_stress_cycle,
+                                      thermal_budget_fields)
 from .genesis_starter_topology import select_starter_cut, split_starter_band
 from .genesis_tides import TidalOrbitState, TidalParameters, advance_tidal_orbit
 from .mesh import connected_components
 from .plates import Plate, PlateSystem
+from .basal_coupling import basal_coupling_fraction
 
 
 VERSION = "genesis-starter-0.1"
@@ -139,7 +142,8 @@ class StarterModel:
             mesh, self.parameters.seed+1)
         self.mantle_tensor = smooth_mantle_tensor(mesh, self.parameters.seed)
         self.smoother = NonlocalLoading(mesh, thermal.radius_km, self.parameters.regularization_km)
-        self.configuration = {"thermal": asdict(thermal), "tides": asdict(tides),
+        self.configuration = {"thermal_model_version": MODEL_VERSION,
+                              "thermal": asdict(thermal), "tides": asdict(tides),
                               "shell": asdict(shell), "starter": asdict(self.parameters)}
         mesh_hash = hashlib.sha256(mesh.vertices.tobytes()+mesh.faces.tobytes()).hexdigest()
         self.fingerprint = hashlib.sha256(json.dumps({**self.configuration, "mesh": mesh_hash},
@@ -248,7 +252,7 @@ class StarterModel:
         weakening = (1-p.damage_strength_reduction*inherited_damage)
         warm_strength = 1-(1-p.hot_strength_fraction)*hot
         state.strength_pa = shell.tensile_strength_pa*self.strength_factor*wet*warm_strength*weakening
-        coupling = -math.expm1(-h/shell.traction_coupling_depth_km)
+        coupling = basal_coupling_fraction(h, shell.traction_coupling_depth_km)
         scale = shell.convective_traction_pa*p.mantle_stress_length_km/h*coupling
         stress = self.mantle_tensor*scale
         stress[:, :2] += state.cooling_stress_pa[:, None]
@@ -349,11 +353,11 @@ class StarterModel:
         area = float(self.areas.sum())
         has_lid = sample.lid_thickness_km >= self.shell.min_load_bearing_thickness_km
         return {"time_myr": state.time_myr,
+            **thermal_budget_fields(thermal),
             "surface_temperature_k": thermal["surface_temperature_k"],
             "mantle_temperature_k": thermal["mantle_temperature_k"],
             "ocean_fraction": thermal["ocean_fraction"],
             "ocean_volume_km3": thermal["ocean_fraction"]*self.thermal.water_volume_km3,
-            "mantle_melt_fraction": thermal["mantle_melt_fraction"],
             "lid_thickness_km": sample.lid_thickness_km,
             "domain_count": len(state.system.plates),
             "plate_count": len(state.system.plates) if has_lid else 0,
@@ -379,7 +383,7 @@ class StarterModel:
     def save_state(self, path, state):
         self._validate(state)
         context = state.thermal_context
-        metadata = {"version": VERSION, "fingerprint": self.fingerprint,
+        metadata = {"version": VERSION, "thermal_model_version": MODEL_VERSION, "fingerprint": self.fingerprint,
             "configuration": self.configuration,
             "thermal": asdict(context.thermal), "orbit": asdict(context.orbit),
             "boundary_energy_j_m2": context.boundary_energy_j_m2,
@@ -409,6 +413,7 @@ class StarterModel:
     def load_state(self, path):
         with np.load(path, allow_pickle=False) as saved:
             metadata = json.loads(str(saved["metadata"]))
+            require_thermal_model_version(metadata)
             if metadata.get("version") != VERSION or metadata.get("fingerprint") != self.fingerprint:
                 raise ValueError("Starter checkpoint belongs to another model/configuration")
             context = StarterThermalState(GenesisState(**metadata["thermal"]),

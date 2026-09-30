@@ -14,10 +14,13 @@ import math
 from numbers import Real
 from pathlib import Path
 from typing import Callable
+import warnings
 
 import numpy as np
 from scipy.integrate import solve_ivp
 from scipy.optimize import brentq
+
+from .mantle_convection import mantle_convection_state
 
 M_EARTH = 5.9722e24
 SIGMA = 5.670374419e-8
@@ -27,7 +30,7 @@ CRITICAL_WATER_K = 647.096
 CRITICAL_WATER_PA = 22.064e6
 FORMAT = "moon_genesis_thermal_checkpoint"
 VERSION = 1
-MODEL_VERSION = "genesis-thermal-0.1"
+MODEL_VERSION = "genesis-thermal-0.2"
 
 
 @dataclass(frozen=True)
@@ -62,11 +65,27 @@ class GenesisParameters:
     steam_olr_limit_w_m2: float = 282.0
     hot_window_temperature_k: float = 1600.0
     magma_transfer_w_m2_k: float = 100.0
+    # Retained for schema readability only. Version 0.2 never uses this legacy
+    # constant to exchange energy, including inside the melt transition.
     solid_transfer_w_m2_k: float = 0.0005
     rheology_transition_low_melt: float = 0.25
     rheology_transition_high_melt: float = 0.55
     lid_melt_threshold: float = 0.4
     thermal_diffusivity_m2_s: float = 1e-6
+    # Same effective solid-mantle law/defaults as ThermalParameters. These are
+    # explicit rheological/transport assumptions, not a temperature target.
+    mantle_depth_fraction_radius: float = 0.45
+    mantle_density_kg_m3: float = 4000.0
+    thermal_conductivity_w_m_k: float = 4.0
+    thermal_expansivity_per_k: float = 3.0e-5
+    viscosity_reference_pa_s: float = 1.0e21
+    viscosity_reference_temperature_k: float = 1600.0
+    activation_energy_j_mol: float = 3.0e5
+    viscosity_min_pa_s: float = 1.0e18
+    viscosity_max_pa_s: float = 1.0e24
+    critical_rayleigh: float = 1000.0
+    nusselt_prefactor: float = 0.27
+    nusselt_exponent: float = 1.0 / 3.0
 
     def validate(self) -> None:
         for item in fields(self):
@@ -78,6 +97,7 @@ class GenesisParameters:
             "tidal_heat_flux_w_m2", "radiogenic_specific_power_w_kg",
             "system_age_at_start_myr", "dry_optical_depth", "steam_opacity_m2_kg",
             "bond_albedo", "eclipse_fraction", "rheology_transition_low_melt",
+            "activation_energy_j_mol",
         }
         for item in fields(self):
             value = getattr(self, item.name)
@@ -95,8 +115,10 @@ class GenesisParameters:
             raise ValueError("lid_melt_threshold must be between 0 and 1")
         if min(self.initial_temperature_k, self.initial_surface_temperature_k) < self.liquidus_k:
             raise ValueError("This experiment requires an initially molten mantle and surface")
-        if self.solid_transfer_w_m2_k > self.magma_transfer_w_m2_k:
-            raise ValueError("Solid heat transfer must not exceed magma heat transfer")
+        if not 0 < self.mantle_depth_fraction_radius <= 1:
+            raise ValueError("mantle_depth_fraction_radius must be in (0, 1]")
+        if not self.viscosity_min_pa_s <= self.viscosity_reference_pa_s <= self.viscosity_max_pa_s:
+            raise ValueError("Require viscosity_min <= viscosity_reference <= viscosity_max")
         if self.surface_column_kg_m2 >= self.silicate_column_kg_m2:
             raise ValueError("Surface layer consumes the entire silicate reservoir")
         if self.critical_transition_width_k >= CRITICAL_WATER_K - 273.16:
@@ -157,6 +179,10 @@ def parameters_from_config(config: dict) -> GenesisParameters:
                 raise ValueError(f"moon.{key} must be a finite number, not null") from exc
     result = GenesisParameters(**values)
     result.validate()
+    if "solid_transfer_w_m2_k" in section:
+        warnings.warn("genesis.solid_transfer_w_m2_k is deprecated and ignored by "
+                      "genesis-thermal-0.2; solid heat loss uses mantle convection",
+                      DeprecationWarning, stacklevel=2)
     return result
 
 
@@ -249,18 +275,54 @@ def outgoing_longwave_w_m2(temperature_k: float, p: GenesisParameters) -> float:
     return (1 - steam_weight) * dry + steam_weight * steam
 
 
-def fluxes(time_myr: float, y: np.ndarray, p: GenesisParameters) -> dict[str, float]:
-    tm, ts = temperatures(y, p)
+def mantle_transport(tm: float, ts: float, p: GenesisParameters) -> dict[str, float]:
+    """Signed exchange and solid-mantle diagnostics at the actual surface T.
+
+    Interpolate log conductance with a C1 smoothstep in melt fraction. The
+    geometric blend resolves multiplicative changes in rheology: a tiny melt
+    weight cannot add an O(100 W/m2/K) parallel channel as an arithmetic blend
+    would. This is an empirical transition, not a partially molten flow solver.
+    The solid branch has its own depth/Nu thermal boundary layer; neither the
+    passive mechanical column nor chemical crust supplies that resistance.
+
+    Ra uses only an unstable (positive) contrast. A hotter surface therefore
+    exchanges heat inward (by conduction in the solid branch), and equal
+    temperatures exchange none.
+    """
+    solid = mantle_convection_state(tm, p.radius_km, p.surface_gravity_m_s2, p,
+                                   surface_temperature_k=ts, min_delta_temperature_k=0.0)
     phi = melt_fraction(tm, p)
     transition = min(1.0, max(0.0, (phi - p.rheology_transition_low_melt) /
                             (p.rheology_transition_high_melt - p.rheology_transition_low_melt)))
     weight = transition**2 * (3 - 2 * transition)
-    transfer = math.exp((1 - weight) * math.log(p.solid_transfer_w_m2_k) + weight * math.log(p.magma_transfer_w_m2_k))
+    solid_transfer = solid.effective_conductance_w_m2_k
+    if weight == 0.0:
+        transfer = solid_transfer
+    elif weight == 1.0:
+        transfer = p.magma_transfer_w_m2_k
+    else:
+        transfer = math.exp((1 - weight) * math.log(solid_transfer)
+                            + weight * math.log(p.magma_transfer_w_m2_k))
     qmantle = transfer * (tm - ts)
+    return {"mantle_to_surface_flux_w_m2": qmantle,
+            "viscosity_pa_s": solid.viscosity_pa_s,
+            "rayleigh_number": solid.rayleigh_number,
+            "nusselt_number": solid.nusselt_number,
+            "conductive_heat_flux_w_m2": p.thermal_conductivity_w_m_k * (tm-ts) / solid.mantle_depth_m,
+            "solid_convective_heat_flux_w_m2": solid_transfer * (tm-ts),
+            "thermal_boundary_layer_thickness_km": solid.thermal_lithosphere_thickness_km,
+            "effective_heat_transfer_w_m2_k": transfer,
+            "magma_transport_weight": weight}
+
+
+def fluxes(time_myr: float, y: np.ndarray, p: GenesisParameters) -> dict[str, float]:
+    tm, ts = temperatures(y, p)
+    transport = mantle_transport(tm, ts, p)
     qrad = p.silicate_column_kg_m2 * p.radiogenic_specific_power_w_kg * 2**(-(time_myr + p.system_age_at_start_myr) / p.radiogenic_half_life_myr)
     olr = outgoing_longwave_w_m2(ts, p)
-    return {"mantle_to_surface_flux_w_m2": qmantle, "radiogenic_flux_w_m2": qrad,
+    return {**transport, "radiogenic_flux_w_m2": qrad,
             "tidal_flux_w_m2": p.tidal_heat_flux_w_m2,
+            "net_mantle_flux_w_m2": qrad + p.tidal_heat_flux_w_m2 - transport["mantle_to_surface_flux_w_m2"],
             "absorbed_stellar_flux_w_m2": p.absorbed_stellar_flux_w_m2,
             "giant_absorbed_flux_w_m2": p.giant_absorbed_flux_w_m2,
             "outgoing_longwave_w_m2": olr,
@@ -426,8 +488,12 @@ def load_checkpoint(path: str | Path) -> tuple[GenesisState, GenesisParameters, 
 
 def _load_checkpoint(path: str | Path) -> tuple[GenesisState, GenesisParameters, dict]:
     payload = json.loads(Path(path).read_text(encoding="utf-8"))
-    if payload.get("format") != FORMAT or payload.get("version") != VERSION or payload.get("model_version") != MODEL_VERSION:
+    if payload.get("format") != FORMAT or payload.get("version") != VERSION:
         raise ValueError("Unsupported genesis checkpoint; mature tectonics checkpoints are separate")
+    if payload.get("model_version") != MODEL_VERSION:
+        raise ValueError("Incompatible Genesis thermal model: this version requires "
+                         f"{MODEL_VERSION} (state-dependent mantle convection). "
+                         "Legacy constant-transfer histories must be regenerated from molten initial conditions.")
     p = GenesisParameters(**payload["parameters"])
     p.validate()
     if payload.get("parameter_hash") != parameter_hash(p):

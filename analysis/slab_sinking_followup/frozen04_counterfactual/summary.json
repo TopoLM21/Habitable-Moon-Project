@@ -1,0 +1,732 @@
+{
+  "evaluation": "force_only_counterfactual_not_evolved_trajectory",
+  "note": "Only config version and buoyancy selectors were changed on loaded copies; saved materials, time, plate motion, coefficients and files were unchanged.",
+  "cases": [
+    {
+      "elapsed_myr": 50,
+      "source": "D:\\Moon Project\\mantle-convection\\analysis\\slab_sinking_validation\\runs\\validated_sinking_sub4_dt1\\elapsed_0050",
+      "source_unchanged": true,
+      "production_unchanged": true,
+      "cases": {
+        "saved_uniform04": {
+          "speeds": {
+            "best_rigid_fit": {
+              "mean": 10.560377769368152,
+              "median": 11.36100535609489,
+              "p90": 13.9791316200117,
+              "rms": 11.021529859353619,
+              "max": 15.17957787536298
+            },
+            "simple_area_average": {
+              "mean": 7.046998227854589,
+              "median": 7.547094355342359,
+              "p90": 9.316967270957676,
+              "rms": 7.361940843723026,
+              "max": 10.340223945906724
+            },
+            "selected_projection": {
+              "mean": 3.4563394902428968,
+              "median": 3.3583889827992053,
+              "p90": 5.598412676173354,
+              "rms": 3.7198393233325207,
+              "max": 6.2850894515326345
+            },
+            "after_memory": {
+              "mean": 3.4563394902428968,
+              "median": 3.3583889827992053,
+              "p90": 5.598412676173354,
+              "rms": 3.7198393233325207,
+              "max": 6.2850894515326345
+            },
+            "target": {
+              "mean": 4.416464561598565,
+              "median": 4.72091715134847,
+              "p90": 5.977572554696714,
+              "rms": 4.646220233771265,
+              "max": 6.712963619930332
+            },
+            "current": {
+              "mean": 4.483046969595213,
+              "median": 4.740746725590052,
+              "p90": 6.324515024711593,
+              "rms": 4.719808839383539,
+              "max": 6.716120747588505
+            },
+            "after_relaxation": {
+              "mean": 4.416464561598565,
+              "median": 4.72091715134847,
+              "p90": 5.977572554696714,
+              "rms": 4.646220233771265,
+              "max": 6.712963619930332
+            },
+            "after_net_rotation": {
+              "mean": 4.416464561598565,
+              "median": 4.72091715134847,
+              "p90": 5.977572554696714,
+              "rms": 4.646220233771265,
+              "max": 6.712963619930332
+            },
+            "actual_returned": {
+              "mean": 4.416464561598565,
+              "median": 4.72091715134847,
+              "p90": 5.977572554696714,
+              "rms": 4.646220233771265,
+              "max": 6.712963619930332
+            },
+            "local_mantle": {
+              "mean": 13.146891327484866,
+              "median": 14.189640981577071,
+              "p90": 19.72771451427598,
+              "rms": 14.18514204323919,
+              "max": 21.516623580139868
+            }
+          },
+          "metrics": {
+            "slab_constraint_power_w": 0.0,
+            "basal_drag_dissipation_w": 761412731.3264167,
+            "slab_bending_dissipation_w": 1522154477.5815656,
+            "slab_mantle_dissipation_w": 116532430.14772584,
+            "total_dissipation_w": 2400099639.0557084,
+            "basal_source_power_w": 1749753013.9900804,
+            "ridge_power_w": 58417741.70218379,
+            "slab_power_w": 591928883.3634437,
+            "total_source_power_w": 2400099639.055708,
+            "transient_net_power_w": -6.629914702706425e-08,
+            "target_torque_relative_residual": 1.7216808911854398e-16,
+            "target_torque_residual_scale": "sum_of_source_and_reaction_torque_norms",
+            "target_velocity_component_relative_error": 2.6101236812732166e-16,
+            "net_power_balance_residual_w": -4.1053801117606073e-07,
+            "net_power_balance_relative_residual": -1.7105040328141634e-16,
+            "transient_net_power_fraction": -2.762349776992962e-17,
+            "slab_constraint_power_fraction": 0.0,
+            "total_drag_relative_asymmetry": 0.0,
+            "total_drag_min_normalized_eigenvalue": 0.05646073316037324,
+            "total_drag_condition_number": 14.996953048001247,
+            "basal_drag_dissipation_w_nonnegative": true,
+            "slab_bending_dissipation_w_nonnegative": true,
+            "slab_mantle_dissipation_w_nonnegative": true,
+            "total_dissipation_w_nonnegative": true,
+            "slab_sinking_diagnostics": {
+              "slab_gravitational_power_w": 591928883.3634437,
+              "slab_bending_dissipation_w": 1522154477.5815656,
+              "slab_mantle_dissipation_w": 116532430.14772584,
+              "negative_feed_section_count": 0,
+              "minimum_feed_m_s": 9.231029882763209e-11,
+              "maximum_feed_m_s": 3.5818191758337025e-10,
+              "no_eduction_active_count": 0,
+              "unconstrained_negative_feed_section_count": 0,
+              "unconstrained_minimum_feed_m_s": 0.0,
+              "constraint_relative_residual": 1.8945810102785812e-16,
+              "constraint_complementarity_relative_error": 0.0,
+              "neck_failures_this_evaluation": 0
+            },
+            "maximum_attached_neck_tension_to_capacity": 0.9615712629118731
+          },
+          "surviving_section_count": 22,
+          "hypothetical_neck_failures": 0
+        },
+        "ordered05_counterfactual": {
+          "speeds": {
+            "best_rigid_fit": {
+              "mean": 10.560377769368152,
+              "median": 11.36100535609489,
+              "p90": 13.9791316200117,
+              "rms": 11.021529859353619,
+              "max": 15.17957787536298
+            },
+            "simple_area_average": {
+              "mean": 7.046998227854589,
+              "median": 7.547094355342359,
+              "p90": 9.316967270957676,
+              "rms": 7.361940843723026,
+              "max": 10.340223945906724
+            },
+            "selected_projection": {
+              "mean": 3.537910832151614,
+              "median": 3.533891937670503,
+              "p90": 5.598412676173353,
+              "rms": 3.7852899011867867,
+              "max": 6.285089451532633
+            },
+            "after_memory": {
+              "mean": 3.537910832151614,
+              "median": 3.533891937670503,
+              "p90": 5.598412676173353,
+              "rms": 3.7852899011867867,
+              "max": 6.285089451532633
+            },
+            "target": {
+              "mean": 4.384002601600903,
+              "median": 4.688974652386101,
+              "p90": 5.970394126749717,
+              "rms": 4.613884328866924,
+              "max": 6.705624376685835
+            },
+            "current": {
+              "mean": 4.483046969595213,
+              "median": 4.740746725590052,
+              "p90": 6.324515024711593,
+              "rms": 4.719808839383539,
+              "max": 6.716120747588505
+            },
+            "after_relaxation": {
+              "mean": 4.384002601600903,
+              "median": 4.688974652386101,
+              "p90": 5.970394126749717,
+              "rms": 4.613884328866924,
+              "max": 6.705624376685835
+            },
+            "after_net_rotation": {
+              "mean": 4.384002601600903,
+              "median": 4.688974652386101,
+              "p90": 5.970394126749717,
+              "rms": 4.613884328866924,
+              "max": 6.705624376685835
+            },
+            "actual_returned": {
+              "mean": 4.384002601600903,
+              "median": 4.688974652386101,
+              "p90": 5.970394126749717,
+              "rms": 4.613884328866924,
+              "max": 6.705624376685835
+            },
+            "local_mantle": {
+              "mean": 13.146891327484866,
+              "median": 14.189640981577071,
+              "p90": 19.72771451427598,
+              "rms": 14.18514204323919,
+              "max": 21.516623580139868
+            }
+          },
+          "metrics": {
+            "slab_constraint_power_w": 0.0,
+            "basal_drag_dissipation_w": 750851332.0808308,
+            "slab_bending_dissipation_w": 1441600877.509592,
+            "slab_mantle_dissipation_w": 109005772.66130766,
+            "total_dissipation_w": 2301457982.2517304,
+            "basal_source_power_w": 1737106925.239616,
+            "ridge_power_w": 58128910.92386175,
+            "slab_power_w": 506222146.0882521,
+            "total_source_power_w": 2301457982.25173,
+            "transient_net_power_w": 1.3839545198691408e-08,
+            "target_torque_relative_residual": 1.4148100910609006e-16,
+            "target_torque_residual_scale": "sum_of_source_and_reaction_torque_norms",
+            "target_velocity_component_relative_error": 4.380672310157029e-16,
+            "net_power_balance_residual_w": -4.906767034018164e-07,
+            "net_power_balance_relative_residual": -2.1320254690104826e-16,
+            "transient_net_power_fraction": 6.013381649988193e-18,
+            "slab_constraint_power_fraction": 0.0,
+            "total_drag_relative_asymmetry": 0.0,
+            "total_drag_min_normalized_eigenvalue": 0.059351521195680344,
+            "total_drag_condition_number": 14.146549725067818,
+            "basal_drag_dissipation_w_nonnegative": true,
+            "slab_bending_dissipation_w_nonnegative": true,
+            "slab_mantle_dissipation_w_nonnegative": true,
+            "total_dissipation_w_nonnegative": true,
+            "slab_sinking_diagnostics": {
+              "slab_gravitational_power_w": 506222146.0882521,
+              "slab_bending_dissipation_w": 1441600877.509592,
+              "slab_mantle_dissipation_w": 109005772.66130766,
+              "negative_feed_section_count": 0,
+              "minimum_feed_m_s": 9.222094577939984e-11,
+              "maximum_feed_m_s": 3.577861684724673e-10,
+              "no_eduction_active_count": 0,
+              "unconstrained_negative_feed_section_count": 0,
+              "unconstrained_minimum_feed_m_s": 0.0,
+              "constraint_relative_residual": 1.6006754054400775e-16,
+              "constraint_complementarity_relative_error": 0.0,
+              "neck_failures_this_evaluation": 1
+            },
+            "maximum_attached_neck_tension_to_capacity": 0.6306173622976228
+          },
+          "surviving_section_count": 21,
+          "hypothetical_neck_failures": 1
+        }
+      }
+    },
+    {
+      "elapsed_myr": 100,
+      "source": "D:\\Moon Project\\mantle-convection\\analysis\\slab_sinking_validation\\runs\\validated_sinking_sub4_dt1\\elapsed_0100",
+      "source_unchanged": true,
+      "production_unchanged": true,
+      "cases": {
+        "saved_uniform04": {
+          "speeds": {
+            "best_rigid_fit": {
+              "mean": 10.383280055249775,
+              "median": 10.979394937443889,
+              "p90": 14.012761780618964,
+              "rms": 10.857776260328757,
+              "max": 15.236119173662491
+            },
+            "simple_area_average": {
+              "mean": 6.924594084261078,
+              "median": 7.318686572932935,
+              "p90": 9.327134213980843,
+              "rms": 7.243931123407467,
+              "max": 10.279482010081257
+            },
+            "selected_projection": {
+              "mean": 3.8738749042660343,
+              "median": 3.7010064844956325,
+              "p90": 6.486753360941573,
+              "rms": 4.217862325561375,
+              "max": 7.388894060207247
+            },
+            "after_memory": {
+              "mean": 3.8738749042660343,
+              "median": 3.7010064844956325,
+              "p90": 6.486753360941573,
+              "rms": 4.217862325561375,
+              "max": 7.388894060207247
+            },
+            "target": {
+              "mean": 4.572251860919147,
+              "median": 4.582871597171802,
+              "p90": 7.210307240412755,
+              "rms": 4.896360197698478,
+              "max": 8.194835619557812
+            },
+            "current": {
+              "mean": 4.848160037109258,
+              "median": 4.933354725297624,
+              "p90": 7.935345337978093,
+              "rms": 5.2039008749733915,
+              "max": 8.999156970486888
+            },
+            "after_relaxation": {
+              "mean": 4.572251860919147,
+              "median": 4.582871597171802,
+              "p90": 7.210307240412755,
+              "rms": 4.896360197698478,
+              "max": 8.194835619557812
+            },
+            "after_net_rotation": {
+              "mean": 4.572251860919147,
+              "median": 4.582871597171802,
+              "p90": 7.210307240412755,
+              "rms": 4.896360197698478,
+              "max": 8.194835619557812
+            },
+            "actual_returned": {
+              "mean": 4.572251860919147,
+              "median": 4.582871597171802,
+              "p90": 7.210307240412755,
+              "rms": 4.896360197698478,
+              "max": 8.194835619557812
+            },
+            "local_mantle": {
+              "mean": 13.152736086560504,
+              "median": 14.18964101755052,
+              "p90": 19.727714564289503,
+              "rms": 14.187757106423497,
+              "max": 21.516623634688607
+            }
+          },
+          "metrics": {
+            "slab_constraint_power_w": 0.0,
+            "basal_drag_dissipation_w": 845604466.9624016,
+            "slab_bending_dissipation_w": 1172448383.9660316,
+            "slab_mantle_dissipation_w": 98043650.26569563,
+            "total_dissipation_w": 2116096501.1941288,
+            "basal_source_power_w": 1737590763.8928847,
+            "ridge_power_w": 43457796.07467573,
+            "slab_power_w": 335047941.22656626,
+            "total_source_power_w": 2116096501.194128,
+            "transient_net_power_w": -4.1036703060514284e-08,
+            "target_torque_relative_residual": 6.001462140911186e-17,
+            "target_torque_residual_scale": "sum_of_source_and_reaction_torque_norms",
+            "target_velocity_component_relative_error": 3.609291692658186e-16,
+            "net_power_balance_residual_w": -6.742190342441732e-07,
+            "net_power_balance_relative_residual": -3.186145026295854e-16,
+            "transient_net_power_fraction": -1.9392642555458587e-17,
+            "slab_constraint_power_fraction": 0.0,
+            "total_drag_relative_asymmetry": 0.0,
+            "total_drag_min_normalized_eigenvalue": 0.06482887589562795,
+            "total_drag_condition_number": 12.195334521080948,
+            "basal_drag_dissipation_w_nonnegative": true,
+            "slab_bending_dissipation_w_nonnegative": true,
+            "slab_mantle_dissipation_w_nonnegative": true,
+            "total_dissipation_w_nonnegative": true,
+            "slab_sinking_diagnostics": {
+              "slab_gravitational_power_w": 335047941.22656626,
+              "slab_bending_dissipation_w": 1172448383.9660316,
+              "slab_mantle_dissipation_w": 98043650.26569563,
+              "negative_feed_section_count": 0,
+              "minimum_feed_m_s": 8.676397830268727e-11,
+              "maximum_feed_m_s": 2.7581485827216336e-10,
+              "no_eduction_active_count": 0,
+              "unconstrained_negative_feed_section_count": 0,
+              "unconstrained_minimum_feed_m_s": 0.0,
+              "constraint_relative_residual": 6.283954029392374e-17,
+              "constraint_complementarity_relative_error": 0.0,
+              "neck_failures_this_evaluation": 1
+            },
+            "maximum_attached_neck_tension_to_capacity": -0.48759992792349244
+          },
+          "surviving_section_count": 18,
+          "hypothetical_neck_failures": 1
+        },
+        "ordered05_counterfactual": {
+          "speeds": {
+            "best_rigid_fit": {
+              "mean": 10.383280055249775,
+              "median": 10.979394937443889,
+              "p90": 14.012761780618964,
+              "rms": 10.857776260328757,
+              "max": 15.236119173662491
+            },
+            "simple_area_average": {
+              "mean": 6.924594084261078,
+              "median": 7.318686572932935,
+              "p90": 9.327134213980843,
+              "rms": 7.243931123407467,
+              "max": 10.279482010081257
+            },
+            "selected_projection": {
+              "mean": 3.7891536650718414,
+              "median": 3.4902323362496395,
+              "p90": 6.486753360941573,
+              "rms": 4.153534843644352,
+              "max": 7.388894060207247
+            },
+            "after_memory": {
+              "mean": 3.7891536650718414,
+              "median": 3.4902323362496395,
+              "p90": 6.486753360941573,
+              "rms": 4.153534843644352,
+              "max": 7.388894060207247
+            },
+            "target": {
+              "mean": 4.537712828666785,
+              "median": 4.510317065221073,
+              "p90": 7.210307240412755,
+              "rms": 4.869335378843798,
+              "max": 8.194835619557812
+            },
+            "current": {
+              "mean": 4.848160037109258,
+              "median": 4.933354725297624,
+              "p90": 7.935345337978093,
+              "rms": 5.2039008749733915,
+              "max": 8.999156970486888
+            },
+            "after_relaxation": {
+              "mean": 4.537712828666785,
+              "median": 4.510317065221073,
+              "p90": 7.210307240412755,
+              "rms": 4.869335378843798,
+              "max": 8.194835619557812
+            },
+            "after_net_rotation": {
+              "mean": 4.537712828666785,
+              "median": 4.510317065221073,
+              "p90": 7.210307240412755,
+              "rms": 4.869335378843798,
+              "max": 8.194835619557812
+            },
+            "actual_returned": {
+              "mean": 4.537712828666785,
+              "median": 4.510317065221073,
+              "p90": 7.210307240412755,
+              "rms": 4.869335378843798,
+              "max": 8.194835619557812
+            },
+            "local_mantle": {
+              "mean": 13.152736086560504,
+              "median": 14.18964101755052,
+              "p90": 19.727714564289503,
+              "rms": 14.187757106423497,
+              "max": 21.516623634688607
+            }
+          },
+          "metrics": {
+            "slab_constraint_power_w": 0.0,
+            "basal_drag_dissipation_w": 836295820.7587273,
+            "slab_bending_dissipation_w": 1183035316.4711845,
+            "slab_mantle_dissipation_w": 101798794.1895313,
+            "total_dissipation_w": 2121129931.4194431,
+            "basal_source_power_w": 1724245008.74056,
+            "ridge_power_w": 43109188.12785458,
+            "slab_power_w": 353775734.55102587,
+            "total_source_power_w": 2121129931.4194422,
+            "transient_net_power_w": -2.0806397959702414e-07,
+            "target_torque_relative_residual": 1.5557181225128833e-16,
+            "target_torque_residual_scale": "sum_of_source_and_reaction_torque_norms",
+            "target_velocity_component_relative_error": 1.5461141843163512e-16,
+            "net_power_balance_residual_w": -7.456103368092259e-07,
+            "net_power_balance_relative_residual": -3.515156359659068e-16,
+            "transient_net_power_fraction": -9.809110536561492e-17,
+            "slab_constraint_power_fraction": 0.0,
+            "total_drag_relative_asymmetry": 0.0,
+            "total_drag_min_normalized_eigenvalue": 0.060789468072402035,
+            "total_drag_condition_number": 13.38194187612201,
+            "basal_drag_dissipation_w_nonnegative": true,
+            "slab_bending_dissipation_w_nonnegative": true,
+            "slab_mantle_dissipation_w_nonnegative": true,
+            "total_dissipation_w_nonnegative": true,
+            "slab_sinking_diagnostics": {
+              "slab_gravitational_power_w": 353775734.5510259,
+              "slab_bending_dissipation_w": 1183035316.4711845,
+              "slab_mantle_dissipation_w": 101798794.1895313,
+              "negative_feed_section_count": 0,
+              "minimum_feed_m_s": 8.883196052637853e-11,
+              "maximum_feed_m_s": 2.707676767504254e-10,
+              "no_eduction_active_count": 0,
+              "unconstrained_negative_feed_section_count": 0,
+              "unconstrained_minimum_feed_m_s": 0.0,
+              "constraint_relative_residual": 1.5680896492494486e-16,
+              "constraint_complementarity_relative_error": 0.0,
+              "neck_failures_this_evaluation": 0
+            },
+            "maximum_attached_neck_tension_to_capacity": 0.20163697557797292
+          },
+          "surviving_section_count": 19,
+          "hypothetical_neck_failures": 0
+        }
+      }
+    },
+    {
+      "elapsed_myr": 400,
+      "source": "D:\\Moon Project\\mantle-convection\\analysis\\slab_sinking_validation\\runs\\validated_sinking_fixed2_sub4_dt1\\elapsed_0400",
+      "source_unchanged": true,
+      "production_unchanged": true,
+      "cases": {
+        "saved_uniform04": {
+          "speeds": {
+            "best_rigid_fit": {
+              "mean": 9.88238630176227,
+              "median": 10.260219728229472,
+              "p90": 13.4624027555886,
+              "rms": 10.339318956085805,
+              "max": 14.070895566204001
+            },
+            "simple_area_average": {
+              "mean": 6.58577194383918,
+              "median": 6.838477284143712,
+              "p90": 8.993290732322475,
+              "rms": 6.89093551753875,
+              "max": 9.316277451353377
+            },
+            "selected_projection": {
+              "mean": 5.217268185300924,
+              "median": 2.875610940009736,
+              "p90": 10.97210777401933,
+              "rms": 6.393907564793425,
+              "max": 12.755008004520699
+            },
+            "after_memory": {
+              "mean": 5.217268185300924,
+              "median": 2.875610940009736,
+              "p90": 10.97210777401933,
+              "rms": 6.393907564793425,
+              "max": 12.755008004520699
+            },
+            "target": {
+              "mean": 5.493772680879161,
+              "median": 3.492674272386467,
+              "p90": 11.259672974196594,
+              "rms": 6.713881612358692,
+              "max": 13.147480390981356
+            },
+            "current": {
+              "mean": 5.410465248811811,
+              "median": 3.4963548738846795,
+              "p90": 10.967714835188763,
+              "rms": 6.575221810123495,
+              "max": 12.767268736727374
+            },
+            "after_relaxation": {
+              "mean": 5.493772680879161,
+              "median": 3.492674272386467,
+              "p90": 11.259672974196594,
+              "rms": 6.713881612358692,
+              "max": 13.147480390981356
+            },
+            "after_net_rotation": {
+              "mean": 5.493772680879161,
+              "median": 3.492674272386467,
+              "p90": 11.259672974196594,
+              "rms": 6.713881612358692,
+              "max": 13.147480390981356
+            },
+            "actual_returned": {
+              "mean": 5.493772680879161,
+              "median": 3.492674272386467,
+              "p90": 11.259672974196594,
+              "rms": 6.713881612358692,
+              "max": 13.147480390981356
+            },
+            "local_mantle": {
+              "mean": 13.13357870240081,
+              "median": 14.18030729737549,
+              "p90": 19.663450875269245,
+              "rms": 14.164605455489346,
+              "max": 21.516623705645
+            }
+          },
+          "metrics": {
+            "slab_constraint_power_w": 0.0,
+            "basal_drag_dissipation_w": 1589893041.4876118,
+            "slab_bending_dissipation_w": 413744973.8092494,
+            "slab_mantle_dissipation_w": 91842713.20898654,
+            "total_dissipation_w": 2095480728.5058477,
+            "basal_source_power_w": 1973122710.4530249,
+            "ridge_power_w": 92163843.3120414,
+            "slab_power_w": 30194174.74077705,
+            "total_source_power_w": 2095480728.505846,
+            "transient_net_power_w": 3.051698947387342e-08,
+            "target_torque_relative_residual": 1.4964129358136603e-16,
+            "target_torque_residual_scale": "sum_of_source_and_reaction_torque_norms",
+            "target_velocity_component_relative_error": 3.486568288661278e-16,
+            "net_power_balance_residual_w": -1.699447043184811e-06,
+            "net_power_balance_relative_residual": -8.110058088659098e-16,
+            "transient_net_power_fraction": 1.4563240338475037e-17,
+            "slab_constraint_power_fraction": 0.0,
+            "total_drag_relative_asymmetry": 0.0,
+            "total_drag_min_normalized_eigenvalue": 0.04676811528041768,
+            "total_drag_condition_number": 19.30583816109757,
+            "basal_drag_dissipation_w_nonnegative": true,
+            "slab_bending_dissipation_w_nonnegative": true,
+            "slab_mantle_dissipation_w_nonnegative": true,
+            "total_dissipation_w_nonnegative": true,
+            "slab_sinking_diagnostics": {
+              "slab_gravitational_power_w": 30194174.74077705,
+              "slab_bending_dissipation_w": 413744973.8092494,
+              "slab_mantle_dissipation_w": 91842713.20898654,
+              "negative_feed_section_count": 0,
+              "minimum_feed_m_s": 5.5220767533814566e-11,
+              "maximum_feed_m_s": 1.2526526448148302e-10,
+              "no_eduction_active_count": 0,
+              "unconstrained_negative_feed_section_count": 0,
+              "unconstrained_minimum_feed_m_s": 0.0,
+              "constraint_relative_residual": 1.6747375293497823e-16,
+              "constraint_complementarity_relative_error": 0.0,
+              "neck_failures_this_evaluation": 10
+            },
+            "maximum_attached_neck_tension_to_capacity": -0.580906042731457
+          },
+          "surviving_section_count": 23,
+          "hypothetical_neck_failures": 10
+        },
+        "ordered05_counterfactual": {
+          "speeds": {
+            "best_rigid_fit": {
+              "mean": 9.88238630176227,
+              "median": 10.260219728229472,
+              "p90": 13.4624027555886,
+              "rms": 10.339318956085805,
+              "max": 14.070895566204001
+            },
+            "simple_area_average": {
+              "mean": 6.58577194383918,
+              "median": 6.838477284143712,
+              "p90": 8.993290732322475,
+              "rms": 6.89093551753875,
+              "max": 9.316277451353377
+            },
+            "selected_projection": {
+              "mean": 5.217268185300924,
+              "median": 2.875610940009736,
+              "p90": 10.97210777401933,
+              "rms": 6.393907564793425,
+              "max": 12.755008004520699
+            },
+            "after_memory": {
+              "mean": 5.217268185300924,
+              "median": 2.875610940009736,
+              "p90": 10.97210777401933,
+              "rms": 6.393907564793425,
+              "max": 12.755008004520699
+            },
+            "target": {
+              "mean": 5.4937612546024805,
+              "median": 3.4926465006783562,
+              "p90": 11.259672974196594,
+              "rms": 6.713877322416377,
+              "max": 13.147480390981356
+            },
+            "current": {
+              "mean": 5.410465248811811,
+              "median": 3.4963548738846795,
+              "p90": 10.967714835188763,
+              "rms": 6.575221810123495,
+              "max": 12.767268736727374
+            },
+            "after_relaxation": {
+              "mean": 5.4937612546024805,
+              "median": 3.4926465006783562,
+              "p90": 11.259672974196594,
+              "rms": 6.713877322416377,
+              "max": 13.147480390981356
+            },
+            "after_net_rotation": {
+              "mean": 5.4937612546024805,
+              "median": 3.4926465006783562,
+              "p90": 11.259672974196594,
+              "rms": 6.713877322416377,
+              "max": 13.147480390981356
+            },
+            "actual_returned": {
+              "mean": 5.4937612546024805,
+              "median": 3.4926465006783562,
+              "p90": 11.259672974196594,
+              "rms": 6.713877322416377,
+              "max": 13.147480390981356
+            },
+            "local_mantle": {
+              "mean": 13.13357870240081,
+              "median": 14.18030729737549,
+              "p90": 19.663450875269245,
+              "rms": 14.164605455489346,
+              "max": 21.516623705645
+            }
+          },
+          "metrics": {
+            "slab_constraint_power_w": 0.0,
+            "basal_drag_dissipation_w": 1589891009.7129545,
+            "slab_bending_dissipation_w": 413738940.3443001,
+            "slab_mantle_dissipation_w": 91841570.48364145,
+            "total_dissipation_w": 2095471520.540896,
+            "basal_source_power_w": 1973118164.8359802,
+            "ridge_power_w": 92163681.5956129,
+            "slab_power_w": 30189674.109298512,
+            "total_source_power_w": 2095471520.5408945,
+            "transient_net_power_w": 1.0635485976380522e-07,
+            "target_torque_relative_residual": 2.311263566491049e-16,
+            "target_torque_residual_scale": "sum_of_source_and_reaction_torque_norms",
+            "target_velocity_component_relative_error": 3.320254197135999e-16,
+            "net_power_balance_residual_w": -1.5368663343731802e-06,
+            "net_power_balance_relative_residual": -7.334226780502724e-16,
+            "transient_net_power_fraction": 5.0754619531336916e-17,
+            "slab_constraint_power_fraction": 0.0,
+            "total_drag_relative_asymmetry": 0.0,
+            "total_drag_min_normalized_eigenvalue": 0.04676811528041768,
+            "total_drag_condition_number": 19.30583816109757,
+            "basal_drag_dissipation_w_nonnegative": true,
+            "slab_bending_dissipation_w_nonnegative": true,
+            "slab_mantle_dissipation_w_nonnegative": true,
+            "total_dissipation_w_nonnegative": true,
+            "slab_sinking_diagnostics": {
+              "slab_gravitational_power_w": 30189674.109298516,
+              "slab_bending_dissipation_w": 413738940.3443001,
+              "slab_mantle_dissipation_w": 91841570.48364145,
+              "negative_feed_section_count": 0,
+              "minimum_feed_m_s": 5.521925903139783e-11,
+              "maximum_feed_m_s": 1.2526526448148302e-10,
+              "no_eduction_active_count": 0,
+              "unconstrained_negative_feed_section_count": 0,
+              "unconstrained_minimum_feed_m_s": 0.0,
+              "constraint_relative_residual": 2.586718810000701e-16,
+              "constraint_complementarity_relative_error": 0.0,
+              "neck_failures_this_evaluation": 10
+            },
+            "maximum_attached_neck_tension_to_capacity": -0.5809199375551708
+          },
+          "surviving_section_count": 23,
+          "hypothetical_neck_failures": 10
+        }
+      }
+    }
+  ]
+}

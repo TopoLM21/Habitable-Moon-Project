@@ -1,0 +1,83 @@
+{
+  "date": "2026-09-29",
+  "branch": "fix/genesis-mantle-convection",
+  "head": "72da5ad2a83201be238fe84d57945d5f275acbc5",
+  "commits_created": false,
+  "code_sha256": {
+    "basal_coupling.py": "a0bd3a36363ef957701bb0c3d0218373db26fbab7c110de29271331176e77af8",
+    "genesis_young_mechanics.py": "f59a1f9a7dbcd486bccd15db1f71cfb8a1e31fe7c390e53303fcce874d68c1a2",
+    "genesis_local_mechanics.py": "181e123224cd5c9f979866d72dab4726da5103558edcdcc2f7789d7c7493cb37",
+    "young_plate_dynamics.py": "7b904a73a305e5157a201125d182ec2a22f9fb49a53584bf760ffcf99512027e",
+    "young_boundary.py": "05dd86ff65b4d21d4742cca0de4b1e04c77eb4085d39256b92f8414b01f11236",
+    "genesis_starter_continuation.py": "1291da9a45e1dd25426391aa034051ce6b3d331e80ce021c31e6234bd7a26369",
+    "genesis_starter_material.py": "f1011f9a7898b1cfce4d0c8c813a3bed7d59478a249c1bef4ef0b1c56957f55f",
+    "genesis_shell.py": "475cf400bc18bfa0bec0eeb1189973921f6ab4b312e245e1ee01004936c4a931",
+    "genesis_starter.py": "1f5f825b236d40a46fa0523e1afb951db3a348ca48d6de551a4236702e75159c",
+    "genesis_starter_fracture.py": "40fdbf833ab9567698744e100b2f5844840271fede005f8d96ea4a9a061b36a7",
+    "genesis_starter_topology.py": "0ee5411a34cbf099401ad4390a58c80a09d62e0333eb5a3e86494deb91b301dd",
+    "genesis_continuation_remesh.py": "05835cd98a7f0d3ab4b05f80ff804b0c97a6b32c01db26dd2c6f152c1fd39019",
+    "dynamics.py": "110326cf473386cc33aa784bb9afc7f62b8f52d3d3a34593bb8b357cdb898393",
+    "subduction_memory.py": "e16d87d7b05b5bb3ccf7d1e56d5e87fd0e14d53471a3182c95ad7dc49bc09b73",
+    "lithosphere.py": "ec4ae1088f670fb071d9ecf55e32ba88542db3d6be362dbad29ec16047be99b2",
+    "breakoff.py": "9c61298fa5195b83a6de78888b9a3a10e2bb6644650950b2bdf661e87d1d43e8",
+    "rollback.py": "f9086ee6858a52e622b982f2de231549c55c4c311a12efecf638f0cd1f5c8fc6",
+    "plate_velocity_diagnostics.py": "92a172e6501484e6659a7e5facfe10253f1aae867a6a73e993ac8f3790103f37",
+    "genesis_plate_membrane_diagnostic.py": "a7477b1bc8f9bc0c4ec9b8874411202eeaebe5509f8bff5accf815849452f7ae"
+  },
+  "wide_suite": {
+    "passed": 2137,
+    "failed": 3,
+    "deselected": 553,
+    "seconds": 357.78,
+    "log": "analysis/young_mechanics_final_tests.log",
+    "resolved_failure": "test_installed_dynamics_has_no_slab_force_before_subduction_memory_exists: fixture expected stored uncoupled source instead of transmitted force; corrected contract, full module8pass"
+  },
+  "final_focused": {
+    "passed": 128,
+    "failed": 0,
+    "seconds": 155.92,
+    "log": "analysis/young_mechanics_final_focused.log",
+    "real_parallel_resume_bitwise": true
+  },
+  "legacy_cpu_gpu_and_regressions": {
+    "passed": 35,
+    "failed": 0,
+    "seconds": 6.8,
+    "files": [
+      "test_gpu_boundary_forces.py",
+      "test_cpu_execution.py",
+      "test_genesis_young_mechanics_regressions.py",
+      "test_genesis_plate_membrane_diagnostic.py"
+    ]
+  },
+  "remaining_preexisting_failures": [
+    "tests/test_gui_backend.py::test_checkpoint_introspection_and_spec_validation",
+    "tests/test_gui_resolution.py::test_resume_cannot_change_checkpoint_resolution"
+  ],
+  "unchanged_gui_source_and_fixtures": {
+    "moon_gui/backend.py": true,
+    "tests/test_gui_backend.py": true,
+    "tests/test_gui_resolution.py": true
+  },
+  "git_diff_check": "passed",
+  "actual_400_checks": {
+    "material_ledger": true,
+    "clocks_agree": true,
+    "fracture_damage_matches_material": true,
+    "thermal_energy": true,
+    "liquid_water_matches_condensation": true,
+    "positive_remaining_material": true,
+    "slab_material_inventory": true
+  },
+  "accepted_inventory_remesh_checks": {
+    "material_ledger": true,
+    "clocks_agree": true,
+    "fracture_damage_matches_material": true,
+    "thermal_energy": true,
+    "liquid_water_matches_condensation": true,
+    "positive_remaining_material": true,
+    "slab_material_inventory": true
+  },
+  "original_starter_sha256": "b4584dd66208ff80aea18a178c38da2b96e353c723663251091886dee49e87f6",
+  "note": "Test suites overlap; counts are not added. Real .08 MPa run uses disabled_pending_closure for slab force. Model and material transport convergence are not claimed."
+}

@@ -1,0 +1,448 @@
+[
+  {
+    "file": "D:\\Moon Project\\mantle-convection\\tests\\test_conservative_transport.py",
+    "sha256": "f110e2a08138aaa8f95d829788f614d3fbfc398bf595c039d44b35377664bcb3",
+    "tests": [
+      {
+        "name": "test_conservative_assignment_is_one_to_one_within_each_plate",
+        "line": 22
+      },
+      {
+        "name": "test_area_scaled_parcels_preserve_continental_volume_before_interplate_resolution",
+        "line": 34
+      },
+      {
+        "name": "test_subcell_rotation_accumulates_until_material_moves",
+        "line": 51
+      },
+      {
+        "name": "test_topology_remap_preserves_parent_residual_for_split_children",
+        "line": 81
+      }
+    ]
+  },
+  {
+    "file": "D:\\Moon Project\\mantle-convection\\tests\\test_continental_material_transport.py",
+    "sha256": "91adc77a0c79bf5736fbac6f725a97e09d84b97d9d60b3cb20ae8de5e7ec128f",
+    "tests": [
+      {
+        "name": "test_footprint_overflow_preserves_area_and_volume_without_tower",
+        "line": 15
+      },
+      {
+        "name": "test_conservative_step_preserves_material_area_and_volume_before_explicit_rifting",
+        "line": 40
+      }
+    ]
+  },
+  {
+    "file": "D:\\Moon Project\\mantle-convection\\tests\\test_transport_cycle_memory.py",
+    "sha256": "c47e6edf3c26231e29cab4d5c16a6411485cd5d39e7e65aeb0b3e33561597134",
+    "tests": [
+      {
+        "name": "test_felsic_memory_uses_exact_transport_source_map",
+        "line": 11
+      }
+    ]
+  },
+  {
+    "file": "D:\\Moon Project\\mantle-convection\\tests\\test_young_boundary_material.py",
+    "sha256": "d00ca13c63f9dbf31db84be31beb6396378c28da57187e15b76a56e91450bd5b",
+    "tests": [
+      {
+        "name": "test_weak_signed_geometry_is_display_independent_but_not_phantom_material",
+        "line": 53
+      },
+      {
+        "name": "test_accepted_inventory_has_si_units_and_no_length_cap_amplitude",
+        "line": 69
+      },
+      {
+        "name": "test_no_floor_or_denominator_jump_as_cold_buoyancy_vanishes",
+        "line": 84
+      },
+      {
+        "name": "test_opposite_segments_cancel_without_unit_axis_renormalization",
+        "line": 93
+      },
+      {
+        "name": "test_duplicate_transaction_rejected_before_any_ledger_mutation",
+        "line": 104
+      },
+      {
+        "name": "test_relabeling_plate_ids_preserves_polarity_and_physical_torque",
+        "line": 117
+      },
+      {
+        "name": "test_checkpoint_and_resume_preserve_every_accepted_inventory_field",
+        "line": 137
+      },
+      {
+        "name": "test_legacy_breakoff_and_rollback_cannot_mutate_new_si_inventory",
+        "line": 156
+      },
+      {
+        "name": "test_raster_loss_is_the_same_single_conservative_slab_transaction",
+        "line": 188
+      },
+      {
+        "name": "test_topology_relabeling_conserves_inventory_and_reorders_torque",
+        "line": 215
+      },
+      {
+        "name": "test_finite_slab_diffusion_matches_independent_heat_equation",
+        "line": 231
+      },
+      {
+        "name": "test_warming_reduces_current_buoyancy_without_consuming_material_again",
+        "line": 249
+      },
+      {
+        "name": "test_physical_depth_transfers_oldest_material_without_losing_volume",
+        "line": 264
+      },
+      {
+        "name": "test_hierarchical_refinement_preserves_parcel_mass_coldness_and_vector_torque",
+        "line": 285
+      },
+      {
+        "name": "test_force_sections_group_cohorts_and_follow_current_contact_polarity",
+        "line": 333
+      },
+      {
+        "name": "test_adjacent_grid_hop_transfers_attachment_without_duplicating_material",
+        "line": 360
+      },
+      {
+        "name": "test_disconnected_slab_cannot_jump_to_remote_pair_or_reconnect_via_new_acceptance",
+        "line": 385
+      },
+      {
+        "name": "test_force_sections_exclude_all_disconnected_or_deep_material",
+        "line": 412
+      },
+      {
+        "name": "test_force_section_refinement_conserves_extensive_geometry_and_bending_width",
+        "line": 432
+      },
+      {
+        "name": "test_connectivity_is_explicit_and_legacy_checkpoint_shape_is_preserved",
+        "line": 457
+      },
+      {
+        "name": "test_remote_raster_collision_cannot_add_force_to_existing_same_pair_trench",
+        "line": 470
+      },
+      {
+        "name": "test_tensile_failure_commits_once_and_preserves_volume_history_on_resume_and_remesh",
+        "line": 491
+      },
+      {
+        "name": "test_invalid_neck_failure_transaction_cannot_partially_detach_inventory",
+        "line": 528
+      },
+      {
+        "name": "test_ordered_layers_put_new_material_shallow_and_preserve_each_thermal_deficit",
+        "line": 541
+      },
+      {
+        "name": "test_equal_time_depth_transfer_has_explicit_versioned_order",
+        "line": 581
+      },
+      {
+        "name": "test_ordered_layer_aggregation_is_independent_of_same_time_cohort_order",
+        "line": 616
+      },
+      {
+        "name": "test_ordered_layer_remesh_and_checkpoint_preserve_lengths_and_thermal_mass",
+        "line": 643
+      },
+      {
+        "name": "test_buoyancy_geometry_is_explicit_and_legacy_checkpoint_shape_is_preserved",
+        "line": 676
+      }
+    ]
+  },
+  {
+    "file": "D:\\Moon Project\\mantle-convection\\tests\\test_genesis_starter_ledger.py",
+    "sha256": "dc96a89780de7dbca948b4fe3fb795aa3dc74dc2757325a66ea67e0695bb2ce7",
+    "tests": [
+      {
+        "name": "test_created_and_subducted_basalt_are_independent_signed_mantle_exchanges",
+        "line": 56
+      },
+      {
+        "name": "test_individual_lithosphere_process_counters",
+        "line": 76
+      },
+      {
+        "name": "test_juvenile_crust_accounts_for_both_new_felsic_and_replaced_basalt",
+        "line": 84
+      },
+      {
+        "name": "test_individual_continental_cycle_fluxes",
+        "line": 98
+      },
+      {
+        "name": "test_erosion_is_internal_but_deep_sediment_is_a_mantle_return",
+        "line": 113
+      },
+      {
+        "name": "test_sediment_rift_counter_does_not_double_count_lithosphere_recycling",
+        "line": 125
+      },
+      {
+        "name": "test_all_plume_reservoirs_have_independent_source_and_sink_counters",
+        "line": 136
+      },
+      {
+        "name": "test_internal_underplate_to_dyke_transfer_has_zero_mantle_exchange",
+        "line": 149
+      },
+      {
+        "name": "test_unrecorded_material_error_is_reported_not_absorbed_into_mantle",
+        "line": 157
+      },
+      {
+        "name": "test_recorded_exchange_without_array_change_also_fails",
+        "line": 167
+      },
+      {
+        "name": "test_resumed_interval_counts_only_new_records_and_new_cumulative_fluxes",
+        "line": 174
+      },
+      {
+        "name": "test_invalid_reference_density_is_rejected",
+        "line": 196
+      },
+      {
+        "name": "test_corrupt_material_or_history_is_rejected",
+        "line": 204
+      },
+      {
+        "name": "test_missing_empty_optional_reservoirs_are_not_fabricated",
+        "line": 230
+      },
+      {
+        "name": "test_reference_density_only_scales_mass_and_never_changes_volume_audit",
+        "line": 242
+      },
+      {
+        "name": "test_planet_scale_ledger_serializes_without_numpy_scalar_fallback",
+        "line": 253
+      }
+    ]
+  },
+  {
+    "file": "D:\\Moon Project\\mantle-convection\\tests\\test_genesis_sinking_compatibility.py",
+    "sha256": "ad531fba2bb1db421e7da6285633c30957a27540fcc05a60c489bf6e7438ff1c",
+    "tests": [
+      {
+        "name": "test_archived_basal_ridge_configuration_retains_relaxation_and_fixed_contacts",
+        "line": 53
+      },
+      {
+        "name": "test_runtime_hook_uses_current_genesis_viscosity_without_editing_saved_parameters",
+        "line": 87
+      },
+      {
+        "name": "test_new_quasistatic_response_does_not_inherit_45_myr_velocity_lag",
+        "line": 122
+      },
+      {
+        "name": "test_saved_connectivity_mismatch_is_rejected_before_evolution",
+        "line": 135
+      },
+      {
+        "name": "test_sinking_cannot_be_enabled_by_relabeling_a_03_configuration",
+        "line": 142
+      },
+      {
+        "name": "test_sinking_rejects_legacy_connectivity_even_when_checkpoint_and_configuration_agree",
+        "line": 149
+      },
+      {
+        "name": "test_whole_checkpoint_refinement_preserves_new_connected_inventory_and_valid_source",
+        "line": 173
+      },
+      {
+        "name": "test_populated_frozen_diagnostic_matches_installed_runtime_and_leaves_files_unchanged",
+        "line": 193
+      },
+      {
+        "name": "test_runtime_commits_solver_failure_even_without_user_trace",
+        "line": 246
+      },
+      {
+        "name": "test_slab_thermal_clock_uses_accepted_heat_endpoint_for_sinking_versions",
+        "line": 277
+      },
+      {
+        "name": "test_generated_limitations_match_enabled_sinking_and_preserve_prior_versions",
+        "line": 316
+      },
+      {
+        "name": "test_saved_04_without_new_buoyancy_fields_preserves_uniform_force_law",
+        "line": 334
+      },
+      {
+        "name": "test_mismatched_saved_buoyancy_models_are_rejected",
+        "line": 353
+      },
+      {
+        "name": "test_ordered_model_cannot_be_silently_enabled_in_saved_04",
+        "line": 365
+      }
+    ]
+  },
+  {
+    "file": "D:\\Moon Project\\mantle-convection\\tests\\test_genesis_starter_continuation_independent.py",
+    "sha256": "b6c7db9186ad940e43e26b7b869bf77b2fb6ce23aa2b48ea2c6e3da0ea8bfaa9",
+    "tests": [
+      {
+        "name": "test_actual_import_uses_surface_inventory_and_preserves_zero_continents",
+        "line": 47
+      },
+      {
+        "name": "test_saved_import_roundtrips_through_existing_public_integrity_checked_loader",
+        "line": 64
+      },
+      {
+        "name": "test_unpartitioned_source_is_refused_without_manufacturing_initial_plates",
+        "line": 73
+      },
+      {
+        "name": "test_zero_mantle_and_zero_force_control_does_not_receive_a_velocity_floor",
+        "line": 79
+      },
+      {
+        "name": "test_young_heat_continues_orbit_without_mutating_archived_first_partition",
+        "line": 100
+      },
+      {
+        "name": "test_installed_hooks_follow_post_topology_velocities_transport_and_liquid_water",
+        "line": 124
+      },
+      {
+        "name": "test_legacy_young_mechanical_thickness_is_not_reset_from_zero_chemical_ages",
+        "line": 185
+      }
+    ]
+  },
+  {
+    "file": "D:\\Moon Project\\mantle-convection\\tests\\test_genesis_starter_continuation_cli.py",
+    "sha256": "6d5c78b80f1188911e95ba819cd604caf7f951d9ef99228e08948c450cbe6664",
+    "tests": [
+      {
+        "name": "test_fresh_routes_exact_starter_and_elapsed_duration",
+        "line": 29
+      },
+      {
+        "name": "test_resume_keeps_total_elapsed_duration_for_core_to_resolve",
+        "line": 37
+      },
+      {
+        "name": "test_invalid_duration_rejected_without_calling_core",
+        "line": 46
+      },
+      {
+        "name": "test_core_failure_produces_error_without_success_marker",
+        "line": 52
+      },
+      {
+        "name": "test_source_modes_are_exclusive",
+        "line": 65
+      }
+    ]
+  },
+  {
+    "file": "D:\\Moon Project\\mantle-convection\\tests\\test_genesis_continuation_execution.py",
+    "sha256": "1dc1117367142878358f07f5bc2b81ac4811e0d8bcbc17cc6e747726bb832bf0",
+    "tests": [
+      {
+        "name": "test_cli_forwards_execution_and_output_controls",
+        "line": 16
+      },
+      {
+        "name": "test_cli_rejects_invalid_execution_without_starting_core",
+        "line": 34
+      },
+      {
+        "name": "test_real_endpoint_maps_without_interval_and_surface_only_resume",
+        "line": 62
+      },
+      {
+        "name": "test_real_parallel_workers_and_rendering_preserve_state_and_resume",
+        "line": 112
+      }
+    ]
+  },
+  {
+    "file": "D:\\Moon Project\\mantle-convection\\tests\\test_genesis_continuation_remesh.py",
+    "sha256": "ac3e0ffecefe465ff758ae308d40e881a29388b3590f982fc390c39b8a6a36be",
+    "tests": [
+      {
+        "name": "test_real_refinement_preserves_all_clocks_damage_and_material_without_new_plates",
+        "line": 56
+      },
+      {
+        "name": "test_every_grid_field_and_nonzero_volume_is_remapped_by_its_physical_kind",
+        "line": 84
+      },
+      {
+        "name": "test_slab_transport_population_histories_and_collision_seams_survive",
+        "line": 118
+      },
+      {
+        "name": "test_live_fracture_and_archived_starter_memory_remain_distinct_and_reloadable",
+        "line": 159
+      },
+      {
+        "name": "test_same_mesh_is_an_independent_exact_copy",
+        "line": 183
+      },
+      {
+        "name": "test_coarsening_and_invalid_targets_do_not_mutate_source",
+        "line": 195
+      },
+      {
+        "name": "test_noncanonical_geometry_disagreement_and_stale_contact_fail_explicitly",
+        "line": 203
+      },
+      {
+        "name": "test_nonfinite_or_negative_extensive_material_is_rejected",
+        "line": 214
+      },
+      {
+        "name": "test_excessive_target_is_rejected_before_any_mesh_allocation",
+        "line": 221
+      },
+      {
+        "name": "test_valid_but_coarser_target_is_rejected_without_majority_ownership",
+        "line": 230
+      },
+      {
+        "name": "test_arbitrary_spherical_mesh_cannot_claim_canonical_ancestry",
+        "line": 238
+      },
+      {
+        "name": "test_fine_loading_range_does_not_expand_membrane_fem_range",
+        "line": 247
+      }
+    ]
+  },
+  {
+    "file": "D:\\Moon Project\\mantle-convection\\tests\\test_genesis_young_mechanics_regressions.py",
+    "sha256": "f028f3394075d2a6a1c13d0e2099e0f2b389999aaabe7c391c39f32d8a7c179b",
+    "tests": [
+      {
+        "name": "test_saved_initial_thin_lid_diagnostic_matches_installed_frozen_force_probe",
+        "line": 18
+      },
+      {
+        "name": "test_tracking_manager_retains_current_seeds_without_a_topology_event",
+        "line": 60
+      }
+    ]
+  }
+]

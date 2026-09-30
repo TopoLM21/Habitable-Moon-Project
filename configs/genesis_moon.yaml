@@ -25,6 +25,24 @@ genesis:
   steam_olr_limit_w_m2: 282.0
   hot_window_temperature_k: 1600.0
   critical_transition_width_k: 5.0
+  # Solid mantle: the same effective Arrhenius/Ra/Nu law as mature thermal.
+  # No target-temperature calibration. D/Nu is a thermal resistance scale,
+  # independent of the passive mechanical column and chemical crust.
+  mantle_depth_fraction_radius: 0.45
+  mantle_density_kg_m3: 4000.0
+  thermal_conductivity_w_m_k: 4.0
+  thermal_expansivity_per_k: 3.0e-5
+  thermal_diffusivity_m2_s: 1.0e-6
+  viscosity_reference_pa_s: 1.0e21
+  viscosity_reference_temperature_k: 1600.0
+  activation_energy_j_mol: 3.0e5
+  viscosity_min_pa_s: 1.0e18
+  viscosity_max_pa_s: 1.0e24
+  critical_rayleigh: 1000.0
+  nusselt_prefactor: 0.27
+  nusselt_exponent: 0.3333333333333333
+  # solid_transfer_w_m2_k remains accepted for legacy config readability,
+  # but is deprecated and ignored in genesis-thermal-0.2, including blending.
 
 # Passive spatial response to the thermal history above. These are explicit
 # experiment parameters, not measured properties or preassigned plate borders.

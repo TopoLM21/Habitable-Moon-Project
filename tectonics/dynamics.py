@@ -24,7 +24,8 @@ from .kinematics import BoundaryRecord, BoundaryType, classify_boundaries
 from .lithosphere import CrustType, LithosphereState, mantle_lithosphere_negative_buoyancy_proxy
 from .mesh import SphereMesh
 from .plates import Plate, PlateSystem
-from .mantle import MantleFlowState, mantle_flow_rms_rad_per_myr, plate_mean_mantle_omega
+from .mantle import (MantleFlowState, mantle_flow_rms_rad_per_myr,
+                     plate_mean_mantle_omega, plate_rigid_mantle_fit)
 from .subduction_memory import SubductionMemoryState, SubductionMemoryParameters, residual_pull_by_plate
 from .breakoff import slab_pull_multiplier_for_pair
 
@@ -74,6 +75,27 @@ class DynamicsParameters:
     craton_collision_resistance_gain: float = 0.60
     gpe_reference_thickness_km: float = 40.0
     gpe_drive_weight: float = 0.30
+    # Ordinary mature archives retain their historical mapping. Genesis stores
+    # local tangent angular vectors, whose arithmetic mean is not a velocity
+    # least-squares Euler fit; its continuation explicitly selects the latter.
+    mantle_projection: str = "legacy_area_mean"
+    # Explicit opt-in SI closure for versioned Genesis continuations. Legacy
+    # calibrated proxies and archives keep their equations and defaults.
+    force_model: str = "legacy_effective"
+    basal_drag_pa_s_m: float = 1e14
+    gravity_m_s2: float = 9.81
+    young_slab_force_model: str = "disabled_pending_closure"
+    young_slab_buoyancy_model: str = "uniform_thermal_mass_v1"
+    young_velocity_response_model: str = "relaxed"
+    # Reduced-order sinking rheology; these are explicit material/geometry
+    # assumptions, not multipliers fitted to a desired surface velocity.
+    young_slab_viscosity_contrast: float = 100.
+    young_slab_bend_radius_thickness_ratio: float = 3.
+    young_slab_mantle_shear_length_fraction: float = .5
+    # Genesis supplies its current Arrhenius viscosity and physical mantle
+    # depth. Standalone SI callers must supply both for viscous_sinking_v1.
+    young_slab_mantle_viscosity_pa_s: float | None = None
+    young_slab_mantle_depth_km: float | None = None
 
 
 @dataclass(slots=True)
@@ -280,6 +302,7 @@ def _boundary_force_terms_reference(
     mantle_flow: MantleFlowState | None = None,
     thermal_lithosphere_thickness_km: float | None = None,
     subduction_memory: SubductionMemoryState | None = None,
+    *, trace: dict | None = None,
 ) -> tuple:
     """Original scalar boundary calculation; execution-policy-independent."""
     drive = np.zeros((pcount, 3), dtype=np.float64)
@@ -292,6 +315,11 @@ def _boundary_force_terms_reference(
     ridge_factor_weight = 0.0
     ridge_factor_min = np.inf
     ridge_factor_max = -np.inf
+    if trace is not None:
+        ridge_drive_raw = np.zeros_like(drive)
+        slab_drive_raw = np.zeros_like(drive)
+        slab_drive_before_activation_raw = np.zeros_like(drive)
+        slab_edges = []
 
     for b in boundaries:
         length = _boundary_length_km(mesh, b, radius_km)
@@ -325,6 +353,9 @@ def _boundary_force_terms_reference(
             # A moves away from B, B moves away from A.
             drive[pa] += length * strength_a * np.cross(r, -normal)
             drive[pb] += length * strength_b * np.cross(r, +normal)
+            if trace is not None:
+                ridge_drive_raw[pa] += length * strength_a * np.cross(r, -normal)
+                ridge_drive_raw[pb] += length * strength_b * np.cross(r, +normal)
             boundary_weight[pa] += length
             boundary_weight[pb] += length
             ridge_factor_sum += length * (factor_a + factor_b)
@@ -393,15 +424,29 @@ def _boundary_force_terms_reference(
                     strength = params.slab_pull_weight * age_factor * thermal_factor
                 over = pb if sub == pa else pa
                 breakoff_mult = slab_pull_multiplier_for_pair(subduction_memory, sub, over)
+                if trace is not None:
+                    raw = length * strength * np.cross(r, toward_trench)
+                    slab_drive_before_activation_raw[sub] += raw
+                    slab_edges.append({"face": int(face), "subducting_plate": sub,
+                        "overriding_plate": over, "length_km": length,
+                        "normal_rate_km_per_myr": float(b.normal_rate_km_per_myr),
+                        "raw_strength_proxy": float(strength),
+                        "applied_multiplier": float(breakoff_mult)})
                 if breakoff_mult > 0.0:
                     drive[sub] += length * strength * breakoff_mult * np.cross(r, toward_trench)
                     boundary_weight[sub] += length
+                    if trace is not None:
+                        slab_drive_raw[sub] += length * strength * breakoff_mult * np.cross(r, toward_trench)
 
         elif b.boundary_type == BoundaryType.TRANSFORM:
             trans_len += length
             transform_length[pa] += length * resistance_scale
             transform_length[pb] += length * resistance_scale
 
+    if trace is not None:
+        trace.update(ridge_drive_raw=ridge_drive_raw, slab_drive_raw=slab_drive_raw,
+            slab_drive_before_activation_raw=slab_drive_before_activation_raw,
+            slab_edges=slab_edges, ridge_push_factors=ridge_factors.copy())
     return (drive, boundary_weight, collision_length, transform_length,
             ridge_len, slab_len, coll_len, trans_len, ridge_factor_sum,
             ridge_factor_weight, ridge_factor_min, ridge_factor_max)
@@ -423,13 +468,32 @@ def update_plate_dynamics(
     subduction_memory: SubductionMemoryState | None = None,
     subduction_memory_params: SubductionMemoryParameters | None = None,
     rollback_omega_rad_per_myr: Array | None = None,
+    young_slab_strength_pa: Array | None = None,
+    trace: dict | None = None,
 ) -> tuple[PlateSystem, DynamicsDiagnostics, list[BoundaryRecord], Array]:
     """Update Euler vectors from effective boundary-force proxies.
 
     Returns (new_system, diagnostics, current_boundaries, drive_vectors).
+
+    An optional ``trace`` receives copied intermediate vectors for auditing.
+    Tracing uses the reference boundary-force path; the default execution and
+    all numerical equations are unchanged. Raw boundary drives have units of
+    length times a dimensionless force proxy, not SI torque.
     """
     if dt_myr <= 0.0:
         raise ValueError("dt_myr must be positive")
+    if params.force_model == "young_si_v1":
+        from .young_plate_dynamics import update_young_plate_dynamics
+        return update_young_plate_dynamics(mesh, state, current_system,
+            baseline_system, radius_km, dt_myr, normal_threshold_km_per_myr,
+            inactive_speed_km_per_myr, params, mantle_flow=mantle_flow,
+            subduction_memory=subduction_memory,
+            subduction_memory_params=subduction_memory_params,
+            young_slab_strength_pa=young_slab_strength_pa, trace=trace)
+    if params.force_model != "legacy_effective":
+        raise ValueError("Unknown plate force model")
+    if params.mantle_projection not in ("legacy_area_mean", "velocity_least_squares"):
+        raise ValueError("Unknown mantle projection")
     pcount = len(current_system.plates)
     current_for_state = PlateSystem(cell_plate=state.cell_plate.copy(), plates=current_system.plates)
     boundaries = classify_boundaries(
@@ -442,10 +506,12 @@ def update_plate_dynamics(
 
     from .cpu_runtime import current_execution
     execution = current_execution()
-    if execution is not None and execution.boundary_forces_enabled:
+    if trace is not None:
+        trace.clear()
+    if trace is None and execution is not None and execution.boundary_forces_enabled:
         (drive, boundary_weight, collision_length, transform_length,
          ridge_len, slab_len, coll_len, trans_len, ridge_factor_sum,
-         ridge_factor_weight, ridge_factor_min, ridge_factor_max) = execution.calculate_boundary_forces(
+        ridge_factor_weight, ridge_factor_min, ridge_factor_max) = execution.calculate_boundary_forces(
             mesh, state, boundaries, radius_km, pcount, params,
             mantle_flow, thermal_lithosphere_thickness_km, subduction_memory,
         )
@@ -455,6 +521,7 @@ def update_plate_dynamics(
          ridge_factor_weight, ridge_factor_min, ridge_factor_max) = _boundary_force_terms_reference(
             mesh, state, boundaries, radius_km, pcount, params,
             mantle_flow, thermal_lithosphere_thickness_km, subduction_memory,
+            trace=trace,
         )
     gpe_drive = np.zeros((pcount, 3), dtype=np.float64)
     gpe_weight = np.zeros(pcount, dtype=np.float64)
@@ -488,11 +555,23 @@ def update_plate_dynamics(
             gpe_drive[pid] += w * np.cross(r0, tangent)
             gpe_weight[pid] += w
     gnz = gpe_weight > 0.0
+    if trace is not None:
+        trace.update(gpe_drive_raw=gpe_drive.copy(), gpe_weight=gpe_weight.copy(),
+            boundary_drive_raw=drive.copy(), boundary_weight_km=boundary_weight.copy(),
+            collision_length_weighted_km=collision_length.copy(),
+            transform_length_weighted_km=transform_length.copy())
     gpe_drive[gnz] /= gpe_weight[gnz, None]
 
     # Normalize local boundary drives so mesh resolution does not set the speed.
     nonzero = boundary_weight > 0.0
     drive[nonzero] /= boundary_weight[nonzero, None]
+    if trace is not None:
+        trace["boundary_drive_normalized"] = drive.copy()
+        for name in ("ridge", "slab"):
+            component = trace[f"{name}_drive_raw"].copy()
+            component[nonzero] /= boundary_weight[nonzero, None]
+            trace[f"{name}_drive_normalized"] = component
+    residual_drive = np.zeros_like(drive)
 
     # v0.18: an already submerged slab retains a small, decaying pull for a
     # short interval after the surface contact is reclassified. Active zones
@@ -507,14 +586,18 @@ def update_plate_dynamics(
     current_omega = angular_velocity_vectors(current_system)
     baseline_omega = angular_velocity_vectors(baseline_system)
     if mantle_flow is not None:
-        mantle_omega = plate_mean_mantle_omega(
-            mesh, state.cell_plate, pcount, radius_km, mantle_flow
-        )
+        if params.mantle_projection == "velocity_least_squares":
+            mantle_omega = plate_rigid_mantle_fit(
+                mesh, state.cell_plate, pcount, radius_km, mantle_flow).omega_rad_per_myr
+        else:
+            mantle_omega = plate_mean_mantle_omega(
+                mesh, state.cell_plate, pcount, radius_km, mantle_flow)
     else:
         mantle_omega = baseline_omega
     drive_scale = np.deg2rad(float(params.force_speed_scale_deg_per_myr))
     gpe_component = float(params.gpe_drive_weight) * gpe_drive if mantle_flow is not None else 0.0
     relative_drive = drive_scale * (drive + gpe_component)
+    rb = np.zeros_like(relative_drive)
     if rollback_omega_rad_per_myr is not None:
         rb=np.asarray(rollback_omega_rad_per_myr,dtype=np.float64)
         if rb.shape != relative_drive.shape: raise ValueError("rollback_omega_rad_per_myr shape mismatch")
@@ -537,6 +620,21 @@ def update_plate_dynamics(
 
     alpha = 1.0 - np.exp(-float(dt_myr) / max(float(params.velocity_relaxation_myr), 1e-9))
     new_omega = current_omega + alpha * (target - current_omega)
+    if trace is not None:
+        trace.update(mantle_projection=params.mantle_projection,
+            current_omega=current_omega.copy(), baseline_omega=baseline_omega.copy(),
+            mantle_omega=mantle_omega.copy(), common_mantle=common_mantle.copy(),
+            residual_slab_drive=residual_drive.copy(), total_drive_normalized=drive.copy(),
+            gpe_drive_normalized=gpe_drive.copy(),
+            gpe_component=np.broadcast_to(gpe_component, drive.shape).copy(),
+            drive_scale_rad_per_myr=float(drive_scale), rollback_omega=rb.copy(),
+            relative_drive=relative_drive.copy(), total_boundary_weight_km=total_boundary.copy(),
+            collision_ratio=collision_ratio.copy(), transform_ratio=transform_ratio.copy(),
+            drag_factor=drag_factor.copy(),
+            resistance_omega=relative_drive * (drag_factor[:, None] - 1.0),
+            collision_resistance_omega=-relative_drive * (drag_factor * float(params.continental_collision_resistance) * collision_ratio)[:, None],
+            transform_resistance_omega=-relative_drive * (drag_factor * float(params.transform_resistance) * transform_ratio)[:, None],
+            target_omega=target.copy(), alpha=float(alpha), relaxed_omega=new_omega.copy())
 
     plate_areas = _plate_area_weights(mesh, state, radius_km, pcount)
     area_sum = max(float(np.sum(plate_areas)), 1e-30)
@@ -544,6 +642,9 @@ def update_plate_dynamics(
     net_before = float(np.linalg.norm(mean_rotation))
     if params.remove_net_rotation:
         new_omega -= mean_rotation[None, :]
+    if trace is not None:
+        trace.update(plate_areas_km2=plate_areas.copy(), mean_rotation=mean_rotation.copy(),
+            post_gauge_omega=new_omega.copy(), remove_net_rotation=bool(params.remove_net_rotation))
 
     max_speed = np.deg2rad(float(params.max_speed_deg_per_myr))
     min_speed = np.deg2rad(float(params.min_active_speed_deg_per_myr))
@@ -558,6 +659,8 @@ def update_plate_dynamics(
     if mantle_flow is None:
         tiny = speeds < min_speed
         new_omega[tiny] = 0.0
+    if trace is not None:
+        trace["final_omega"] = new_omega.copy()
 
     # Axis-turn diagnostic between old and new omega vectors.
     old_speed = np.linalg.norm(current_omega, axis=1)

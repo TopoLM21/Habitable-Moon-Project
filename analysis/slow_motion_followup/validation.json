@@ -1,0 +1,43 @@
+{
+  "date": "2026-09-29",
+  "scope": "Diagnostic follow-up and correction plan; no new production physics changes. Full production suite was not repeated.",
+  "previous_recorded_code_hashes_match": {
+    "tectonics/mantle.py": true,
+    "tectonics/dynamics.py": true,
+    "tectonics/genesis_starter_continuation.py": true,
+    "tectonics/plate_velocity_diagnostics.py": true
+  },
+  "original_starter_sha256_matches_probe": true,
+  "compiled_probes": [
+    "origin_probe.py",
+    "torque_probe.py",
+    "boundary_probe.py",
+    "transport_fracture_probe.py"
+  ],
+  "json_parsed": [
+    "boundary_frozen_400.json",
+    "origin_probe.json",
+    "torque_probe.json",
+    "transport_405.metrics.json",
+    "transport_405_material.json",
+    "transport_commit_mapping.json",
+    "transport_fracture_probe.json",
+    "transport_hemisphere_probe.json"
+  ],
+  "continuation": {
+    "status": "completed",
+    "final_time_myr": 405.8781219482422,
+    "mean_speed_km_myr": 0.2295942896909714,
+    "transport_commits": 1,
+    "checks": {
+      "material_ledger": true,
+      "clocks_agree": true,
+      "fracture_damage_matches_material": true,
+      "thermal_energy": true,
+      "liquid_water_matches_condensation": true,
+      "positive_remaining_material": true
+    },
+    "relative_material_volume_residual": 2.0111671346699515e-17
+  },
+  "git_diff_check": "passed"
+}

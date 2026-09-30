@@ -1,0 +1,247 @@
+{
+  "scope": "Pre-correction fractional-heat-basal-coupling-1 immutable baseline",
+  "production_sha256": {
+    "run_fractional_coupling_probe.py": "e6a5531d5f75b09f65d3096e3e6eace64c73b55b0e220c18f0e159f0ff7638b8",
+    "tectonics/fractional_coupling.py": "f71f6ef1c928498e792011760706d0dd8f1ed14ee0e1ee319d782d25211002f2",
+    "tectonics/fractional_dynamics.py": "41db8cbadcf094c6d05a570d3497382ea65f97e8eebf3b2604dc0ea50eab9fb6",
+    "tectonics/fractional_surface.py": "a3a74c371d1e930bc750f6d00b54ee1c8cc2538f637dcb5f20e863bffa7dd360",
+    "tectonics/fractional_surface_io.py": "75df451c38da8c3bf921e8cff1139bf81ef55854bf499f40b783cf2f7d7cf8aa",
+    "tectonics/fractional_thermal.py": "e7f0210e091672087748d4eb8930f750cc2325ff9c39629b136976d96a3c49b5",
+    "tectonics/fractional_transport.py": "33648045d25e4ce45b4b3c7c484b6257d7c007d2278dc06c19819c9628afec35"
+  },
+  "old_validation_summary_sha256": "424664f7251eccea4057df0b6ab01dcd1bc616a35e7afc15e060dc619af1e9fb",
+  "old_validation": {
+    "scope": "Basal-only coupled surface with Genesis heat; no slab/ridge forces or fracture/topology evolution",
+    "cases": {
+      "starter_dt0p25": {
+        "start_mean_speed_mm_per_year": 0.0024433756327430613,
+        "end_mean_speed_mm_per_year": 0.020890486652900615,
+        "end_max_speed_mm_per_year": 0.026871935152543224,
+        "cumulative_losses": {
+          "area_km2": 100.89357632113388,
+          "oceanic_volume_km3": 100.89357632113388,
+          "cold_mantle_volume_km3": 177.41690060252094,
+          "density_excess_mass_kg": 12197379236092.145
+        },
+        "cumulative_births": {
+          "area_km2": 100.89357632108295,
+          "oceanic_volume_km3": 100.89357632108295,
+          "cold_mantle_volume_km3": 0.0,
+          "density_excess_mass_kg": 0.0
+        },
+        "cumulative_thermal_sources": {
+          "area_km2": 0.0,
+          "oceanic_volume_km3": 0.0,
+          "cold_mantle_volume_km3": 1114574166.690898,
+          "density_excess_mass_kg": 7.621055787775328e+19
+        },
+        "remaining_reference_mantle_mass_kg": 2.0294942202121095e+24,
+        "final_parcel_count": 23430,
+        "wall_seconds": 3.4326756000000387,
+        "maximum_material_relative_residual": 1.1080019312803037e-16,
+        "maximum_energy_relative_residual": 1.1924261227326965e-15,
+        "maximum_torque_relative_residual": 4.715893156531542e-16,
+        "maximum_power_relative_residual": 1.364291319166487e-13,
+        "source_unchanged": true,
+        "report_sha256": "14dd2afe708cd3efd402279c07a86bdcd6fd69f585d3b2b2cd826780d3c50134",
+        "checkpoint_sha256": "06b53b380779d0cd01c2c87b334bcd8ef88a51846342224a8b58c84afc1cc878"
+      },
+      "late_dt1": {
+        "start_mean_speed_mm_per_year": 10.581675896227146,
+        "end_mean_speed_mm_per_year": 10.581308178211849,
+        "end_max_speed_mm_per_year": 14.986397217499976,
+        "cumulative_losses": {
+          "area_km2": 1150184.63715568,
+          "oceanic_volume_km3": 1123676.291291514,
+          "cold_mantle_volume_km3": 38270864.98839764,
+          "density_excess_mass_kg": 2.568392674923742e+18
+        },
+        "cumulative_births": {
+          "area_km2": 1150184.63715568,
+          "oceanic_volume_km3": 1150184.63715568,
+          "cold_mantle_volume_km3": 0.0,
+          "density_excess_mass_kg": 0.0
+        },
+        "cumulative_thermal_sources": {
+          "area_km2": 0.0,
+          "oceanic_volume_km3": 0.0,
+          "cold_mantle_volume_km3": 17980797.80796848,
+          "density_excess_mass_kg": 9.402305409078986e+17
+        },
+        "remaining_reference_mantle_mass_kg": 2.029491527814156e+24,
+        "final_parcel_count": 23644,
+        "wall_seconds": 3.511512000000039,
+        "maximum_material_relative_residual": 1.4898359776343354e-16,
+        "maximum_energy_relative_residual": 4.4517241915354e-14,
+        "maximum_torque_relative_residual": 4.860755715912456e-16,
+        "maximum_power_relative_residual": 9.99269176045004e-16,
+        "source_unchanged": true,
+        "report_sha256": "42b47a13ec240065e88fab3dfc1c2cbd0cdf19d7411799b756212f2b6b100e4a",
+        "checkpoint_sha256": "bbd8829f97ab65f9d620c3eaaaea8a34f3ea2d0d569ab309c51eb5ffa106a105"
+      },
+      "late_dt0p5": {
+        "start_mean_speed_mm_per_year": 10.581675896227146,
+        "end_mean_speed_mm_per_year": 10.582100443327354,
+        "end_max_speed_mm_per_year": 14.989395748696072,
+        "cumulative_losses": {
+          "area_km2": 1150226.0057304332,
+          "oceanic_volume_km3": 1123732.4654076514,
+          "cold_mantle_volume_km3": 38273575.487601675,
+          "density_excess_mass_kg": 2.568462967499273e+18
+        },
+        "cumulative_births": {
+          "area_km2": 1150226.0057304339,
+          "oceanic_volume_km3": 1150226.0057304339,
+          "cold_mantle_volume_km3": 0.0,
+          "density_excess_mass_kg": 0.0
+        },
+        "cumulative_thermal_sources": {
+          "area_km2": 0.0,
+          "oceanic_volume_km3": 0.0,
+          "cold_mantle_volume_km3": 20811610.10126326,
+          "density_excess_mass_kg": 1.10686112506941e+18
+        },
+        "remaining_reference_mantle_mass_kg": 2.0294915276900502e+24,
+        "final_parcel_count": 53997,
+        "wall_seconds": 12.512091800000007,
+        "maximum_material_relative_residual": 1.4219302191809308e-16,
+        "maximum_energy_relative_residual": 4.4517241915354e-14,
+        "maximum_torque_relative_residual": 5.814404967905914e-16,
+        "maximum_power_relative_residual": 3.3292730589712126e-15,
+        "source_unchanged": true,
+        "report_sha256": "237d8ce449c91ed1453463b3bfdf3b3105043002e8e2e63480f85e4db69044b6",
+        "checkpoint_sha256": "de0312495386269c9a8c8d18b4acbfa9b2b223f8464a48ec448fb5f4d509358c"
+      },
+      "late_dt0p25": {
+        "start_mean_speed_mm_per_year": 10.581675896227146,
+        "end_mean_speed_mm_per_year": 10.582920272912757,
+        "end_max_speed_mm_per_year": 14.989293699853311,
+        "cumulative_losses": {
+          "area_km2": 1149987.6980984225,
+          "oceanic_volume_km3": 1123501.162542197,
+          "cold_mantle_volume_km3": 38266315.392657615,
+          "density_excess_mass_kg": 2.567920011537953e+18
+        },
+        "cumulative_births": {
+          "area_km2": 1149987.6980984684,
+          "oceanic_volume_km3": 1149987.6980984684,
+          "cold_mantle_volume_km3": 0.0,
+          "density_excess_mass_kg": 0.0
+        },
+        "cumulative_thermal_sources": {
+          "area_km2": 0.0,
+          "oceanic_volume_km3": 0.0,
+          "cold_mantle_volume_km3": 22130397.966109496,
+          "density_excess_mass_kg": 1.1844856401685146e+18
+        },
+        "remaining_reference_mantle_mass_kg": 2.0294915284049733e+24,
+        "final_parcel_count": 154408,
+        "wall_seconds": 65.46362939999995,
+        "maximum_material_relative_residual": 1.3754023276098807e-16,
+        "maximum_energy_relative_residual": 4.4517241915354e-14,
+        "maximum_torque_relative_residual": 5.185112167900622e-16,
+        "maximum_power_relative_residual": 1.1764501669495698e-14,
+        "source_unchanged": true,
+        "report_sha256": "5fede1d47d8cb7c6936e79c77745b336fac382906a1d5858a4b84c469d881f6a",
+        "checkpoint_sha256": "d62083936354766a126093c47d04c34d431bc9df12a462a8ce2687e62038fffe"
+      },
+      "late_restart_first": {
+        "start_mean_speed_mm_per_year": 10.581675896227146,
+        "end_mean_speed_mm_per_year": 10.58295535284734,
+        "end_max_speed_mm_per_year": 14.988957738522638,
+        "cumulative_losses": {
+          "area_km2": 575068.7253472484,
+          "oceanic_volume_km3": 561802.6692039472,
+          "cold_mantle_volume_km3": 19133297.174140267,
+          "density_excess_mass_kg": 1.2841646893271762e+18
+        },
+        "cumulative_births": {
+          "area_km2": 575068.7253472485,
+          "oceanic_volume_km3": 575068.7253472485,
+          "cold_mantle_volume_km3": 0.0,
+          "density_excess_mass_kg": 0.0
+        },
+        "cumulative_thermal_sources": {
+          "area_km2": 0.0,
+          "oceanic_volume_km3": 0.0,
+          "cold_mantle_volume_km3": 6909388.449552993,
+          "density_excess_mass_kg": 3.459764872320126e+17
+        },
+        "remaining_reference_mantle_mass_kg": 2.0294932531618916e+24,
+        "final_parcel_count": 12979,
+        "wall_seconds": 1.3631259,
+        "maximum_material_relative_residual": 1.4898359776343354e-16,
+        "maximum_energy_relative_residual": 3.8157635927446287e-14,
+        "maximum_torque_relative_residual": 4.860755715912456e-16,
+        "maximum_power_relative_residual": 2.2199000490209917e-16,
+        "source_unchanged": true,
+        "report_sha256": "f1fdd35faab4c845078ffa7463e21d916ba6c2682578f6a6c7b4180ebce4fbff",
+        "checkpoint_sha256": "11b9e1998f3388af92a80ae0e583c8f11fb50cf4131a042a3a7fa13bfe77797d"
+      },
+      "late_restart_second": {
+        "start_mean_speed_mm_per_year": 10.581675896227146,
+        "end_mean_speed_mm_per_year": 10.581308178211849,
+        "end_max_speed_mm_per_year": 14.986397217499976,
+        "cumulative_losses": {
+          "area_km2": 1150184.63715568,
+          "oceanic_volume_km3": 1123676.291291514,
+          "cold_mantle_volume_km3": 38270864.98839764,
+          "density_excess_mass_kg": 2.568392674923742e+18
+        },
+        "cumulative_births": {
+          "area_km2": 1150184.63715568,
+          "oceanic_volume_km3": 1150184.63715568,
+          "cold_mantle_volume_km3": 0.0,
+          "density_excess_mass_kg": 0.0
+        },
+        "cumulative_thermal_sources": {
+          "area_km2": 0.0,
+          "oceanic_volume_km3": 0.0,
+          "cold_mantle_volume_km3": 17980797.80796848,
+          "density_excess_mass_kg": 9.402305409078986e+17
+        },
+        "remaining_reference_mantle_mass_kg": 2.029491527814156e+24,
+        "final_parcel_count": 23644,
+        "wall_seconds": 2.6237432000000354,
+        "maximum_material_relative_residual": 1.4898359776343354e-16,
+        "maximum_energy_relative_residual": 4.4517241915354e-14,
+        "maximum_torque_relative_residual": 4.860755715912456e-16,
+        "maximum_power_relative_residual": 9.99269176045004e-16,
+        "source_unchanged": true,
+        "report_sha256": "3f1e634d6473305c286fa9cdc1244230674c99596e16eb988dd7996a801c0528",
+        "checkpoint_sha256": "bbd8829f97ab65f9d620c3eaaaea8a34f3ea2d0d569ab309c51eb5ffa106a105"
+      }
+    },
+    "stepsize_sensitivity_percent": {
+      "late_dt1_to_late_dt0p5": {
+        "end_mean_speed_mm_per_year": 0.007487402334027671,
+        "end_max_speed_mm_per_year": 0.020008352591882606,
+        "removed_basalt_volume": 0.00499913690203968,
+        "created_basalt_volume": 0.003596689906770756,
+        "thermal_cold_volume_source": 15.74352997863231,
+        "thermal_excess_mass_source": 17.72231138127154
+      },
+      "late_dt0p5_to_late_dt0p25": {
+        "end_mean_speed_mm_per_year": 0.007747323792606231,
+        "end_max_speed_mm_per_year": -0.0006808069149100149,
+        "removed_basalt_volume": -0.020583446022492957,
+        "created_basalt_volume": -0.02071833107391008,
+        "thermal_cold_volume_source": 6.336789217313776,
+        "thermal_excess_mass_source": 7.013031114832646
+      }
+    },
+    "checkpoint_restart_bitwise_equal": true,
+    "previous_05_production_files_changed": [],
+    "previous_fractional_transport_files_changed": [],
+    "tests": {
+      "passed": 260,
+      "seconds": 23.96,
+      "sha256": "357b40ddb82e3a6520a7cac6c5059c2b143d468efc06dd23f57ab1a801046093"
+    },
+    "limitations": [
+      "Three stepsizes over 2 Myr test short temporal sensitivity, not certified long-term convergence",
+      "No grid convergence established for this coupled model",
+      "These speeds exclude slab and ridge forces and cannot replace the full 0.5 speed history"
+    ]
+  }
+}

@@ -31,6 +31,21 @@ from .genesis_tides import (TidalOrbitState, TidalParameters,
 from .mesh import SphereMesh
 
 
+def thermal_budget_fields(row):
+    """Keep the global reservoir's transport diagnostics in downstream history.
+
+    The thermal boundary layer belongs to the global heat-transfer law. It is
+    independent of the passive column's mechanical lid and chemical crust.
+    """
+    names = ("mantle_melt_fraction", "viscosity_pa_s", "rayleigh_number",
+        "nusselt_number", "solid_convective_heat_flux_w_m2",
+        "conductive_heat_flux_w_m2", "mantle_to_surface_flux_w_m2",
+        "radiogenic_flux_w_m2", "tidal_flux_w_m2", "net_mantle_flux_w_m2",
+        "thermal_boundary_layer_thickness_km", "effective_heat_transfer_w_m2_k",
+        "magma_transport_weight")
+    return {name: row[name] for name in names}
+
+
 def _positive(value, name):
     if isinstance(value, bool) or not isinstance(value, Real) or not math.isfinite(value) or value <= 0:
         raise ValueError(f"{name} must be positive and finite")

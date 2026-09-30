@@ -1,0 +1,4544 @@
+{
+  "format": "plate-velocity-budget-1",
+  "evaluation": "saved_uniform04_frozen_probe",
+  "time_myr": 100.87812194824218,
+  "plate_count": 4,
+  "cell_count": 5120,
+  "weighting": "cell area; boundary edge length; inverse-CDF quantiles",
+  "units": "omega rad/Myr, surface speed km/Myr = mm/yr; raw boundary drives km * dimensionless proxy",
+  "note": "Magnitudes are not additive. Raw vectors in trace reconstruct the target exactly. Current and returned are different step endpoints.",
+  "mantle": {
+    "local_velocity_km_per_myr": {
+      "mean": 13.152736086560504,
+      "median": 14.18964101755052,
+      "p90": 19.727714564289503,
+      "rms": 14.187757106423497,
+      "max": 21.516623634688607
+    },
+    "rms_omega_rad_per_myr": 0.002683578987664366,
+    "formation_rms_omega_rad_per_myr": 0.002683578987664366,
+    "realised_thermal_amplitude_fraction": 1.0,
+    "rigid_fit_relative_residual": 0.643683335011582,
+    "represented_kinetic_proxy_fraction": 0.5856717642283675
+  },
+  "stages_speed_km_per_myr": {
+    "best_rigid_fit": {
+      "mean": 10.383280055249775,
+      "median": 10.979394937443889,
+      "p90": 14.012761780618964,
+      "rms": 10.857776260328757,
+      "max": 15.236119173662491
+    },
+    "simple_area_average": {
+      "mean": 6.924594084261078,
+      "median": 7.318686572932935,
+      "p90": 9.327134213980843,
+      "rms": 7.243931123407467,
+      "max": 10.279482010081257
+    },
+    "selected_projection": {
+      "mean": 3.8738749042660343,
+      "median": 3.7010064844956325,
+      "p90": 6.486753360941573,
+      "rms": 4.217862325561375,
+      "max": 7.388894060207247
+    },
+    "after_memory": {
+      "mean": 3.8738749042660343,
+      "median": 3.7010064844956325,
+      "p90": 6.486753360941573,
+      "rms": 4.217862325561375,
+      "max": 7.388894060207247
+    },
+    "target": {
+      "mean": 4.572251860919147,
+      "median": 4.582871597171802,
+      "p90": 7.210307240412755,
+      "rms": 4.896360197698478,
+      "max": 8.194835619557812
+    },
+    "current": {
+      "mean": 4.848160037109258,
+      "median": 4.933354725297624,
+      "p90": 7.935345337978093,
+      "rms": 5.2039008749733915,
+      "max": 8.999156970486888
+    },
+    "after_relaxation": {
+      "mean": 4.572251860919147,
+      "median": 4.582871597171802,
+      "p90": 7.210307240412755,
+      "rms": 4.896360197698478,
+      "max": 8.194835619557812
+    },
+    "after_net_rotation": {
+      "mean": 4.572251860919147,
+      "median": 4.582871597171802,
+      "p90": 7.210307240412755,
+      "rms": 4.896360197698478,
+      "max": 8.194835619557812
+    },
+    "actual_returned": {
+      "mean": 4.572251860919147,
+      "median": 4.582871597171802,
+      "p90": 7.210307240412755,
+      "rms": 4.896360197698478,
+      "max": 8.194835619557812
+    },
+    "local_mantle": {
+      "mean": 13.152736086560504,
+      "median": 14.18964101755052,
+      "p90": 19.727714564289503,
+      "rms": 14.187757106423497,
+      "max": 21.516623634688607
+    }
+  },
+  "contributions_speed_km_per_myr": {
+    "mantle": {
+      "mean": 3.8738749042660343,
+      "median": 3.7010064844956325,
+      "p90": 6.486753360941573,
+      "rms": 4.217862325561375,
+      "max": 7.388894060207247
+    },
+    "ridge": {
+      "mean": 0.2415406715039629,
+      "median": 0.17418000351012608,
+      "p90": 0.49896423849824445,
+      "rms": 0.2828799679854586,
+      "max": 0.5742615988290509
+    },
+    "slab": {
+      "mean": 0.7546601965987249,
+      "median": 0.7410803322361735,
+      "p90": 1.1567512903486654,
+      "rms": 0.8095777143172657,
+      "max": 1.2349462575728531
+    },
+    "residual_slab": {
+      "mean": 0.0,
+      "median": 0.0,
+      "p90": 0.0,
+      "rms": 0.0,
+      "max": 0.0
+    },
+    "gpe": {
+      "mean": 0.0,
+      "median": 0.0,
+      "p90": 0.0,
+      "rms": 0.0,
+      "max": 0.0
+    },
+    "rollback": {
+      "mean": 0.0,
+      "median": 0.0,
+      "p90": 0.0,
+      "rms": 0.0,
+      "max": 0.0
+    },
+    "collision_resistance": {
+      "mean": 0.0,
+      "median": 0.0,
+      "p90": 0.0,
+      "rms": 0.0,
+      "max": 0.0
+    },
+    "transform_resistance": {
+      "mean": 0.0,
+      "median": 0.0,
+      "p90": 0.0,
+      "rms": 0.0,
+      "max": 0.0
+    },
+    "slab_constraint": {
+      "mean": 0.0,
+      "median": 0.0,
+      "p90": 0.0,
+      "rms": 0.0,
+      "max": 0.0
+    }
+  },
+  "plates": [
+    {
+      "plate_id": 0,
+      "area_fraction": 0.286759983303309,
+      "actual_angular_speed_rad_per_myr": 0.0011209469619739535,
+      "local_mantle_speed_km_per_myr": {
+        "mean": 12.340660763087163,
+        "median": 13.205428092400458,
+        "p90": 19.474165641837345,
+        "rms": 13.55531717631602,
+        "max": 21.516623634688607
+      },
+      "best_fit_relative_residual": 0.735856344592285,
+      "represented_kinetic_proxy_fraction": 0.458515440123278,
+      "residual_rms_km_per_myr": 9.974766147152938,
+      "fit_moment_rank": 3,
+      "relaxation_alpha": 1.0,
+      "drag_factor": 1.0,
+      "boundary_normalization_length_km": 0.0,
+      "collision_length_weighted_km": 0.0,
+      "transform_length_weighted_km": 0.0,
+      "ridge_gpe_factor": 0.0,
+      "available_negative_buoyancy_km_kg_m3": {
+        "mean": 2220.0430899085864,
+        "median": 2226.5819417047182,
+        "p90": 2226.7563190184196,
+        "rms": 2221.742822093409,
+        "max": 2238.1499614812897
+      },
+      "stages": {
+        "best_rigid_fit": {
+          "omega_rad_per_myr": [
+            -0.00019407813174570282,
+            -0.0020979233922895878,
+            0.0002760538798795534
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 8.800161494359003,
+            "median": 9.801402567948783,
+            "p90": 11.19076375888049,
+            "rms": 9.178816048932452,
+            "max": 11.234289835756794
+          }
+        },
+        "simple_area_average": {
+          "omega_rad_per_myr": [
+            -0.00012630620413815052,
+            -0.0014017640064528402,
+            0.00017667851079759963
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 5.874761696156995,
+            "median": 6.545780213566765,
+            "p90": 7.46909861448469,
+            "rms": 6.1276068301204,
+            "max": 7.499550395778231
+          }
+        },
+        "selected_projection": {
+          "omega_rad_per_myr": [
+            -0.00020700232675577556,
+            -0.000880290508151689,
+            0.0004939129786752989
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 4.2141091209997095,
+            "median": 4.678527088068919,
+            "p90": 5.415059633250875,
+            "rms": 4.404348703932377,
+            "max": 5.4476919553978
+          }
+        },
+        "after_memory": {
+          "omega_rad_per_myr": [
+            -0.00020700232675577556,
+            -0.000880290508151689,
+            0.0004939129786752989
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 4.2141091209997095,
+            "median": 4.678527088068919,
+            "p90": 5.415059633250875,
+            "rms": 4.404348703932377,
+            "max": 5.4476919553978
+          }
+        },
+        "target": {
+          "omega_rad_per_myr": [
+            -0.0001860997288656485,
+            -0.0009674798853832099,
+            0.000614702565477304
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 4.699617286227425,
+            "median": 5.249922180083675,
+            "p90": 6.103460206951787,
+            "rms": 4.927876470833258,
+            "max": 6.139545001748598
+          }
+        },
+        "current": {
+          "omega_rad_per_myr": [
+            -0.00011882660708911153,
+            -0.0008907422523710306,
+            0.0006700601233078336
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 4.466511328881409,
+            "median": 5.013405574232732,
+            "p90": 5.890798010610036,
+            "rms": 4.702761732824888,
+            "max": 5.926446587918906
+          }
+        },
+        "after_relaxation": {
+          "omega_rad_per_myr": [
+            -0.0001860997288656485,
+            -0.0009674798853832099,
+            0.000614702565477304
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 4.699617286227425,
+            "median": 5.249922180083675,
+            "p90": 6.103460206951787,
+            "rms": 4.927876470833258,
+            "max": 6.139545001748598
+          }
+        },
+        "after_net_rotation": {
+          "omega_rad_per_myr": [
+            -0.0001860997288656485,
+            -0.0009674798853832099,
+            0.000614702565477304
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 4.699617286227425,
+            "median": 5.249922180083675,
+            "p90": 6.103460206951787,
+            "rms": 4.927876470833258,
+            "max": 6.139545001748598
+          }
+        },
+        "actual_returned": {
+          "omega_rad_per_myr": [
+            -0.0001860997288656485,
+            -0.0009674798853832099,
+            0.000614702565477304
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 4.699617286227425,
+            "median": 5.249922180083675,
+            "p90": 6.103460206951787,
+            "rms": 4.927876470833258,
+            "max": 6.139545001748598
+          }
+        }
+      },
+      "contributions": {
+        "mantle": {
+          "omega_rad_per_myr": [
+            -0.00020700232675577556,
+            -0.000880290508151689,
+            0.0004939129786752989
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 4.2141091209997095,
+            "median": 4.678527088068919,
+            "p90": 5.415059633250875,
+            "rms": 4.404348703932377,
+            "max": 5.4476919553978
+          }
+        },
+        "ridge": {
+          "omega_rad_per_myr": [
+            -2.6092173189633028e-05,
+            -2.184459743534283e-05,
+            3.99904228185487e-06
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.15395810345858332,
+            "median": 0.1622982623986328,
+            "p90": 0.180455307494426,
+            "rms": 0.15625112243747047,
+            "max": 0.18115052695220335
+          }
+        },
+        "slab": {
+          "omega_rad_per_myr": [
+            4.699477107976011e-05,
+            -6.534477979617817e-05,
+            0.00011679054452015012
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.5239865078573688,
+            "median": 0.5547288669163776,
+            "p90": 0.7405867280160695,
+            "rms": 0.5559042341174719,
+            "max": 0.74990458612125
+          }
+        },
+        "residual_slab": {
+          "omega_rad_per_myr": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.0,
+            "median": 0.0,
+            "p90": 0.0,
+            "rms": 0.0,
+            "max": 0.0
+          }
+        },
+        "gpe": {
+          "omega_rad_per_myr": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.0,
+            "median": 0.0,
+            "p90": 0.0,
+            "rms": 0.0,
+            "max": 0.0
+          }
+        },
+        "rollback": {
+          "omega_rad_per_myr": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.0,
+            "median": 0.0,
+            "p90": 0.0,
+            "rms": 0.0,
+            "max": 0.0
+          }
+        },
+        "collision_resistance": {
+          "omega_rad_per_myr": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.0,
+            "median": 0.0,
+            "p90": 0.0,
+            "rms": 0.0,
+            "max": 0.0
+          }
+        },
+        "transform_resistance": {
+          "omega_rad_per_myr": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.0,
+            "median": 0.0,
+            "p90": 0.0,
+            "rms": 0.0,
+            "max": 0.0
+          }
+        },
+        "slab_constraint": {
+          "omega_rad_per_myr": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.0,
+            "median": 0.0,
+            "p90": 0.0,
+            "rms": 0.0,
+            "max": 0.0
+          }
+        }
+      }
+    },
+    {
+      "plate_id": 1,
+      "area_fraction": 0.26267056745363676,
+      "actual_angular_speed_rad_per_myr": 0.0009768142675252603,
+      "local_mantle_speed_km_per_myr": {
+        "mean": 12.91279114012471,
+        "median": 13.991168150901707,
+        "p90": 19.66345081042416,
+        "rms": 14.016610182886849,
+        "max": 21.513307222851555
+      },
+      "best_fit_relative_residual": 0.6575474210531521,
+      "represented_kinetic_proxy_fraction": 0.5676313890663486,
+      "residual_rms_km_per_myr": 9.216585877664604,
+      "fit_moment_rank": 3,
+      "relaxation_alpha": 1.0,
+      "drag_factor": 1.0,
+      "boundary_normalization_length_km": 0.0,
+      "collision_length_weighted_km": 0.0,
+      "transform_length_weighted_km": 0.0,
+      "ridge_gpe_factor": 0.0,
+      "available_negative_buoyancy_km_kg_m3": {
+        "mean": 2219.9084931100565,
+        "median": 2226.5819417047182,
+        "p90": 2226.8015900056544,
+        "rms": 2221.894241413804,
+        "max": 2240.2301192951763
+      },
+      "stages": {
+        "best_rigid_fit": {
+          "omega_rad_per_myr": [
+            -0.00023190117806642262,
+            -0.002425375574894452,
+            0.0003155735264304526
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 10.095821214808064,
+            "median": 11.307618391113762,
+            "p90": 12.918317835840488,
+            "rms": 10.560298564843741,
+            "max": 12.989042489505671
+          }
+        },
+        "simple_area_average": {
+          "omega_rad_per_myr": [
+            -0.00014862612788334344,
+            -0.0016057347065534962,
+            0.00019223498690384822
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 6.67438686578152,
+            "median": 7.466486307734473,
+            "p90": 8.54032460698875,
+            "rms": 6.981444207180062,
+            "max": 8.586161721213255
+          }
+        },
+        "selected_projection": {
+          "omega_rad_per_myr": [
+            -8.160053788033477e-05,
+            -0.0006817189904033686,
+            -0.00020804159726830226
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 2.878975924163383,
+            "median": 3.2353116954518306,
+            "p90": 3.771946259737407,
+            "rms": 3.0309691262614273,
+            "max": 3.792959971587836
+          }
+        },
+        "after_memory": {
+          "omega_rad_per_myr": [
+            -8.160053788033477e-05,
+            -0.0006817189904033686,
+            -0.00020804159726830226
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 2.878975924163383,
+            "median": 3.2353116954518306,
+            "p90": 3.771946259737407,
+            "rms": 3.0309691262614273,
+            "max": 3.792959971587836
+          }
+        },
+        "target": {
+          "omega_rad_per_myr": [
+            -0.0001922688029287637,
+            -0.0008897231033343512,
+            -5.245733705645442e-05
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 3.721706937789845,
+            "median": 4.181276672227358,
+            "p90": 4.793463016038062,
+            "rms": 3.90099892079918,
+            "max": 4.820532848238463
+          }
+        },
+        "current": {
+          "omega_rad_per_myr": [
+            -0.00022232248387371343,
+            -0.0009508474780178959,
+            -2.5057931920658976e-05
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 3.998207507694267,
+            "median": 4.486158930747533,
+            "p90": 5.1357186553901375,
+            "rms": 4.185992457747566,
+            "max": 5.164416540362882
+          }
+        },
+        "after_relaxation": {
+          "omega_rad_per_myr": [
+            -0.0001922688029287637,
+            -0.0008897231033343512,
+            -5.245733705645442e-05
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 3.721706937789845,
+            "median": 4.181276672227358,
+            "p90": 4.793463016038062,
+            "rms": 3.90099892079918,
+            "max": 4.820532848238463
+          }
+        },
+        "after_net_rotation": {
+          "omega_rad_per_myr": [
+            -0.0001922688029287637,
+            -0.0008897231033343512,
+            -5.245733705645442e-05
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 3.721706937789845,
+            "median": 4.181276672227358,
+            "p90": 4.793463016038062,
+            "rms": 3.90099892079918,
+            "max": 4.820532848238463
+          }
+        },
+        "actual_returned": {
+          "omega_rad_per_myr": [
+            -0.0001922688029287637,
+            -0.0008897231033343512,
+            -5.245733705645442e-05
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 3.721706937789845,
+            "median": 4.181276672227358,
+            "p90": 4.793463016038062,
+            "rms": 3.90099892079918,
+            "max": 4.820532848238463
+          }
+        }
+      },
+      "contributions": {
+        "mantle": {
+          "omega_rad_per_myr": [
+            -8.160053788033477e-05,
+            -0.0006817189904033686,
+            -0.00020804159726830226
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 2.878975924163383,
+            "median": 3.2353116954518306,
+            "p90": 3.771946259737407,
+            "rms": 3.0309691262614273,
+            "max": 3.792959971587836
+          }
+        },
+        "ridge": {
+          "omega_rad_per_myr": [
+            -2.3505437781976292e-05,
+            -1.3044931977767252e-05,
+            0.00010523877146552431
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.4128341557302839,
+            "median": 0.45510358889471114,
+            "p90": 0.5665704387915216,
+            "rms": 0.4368173591943435,
+            "max": 0.5742615988290509
+          }
+        },
+        "slab": {
+          "omega_rad_per_myr": [
+            -8.716282726645252e-05,
+            -0.00019495918095321503,
+            5.034548874632355e-05
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.9284286363264238,
+            "median": 1.0094182900310353,
+            "p90": 1.154933901728789,
+            "rms": 0.9573126877414306,
+            "max": 1.1600250115181603
+          }
+        },
+        "residual_slab": {
+          "omega_rad_per_myr": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.0,
+            "median": 0.0,
+            "p90": 0.0,
+            "rms": 0.0,
+            "max": 0.0
+          }
+        },
+        "gpe": {
+          "omega_rad_per_myr": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.0,
+            "median": 0.0,
+            "p90": 0.0,
+            "rms": 0.0,
+            "max": 0.0
+          }
+        },
+        "rollback": {
+          "omega_rad_per_myr": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.0,
+            "median": 0.0,
+            "p90": 0.0,
+            "rms": 0.0,
+            "max": 0.0
+          }
+        },
+        "collision_resistance": {
+          "omega_rad_per_myr": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.0,
+            "median": 0.0,
+            "p90": 0.0,
+            "rms": 0.0,
+            "max": 0.0
+          }
+        },
+        "transform_resistance": {
+          "omega_rad_per_myr": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.0,
+            "median": 0.0,
+            "p90": 0.0,
+            "rms": 0.0,
+            "max": 0.0
+          }
+        },
+        "slab_constraint": {
+          "omega_rad_per_myr": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.0,
+            "median": 0.0,
+            "p90": 0.0,
+            "rms": 0.0,
+            "max": 0.0
+          }
+        }
+      }
+    },
+    {
+      "plate_id": 2,
+      "area_fraction": 0.24136780517043235,
+      "actual_angular_speed_rad_per_myr": 0.0010304142411191575,
+      "local_mantle_speed_km_per_myr": {
+        "mean": 13.340581363835595,
+        "median": 14.386098706357222,
+        "p90": 19.773418530468682,
+        "rms": 14.312993700098815,
+        "max": 21.51023698036536
+      },
+      "best_fit_relative_residual": 0.5995134500272445,
+      "represented_kinetic_proxy_fraction": 0.640583623236431,
+      "residual_rms_km_per_myr": 8.580832233364458,
+      "fit_moment_rank": 3,
+      "relaxation_alpha": 1.0,
+      "drag_factor": 1.0,
+      "boundary_normalization_length_km": 0.0,
+      "collision_length_weighted_km": 0.0,
+      "transform_length_weighted_km": 0.0,
+      "ridge_gpe_factor": 0.0,
+      "available_negative_buoyancy_km_kg_m3": {
+        "mean": 2221.74114219801,
+        "median": 2226.5819417047182,
+        "p90": 2226.8088399902285,
+        "rms": 2223.223183131536,
+        "max": 2238.037836856073
+      },
+      "stages": {
+        "best_rigid_fit": {
+          "omega_rad_per_myr": [
+            0.00021682341684123925,
+            0.0026324405443156227,
+            -0.0002998507738052594
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 11.058023011233017,
+            "median": 12.069213102052688,
+            "p90": 13.987153893583672,
+            "rms": 11.455614642694725,
+            "max": 14.054517490372712
+          }
+        },
+        "simple_area_average": {
+          "omega_rad_per_myr": [
+            0.00016413737087864362,
+            0.0017454393676385065,
+            -0.0002149650525137649
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 7.349047403451302,
+            "median": 8.003183810648306,
+            "p90": 9.291223900692422,
+            "rms": 7.612880190628403,
+            "max": 9.338259917833968
+          }
+        },
+        "selected_projection": {
+          "omega_rad_per_myr": [
+            -0.00011096743897379282,
+            0.000712156703140189,
+            0.00010862308381811398
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 2.957054184574279,
+            "median": 3.279375244460013,
+            "p90": 3.8313497656907214,
+            "rms": 3.094730901677911,
+            "max": 3.853638408949634
+          }
+        },
+        "after_memory": {
+          "omega_rad_per_myr": [
+            -0.00011096743897379282,
+            0.000712156703140189,
+            0.00010862308381811398
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 2.957054184574279,
+            "median": 3.279375244460013,
+            "p90": 3.8313497656907214,
+            "rms": 3.094730901677911,
+            "max": 3.853638408949634
+          }
+        },
+        "target": {
+          "omega_rad_per_myr": [
+            2.2961635214379495e-05,
+            0.0008967411248719164,
+            4.566953789348976e-05
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 3.7326344267837643,
+            "median": 4.064810670540716,
+            "p90": 4.726757009581655,
+            "rms": 3.8675273075346195,
+            "max": 4.748766614730089
+          }
+        },
+        "current": {
+          "omega_rad_per_myr": [
+            5.3159074967577445e-05,
+            0.0010282363975517028,
+            -4.07127965099098e-05
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 4.281560410803112,
+            "median": 4.663058422048119,
+            "p90": 5.422033830378474,
+            "rms": 4.436600057598982,
+            "max": 5.447797453332751
+          }
+        },
+        "after_relaxation": {
+          "omega_rad_per_myr": [
+            2.2961635214379495e-05,
+            0.0008967411248719164,
+            4.566953789348976e-05
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 3.7326344267837643,
+            "median": 4.064810670540716,
+            "p90": 4.726757009581655,
+            "rms": 3.8675273075346195,
+            "max": 4.748766614730089
+          }
+        },
+        "after_net_rotation": {
+          "omega_rad_per_myr": [
+            2.2961635214379495e-05,
+            0.0008967411248719164,
+            4.566953789348976e-05
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 3.7326344267837643,
+            "median": 4.064810670540716,
+            "p90": 4.726757009581655,
+            "rms": 3.8675273075346195,
+            "max": 4.748766614730089
+          }
+        },
+        "actual_returned": {
+          "omega_rad_per_myr": [
+            2.2961635214379495e-05,
+            0.0008967411248719164,
+            4.566953789348976e-05
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 3.7326344267837643,
+            "median": 4.064810670540716,
+            "p90": 4.726757009581655,
+            "rms": 3.8675273075346195,
+            "max": 4.748766614730089
+          }
+        }
+      },
+      "contributions": {
+        "mantle": {
+          "omega_rad_per_myr": [
+            -0.00011096743897379282,
+            0.000712156703140189,
+            0.00010862308381811398
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 2.957054184574279,
+            "median": 3.279375244460013,
+            "p90": 3.8313497656907214,
+            "rms": 3.094730901677911,
+            "max": 3.853638408949634
+          }
+        },
+        "ridge": {
+          "omega_rad_per_myr": [
+            2.0936097408644133e-05,
+            -3.7872326565528383e-06,
+            1.6476310577154553e-05
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.12027438345759106,
+            "median": 0.13090454872346044,
+            "p90": 0.14200941841846623,
+            "rms": 0.12297244782347704,
+            "max": 0.14227137225991868
+          }
+        },
+        "slab": {
+          "omega_rad_per_myr": [
+            0.00011299297677952827,
+            0.0001883716543882809,
+            -7.942985650177874e-05
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.9242129519583621,
+            "median": 1.0473879583598846,
+            "p90": 1.2274000641590983,
+            "rms": 0.9778093767198681,
+            "max": 1.2349462575728531
+          }
+        },
+        "residual_slab": {
+          "omega_rad_per_myr": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.0,
+            "median": 0.0,
+            "p90": 0.0,
+            "rms": 0.0,
+            "max": 0.0
+          }
+        },
+        "gpe": {
+          "omega_rad_per_myr": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.0,
+            "median": 0.0,
+            "p90": 0.0,
+            "rms": 0.0,
+            "max": 0.0
+          }
+        },
+        "rollback": {
+          "omega_rad_per_myr": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.0,
+            "median": 0.0,
+            "p90": 0.0,
+            "rms": 0.0,
+            "max": 0.0
+          }
+        },
+        "collision_resistance": {
+          "omega_rad_per_myr": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.0,
+            "median": 0.0,
+            "p90": 0.0,
+            "rms": 0.0,
+            "max": 0.0
+          }
+        },
+        "transform_resistance": {
+          "omega_rad_per_myr": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.0,
+            "median": 0.0,
+            "p90": 0.0,
+            "rms": 0.0,
+            "max": 0.0
+          }
+        },
+        "slab_constraint": {
+          "omega_rad_per_myr": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.0,
+            "median": 0.0,
+            "p90": 0.0,
+            "rms": 0.0,
+            "max": 0.0
+          }
+        }
+      }
+    },
+    {
+      "plate_id": 3,
+      "area_fraction": 0.20920164407262193,
+      "actual_angular_speed_rad_per_myr": 0.0017021291797478673,
+      "local_mantle_speed_km_per_myr": {
+        "mean": 14.350419691110316,
+        "median": 15.282493787465091,
+        "p90": 20.023436485693118,
+        "rms": 15.076001075300667,
+        "max": 21.51023698036536
+      },
+      "best_fit_relative_residual": 0.557623504888777,
+      "represented_kinetic_proxy_fraction": 0.6890560267955563,
+      "residual_rms_km_per_myr": 8.406732559316128,
+      "fit_moment_rank": 3,
+      "relaxation_alpha": 1.0,
+      "drag_factor": 1.0,
+      "boundary_normalization_length_km": 0.0,
+      "collision_length_weighted_km": 0.0,
+      "transform_length_weighted_km": 0.0,
+      "ridge_gpe_factor": 0.0,
+      "available_negative_buoyancy_km_kg_m3": {
+        "mean": 2216.2590806078315,
+        "median": 2226.5819417047182,
+        "p90": 2227.372797551693,
+        "rms": 2218.578072666416,
+        "max": 2240.9368421531626
+      },
+      "stages": {
+        "best_rigid_fit": {
+          "omega_rad_per_myr": [
+            0.0002298170596429611,
+            0.00285327798279186,
+            -0.00033287645911724744
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 12.13575577843019,
+            "median": 13.17385867665608,
+            "p90": 15.135605231103746,
+            "rms": 12.514497836453565,
+            "max": 15.236119173662491
+          }
+        },
+        "simple_area_average": {
+          "omega_rad_per_myr": [
+            0.0001696289464276737,
+            0.001922546164871965,
+            -0.00023521611953150883
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 8.188076621716737,
+            "median": 8.879009481460582,
+            "p90": 10.215266408169166,
+            "rms": 8.443907559250693,
+            "max": 10.279482010081257
+          }
+        },
+        "selected_projection": {
+          "omega_rad_per_myr": [
+            0.0005061566499594183,
+            0.001189501913870965,
+            -0.0005310947444246447
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 5.714472897205095,
+            "median": 6.362226252249418,
+            "p90": 7.359246605390734,
+            "rms": 5.988712185903908,
+            "max": 7.388894060207247
+          }
+        },
+        "after_memory": {
+          "omega_rad_per_myr": [
+            0.0005061566499594183,
+            0.001189501913870965,
+            -0.0005310947444246447
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 5.714472897205095,
+            "median": 6.362226252249418,
+            "p90": 7.359246605390734,
+            "rms": 5.988712185903908,
+            "max": 7.388894060207247
+          }
+        },
+        "target": {
+          "omega_rad_per_myr": [
+            0.00048035945084060386,
+            0.0013166601572407158,
+            -0.0006619369570991013
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 6.434313841145384,
+            "median": 7.121890001416579,
+            "p90": 8.162561170433717,
+            "rms": 6.704287083120075,
+            "max": 8.194835619557812
+          }
+        },
+        "current": {
+          "omega_rad_per_myr": [
+            0.0004910090543204978,
+            0.001468665474885968,
+            -0.0007065235848875903
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 7.092205492402968,
+            "median": 7.8077080883427135,
+            "p90": 8.965963348888286,
+            "rms": 7.377075073284456,
+            "max": 8.999156970486888
+          }
+        },
+        "after_relaxation": {
+          "omega_rad_per_myr": [
+            0.00048035945084060386,
+            0.0013166601572407158,
+            -0.0006619369570991013
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 6.434313841145384,
+            "median": 7.121890001416579,
+            "p90": 8.162561170433717,
+            "rms": 6.704287083120075,
+            "max": 8.194835619557812
+          }
+        },
+        "after_net_rotation": {
+          "omega_rad_per_myr": [
+            0.00048035945084060386,
+            0.0013166601572407158,
+            -0.0006619369570991013
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 6.434313841145384,
+            "median": 7.121890001416579,
+            "p90": 8.162561170433717,
+            "rms": 6.704287083120075,
+            "max": 8.194835619557812
+          }
+        },
+        "actual_returned": {
+          "omega_rad_per_myr": [
+            0.00048035945084060386,
+            0.0013166601572407158,
+            -0.0006619369570991013
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 6.434313841145384,
+            "median": 7.121890001416579,
+            "p90": 8.162561170433717,
+            "rms": 6.704287083120075,
+            "max": 8.194835619557812
+          }
+        }
+      },
+      "contributions": {
+        "mantle": {
+          "omega_rad_per_myr": [
+            0.0005061566499594183,
+            0.001189501913870965,
+            -0.0005310947444246447
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 5.714472897205095,
+            "median": 6.362226252249418,
+            "p90": 7.359246605390734,
+            "rms": 5.988712185903908,
+            "max": 7.388894060207247
+          }
+        },
+        "ridge": {
+          "omega_rad_per_myr": [
+            5.2402737824087685e-05,
+            2.438937903925069e-05,
+            -4.9858938163986956e-05
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.28643131696740814,
+            "median": 0.3074487107123166,
+            "p90": 0.39884733180842513,
+            "rms": 0.3033419319143005,
+            "max": 0.40357517875292204
+          }
+        },
+        "slab": {
+          "omega_rad_per_myr": [
+            -7.819993694290225e-05,
+            0.00010276886433050006,
+            -8.098327451046962e-05
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.6570488797799622,
+            "median": 0.7145192147190085,
+            "p90": 0.801685539136238,
+            "rms": 0.6749398546825327,
+            "max": 0.8058983604722557
+          }
+        },
+        "residual_slab": {
+          "omega_rad_per_myr": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.0,
+            "median": 0.0,
+            "p90": 0.0,
+            "rms": 0.0,
+            "max": 0.0
+          }
+        },
+        "gpe": {
+          "omega_rad_per_myr": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.0,
+            "median": 0.0,
+            "p90": 0.0,
+            "rms": 0.0,
+            "max": 0.0
+          }
+        },
+        "rollback": {
+          "omega_rad_per_myr": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.0,
+            "median": 0.0,
+            "p90": 0.0,
+            "rms": 0.0,
+            "max": 0.0
+          }
+        },
+        "collision_resistance": {
+          "omega_rad_per_myr": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.0,
+            "median": 0.0,
+            "p90": 0.0,
+            "rms": 0.0,
+            "max": 0.0
+          }
+        },
+        "transform_resistance": {
+          "omega_rad_per_myr": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.0,
+            "median": 0.0,
+            "p90": 0.0,
+            "rms": 0.0,
+            "max": 0.0
+          }
+        },
+        "slab_constraint": {
+          "omega_rad_per_myr": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.0,
+            "median": 0.0,
+            "p90": 0.0,
+            "rms": 0.0,
+            "max": 0.0
+          }
+        }
+      }
+    }
+  ],
+  "boundaries": {
+    "count": 261,
+    "total_length_km": 103058.99996576809,
+    "by_type": {
+      "INACTIVE": {
+        "count": 1,
+        "length_km": 418.8117439749973,
+        "length_fraction": 0.00406380562701083
+      },
+      "DIVERGENT": {
+        "count": 83,
+        "length_km": 32367.54569150525,
+        "length_fraction": 0.31406811343265895
+      },
+      "CONVERGENT": {
+        "count": 92,
+        "length_km": 36283.609192815034,
+        "length_fraction": 0.35206638144040736
+      },
+      "TRANSFORM": {
+        "count": 85,
+        "length_km": 33989.03333747281,
+        "length_fraction": 0.32980169949992283
+      }
+    },
+    "active_length_fraction": 0.9959361943729892,
+    "relative_speed_km_per_myr": {
+      "mean": 9.024540025477714,
+      "median": 9.646022209507741,
+      "p90": 14.226626505146465,
+      "rms": 9.77054504162771,
+      "max": 14.797263285104382
+    },
+    "absolute_normal_speed_km_per_myr": {
+      "mean": 5.407318940521993,
+      "median": 5.1167514051096985,
+      "p90": 9.410155844042125,
+      "rms": 6.175637316839258,
+      "max": 14.32345871496463
+    },
+    "max_convergent_normal_speed_km_per_myr": 14.32345871496463,
+    "max_divergent_normal_speed_km_per_myr": 14.310737563808743,
+    "positive_normal_length_km": 48754.88458092245,
+    "negative_normal_length_km": 54304.115384845645
+  },
+  "slabs": [
+    {
+      "subducting_plate": 0,
+      "overriding_plate": 3,
+      "active": true,
+      "active_age_myr": 77.0,
+      "inactive_age_myr": 0.0,
+      "slab_length_km": 178.00850951163133,
+      "slab_depth_km": 130.9500537709638,
+      "dip_deg": 47.36126301392102,
+      "trench_length_km": 798.8027794891391,
+      "convergence_rate_km_per_myr": 3.868632769483811,
+      "buoyancy_factor": 0.26378311226251244,
+      "cumulative_subducted_area_km2": 142193.69217060995,
+      "trench_midpoint": [
+        0.5477982601567135,
+        0.04355573221013871,
+        -0.8354758909513288
+      ],
+      "torque_axis": [
+        0.6829072479487304,
+        -0.43378428816001563,
+        0.5877660094673011
+      ],
+      "rollback_distance_km": 0.0,
+      "rollback_rate_km_per_myr": 0.0,
+      "continental_collision_age_myr": 0.0,
+      "breakoff_damage": 0.0,
+      "last_front_continental_fraction": 0.0,
+      "broken_off": false,
+      "post_breakoff_age_myr": 0.0,
+      "breakoff_time_myr": -1.0,
+      "development_fraction": 0.09889361639535074
+    },
+    {
+      "subducting_plate": 1,
+      "overriding_plate": 2,
+      "active": true,
+      "active_age_myr": 84.0,
+      "inactive_age_myr": 0.0,
+      "slab_length_km": 280.63137623943504,
+      "slab_depth_km": 208.55383544435486,
+      "dip_deg": 48.001245017776895,
+      "trench_length_km": 2878.8457932954607,
+      "convergence_rate_km_per_myr": 3.187071477509344,
+      "buoyancy_factor": 0.11872936312637995,
+      "cumulative_subducted_area_km2": 807894.4569536133,
+      "trench_midpoint": [
+        -0.46809741757349393,
+        0.1597727221675669,
+        0.8691130449557132
+      ],
+      "torque_axis": [
+        -0.010802202346534454,
+        -0.565651126154374,
+        0.0791073805495165
+      ],
+      "rollback_distance_km": 0.0,
+      "rollback_rate_km_per_myr": 0.0,
+      "continental_collision_age_myr": 0.0,
+      "breakoff_damage": 0.0,
+      "last_front_continental_fraction": 0.0,
+      "broken_off": false,
+      "post_breakoff_age_myr": 0.0,
+      "breakoff_time_myr": -1.0,
+      "development_fraction": 0.15590632013301947
+    },
+    {
+      "subducting_plate": 2,
+      "overriding_plate": 1,
+      "active": true,
+      "active_age_myr": 83.0,
+      "inactive_age_myr": 0.0,
+      "slab_length_km": 255.89959593780333,
+      "slab_depth_km": 189.91087236456443,
+      "dip_deg": 47.91321151738823,
+      "trench_length_km": 2831.399851419585,
+      "convergence_rate_km_per_myr": 3.187071477509344,
+      "buoyancy_factor": 0.11363892791244558,
+      "cumulative_subducted_area_km2": 724554.0779166282,
+      "trench_midpoint": [
+        -0.46144432334867014,
+        0.2928374809056037,
+        0.8374457273317167
+      ],
+      "torque_axis": [
+        0.3371938073954431,
+        0.7996572194075345,
+        -0.16112911749669637
+      ],
+      "rollback_distance_km": 0.0,
+      "rollback_rate_km_per_myr": 0.0,
+      "continental_collision_age_myr": 0.0,
+      "breakoff_damage": 0.0,
+      "last_front_continental_fraction": 0.0,
+      "broken_off": false,
+      "post_breakoff_age_myr": 0.0,
+      "breakoff_time_myr": -1.0,
+      "development_fraction": 0.14216644218766852
+    },
+    {
+      "subducting_plate": 3,
+      "overriding_plate": 0,
+      "active": true,
+      "active_age_myr": 79.0,
+      "inactive_age_myr": 0.0,
+      "slab_length_km": 175.97485019338438,
+      "slab_depth_km": 129.8456861448678,
+      "dip_deg": 47.54986410209974,
+      "trench_length_km": 1128.681007471126,
+      "convergence_rate_km_per_myr": 3.868632769483811,
+      "buoyancy_factor": 0.030331342611683947,
+      "cumulative_subducted_area_km2": 198619.47120584955,
+      "trench_midpoint": [
+        0.6635578519038876,
+        0.03680034556486022,
+        -0.7472193197067412
+      ],
+      "torque_axis": [
+        -0.5297370232951741,
+        0.32202066824173525,
+        -0.7843198028766878
+      ],
+      "rollback_distance_km": 0.0,
+      "rollback_rate_km_per_myr": 0.0,
+      "continental_collision_age_myr": 0.0,
+      "breakoff_damage": 0.0,
+      "last_front_continental_fraction": 0.0,
+      "broken_off": false,
+      "post_breakoff_age_myr": 0.0,
+      "breakoff_time_myr": -1.0,
+      "development_fraction": 0.09776380566299132
+    }
+  ],
+  "slab_zero_reason": "Inspect stored length, activity, breakoff and per-edge multiplier in trace",
+  "verification": {
+    "target_vector_sum_max_error": 6.505213034913027e-19,
+    "relaxation_prediction_max_error": 0.0,
+    "net_rotation_relative_velocity_max_change_km_per_myr": 0.0
+  },
+  "trace": {
+    "force_model": "young_si_v1",
+    "mantle_projection": "velocity_least_squares",
+    "young_slab_force_model": "viscous_sinking_v1",
+    "young_slab_buoyancy_model": "uniform_thermal_mass_v1",
+    "young_velocity_response_model": "quasistatic",
+    "current_omega": [
+      [
+        -0.00011882660708911153,
+        -0.0008907422523710306,
+        0.0006700601233078336
+      ],
+      [
+        -0.00022232248387371343,
+        -0.0009508474780178959,
+        -2.5057931920658976e-05
+      ],
+      [
+        5.3159074967577445e-05,
+        0.0010282363975517028,
+        -4.07127965099098e-05
+      ],
+      [
+        0.0004910090543204978,
+        0.001468665474885968,
+        -0.0007065235848875903
+      ]
+    ],
+    "baseline_omega": [
+      [
+        -2.5561859361054906e-07,
+        1.7643180369505324e-07,
+        5.068580957920638e-07
+      ],
+      [
+        2.502376405816336e-07,
+        -1.7467583775398634e-07,
+        -4.9616421125549e-07
+      ]
+    ],
+    "mantle_omega": [
+      [
+        -0.00020700232675577556,
+        -0.000880290508151689,
+        0.0004939129786752989
+      ],
+      [
+        -8.160053788033477e-05,
+        -0.0006817189904033686,
+        -0.00020804159726830226
+      ],
+      [
+        -0.00011096743897379282,
+        0.000712156703140189,
+        0.00010862308381811398
+      ],
+      [
+        0.0005061566499594183,
+        0.001189501913870965,
+        -0.0005310947444246447
+      ]
+    ],
+    "common_mantle": [
+      [
+        -0.00020700232675577556,
+        -0.000880290508151689,
+        0.0004939129786752989
+      ],
+      [
+        -8.160053788033477e-05,
+        -0.0006817189904033686,
+        -0.00020804159726830226
+      ],
+      [
+        -0.00011096743897379282,
+        0.000712156703140189,
+        0.00010862308381811398
+      ],
+      [
+        0.0005061566499594183,
+        0.001189501913870965,
+        -0.0005310947444246447
+      ]
+    ],
+    "ridge_drive_raw": [
+      [
+        -2.6092173189633028e-05,
+        -2.184459743534283e-05,
+        3.99904228185487e-06
+      ],
+      [
+        -2.3505437781976292e-05,
+        -1.3044931977767252e-05,
+        0.00010523877146552431
+      ],
+      [
+        2.0936097408644133e-05,
+        -3.7872326565528383e-06,
+        1.6476310577154553e-05
+      ],
+      [
+        5.2402737824087685e-05,
+        2.438937903925069e-05,
+        -4.9858938163986956e-05
+      ]
+    ],
+    "slab_drive_raw": [
+      [
+        4.699477107976011e-05,
+        -6.534477979617817e-05,
+        0.00011679054452015012
+      ],
+      [
+        -8.716282726645252e-05,
+        -0.00019495918095321503,
+        5.034548874632355e-05
+      ],
+      [
+        0.00011299297677952827,
+        0.0001883716543882809,
+        -7.942985650177874e-05
+      ],
+      [
+        -7.819993694290225e-05,
+        0.00010276886433050006,
+        -8.098327451046962e-05
+      ]
+    ],
+    "ridge_drive_normalized": [
+      [
+        -2.6092173189633028e-05,
+        -2.184459743534283e-05,
+        3.99904228185487e-06
+      ],
+      [
+        -2.3505437781976292e-05,
+        -1.3044931977767252e-05,
+        0.00010523877146552431
+      ],
+      [
+        2.0936097408644133e-05,
+        -3.7872326565528383e-06,
+        1.6476310577154553e-05
+      ],
+      [
+        5.2402737824087685e-05,
+        2.438937903925069e-05,
+        -4.9858938163986956e-05
+      ]
+    ],
+    "slab_drive_normalized": [
+      [
+        4.699477107976011e-05,
+        -6.534477979617817e-05,
+        0.00011679054452015012
+      ],
+      [
+        -8.716282726645252e-05,
+        -0.00019495918095321503,
+        5.034548874632355e-05
+      ],
+      [
+        0.00011299297677952827,
+        0.0001883716543882809,
+        -7.942985650177874e-05
+      ],
+      [
+        -7.819993694290225e-05,
+        0.00010276886433050006,
+        -8.098327451046962e-05
+      ]
+    ],
+    "slab_drive_potential_raw": [
+      [
+        4.699477107976011e-05,
+        -6.534477979617817e-05,
+        0.00011679054452015012
+      ],
+      [
+        -8.716282726645252e-05,
+        -0.00019495918095321503,
+        5.034548874632355e-05
+      ],
+      [
+        0.00011299297677952827,
+        0.0001883716543882809,
+        -7.942985650177874e-05
+      ],
+      [
+        -7.819993694290225e-05,
+        0.00010276886433050006,
+        -8.098327451046962e-05
+      ]
+    ],
+    "slab_edges": [],
+    "ridge_push_factors": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "boundary_drive_raw": [
+      [
+        2.0902597890127084e-05,
+        -8.7189377231521e-05,
+        0.00012078958680200499
+      ],
+      [
+        -0.00011066826504842881,
+        -0.0002080041129309823,
+        0.00015558426021184787
+      ],
+      [
+        0.0001339290741881724,
+        0.00018458442173172805,
+        -6.295354592462418e-05
+      ],
+      [
+        -2.5797199118814567e-05,
+        0.00012715824336975075,
+        -0.00013084221267445657
+      ]
+    ],
+    "boundary_weight_km": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "boundary_drive_normalized": [
+      [
+        2.0902597890127084e-05,
+        -8.7189377231521e-05,
+        0.00012078958680200499
+      ],
+      [
+        -0.00011066826504842881,
+        -0.0002080041129309823,
+        0.00015558426021184787
+      ],
+      [
+        0.0001339290741881724,
+        0.00018458442173172805,
+        -6.295354592462418e-05
+      ],
+      [
+        -2.5797199118814567e-05,
+        0.00012715824336975075,
+        -0.00013084221267445657
+      ]
+    ],
+    "residual_slab_drive": [
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ]
+    ],
+    "total_drive_normalized": [
+      [
+        2.0902597890127084e-05,
+        -8.7189377231521e-05,
+        0.00012078958680200499
+      ],
+      [
+        -0.00011066826504842881,
+        -0.0002080041129309823,
+        0.00015558426021184787
+      ],
+      [
+        0.0001339290741881724,
+        0.00018458442173172805,
+        -6.295354592462418e-05
+      ],
+      [
+        -2.5797199118814567e-05,
+        0.00012715824336975075,
+        -0.00013084221267445657
+      ]
+    ],
+    "gpe_drive_raw": [
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ]
+    ],
+    "gpe_weight": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "gpe_drive_normalized": [
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ]
+    ],
+    "gpe_component": [
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ]
+    ],
+    "rollback_omega": [
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ]
+    ],
+    "drive_scale_rad_per_myr": 1.0,
+    "relative_drive": [
+      [
+        2.0902597890127084e-05,
+        -8.7189377231521e-05,
+        0.00012078958680200499
+      ],
+      [
+        -0.00011066826504842881,
+        -0.0002080041129309823,
+        0.00015558426021184787
+      ],
+      [
+        0.0001339290741881724,
+        0.00018458442173172805,
+        -6.295354592462418e-05
+      ],
+      [
+        -2.5797199118814567e-05,
+        0.00012715824336975075,
+        -0.00013084221267445657
+      ]
+    ],
+    "total_boundary_weight_km": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "collision_length_weighted_km": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "transform_length_weighted_km": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "collision_ratio": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "transform_ratio": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "drag_factor": [
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ],
+    "resistance_omega": [
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ]
+    ],
+    "collision_resistance_omega": [
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ]
+    ],
+    "transform_resistance_omega": [
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ]
+    ],
+    "target_omega": [
+      [
+        -0.0001860997288656485,
+        -0.0009674798853832099,
+        0.000614702565477304
+      ],
+      [
+        -0.0001922688029287637,
+        -0.0008897231033343512,
+        -5.245733705645442e-05
+      ],
+      [
+        2.2961635214379495e-05,
+        0.0008967411248719164,
+        4.566953789348976e-05
+      ],
+      [
+        0.00048035945084060386,
+        0.0013166601572407158,
+        -0.0006619369570991013
+      ]
+    ],
+    "alpha": 1.0,
+    "relaxed_omega": [
+      [
+        -0.0001860997288656485,
+        -0.0009674798853832099,
+        0.000614702565477304
+      ],
+      [
+        -0.0001922688029287637,
+        -0.0008897231033343512,
+        -5.245733705645442e-05
+      ],
+      [
+        2.2961635214379495e-05,
+        0.0008967411248719164,
+        4.566953789348976e-05
+      ],
+      [
+        0.00048035945084060386,
+        0.0013166601572407158,
+        -0.0006619369570991013
+      ]
+    ],
+    "post_gauge_omega": [
+      [
+        -0.0001860997288656485,
+        -0.0009674798853832099,
+        0.000614702565477304
+      ],
+      [
+        -0.0001922688029287637,
+        -0.0008897231033343512,
+        -5.245733705645442e-05
+      ],
+      [
+        2.2961635214379495e-05,
+        0.0008967411248719164,
+        4.566953789348976e-05
+      ],
+      [
+        0.00048035945084060386,
+        0.0013166601572407158,
+        -0.0006619369570991013
+      ]
+    ],
+    "final_omega": [
+      [
+        -0.0001860997288656485,
+        -0.0009674798853832099,
+        0.000614702565477304
+      ],
+      [
+        -0.0001922688029287637,
+        -0.0008897231033343512,
+        -5.245733705645442e-05
+      ],
+      [
+        2.2961635214379495e-05,
+        0.0008967411248719164,
+        4.566953789348976e-05
+      ],
+      [
+        0.00048035945084060386,
+        0.0013166601572407158,
+        -0.0006619369570991013
+      ]
+    ],
+    "plate_areas_km2": [
+      100727262.5280602,
+      92265618.45036805,
+      84782813.82625291,
+      73484133.59864242
+    ],
+    "mean_rotation": [
+      2.1648756453016673e-06,
+      -1.9246681512147106e-05,
+      3.503795534798605e-05
+    ],
+    "remove_net_rotation": false,
+    "frame": "fixed_prescribed_source",
+    "basal_drag_tensor_nm_s": [
+      [
+        [
+          2.3037452100517377e+41,
+          -7.40049886380081e+39,
+          -2.310187968465745e+40
+        ],
+        [
+          -7.40049886380081e+39,
+          1.8847059849447084e+41,
+          -2.590982311656654e+39
+        ],
+        [
+          -2.310187968465745e+40,
+          -2.590982311656654e+39,
+          1.4426800260919898e+41
+        ]
+      ],
+      [
+        [
+          2.121329870556431e+41,
+          -8.559965419498502e+39,
+          -3.136686805802612e+40
+        ],
+        [
+          -8.559965419498502e+39,
+          1.715331680952511e+41,
+          -2.4885867604681617e+38
+        ],
+        [
+          -3.136686805802612e+40,
+          -2.4885867604681617e+38,
+          1.3214236743668606e+41
+        ]
+      ],
+      [
+        [
+          1.1856938799129356e+41,
+          8.552062677893189e+39,
+          3.109153544374172e+40
+        ],
+        [
+          8.552062677893189e+39,
+          1.5651497465263862e+41,
+          7.416386564335322e+38
+        ],
+        [
+          3.109153544374172e+40,
+          7.416386564335322e+38,
+          1.988917367420133e+41
+        ]
+      ],
+      [
+        [
+          9.349272650831647e+40,
+          7.408401605406113e+39,
+          2.3377212298941855e+40
+        ],
+        [
+          7.408401605406113e+39,
+          1.3805088131806574e+41,
+          2.0982023312699422e+39
+        ],
+        [
+          2.3377212298941855e+40,
+          2.0982023312699422e+39,
+          1.7926751577252827e+41
+        ]
+      ]
+    ],
+    "basal_driving_torque_nm": [
+      [
+        -1.126902567906791e+24,
+        -1.2506523090055324e+25,
+        1.576323735404115e+24
+      ],
+      [
+        -1.2146459718327736e+24,
+        -1.3122855455658233e+25,
+        1.5710390616605291e+24
+      ],
+      [
+        1.232622107076011e+24,
+        1.3107722754391484e+25,
+        -1.614322652780457e+24
+      ],
+      [
+        1.1040994574500606e+24,
+        1.251367895787114e+25,
+        -1.531000430218303e+24
+      ]
+    ],
+    "total_drag_tensor_nm_s": [
+      [
+        3.4923692705684116e+41,
+        -1.9272498846639702e+40,
+        5.52308149469307e+40,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -1.1492052407047698e+41,
+        9.164304224774185e+39,
+        -7.48505466537013e+40
+      ],
+      [
+        -1.9272498846639702e+40,
+        3.1956604310652747e+41,
+        1.8136548313366896e+40,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        9.164304224774185e+39,
+        -1.1944882869372597e+41,
+        -2.0963885701442842e+40
+      ],
+      [
+        5.52308149469307e+40,
+        1.8136548313366896e+40,
+        2.1414225742472643e+41,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -7.48505466537013e+40,
+        -2.0963885701442842e+40,
+        -6.439223262126006e+40
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        6.9552686370493354e+41,
+        -3.666759720375129e+40,
+        2.193868356833866e+41,
+        -4.516575959714727e+41,
+        1.9941461020086912e+40,
+        -2.324744071837928e+41,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        -3.666759720375129e+40,
+        4.240137261582847e+41,
+        -9.551194789977181e+40,
+        1.9941461020086912e+40,
+        -2.167762370078243e+41,
+        7.973751944256445e+40,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        2.193868356833866e+41,
+        -9.551194789977181e+40,
+        3.0416424658143292e+41,
+        -2.324744071837928e+41,
+        7.973751944256445e+40,
+        -1.5591423917204795e+41,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        -4.516575959714727e+41,
+        1.9941461020086912e+40,
+        -2.324744071837928e+41,
+        6.044797800857331e+41,
+        6.040412125582882e+39,
+        2.7663614751927933e+41,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.9941461020086912e+40,
+        -2.167762370078243e+41,
+        7.973751944256445e+40,
+        6.040412125582882e+39,
+        4.120475422633487e+41,
+        -7.99865079870014e+40,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        -2.324744071837928e+41,
+        7.973751944256445e+40,
+        -1.5591423917204795e+41,
+        2.7663614751927933e+41,
+        -7.99865079870014e+40,
+        3.651920008860035e+41,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        -1.1492052407047698e+41,
+        9.164304224774185e+39,
+        -7.48505466537013e+40,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        2.1802706017115286e+41,
+        5.9479016187184895e+38,
+        1.035079547477954e+41
+      ],
+      [
+        9.164304224774185e+39,
+        -1.1944882869372597e+41,
+        -2.0963885701442842e+40,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        5.9479016187184895e+38,
+        2.6436288625305787e+41,
+        2.4021784781589417e+40
+      ],
+      [
+        -7.48505466537013e+40,
+        -2.0963885701442842e+40,
+        -6.439223262126006e+40,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.035079547477954e+41,
+        2.4021784781589417e+40,
+        2.474592088203056e+41
+      ]
+    ],
+    "slab_bending_drag_tensor_nm_s": [
+      [
+        1.1399912997101544e+41,
+        -9.06463262553093e+39,
+        7.4279435920228005e+40,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -1.1399912997101544e+41,
+        9.06463262553093e+39,
+        -7.4279435920228005e+40
+      ],
+      [
+        -9.06463262553093e+39,
+        1.1828654227332856e+41,
+        2.067810184550586e+40,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        9.06463262553093e+39,
+        -1.1828654227332856e+41,
+        -2.067810184550586e+40
+      ],
+      [
+        7.4279435920228005e+40,
+        2.067810184550586e+40,
+        6.385884157102819e+40,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -7.4279435920228005e+40,
+        -2.067810184550586e+40,
+        -6.385884157102819e+40
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        4.431072291460234e+41,
+        -2.001427888243957e+40,
+        2.284587510637028e+41,
+        -4.431072291460234e+41,
+        2.001427888243957e+40,
+        -2.284587510637028e+41,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        -2.001427888243957e+40,
+        2.1362678181521864e+41,
+        -7.895295939661127e+40,
+        2.001427888243957e+40,
+        -2.1362678181521864e+41,
+        7.895295939661127e+40,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        2.284587510637028e+41,
+        -7.895295939661127e+40,
+        1.535957034785621e+41,
+        -2.284587510637028e+41,
+        7.895295939661127e+40,
+        -1.535957034785621e+41,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        -4.431072291460234e+41,
+        2.001427888243957e+40,
+        -2.284587510637028e+41,
+        4.431072291460234e+41,
+        -2.001427888243957e+40,
+        2.284587510637028e+41,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        2.001427888243957e+40,
+        -2.1362678181521864e+41,
+        7.895295939661127e+40,
+        -2.001427888243957e+40,
+        2.1362678181521864e+41,
+        -7.895295939661127e+40,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        -2.284587510637028e+41,
+        7.895295939661127e+40,
+        -1.535957034785621e+41,
+        2.284587510637028e+41,
+        -7.895295939661127e+40,
+        1.535957034785621e+41,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        -1.1399912997101544e+41,
+        9.06463262553093e+39,
+        -7.4279435920228005e+40,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.1399912997101544e+41,
+        -9.06463262553093e+39,
+        7.4279435920228005e+40
+      ],
+      [
+        9.06463262553093e+39,
+        -1.1828654227332856e+41,
+        -2.067810184550586e+40,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -9.06463262553093e+39,
+        1.1828654227332856e+41,
+        2.067810184550586e+40
+      ],
+      [
+        -7.4279435920228005e+40,
+        -2.067810184550586e+40,
+        -6.385884157102819e+40,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        7.4279435920228005e+40,
+        2.067810184550586e+40,
+        6.385884157102819e+40
+      ]
+    ],
+    "slab_mantle_drag_tensor_nm_s": [
+      [
+        4.8632760806519517e+39,
+        -2.8073673573079626e+39,
+        4.053258711360151e+39,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -9.213940994615515e+38,
+        9.96715992432555e+37,
+        -5.711107334732921e+38
+      ],
+      [
+        -2.8073673573079626e+39,
+        1.280890233872808e+40,
+        4.942877951768771e+37,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        9.96715992432551e+37,
+        -1.1622864203974072e+39,
+        -2.85783855936982e+38
+      ],
+      [
+        4.053258711360151e+39,
+        4.942877951768771e+37,
+        6.015413244499256e+39,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -5.71110733473292e+38,
+        -2.8578385593698194e+38,
+        -5.333910502318659e+38
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        4.0286647503267043e+40,
+        -8.093352901813215e+39,
+        2.229495267770991e+40,
+        -8.550366825449292e+39,
+        -7.281786235265895e+37,
+        -4.0156561200899986e+39,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        -8.093352901813215e+39,
+        3.885377624781507e+40,
+        -1.6310129827113722e+40,
+        -7.281786235265908e+37,
+        -3.149455192605667e+39,
+        7.845600459531812e+38,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        2.229495267770991e+40,
+        -1.6310129827113722e+40,
+        1.8426175666184742e+40,
+        -4.015656120089998e+39,
+        7.845600459531814e+38,
+        -2.3185356934858515e+39,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        -8.550366825449292e+39,
+        -7.281786235265908e+37,
+        -4.015656120089998e+39,
+        4.2803162948416076e+40,
+        1.7502628330129263e+40,
+        1.70858610118348e+40,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        -7.281786235265895e+37,
+        -3.149455192605667e+39,
+        7.845600459531814e+38,
+        1.7502628330129263e+40,
+        4.1905785795491475e+40,
+        -1.7751872468236584e+39,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        -4.0156561200899986e+39,
+        7.845600459531812e+38,
+        -2.3185356934858515e+39,
+        1.70858610118348e+40,
+        -1.7751872468236584e+39,
+        1.27045606654281e+40,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        -9.213940994615515e+38,
+        9.96715992432551e+37,
+        -5.71110733473292e+38,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0535203691820933e+40,
+        2.251021181996666e+39,
+        5.851306528625527e+39
+      ],
+      [
+        9.96715992432555e+37,
+        -1.1622864203974072e+39,
+        -2.8578385593698194e+38,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        2.251021181996666e+39,
+        8.025462661663564e+39,
+        1.2454806048136134e+39
+      ],
+      [
+        -5.711107334732921e+38,
+        -2.85783855936982e+38,
+        -5.333910502318659e+38,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        5.851306528625527e+39,
+        1.2454806048136134e+39,
+        4.3328514767491084e+39
+      ]
+    ],
+    "slab_sections": [
+      {
+        "contact_key": "1325:1339",
+        "subducting_plate": 1,
+        "overriding_plate": 2,
+        "accepted_area_km2": 81321.63950535648,
+        "slab_length_km": 188.0402036130881,
+        "trench_length_km": 432.46942910508676,
+        "nominal_dip_deg": 47.16788746646402,
+        "tip_dip_deg": 47.16788746646402,
+        "geometric_depth_km": 79.7144393995133,
+        "effective_sine": 0.42392232016262804,
+        "geometric_mean_sine": 0.42392232016262804,
+        "cold_hinge_thickness_km": 33.37838940727973,
+        "thickness_origin": "incoming_cold_mantle",
+        "bend_radius_km": 100.13516822183918,
+        "bend_length_km": 164.86953790530825,
+        "mantle_shear_distance_km": 1189.575,
+        "mantle_viscosity_pa_s": 1.2907451643581314e+21,
+        "effective_bending_viscosity_pa_s": 1.2907451643581314e+23,
+        "thermal_excess_mass_kg": 43971340.623435855,
+        "gravitational_feed_force_n": 132719881.0927668,
+        "uniform_buoyancy_feed_force_n": 132719881.0927668,
+        "buoyancy_distribution_model": "uniform_thermal_mass_v1",
+        "buoyancy_layers": [],
+        "bending_coefficient_n_s_m": 2.0655079056128012e+27,
+        "mantle_coefficient_n_s_m": 1.7647565382462487e+26,
+        "mantle_feed_drag_row_n_s": [
+          0.0,
+          0.0,
+          0.0,
+          7.26572080991434e+32,
+          -4.6182099657944235e+32,
+          3.596572726133986e+32,
+          -1.1055546237427504e+32,
+          7.02708446233165e+31,
+          -5.472557659494449e+31,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "feed_row_m": [
+          0.0,
+          0.0,
+          0.0,
+          4117123.6102260035,
+          -2616910.528850531,
+          2037999.3773578138,
+          -4117123.6102260035,
+          2616910.528850531,
+          -2037999.3773578138,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "buoyancy_model": "thermal_mantle_only",
+        "geometry_model": "smooth_prescribed_bend_uniform_excess_mass",
+        "mantle_frame": "fixed_prescribed_source_zero_deep_flow",
+        "feed_m_s": 1.1372551206807057e-10,
+        "neck_tension_n": -2.4473394578354218e+17,
+        "neck_capacity_n": 6.306016335486792e+16,
+        "neck_strength_pa": 4368519.729261078,
+        "no_eduction_reaction_n": 0.0
+      },
+      {
+        "contact_key": "1325:1339",
+        "subducting_plate": 2,
+        "overriding_plate": 1,
+        "accepted_area_km2": 77236.2304136022,
+        "slab_length_km": 178.59350329901443,
+        "trench_length_km": 432.46942910508676,
+        "nominal_dip_deg": 41.25421442418055,
+        "tip_dip_deg": 41.25421442418055,
+        "geometric_depth_km": 71.54101366199527,
+        "effective_sine": 0.4005801573992085,
+        "geometric_mean_sine": 0.4005801573992085,
+        "cold_hinge_thickness_km": 33.39535908847254,
+        "thickness_origin": "incoming_cold_mantle",
+        "bend_radius_km": 100.18607726541762,
+        "bend_length_km": 144.2723338071123,
+        "mantle_shear_distance_km": 1189.575,
+        "mantle_viscosity_pa_s": 1.2907451643581314e+21,
+        "effective_bending_viscosity_pa_s": 1.2907451643581314e+23,
+        "thermal_excess_mass_kg": 33647922890784.734,
+        "gravitational_feed_force_n": 95968274563958.5,
+        "uniform_buoyancy_feed_force_n": 95968274563958.5,
+        "buoyancy_distribution_model": "uniform_thermal_mass_v1",
+        "buoyancy_layers": [],
+        "bending_coefficient_n_s_m": 2.361592526070057e+27,
+        "mantle_coefficient_n_s_m": 1.6760992946154297e+26,
+        "mantle_feed_drag_row_n_s": [
+          0.0,
+          0.0,
+          0.0,
+          8.831358196045863e+31,
+          -5.6133544763826495e+31,
+          4.37157205094877e+31,
+          -6.900707978944335e+32,
+          4.3862018914780665e+32,
+          -3.415889318816117e+32,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "feed_row_m": [
+          0.0,
+          0.0,
+          0.0,
+          4117123.6102260035,
+          -2616910.528850531,
+          2037999.3773578138,
+          -4117123.6102260035,
+          2616910.528850531,
+          -2037999.3773578138,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "buoyancy_model": "thermal_mantle_only",
+        "geometry_model": "smooth_prescribed_bend_uniform_excess_mass",
+        "mantle_frame": "fixed_prescribed_source_zero_deep_flow",
+        "feed_m_s": 1.1372551206807057e-10,
+        "neck_tension_n": -2.8091662253603942e+17,
+        "neck_capacity_n": 6.2733171086346264e+16,
+        "neck_strength_pa": 4343658.870078925,
+        "no_eduction_reaction_n": 0.0
+      },
+      {
+        "contact_key": "13:1249",
+        "subducting_plate": 1,
+        "overriding_plate": 2,
+        "accepted_area_km2": 77160.12461204825,
+        "slab_length_km": 185.82054460517173,
+        "trench_length_km": 415.2400089882243,
+        "nominal_dip_deg": 35.73611164558356,
+        "tip_dip_deg": 35.73611164558356,
+        "geometric_depth_km": 72.81082748077648,
+        "effective_sine": 0.3918341087390722,
+        "geometric_mean_sine": 0.3918341087390722,
+        "cold_hinge_thickness_km": 33.38150303354185,
+        "thickness_origin": "incoming_cold_mantle",
+        "bend_radius_km": 100.14450910062556,
+        "bend_length_km": 124.92282636960978,
+        "mantle_shear_distance_km": 1189.575,
+        "mantle_viscosity_pa_s": 1.2907451643581314e+21,
+        "effective_bending_viscosity_pa_s": 1.2907451643581314e+23,
+        "thermal_excess_mass_kg": 6.097894971745367e+16,
+        "gravitational_feed_force_n": 1.701226627904081e+17,
+        "uniform_buoyancy_feed_force_n": 1.701226627904081e+17,
+        "buoyancy_distribution_model": "uniform_thermal_mass_v1",
+        "buoyancy_layers": [],
+        "bending_coefficient_n_s_m": 2.617639103742129e+27,
+        "mantle_coefficient_n_s_m": 1.674447726696881e+26,
+        "mantle_feed_drag_row_n_s": [
+          0.0,
+          0.0,
+          0.0,
+          6.216678641501572e+32,
+          -3.9417083270706345e+32,
+          4.9181298092752555e+32,
+          -6.9791547110289165e+31,
+          4.425159128658499e+31,
+          -5.521338773844757e+31,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "feed_row_m": [
+          0.0,
+          0.0,
+          0.0,
+          3712674.0610559257,
+          -2354034.8642870397,
+          2937165.329715644,
+          -3712674.0610559257,
+          2354034.8642870397,
+          -2937165.329715644,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "buoyancy_model": "thermal_mantle_only",
+        "geometry_model": "smooth_prescribed_bend_uniform_excess_mass",
+        "mantle_frame": "fixed_prescribed_source_zero_deep_flow",
+        "feed_m_s": 9.880674566947817e-11,
+        "neck_tension_n": -9.615249150403483e+16,
+        "neck_capacity_n": 6.074902950216634e+16,
+        "neck_strength_pa": 4382624.529766069,
+        "no_eduction_reaction_n": 0.0
+      },
+      {
+        "contact_key": "13:681",
+        "subducting_plate": 1,
+        "overriding_plate": 2,
+        "accepted_area_km2": 77136.51923020641,
+        "slab_length_km": 185.7636970439212,
+        "trench_length_km": 415.24000898823925,
+        "nominal_dip_deg": 37.35006194830809,
+        "tip_dip_deg": 37.35006194830809,
+        "geometric_depth_km": 73.80410690793713,
+        "effective_sine": 0.3973010231944683,
+        "geometric_mean_sine": 0.3973010231944683,
+        "cold_hinge_thickness_km": 33.55196010033448,
+        "thickness_origin": "incoming_cold_mantle",
+        "bend_radius_km": 100.65588030100344,
+        "bend_length_km": 131.2314239077786,
+        "mantle_shear_distance_km": 1189.575,
+        "mantle_viscosity_pa_s": 1.2907451643581314e+21,
+        "effective_bending_viscosity_pa_s": 1.2907451643581314e+23,
+        "thermal_excess_mass_kg": 8768687757115010.0,
+        "gravitational_feed_force_n": 2.480471735997916e+16,
+        "uniform_buoyancy_feed_force_n": 2.480471735997916e+16,
+        "buoyancy_distribution_model": "uniform_thermal_mass_v1",
+        "buoyancy_layers": [],
+        "bending_coefficient_n_s_m": 2.504527124711099e+27,
+        "mantle_coefficient_n_s_m": 1.6739354675713078e+26,
+        "mantle_feed_drag_row_n_s": [
+          0.0,
+          0.0,
+          0.0,
+          5.8673395289343716e+32,
+          -3.7257744147266625e+32,
+          5.478790517433769e+32,
+          -6.929056036919181e+31,
+          4.399966896964212e+31,
+          -6.470197663289965e+31,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "feed_row_m": [
+          0.0,
+          0.0,
+          0.0,
+          3505116.919140988,
+          -2225757.495975841,
+          3272999.8399417857,
+          -3505116.919140988,
+          2225757.495975841,
+          -3272999.8399417857,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "buoyancy_model": "thermal_mantle_only",
+        "geometry_model": "smooth_prescribed_bend_uniform_excess_mass",
+        "mantle_frame": "fixed_prescribed_source_zero_deep_flow",
+        "feed_m_s": 9.191633872563128e-11,
+        "neck_tension_n": -2.12527319867337e+17,
+        "neck_capacity_n": 6.081915339703042e+16,
+        "neck_strength_pa": 4365392.339858908,
+        "no_eduction_reaction_n": 0.0
+      },
+      {
+        "contact_key": "1603:1604",
+        "subducting_plate": 3,
+        "overriding_plate": 0,
+        "accepted_area_km2": 65311.86895495699,
+        "slab_length_km": 178.12699916778286,
+        "trench_length_km": 366.65900879763825,
+        "nominal_dip_deg": 42.4058518497678,
+        "tip_dip_deg": 42.40585184976781,
+        "geometric_depth_km": 71.62106007706484,
+        "effective_sine": 0.40207863160375223,
+        "geometric_mean_sine": 0.40207863160375223,
+        "cold_hinge_thickness_km": 33.39195630436952,
+        "thickness_origin": "incoming_cold_mantle",
+        "bend_radius_km": 100.17586891310857,
+        "bend_length_km": 148.28467618914542,
+        "mantle_shear_distance_km": 1189.575,
+        "mantle_viscosity_pa_s": 1.2907451643581314e+21,
+        "effective_bending_viscosity_pa_s": 1.2907451643581314e+23,
+        "thermal_excess_mass_kg": 3641955680489.517,
+        "gravitational_feed_force_n": 10426190201373.89,
+        "uniform_buoyancy_feed_force_n": 10426190201373.89,
+        "buoyancy_distribution_model": "uniform_thermal_mass_v1",
+        "buoyancy_layers": [],
+        "bending_coefficient_n_s_m": 1.9478452139509578e+27,
+        "mantle_coefficient_n_s_m": 1.4173293660139581e+26,
+        "mantle_feed_drag_row_n_s": [
+          7.235094731834618e+31,
+          -5.898817073295653e+31,
+          3.05323316962757e+31,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          -5.52000819970048e+32,
+          4.500496513176762e+32,
+          -2.3294611551918114e+32
+        ],
+        "feed_row_m": [
+          3894654.5044958293,
+          -3175335.684911252,
+          1643556.6855875547,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          -3894654.5044958293,
+          3175335.684911252,
+          -1643556.6855875547
+        ],
+        "buoyancy_model": "thermal_mantle_only",
+        "geometry_model": "smooth_prescribed_bend_uniform_excess_mass",
+        "mantle_frame": "fixed_prescribed_source_zero_deep_flow",
+        "feed_m_s": 2.1406927531842294e-10,
+        "neck_tension_n": -4.3420085000375034e+17,
+        "neck_capacity_n": 5.050340044169935e+16,
+        "neck_strength_pa": 4124928.2343610977,
+        "no_eduction_reaction_n": 0.0
+      },
+      {
+        "contact_key": "1603:1634",
+        "subducting_plate": 0,
+        "overriding_plate": 3,
+        "accepted_area_km2": 77399.3088247597,
+        "slab_length_km": 185.93805385975926,
+        "trench_length_km": 416.26395037530546,
+        "nominal_dip_deg": 47.36126301392102,
+        "tip_dip_deg": 47.36126301392102,
+        "geometric_depth_km": 78.17401267356603,
+        "effective_sine": 0.4204304124454669,
+        "geometric_mean_sine": 0.4204304124454669,
+        "cold_hinge_thickness_km": 33.39195630436952,
+        "thickness_origin": "incoming_cold_mantle",
+        "bend_radius_km": 100.17586891310857,
+        "bend_length_km": 165.61274549580077,
+        "mantle_shear_distance_km": 1189.575,
+        "mantle_viscosity_pa_s": 1.2907451643581314e+21,
+        "effective_bending_viscosity_pa_s": 1.2907451643581314e+23,
+        "thermal_excess_mass_kg": 16373606.506131435,
+        "gravitational_feed_force_n": 49013810.41253945,
+        "uniform_buoyancy_feed_force_n": 49013810.41253945,
+        "buoyancy_distribution_model": "uniform_thermal_mass_v1",
+        "buoyancy_layers": [],
+        "bending_coefficient_n_s_m": 1.9799918388443487e+27,
+        "mantle_coefficient_n_s_m": 1.6796382504713064e+26,
+        "mantle_feed_drag_row_n_s": [
+          1.366175760421465e+32,
+          -8.191705020240535e+32,
+          -3.1445710479044528e+32,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          -2.0583443311669963e+31,
+          1.234200611625741e+32,
+          4.737757891714604e+31
+        ],
+        "feed_row_m": [
+          813374.999073828,
+          -4877065.057277627,
+          -1872171.6101798026,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          -813374.999073828,
+          4877065.057277627,
+          1872171.6101798026
+        ],
+        "buoyancy_model": "thermal_mantle_only",
+        "geometry_model": "smooth_prescribed_bend_uniform_excess_mass",
+        "mantle_frame": "fixed_prescribed_source_zero_deep_flow",
+        "feed_m_s": 2.6008727160913437e-10,
+        "neck_tension_n": -5.369958847628931e+17,
+        "neck_capacity_n": 5.778985537668129e+16,
+        "neck_strength_pa": 4157583.1414390183,
+        "no_eduction_reaction_n": 0.0
+      },
+      {
+        "contact_key": "1983:1985",
+        "subducting_plate": 0,
+        "overriding_plate": 3,
+        "accepted_area_km2": 64794.38334585025,
+        "slab_length_km": 169.37988620906538,
+        "trench_length_km": 382.5388291138337,
+        "nominal_dip_deg": 35.0,
+        "tip_dip_deg": 35.0,
+        "geometric_depth_km": 62.79540910066712,
+        "effective_sine": 0.37073710761122386,
+        "geometric_mean_sine": 0.37073710761122386,
+        "cold_hinge_thickness_km": 33.35324404803487,
+        "thickness_origin": "incoming_cold_mantle",
+        "bend_radius_km": 100.05973214410461,
+        "bend_length_km": 122.24602422047614,
+        "mantle_shear_distance_km": 1189.575,
+        "mantle_viscosity_pa_s": 1.2907451643581314e+21,
+        "effective_bending_viscosity_pa_s": 1.2907451643581314e+23,
+        "thermal_excess_mass_kg": 1.4433142478455728e+17,
+        "gravitational_feed_force_n": 3.809841865296798e+17,
+        "uniform_buoyancy_feed_force_n": 3.809841865296798e+17,
+        "buoyancy_distribution_model": "uniform_thermal_mass_v1",
+        "buoyancy_layers": [],
+        "bending_coefficient_n_s_m": 2.4622114929832144e+27,
+        "mantle_coefficient_n_s_m": 1.4060994385595403e+26,
+        "mantle_feed_drag_row_n_s": [
+          5.076765077996545e+32,
+          -3.224773103015443e+32,
+          4.369480570224092e+32,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          -5.2009017669346175e+31,
+          3.30362501942968e+31,
+          -4.4763227900301215e+31
+        ],
+        "feed_row_m": [
+          3610530.620222258,
+          -2293417.531208901,
+          3107518.892618539,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          -3610530.620222258,
+          2293417.531208901,
+          -3107518.892618539
+        ],
+        "buoyancy_model": "thermal_mantle_only",
+        "geometry_model": "smooth_prescribed_bend_uniform_excess_mass",
+        "mantle_frame": "fixed_prescribed_source_zero_deep_flow",
+        "feed_m_s": 2.1545988850552697e-10,
+        "neck_tension_n": -1.6645298397201757e+17,
+        "neck_capacity_n": 5.719283468902078e+16,
+        "neck_strength_pa": 4482579.667178867,
+        "no_eduction_reaction_n": 0.0
+      },
+      {
+        "contact_key": "2028:2030",
+        "subducting_plate": 3,
+        "overriding_plate": 0,
+        "accepted_area_km2": 68006.85942945868,
+        "slab_length_km": 179.21689080209202,
+        "trench_length_km": 379.46679648938994,
+        "nominal_dip_deg": 35.73611164558356,
+        "tip_dip_deg": 35.73611164558356,
+        "geometric_depth_km": 68.88959286227977,
+        "effective_sine": 0.384392300044721,
+        "geometric_mean_sine": 0.384392300044721,
+        "cold_hinge_thickness_km": 33.44164444010453,
+        "thickness_origin": "incoming_cold_mantle",
+        "bend_radius_km": 100.32493332031359,
+        "bend_length_km": 125.14789216374447,
+        "mantle_shear_distance_km": 1189.575,
+        "mantle_viscosity_pa_s": 1.2907451643581314e+21,
+        "effective_bending_viscosity_pa_s": 1.2907451643581314e+23,
+        "thermal_excess_mass_kg": 1.1269074531475782e+16,
+        "gravitational_feed_force_n": 3.0842027807129064e+16,
+        "uniform_buoyancy_feed_force_n": 3.0842027807129064e+16,
+        "buoyancy_distribution_model": "uniform_thermal_mass_v1",
+        "buoyancy_layers": [],
+        "bending_coefficient_n_s_m": 2.3921276937708408e+27,
+        "mantle_coefficient_n_s_m": 1.4758132097893278e+26,
+        "mantle_feed_drag_row_n_s": [
+          -5.467195365388008e+31,
+          -5.618365785302508e+31,
+          -3.362178400023166e+31,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          5.00100686956768e+32,
+          5.139286967120792e+32,
+          3.075484988459822e+32
+        ],
+        "feed_row_m": [
+          -3388644.87483587,
+          -3482342.4353644485,
+          -2083925.640494062,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          3388644.87483587,
+          3482342.4353644485,
+          2083925.640494062
+        ],
+        "buoyancy_model": "thermal_mantle_only",
+        "geometry_model": "smooth_prescribed_bend_uniform_excess_mass",
+        "mantle_frame": "fixed_prescribed_source_zero_deep_flow",
+        "feed_m_s": 2.3931254111777507e-10,
+        "neck_tension_n": -5.656178236617265e+17,
+        "neck_capacity_n": 5.532207637730775e+16,
+        "neck_strength_pa": 4359503.854016653,
+        "no_eduction_reaction_n": 0.0
+      },
+      {
+        "contact_key": "2409:2411",
+        "subducting_plate": 3,
+        "overriding_plate": 0,
+        "accepted_area_km2": 65300.74282143387,
+        "slab_length_km": 170.69626147707982,
+        "trench_length_km": 382.55520218409765,
+        "nominal_dip_deg": 47.54986410209974,
+        "tip_dip_deg": 47.54986410209974,
+        "geometric_depth_km": 66.92836960952808,
+        "effective_sine": 0.392090424420425,
+        "geometric_mean_sine": 0.392090424420425,
+        "cold_hinge_thickness_km": 33.40416312348463,
+        "thickness_origin": "incoming_cold_mantle",
+        "bend_radius_km": 100.21248937045388,
+        "bend_length_km": 166.33302806571245,
+        "mantle_shear_distance_km": 1189.575,
+        "mantle_viscosity_pa_s": 1.2907451643581314e+21,
+        "effective_bending_viscosity_pa_s": 1.2907451643581314e+23,
+        "thermal_excess_mass_kg": 4202274.672341437,
+        "gravitational_feed_force_n": 11731422.217844043,
+        "uniform_buoyancy_feed_force_n": 11731422.217844043,
+        "buoyancy_distribution_model": "uniform_thermal_mass_v1",
+        "buoyancy_layers": [],
+        "bending_coefficient_n_s_m": 1.8124361103152284e+27,
+        "mantle_coefficient_n_s_m": 1.4170879183869826e+26,
+        "mantle_feed_drag_row_n_s": [
+          -6.926555236717687e+31,
+          -4.417939146595284e+31,
+          -5.966037966718159e+31,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          5.111134654325737e+32,
+          3.2600161409476894e+32,
+          4.402364863716321e+32
+        ],
+        "feed_row_m": [
+          -3606787.2628139737,
+          -2300503.7998337056,
+          -3106627.8997899904,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          3606787.2628139737,
+          2300503.7998337056,
+          3106627.8997899904
+        ],
+        "buoyancy_model": "thermal_mantle_only",
+        "geometry_model": "smooth_prescribed_bend_uniform_excess_mass",
+        "mantle_frame": "fixed_prescribed_source_zero_deep_flow",
+        "feed_m_s": 1.1700526558255983e-10,
+        "neck_tension_n": -2.248127591806223e+17,
+        "neck_capacity_n": 5.4345441655873976e+16,
+        "neck_strength_pa": 4252735.912480226,
+        "no_eduction_reaction_n": 0.0
+      },
+      {
+        "contact_key": "327:1329",
+        "subducting_plate": 1,
+        "overriding_plate": 2,
+        "accepted_area_km2": 155689.63313412011,
+        "slab_length_km": 357.654310950501,
+        "trench_length_km": 435.307581559299,
+        "nominal_dip_deg": 48.001245017776895,
+        "tip_dip_deg": 48.0012450177769,
+        "geometric_depth_km": 205.86033735265647,
+        "effective_sine": 0.5755846666731422,
+        "geometric_mean_sine": 0.5755846666731422,
+        "cold_hinge_thickness_km": 33.3887949213397,
+        "thickness_origin": "incoming_cold_mantle",
+        "bend_radius_km": 100.16638476401911,
+        "bend_length_km": 167.8347417022143,
+        "mantle_shear_distance_km": 1189.575,
+        "mantle_viscosity_pa_s": 1.2907451643581314e+21,
+        "effective_bending_viscosity_pa_s": 1.2907451643581314e+23,
+        "thermal_excess_mass_kg": 87295.83397017932,
+        "gravitational_feed_force_n": 357752.54170347896,
+        "uniform_buoyancy_feed_force_n": 357752.54170347896,
+        "buoyancy_distribution_model": "uniform_thermal_mass_v1",
+        "buoyancy_layers": [],
+        "bending_coefficient_n_s_m": 2.042968185286867e+27,
+        "mantle_coefficient_n_s_m": 3.3786123801955665e+26,
+        "mantle_feed_drag_row_n_s": [
+          0.0,
+          0.0,
+          0.0,
+          1.4105297141865925e+33,
+          -9.06895952857979e+32,
+          6.153979359014675e+32,
+          -3.356894512382718e+32,
+          2.1583055052524214e+32,
+          -1.4645745730713544e+32,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "feed_row_m": [
+          0.0,
+          0.0,
+          0.0,
+          4174878.7829426765,
+          -2684226.0987792998,
+          1821451.7282561013,
+          -4174878.7829426765,
+          2684226.0987792998,
+          -1821451.7282561013,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "buoyancy_model": "thermal_mantle_only",
+        "geometry_model": "smooth_prescribed_bend_uniform_excess_mass",
+        "mantle_frame": "fixed_prescribed_source_zero_deep_flow",
+        "feed_m_s": 1.1781566247983597e-10,
+        "neck_tension_n": -2.6232237962558726e+17,
+        "neck_capacity_n": 6.188895104122982e+16,
+        "neck_strength_pa": 4258102.839573037,
+        "no_eduction_reaction_n": 0.0
+      },
+      {
+        "contact_key": "331:1324",
+        "subducting_plate": 2,
+        "overriding_plate": 1,
+        "accepted_area_km2": 154320.24922409636,
+        "slab_length_km": 354.5085262960768,
+        "trench_length_km": 435.307581559299,
+        "nominal_dip_deg": 37.12805305782969,
+        "tip_dip_deg": 37.12805305782969,
+        "geometric_depth_km": 175.49127006275629,
+        "effective_sine": 0.4950269374231927,
+        "geometric_mean_sine": 0.4950269374231927,
+        "cold_hinge_thickness_km": 33.56115340934604,
+        "thickness_origin": "incoming_cold_mantle",
+        "bend_radius_km": 100.68346022803814,
+        "bend_length_km": 130.48712785342062,
+        "mantle_shear_distance_km": 1189.575,
+        "mantle_viscosity_pa_s": 1.2907451643581314e+21,
+        "effective_bending_viscosity_pa_s": 1.2907451643581314e+23,
+        "thermal_excess_mass_kg": 5.785643509554896e+16,
+        "gravitational_feed_force_n": 2.0392031639408208e+17,
+        "uniform_buoyancy_feed_force_n": 2.0392031639408208e+17,
+        "buoyancy_distribution_model": "uniform_thermal_mass_v1",
+        "buoyancy_layers": [],
+        "bending_coefficient_n_s_m": 2.6412647135774785e+27,
+        "mantle_coefficient_n_s_m": 3.3488954533937594e+26,
+        "mantle_feed_drag_row_n_s": [
+          0.0,
+          0.0,
+          0.0,
+          -2.207881379449066e+32,
+          -1.419550873174997e+32,
+          -9.6327332204538e+31,
+          1.398123257466679e+33,
+          8.989192578082882e+32,
+          6.099851411333055e+32,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "feed_row_m": [
+          0.0,
+          0.0,
+          0.0,
+          -4174878.782942674,
+          -2684226.098779305,
+          -1821451.728256099,
+          4174878.782942674,
+          2684226.098779305,
+          1821451.728256099,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "buoyancy_model": "thermal_mantle_only",
+        "geometry_model": "smooth_prescribed_bend_uniform_excess_mass",
+        "mantle_frame": "fixed_prescribed_source_zero_deep_flow",
+        "feed_m_s": 1.8609045876429454e-10,
+        "neck_tension_n": -3.205451244655016e+17,
+        "neck_capacity_n": 6.364684573409426e+16,
+        "neck_strength_pa": 4356560.768382165,
+        "no_eduction_reaction_n": 0.0
+      },
+      {
+        "contact_key": "341:1325",
+        "subducting_plate": 2,
+        "overriding_plate": 1,
+        "accepted_area_km2": 78453.40272051797,
+        "slab_length_km": 181.86840659129416,
+        "trench_length_km": 431.3745536728833,
+        "nominal_dip_deg": 44.2947714296202,
+        "tip_dip_deg": 44.2947714296202,
+        "geometric_depth_km": 74.44763607489189,
+        "effective_sine": 0.40934892140004936,
+        "geometric_mean_sine": 0.40934892140004936,
+        "cold_hinge_thickness_km": 33.552469701052146,
+        "thickness_origin": "incoming_cold_mantle",
+        "bend_radius_km": 100.65740910315644,
+        "bend_length_km": 155.63439285799598,
+        "mantle_shear_distance_km": 1189.575,
+        "mantle_viscosity_pa_s": 1.2907451643581314e+21,
+        "effective_bending_viscosity_pa_s": 1.2907451643581314e+23,
+        "thermal_excess_mass_kg": 125504034134.7049,
+        "gravitational_feed_force_n": 365789579951.30255,
+        "uniform_buoyancy_feed_force_n": 365789579951.30255,
+        "buoyancy_distribution_model": "uniform_thermal_mass_v1",
+        "buoyancy_layers": [],
+        "bending_coefficient_n_s_m": 2.1939156808895738e+27,
+        "mantle_coefficient_n_s_m": 1.7025130855801382e+26,
+        "mantle_feed_drag_row_n_s": [
+          0.0,
+          0.0,
+          0.0,
+          -9.878619782067523e+31,
+          -6.266575360422005e+31,
+          -4.315780708743464e+31,
+          7.131066746656657e+32,
+          4.5236448161759876e+32,
+          3.1154271524702395e+32,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "feed_row_m": [
+          0.0,
+          0.0,
+          0.0,
+          -4188553.2669645925,
+          -2657039.6753423703,
+          -1829899.0937908972,
+          4188553.2669645925,
+          2657039.6753423703,
+          1829899.0937908972,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "buoyancy_model": "thermal_mantle_only",
+        "geometry_model": "smooth_prescribed_bend_uniform_excess_mass",
+        "mantle_frame": "fixed_prescribed_source_zero_deep_flow",
+        "feed_m_s": 1.8467097521060088e-10,
+        "neck_tension_n": -4.2141668165785837e+17,
+        "neck_capacity_n": 6.3178237703860456e+16,
+        "neck_strength_pa": 4365042.6523755165,
+        "no_eduction_reaction_n": 0.0
+      },
+      {
+        "contact_key": "681:737",
+        "subducting_plate": 2,
+        "overriding_plate": 1,
+        "accepted_area_km2": 77160.12461204836,
+        "slab_length_km": 185.36345638982297,
+        "trench_length_km": 416.26395037530546,
+        "nominal_dip_deg": 35.0,
+        "tip_dip_deg": 35.0,
+        "geometric_depth_km": 71.92528790684669,
+        "effective_sine": 0.3880230187097202,
+        "geometric_mean_sine": 0.3880230187097202,
+        "cold_hinge_thickness_km": 33.390056707958344,
+        "thickness_origin": "retained_cubic_mean",
+        "bend_radius_km": 100.17017012387502,
+        "bend_length_km": 122.38094966611327,
+        "mantle_shear_distance_km": 1189.575,
+        "mantle_viscosity_pa_s": 1.2907451643581314e+21,
+        "effective_bending_viscosity_pa_s": 1.2907451643581314e+23,
+        "thermal_excess_mass_kg": 1.7180930335423562e+17,
+        "gravitational_feed_force_n": 4.746616674530629e+17,
+        "uniform_buoyancy_feed_force_n": 4.746616674530629e+17,
+        "buoyancy_distribution_model": "uniform_thermal_mass_v1",
+        "buoyancy_layers": [],
+        "bending_coefficient_n_s_m": 2.6792832641406954e+27,
+        "mantle_coefficient_n_s_m": 1.6744477266968835e+26,
+        "mantle_feed_drag_row_n_s": [
+          0.0,
+          0.0,
+          0.0,
+          -1.4862547443091174e+31,
+          -8.911708729598129e+31,
+          3.4209607388461334e+31,
+          1.3619539181512508e+32,
+          8.166390498111328e+32,
+          -3.1348534966520145e+32,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "feed_row_m": [
+          0.0,
+          0.0,
+          0.0,
+          -813374.999073828,
+          -4877065.057277627,
+          1872171.6101798026,
+          813374.999073828,
+          4877065.057277627,
+          -1872171.6101798026,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "buoyancy_model": "thermal_mantle_only",
+        "geometry_model": "smooth_prescribed_bend_uniform_excess_mass",
+        "mantle_frame": "fixed_prescribed_source_zero_deep_flow",
+        "feed_m_s": 2.758148582721634e-10,
+        "neck_tension_n": -2.8972173825011635e+17,
+        "neck_capacity_n": 1.6959705092782854e+17,
+        "neck_strength_pa": 12202037.016140739,
+        "no_eduction_reaction_n": 0.0
+      },
+      {
+        "contact_key": "721:722",
+        "subducting_plate": 1,
+        "overriding_plate": 2,
+        "accepted_area_km2": 129588.76669170041,
+        "slab_length_km": 353.4312906060939,
+        "trench_length_km": 366.65900879763825,
+        "nominal_dip_deg": 37.35006194830809,
+        "tip_dip_deg": 37.35006194830809,
+        "geometric_depth_km": 175.7523017170353,
+        "effective_sine": 0.497274311551873,
+        "geometric_mean_sine": 0.497274311551873,
+        "cold_hinge_thickness_km": 33.356076611421194,
+        "thickness_origin": "incoming_cold_mantle",
+        "bend_radius_km": 100.06822983426359,
+        "bend_length_km": 130.46526690552773,
+        "mantle_shear_distance_km": 1189.575,
+        "mantle_viscosity_pa_s": 1.2907451643581314e+21,
+        "effective_bending_viscosity_pa_s": 1.2907451643581314e+23,
+        "thermal_excess_mass_kg": 9.640925428880685e+16,
+        "gravitational_feed_force_n": 3.413459403423147e+17,
+        "uniform_buoyancy_feed_force_n": 3.413459403423147e+17,
+        "buoyancy_distribution_model": "uniform_thermal_mass_v1",
+        "buoyancy_layers": [],
+        "bending_coefficient_n_s_m": 2.2115100018682912e+27,
+        "mantle_coefficient_n_s_m": 2.8121988771190785e+26,
+        "mantle_feed_drag_row_n_s": [
+          0.0,
+          0.0,
+          0.0,
+          -1.2919785250327806e+33,
+          -5.824234816737691e+32,
+          -4.496409744625611e+32,
+          2.0622099662995326e+32,
+          9.296435546280053e+31,
+          7.177008602134462e+31,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "feed_row_m": [
+          0.0,
+          0.0,
+          0.0,
+          -4594193.303840344,
+          -2071060.7859655553,
+          -1598894.6518718125,
+          4594193.303840344,
+          2071060.7859655553,
+          1598894.6518718125,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "buoyancy_model": "thermal_mantle_only",
+        "geometry_model": "smooth_prescribed_bend_uniform_excess_mass",
+        "mantle_frame": "fixed_prescribed_source_zero_deep_flow",
+        "feed_m_s": 1.5354718932461385e-10,
+        "neck_tension_n": -2.6160396092328584e+16,
+        "neck_capacity_n": 5.3651353485091816e+16,
+        "neck_strength_pa": 4386754.799017568,
+        "no_eduction_reaction_n": 0.0
+      },
+      {
+        "contact_key": "721:722",
+        "subducting_plate": 2,
+        "overriding_plate": 1,
+        "accepted_area_km2": 141761.71735336684,
+        "slab_length_km": 386.63094033400984,
+        "trench_length_km": 366.65900879763825,
+        "nominal_dip_deg": 43.1688927126637,
+        "tip_dip_deg": 43.1688927126637,
+        "geometric_depth_km": 214.77152539995336,
+        "effective_sine": 0.5554949255080636,
+        "geometric_mean_sine": 0.5554949255080636,
+        "cold_hinge_thickness_km": 33.1982473405328,
+        "thickness_origin": "incoming_cold_mantle",
+        "bend_radius_km": 99.59474202159842,
+        "bend_length_km": 150.07718787015096,
+        "mantle_shear_distance_km": 1189.575,
+        "mantle_viscosity_pa_s": 1.2907451643581314e+21,
+        "effective_bending_viscosity_pa_s": 1.2907451643581314e+23,
+        "thermal_excess_mass_kg": 11795139664627.154,
+        "gravitational_feed_force_n": 46651238433037.984,
+        "uniform_buoyancy_feed_force_n": 46651238433037.984,
+        "buoyancy_distribution_model": "uniform_thermal_mass_v1",
+        "buoyancy_layers": [],
+        "bending_coefficient_n_s_m": 1.913415665277249e+27,
+        "mantle_coefficient_n_s_m": 3.0763634266853702e+26,
+        "mantle_feed_drag_row_n_s": [
+          0.0,
+          0.0,
+          0.0,
+          -2.9355079091655783e+32,
+          -1.3233259716091054e+32,
+          -1.0216304770129804e+32,
+          1.4133408255057263e+33,
+          6.371335656386692e+32,
+          4.9187810301412815e+32,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "feed_row_m": [
+          0.0,
+          0.0,
+          0.0,
+          -4594193.303840344,
+          -2071060.7859655553,
+          -1598894.6518718125,
+          4594193.303840344,
+          2071060.7859655553,
+          1598894.6518718125,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "buoyancy_model": "thermal_mantle_only",
+        "geometry_model": "smooth_prescribed_bend_uniform_excess_mass",
+        "mantle_frame": "fixed_prescribed_source_zero_deep_flow",
+        "feed_m_s": 1.5354718932461385e-10,
+        "neck_tension_n": -3.192871934586682e+17,
+        "neck_capacity_n": 5.3350545124163576e+16,
+        "neck_strength_pa": 4382897.8104152735,
+        "no_eduction_reaction_n": 0.0
+      },
+      {
+        "contact_key": "721:724",
+        "subducting_plate": 2,
+        "overriding_plate": 1,
+        "accepted_area_km2": 130783.57287004332,
+        "slab_length_km": 353.546361487339,
+        "trench_length_km": 369.919159455773,
+        "nominal_dip_deg": 41.08131372642716,
+        "tip_dip_deg": 41.08131372642716,
+        "geometric_depth_km": 186.44291675153465,
+        "effective_sine": 0.5273506873813816,
+        "geometric_mean_sine": 0.5273506873813816,
+        "cold_hinge_thickness_km": 33.39508701896391,
+        "thickness_origin": "incoming_cold_mantle",
+        "bend_radius_km": 100.18526105689173,
+        "bend_length_km": 143.6665030206083,
+        "mantle_shear_distance_km": 1189.575,
+        "mantle_viscosity_pa_s": 1.2907451643581314e+21,
+        "effective_bending_viscosity_pa_s": 1.2907451643581314e+23,
+        "thermal_excess_mass_kg": 9578881928591800.0,
+        "gravitational_feed_force_n": 3.5966181382042416e+16,
+        "uniform_buoyancy_feed_force_n": 3.5966181382042416e+16,
+        "buoyancy_distribution_model": "uniform_thermal_mass_v1",
+        "buoyancy_layers": [],
+        "bending_coefficient_n_s_m": 2.0285250566520466e+27,
+        "mantle_coefficient_n_s_m": 2.8381273019269524e+26,
+        "mantle_feed_drag_row_n_s": [
+          0.0,
+          0.0,
+          0.0,
+          -2.5130534922349535e+32,
+          -1.004108818672595e+32,
+          -6.960884563085017e+31,
+          1.3494821060513234e+33,
+          5.3919540014324314e+32,
+          3.737918507981318e+32,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "feed_row_m": [
+          0.0,
+          0.0,
+          0.0,
+          -4754832.896801669,
+          -1899828.1006533967,
+          -1317036.943847956,
+          4754832.896801669,
+          1899828.1006533967,
+          1317036.943847956,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "buoyancy_model": "thermal_mantle_only",
+        "geometry_model": "smooth_prescribed_bend_uniform_excess_mass",
+        "mantle_frame": "fixed_prescribed_source_zero_deep_flow",
+        "feed_m_s": 1.4407294688847786e-10,
+        "neck_tension_n": -2.7761179157904314e+17,
+        "neck_capacity_n": 5.429634220651302e+16,
+        "neck_strength_pa": 4395225.566440511,
+        "no_eduction_reaction_n": 0.0
+      },
+      {
+        "contact_key": "724:727",
+        "subducting_plate": 1,
+        "overriding_plate": 2,
+        "accepted_area_km2": 130623.73790991398,
+        "slab_length_km": 341.4506904210297,
+        "trench_length_km": 382.5552021840896,
+        "nominal_dip_deg": 44.2947714296202,
+        "tip_dip_deg": 44.2947714296202,
+        "geometric_depth_km": 186.127962891613,
+        "effective_sine": 0.545109347010269,
+        "geometric_mean_sine": 0.545109347010269,
+        "cold_hinge_thickness_km": 33.40178825200443,
+        "thickness_origin": "incoming_cold_mantle",
+        "bend_radius_km": 100.2053647560133,
+        "bend_length_km": 154.9354512883753,
+        "mantle_shear_distance_km": 1189.575,
+        "mantle_viscosity_pa_s": 1.2907451643581314e+21,
+        "effective_bending_viscosity_pa_s": 1.2907451643581314e+23,
+        "thermal_excess_mass_kg": 26360157459454.793,
+        "gravitational_feed_force_n": 102308477725056.27,
+        "uniform_buoyancy_feed_force_n": 102308477725056.27,
+        "buoyancy_distribution_model": "uniform_thermal_mass_v1",
+        "buoyancy_layers": [],
+        "bending_coefficient_n_s_m": 1.9456267175045335e+27,
+        "mantle_coefficient_n_s_m": 2.8346587320279162e+26,
+        "mantle_feed_drag_row_n_s": [
+          0.0,
+          0.0,
+          0.0,
+          1.0221251086005572e+33,
+          -6.519437457981675e+32,
+          8.810695552678713e+32,
+          -2.1155913197905413e+32,
+          1.3493911048626253e+32,
+          -1.8236349812485228e+32,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "feed_row_m": [
+          0.0,
+          0.0,
+          0.0,
+          3605813.6277636793,
+          -2299902.060279992,
+          3108203.274394,
+          -3605813.6277636793,
+          2299902.060279992,
+          -3108203.274394,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "buoyancy_model": "thermal_mantle_only",
+        "geometry_model": "smooth_prescribed_bend_uniform_excess_mass",
+        "mantle_frame": "fixed_prescribed_source_zero_deep_flow",
+        "feed_m_s": 9.593928683032106e-11,
+        "neck_tension_n": -2.006649651093901e+17,
+        "neck_capacity_n": 5.616451727109751e+16,
+        "neck_strength_pa": 4395397.93581601,
+        "no_eduction_reaction_n": 0.0
+      },
+      {
+        "contact_key": "726:727",
+        "subducting_plate": 2,
+        "overriding_plate": 1,
+        "accepted_area_km2": 64838.78072295318,
+        "slab_length_km": 170.89543110810766,
+        "trench_length_km": 379.40616845359943,
+        "nominal_dip_deg": 47.91321151738823,
+        "tip_dip_deg": 47.913211517388234,
+        "geometric_depth_km": 67.07043690948682,
+        "effective_sine": 0.3924647749480112,
+        "geometric_mean_sine": 0.3924647749480112,
+        "cold_hinge_thickness_km": 33.39195630436952,
+        "thickness_origin": "incoming_cold_mantle",
+        "bend_radius_km": 100.17586891310857,
+        "bend_length_km": 167.54279763576662,
+        "mantle_shear_distance_km": 1189.575,
+        "mantle_viscosity_pa_s": 1.2907451643581314e+21,
+        "effective_bending_viscosity_pa_s": 1.2907451643581314e+23,
+        "thermal_excess_mass_kg": 63691.28152739118,
+        "gravitational_feed_force_n": 177975.68143208176,
+        "uniform_buoyancy_feed_force_n": 177975.68143208176,
+        "buoyancy_distribution_model": "uniform_thermal_mass_v1",
+        "buoyancy_layers": [],
+        "bending_coefficient_n_s_m": 1.783885519132108e+27,
+        "mantle_coefficient_n_s_m": 1.4070629036593584e+26,
+        "mantle_feed_drag_row_n_s": [
+          0.0,
+          0.0,
+          0.0,
+          6.594701622567967e+31,
+          -4.093067106358571e+31,
+          6.527581673423326e+31,
+          -4.837381230999602e+32,
+          3.0023687394382557e+32,
+          -4.788147042585861e+32,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "feed_row_m": [
+          0.0,
+          0.0,
+          0.0,
+          3437928.196684733,
+          -2133784.3046177784,
+          3402937.445179809,
+          -3437928.196684733,
+          2133784.3046177784,
+          -3402937.445179809,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "buoyancy_model": "thermal_mantle_only",
+        "geometry_model": "smooth_prescribed_bend_uniform_excess_mass",
+        "mantle_frame": "fixed_prescribed_source_zero_deep_flow",
+        "feed_m_s": 8.676397830268727e-11,
+        "neck_tension_n": -1.629073217931895e+17,
+        "neck_capacity_n": 5.5513563815299976e+16,
+        "neck_strength_pa": 4381803.095703956,
+        "no_eduction_reaction_n": 0.0
+      }
+    ],
+    "slab_sinking_diagnostics": {
+      "slab_gravitational_power_w": 335047941.22656626,
+      "slab_bending_dissipation_w": 1172448383.9660316,
+      "slab_mantle_dissipation_w": 98043650.26569563,
+      "negative_feed_section_count": 0,
+      "minimum_feed_m_s": 8.676397830268727e-11,
+      "maximum_feed_m_s": 2.7581485827216336e-10,
+      "no_eduction_active_count": 0,
+      "unconstrained_negative_feed_section_count": 0,
+      "unconstrained_minimum_feed_m_s": 0.0,
+      "constraint_relative_residual": 6.283954029392374e-17,
+      "constraint_complementarity_relative_error": 0.0,
+      "neck_failures_this_evaluation": 1
+    },
+    "slab_neck_failures": [
+      {
+        "contact_key": "342:1333",
+        "subducting_plate": 1,
+        "overriding_plate": 2,
+        "tension_n": 8.155758974728931e+16,
+        "capacity_n": 6.260394702066364e+16,
+        "source_face": 1777,
+        "feed_m_s": 1.205788007804805e-10,
+        "unconstrained_feed_m_s": 1.205788007804805e-10,
+        "gravitational_feed_force_n": 4.1531130320452685e+17,
+        "bending_feed_resistance_n": 3.137270971082941e+17,
+        "mantle_feed_resistance_n": 2.0026616348943464e+16,
+        "no_eduction_reaction_n": 0.0,
+        "neck_strength_pa": 4346156.1814894825,
+        "cold_hinge_thickness_km": 33.39195630436952,
+        "trench_length_km": 431.3745536728833,
+        "iteration": 0
+      }
+    ],
+    "slab_constraint_omega": [
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ]
+    ],
+    "slab_constraint_reaction_torque_nm": [
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ]
+    ],
+    "slab_constraint_power_w": 0.0,
+    "slab_bending_resistance_torque_nm": [
+      [
+        -1.2534916252942437e+24,
+        7.533631772322823e+24,
+        4.820129334199744e+23
+      ],
+      [
+        2.599478828983152e+24,
+        1.1711331492670147e+25,
+        -2.433755868504016e+24
+      ],
+      [
+        -2.599478828983152e+24,
+        -1.1711331492670147e+25,
+        2.433755868504016e+24
+      ],
+      [
+        1.2534916252942437e+24,
+        -7.533631772322823e+24,
+        -4.820129334199744e+23
+      ]
+    ],
+    "slab_mantle_resistance_torque_nm": [
+      [
+        -1.3845280307989038e+23,
+        4.161535793385265e+23,
+        -8.232599596896199e+22
+      ],
+      [
+        6.8432916688622886e+22,
+        1.1074195959823432e+24,
+        -3.093943179689595e+23
+      ],
+      [
+        -6.140475753142558e+23,
+        -1.2888954229375944e+24,
+        1.342574471035219e+22
+      ],
+      [
+        -1.2280072680948967e+23,
+        -3.724600220850435e+23,
+        -5.188694309899558e+22
+      ]
+    ],
+    "ridge_torque_nm": [
+      [
+        -3.339021240153158e+23,
+        -2.4695199922432566e+23,
+        -6.984228921989645e+22
+      ],
+      [
+        -1.946956345595784e+23,
+        -3.856010532677638e+23,
+        6.45202806349069e+23
+      ],
+      [
+        9.76458191968502e+22,
+        2.534615205744253e+23,
+        4.0448223421942873e+21
+      ],
+      [
+        2.781558134901926e+23,
+        2.397987833759705e+23,
+        -1.3228581867780897e+23
+      ]
+    ],
+    "slab_torque_nm": [
+      [
+        1.2710829982338904e+24,
+        -9.811914216458216e+23,
+        1.1196602007841815e+24
+      ],
+      [
+        -2.2575413574739393e+24,
+        -4.09386981595207e+24,
+        5.0537463968619315e+23
+      ],
+      [
+        2.2575413574739393e+24,
+        4.09386981595207e+24,
+        -5.0537463968619315e+23
+      ],
+      [
+        -1.2710829982338904e+24,
+        9.811914216458216e+23,
+        -1.1196602007841815e+24
+      ]
+    ],
+    "target_torque_residual_nm": [
+      [
+        268435456.0,
+        0.0,
+        -1610612736.0
+      ],
+      [
+        1073741824.0,
+        0.0,
+        -536870912.0
+      ],
+      [
+        0.0,
+        0.0,
+        -268435456.0
+      ],
+      [
+        -134217728.0,
+        0.0,
+        0.0
+      ]
+    ],
+    "transient_torque_residual_nm": [
+      [
+        268435456.0,
+        0.0,
+        -1610612736.0
+      ],
+      [
+        1073741824.0,
+        0.0,
+        -536870912.0
+      ],
+      [
+        0.0,
+        0.0,
+        -268435456.0
+      ],
+      [
+        -134217728.0,
+        0.0,
+        0.0
+      ]
+    ],
+    "basal_drag_dissipation_w": 845604466.9624016,
+    "slab_bending_dissipation_w": 1172448383.9660316,
+    "slab_mantle_dissipation_w": 98043650.26569563,
+    "total_dissipation_w": 2116096501.1941288,
+    "basal_source_power_w": 1737590763.8928847,
+    "ridge_power_w": 43457796.07467573,
+    "slab_power_w": 335047941.22656626,
+    "total_source_power_w": 2116096501.194128,
+    "transient_net_power_w": -4.1036703060514284e-08,
+    "force_trace_units": "SI torque fields; component drives are rad/Myr"
+  },
+  "source": "D:\\Moon Project\\mantle-convection\\analysis\\slab_sinking_validation\\runs\\validated_sinking_sub4_dt1\\elapsed_0100",
+  "step_myr": 1.0,
+  "controls": {
+    "shell": {
+      "subdivisions": 4,
+      "seed": 20260920,
+      "column_layers": 32,
+      "column_depth_km": 40.0,
+      "conductivity_w_m_k": 3.6,
+      "density_kg_m3": 3000.0,
+      "initial_temperature_anomaly_k": 120.0,
+      "convective_traction_pa": 80000.0,
+      "traction_coupling_depth_km": 2.0,
+      "anomaly_depth_km": 8.0,
+      "young_modulus_pa": 60000000000.0,
+      "poisson_ratio": 0.25,
+      "linear_expansion_per_k": 1e-05,
+      "viscosity_reference_pa_s": 1e+24,
+      "viscosity_reference_temperature_k": 1000.0,
+      "activation_energy_j_mol": 150000.0,
+      "viscosity_min_pa_s": 1e+17,
+      "viscosity_max_pa_s": 1e+28,
+      "tensile_strength_pa": 12000000.0,
+      "damage_timescale_myr": 0.01,
+      "cold_healing_timescale_myr": 100.0,
+      "hot_healing_timescale_myr": 0.01,
+      "residual_stiffness": 0.02,
+      "damage_threshold": 0.65,
+      "min_load_bearing_thickness_km": 0.05,
+      "max_total_strain": 0.05
+    },
+    "starter": {
+      "seed": 20260927,
+      "mantle_stress_length_km": 1000.0,
+      "strength_variation_fraction": 0.15,
+      "cooling_contrast_fraction": 0.1,
+      "rupture_damage": 0.65,
+      "min_child_area_km2": 3100000.0,
+      "min_band_span_km": 1000.0,
+      "max_loading_interval_myr": 0.05,
+      "regularization_km": 300.0,
+      "water_weakening": true,
+      "tidal_mechanics": true,
+      "wet_strength_fraction": 0.4,
+      "water_access_timescale_myr": 0.1,
+      "hot_strength_fraction": 0.5,
+      "damage_strength_reduction": 0.5,
+      "shear_cohesion_pa": 4000000.0,
+      "friction_dry": 0.6,
+      "friction_wet": 0.2,
+      "basal_drag_pa_s_m": 100000000000000.0
+    },
+    "classification": {
+      "normal_threshold_km_per_myr": 4.0,
+      "inactive_speed_km_per_myr": 1.0
+    },
+    "dynamics": {
+      "slab_pull_weight": 1.25,
+      "ridge_push_weight": 0.7,
+      "ridge_gpe_reference_mantle_thickness_km": 93.5,
+      "ridge_gpe_reference_density_anomaly_kg_m3": 64.0,
+      "ridge_gpe_saturation_ratio": 0.2,
+      "ridge_gpe_exponent": 1.0,
+      "ridge_gpe_calibration_gain": 1.014,
+      "ridge_gpe_min_factor": 0.0,
+      "ridge_gpe_max_factor": 2.4,
+      "slab_age_reference_myr": 80.0,
+      "slab_age_gain": 0.9,
+      "slab_buoyancy_reference_thickness_km": 100.0,
+      "slab_buoyancy_reference_density_anomaly_kg_m3": 60.0,
+      "slab_buoyancy_exponent": 0.75,
+      "slab_buoyancy_calibration_gain": 1.85,
+      "continental_collision_resistance": 2.5,
+      "transform_resistance": 0.55,
+      "tidal_resistance_reduction": 0.65,
+      "tidal_ridge_enhancement": 0.35,
+      "force_speed_scale_deg_per_myr": 0.22749999999999998,
+      "mantle_memory_fraction": 0.22,
+      "velocity_relaxation_myr": 45.0,
+      "max_speed_deg_per_myr": 1.2,
+      "min_active_speed_deg_per_myr": 0.005,
+      "remove_net_rotation": true,
+      "slab_thermal_reference_km": 140.0,
+      "slab_thermal_exponent": 0.25,
+      "continental_buoyancy_reference_km": 35.0,
+      "continental_buoyancy_resistance_gain": 0.65,
+      "craton_collision_resistance_gain": 0.6,
+      "gpe_reference_thickness_km": 40.0,
+      "gpe_drive_weight": 0.3,
+      "mantle_projection": "velocity_least_squares",
+      "force_model": "young_si_v1",
+      "basal_drag_pa_s_m": 100000000000000.0,
+      "gravity_m_s2": 7.12,
+      "young_slab_force_model": "viscous_sinking_v1",
+      "young_slab_buoyancy_model": "uniform_thermal_mass_v1",
+      "young_velocity_response_model": "quasistatic",
+      "young_slab_viscosity_contrast": 100.0,
+      "young_slab_bend_radius_thickness_ratio": 3.0,
+      "young_slab_mantle_shear_length_fraction": 0.5,
+      "young_slab_mantle_viscosity_pa_s": 1.2907451643581314e+21,
+      "young_slab_mantle_depth_km": 2379.15
+    },
+    "mantle_flow": {
+      "amplitude_relaxation_myr": 600.0,
+      "thermal_speed_floor_fraction": 0.72,
+      "thermal_activity_exponent": 0.35,
+      "spatial_smoothing_fraction_per_myr": 0.00035
+    }
+  },
+  "thermal": {
+    "time_myr": 100.87812194824218,
+    "system_age_myr": 100.87812194824218,
+    "mantle_temperature_k": 1582.0947824381437,
+    "reference_convective_flux_w_m2": 53.99737243018324,
+    "tectonic_activity_factor": 0.35,
+    "thermal_lithosphere_thickness_km": 34.39195630436952
+  },
+  "ledger_checks": {
+    "material_ledger": true,
+    "clocks_agree": true,
+    "fracture_damage_matches_material": true,
+    "thermal_energy": true,
+    "liquid_water_matches_condensation": true,
+    "positive_remaining_material": true,
+    "slab_material_inventory": true
+  },
+  "transport_commits": 201,
+  "thermal_budget": {
+    "time_myr": 100.87812194824218,
+    "phase": "ocean_condensation",
+    "mantle_temperature_k": 1582.0947824381437,
+    "surface_temperature_k": 282.2054117043473,
+    "mantle_melt_fraction": 0.3034913040635729,
+    "surface_melt_fraction": 0.0,
+    "steam_pressure_bar": 0.01152512901865132,
+    "vapor_mass_kg": 5.685835451429265e+16,
+    "ocean_mass_kg": 1.126662762201797e+21,
+    "total_water_mass_kg": 1.1267196205563112e+21,
+    "ocean_volume_km3": 1126662762.201797,
+    "water_inventory_km3": 1126719620.5563111,
+    "ocean_fraction": 0.9999495363766844,
+    "cooling_depth_proxy_km": 112.4213419792891,
+    "energy_residual_j_m2": 1862.645149230957,
+    "relative_energy_residual": 1.0175369580652343e-13,
+    "mantle_to_surface_flux_w_m2": 0.05162631439356381,
+    "viscosity_pa_s": 1.2907451643581314e+21,
+    "rayleigh_number": 11587576.065930935,
+    "nusselt_number": 6.109813637317527,
+    "conductive_heat_flux_w_m2": 0.0021854685425194654,
+    "solid_convective_heat_flux_w_m2": 0.013352805505013889,
+    "thermal_boundary_layer_thickness_km": 389.3981291783803,
+    "effective_heat_transfer_w_m2_k": 3.971592933667917e-05,
+    "magma_transport_weight": 0.08403985980634056,
+    "radiogenic_flux_w_m2": 0.028073833580733495,
+    "tidal_flux_w_m2": 9.13738675697193e-156,
+    "net_mantle_flux_w_m2": -0.023552480812830318,
+    "absorbed_stellar_flux_w_m2": 224.72601248366962,
+    "giant_absorbed_flux_w_m2": 0.0,
+    "outgoing_longwave_w_m2": 224.77763884887636,
+    "net_cooling_flux_w_m2": 0.02355253162601019
+  },
+  "residual_basal_shear_diagnostic_pa": {
+    "mean": 32230.501763515556,
+    "median": 33427.52221082894,
+    "p90": 49578.25721236129,
+    "rms": 35142.253490453375,
+    "max": 70373.72626525704
+  },
+  "residual_basal_shear_note": "beta*(transmitted_traction/beta-u_plate); used by SI rigid torque balance, not yet coupled to the transported Maxwell fracture stress",
+  "force_model": "young_si_v1",
+  "uncoupled_prescribed_source_speed_km_per_myr": {
+    "mean": 13.154709829417184,
+    "median": 14.189641500445848,
+    "p90": 19.727715235653992,
+    "rms": 14.18873509684695,
+    "max": 21.516624366932433
+  },
+  "si_force_budget": {
+    "basal_driving_torque_nm": [
+      [
+        -1.126902567906791e+24,
+        -1.2506523090055324e+25,
+        1.576323735404115e+24
+      ],
+      [
+        -1.2146459718327736e+24,
+        -1.3122855455658233e+25,
+        1.5710390616605291e+24
+      ],
+      [
+        1.232622107076011e+24,
+        1.3107722754391484e+25,
+        -1.614322652780457e+24
+      ],
+      [
+        1.1040994574500606e+24,
+        1.251367895787114e+25,
+        -1.531000430218303e+24
+      ]
+    ],
+    "ridge_torque_nm": [
+      [
+        -3.339021240153158e+23,
+        -2.4695199922432566e+23,
+        -6.984228921989645e+22
+      ],
+      [
+        -1.946956345595784e+23,
+        -3.856010532677638e+23,
+        6.45202806349069e+23
+      ],
+      [
+        9.76458191968502e+22,
+        2.534615205744253e+23,
+        4.0448223421942873e+21
+      ],
+      [
+        2.781558134901926e+23,
+        2.397987833759705e+23,
+        -1.3228581867780897e+23
+      ]
+    ],
+    "slab_torque_nm": [
+      [
+        1.2710829982338904e+24,
+        -9.811914216458216e+23,
+        1.1196602007841815e+24
+      ],
+      [
+        -2.2575413574739393e+24,
+        -4.09386981595207e+24,
+        5.0537463968619315e+23
+      ],
+      [
+        2.2575413574739393e+24,
+        4.09386981595207e+24,
+        -5.0537463968619315e+23
+      ],
+      [
+        -1.2710829982338904e+24,
+        9.811914216458216e+23,
+        -1.1196602007841815e+24
+      ]
+    ],
+    "target_torque_residual_nm": [
+      [
+        268435456.0,
+        0.0,
+        -1610612736.0
+      ],
+      [
+        1073741824.0,
+        0.0,
+        -536870912.0
+      ],
+      [
+        0.0,
+        0.0,
+        -268435456.0
+      ],
+      [
+        -134217728.0,
+        0.0,
+        0.0
+      ]
+    ],
+    "transient_torque_residual_nm": [
+      [
+        268435456.0,
+        0.0,
+        -1610612736.0
+      ],
+      [
+        1073741824.0,
+        0.0,
+        -536870912.0
+      ],
+      [
+        0.0,
+        0.0,
+        -268435456.0
+      ],
+      [
+        -134217728.0,
+        0.0,
+        0.0
+      ]
+    ],
+    "basal_drag_dissipation_w": 845604466.9624016,
+    "slab_bending_dissipation_w": 1172448383.9660316,
+    "slab_mantle_dissipation_w": 98043650.26569563,
+    "slab_constraint_reaction_torque_nm": [
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ]
+    ],
+    "slab_constraint_power_w": 0.0,
+    "total_dissipation_w": 2116096501.1941288,
+    "total_source_power_w": 2116096501.194128,
+    "transient_net_power_w": -4.1036703060514284e-08
+  },
+  "source_unchanged": true,
+  "source_sha256": {
+    "mature_checkpoint/meta.json": "b670298da0d8397403ccd054f71920369181d2e4e3dd0ccdda82a83a0c2942dd",
+    "mature_checkpoint/state.npz": "7f2ab7a33b401c42dc553e39e76291a3079872d8b856d1a0a642ca8de4eae138",
+    "mature_config.yaml": "90333fd1bace4dbd1cbc373626df5b44682e6b243be42f4a35387aa91d5e290f",
+    "young_context/starter_checkpoint.npz": "c6e443aee81c5fd120861c30102379e9095e5788431d2c4b1c6f9069230348fb",
+    "young_context/parameters.json": "01eec3e1cb40b5f71b6b52aec5e1c6d9bc0c40c04587a797729e09e420b30877",
+    "young_context/fracture_memory.npz": "b9b832f1bd524db7eea029cfdcf9fc590c424f6c284bdc1b87b525a63811dabf",
+    "continuation.json": "ff6af9fa47bda8d90ebf5518ac75da0a2cef57cda15bb632239d7fb60e097d66"
+  },
+  "production_sha256": {
+    "tectonics/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tectonics/assignment_kernels.py": "53cc88b735de9e138c56651a52fa3f8cfebd2d0ed7d95c589b51e8391a0e9c06",
+    "tectonics/assignment_runtime.py": "62a51a9853f8d455c2e6a9d8a3ff9c5a4402f5e780bba0c0e949c1172b998f1c",
+    "tectonics/assignment_sparse.py": "42b3011873505cc40a7a9bdcf9e885afb040f61afefd9aa89aed79e232ef60e7",
+    "tectonics/basal_coupling.py": "a0bd3a36363ef957701bb0c3d0218373db26fbab7c110de29271331176e77af8",
+    "tectonics/boundary_geometry.py": "8add6f1dd916441ced54d0cc03140fc49eb9ef1f8f5f96a6c29b99728b6cce07",
+    "tectonics/boundary_kernels.py": "d0f5fe21c1425f9d7f0de36dd74f0eb469062d05aa292ea4cd34a0a5c5005bbe",
+    "tectonics/breakoff.py": "9c61298fa5195b83a6de78888b9a3a10e2bb6644650950b2bdf661e87d1d43e8",
+    "tectonics/checkpoint.py": "39d00a897b509d2c7a7c30d7d9346a9d09a705a0c749b0073a17c524e7225957",
+    "tectonics/collision_contacts.py": "a484abd8d12633422e9d390c55ed64f1dfbfe53bcd87aa665ccc63ac6dff0e6a",
+    "tectonics/connectivity.py": "dc30d264dc6f01163cc1a1473069133ca082b2b1668e9bb65b341240a83c12c8",
+    "tectonics/continental.py": "4c5df28abf35a75cae64c566432245fefb32c0f731a096f3167cf00518bfec46",
+    "tectonics/cpu_runtime.py": "67ed09d8d7d43298e885c8d8f9bfb9812a2c08cff6325271c21e1bb69cf23b1f",
+    "tectonics/cratons.py": "c7f0f4440657a3b243b7e5b66d40f788ed576287b03961d82b06c42fc12db60b",
+    "tectonics/crust.py": "0affb91b0cc1f9a9848ad513df9f1bfbb86fb929147222edfdd866b88e978490",
+    "tectonics/dynamics.py": "b16a9913a20290330e45e72cca5e6ab1fd4b751ccc032840f1ac77f4245e3c52",
+    "tectonics/evolution.py": "4f5853ca993501b4133a25ce62cd18eccd969a8f6ba8c5f0424b1eaf987f21bd",
+    "tectonics/flexure.py": "22f78adf220ce30b2e3a694e2e315aeb8ef0ac329647074268b55d8e1db986b9",
+    "tectonics/genesis.py": "11e6d61c3ad0d3dcd0992d99990b038c64eae1ea8944eaff8f99814e1b4f0744",
+    "tectonics/genesis_checkpoint_compat.py": "370da179f0fdaaac1821bbc51542a1022001676a4f137b2f47fc5ecd82fa527f",
+    "tectonics/genesis_contact.py": "b5ea065fc4eb08e373546a8593316989977e0dc7ae7122eb7413d5ed3ce4df96",
+    "tectonics/genesis_contact_geometry.py": "94b528c69685047834683ce80eda688bdc4ff17c66e7c3c83e50b6a9c30dbf0c",
+    "tectonics/genesis_contact_growth.py": "2ceeaf8f97ccb660f764a74469fb4928b25ac9b2821f0bd182c85ad751758b0d",
+    "tectonics/genesis_contact_law.py": "cc0511e714f79a2f9a61be8f08d0dabff9a8d67dfe5acfe128d30fd2aa7b1158",
+    "tectonics/genesis_continuation_remesh.py": "05835cd98a7f0d3ab4b05f80ff804b0c97a6b32c01db26dd2c6f152c1fd39019",
+    "tectonics/genesis_coupled.py": "f6ccc5a522100cae463770f6383c7e1e9aa90b7f170314da6d28bf5ade7a11c0",
+    "tectonics/genesis_coupled_checkpoint.py": "9b517ee4bcc2dd5c023c3c4bd9840fea0a884d0e8c528d9c51e712ebb3a14465",
+    "tectonics/genesis_coupled_thermal.py": "8fcc71ef18bead196031d2e39a75fced7d09fd8ff301b1b539fcd78f8bfa4e28",
+    "tectonics/genesis_coupled_topology.py": "c2132dd6ab969594925927455183538ad5fbcbc144e4111f6b7bb402dba54d87",
+    "tectonics/genesis_crack_energy.py": "ec6375791e46560dd22807497466b5bee11e51b646ab0840fc65dfac0a26de08",
+    "tectonics/genesis_crack_front.py": "e3b77fa1471739e660afb548e4349cfc9eae69d301ffb5264766463b4a4407f1",
+    "tectonics/genesis_crack_path.py": "ad9b2bbda93314a06fefdb53a72fd98df71b0e93b3d34d1604189c3dcdbe3d77",
+    "tectonics/genesis_extrinsic_contact_law.py": "925b003c607d8558200b84af95fc14c277c9a24f91197d2151b4b491b27b6b2d",
+    "tectonics/genesis_fault_law.py": "f35aa6cde2d20c8c06b34516228ac1bdb1d8b95678d0050f35b5ccf766961ab9",
+    "tectonics/genesis_faults.py": "1d30fe2e50b1001b06dc3be7cc532ad341b9a53ab6e7496c73bd2d62402d81ef",
+    "tectonics/genesis_handoff.py": "881fa6f2d524b12146605b1fe6b4a7ecdc923b424c375ecc35b649563439f902",
+    "tectonics/genesis_local_mechanics.py": "181e123224cd5c9f979866d72dab4726da5103558edcdcc2f7789d7c7493cb37",
+    "tectonics/genesis_long_term_support.py": "cb0f768b27d9bb229cdd4f5a3e2aa5166dec80fb630fe576fe98ac880380da41",
+    "tectonics/genesis_material.py": "69b99346d59be7033b50069eba27ee94644a6dc0f39d7658becd50fbc598e0ee",
+    "tectonics/genesis_mature.py": "2d6077b3a4cd49265a2266a0d0393d42b9ca58c1d6f322146dd49871eb66a54b",
+    "tectonics/genesis_mobile.py": "3636ed3f778f66de13766cd95a3763335967b9df341220da48fa8fda77bef25f",
+    "tectonics/genesis_moving_contact.py": "647d213a351c398d471a209e6dbac6dacf666034a09f73ec74ad8d89ff9bb04a",
+    "tectonics/genesis_moving_contact_cohorts.py": "eca03b82f07650b05861eff62fedb02743ca1f777c7c00907f2b06961ef80ba9",
+    "tectonics/genesis_moving_path_diagnostics.py": "2855635533abc4a29f9cc4e023b8deb6fcf162935942ecf46f7134e95c373d0e",
+    "tectonics/genesis_moving_support.py": "fea072f99047992d58d562ca0a15fcc9f6a33f4f0acf74f259f49dad20f7e2be",
+    "tectonics/genesis_moving_tied.py": "e13ecb4d00c20bd59031e2857c328c4412c3eadd99097e5e9a930a0962b422db",
+    "tectonics/genesis_onset.py": "dfcfff0b85fbc24236b586c34a8f0bd186ee323f2b1c50997b6f85f83d42fb4f",
+    "tectonics/genesis_onset_support.py": "1097b6f42fd5ae1e9793a52df0104c8ac4166c1b926dcbc88904df5d9fa3efd7",
+    "tectonics/genesis_path_activation.py": "55f44dfc50b0a997eb06b556f719eb6ba580653d2f74ddd2957f5f2691bd910b",
+    "tectonics/genesis_path_basis.py": "aea03be54ab4ad888092daa3877ffb9184ff22fbbda6a7dd627c0dcc58425eff",
+    "tectonics/genesis_path_birth.py": "2b966e69c141bc34780a8a51e37758cf1dbb1b1b744884f003db15f204b0bbd1",
+    "tectonics/genesis_path_dynamics.py": "cdfad285bd4ccbb9790159b2f7131a073b93fb5ad28fd829c9b191e9bbbef7bb",
+    "tectonics/genesis_path_geometry.py": "ef095c2aff19c245272d6f68c19c287318791aca52857638e7964467f8ce3254",
+    "tectonics/genesis_path_material.py": "b421b7a6e77ec735d765ea68b926f5ec88e5ea0d000d71e83228284beb29abe0",
+    "tectonics/genesis_path_mesh.py": "c06839a79684e086430ce95e26ea585b33b14c38835c88c026fa9949bfe2559e",
+    "tectonics/genesis_path_onset_event.py": "9ed5ae9936d0446eeb574244d33cde006e4b87529448a087a60fc01111706a1b",
+    "tectonics/genesis_plate_membrane_diagnostic.py": "a7477b1bc8f9bc0c4ec9b8874411202eeaebe5509f8bff5accf815849452f7ae",
+    "tectonics/genesis_ridge.py": "6cbde8abfd61c194d07ada8f6a60105997501072de24954f6b0345a7b3e927d9",
+    "tectonics/genesis_seam_diagnostics.py": "6a19b8dacd2b839dd320d97e6cd9ca18035f39aa5a6b470f1f783534d64fc9d1",
+    "tectonics/genesis_seams.py": "f58dc6e5d8813479707294427232f128bbcdb5a6e6ebfee6024902592b38b1f1",
+    "tectonics/genesis_shell.py": "475cf400bc18bfa0bec0eeb1189973921f6ab4b312e245e1ee01004936c4a931",
+    "tectonics/genesis_shell_release.py": "afd1e15fa328ba9db84bf1ac6b37254bdb878334acb3df143162576ac733b9bf",
+    "tectonics/genesis_starter.py": "1f5f825b236d40a46fa0523e1afb951db3a348ca48d6de551a4236702e75159c",
+    "tectonics/genesis_starter_continuation.py": "d24047528d49dccc579b3f5b00a233317f9623103969bcca23c2206c89e76b57",
+    "tectonics/genesis_starter_fracture.py": "40fdbf833ab9567698744e100b2f5844840271fede005f8d96ea4a9a061b36a7",
+    "tectonics/genesis_starter_ledger.py": "421420a0bc4fcf5311f8ef65074a6c4e63b4a7e3385d910783a21ecae0c84d6f",
+    "tectonics/genesis_starter_loading.py": "620233e322561fac7521143073c576c9da146b0e8d683e68fdbda9def83fb600",
+    "tectonics/genesis_starter_material.py": "f1011f9a7898b1cfce4d0c8c813a3bed7d59478a249c1bef4ef0b1c56957f55f",
+    "tectonics/genesis_starter_slab.py": "ff151a579a877425fb5dbb3cf8dfbad92bf50bbeae4e0ddd89b77dc6a5a4d23c",
+    "tectonics/genesis_starter_topology.py": "0ee5411a34cbf099401ad4390a58c80a09d62e0333eb5a3e86494deb91b301dd",
+    "tectonics/genesis_tides.py": "54bfc97aa6bbbf5a959a8ba0295bbd30bcc1f1d584b100828149076aa110f3a7",
+    "tectonics/genesis_unilateral.py": "bc2ae629b1b71f3705dc08281f1ef13a4d1cc847afcfcbfd32b91b9606ae5492",
+    "tectonics/genesis_young_mechanics.py": "0b12459f3605908f32d0ac4708f9a1cf77ede2586705b17a2a3a165262db0af3",
+    "tectonics/gpu_dynamics.py": "25dcda9b7344cde131b20119803d62a101458e0202678f33dc058c6ca0cbd664",
+    "tectonics/gpu_flexure.py": "9662f45a3ad81e59180b635013a6a6188b84b8db1a3cac7bf1a7a3e9b4bcd98a",
+    "tectonics/gpu_runtime.py": "197d100e950b2b5a94c3e6818edb476aef89712df94d939a1786dae05763f8ef",
+    "tectonics/gpu_surface.py": "b1604be9d850947ea21fdb52539259f4276c7f49229ca5faf856b6c9da9931fc",
+    "tectonics/hotspot_tracks.py": "e2368e0e22c71a7b07bbcedb33ebec877975344623d27686f0c09339ae056f22",
+    "tectonics/hydrosphere.py": "4a6d831afbee9d17cbf753527244efee407bf5e30290434bd26140b025199f4e",
+    "tectonics/kinematics.py": "584a47c8cd212a21d9052607a9a3ab13ed80c8609aa26a67fee91ed8f4d512a3",
+    "tectonics/late_tectonics.py": "78b10f59b09369f14ebccb052f79628d445a242f05fbe2ff3681d8679154a7af",
+    "tectonics/lithosphere.py": "ec4ae1088f670fb071d9ecf55e32ba88542db3d6be362dbad29ec16047be99b2",
+    "tectonics/lithosphere_kernels.py": "ac572012da081ef2b58ab729bda7ba8a4b7ecd57c954b60e596c3f1cc20a926d",
+    "tectonics/mantle.py": "97d21a5816fda11e3ecf58b101e62d44b5a2f5e3de294384b1b1f60e68cba376",
+    "tectonics/mantle_convection.py": "5c2356bff232b56c7488be5c7921eeeeb650bdd469866d9198743493eb27bde3",
+    "tectonics/mesh.py": "860b0559798efe69ecb04014a0a3ee37234523f613cd352dccf76ba75508ac31",
+    "tectonics/plate_velocity_diagnostics.py": "221bb27a7a2103e098dfec3356dea8d515b05255b49bc46fcebcfddea5f4f6fb",
+    "tectonics/plates.py": "5e915f0c580c780ff1b6bbe09b7ccf77112f875d07ea78291f4e639230d28427",
+    "tectonics/plume_drift.py": "0b255232d529bce8caf9d7a1a2c9f79693b466ca345877f933f2e47253122476",
+    "tectonics/plume_dynamic_topography.py": "dc382cd79634b294d05353c993042f8084e4be21a4ca3ddb928666199b2191ad",
+    "tectonics/plume_flow_coupling.py": "e679f5bc5e602928cab9617060b5598aeeebf1e5cb0931f92fadddce39f41892",
+    "tectonics/plume_magmatism.py": "ffbae006eefbd08e954b6e52d02a3cda4bef2409e64df6b21c8ece1b8ac1e330",
+    "tectonics/plume_rifting.py": "7dad3b5ed72e2ca65c1ad0fb3e9413ffee3031d7d7c3d71e85ca16ad34d92e45",
+    "tectonics/plumes.py": "30a9dd86c170818ca973527df4aef8c4c608ae02dae5fb080a617dbfe4ba0efc",
+    "tectonics/rollback.py": "f9086ee6858a52e622b982f2de231549c55c4c311a12efecf638f0cd1f5c8fc6",
+    "tectonics/sediment.py": "9f6d98000371c9aefe7ce11ed37b0da0d971d968d753401150244a3bac2853cc",
+    "tectonics/sediment_kernels.py": "e302b891fb6e342b865256f19d3e82f2a3f68c08808820354c84e6fd6bf395f0",
+    "tectonics/simulation.py": "df1cddebfaa1a2e1bf2ff5ae21d0b366a7a90803ece4451a4de63ea27357ff27",
+    "tectonics/subduction_memory.py": "beb7077a6f44051f9b7b122737f6b4236115c9bebf06bd31fec8d5c39dca3eee",
+    "tectonics/thermal.py": "2658f6b767cbb7df81add880a9465f8dc887fa3e87d91a1032e622dee3ff6861",
+    "tectonics/tides.py": "57b30964d1caf139df8e911ce76e11bc47a8d7859656875f01add523e52fe1d3",
+    "tectonics/topography.py": "6d34e2012f7f81c2103cd3771ccf46e28cf1a546d2652d4172bb2a80eae57020",
+    "tectonics/topology.py": "d73b0f5bd9459fd676ffbf686f3596f07a16d451bdee4ebe18b6b80221fd28cd",
+    "tectonics/transport.py": "a2a5a8ef19ce079e756da792dead24709c6dcbbf5ce081542ebdba71efc11fdf",
+    "tectonics/volcanic_arc.py": "e070406e7a75c50bfb058907f9d50d65c86ac24c0a7fda58a31b2cbf1aeba5d3",
+    "tectonics/young_boundary.py": "6244626de6cc4acd93372b036df12ceb3941a3b8ba9037bdb81a4838c9ba7600",
+    "tectonics/young_plate_dynamics.py": "446ead839666c48868eb90cca42608f64a3076c401429f3f23c43bc90367bda2",
+    "tectonics/young_slab_constraints.py": "988b901758ca7e0e64bfd5d33ff7afb4da6af3772024b30d47a1863483873473",
+    "tectonics/young_slab_sinking.py": "1a44cc9ae99ec260934ca02648cfc758442cc04e5040dc0dd1949ba99d2d3d45"
+  },
+  "metrics": {
+    "slab_constraint_power_w": 0.0,
+    "basal_drag_dissipation_w": 845604466.9624016,
+    "slab_bending_dissipation_w": 1172448383.9660316,
+    "slab_mantle_dissipation_w": 98043650.26569563,
+    "total_dissipation_w": 2116096501.1941288,
+    "basal_source_power_w": 1737590763.8928847,
+    "ridge_power_w": 43457796.07467573,
+    "slab_power_w": 335047941.22656626,
+    "total_source_power_w": 2116096501.194128,
+    "transient_net_power_w": -4.1036703060514284e-08,
+    "target_torque_relative_residual": 6.001462140911186e-17,
+    "target_torque_residual_scale": "sum_of_source_and_reaction_torque_norms",
+    "target_velocity_component_relative_error": 3.609291692658186e-16,
+    "net_power_balance_residual_w": -6.742190342441732e-07,
+    "net_power_balance_relative_residual": -3.186145026295854e-16,
+    "transient_net_power_fraction": -1.9392642555458587e-17,
+    "slab_constraint_power_fraction": 0.0,
+    "total_drag_relative_asymmetry": 0.0,
+    "total_drag_min_normalized_eigenvalue": 0.06482887589562795,
+    "total_drag_condition_number": 12.195334521080948,
+    "basal_drag_dissipation_w_nonnegative": true,
+    "slab_bending_dissipation_w_nonnegative": true,
+    "slab_mantle_dissipation_w_nonnegative": true,
+    "total_dissipation_w_nonnegative": true,
+    "slab_sinking_diagnostics": {
+      "slab_gravitational_power_w": 335047941.22656626,
+      "slab_bending_dissipation_w": 1172448383.9660316,
+      "slab_mantle_dissipation_w": 98043650.26569563,
+      "negative_feed_section_count": 0,
+      "minimum_feed_m_s": 8.676397830268727e-11,
+      "maximum_feed_m_s": 2.7581485827216336e-10,
+      "no_eduction_active_count": 0,
+      "unconstrained_negative_feed_section_count": 0,
+      "unconstrained_minimum_feed_m_s": 0.0,
+      "constraint_relative_residual": 6.283954029392374e-17,
+      "constraint_complementarity_relative_error": 0.0,
+      "neck_failures_this_evaluation": 1
+    },
+    "maximum_attached_neck_tension_to_capacity": -0.48759992792349244
+  }
+}

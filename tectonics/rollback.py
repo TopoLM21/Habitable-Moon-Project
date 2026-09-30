@@ -81,6 +81,12 @@ def advance_rollback(
     pcount=int(np.max(state.cell_plate))+1
     omega_sum=np.zeros((pcount,3),dtype=np.float64); omega_w=np.zeros(pcount,dtype=np.float64)
     forcing=np.zeros(mesh.cell_count,dtype=np.float64)
+    if memory.young_boundary_state is not None:
+        # A prescribed rollback speed is not an SI force. Keep it excluded from
+        # the accepted-material torque solve until a compatible law exists.
+        distances=[float(z.rollback_distance_km) for z in memory.zones.values()]
+        return omega_sum,forcing,RollbackDiagnostics(float(state.time_myr),0,0.,0.,
+            float(np.mean(distances)) if distances else 0.,max(distances,default=0.),0.,0.)
     rates=[]; distances=[]
     areas=mesh.physical_cell_areas_km2(radius_km)
     for key in sorted(memory.zones):

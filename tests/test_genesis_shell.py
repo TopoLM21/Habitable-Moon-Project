@@ -7,8 +7,7 @@ import numpy as np
 import pytest
 
 from tectonics.genesis import (
-    GenesisParameters, SECONDS_PER_MYR, advance as advance_thermal,
-    initial_state, temperatures,
+    GenesisParameters, SECONDS_PER_MYR, initial_state,
 )
 from tectonics.genesis_shell import (
     Membrane,
@@ -17,6 +16,7 @@ from tectonics.genesis_shell import (
     diagnose_shell,
     evolve_damage,
     initialize_shell,
+    lid_geometry,
     load_shell_checkpoint,
     maxwell_factors,
     maximum_total_strain,
@@ -247,23 +247,40 @@ def test_timestep_refinement_converges_during_nonlinear_damage():
     thermal = GenesisParameters()
     p = ShellParameters(subdivisions=1, convective_traction_pa=50000.0)
     mesh = build_icosphere(p.subdivisions)
-    membrane = Membrane(mesh, p.poisson_ratio)
+    # Isolate timestep convergence from the global cooling clock and discrete
+    # activation of the first load-bearing cells. The old 0.96 Myr endpoint
+    # now lies beyond this small-strain shell's physical applicability limit.
+    # Start with an unstrained, fully connected young lid under prescribed
+    # thermal boundaries, retaining the default anomaly and all damage/force
+    # parameters. Its conductive profile and damage still evolve nonlinearly.
+    surface, mantle = 700., thermal.initial_temperature_k
+    initial = initialize_shell(mesh, p, thermal)
+    z = (np.arange(p.column_layers)+.5)*p.column_depth_km/p.column_layers
+    profile = surface+(mantle-surface)*np.minimum(z/p.anomaly_depth_km, 1.)
+    temperature = rock_temperature(initial.column_enthalpy, thermal)
+    temperature += profile[None, :]-thermal.initial_temperature_k
+    enthalpy = rock_enthalpy(temperature, thermal)
+    depth, _ = lid_geometry(temperature, surface, mantle, p, thermal)
+    areas = mesh.physical_cell_areas_km2(thermal.radius_km)*1e6
+    energy = float(np.sum(enthalpy*areas[:, None])
+        *p.density_kg_m3*p.column_depth_km*1000/p.column_layers)
+    initial = replace(initial, column_enthalpy=enthalpy, lid_thickness_km=depth,
+                      initial_column_energy_j=energy)
+    assert np.all(depth > p.min_load_bearing_thickness_km)
+    duration = 10*p.damage_timescale_myr
     results = []
     for dt in (0.002, 0.001, 0.0005):
-        global_state = initial_state(thermal)
-        state = initialize_shell(mesh, p, thermal)
-        mantle, surface = temperatures(np.asarray(global_state.energy), thermal)
-        for step in range(1, round(0.96 / dt) + 1):
-            old_mantle, old_surface = mantle, surface
-            global_state, _ = advance_thermal(global_state, thermal, step * dt, 0.01)
-            mantle, surface = temperatures(np.asarray(global_state.energy), thermal)
+        membrane = Membrane(mesh, p.poisson_ratio)
+        state = initial
+        for step in range(1, round(duration / dt) + 1):
             state = advance_shell(state, mesh, membrane, p, thermal,
-                                  global_state.time_myr, old_surface, surface,
-                                  old_mantle, mantle)
+                                  step*dt, surface, surface, mantle, mantle)
             assert state.stopped_reason is None
         assert np.max(state.damage) > p.damage_threshold
         assert state.first_fracture_time_myr is not None
         assert np.all(state.peak_tensile_pa + 1e-6 >= principal_tensile(state.stress_pa))
+        assert abs(diagnose_shell(state, mesh, p, thermal, surface, mantle)[
+            "relative_column_energy_residual"]) < 1e-12
         results.append(state)
     coarse, fine, reference = results
     for field in ("damage", "stress_pa", "column_enthalpy", "lid_thickness_km"):

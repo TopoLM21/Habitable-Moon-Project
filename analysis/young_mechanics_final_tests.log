@@ -1,0 +1,185 @@
+........................................................................ [  3%]
+........................................................................ [  6%]
+........................................................................ [ 10%]
+........................................................................ [ 13%]
+........................................................................ [ 16%]
+........................................................................ [ 20%]
+........................................................................ [ 23%]
+........................................................................ [ 26%]
+........................................................................ [ 30%]
+........................................................................ [ 33%]
+........................................................................ [ 37%]
+........................................................................ [ 40%]
+........................................................................ [ 43%]
+........................................................................ [ 47%]
+........................................................................ [ 50%]
+........................................................................ [ 53%]
+........................................................................ [ 57%]
+........................................................................ [ 60%]
+........................................................................ [ 63%]
+........................................................................ [ 67%]
+........................................................................ [ 70%]
+........................................................................ [ 74%]
+........................................................................ [ 77%]
+........................................................................ [ 80%]
+.......................................................F................ [ 84%]
+........................................................................ [ 87%]
+........................................................................ [ 90%]
+........................................................................ [ 94%]
+.......................F.F.............................................. [ 97%]
+....................................................                     [100%]
+================================== FAILURES ===================================
+__ test_installed_dynamics_has_no_slab_force_before_subduction_memory_exists __
+
+source = (<tectonics.genesis_starter.StarterModel object at 0x00000243A99C5340>, StarterState(thermal_context=StarterThermalSta...er': 5.0, 'radius_jupiter': 1.03}, 'orbit': {'semi_major_axis_primary_radii': 10.5}, 'mesh': {'subdivisions': 5}, ...})
+
+    def test_installed_dynamics_has_no_slab_force_before_subduction_memory_exists(source):
+        model, cp, cfg, _, runner = installed(source)
+        assert not cp.subduction_memory.zones
+        p = DynamicsParameters(**cfg["plate_dynamics"])
+        assert p.slab_pull_weight > 0.
+        args = (model.mesh, cp.state, cp.system, cp.baseline, model.thermal.radius_km,
+                1., 0., 0.)
+        kwargs = dict(subduction_memory=cp.subduction_memory, mantle_flow=cp.mantle_flow)
+        expected = update_plate_dynamics(*args, replace(p, slab_pull_weight=0.), **kwargs)
+        observed = runner.base.update_plate_dynamics(*args, p, **kwargs)
+        np.testing.assert_array_equal(observed[3], expected[3])
+>       np.testing.assert_array_equal(angular_velocity_vectors(observed[0]),
+                                      angular_velocity_vectors(expected[0]))
+E       AssertionError: 
+E       Arrays are not equal
+E       
+E       Mismatched elements: 6 / 6 (100%)
+E       First 5 mismatches are at indices:
+E        [0, 0]: 1.3059508764846167e-07 (ACTUAL), 1.4169754095552344e-07 (DESIRED)
+E        [0, 1]: -7.110376553039604e-07 (ACTUAL), -7.714860420673597e-07 (DESIRED)
+E        [0, 2]: -5.901058125242208e-07 (ACTUAL), -6.402732602264751e-07 (DESIRED)
+E        [1, 0]: -1.5484404144651056e-07 (ACTUAL), -1.6800800320795375e-07 (DESIRED)
+E        [1, 1]: 7.499407440665156e-07 (ACTUAL), 8.136964506860022e-07 (DESIRED)
+E       Max absolute difference among violations: 6.37557066e-08
+E       Max relative difference among violations: 0.07835318
+E        ACTUAL: array([[ 1.305951e-07, -7.110377e-07, -5.901058e-07],
+E              [-1.548440e-07,  7.499407e-07,  6.608189e-07]])
+E        DESIRED: array([[ 1.416975e-07, -7.714860e-07, -6.402733e-07],
+E              [-1.680080e-07,  8.136965e-07,  7.169980e-07]])
+
+tests\test_genesis_starter_fracture_coupling.py:230: AssertionError
+______________ test_checkpoint_introspection_and_spec_validation ______________
+
+tmp_path = WindowsPath('C:/Users/USER/AppData/Local/Temp/pytest-of-USER/pytest-369/test_checkpoint_introspection_0')
+
+    def test_checkpoint_introspection_and_spec_validation(tmp_path: Path) -> None:
+        root, config = _project(tmp_path)
+        checkpoint = root / "checkpoint"
+        checkpoint.mkdir()
+        (checkpoint / "meta.json").write_text(
+            json.dumps({"format": "moon_tectonics_checkpoint", "time_myr": 40.0}),
+            encoding="utf-8",
+        )
+        np.savez_compressed(checkpoint / "state.npz", state_cell_plate=np.zeros(1_280, dtype=np.int32))
+        assert read_checkpoint_time(checkpoint) == 40.0
+        assert checkpoint_cell_count(checkpoint) == 1_280
+        spec = RunSpec(
+            root,
+            config,
+            root / "out",
+            subdivisions=3,
+            end_time_myr=80.0,
+            resume_checkpoint=checkpoint,
+        ).normalized()
+>       spec.validate()
+
+tests\test_gui_backend.py:120: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = RunSpec(project_root=WindowsPath('C:/Users/USER/AppData/Local/Temp/pytest-of-USER/pytest-369/test_checkpoint_introspec...e, gpu_device=0, assignment_columns=False, assignment_optimized=True, boundary_forces=False, genesis_continuation=None)
+
+    def validate(self) -> None:
+        if not self.project_root.is_dir():
+            raise ValueError(f"Project root does not exist: {self.project_root}")
+        if self.genesis_continuation is not None:
+            self._validate_genesis_continuation()
+            return
+        if (self.resume_checkpoint is not None
+                and _belongs_to_genesis_continuation(self.resume_checkpoint)):
+            raise ValueError("Resume the whole Genesis continuation folder to retain young heat and fracture state")
+        _gpu_device_index(self.gpu_device)
+        if self.gpu_surface and not self.cpu_optimized:
+            raise ValueError("GPU surface requires the optimized CPU runner")
+        if (self.assignment_columns or self.boundary_forces) and not self.cpu_optimized:
+            raise ValueError("Assignment columns and boundary forces require the optimized CPU or GPU runner")
+        if not self.runner.is_file():
+            raise ValueError(f"v0.31 runner does not exist: {self.runner}")
+        if not 1 <= self.cpu_workers <= 32:
+            raise ValueError("CPU workers must be between 1 and 32")
+        if self.render_workers not in RENDER_WORKER_CHOICES:
+            raise ValueError(f"Render workers must be one of {RENDER_WORKER_CHOICES}")
+        if self.process_priority not in PROCESS_PRIORITY_CHOICES:
+            raise ValueError(f"Process priority must be one of {PROCESS_PRIORITY_CHOICES}")
+        if self.process_priority != "normal" and not self.cpu_optimized:
+            raise ValueError("Lower process priority requires the experimental CPU runner")
+        if self.render_workers != 1 and not self.cpu_optimized:
+            raise ValueError("Parallel rendering requires the experimental CPU runner")
+        if self.cell_kernels and not self.cpu_optimized:
+            raise ValueError("Cell kernels require the experimental CPU runner")
+        if (self.cpu_optimized or self.assignment_optimized) and not self.output_dir.resolve().is_relative_to((self.project_root / "results").resolve()):
+>           raise ValueError("Optimized results must stay inside this workspace's results folder")
+E           ValueError: Optimized results must stay inside this workspace's results folder
+
+moon_gui\backend.py:188: ValueError
+_______________ test_resume_cannot_change_checkpoint_resolution _______________
+
+resolution_project = (WindowsPath('C:/Users/USER/AppData/Local/Temp/pytest-of-USER/pytest-369/test_resume_cannot_change_chec0/project'), Wi...SER/AppData/Local/Temp/pytest-of-USER/pytest-369/test_resume_cannot_change_chec0/project/configs/canonical_moon.yaml'))
+
+    def test_resume_cannot_change_checkpoint_resolution(resolution_project):
+        root, config = resolution_project
+        checkpoint = _checkpoint(root / "prior" / "checkpoint")
+        with pytest.raises(ValueError):
+            RunSpec(
+                root, config, root / "out", subdivisions=7, resume_checkpoint=checkpoint
+            ).validate()
+>       RunSpec(root, config, root / "out", resume_checkpoint=checkpoint).validate()
+
+tests\test_gui_resolution.py:99: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = RunSpec(project_root=WindowsPath('C:/Users/USER/AppData/Local/Temp/pytest-of-USER/pytest-369/test_resume_cannot_change...e, gpu_device=0, assignment_columns=False, assignment_optimized=True, boundary_forces=False, genesis_continuation=None)
+
+    def validate(self) -> None:
+        if not self.project_root.is_dir():
+            raise ValueError(f"Project root does not exist: {self.project_root}")
+        if self.genesis_continuation is not None:
+            self._validate_genesis_continuation()
+            return
+        if (self.resume_checkpoint is not None
+                and _belongs_to_genesis_continuation(self.resume_checkpoint)):
+            raise ValueError("Resume the whole Genesis continuation folder to retain young heat and fracture state")
+        _gpu_device_index(self.gpu_device)
+        if self.gpu_surface and not self.cpu_optimized:
+            raise ValueError("GPU surface requires the optimized CPU runner")
+        if (self.assignment_columns or self.boundary_forces) and not self.cpu_optimized:
+            raise ValueError("Assignment columns and boundary forces require the optimized CPU or GPU runner")
+        if not self.runner.is_file():
+            raise ValueError(f"v0.31 runner does not exist: {self.runner}")
+        if not 1 <= self.cpu_workers <= 32:
+            raise ValueError("CPU workers must be between 1 and 32")
+        if self.render_workers not in RENDER_WORKER_CHOICES:
+            raise ValueError(f"Render workers must be one of {RENDER_WORKER_CHOICES}")
+        if self.process_priority not in PROCESS_PRIORITY_CHOICES:
+            raise ValueError(f"Process priority must be one of {PROCESS_PRIORITY_CHOICES}")
+        if self.process_priority != "normal" and not self.cpu_optimized:
+            raise ValueError("Lower process priority requires the experimental CPU runner")
+        if self.render_workers != 1 and not self.cpu_optimized:
+            raise ValueError("Parallel rendering requires the experimental CPU runner")
+        if self.cell_kernels and not self.cpu_optimized:
+            raise ValueError("Cell kernels require the experimental CPU runner")
+        if (self.cpu_optimized or self.assignment_optimized) and not self.output_dir.resolve().is_relative_to((self.project_root / "results").resolve()):
+>           raise ValueError("Optimized results must stay inside this workspace's results folder")
+E           ValueError: Optimized results must stay inside this workspace's results folder
+
+moon_gui\backend.py:188: ValueError
+=========================== short test summary info ===========================
+FAILED tests/test_genesis_starter_fracture_coupling.py::test_installed_dynamics_has_no_slab_force_before_subduction_memory_exists
+FAILED tests/test_gui_backend.py::test_checkpoint_introspection_and_spec_validation
+FAILED tests/test_gui_resolution.py::test_resume_cannot_change_checkpoint_resolution
+3 failed, 2137 passed, 553 deselected in 357.78s (0:05:57)

@@ -1,0 +1,171 @@
+{
+  "scope": "Independent evolving arms and counterfactual frozen probes are separate evidence.",
+  "original_starter_sha256": "b4584dd66208ff80aea18a178c38da2b96e353c723663251091886dee49e87f6",
+  "arms": {},
+  "frozen": [
+    {
+      "path": "D:\\Moon Project\\mantle-convection\\analysis\\slab_sinking_validation\\frozen\\harness_disabled_smoke.json",
+      "source": "D:\\Moon Project\\mantle-convection\\analysis\\young_mechanics_validation\\final_after_seed_fix\\corrected_mechanics\\elapsed_0400",
+      "time_myr": 400.8781219482422,
+      "evaluation": "frozen_counterfactual_force_probe_no_evolution",
+      "parameter_overrides": {
+        "plate_dynamics.young_slab_force_model": "disabled_pending_closure"
+      },
+      "source_unchanged": true,
+      "speeds_mm_yr": {
+        "best_rigid_fit": {
+          "mean": 8.905599165752527,
+          "median": 9.022201479949905,
+          "p90": 12.844892477724756,
+          "rms": 9.415137755790719,
+          "max": 15.048446472847743
+        },
+        "simple_area_average": {
+          "mean": 5.924603231622578,
+          "median": 6.077181448181614,
+          "p90": 8.318146525805483,
+          "rms": 6.264726586366893,
+          "max": 13.35341157404002
+        },
+        "selected_projection": {
+          "mean": 8.905599165752546,
+          "median": 9.02220147994992,
+          "p90": 12.84489247772477,
+          "rms": 9.415137755790736,
+          "max": 15.048446472847782
+        },
+        "after_memory": {
+          "mean": 8.905599165752546,
+          "median": 9.02220147994992,
+          "p90": 12.84489247772477,
+          "rms": 9.415137755790736,
+          "max": 15.048446472847782
+        },
+        "target": {
+          "mean": 9.056309571865576,
+          "median": 8.804336090705288,
+          "p90": 13.833832539008421,
+          "rms": 9.63370974332724,
+          "max": 16.35675384941645
+        },
+        "current": {
+          "mean": 8.87495928993857,
+          "median": 8.856872091692782,
+          "p90": 13.245843868738755,
+          "rms": 9.417868194209936,
+          "max": 15.185427821840008
+        },
+        "after_relaxation": {
+          "mean": 8.875021151391577,
+          "median": 8.852235643761132,
+          "p90": 13.258172009315768,
+          "rms": 9.418781029699462,
+          "max": 15.18498966850278
+        },
+        "after_net_rotation": {
+          "mean": 8.875021151391577,
+          "median": 8.852235643761132,
+          "p90": 13.258172009315768,
+          "rms": 9.418781029699462,
+          "max": 15.18498966850278
+        },
+        "actual_returned": {
+          "mean": 8.875021151391577,
+          "median": 8.852235643761132,
+          "p90": 13.258172009315768,
+          "rms": 9.418781029699462,
+          "max": 15.18498966850278
+        },
+        "local_mantle": {
+          "mean": 13.136605887934104,
+          "median": 14.180307297375489,
+          "p90": 19.711470267263937,
+          "rms": 14.173123886962873,
+          "max": 21.516623705645
+        }
+      },
+      "component_speeds_mm_yr": {
+        "mantle": {
+          "mean": 8.905599165752546,
+          "median": 9.02220147994992,
+          "p90": 12.84489247772477,
+          "rms": 9.415137755790736,
+          "max": 15.048446472847782
+        },
+        "ridge": {
+          "mean": 0.7942660444444984,
+          "median": 0.7906932370949139,
+          "p90": 1.3891505126966397,
+          "rms": 0.9258305661041106,
+          "max": 5.834820342950861
+        },
+        "slab": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        },
+        "residual_slab": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        },
+        "gpe": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        },
+        "rollback": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        },
+        "collision_resistance": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        },
+        "transform_resistance": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        }
+      },
+      "metrics": {
+        "basal_drag_dissipation_w": 3129031617.3691807,
+        "basal_source_power_w": 3083065334.405697,
+        "ridge_power_w": 60751568.356238924,
+        "slab_power_w": 0.0,
+        "total_source_power_w": 3143816902.7619376,
+        "transient_net_power_w": 14785285.392761169,
+        "target_torque_relative_residual": 4.540638459603218e-16,
+        "net_power_balance_residual_w": -4.230067133903503e-06
+      },
+      "inventory": {
+        "cumulative_accepted_area_km2": 296704211.63945854,
+        "cumulative_accepted_oceanic_volume_km3": 289975447.0424772,
+        "attached_area_km2": 65809825.533766165,
+        "attached_oceanic_volume_km3": 65054006.010335855,
+        "deep_oceanic_volume_km3": 13652695.091228481,
+        "unresolved_or_detached_oceanic_volume_km3": 211268745.94091928,
+        "attached_mantle_volume_km3": 2183198594.515651,
+        "current_negative_buoyancy_mass_kg": 2.5374039760355574e+18,
+        "initial_negative_buoyancy_mass_kg": 6.485790354573018e+20,
+        "segment_count": 993,
+        "thermal_cohort_count": 4372
+      }
+    }
+  ],
+  "note": "A small target residual alone does not establish physical closure of a relaxed transient velocity. Inspect source power, all positive dissipations, and transient residual work together."
+}

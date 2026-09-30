@@ -1,0 +1,169 @@
+.....FF....................F...............                              [100%]
+================================== FAILURES ===================================
+_ test_installed_hooks_follow_post_topology_velocities_transport_and_liquid_water _
+
+source = (<tectonics.genesis_starter.StarterModel object at 0x0000012CFF428D70>, StarterState(thermal_context=StarterThermalSta...er': 5.0, 'radius_jupiter': 1.03}, 'orbit': {'semi_major_axis_primary_radii': 10.5}, 'mesh': {'subdivisions': 5}, ...})
+
+    def test_installed_hooks_follow_post_topology_velocities_transport_and_liquid_water(source):
+        model, state, bundle, cfg, _ = imported(source)
+        cp = bundle.checkpoint
+        coupling = YoungWorldCoupling(model, state, cfg, cp)
+        merged_state = deepcopy(cp.state)
+        merged_state.cell_plate[:] = 0
+        merged_system = PlateSystem(merged_state.cell_plate.copy(),
+            (Plate(0, 0, np.array([0., 0., 1.]), .007),))
+        remapped = initialize_transport_state(1)
+        remapped.cumulative_commit_count = 11
+        seen = {}
+    
+        class FakeManager:
+            params = SimpleNamespace(split_enabled=False)
+    
+            def update(self, mesh, material, system, boundaries, radius_km, dt_myr):
+                return merged_system, None, []
+    
+        def original_lithosphere(*args, **kwargs):
+            seen["period"] = args[6]
+            return advance_lithosphere(*args, **kwargs)
+    
+        def original_hydrosphere(mesh, material, topography, hydrosphere, *args, **kwargs):
+            seen["water"] = hydrosphere.water_volume_km3
+            return hydrosphere, None
+    
+        base = SimpleNamespace(
+            update_plate_dynamics=lambda *args, **kwargs: (cp.system, None, None, None),
+            advance_hydrosphere=original_hydrosphere, PlateTopologyManager=FakeManager,
+            remap_transport_state=lambda *args, **kwargs: remapped,
+        )
+        runner = SimpleNamespace(base=base,
+            v124=SimpleNamespace(_original_advance_lithosphere=original_lithosphere))
+        coupling.install(runner)
+        prototype = base.build_prototype(cfg)
+        assert prototype.mesh is model.mesh
+        np.testing.assert_array_equal(prototype.plates.cell_plate, cp.system.cell_plate)
+        assert base.eccentricity_history_from_config(cfg) is coupling
+        thermal, _ = base.advance_thermal_state(cp.thermal, .1)
+        merged_state.time_myr = thermal.time_myr
+>       runner.v124._original_advance_lithosphere(model.mesh, cp.system, cp.state, .1,
+            model.thermal.radius_km, model.thermal.surface_gravity_m_s2, -123., coupling,
+            transport_state=cp.transport_state)
+
+tests\test_genesis_starter_continuation_independent.py:164: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tectonics\genesis_starter_continuation.py:490: in lithosphere
+    result = old_lith(*arguments, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\test_genesis_starter_continuation_independent.py:144: in original_lithosphere
+    return advance_lithosphere(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tectonics\lithosphere.py:1520: in advance_lithosphere
+    young_subduction_sink(events,new_state)
+tectonics\genesis_starter_continuation.py:484: in accepted_material
+    accept_slab_material(model.mesh, memory.young_boundary_state,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+mesh = SphereMesh(vertices=array([[-0.52573111,  0.85065081,  0.        ],
+       [ 0.52573111,  0.85065081,  0.        ],
+  ..., 26, 29), (72, 75, 31, 39), (73, 75, 28, 39), (74, 75, 28, 31), (76, 79, 23, 41), (77, 79, 30, 41), (78, 79, 23, 30)))
+inventory = None, events = (), time_myr = 0.9968719482421874
+
+    def accept_slab_material(mesh, inventory: YoungBoundaryState,
+                             events: Iterable[SlabAcceptance], time_myr: float):
+        """Consume an already-conservative material transaction once, without sinks."""
+        time_myr = float(time_myr)
+        events = tuple(events)
+>       if not math.isfinite(time_myr) or time_myr <= inventory.last_material_time_myr:
+                                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'NoneType' object has no attribute 'last_material_time_myr'
+
+tectonics\young_boundary.py:224: AttributeError
+____ test_young_mechanical_thickness_is_not_reset_from_zero_chemical_ages _____
+
+source = (<tectonics.genesis_starter.StarterModel object at 0x0000012CFF428D70>, StarterState(thermal_context=StarterThermalSta...er': 5.0, 'radius_jupiter': 1.03}, 'orbit': {'semi_major_axis_primary_radii': 10.5}, 'mesh': {'subdivisions': 5}, ...})
+
+    def test_young_mechanical_thickness_is_not_reset_from_zero_chemical_ages(source):
+        model, state, bundle, cfg, _ = imported(source)
+        cp = bundle.checkpoint
+        coupling = YoungWorldCoupling(model, state, cfg, cp)
+        thermal, _ = coupling.advance_heat(cp.thermal, 1.)
+        cp.state.time_myr = thermal.time_myr
+        cp.state.crust_age_myr[:] = 0.
+        coupling.mechanical_fields(cp.state)
+        sample = model.loading.sample(coupling.source_state.thermal_context)
+        expected = np.maximum(sample.lid_thickness_km-cp.state.crust_thickness_km, 0.)
+>       np.testing.assert_array_equal(cp.state.mantle_lithosphere_thickness_km, expected)
+E       AssertionError: 
+E       Arrays are not equal
+E       
+E       Mismatched elements: 80 / 80 (100%)
+E       First 5 mismatches are at indices:
+E        [0]: 0.0 (ACTUAL), 4.802642664602127 (DESIRED)
+E        [1]: 0.0 (ACTUAL), 4.802642664602127 (DESIRED)
+E        [2]: 0.0 (ACTUAL), 4.802642664602127 (DESIRED)
+E        [3]: 0.0 (ACTUAL), 4.802642664602127 (DESIRED)
+E        [4]: 0.0 (ACTUAL), 4.802642664602127 (DESIRED)
+E       Max absolute difference among violations: 4.80264266
+E       Max relative difference among violations: 1.
+E        ACTUAL: array([0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
+E              0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
+E              0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,...
+E        DESIRED: array([4.802643, 4.802643, 4.802643, 4.802643, 4.802643, 4.802643,
+E              4.802643, 4.802643, 4.802643, 4.802643, 4.802643, 4.802643,
+E              4.802643, 4.802643, 4.802643, 4.802643, 4.802643, 4.802643,...
+
+tests\test_genesis_starter_continuation_independent.py:194: AssertionError
+_____ test_real_parallel_workers_and_rendering_preserve_state_and_resume ______
+
+tmp_path = WindowsPath('C:/Users/USER/AppData/Local/Temp/pytest-of-USER/pytest-363/test_real_parallel_workers_and0')
+
+    def test_real_parallel_workers_and_rendering_preserve_state_and_resume(tmp_path):
+        """Exercise real pools in separate CLI processes, including a changed resume policy."""
+        root = Path(os.environ.get("GENESIS_EXECUTION_E2E_OUTPUT", str(tmp_path / "execution")))
+        starter = root / "starter"
+        _run([ROOT / "run_genesis_starter.py", "--output", starter, "--duration-myr", "2",
+              "--subdivisions", "3", "--convective-traction-mpa", ".05"], starter)
+        script = ROOT / "run_genesis_starter_continuation.py"
+        source = starter / "starter_checkpoint.npz"
+        common = ["--step-myr", "1", "--frame-interval", "1", "--surface-only-frames"]
+        one, many, first, resumed = (root / name for name in ("one", "many", "first", "resumed"))
+        _run([script, "--starter-checkpoint", source, "--output", one, "--duration-myr", "3",
+              "--cpu-workers", "1", *common], one)
+        parallel = ["--cpu-workers", "4", "--render-workers", "2", "--process-priority", "below_normal"]
+        _run([script, "--starter-checkpoint", source, "--output", many, "--duration-myr", "3",
+              *parallel, *common], many)
+        _run([script, "--starter-checkpoint", source, "--output", first, "--duration-myr", "1",
+              "--cpu-workers", "1", *common], first)
+        _run([script, "--resume", first, "--output", resumed, "--duration-myr", "3",
+              *parallel, *common], resumed)
+        kernels = root / "kernels"
+        _run([script, "--starter-checkpoint", source, "--output", kernels, "--duration-myr", "3",
+              *parallel, *common, "--cell-kernels", "--cell-workers", "2", "--boundary-forces",
+              "--assignment-columns", "--no-assignment-optimized"], kernels)
+        _assert_same_saved_state(one, many)
+        _assert_same_saved_state(one, resumed)
+        _assert_same_saved_state(one, kernels)
+        reports = [json.loads((path / "continuation.json").read_text(encoding="utf-8"))
+                   for path in (one, many, first, resumed, kernels)]
+        for report in reports:
+            assert report["status"] == "completed" and all(report["checks"].values())
+            assert report["material_ledger"]["balanced"]
+        for path, count in ((one,3), (many,3), (first,1), (resumed,2), (kernels,3)):
+            assert len(list((path / "mature_run" / "hydrosphere_frames").glob("surface_*_Myr.png"))) == count
+        assert reports[0]["history"] == reports[1]["history"] == reports[3]["history"]
+        timing = json.loads((many / "render_timings.json").read_text(encoding="utf-8"))
+        assert timing["cpu_workers"] == 4 and timing["render_workers"] == 2
+        assert timing["jobs_completed"] > 0
+        render_processes = len({job["pid"] for job in timing["jobs"]})
+        assert 1 <= render_processes <= 2
+        assert timing["numerical_execution"]["arc_query_workers"] == 4
+        assert reports[1]["execution"]["process_priority"] == "below_normal"
+        accelerated = json.loads((kernels / "render_timings.json").read_text(encoding="utf-8"))["numerical_execution"]
+>       assert accelerated["boundary_forces"]["calls"] > 0
+E       assert 0 > 0
+
+tests\test_genesis_continuation_execution.py:154: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_genesis_starter_continuation_independent.py::test_installed_hooks_follow_post_topology_velocities_transport_and_liquid_water
+FAILED tests/test_genesis_starter_continuation_independent.py::test_young_mechanical_thickness_is_not_reset_from_zero_chemical_ages
+FAILED tests/test_genesis_continuation_execution.py::test_real_parallel_workers_and_rendering_preserve_state_and_resume
+3 failed, 40 passed in 142.54s (0:02:22)

@@ -1,0 +1,10 @@
+corrected_mechanics elapsed 5: mean=0.00465231725223, plates=2; analysis\young_mechanics_validation\final\corrected_mechanics\elapsed_0005.log
+corrected_mechanics elapsed 50: mean=6.5282181852, plates=4; analysis\young_mechanics_validation\final\corrected_mechanics\elapsed_0050.log
+Traceback (most recent call last):
+  File "D:\Moon Project\mantle-convection\analysis\plate_velocity_experiments.py", line 228, in <module>
+    main()
+  File "D:\Moon Project\mantle-convection\analysis\plate_velocity_experiments.py", line 224, in main
+    run_series(args)
+  File "D:\Moon Project\mantle-convection\analysis\plate_velocity_experiments.py", line 201, in run_series
+    raise RuntimeError(f"Experiment segment failed: {log}")
+RuntimeError: Experiment segment failed: analysis\young_mechanics_validation\final\corrected_mechanics\elapsed_0100.log

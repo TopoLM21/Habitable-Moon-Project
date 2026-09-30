@@ -12,6 +12,7 @@ from tectonics.genesis_shell import ShellParameters
 from tectonics.genesis_starter import StarterModel
 from tectonics.genesis_starter_continuation import (YoungWorldCoupling,
     build_starter_continuation, project_thermal)
+from tectonics.genesis_starter_fracture import YoungShellFracture
 from tectonics.genesis_tides import (TidalParameters, SYNCHRONOUS_SPIN,
                                    advance_tidal_orbit)
 from tectonics.hydrosphere import HydrosphereParameters, advance_hydrosphere
@@ -103,8 +104,86 @@ def test_thermal_projection_preserves_system_age_offset_and_column_lid(source):
     assert thermal.thermal_lithosphere_thickness_km == sample.lid_thickness_km
 
 
-def test_mechanical_hook_uses_young_column_not_reset_chemical_age(source):
+def test_projection_diagnostics_use_genesis_transport_and_separate_mechanical_lid(source):
+    model, state, _, _ = source
+    # Deliberately inconsistent mature material constants cannot alter the
+    # projected diagnostics of the independently owned Genesis heat reservoir.
+    mature = ThermalParameters(viscosity_reference_pa_s=1e23,
+        thermal_conductivity_w_m_k=.2, mantle_depth_fraction_radius=.2)
+    thermal, diag = project_thermal(model, state, mature)
+    sample = model.loading.sample(state.thermal_context)
+    row = sample.thermal
+    for field in ("viscosity_pa_s", "rayleigh_number", "nusselt_number",
+                  "surface_temperature_k", "mantle_melt_fraction",
+                  "solid_convective_heat_flux_w_m2", "conductive_heat_flux_w_m2",
+                  "mantle_to_surface_flux_w_m2", "thermal_boundary_layer_thickness_km",
+                  "effective_heat_transfer_w_m2_k", "magma_transport_weight",
+                  "net_mantle_flux_w_m2"):
+        assert getattr(diag, field) == row[field]
+    assert diag.net_heat_flux_w_m2 == row["net_mantle_flux_w_m2"]
+    assert diag.mechanical_lithosphere_thickness_km == sample.lid_thickness_km
+    assert thermal.thermal_lithosphere_thickness_km == sample.lid_thickness_km
+    assert diag.thermal_boundary_layer_thickness_km != sample.lid_thickness_km
+    coupling, checkpoint = coupling_from(source)
+    coupling.record(checkpoint.state, checkpoint.system, checkpoint.transport_state)
+    for field in ("viscosity_pa_s", "rayleigh_number", "nusselt_number",
+                  "mantle_to_surface_flux_w_m2", "radiogenic_flux_w_m2",
+                  "tidal_flux_w_m2", "net_mantle_flux_w_m2",
+                  "thermal_boundary_layer_thickness_km"):
+        assert model.diagnose(state)[field] == coupling.history[-1][field] == row[field]
+
+
+def test_coupled_heat_and_diagnostics_resume_exactly_after_checkpoint(source, tmp_path):
+    coupling, checkpoint = coupling_from(source)
+    thermal, _ = coupling.advance_heat(checkpoint.thermal, .25)
+    starter_path, fracture_path = tmp_path/"starter.npz", tmp_path/"fracture.npz"
+    coupling.model.save_state(starter_path, coupling.source_state)
+    coupling.fracture.save(fracture_path)
+    checkpoint.thermal = thermal
+    checkpoint.state.time_myr = thermal.time_myr
+    checkpoint.state.tidal_damage = coupling.fracture.damage.copy()
+    resumed = YoungWorldCoupling(coupling.model, coupling.model.load_state(starter_path),
+        deepcopy(coupling.cfg), deepcopy(checkpoint),
+        fracture=YoungShellFracture.load(coupling.model, fracture_path))
+    one, diag_one = coupling.advance_heat(thermal, .5)
+    two, diag_two = resumed.advance_heat(deepcopy(thermal), .5)
+    assert equal(one, two)
+    assert equal(diag_one, diag_two)
+    assert equal(coupling.source_state.thermal_context, resumed.source_state.thermal_context)
+
+
+def test_mature_outer_step_does_not_control_late_genesis_cooling(source):
+    model, initial, cfg, checkpoint = source
+    late = deepcopy(initial)
+    # Reach a late physical heat/orbit/column state cheaply before exercising
+    # the real mature heat hook with its unmodified forcing-step controls.
+    late.thermal_context, _ = model.loading.advance(late.thermal_context, 50.,
+        max_sample_myr=1., max_thermal_step_myr=.5)
+    checkpoint = deepcopy(checkpoint)
+    checkpoint.thermal, _ = project_thermal(model, late, ThermalParameters(**cfg["thermal"]))
+    checkpoint.state.time_myr = late.time_myr
+    late_source = (model, late, cfg, checkpoint)
+    coarse, a = coupling_from(late_source)
+    fine, b = coupling_from(late_source)
+    _, coarse_diag = coarse.advance_heat(a.thermal, 50.)
+    thermal = b.thermal
+    for _ in range(5):
+        thermal, fine_diag = fine.advance_heat(thermal, 10.)
+    for field in ("mantle_temperature_k", "surface_temperature_k"):
+        assert getattr(coarse_diag, field) == pytest.approx(getattr(fine_diag, field), abs=2e-4)
+    assert coarse_diag.mantle_to_surface_flux_w_m2 == pytest.approx(
+        fine_diag.mantle_to_surface_flux_w_m2, rel=2e-5)
+    for coupling in (coarse, fine):
+        row = model.loading.sample(coupling.source_state.thermal_context).thermal
+        assert row["time_myr"] == 100.
+        assert abs(row["relative_energy_residual"]) < 2e-11
+
+
+def test_legacy_mechanical_hook_uses_young_column_not_reset_chemical_age(source):
     coupling, cp = coupling_from(source)
+    # Historical checkpoints without a mechanics version retain this closure;
+    # corrected runs test material-age cooling in test_genesis_local_mechanics.
+    coupling.cfg["young_shell"].pop("mechanics_model_version", None)
     coupling.advance_heat(cp.thermal, 2.)
     young = coupling.model.loading.sample(coupling.source_state.thermal_context)
     a, b = deepcopy(cp.state), deepcopy(cp.state)

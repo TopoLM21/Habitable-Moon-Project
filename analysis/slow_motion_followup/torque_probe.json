@@ -1,0 +1,746 @@
+{
+  "source_coupling": 0.10244522375500104,
+  "scope": "frozen geometry diagnostic counterfactuals, not trajectories or proposed speed multipliers",
+  "cases": [
+    {
+      "source": "D:\\Moon Project\\mantle-convection\\results\\gui_runs\\genesis_20260928_192334_470716\\gui_checkpoint_0000110p8781_Myr",
+      "source_sha256": "96038fb59d6f451a873a52d5998ff1c9f37af7f5448d32fa18766bae2afa694e",
+      "age_myr": 110.87812194824218,
+      "beta_pa_s_m": 100000000000000.0,
+      "memory_fraction": 0.22,
+      "equivalent_unmodelled_anchoring_drag_ratio": 3.545454545454546,
+      "torque_note": "Conditional SI test: tau=beta*(u_m-u_plate), using the saved already-coupled mantle velocity. This is not the mature solver's force law. Nonzero residual needs an explicit countertorque, or the velocity map is empirical.",
+      "gauge_note": "Counterfactual speeds are centered for comparison. Torque ratios use the saved mantle frame; target before centering isolates .22 exactly. A future SI solver must transform mantle and plates together when changing frame.",
+      "actual_basal_shear_pa": {
+        "mean": 3866.636178131673,
+        "median": 4209.215282340669,
+        "p90": 5789.606747511673,
+        "rms": 4182.74723076782,
+        "max": 6375.209261294403
+      },
+      "best_fit_basal_shear_pa": {
+        "mean": 2505.7471537182055,
+        "median": 2385.278861100435,
+        "p90": 4435.0024492506545,
+        "rms": 2841.1487742900486,
+        "max": 6382.9286588033765
+      },
+      "plates": [
+        {
+          "plate": 0,
+          "loading_torque_Nm": [
+            -1.1981224221662358e+23,
+            -1.31327090302267e+24,
+            1.639711347353046e+23
+          ],
+          "actual_unbalanced_basal_torque_Nm": [
+            -1.0459531241954116e+23,
+            -1.140813391598978e+24,
+            1.4318237920332739e+23
+          ],
+          "actual_residual_to_loading_ratio": 0.8687853116702395,
+          "target_before_gauge_residual_to_loading_ratio": 0.78,
+          "best_fit_residual_to_loading_ratio": 3.4584991560318268e-15
+        },
+        {
+          "plate": 1,
+          "loading_torque_Nm": [
+            -1.214941611443851e+23,
+            -1.331747244814396e+24,
+            1.5546332091451563e+23
+          ],
+          "actual_unbalanced_basal_torque_Nm": [
+            -1.0670566859575512e+23,
+            -1.1566309304988439e+24,
+            1.3682861532510894e+23
+          ],
+          "actual_residual_to_loading_ratio": 0.8687424353492992,
+          "target_before_gauge_residual_to_loading_ratio": 0.7800000000000019,
+          "best_fit_residual_to_loading_ratio": 8.590146948847588e-16
+        },
+        {
+          "plate": 2,
+          "loading_torque_Nm": [
+            1.2407861337545788e+23,
+            1.3299535450546893e+24,
+            -1.605877730426525e+23
+          ],
+          "actual_unbalanced_basal_torque_Nm": [
+            1.0644694314291399e+23,
+            1.1540113926905356e+24,
+            -1.3740350953908172e+23
+          ],
+          "actual_residual_to_loading_ratio": 0.867454137941618,
+          "target_before_gauge_residual_to_loading_ratio": 0.7800000000000049,
+          "best_fit_residual_to_loading_ratio": 2.9192861725054878e-15
+        },
+        {
+          "plate": 3,
+          "loading_torque_Nm": [
+            1.1722778998555e+23,
+            1.315064602782368e+24,
+            -1.5884668260716654e+23
+          ],
+          "actual_unbalanced_basal_torque_Nm": [
+            1.0055772096368202e+23,
+            1.1367156190890107e+24,
+            -1.3629459682935454e+23
+          ],
+          "actual_residual_to_loading_ratio": 0.8642387594717992,
+          "target_before_gauge_residual_to_loading_ratio": 0.7800000000000015,
+          "best_fit_residual_to_loading_ratio": 1.820873845743819e-15
+        }
+      ],
+      "scenarios": [
+        {
+          "name": "actual_checkpoint",
+          "speed_km_myr": {
+            "mean": 0.1421113526572039,
+            "median": 0.1527377914982954,
+            "p90": 0.18773952704612148,
+            "rms": 0.14838305313572964,
+            "max": 0.20634944319329301
+          },
+          "boundaries": {
+            "count": 450,
+            "total_length_km": 90115.22204790081,
+            "by_type": {
+              "INACTIVE": {
+                "count": 450,
+                "length_km": 90115.22204790081,
+                "length_fraction": 1.0
+              },
+              "DIVERGENT": {
+                "count": 0,
+                "length_km": 0.0,
+                "length_fraction": 0.0
+              },
+              "CONVERGENT": {
+                "count": 0,
+                "length_km": 0.0,
+                "length_fraction": 0.0
+              },
+              "TRANSFORM": {
+                "count": 0,
+                "length_km": 0.0,
+                "length_fraction": 0.0
+              }
+            },
+            "active_length_fraction": 0.0,
+            "relative_speed_km_per_myr": {
+              "mean": 0.24507924477063542,
+              "median": 0.278938601242384,
+              "p90": 0.3626230529906522,
+              "rms": 0.26924258035509857,
+              "max": 0.38069239659285103
+            },
+            "absolute_normal_speed_km_per_myr": {
+              "mean": 0.17193046372677137,
+              "median": 0.1639448371201654,
+              "p90": 0.31755010193874283,
+              "rms": 0.2007670630947728,
+              "max": 0.3615360107384591
+            },
+            "max_convergent_normal_speed_km_per_myr": 0.3615360107384591,
+            "max_divergent_normal_speed_km_per_myr": 0.3368816241797961,
+            "positive_normal_length_km": 46853.55493581412,
+            "negative_normal_length_km": 43261.6671120867
+          }
+        },
+        {
+          "name": "existing_mantle_only_target",
+          "speed_km_myr": {
+            "mean": 0.2354685862951674,
+            "median": 0.2532546289958623,
+            "p90": 0.31423563811833793,
+            "rms": 0.24578737851324553,
+            "max": 0.3376648535020679
+          },
+          "boundaries": {
+            "count": 450,
+            "total_length_km": 90115.22204790081,
+            "by_type": {
+              "INACTIVE": {
+                "count": 450,
+                "length_km": 90115.22204790081,
+                "length_fraction": 1.0
+              },
+              "DIVERGENT": {
+                "count": 0,
+                "length_km": 0.0,
+                "length_fraction": 0.0
+              },
+              "CONVERGENT": {
+                "count": 0,
+                "length_km": 0.0,
+                "length_fraction": 0.0
+              },
+              "TRANSFORM": {
+                "count": 0,
+                "length_km": 0.0,
+                "length_fraction": 0.0
+              }
+            },
+            "active_length_fraction": 0.0,
+            "relative_speed_km_per_myr": {
+              "mean": 0.40585213864416164,
+              "median": 0.46245984375114507,
+              "p90": 0.600849235815021,
+              "rms": 0.44585077788403293,
+              "max": 0.6266862324051434
+            },
+            "absolute_normal_speed_km_per_myr": {
+              "mean": 0.28481958834557963,
+              "median": 0.2702316699477566,
+              "p90": 0.5243850390947704,
+              "rms": 0.3326791902427091,
+              "max": 0.6031732132564125
+            },
+            "max_convergent_normal_speed_km_per_myr": 0.6031732132564125,
+            "max_divergent_normal_speed_km_per_myr": 0.5547921837017069,
+            "positive_normal_length_km": 47068.304556461655,
+            "negative_normal_length_km": 43046.91749143916
+          }
+        },
+        {
+          "name": "same_field_zero_external_torque_LS",
+          "speed_km_myr": {
+            "mean": 1.070311755887124,
+            "median": 1.1511574045266466,
+            "p90": 1.4283438096288086,
+            "rms": 1.117215356878389,
+            "max": 1.534840243191218
+          },
+          "boundaries": {
+            "count": 450,
+            "total_length_km": 90115.22204790081,
+            "by_type": {
+              "INACTIVE": {
+                "count": 94,
+                "length_km": 18813.75809219486,
+                "length_fraction": 0.20877447410820776
+              },
+              "DIVERGENT": {
+                "count": 0,
+                "length_km": 0.0,
+                "length_fraction": 0.0
+              },
+              "CONVERGENT": {
+                "count": 0,
+                "length_km": 0.0,
+                "length_fraction": 0.0
+              },
+              "TRANSFORM": {
+                "count": 356,
+                "length_km": 71301.46395570596,
+                "length_fraction": 0.7912255258917923
+              }
+            },
+            "active_length_fraction": 0.7912255258917922,
+            "relative_speed_km_per_myr": {
+              "mean": 1.8447824483825532,
+              "median": 2.1020901988688414,
+              "p90": 2.7311328900682765,
+              "rms": 2.0265944449274227,
+              "max": 2.848573783659743
+            },
+            "absolute_normal_speed_km_per_myr": {
+              "mean": 1.2946344924799076,
+              "median": 1.228325772489803,
+              "p90": 2.383568359521684,
+              "rms": 1.5121781374668595,
+              "max": 2.7416964238927837
+            },
+            "max_convergent_normal_speed_km_per_myr": 2.7416964238927837,
+            "max_divergent_normal_speed_km_per_myr": 2.521782653189577,
+            "positive_normal_length_km": 47068.304556461655,
+            "negative_normal_length_km": 43046.91749143916
+          }
+        },
+        {
+          "name": "hypothetical_saturated_source_existing_memory",
+          "speed_km_myr": {
+            "mean": 2.298482815150984,
+            "median": 2.4720979633128013,
+            "p90": 3.0673527432556176,
+            "rms": 2.3992077864073873,
+            "max": 3.296052672105021
+          },
+          "boundaries": {
+            "count": 450,
+            "total_length_km": 90115.22204790081,
+            "by_type": {
+              "INACTIVE": {
+                "count": 36,
+                "length_km": 7242.602310421768,
+                "length_fraction": 0.08037046512044278
+              },
+              "DIVERGENT": {
+                "count": 73,
+                "length_km": 14566.687390256093,
+                "length_fraction": 0.16164513673964162
+              },
+              "CONVERGENT": {
+                "count": 56,
+                "length_km": 11629.730456865134,
+                "length_fraction": 0.12905400655488972
+              },
+              "TRANSFORM": {
+                "count": 285,
+                "length_km": 56676.20189035783,
+                "length_fraction": 0.6289303915850261
+              }
+            },
+            "active_length_fraction": 0.9196295348795572,
+            "relative_speed_km_per_myr": {
+              "mean": 3.961650175265974,
+              "median": 4.514215761362612,
+              "p90": 5.865078075791596,
+              "rms": 4.35208945368005,
+              "max": 6.117281113113394
+            },
+            "absolute_normal_speed_km_per_myr": {
+              "mean": 2.78021344388616,
+              "median": 2.6378161913533313,
+              "p90": 5.1186870395133655,
+              "rms": 3.247386047379967,
+              "max": 5.887763149396876
+            },
+            "max_convergent_normal_speed_km_per_myr": 5.887763149396876,
+            "max_divergent_normal_speed_km_per_myr": 5.415500726793268,
+            "positive_normal_length_km": 47068.304556461655,
+            "negative_normal_length_km": 43046.91749143916
+          }
+        },
+        {
+          "name": "hypothetical_saturated_source_zero_external_torque",
+          "speed_km_myr": {
+            "mean": 10.447649159777201,
+            "median": 11.236808924149095,
+            "p90": 13.942512469343713,
+            "rms": 10.905489938215394,
+            "max": 14.98205760047737
+          },
+          "boundaries": {
+            "count": 450,
+            "total_length_km": 90115.22204790081,
+            "by_type": {
+              "INACTIVE": {
+                "count": 18,
+                "length_km": 3506.160685341966,
+                "length_fraction": 0.03890752977869004
+              },
+              "DIVERGENT": {
+                "count": 199,
+                "length_km": 39653.126490330855,
+                "length_fraction": 0.4400269520420558
+              },
+              "CONVERGENT": {
+                "count": 177,
+                "length_km": 35884.077224528664,
+                "length_fraction": 0.39820217282996273
+              },
+              "TRANSFORM": {
+                "count": 56,
+                "length_km": 11071.857647699335,
+                "length_fraction": 0.12286334534929161
+              }
+            },
+            "active_length_fraction": 0.96109247022131,
+            "relative_speed_km_per_myr": {
+              "mean": 18.007500796663514,
+              "median": 20.519162551648233,
+              "p90": 26.659445799052712,
+              "rms": 19.782224789454773,
+              "max": 27.805823241424513
+            },
+            "absolute_normal_speed_km_per_myr": {
+              "mean": 12.637333835846182,
+              "median": 11.990073597060594,
+              "p90": 23.26675927051529,
+              "rms": 14.760845669908939,
+              "max": 26.762559769985792
+            },
+            "max_convergent_normal_speed_km_per_myr": 26.762559769985792,
+            "max_divergent_normal_speed_km_per_myr": 24.61591239451485,
+            "positive_normal_length_km": 47068.304556461655,
+            "negative_normal_length_km": 43046.91749143916
+          }
+        }
+      ],
+      "current_lid_coupling": 0.9999999662691754,
+      "thermal_activity": 0.35,
+      "raw_heat_flux_ratio": 0.0009057035798005088
+    },
+    {
+      "source": "D:\\Moon Project\\mantle-convection\\analysis\\plate_velocity_validation\\experiments\\velocity_least_squares\\elapsed_0400",
+      "source_sha256": "f3548e83d1bb6795a7c84772189b70530534c8d0b4e94c0e359f6e8a4d9702ee",
+      "age_myr": 400.8781219482422,
+      "beta_pa_s_m": 100000000000000.0,
+      "memory_fraction": 0.22,
+      "equivalent_unmodelled_anchoring_drag_ratio": 3.545454545454546,
+      "torque_note": "Conditional SI test: tau=beta*(u_m-u_plate), using the saved already-coupled mantle velocity. This is not the mature solver's force law. Nonzero residual needs an explicit countertorque, or the velocity map is empirical.",
+      "gauge_note": "Counterfactual speeds are centered for comparison. Torque ratios use the saved mantle frame; target before centering isolates .22 exactly. A future SI solver must transform mantle and plates together when changing frame.",
+      "actual_basal_shear_pa": {
+        "mean": 3552.7791801772278,
+        "median": 3864.2249802797314,
+        "p90": 5294.852179739384,
+        "rms": 3848.761994194473,
+        "max": 5867.402723160759
+      },
+      "best_fit_basal_shear_pa": {
+        "mean": 2435.0491013093206,
+        "median": 2317.381846708934,
+        "p90": 4301.428317996222,
+        "rms": 2761.098236487996,
+        "max": 6149.217712158455
+      },
+      "plates": [
+        {
+          "plate": 0,
+          "loading_torque_Nm": [
+            -1.1646979312950664e+23,
+            -1.2765923497310214e+24,
+            1.593894213920803e+23
+          ],
+          "actual_unbalanced_basal_torque_Nm": [
+            -9.38900595835034e+22,
+            -9.975987939426698e+23,
+            1.2691365440167808e+23
+          ],
+          "actual_residual_to_loading_ratio": 0.781885506388414,
+          "target_before_gauge_residual_to_loading_ratio": 0.78,
+          "best_fit_residual_to_loading_ratio": 1.1780176741850812e-15
+        },
+        {
+          "plate": 1,
+          "loading_torque_Nm": [
+            -1.1810215034424665e+23,
+            -1.294547577449071e+24,
+            1.5111568428418277e+23
+          ],
+          "actual_unbalanced_basal_torque_Nm": [
+            -9.506343560053407e+22,
+            -1.0113670985056405e+24,
+            1.2035799046907525e+23
+          ],
+          "actual_residual_to_loading_ratio": 0.7816518171185114,
+          "target_before_gauge_residual_to_loading_ratio": 0.78,
+          "best_fit_residual_to_loading_ratio": 3.81260447702734e-16
+        },
+        {
+          "plate": 2,
+          "loading_torque_Nm": [
+            1.2061460314435017e+23,
+            1.292805060874388e+24,
+            -1.560963041996251e+23
+          ],
+          "actual_unbalanced_basal_torque_Nm": [
+            9.289486457067281e+22,
+            1.0047421845262464e+24,
+            -1.1869464964916798e+23
+          ],
+          "actual_residual_to_loading_ratio": 0.776884050581527,
+          "target_before_gauge_residual_to_loading_ratio": 0.7800000000000009,
+          "best_fit_residual_to_loading_ratio": 1.141054729987014e-15
+        },
+        {
+          "plate": 3,
+          "loading_torque_Nm": [
+            1.1395734032940293e+23,
+            1.2783348663057024e+24,
+            -1.544088014766389e+23
+          ],
+          "actual_unbalanced_basal_torque_Nm": [
+            8.789309270690357e+22,
+            9.936802837728201e+23,
+            -1.175858224683763e+23
+          ],
+          "actual_residual_to_loading_ratio": 0.7770539347330837,
+          "target_before_gauge_residual_to_loading_ratio": 0.7800000000000014,
+          "best_fit_residual_to_loading_ratio": 3.6621393386110797e-16
+        }
+      ],
+      "scenarios": [
+        {
+          "name": "actual_checkpoint",
+          "speed_km_myr": {
+            "mean": 0.22970646391718794,
+            "median": 0.2470060165720174,
+            "p90": 0.3066204486168256,
+            "rms": 0.23977189594247467,
+            "max": 0.32939796292221957
+          },
+          "boundaries": {
+            "count": 225,
+            "total_length_km": 90115.22204790066,
+            "by_type": {
+              "INACTIVE": {
+                "count": 225,
+                "length_km": 90115.22204790066,
+                "length_fraction": 1.0
+              },
+              "DIVERGENT": {
+                "count": 0,
+                "length_km": 0.0,
+                "length_fraction": 0.0
+              },
+              "CONVERGENT": {
+                "count": 0,
+                "length_km": 0.0,
+                "length_fraction": 0.0
+              },
+              "TRANSFORM": {
+                "count": 0,
+                "length_km": 0.0,
+                "length_fraction": 0.0
+              }
+            },
+            "active_length_fraction": 0.0,
+            "relative_speed_km_per_myr": {
+              "mean": 0.3959092453572337,
+              "median": 0.4512939118577268,
+              "p90": 0.5866633879461478,
+              "rms": 0.43492228420221035,
+              "max": 0.6113205246294651
+            },
+            "absolute_normal_speed_km_per_myr": {
+              "mean": 0.27786253407021394,
+              "median": 0.2619537141725619,
+              "p90": 0.5112211398812888,
+              "rms": 0.3245149132182863,
+              "max": 0.5883596633319159
+            },
+            "max_convergent_normal_speed_km_per_myr": 0.5883596633319159,
+            "max_divergent_normal_speed_km_per_myr": 0.5403603011660282,
+            "positive_normal_length_km": 47252.210876754434,
+            "negative_normal_length_km": 42863.01117114623
+          }
+        },
+        {
+          "name": "existing_mantle_only_target",
+          "speed_km_myr": {
+            "mean": 0.2288923550796347,
+            "median": 0.2461299830291371,
+            "p90": 0.3055332198220377,
+            "rms": 0.23892211297955812,
+            "max": 0.32823113405818305
+          },
+          "boundaries": {
+            "count": 225,
+            "total_length_km": 90115.22204790066,
+            "by_type": {
+              "INACTIVE": {
+                "count": 225,
+                "length_km": 90115.22204790066,
+                "length_fraction": 1.0
+              },
+              "DIVERGENT": {
+                "count": 0,
+                "length_km": 0.0,
+                "length_fraction": 0.0
+              },
+              "CONVERGENT": {
+                "count": 0,
+                "length_km": 0.0,
+                "length_fraction": 0.0
+              },
+              "TRANSFORM": {
+                "count": 0,
+                "length_km": 0.0,
+                "length_fraction": 0.0
+              }
+            },
+            "active_length_fraction": 0.0,
+            "relative_speed_km_per_myr": {
+              "mean": 0.3945061210572973,
+              "median": 0.4496946287497169,
+              "p90": 0.5845853892509268,
+              "rms": 0.43338091695436515,
+              "max": 0.6091538535559301
+            },
+            "absolute_normal_speed_km_per_myr": {
+              "mean": 0.27687776277661125,
+              "median": 0.2610246460926119,
+              "p90": 0.5094104447070859,
+              "rms": 0.323364745046521,
+              "max": 0.586273213347092
+            },
+            "max_convergent_normal_speed_km_per_myr": 0.586273213347092,
+            "max_divergent_normal_speed_km_per_myr": 0.5384455544498863,
+            "positive_normal_length_km": 47252.210876754434,
+            "negative_normal_length_km": 42863.01117114623
+          }
+        },
+        {
+          "name": "same_field_zero_external_torque_LS",
+          "speed_km_myr": {
+            "mean": 1.0404197958165216,
+            "median": 1.1187726501324415,
+            "p90": 1.388787362827444,
+            "rms": 1.086009604452537,
+            "max": 1.4919597002644691
+          },
+          "boundaries": {
+            "count": 225,
+            "total_length_km": 90115.22204790066,
+            "by_type": {
+              "INACTIVE": {
+                "count": 49,
+                "length_km": 19602.971114585467,
+                "length_fraction": 0.2175322955334397
+              },
+              "DIVERGENT": {
+                "count": 0,
+                "length_km": 0.0,
+                "length_fraction": 0.0
+              },
+              "CONVERGENT": {
+                "count": 0,
+                "length_km": 0.0,
+                "length_fraction": 0.0
+              },
+              "TRANSFORM": {
+                "count": 176,
+                "length_km": 70512.2509333152,
+                "length_fraction": 0.7824677044665603
+              }
+            },
+            "active_length_fraction": 0.7824677044665603,
+            "relative_speed_km_per_myr": {
+              "mean": 1.793209641169533,
+              "median": 2.0440664943168945,
+              "p90": 2.657206314776941,
+              "rms": 1.9699132588834782,
+              "max": 2.7688811525269545
+            },
+            "absolute_normal_speed_km_per_myr": {
+              "mean": 1.2585352853482328,
+              "median": 1.1864756640573266,
+              "p90": 2.3155020213958455,
+              "rms": 1.469839750211459,
+              "max": 2.6648782424867816
+            },
+            "max_convergent_normal_speed_km_per_myr": 2.6648782424867816,
+            "max_divergent_normal_speed_km_per_myr": 2.447479792954029,
+            "positive_normal_length_km": 47252.210876754434,
+            "negative_normal_length_km": 42863.01117114623
+          }
+        },
+        {
+          "name": "hypothetical_saturated_source_existing_memory",
+          "speed_km_myr": {
+            "mean": 2.2342901571188283,
+            "median": 2.402552056675281,
+            "p90": 2.9824057054404407,
+            "rms": 2.3321937736301224,
+            "max": 3.203967174137388
+          },
+          "boundaries": {
+            "count": 225,
+            "total_length_km": 90115.22204790066,
+            "by_type": {
+              "INACTIVE": {
+                "count": 19,
+                "length_km": 7615.7547565758505,
+                "length_fraction": 0.08451130212526917
+              },
+              "DIVERGENT": {
+                "count": 34,
+                "length_km": 13494.419137760939,
+                "length_fraction": 0.14974627849874234
+              },
+              "CONVERGENT": {
+                "count": 28,
+                "length_km": 11629.730456864916,
+                "length_fraction": 0.12905400655488752
+              },
+              "TRANSFORM": {
+                "count": 144,
+                "length_km": 57375.31769669896,
+                "length_fraction": 0.636688412821101
+              }
+            },
+            "active_length_fraction": 0.9154886978747309,
+            "relative_speed_km_per_myr": {
+              "mean": 3.850898134604726,
+              "median": 4.389610489066497,
+              "p90": 5.706321562135194,
+              "rms": 4.2303672252285835,
+              "max": 5.9461420574640815
+            },
+            "absolute_normal_speed_km_per_myr": {
+              "mean": 2.7026907905318036,
+              "median": 2.547943540216725,
+              "p90": 4.972515321215434,
+              "rms": 3.1564648227998564,
+              "max": 5.722796943166147
+            },
+            "max_convergent_normal_speed_km_per_myr": 5.722796943166147,
+            "max_divergent_normal_speed_km_per_myr": 5.255936145325674,
+            "positive_normal_length_km": 47252.210876754434,
+            "negative_normal_length_km": 42863.01117114623
+          }
+        },
+        {
+          "name": "hypothetical_saturated_source_zero_external_torque",
+          "speed_km_myr": {
+            "mean": 10.15586435054013,
+            "median": 10.920691166705826,
+            "p90": 13.556389570183823,
+            "rms": 10.600880789227832,
+            "max": 14.563487155169947
+          },
+          "boundaries": {
+            "count": 225,
+            "total_length_km": 90115.22204790066,
+            "by_type": {
+              "INACTIVE": {
+                "count": 9,
+                "length_km": 3496.126899056543,
+                "length_fraction": 0.03879618581196171
+              },
+              "DIVERGENT": {
+                "count": 98,
+                "length_km": 39079.779056330226,
+                "length_fraction": 0.4336645704047359
+              },
+              "CONVERGENT": {
+                "count": 88,
+                "length_km": 35692.80780997137,
+                "length_fraction": 0.39607967443057385
+              },
+              "TRANSFORM": {
+                "count": 30,
+                "length_km": 11846.508282542529,
+                "length_fraction": 0.13145956935272854
+              }
+            },
+            "active_length_fraction": 0.9612038141880382,
+            "relative_speed_km_per_myr": {
+              "mean": 17.504082430021484,
+              "median": 19.95277495030226,
+              "p90": 25.9378252824327,
+              "rms": 19.2289419328572,
+              "max": 27.027918443018557
+            },
+            "absolute_normal_speed_km_per_myr": {
+              "mean": 12.284958138780928,
+              "median": 11.581561546439659,
+              "p90": 22.60234236916106,
+              "rms": 14.347567376362985,
+              "max": 26.012713378027943
+            },
+            "max_convergent_normal_speed_km_per_myr": 26.012713378027943,
+            "max_divergent_normal_speed_km_per_myr": 23.89061884238943,
+            "positive_normal_length_km": 47252.210876754434,
+            "negative_normal_length_km": 42863.01117114623
+          }
+        }
+      ],
+      "current_lid_coupling": 0.999999969266209,
+      "thermal_activity": 0.35,
+      "raw_heat_flux_ratio": 0.0005376996966586261
+    }
+  ]
+}

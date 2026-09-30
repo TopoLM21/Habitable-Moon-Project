@@ -1,0 +1,2061 @@
+{
+  "format": "plate-velocity-budget-1",
+  "evaluation": "frozen_checkpoint_force_probe",
+  "time_myr": 200.87812194824218,
+  "plate_count": 4,
+  "cell_count": 5120,
+  "weighting": "cell area; boundary edge length; inverse-CDF quantiles",
+  "units": "omega rad/Myr, surface speed km/Myr = mm/yr; raw boundary drives km * dimensionless proxy",
+  "note": "Magnitudes are not additive. Raw vectors in trace reconstruct the target exactly. Current and returned are different step endpoints.",
+  "mantle": {
+    "local_velocity_km_per_myr": {
+      "mean": 1.3145191023609477,
+      "median": 1.417918925799468,
+      "p90": 1.9713502703302066,
+      "rms": 1.4178470673023071,
+      "max": 2.1500308226611606
+    },
+    "rms_omega_rad_per_myr": 0.00026818164878070194,
+    "formation_rms_omega_rad_per_myr": 0.00027493792611544914,
+    "realised_thermal_amplitude_fraction": 0.9754261718992157,
+    "rigid_fit_relative_residual": 0.6258496125313076,
+    "represented_kinetic_proxy_fraction": 0.6083122624944122
+  },
+  "stages_speed_km_per_myr": {
+    "best_rigid_fit": {
+      "mean": 1.060276827202115,
+      "median": 1.1461157994255826,
+      "p90": 1.3996666710790826,
+      "rms": 1.1058409670790097,
+      "max": 1.5048076859799848
+    },
+    "simple_area_average": {
+      "mean": 0.7076239434519392,
+      "median": 0.7606346297341744,
+      "p90": 0.9338963964301612,
+      "rms": 0.7388541598483238,
+      "max": 1.028555693444855
+    },
+    "selected_projection": {
+      "mean": 0.7076239434519392,
+      "median": 0.7606346297341744,
+      "p90": 0.9338963964301612,
+      "rms": 0.7388541598483238,
+      "max": 1.028555693444855
+    },
+    "after_memory": {
+      "mean": 0.15567726755942665,
+      "median": 0.16733961854151835,
+      "p90": 0.20545720721463548,
+      "rms": 0.16254791516663122,
+      "max": 0.2262822525578681
+    },
+    "target": {
+      "mean": 0.15567726755942665,
+      "median": 0.16733961854151835,
+      "p90": 0.20545720721463548,
+      "rms": 0.16254791516663122,
+      "max": 0.2262822525578681
+    },
+    "current": {
+      "mean": 0.15429343375839602,
+      "median": 0.16588458774158932,
+      "p90": 0.20365370920130968,
+      "rms": 0.16110290169475072,
+      "max": 0.22424167407612708
+    },
+    "after_relaxation": {
+      "mean": 0.15432384639099447,
+      "median": 0.1659165650524234,
+      "p90": 0.20369329603696923,
+      "rms": 0.16113465883415415,
+      "max": 0.22428652007675717
+    },
+    "after_net_rotation": {
+      "mean": 0.15432384639099447,
+      "median": 0.1659165650524234,
+      "p90": 0.20369329603696923,
+      "rms": 0.16113465883415415,
+      "max": 0.22428652007675717
+    },
+    "actual_returned": {
+      "mean": 0.15432384639099447,
+      "median": 0.1659165650524234,
+      "p90": 0.20369329603696923,
+      "rms": 0.16113465883415415,
+      "max": 0.22428652007675717
+    },
+    "local_mantle": {
+      "mean": 1.3145191023609477,
+      "median": 1.417918925799468,
+      "p90": 1.9713502703302066,
+      "rms": 1.4178470673023071,
+      "max": 2.1500308226611606
+    }
+  },
+  "contributions_speed_km_per_myr": {
+    "mantle": {
+      "mean": 0.15567726755942665,
+      "median": 0.16733961854151835,
+      "p90": 0.20545720721463548,
+      "rms": 0.16254791516663122,
+      "max": 0.2262822525578681
+    },
+    "ridge": {
+      "mean": 0.0,
+      "median": 0.0,
+      "p90": 0.0,
+      "rms": 0.0,
+      "max": 0.0
+    },
+    "slab": {
+      "mean": 0.0,
+      "median": 0.0,
+      "p90": 0.0,
+      "rms": 0.0,
+      "max": 0.0
+    },
+    "residual_slab": {
+      "mean": 0.0,
+      "median": 0.0,
+      "p90": 0.0,
+      "rms": 0.0,
+      "max": 0.0
+    },
+    "gpe": {
+      "mean": 0.0,
+      "median": 0.0,
+      "p90": 0.0,
+      "rms": 0.0,
+      "max": 0.0
+    },
+    "rollback": {
+      "mean": 0.0,
+      "median": 0.0,
+      "p90": 0.0,
+      "rms": 0.0,
+      "max": 0.0
+    },
+    "collision_resistance": {
+      "mean": 0.0,
+      "median": 0.0,
+      "p90": 0.0,
+      "rms": 0.0,
+      "max": 0.0
+    },
+    "transform_resistance": {
+      "mean": 0.0,
+      "median": 0.0,
+      "p90": 0.0,
+      "rms": 0.0,
+      "max": 0.0
+    }
+  },
+  "plates": [
+    {
+      "plate_id": 0,
+      "area_fraction": 0.27904270087541483,
+      "actual_angular_speed_rad_per_myr": 3.303243772275241e-05,
+      "local_mantle_speed_km_per_myr": {
+        "mean": 1.2366132365660298,
+        "median": 1.331661351042776,
+        "p90": 1.9537472565772283,
+        "rms": 1.3600227196469723,
+        "max": 2.1500308226611606
+      },
+      "best_fit_relative_residual": 0.6892617328961405,
+      "represented_kinetic_proxy_fraction": 0.5249182635650088,
+      "residual_rms_km_per_myr": 0.9374116165219959,
+      "fit_moment_rank": 3,
+      "relaxation_alpha": 0.021977127515399486,
+      "drag_factor": 1.0,
+      "boundary_normalization_length_km": 0.0,
+      "collision_length_weighted_km": 0.0,
+      "transform_length_weighted_km": 0.0,
+      "ridge_gpe_factor": 0.751025656409796,
+      "available_negative_buoyancy_km_kg_m3": {
+        "mean": 2221.60045696892,
+        "median": 2221.6004569689194,
+        "p90": 2221.6004569689194,
+        "rms": 2221.600456968919,
+        "max": 2221.6004569689194
+      },
+      "stages": {
+        "best_rigid_fit": {
+          "omega_rad_per_myr": [
+            -2.1231803782091677e-05,
+            -0.00022630656494216858,
+            2.9793396754149328e-05
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.9441451140844507,
+            "median": 1.0497099260928044,
+            "p90": 1.2051771619307734,
+            "rms": 0.9853533676633836,
+            "max": 1.2120162730025836
+          }
+        },
+        "simple_area_average": {
+          "omega_rad_per_myr": [
+            -1.3661329363958865e-05,
+            -0.00014974291012411205,
+            1.8696284043372317e-05
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.6240737117781567,
+            "median": 0.6931569505175367,
+            "p90": 0.796701721059954,
+            "rms": 0.6513158343167077,
+            "max": 0.8011003325812118
+          }
+        },
+        "selected_projection": {
+          "omega_rad_per_myr": [
+            -1.3661329363958865e-05,
+            -0.00014974291012411205,
+            1.8696284043372317e-05
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.6240737117781567,
+            "median": 0.6931569505175367,
+            "p90": 0.796701721059954,
+            "rms": 0.6513158343167077,
+            "max": 0.8011003325812118
+          }
+        },
+        "after_memory": {
+          "omega_rad_per_myr": [
+            -3.0054924600709505e-06,
+            -3.294344022730465e-05,
+            4.11318248954191e-06
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.13729621659119445,
+            "median": 0.15249452911385808,
+            "p90": 0.17527437863318987,
+            "rms": 0.14328948354967566,
+            "max": 0.1762420731678666
+          }
+        },
+        "target": {
+          "omega_rad_per_myr": [
+            -3.0054924600709505e-06,
+            -3.294344022730465e-05,
+            4.11318248954191e-06
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.13729621659119445,
+            "median": 0.15249452911385808,
+            "p90": 0.17527437863318987,
+            "rms": 0.14328948354967566,
+            "max": 0.1762420731678666
+          }
+        },
+        "current": {
+          "omega_rad_per_myr": [
+            -2.9813702103177438e-06,
+            -3.26433782986605e-05,
+            4.082061590310336e-06
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.13604994559191833,
+            "median": 0.15111077842501416,
+            "p90": 0.17368552343479596,
+            "rms": 0.14198876870672186,
+            "max": 0.1746424856165686
+          }
+        },
+        "after_relaxation": {
+          "omega_rad_per_myr": [
+            -2.9819003480765283e-06,
+            -3.264997279792883e-05,
+            4.082745538281142e-06
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.13607733498514468,
+            "median": 0.15114118919076078,
+            "p90": 0.1737204418431626,
+            "rms": 0.14201735461299428,
+            "max": 0.1746776398720506
+          }
+        },
+        "after_net_rotation": {
+          "omega_rad_per_myr": [
+            -2.981900348076528e-06,
+            -3.264997279792883e-05,
+            4.082745538281142e-06
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.13607733498514468,
+            "median": 0.15114118919076078,
+            "p90": 0.1737204418431626,
+            "rms": 0.14201735461299428,
+            "max": 0.1746776398720506
+          }
+        },
+        "actual_returned": {
+          "omega_rad_per_myr": [
+            -2.981900348076528e-06,
+            -3.264997279792883e-05,
+            4.082745538281142e-06
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.13607733498514468,
+            "median": 0.15114118919076078,
+            "p90": 0.1737204418431626,
+            "rms": 0.14201735461299428,
+            "max": 0.1746776398720506
+          }
+        }
+      },
+      "contributions": {
+        "mantle": {
+          "omega_rad_per_myr": [
+            -3.0054924600709505e-06,
+            -3.294344022730465e-05,
+            4.11318248954191e-06
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.13729621659119445,
+            "median": 0.15249452911385808,
+            "p90": 0.17527437863318987,
+            "rms": 0.14328948354967566,
+            "max": 0.1762420731678666
+          }
+        },
+        "ridge": {
+          "omega_rad_per_myr": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.0,
+            "median": 0.0,
+            "p90": 0.0,
+            "rms": 0.0,
+            "max": 0.0
+          }
+        },
+        "slab": {
+          "omega_rad_per_myr": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.0,
+            "median": 0.0,
+            "p90": 0.0,
+            "rms": 0.0,
+            "max": 0.0
+          }
+        },
+        "residual_slab": {
+          "omega_rad_per_myr": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.0,
+            "median": 0.0,
+            "p90": 0.0,
+            "rms": 0.0,
+            "max": 0.0
+          }
+        },
+        "gpe": {
+          "omega_rad_per_myr": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.0,
+            "median": 0.0,
+            "p90": 0.0,
+            "rms": 0.0,
+            "max": 0.0
+          }
+        },
+        "rollback": {
+          "omega_rad_per_myr": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.0,
+            "median": 0.0,
+            "p90": 0.0,
+            "rms": 0.0,
+            "max": 0.0
+          }
+        },
+        "collision_resistance": {
+          "omega_rad_per_myr": [
+            -0.0,
+            -0.0,
+            -0.0
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.0,
+            "median": 0.0,
+            "p90": 0.0,
+            "rms": 0.0,
+            "max": 0.0
+          }
+        },
+        "transform_resistance": {
+          "omega_rad_per_myr": [
+            -0.0,
+            -0.0,
+            -0.0
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.0,
+            "median": 0.0,
+            "p90": 0.0,
+            "rms": 0.0,
+            "max": 0.0
+          }
+        }
+      }
+    },
+    {
+      "plate_id": 1,
+      "area_fraction": 0.2612428354822442,
+      "actual_angular_speed_rad_per_myr": 3.57585781465917e-05,
+      "local_mantle_speed_km_per_myr": {
+        "mean": 1.2942254710348617,
+        "median": 1.4051864911904823,
+        "p90": 1.9656908752267617,
+        "rms": 1.4037810772978083,
+        "max": 2.1500308226611606
+      },
+      "best_fit_relative_residual": 0.649192482444035,
+      "represented_kinetic_proxy_fraction": 0.5785491207381523,
+      "residual_rms_km_per_myr": 0.9113241223789269,
+      "fit_moment_rank": 3,
+      "relaxation_alpha": 0.021977127515399486,
+      "drag_factor": 1.0,
+      "boundary_normalization_length_km": 0.0,
+      "collision_length_weighted_km": 0.0,
+      "transform_length_weighted_km": 0.0,
+      "ridge_gpe_factor": 0.7510256564097963,
+      "available_negative_buoyancy_km_kg_m3": {
+        "mean": 2221.6004569689194,
+        "median": 2221.6004569689194,
+        "p90": 2221.6004569689194,
+        "rms": 2221.6004569689194,
+        "max": 2221.6004569689194
+      },
+      "stages": {
+        "best_rigid_fit": {
+          "omega_rad_per_myr": [
+            -2.3107619069213133e-05,
+            -0.00024569549199813406,
+            3.138501830142622e-05
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 1.0205415094128092,
+            "median": 1.1404729283127124,
+            "p90": 1.3080365668909666,
+            "rms": 1.0677498100911458,
+            "max": 1.3152332066696832
+          }
+        },
+        "simple_area_average": {
+          "omega_rad_per_myr": [
+            -1.4796886917166773e-05,
+            -0.0001621957143006588,
+            1.8933821014558327e-05
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.6727356548368227,
+            "median": 0.7507234048886853,
+            "p90": 0.8625282470316947,
+            "rms": 0.7038514172417158,
+            "max": 0.8668888383243619
+          }
+        },
+        "selected_projection": {
+          "omega_rad_per_myr": [
+            -1.4796886917166773e-05,
+            -0.0001621957143006588,
+            1.8933821014558327e-05
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.6727356548368227,
+            "median": 0.7507234048886853,
+            "p90": 0.8625282470316947,
+            "rms": 0.7038514172417158,
+            "max": 0.8668888383243619
+          }
+        },
+        "after_memory": {
+          "omega_rad_per_myr": [
+            -3.25531512177669e-06,
+            -3.5683057146144937e-05,
+            4.165440623202832e-06
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.14800184406410097,
+            "median": 0.16515914907551071,
+            "p90": 0.18975621434697287,
+            "rms": 0.15484731179317748,
+            "max": 0.19071554443135963
+          }
+        },
+        "target": {
+          "omega_rad_per_myr": [
+            -3.25531512177669e-06,
+            -3.5683057146144937e-05,
+            4.165440623202832e-06
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.14800184406410097,
+            "median": 0.16515914907551071,
+            "p90": 0.18975621434697287,
+            "rms": 0.15484731179317748,
+            "max": 0.19071554443135963
+          }
+        },
+        "current": {
+          "omega_rad_per_myr": [
+            -3.2238688757662286e-06,
+            -3.537347377216856e-05,
+            4.1230976010123926e-06
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.14671399814200006,
+            "median": 0.163739782869791,
+            "p90": 0.18810141362105937,
+            "rms": 0.15349986525293455,
+            "max": 0.18905560232359736
+          }
+        },
+        "after_relaxation": {
+          "omega_rad_per_myr": [
+            -3.2245599739246813e-06,
+            -3.538027752545509e-05,
+            4.124028179010459e-06
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.14674230122724055,
+            "median": 0.1637709764607112,
+            "p90": 0.18813778136961856,
+            "rms": 0.15352947819309723,
+            "max": 0.18909208304458988
+          }
+        },
+        "after_net_rotation": {
+          "omega_rad_per_myr": [
+            -3.224559973924681e-06,
+            -3.538027752545509e-05,
+            4.124028179010459e-06
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.14674230122724055,
+            "median": 0.1637709764607112,
+            "p90": 0.18813778136961856,
+            "rms": 0.15352947819309723,
+            "max": 0.18909208304458988
+          }
+        },
+        "actual_returned": {
+          "omega_rad_per_myr": [
+            -3.224559973924681e-06,
+            -3.538027752545509e-05,
+            4.124028179010459e-06
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.14674230122724055,
+            "median": 0.1637709764607112,
+            "p90": 0.18813778136961856,
+            "rms": 0.15352947819309723,
+            "max": 0.18909208304458988
+          }
+        }
+      },
+      "contributions": {
+        "mantle": {
+          "omega_rad_per_myr": [
+            -3.25531512177669e-06,
+            -3.5683057146144937e-05,
+            4.165440623202832e-06
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.14800184406410097,
+            "median": 0.16515914907551071,
+            "p90": 0.18975621434697287,
+            "rms": 0.15484731179317748,
+            "max": 0.19071554443135963
+          }
+        },
+        "ridge": {
+          "omega_rad_per_myr": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.0,
+            "median": 0.0,
+            "p90": 0.0,
+            "rms": 0.0,
+            "max": 0.0
+          }
+        },
+        "slab": {
+          "omega_rad_per_myr": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.0,
+            "median": 0.0,
+            "p90": 0.0,
+            "rms": 0.0,
+            "max": 0.0
+          }
+        },
+        "residual_slab": {
+          "omega_rad_per_myr": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.0,
+            "median": 0.0,
+            "p90": 0.0,
+            "rms": 0.0,
+            "max": 0.0
+          }
+        },
+        "gpe": {
+          "omega_rad_per_myr": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.0,
+            "median": 0.0,
+            "p90": 0.0,
+            "rms": 0.0,
+            "max": 0.0
+          }
+        },
+        "rollback": {
+          "omega_rad_per_myr": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.0,
+            "median": 0.0,
+            "p90": 0.0,
+            "rms": 0.0,
+            "max": 0.0
+          }
+        },
+        "collision_resistance": {
+          "omega_rad_per_myr": [
+            -0.0,
+            -0.0,
+            -0.0
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.0,
+            "median": 0.0,
+            "p90": 0.0,
+            "rms": 0.0,
+            "max": 0.0
+          }
+        },
+        "transform_resistance": {
+          "omega_rad_per_myr": [
+            -0.0,
+            -0.0,
+            -0.0
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.0,
+            "median": 0.0,
+            "p90": 0.0,
+            "rms": 0.0,
+            "max": 0.0
+          }
+        }
+      }
+    },
+    {
+      "plate_id": 2,
+      "area_fraction": 0.24222894364802497,
+      "actual_angular_speed_rad_per_myr": 3.853639115206519e-05,
+      "local_mantle_speed_km_per_myr": {
+        "mean": 1.330579364015151,
+        "median": 1.4361390158658491,
+        "p90": 1.97594103917709,
+        "rms": 1.4282588513834444,
+        "max": 2.1494924871480454
+      },
+      "best_fit_relative_residual": 0.5978474821191154,
+      "represented_kinetic_proxy_fraction": 0.6425783881238337,
+      "residual_rms_km_per_myr": 0.8538809581139335,
+      "fit_moment_rank": 3,
+      "relaxation_alpha": 0.021977127515399486,
+      "drag_factor": 1.0,
+      "boundary_normalization_length_km": 0.0,
+      "collision_length_weighted_km": 0.0,
+      "transform_length_weighted_km": 0.0,
+      "ridge_gpe_factor": 0.751025656409796,
+      "available_negative_buoyancy_km_kg_m3": {
+        "mean": 2221.60045696892,
+        "median": 2221.6004569689194,
+        "p90": 2221.6004569689194,
+        "rms": 2221.60045696892,
+        "max": 2221.6004569689194
+      },
+      "stages": {
+        "best_rigid_fit": {
+          "omega_rad_per_myr": [
+            2.1515742673921317e-05,
+            0.0002629011634743748,
+            -2.9258362291676717e-05
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 1.1053033447277139,
+            "median": 1.2077871188987541,
+            "p90": 1.3965295707612755,
+            "rms": 1.1449063961414443,
+            "max": 1.4031575249889336
+          }
+        },
+        "simple_area_average": {
+          "omega_rad_per_myr": [
+            1.629783896988205e-05,
+            0.000174691832707779,
+            -2.1093115552887706e-05
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.7361400700514897,
+            "median": 0.8019405488355029,
+            "p90": 0.9295042528642569,
+            "rms": 0.7624716581376576,
+            "max": 0.9342850421223833
+          }
+        },
+        "selected_projection": {
+          "omega_rad_per_myr": [
+            1.629783896988205e-05,
+            0.000174691832707779,
+            -2.1093115552887706e-05
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.7361400700514897,
+            "median": 0.8019405488355029,
+            "p90": 0.9295042528642569,
+            "rms": 0.7624716581376576,
+            "max": 0.9342850421223833
+          }
+        },
+        "after_memory": {
+          "omega_rad_per_myr": [
+            3.5855245733740513e-06,
+            3.8432203195711376e-05,
+            -4.640485421635295e-06
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.1619508154113278,
+            "median": 0.1764269207438106,
+            "p90": 0.20449093563013648,
+            "rms": 0.16774376479028466,
+            "max": 0.2055427092669243
+          }
+        },
+        "target": {
+          "omega_rad_per_myr": [
+            3.5855245733740513e-06,
+            3.8432203195711376e-05,
+            -4.640485421635295e-06
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.1619508154113278,
+            "median": 0.1764269207438106,
+            "p90": 0.20449093563013648,
+            "rms": 0.16774376479028466,
+            "max": 0.2055427092669243
+          }
+        },
+        "current": {
+          "omega_rad_per_myr": [
+            3.557216937865603e-06,
+            3.809442207084054e-05,
+            -4.605937230421971e-06
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.16053214068682298,
+            "median": 0.17486977181094213,
+            "p90": 0.2026978360619466,
+            "rms": 0.16627428950666012,
+            "max": 0.20374164575575252
+          }
+        },
+        "after_relaxation": {
+          "omega_rad_per_myr": [
+            3.5578390583808316e-06,
+            3.8101845529694125e-05,
+            -4.606696500425692e-06
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.16056331902943105,
+            "median": 0.17490399341808016,
+            "p90": 0.20273724317676112,
+            "rms": 0.1663065842949031,
+            "max": 0.2037812279420881
+          }
+        },
+        "after_net_rotation": {
+          "omega_rad_per_myr": [
+            3.557839058380832e-06,
+            3.8101845529694125e-05,
+            -4.606696500425692e-06
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.16056331902943105,
+            "median": 0.17490399341808016,
+            "p90": 0.20273724317676112,
+            "rms": 0.1663065842949031,
+            "max": 0.2037812279420881
+          }
+        },
+        "actual_returned": {
+          "omega_rad_per_myr": [
+            3.557839058380832e-06,
+            3.8101845529694125e-05,
+            -4.606696500425692e-06
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.16056331902943105,
+            "median": 0.17490399341808016,
+            "p90": 0.20273724317676112,
+            "rms": 0.1663065842949031,
+            "max": 0.2037812279420881
+          }
+        }
+      },
+      "contributions": {
+        "mantle": {
+          "omega_rad_per_myr": [
+            3.5855245733740513e-06,
+            3.8432203195711376e-05,
+            -4.640485421635295e-06
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.1619508154113278,
+            "median": 0.1764269207438106,
+            "p90": 0.20449093563013648,
+            "rms": 0.16774376479028466,
+            "max": 0.2055427092669243
+          }
+        },
+        "ridge": {
+          "omega_rad_per_myr": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.0,
+            "median": 0.0,
+            "p90": 0.0,
+            "rms": 0.0,
+            "max": 0.0
+          }
+        },
+        "slab": {
+          "omega_rad_per_myr": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.0,
+            "median": 0.0,
+            "p90": 0.0,
+            "rms": 0.0,
+            "max": 0.0
+          }
+        },
+        "residual_slab": {
+          "omega_rad_per_myr": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.0,
+            "median": 0.0,
+            "p90": 0.0,
+            "rms": 0.0,
+            "max": 0.0
+          }
+        },
+        "gpe": {
+          "omega_rad_per_myr": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.0,
+            "median": 0.0,
+            "p90": 0.0,
+            "rms": 0.0,
+            "max": 0.0
+          }
+        },
+        "rollback": {
+          "omega_rad_per_myr": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.0,
+            "median": 0.0,
+            "p90": 0.0,
+            "rms": 0.0,
+            "max": 0.0
+          }
+        },
+        "collision_resistance": {
+          "omega_rad_per_myr": [
+            -0.0,
+            -0.0,
+            -0.0
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.0,
+            "median": 0.0,
+            "p90": 0.0,
+            "rms": 0.0,
+            "max": 0.0
+          }
+        },
+        "transform_resistance": {
+          "omega_rad_per_myr": [
+            -0.0,
+            -0.0,
+            -0.0
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.0,
+            "median": 0.0,
+            "p90": 0.0,
+            "rms": 0.0,
+            "max": 0.0
+          }
+        }
+      }
+    },
+    {
+      "plate_id": 3,
+      "area_fraction": 0.217485519994316,
+      "actual_angular_speed_rad_per_myr": 4.2413786737407455e-05,
+      "local_mantle_speed_km_per_myr": {
+        "mean": 1.4209646660964368,
+        "median": 1.5094875042175577,
+        "p90": 1.9967064726310806,
+        "rms": 1.4936709944771709,
+        "max": 2.1494924871480454
+      },
+      "best_fit_relative_residual": 0.5534420802765978,
+      "represented_kinetic_proxy_fraction": 0.6937018637791091,
+      "residual_rms_km_per_myr": 0.8266603824322611,
+      "fit_moment_rank": 3,
+      "relaxation_alpha": 0.021977127515399486,
+      "drag_factor": 1.0,
+      "boundary_normalization_length_km": 0.0,
+      "collision_length_weighted_km": 0.0,
+      "transform_length_weighted_km": 0.0,
+      "ridge_gpe_factor": 0.7510256564097966,
+      "available_negative_buoyancy_km_kg_m3": {
+        "mean": 2221.6004569689208,
+        "median": 2221.6004569689194,
+        "p90": 2221.6004569689194,
+        "rms": 2221.600456968919,
+        "max": 2221.6004569689194
+      },
+      "stages": {
+        "best_rigid_fit": {
+          "omega_rad_per_myr": [
+            2.2685012349140506e-05,
+            0.0002818969443237266,
+            -3.209968931178962e-05
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 1.2068592212767475,
+            "median": 1.312982100161421,
+            "p90": 1.497822636910996,
+            "rms": 1.2440601480070674,
+            "max": 1.5048076859799848
+          }
+        },
+        "simple_area_average": {
+          "omega_rad_per_myr": [
+            1.7149953801502756e-05,
+            0.00019238851526896843,
+            -2.3238437141302218e-05
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.8249695328294724,
+            "median": 0.8960368236584975,
+            "p90": 1.0240501921482725,
+            "rms": 0.8504174957410278,
+            "max": 1.028555693444855
+          }
+        },
+        "selected_projection": {
+          "omega_rad_per_myr": [
+            1.7149953801502756e-05,
+            0.00019238851526896843,
+            -2.3238437141302218e-05
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.8249695328294724,
+            "median": 0.8960368236584975,
+            "p90": 1.0240501921482725,
+            "rms": 0.8504174957410278,
+            "max": 1.028555693444855
+          }
+        },
+        "after_memory": {
+          "omega_rad_per_myr": [
+            3.7729898363306064e-06,
+            4.232547335917306e-05,
+            -5.112456171086488e-06
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.181493297222484,
+            "median": 0.19712810120486948,
+            "p90": 0.22529104227261995,
+            "rms": 0.18709184906302612,
+            "max": 0.2262822525578681
+          }
+        },
+        "target": {
+          "omega_rad_per_myr": [
+            3.7729898363306064e-06,
+            4.232547335917306e-05,
+            -5.112456171086488e-06
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.181493297222484,
+            "median": 0.19712810120486948,
+            "p90": 0.22529104227261995,
+            "rms": 0.18709184906302612,
+            "max": 0.2262822525578681
+          }
+        },
+        "current": {
+          "omega_rad_per_myr": [
+            3.735795104703417e-06,
+            4.19448219743132e-05,
+            -5.060143267253102e-06
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.1798564692850272,
+            "median": 0.19535449726101056,
+            "p90": 0.22325674235136672,
+            "rms": 0.18540443685074412,
+            "max": 0.22424167407612708
+          }
+        },
+        "after_relaxation": {
+          "omega_rad_per_myr": [
+            3.736612538063289e-06,
+            4.1953187598337184e-05,
+            -5.061292954611349e-06
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.1798924420114029,
+            "median": 0.1953934759077727,
+            "p90": 0.22330145039213178,
+            "rms": 0.1854415212695022,
+            "max": 0.22428652007675717
+          }
+        },
+        "after_net_rotation": {
+          "omega_rad_per_myr": [
+            3.7366125380632893e-06,
+            4.1953187598337184e-05,
+            -5.061292954611349e-06
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.1798924420114029,
+            "median": 0.1953934759077727,
+            "p90": 0.22330145039213178,
+            "rms": 0.1854415212695022,
+            "max": 0.22428652007675717
+          }
+        },
+        "actual_returned": {
+          "omega_rad_per_myr": [
+            3.7366125380632893e-06,
+            4.1953187598337184e-05,
+            -5.061292954611349e-06
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.1798924420114029,
+            "median": 0.1953934759077727,
+            "p90": 0.22330145039213178,
+            "rms": 0.1854415212695022,
+            "max": 0.22428652007675717
+          }
+        }
+      },
+      "contributions": {
+        "mantle": {
+          "omega_rad_per_myr": [
+            3.7729898363306064e-06,
+            4.232547335917306e-05,
+            -5.112456171086488e-06
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.181493297222484,
+            "median": 0.19712810120486948,
+            "p90": 0.22529104227261995,
+            "rms": 0.18709184906302612,
+            "max": 0.2262822525578681
+          }
+        },
+        "ridge": {
+          "omega_rad_per_myr": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.0,
+            "median": 0.0,
+            "p90": 0.0,
+            "rms": 0.0,
+            "max": 0.0
+          }
+        },
+        "slab": {
+          "omega_rad_per_myr": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.0,
+            "median": 0.0,
+            "p90": 0.0,
+            "rms": 0.0,
+            "max": 0.0
+          }
+        },
+        "residual_slab": {
+          "omega_rad_per_myr": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.0,
+            "median": 0.0,
+            "p90": 0.0,
+            "rms": 0.0,
+            "max": 0.0
+          }
+        },
+        "gpe": {
+          "omega_rad_per_myr": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.0,
+            "median": 0.0,
+            "p90": 0.0,
+            "rms": 0.0,
+            "max": 0.0
+          }
+        },
+        "rollback": {
+          "omega_rad_per_myr": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.0,
+            "median": 0.0,
+            "p90": 0.0,
+            "rms": 0.0,
+            "max": 0.0
+          }
+        },
+        "collision_resistance": {
+          "omega_rad_per_myr": [
+            -0.0,
+            -0.0,
+            -0.0
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.0,
+            "median": 0.0,
+            "p90": 0.0,
+            "rms": 0.0,
+            "max": 0.0
+          }
+        },
+        "transform_resistance": {
+          "omega_rad_per_myr": [
+            -0.0,
+            -0.0,
+            -0.0
+          ],
+          "surface_speed_km_per_myr": {
+            "mean": 0.0,
+            "median": 0.0,
+            "p90": 0.0,
+            "rms": 0.0,
+            "max": 0.0
+          }
+        }
+      }
+    }
+  ],
+  "boundaries": {
+    "count": 225,
+    "total_length_km": 90115.22204790066,
+    "by_type": {
+      "INACTIVE": {
+        "count": 225,
+        "length_km": 90115.22204790066,
+        "length_fraction": 1.0
+      },
+      "DIVERGENT": {
+        "count": 0,
+        "length_km": 0.0,
+        "length_fraction": 0.0
+      },
+      "CONVERGENT": {
+        "count": 0,
+        "length_km": 0.0,
+        "length_fraction": 0.0
+      },
+      "TRANSFORM": {
+        "count": 0,
+        "length_km": 0.0,
+        "length_fraction": 0.0
+      }
+    },
+    "active_length_fraction": 0.0,
+    "relative_speed_km_per_myr": {
+      "mean": 0.26608142049292505,
+      "median": 0.30206652912130105,
+      "p90": 0.39402085267324377,
+      "rms": 0.2923320255190142,
+      "max": 0.41328634728003594
+    },
+    "absolute_normal_speed_km_per_myr": {
+      "mean": 0.1866771910636095,
+      "median": 0.17767249370679034,
+      "p90": 0.34434910374244815,
+      "rms": 0.21794360959690812,
+      "max": 0.3920749561959433
+    },
+    "max_convergent_normal_speed_km_per_myr": 0.3920749561959433,
+    "max_divergent_normal_speed_km_per_myr": 0.36541446702820035,
+    "positive_normal_length_km": 46454.41566558211,
+    "negative_normal_length_km": 43660.80638231856
+  },
+  "slabs": [],
+  "slab_zero_reason": "No convergence-integrated slab geometry exists",
+  "verification": {
+    "target_vector_sum_max_error": 0.0,
+    "relaxation_prediction_max_error": 0.0,
+    "net_rotation_relative_velocity_max_change_km_per_myr": 0.0
+  },
+  "trace": {
+    "ridge_drive_raw": [
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ]
+    ],
+    "slab_drive_raw": [
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ]
+    ],
+    "slab_drive_before_activation_raw": [
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ]
+    ],
+    "slab_edges": [],
+    "ridge_push_factors": [
+      0.751025656409796,
+      0.7510256564097963,
+      0.751025656409796,
+      0.7510256564097966
+    ],
+    "gpe_drive_raw": [
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ]
+    ],
+    "gpe_weight": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "boundary_drive_raw": [
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ]
+    ],
+    "boundary_weight_km": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "collision_length_weighted_km": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "transform_length_weighted_km": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "boundary_drive_normalized": [
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ]
+    ],
+    "ridge_drive_normalized": [
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ]
+    ],
+    "slab_drive_normalized": [
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ]
+    ],
+    "mantle_projection": "legacy_area_mean",
+    "current_omega": [
+      [
+        -2.9813702103177438e-06,
+        -3.26433782986605e-05,
+        4.082061590310336e-06
+      ],
+      [
+        -3.2238688757662286e-06,
+        -3.537347377216856e-05,
+        4.1230976010123926e-06
+      ],
+      [
+        3.557216937865603e-06,
+        3.809442207084054e-05,
+        -4.605937230421971e-06
+      ],
+      [
+        3.735795104703417e-06,
+        4.19448219743132e-05,
+        -5.060143267253102e-06
+      ]
+    ],
+    "baseline_omega": [
+      [
+        -2.5561859361054906e-07,
+        1.7643180369505324e-07,
+        5.068580957920638e-07
+      ],
+      [
+        2.502376405816336e-07,
+        -1.7467583775398634e-07,
+        -4.9616421125549e-07
+      ]
+    ],
+    "mantle_omega": [
+      [
+        -1.3661329363958865e-05,
+        -0.00014974291012411205,
+        1.8696284043372317e-05
+      ],
+      [
+        -1.4796886917166773e-05,
+        -0.0001621957143006588,
+        1.8933821014558327e-05
+      ],
+      [
+        1.629783896988205e-05,
+        0.000174691832707779,
+        -2.1093115552887706e-05
+      ],
+      [
+        1.7149953801502756e-05,
+        0.00019238851526896843,
+        -2.3238437141302218e-05
+      ]
+    ],
+    "common_mantle": [
+      [
+        -3.0054924600709505e-06,
+        -3.294344022730465e-05,
+        4.11318248954191e-06
+      ],
+      [
+        -3.25531512177669e-06,
+        -3.5683057146144937e-05,
+        4.165440623202832e-06
+      ],
+      [
+        3.5855245733740513e-06,
+        3.8432203195711376e-05,
+        -4.640485421635295e-06
+      ],
+      [
+        3.7729898363306064e-06,
+        4.232547335917306e-05,
+        -5.112456171086488e-06
+      ]
+    ],
+    "residual_slab_drive": [
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ]
+    ],
+    "total_drive_normalized": [
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ]
+    ],
+    "gpe_drive_normalized": [
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ]
+    ],
+    "gpe_component": [
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ]
+    ],
+    "drive_scale_rad_per_myr": 0.003970624048287099,
+    "rollback_omega": [
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ]
+    ],
+    "relative_drive": [
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ]
+    ],
+    "total_boundary_weight_km": [
+      1e-09,
+      1e-09,
+      1e-09,
+      1e-09
+    ],
+    "collision_ratio": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "transform_ratio": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "drag_factor": [
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ],
+    "resistance_omega": [
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ]
+    ],
+    "collision_resistance_omega": [
+      [
+        -0.0,
+        -0.0,
+        -0.0
+      ],
+      [
+        -0.0,
+        -0.0,
+        -0.0
+      ],
+      [
+        -0.0,
+        -0.0,
+        -0.0
+      ],
+      [
+        -0.0,
+        -0.0,
+        -0.0
+      ]
+    ],
+    "transform_resistance_omega": [
+      [
+        -0.0,
+        -0.0,
+        -0.0
+      ],
+      [
+        -0.0,
+        -0.0,
+        -0.0
+      ],
+      [
+        -0.0,
+        -0.0,
+        -0.0
+      ],
+      [
+        -0.0,
+        -0.0,
+        -0.0
+      ]
+    ],
+    "target_omega": [
+      [
+        -3.0054924600709505e-06,
+        -3.294344022730465e-05,
+        4.11318248954191e-06
+      ],
+      [
+        -3.25531512177669e-06,
+        -3.5683057146144937e-05,
+        4.165440623202832e-06
+      ],
+      [
+        3.5855245733740513e-06,
+        3.8432203195711376e-05,
+        -4.640485421635295e-06
+      ],
+      [
+        3.7729898363306064e-06,
+        4.232547335917306e-05,
+        -5.112456171086488e-06
+      ]
+    ],
+    "alpha": 0.021977127515399486,
+    "relaxed_omega": [
+      [
+        -2.9819003480765283e-06,
+        -3.264997279792883e-05,
+        4.082745538281142e-06
+      ],
+      [
+        -3.2245599739246813e-06,
+        -3.538027752545509e-05,
+        4.124028179010459e-06
+      ],
+      [
+        3.5578390583808316e-06,
+        3.8101845529694125e-05,
+        -4.606696500425692e-06
+      ],
+      [
+        3.736612538063289e-06,
+        4.1953187598337184e-05,
+        -5.061292954611349e-06
+      ]
+    ],
+    "plate_areas_km2": [
+      98016491.2266981,
+      91764113.56309076,
+      85085297.1801236,
+      76393926.43341105
+    ],
+    "mean_rotation": [
+      -3.236545386883198e-22,
+      2.5892363095065582e-21,
+      -1.618272693441599e-22
+    ],
+    "post_gauge_omega": [
+      [
+        -2.981900348076528e-06,
+        -3.264997279792883e-05,
+        4.082745538281142e-06
+      ],
+      [
+        -3.224559973924681e-06,
+        -3.538027752545509e-05,
+        4.124028179010459e-06
+      ],
+      [
+        3.557839058380832e-06,
+        3.8101845529694125e-05,
+        -4.606696500425692e-06
+      ],
+      [
+        3.7366125380632893e-06,
+        4.1953187598337184e-05,
+        -5.061292954611349e-06
+      ]
+    ],
+    "remove_net_rotation": true,
+    "final_omega": [
+      [
+        -2.981900348076528e-06,
+        -3.264997279792883e-05,
+        4.082745538281142e-06
+      ],
+      [
+        -3.224559973924681e-06,
+        -3.538027752545509e-05,
+        4.124028179010459e-06
+      ],
+      [
+        3.557839058380832e-06,
+        3.8101845529694125e-05,
+        -4.606696500425692e-06
+      ],
+      [
+        3.7366125380632893e-06,
+        4.1953187598337184e-05,
+        -5.061292954611349e-06
+      ]
+    ]
+  },
+  "source": "D:\\Moon Project\\mantle-convection\\analysis\\plate_velocity_validation\\experiments\\legacy\\elapsed_0200",
+  "step_myr": 1.0,
+  "controls": {
+    "shell": {
+      "subdivisions": 4,
+      "seed": 20260920,
+      "column_layers": 32,
+      "column_depth_km": 40.0,
+      "conductivity_w_m_k": 3.6,
+      "density_kg_m3": 3000.0,
+      "initial_temperature_anomaly_k": 120.0,
+      "convective_traction_pa": 80000.0,
+      "traction_coupling_depth_km": 2.0,
+      "anomaly_depth_km": 8.0,
+      "young_modulus_pa": 60000000000.0,
+      "poisson_ratio": 0.25,
+      "linear_expansion_per_k": 1e-05,
+      "viscosity_reference_pa_s": 1e+24,
+      "viscosity_reference_temperature_k": 1000.0,
+      "activation_energy_j_mol": 150000.0,
+      "viscosity_min_pa_s": 1e+17,
+      "viscosity_max_pa_s": 1e+28,
+      "tensile_strength_pa": 12000000.0,
+      "damage_timescale_myr": 0.01,
+      "cold_healing_timescale_myr": 100.0,
+      "hot_healing_timescale_myr": 0.01,
+      "residual_stiffness": 0.02,
+      "damage_threshold": 0.65,
+      "min_load_bearing_thickness_km": 0.05,
+      "max_total_strain": 0.05
+    },
+    "starter": {
+      "seed": 20260927,
+      "mantle_stress_length_km": 1000.0,
+      "strength_variation_fraction": 0.15,
+      "cooling_contrast_fraction": 0.1,
+      "rupture_damage": 0.65,
+      "min_child_area_km2": 3100000.0,
+      "min_band_span_km": 1000.0,
+      "max_loading_interval_myr": 0.05,
+      "regularization_km": 300.0,
+      "water_weakening": true,
+      "tidal_mechanics": true,
+      "wet_strength_fraction": 0.4,
+      "water_access_timescale_myr": 0.1,
+      "hot_strength_fraction": 0.5,
+      "damage_strength_reduction": 0.5,
+      "shear_cohesion_pa": 4000000.0,
+      "friction_dry": 0.6,
+      "friction_wet": 0.2,
+      "basal_drag_pa_s_m": 100000000000000.0
+    },
+    "classification": {
+      "normal_threshold_km_per_myr": 4.0,
+      "inactive_speed_km_per_myr": 1.0
+    },
+    "dynamics": {
+      "slab_pull_weight": 1.25,
+      "ridge_push_weight": 0.7,
+      "ridge_gpe_reference_mantle_thickness_km": 93.5,
+      "ridge_gpe_reference_density_anomaly_kg_m3": 64.0,
+      "ridge_gpe_saturation_ratio": 0.2,
+      "ridge_gpe_exponent": 1.0,
+      "ridge_gpe_calibration_gain": 1.014,
+      "ridge_gpe_min_factor": 0.0,
+      "ridge_gpe_max_factor": 2.4,
+      "slab_age_reference_myr": 80.0,
+      "slab_age_gain": 0.9,
+      "slab_buoyancy_reference_thickness_km": 100.0,
+      "slab_buoyancy_reference_density_anomaly_kg_m3": 60.0,
+      "slab_buoyancy_exponent": 0.75,
+      "slab_buoyancy_calibration_gain": 1.85,
+      "continental_collision_resistance": 2.5,
+      "transform_resistance": 0.55,
+      "tidal_resistance_reduction": 0.65,
+      "tidal_ridge_enhancement": 0.35,
+      "force_speed_scale_deg_per_myr": 0.22749999999999998,
+      "mantle_memory_fraction": 0.22,
+      "velocity_relaxation_myr": 45.0,
+      "max_speed_deg_per_myr": 1.2,
+      "min_active_speed_deg_per_myr": 0.005,
+      "remove_net_rotation": true,
+      "slab_thermal_reference_km": 140.0,
+      "slab_thermal_exponent": 0.25,
+      "continental_buoyancy_reference_km": 35.0,
+      "continental_buoyancy_resistance_gain": 0.65,
+      "craton_collision_resistance_gain": 0.6,
+      "gpe_reference_thickness_km": 40.0,
+      "gpe_drive_weight": 0.3,
+      "mantle_projection": "legacy_area_mean"
+    },
+    "mantle_flow": {
+      "amplitude_relaxation_myr": 600.0,
+      "thermal_speed_floor_fraction": 0.72,
+      "thermal_activity_exponent": 0.35,
+      "spatial_smoothing_fraction_per_myr": 0.00035
+    }
+  },
+  "thermal": {
+    "time_myr": 200.87812194824218,
+    "system_age_myr": 200.87812194824218,
+    "mantle_temperature_k": 1577.7831950492196,
+    "reference_convective_flux_w_m2": 53.99737243018324,
+    "tectonic_activity_factor": 0.35,
+    "thermal_lithosphere_thickness_km": 34.509328359936994
+  },
+  "ledger_checks": {
+    "material_ledger": true,
+    "clocks_agree": true,
+    "fracture_damage_matches_material": true,
+    "thermal_energy": true,
+    "liquid_water_matches_condensation": true,
+    "positive_remaining_material": true
+  },
+  "transport_commits": 0,
+  "thermal_budget": {
+    "time_myr": 200.87812194824218,
+    "phase": "ocean_condensation",
+    "mantle_temperature_k": 1577.7831950492196,
+    "surface_temperature_k": 282.20069090251724,
+    "mantle_melt_fraction": 0.2963053250820326,
+    "surface_melt_fraction": 0.0,
+    "steam_pressure_bar": 0.011521456220826135,
+    "vapor_mass_kg": 5.6840235043311816e+16,
+    "ocean_mass_kg": 1.126662780321268e+21,
+    "total_water_mass_kg": 1.1267196205563112e+21,
+    "ocean_volume_km3": 1126662780.321268,
+    "water_inventory_km3": 1126719620.5563111,
+    "ocean_fraction": 0.9999495524582993,
+    "cooling_depth_proxy_km": 158.93897612739383,
+    "energy_residual_j_m2": -2095.4757928848267,
+    "relative_energy_residual": -1.1447290778233886e-13,
+    "mantle_to_surface_flux_w_m2": 0.03658618633764964,
+    "viscosity_pa_s": 1.3737471291854862e+21,
+    "rayleigh_number": 10851380.419863733,
+    "nusselt_number": 5.977580412881047,
+    "conductive_heat_flux_w_m2": 0.0021782275252030386,
+    "solid_convective_heat_flux_w_m2": 0.013020530189452042,
+    "thermal_boundary_layer_thickness_km": 398.0122115753033,
+    "effective_heat_transfer_w_m2_k": 2.8239179072386485e-05,
+    "magma_transport_weight": 0.06411817126033681,
+    "radiogenic_flux_w_m2": 0.027274626034313302,
+    "tidal_flux_w_m2": 1.2747026248595102e-307,
+    "net_mantle_flux_w_m2": -0.009311560303336335,
+    "absorbed_stellar_flux_w_m2": 224.72601248366962,
+    "giant_absorbed_flux_w_m2": 0.0,
+    "outgoing_longwave_w_m2": 224.7625986828294,
+    "net_cooling_flux_w_m2": 0.009311573125472036
+  },
+  "residual_basal_shear_diagnostic_pa": {
+    "mean": 3795.9470416354693,
+    "median": 4127.979743769227,
+    "p90": 5681.098675065321,
+    "rms": 4107.236963014034,
+    "max": 6259.739992997921
+  },
+  "residual_basal_shear_note": "beta*(u_m-u_plate), diagnostic only; not wired into evolved young-shell stress"
+}

@@ -1,6 +1,8 @@
 @echo off
 setlocal
 cd /d "%~dp0"
+rem Keep CUDA compilation cache with this local environment.
+if not defined CUPY_CACHE_DIR set "CUPY_CACHE_DIR=%~dp0.venv\cupy-cache"
 if not exist ".venv\Scripts\python.exe" (
   echo Local virtual environment not found. Run setup_gui.bat first.
   echo Python 3.12 is required. You can pass its full path to setup_gui.bat.

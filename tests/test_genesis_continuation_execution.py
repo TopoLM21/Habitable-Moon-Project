@@ -151,7 +151,10 @@ def test_real_parallel_workers_and_rendering_preserve_state_and_resume(tmp_path)
     assert timing["numerical_execution"]["arc_query_workers"] == 4
     assert reports[1]["execution"]["process_priority"] == "below_normal"
     accelerated = json.loads((kernels / "render_timings.json").read_text(encoding="utf-8"))["numerical_execution"]
-    assert accelerated["boundary_forces"]["calls"] > 0
+    # SI forces have their own NumPy solve. Optional legacy CPU/GPU force
+    # kernels must not silently substitute the old effective equations.
+    assert reports[4]["execution"]["plate_force_backend"] == "numpy_si"
+    assert accelerated["boundary_forces"]["calls"] == 0
     assert accelerated["cell_workers"] == 2
     assert accelerated["assignment_columns"]["enabled"]
     assert 1 <= len(accelerated["cell_thread_ids"]) <= 2

@@ -1,0 +1,449 @@
+{
+  "format": "geometric-forced-underthrust-synthetic-validation-1",
+  "status": "complete",
+  "elapsed_seconds": 1.727744599998914,
+  "source_integration_cells": 20,
+  "source_octant_fragments": 8,
+  "admitted": {
+    "format": "geometric-forced-underthrust-audit-1",
+    "time_myr": 0.0,
+    "dt_myr": 0.1,
+    "surface_sha256": "028fff23ed0d24f5ac63e52d4a0749bb13d55c0027a3e00a714e38217ada8f54",
+    "stress_frame": "global_cartesian_effective_compression_positive_pa",
+    "stress_spatial_model": "contactwise_parallel_transport_from_midpoint",
+    "load_evolution": "single_step_frozen_snapshot",
+    "candidate_set_assumption": "only_declared_oriented_weak_faults",
+    "scope": "Local forced reactivation of declared dipping faults; no bending or self-sustaining initiation solve",
+    "overlap_policy": "Every local support must mechanically admit the same direction; no age/buoyancy fallback",
+    "blocked_motion": "Atomic rejection; compression, shortening and contact reactions are not evolved",
+    "faults": [
+      {
+        "fault_id": "synthetic:contact:066878a5e618237f68b3f5465e5cf9ed:1",
+        "contact_id": "contact:066878a5e618237f68b3f5465e5cf9ed",
+        "subducting_plate": 1,
+        "overriding_plate": 0,
+        "dip_radians": 0.5235987755982988,
+        "effective_stress_pa": [
+          [
+            160000000.0,
+            7071067.811865475,
+            -7071067.811865475
+          ],
+          [
+            7071067.811865475,
+            100000000.0,
+            0.0
+          ],
+          [
+            -7071067.811865475,
+            0.0,
+            100000000.0
+          ]
+        ],
+        "cohesion_pa": 2000000.0,
+        "friction": 0.2,
+        "provenance": "explicit synthetic oriented dipping fault and prescribed effective stress"
+      },
+      {
+        "fault_id": "synthetic:contact:976387e77331a64ed1404a86708546d6:1",
+        "contact_id": "contact:976387e77331a64ed1404a86708546d6",
+        "subducting_plate": 1,
+        "overriding_plate": 0,
+        "dip_radians": 0.5235987755982988,
+        "effective_stress_pa": [
+          [
+            160000000.0,
+            -7071067.811865475,
+            7071067.811865475
+          ],
+          [
+            -7071067.811865475,
+            100000000.0,
+            0.0
+          ],
+          [
+            7071067.811865475,
+            0.0,
+            100000000.0
+          ]
+        ],
+        "cohesion_pa": 2000000.0,
+        "friction": 0.2,
+        "provenance": "explicit synthetic oriented dipping fault and prescribed effective stress"
+      },
+      {
+        "fault_id": "synthetic:contact:a3f4ac047f77dd5fb4265bf3e07d5c14:1",
+        "contact_id": "contact:a3f4ac047f77dd5fb4265bf3e07d5c14",
+        "subducting_plate": 1,
+        "overriding_plate": 0,
+        "dip_radians": 0.5235987755982988,
+        "effective_stress_pa": [
+          [
+            160000000.0,
+            -7071067.811865475,
+            -7071067.811865475
+          ],
+          [
+            -7071067.811865475,
+            100000000.0,
+            0.0
+          ],
+          [
+            -7071067.811865475,
+            0.0,
+            100000000.0
+          ]
+        ],
+        "cohesion_pa": 2000000.0,
+        "friction": 0.2,
+        "provenance": "explicit synthetic oriented dipping fault and prescribed effective stress"
+      },
+      {
+        "fault_id": "synthetic:contact:dd8c1ceb0034ff9325d10c7a719dfd71:1",
+        "contact_id": "contact:dd8c1ceb0034ff9325d10c7a719dfd71",
+        "subducting_plate": 1,
+        "overriding_plate": 0,
+        "dip_radians": 0.5235987755982988,
+        "effective_stress_pa": [
+          [
+            160000000.0,
+            7071067.811865475,
+            7071067.811865475
+          ],
+          [
+            7071067.811865475,
+            100000000.0,
+            0.0
+          ],
+          [
+            7071067.811865475,
+            0.0,
+            100000000.0
+          ]
+        ],
+        "cohesion_pa": 2000000.0,
+        "friction": 0.2,
+        "provenance": "explicit synthetic oriented dipping fault and prescribed effective stress"
+      }
+    ],
+    "contacts": [
+      {
+        "contact_id": "contact:066878a5e618237f68b3f5465e5cf9ed",
+        "status": "nonconvergent",
+        "historical_directions": [],
+        "assessments": [
+          {
+            "fault_id": "synthetic:contact:066878a5e618237f68b3f5465e5cf9ed:1",
+            "contact_id": "contact:066878a5e618237f68b3f5465e5cf9ed",
+            "subducting_plate": 1,
+            "overriding_plate": 0,
+            "status": "nonconvergent",
+            "normal_stress_pa": 123660254.03784439,
+            "shear_stress_pa": 30980762.113533165,
+            "strength_pa": 26732050.807568878,
+            "margin_pa": 4248711.305964287,
+            "normal_velocity_min_km_per_myr": 1.2246467991473532e-16,
+            "normal_velocity_max_km_per_myr": 2.0,
+            "stress_tolerance_pa": 4.547473508864641e-06,
+            "velocity_tolerance_km_per_myr": 5.684341886080802e-14
+          }
+        ],
+        "accepted_evidence_ids": []
+      },
+      {
+        "contact_id": "contact:976387e77331a64ed1404a86708546d6",
+        "status": "forced_underthrust_admissible",
+        "historical_directions": [],
+        "assessments": [
+          {
+            "fault_id": "synthetic:contact:976387e77331a64ed1404a86708546d6:1",
+            "contact_id": "contact:976387e77331a64ed1404a86708546d6",
+            "subducting_plate": 1,
+            "overriding_plate": 0,
+            "status": "forced_underthrust_admissible",
+            "normal_stress_pa": 123660254.03784439,
+            "shear_stress_pa": 30980762.113533165,
+            "strength_pa": 26732050.807568878,
+            "margin_pa": 4248711.305964287,
+            "normal_velocity_min_km_per_myr": -2.0,
+            "normal_velocity_max_km_per_myr": -1.2246467991473532e-16,
+            "stress_tolerance_pa": 4.547473508864641e-06,
+            "velocity_tolerance_km_per_myr": 5.684341886080802e-14
+          }
+        ],
+        "accepted_evidence_ids": [
+          "fault-admission:synthetic:contact:976387e77331a64ed1404a86708546d6:1:b35a61a32a724b6b5ec595eb"
+        ]
+      },
+      {
+        "contact_id": "contact:a3f4ac047f77dd5fb4265bf3e07d5c14",
+        "status": "forced_underthrust_admissible",
+        "historical_directions": [],
+        "assessments": [
+          {
+            "fault_id": "synthetic:contact:a3f4ac047f77dd5fb4265bf3e07d5c14:1",
+            "contact_id": "contact:a3f4ac047f77dd5fb4265bf3e07d5c14",
+            "subducting_plate": 1,
+            "overriding_plate": 0,
+            "status": "forced_underthrust_admissible",
+            "normal_stress_pa": 123660254.03784439,
+            "shear_stress_pa": 30980762.113533165,
+            "strength_pa": 26732050.807568878,
+            "margin_pa": 4248711.305964287,
+            "normal_velocity_min_km_per_myr": -2.0,
+            "normal_velocity_max_km_per_myr": 0.0,
+            "stress_tolerance_pa": 4.547473508864641e-06,
+            "velocity_tolerance_km_per_myr": 5.684341886080802e-14
+          }
+        ],
+        "accepted_evidence_ids": [
+          "fault-admission:synthetic:contact:a3f4ac047f77dd5fb4265bf3e07d5c14:1:ff57e518b16b934dc8fc832c"
+        ]
+      },
+      {
+        "contact_id": "contact:dd8c1ceb0034ff9325d10c7a719dfd71",
+        "status": "nonconvergent",
+        "historical_directions": [],
+        "assessments": [
+          {
+            "fault_id": "synthetic:contact:dd8c1ceb0034ff9325d10c7a719dfd71:1",
+            "contact_id": "contact:dd8c1ceb0034ff9325d10c7a719dfd71",
+            "subducting_plate": 1,
+            "overriding_plate": 0,
+            "status": "nonconvergent",
+            "normal_stress_pa": 123660254.03784439,
+            "shear_stress_pa": 30980762.113533165,
+            "strength_pa": 26732050.807568878,
+            "margin_pa": 4248711.305964287,
+            "normal_velocity_min_km_per_myr": 0.0,
+            "normal_velocity_max_km_per_myr": 2.0,
+            "stress_tolerance_pa": 4.547473508864641e-06,
+            "velocity_tolerance_km_per_myr": 5.684341886080802e-14
+          }
+        ],
+        "accepted_evidence_ids": []
+      }
+    ],
+    "contact_status_counts": {
+      "forced_underthrust_admissible": 2,
+      "nonconvergent": 2
+    },
+    "accepted_evidence": [
+      {
+        "evidence_id": "fault-admission:synthetic:contact:976387e77331a64ed1404a86708546d6:1:b35a61a32a724b6b5ec595eb",
+        "contact_id": "contact:976387e77331a64ed1404a86708546d6",
+        "subducting_plate": 1,
+        "overriding_plate": 0,
+        "provenance": "prescribed_effective_stress_forced_underthrust:explicit synthetic oriented dipping fault and prescribed effective stress",
+        "origin_evidence_id": "fault-admission:synthetic:contact:976387e77331a64ed1404a86708546d6:1:b35a61a32a724b6b5ec595eb"
+      },
+      {
+        "evidence_id": "fault-admission:synthetic:contact:a3f4ac047f77dd5fb4265bf3e07d5c14:1:ff57e518b16b934dc8fc832c",
+        "contact_id": "contact:a3f4ac047f77dd5fb4265bf3e07d5c14",
+        "subducting_plate": 1,
+        "overriding_plate": 0,
+        "provenance": "prescribed_effective_stress_forced_underthrust:explicit synthetic oriented dipping fault and prescribed effective stress",
+        "origin_evidence_id": "fault-admission:synthetic:contact:a3f4ac047f77dd5fb4265bf3e07d5c14:1:ff57e518b16b934dc8fc832c"
+      }
+    ]
+  },
+  "controls": {
+    "no_declared_fault": {
+      "status": "blocked",
+      "material_unchanged": true,
+      "birth_calls": 0,
+      "contact_status_counts": {
+        "no_oriented_fault": 4
+      },
+      "overlap_reasons": {
+        "no_oriented_fault": 2
+      },
+      "unresolved_overlap_area_km2": 40.0
+    },
+    "hydrostatic_locked_fault": {
+      "status": "blocked",
+      "material_unchanged": true,
+      "birth_calls": 0,
+      "contact_status_counts": {
+        "locked": 2,
+        "nonconvergent": 2
+      },
+      "overlap_reasons": {
+        "locked": 2
+      },
+      "unresolved_overlap_area_km2": 40.0
+    },
+    "two_admissible_opposed_faults": {
+      "status": "blocked",
+      "material_unchanged": true,
+      "birth_calls": 0,
+      "contact_status_counts": {
+        "multiple_admissible_directions": 2,
+        "nonconvergent": 2
+      },
+      "overlap_reasons": {
+        "multiple_admissible_directions": 2
+      },
+      "unresolved_overlap_area_km2": 40.0
+    },
+    "conflicting_inherited_history": {
+      "status": "blocked",
+      "material_unchanged": true,
+      "birth_calls": 0,
+      "contact_status_counts": {
+        "conflicting_local_history": 4
+      },
+      "overlap_reasons": {
+        "conflicting_local_history": 2
+      },
+      "unresolved_overlap_area_km2": 40.0
+    },
+    "reverse_velocity_on_initially_admitted_faults": {
+      "status": "blocked",
+      "material_unchanged": true,
+      "birth_calls": 0,
+      "contact_status_counts": {
+        "no_oriented_fault": 2,
+        "nonconvergent": 2
+      },
+      "overlap_reasons": {
+        "no_oriented_fault": 2
+      },
+      "unresolved_overlap_area_km2": 40.0
+    }
+  },
+  "accepted_boundary": {
+    "version": "geometric-boundary-1",
+    "time_myr": 0.1,
+    "cohort_count": 2,
+    "transaction_count": 1,
+    "accepted": {
+      "area_km2": 40.0,
+      "oceanic_volume_km3": 80.0,
+      "cold_mantle_volume_km3": 320.0,
+      "density_excess_mass_kg": 40000000000000.0
+    },
+    "by_attachment": {
+      "geometric_contact": {
+        "area_km2": 40.0,
+        "oceanic_volume_km3": 80.0,
+        "cold_mantle_volume_km3": 320.0,
+        "density_excess_mass_kg": 40000000000000.0
+      },
+      "unresolved_attachment": {
+        "area_km2": 0.0,
+        "oceanic_volume_km3": 0.0,
+        "cold_mantle_volume_km3": 0.0,
+        "density_excess_mass_kg": 0.0
+      },
+      "unresolved_connectivity": {
+        "area_km2": 0.0,
+        "oceanic_volume_km3": 0.0,
+        "cold_mantle_volume_km3": 0.0,
+        "density_excess_mass_kg": 0.0
+      },
+      "unresolved_lateral_allocation": {
+        "area_km2": 0.0,
+        "oceanic_volume_km3": 0.0,
+        "cold_mantle_volume_km3": 0.0,
+        "density_excess_mass_kg": 0.0
+      }
+    },
+    "attachment_counts": {
+      "geometric_contact": 2,
+      "unresolved_attachment": 0,
+      "unresolved_connectivity": 0,
+      "unresolved_lateral_allocation": 0
+    },
+    "forces_active": false,
+    "thermal_evolution": "archival values frozen; optional passive warming diagnostic only"
+  },
+  "final_boundary": {
+    "version": "geometric-boundary-1",
+    "time_myr": 0.2,
+    "cohort_count": 2,
+    "transaction_count": 2,
+    "accepted": {
+      "area_km2": 40.0,
+      "oceanic_volume_km3": 80.0,
+      "cold_mantle_volume_km3": 320.0,
+      "density_excess_mass_kg": 40000000000000.0
+    },
+    "by_attachment": {
+      "geometric_contact": {
+        "area_km2": 40.0,
+        "oceanic_volume_km3": 80.0,
+        "cold_mantle_volume_km3": 320.0,
+        "density_excess_mass_kg": 40000000000000.0
+      },
+      "unresolved_attachment": {
+        "area_km2": 0.0,
+        "oceanic_volume_km3": 0.0,
+        "cold_mantle_volume_km3": 0.0,
+        "density_excess_mass_kg": 0.0
+      },
+      "unresolved_connectivity": {
+        "area_km2": 0.0,
+        "oceanic_volume_km3": 0.0,
+        "cold_mantle_volume_km3": 0.0,
+        "density_excess_mass_kg": 0.0
+      },
+      "unresolved_lateral_allocation": {
+        "area_km2": 0.0,
+        "oceanic_volume_km3": 0.0,
+        "cold_mantle_volume_km3": 0.0,
+        "density_excess_mass_kg": 0.0
+      }
+    },
+    "attachment_counts": {
+      "geometric_contact": 2,
+      "unresolved_attachment": 0,
+      "unresolved_connectivity": 0,
+      "unresolved_lateral_allocation": 0
+    },
+    "forces_active": false,
+    "thermal_evolution": "archival values frozen; optional passive warming diagnostic only"
+  },
+  "removed": {
+    "area_km2": 40.0,
+    "oceanic_volume_km3": 80.0,
+    "cold_mantle_volume_km3": 320.0,
+    "density_excess_mass_kg": 40000000000000.0
+  },
+  "born": {
+    "area_km2": 40.0,
+    "oceanic_volume_km3": 80.0,
+    "cold_mantle_volume_km3": 0.0,
+    "density_excess_mass_kg": 0.0
+  },
+  "maximum_relative_material_ledger_residuals": {
+    "area_km2": 0.0,
+    "oceanic_volume_km3": 0.0,
+    "cold_mantle_volume_km3": 0.0,
+    "density_excess_mass_kg": 0.0
+  },
+  "source_preserved": true,
+  "exact_restart": true,
+  "checkpoint_bytes_identical": true,
+  "checkpoint_sha256": {
+    "accepted.json": "e534d81c6ed40e4ad8a653c2c10422960e3904fba7a645007a5946a70f8f08a1",
+    "direct_final.json": "152df199cce8c5d38e736794147bd7e8306faf4fa0abb43e766e23eba001db2e",
+    "resumed_final.json": "152df199cce8c5d38e736794147bd7e8306faf4fa0abb43e766e23eba001db2e"
+  },
+  "code_sha256": {
+    "tectonics/fractional_surface.py": "a3a74c371d1e930bc750f6d00b54ee1c8cc2538f637dcb5f20e863bffa7dd360",
+    "tectonics/geometric_surface.py": "e3ecf79aec7eeb1efb8d92d31beee349c86e275e1f0ae6c11747ea9763985494",
+    "tectonics/geometric_contacts.py": "ea9448e7b86667a57d2bb9e773648b3008016dc71d001e5eb787e6d098aa0e5c",
+    "tectonics/geometric_transport.py": "c89783695afd823abcb6fd5840597fd6dc7253cfc3aa9f74444551e91ac63d39",
+    "tectonics/geometric_polarity.py": "aa43316722b513af50f53a9d3eb975cbf577fcf96120066618278cbdb65dca9a",
+    "tectonics/geometric_boundary.py": "aca2332ff807a2b599192f345bc5e06f5030b9b2ffedf6509b8f62387d8b45b6",
+    "tectonics/geometric_boundary_io.py": "2ae3af3ab8f804675345757c7842a57b8c3c6d6d0b6d7e26cfa33a52f5b69f13",
+    "tectonics/spherical_polygons.py": "dd0085bd40f9bc7ec0e94d9eef3018929064f2bf405cdae3ad363870170face9",
+    "tectonics/geometric_initiation.py": "fd10d22bc9446b75df47edf979eaa7641b89f07250b8464ee234239a09716c0f",
+    "tectonics/geometric_initiation_adapter.py": "eb81ed8b0b66b572db2c8b8e94eebc2a566a9717d0dc09c33e5ad6313cb57877",
+    "tectonics/mesh.py": "860b0559798efe69ecb04014a0a3ee37234523f613cd352dccf76ba75508ac31",
+    "analysis/geometric_initiation_validation/admission_case.py": "66c24e0c0efaec9181d6164870eb5b8356198b1393c8b9683fcd8a637b23783b"
+  },
+  "code_unchanged": true,
+  "scope": "Synthetic prescribed loading on declared faults, not spontaneous or self-sustaining subduction; no feedback to plate forces or speed, no old source import."
+}

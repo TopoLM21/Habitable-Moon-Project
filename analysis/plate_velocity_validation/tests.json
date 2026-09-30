@@ -1,0 +1,49 @@
+{
+  "date": "2026-09-29",
+  "python": "3.12.14 (workspace .venv)",
+  "focused": {
+    "command": "python -m pytest tests/test_genesis_velocity_projection.py tests/test_dynamics_trace.py tests/test_mantle_projection.py tests/test_cpu_execution.py tests/test_gpu_boundary_forces.py -q",
+    "passed": 57,
+    "failed": 0,
+    "seconds": 6.72,
+    "cupy_cache_dir": "D:\\Moon Project\\mantle-convection\\.venv\\cupy-cache"
+  },
+  "extended": {
+    "command": "python -m pytest tests -k 'genesis or thermal or mantle or dynamics or kinematics or checkpoint or ridge_push or subduction_memory' -q",
+    "passed": 2064,
+    "failed": 2,
+    "deselected": 553,
+    "seconds": 542.02
+  },
+  "resume": {
+    "command": "python -m pytest tests/test_genesis_continuation_execution.py::test_real_parallel_workers_and_rendering_preserve_state_and_resume -q",
+    "passed": 1,
+    "seconds": 82.94,
+    "bitwise_arrays_and_metadata_equal": true
+  },
+  "existing_gui_failures": [
+    "tests/test_gui_backend.py::test_checkpoint_introspection_and_spec_validation",
+    "tests/test_gui_resolution.py::test_resume_cannot_change_checkpoint_resolution"
+  ],
+  "existing_gui_cause": "Unchanged fixtures request root/out with assignment_optimized=True; unchanged backend requires root/results. Reproduced independently: 2 failed in 0.24s.",
+  "head_equals_working_normalized": {
+    "moon_gui/backend.py": true,
+    "tests/test_gui_backend.py": true,
+    "tests/test_gui_resolution.py": true
+  },
+  "resolved_environment_failure": "One initial standalone GPU invocation lacked CUPY_CACHE_DIR and could not create restricted C:/Users/USER/.cupy; rerun with local cache passed, including final focused suite.",
+  "git_diff_check": "passed",
+  "code_sha256": {
+    "tectonics/mantle.py": "97d21a5816fda11e3ecf58b101e62d44b5a2f5e3de294384b1b1f60e68cba376",
+    "tectonics/dynamics.py": "e8c45e1822d5e9660af733e64f6b5f3a35afae1aecc3c40c470815d7ef49849f",
+    "tectonics/genesis_starter_continuation.py": "ef32a27a39cb452a83c3a7982d6cd5cfbd90fdb5fbcbca2449f83eb6da9e92d8",
+    "tectonics/plate_velocity_diagnostics.py": "b1dc52c233d65a032f8f2d7cbca6720ed747c148e8098c33b446dbf55adc50c6"
+  },
+  "experiment_config_differences": [
+    {
+      "path": ".plate_dynamics.mantle_projection",
+      "old": "legacy_area_mean",
+      "new": "velocity_least_squares"
+    }
+  ]
+}

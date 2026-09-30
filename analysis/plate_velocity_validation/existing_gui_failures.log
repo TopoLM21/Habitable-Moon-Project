@@ -1,0 +1,120 @@
+FF                                                                       [100%]
+================================== FAILURES ===================================
+______________ test_checkpoint_introspection_and_spec_validation ______________
+
+tmp_path = WindowsPath('C:/Users/USER/AppData/Local/Temp/pytest-of-USER/pytest-357/test_checkpoint_introspection_0')
+
+    def test_checkpoint_introspection_and_spec_validation(tmp_path: Path) -> None:
+        root, config = _project(tmp_path)
+        checkpoint = root / "checkpoint"
+        checkpoint.mkdir()
+        (checkpoint / "meta.json").write_text(
+            json.dumps({"format": "moon_tectonics_checkpoint", "time_myr": 40.0}),
+            encoding="utf-8",
+        )
+        np.savez_compressed(checkpoint / "state.npz", state_cell_plate=np.zeros(1_280, dtype=np.int32))
+        assert read_checkpoint_time(checkpoint) == 40.0
+        assert checkpoint_cell_count(checkpoint) == 1_280
+        spec = RunSpec(
+            root,
+            config,
+            root / "out",
+            subdivisions=3,
+            end_time_myr=80.0,
+            resume_checkpoint=checkpoint,
+        ).normalized()
+>       spec.validate()
+
+tests\test_gui_backend.py:120: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = RunSpec(project_root=WindowsPath('C:/Users/USER/AppData/Local/Temp/pytest-of-USER/pytest-357/test_checkpoint_introspec...e, gpu_device=0, assignment_columns=False, assignment_optimized=True, boundary_forces=False, genesis_continuation=None)
+
+    def validate(self) -> None:
+        if not self.project_root.is_dir():
+            raise ValueError(f"Project root does not exist: {self.project_root}")
+        if self.genesis_continuation is not None:
+            self._validate_genesis_continuation()
+            return
+        if (self.resume_checkpoint is not None
+                and _belongs_to_genesis_continuation(self.resume_checkpoint)):
+            raise ValueError("Resume the whole Genesis continuation folder to retain young heat and fracture state")
+        _gpu_device_index(self.gpu_device)
+        if self.gpu_surface and not self.cpu_optimized:
+            raise ValueError("GPU surface requires the optimized CPU runner")
+        if (self.assignment_columns or self.boundary_forces) and not self.cpu_optimized:
+            raise ValueError("Assignment columns and boundary forces require the optimized CPU or GPU runner")
+        if not self.runner.is_file():
+            raise ValueError(f"v0.31 runner does not exist: {self.runner}")
+        if not 1 <= self.cpu_workers <= 32:
+            raise ValueError("CPU workers must be between 1 and 32")
+        if self.render_workers not in RENDER_WORKER_CHOICES:
+            raise ValueError(f"Render workers must be one of {RENDER_WORKER_CHOICES}")
+        if self.process_priority not in PROCESS_PRIORITY_CHOICES:
+            raise ValueError(f"Process priority must be one of {PROCESS_PRIORITY_CHOICES}")
+        if self.process_priority != "normal" and not self.cpu_optimized:
+            raise ValueError("Lower process priority requires the experimental CPU runner")
+        if self.render_workers != 1 and not self.cpu_optimized:
+            raise ValueError("Parallel rendering requires the experimental CPU runner")
+        if self.cell_kernels and not self.cpu_optimized:
+            raise ValueError("Cell kernels require the experimental CPU runner")
+        if (self.cpu_optimized or self.assignment_optimized) and not self.output_dir.resolve().is_relative_to((self.project_root / "results").resolve()):
+>           raise ValueError("Optimized results must stay inside this workspace's results folder")
+E           ValueError: Optimized results must stay inside this workspace's results folder
+
+moon_gui\backend.py:188: ValueError
+_______________ test_resume_cannot_change_checkpoint_resolution _______________
+
+resolution_project = (WindowsPath('C:/Users/USER/AppData/Local/Temp/pytest-of-USER/pytest-357/test_resume_cannot_change_chec0/project'), Wi...SER/AppData/Local/Temp/pytest-of-USER/pytest-357/test_resume_cannot_change_chec0/project/configs/canonical_moon.yaml'))
+
+    def test_resume_cannot_change_checkpoint_resolution(resolution_project):
+        root, config = resolution_project
+        checkpoint = _checkpoint(root / "prior" / "checkpoint")
+        with pytest.raises(ValueError):
+            RunSpec(
+                root, config, root / "out", subdivisions=7, resume_checkpoint=checkpoint
+            ).validate()
+>       RunSpec(root, config, root / "out", resume_checkpoint=checkpoint).validate()
+
+tests\test_gui_resolution.py:99: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = RunSpec(project_root=WindowsPath('C:/Users/USER/AppData/Local/Temp/pytest-of-USER/pytest-357/test_resume_cannot_change...e, gpu_device=0, assignment_columns=False, assignment_optimized=True, boundary_forces=False, genesis_continuation=None)
+
+    def validate(self) -> None:
+        if not self.project_root.is_dir():
+            raise ValueError(f"Project root does not exist: {self.project_root}")
+        if self.genesis_continuation is not None:
+            self._validate_genesis_continuation()
+            return
+        if (self.resume_checkpoint is not None
+                and _belongs_to_genesis_continuation(self.resume_checkpoint)):
+            raise ValueError("Resume the whole Genesis continuation folder to retain young heat and fracture state")
+        _gpu_device_index(self.gpu_device)
+        if self.gpu_surface and not self.cpu_optimized:
+            raise ValueError("GPU surface requires the optimized CPU runner")
+        if (self.assignment_columns or self.boundary_forces) and not self.cpu_optimized:
+            raise ValueError("Assignment columns and boundary forces require the optimized CPU or GPU runner")
+        if not self.runner.is_file():
+            raise ValueError(f"v0.31 runner does not exist: {self.runner}")
+        if not 1 <= self.cpu_workers <= 32:
+            raise ValueError("CPU workers must be between 1 and 32")
+        if self.render_workers not in RENDER_WORKER_CHOICES:
+            raise ValueError(f"Render workers must be one of {RENDER_WORKER_CHOICES}")
+        if self.process_priority not in PROCESS_PRIORITY_CHOICES:
+            raise ValueError(f"Process priority must be one of {PROCESS_PRIORITY_CHOICES}")
+        if self.process_priority != "normal" and not self.cpu_optimized:
+            raise ValueError("Lower process priority requires the experimental CPU runner")
+        if self.render_workers != 1 and not self.cpu_optimized:
+            raise ValueError("Parallel rendering requires the experimental CPU runner")
+        if self.cell_kernels and not self.cpu_optimized:
+            raise ValueError("Cell kernels require the experimental CPU runner")
+        if (self.cpu_optimized or self.assignment_optimized) and not self.output_dir.resolve().is_relative_to((self.project_root / "results").resolve()):
+>           raise ValueError("Optimized results must stay inside this workspace's results folder")
+E           ValueError: Optimized results must stay inside this workspace's results folder
+
+moon_gui\backend.py:188: ValueError
+=========================== short test summary info ===========================
+FAILED tests/test_gui_backend.py::test_checkpoint_introspection_and_spec_validation
+FAILED tests/test_gui_resolution.py::test_resume_cannot_change_checkpoint_resolution
+2 failed in 0.24s

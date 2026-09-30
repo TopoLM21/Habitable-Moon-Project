@@ -217,14 +217,21 @@ def test_real_manager_reports_continued_split_for_normal_transport_and_slab_rema
 
 
 def test_installed_dynamics_has_no_slab_force_before_subduction_memory_exists(source):
-    model, cp, cfg, _, runner = installed(source)
+    model, cp, cfg, coupling, runner = installed(source)
     assert not cp.subduction_memory.zones
-    p = DynamicsParameters(**cfg["plate_dynamics"])
+    p = replace(DynamicsParameters(**cfg["plate_dynamics"]),
+                young_slab_force_model="full_transmission_upper_bound")
     assert p.slab_pull_weight > 0.
     args = (model.mesh, cp.state, cp.system, cp.baseline, model.thermal.radius_km,
             1., 0., 0.)
     kwargs = dict(subduction_memory=cp.subduction_memory, mantle_flow=cp.mantle_flow)
-    expected = update_plate_dynamics(*args, replace(p, slab_pull_weight=0.), **kwargs)
+    from tectonics.genesis_young_mechanics import transmitted_mantle_flow
+    h = model.loading.sample(coupling.source_state.thermal_context).lid_thickness_km
+    transmitted = transmitted_mantle_flow(model, cp.mantle_flow,
+                                          np.full(model.mesh.cell_count, h))
+    expected = update_plate_dynamics(*args,
+        replace(p, young_slab_force_model="disabled_pending_closure"),
+        **{**kwargs, "mantle_flow": transmitted})
     observed = runner.base.update_plate_dynamics(*args, p, **kwargs)
     np.testing.assert_array_equal(observed[3], expected[3])
     np.testing.assert_array_equal(angular_velocity_vectors(observed[0]),

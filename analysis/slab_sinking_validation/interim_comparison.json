@@ -1,0 +1,2145 @@
+{
+  "scope": "Independent evolving arms and counterfactual frozen probes are separate evidence.",
+  "original_starter_sha256": "b4584dd66208ff80aea18a178c38da2b96e353c723663251091886dee49e87f6",
+  "arms": {
+    "disabled_sub4_dt1": [
+      {
+        "path": "D:\\Moon Project\\mantle-convection\\analysis\\slab_sinking_validation\\runs\\disabled_sub4_dt1\\elapsed_0050",
+        "age_myr": 50.0,
+        "step_myr": 1.0,
+        "mechanics_model_version": "young-mechanics-0.4",
+        "slab_force_model": "disabled_pending_closure",
+        "status": "completed",
+        "checks": {
+          "material_ledger": true,
+          "clocks_agree": true,
+          "fracture_damage_matches_material": true,
+          "thermal_energy": true,
+          "liquid_water_matches_condensation": true,
+          "positive_remaining_material": true,
+          "slab_material_inventory": true
+        },
+        "mean_speed_mm_yr": 10.682591881186474,
+        "max_speed_mm_yr": 16.448340198452733,
+        "plates": 4,
+        "transport_commits": 59,
+        "inventory": {
+          "cumulative_accepted_area_km2": 27540747.78613165,
+          "cumulative_accepted_oceanic_volume_km3": 27122020.840996448,
+          "attached_area_km2": 19791736.230167415,
+          "attached_oceanic_volume_km3": 19466738.0941673,
+          "deep_oceanic_volume_km3": 53200.741915704115,
+          "unresolved_or_detached_oceanic_volume_km3": 7602082.004913478,
+          "attached_mantle_volume_km3": 640382634.5814052,
+          "current_negative_buoyancy_mass_kg": 5.079894884079681e+18,
+          "initial_negative_buoyancy_mass_kg": 5.913749233627541e+19,
+          "segment_count": 295,
+          "thermal_cohort_count": 400,
+          "unresolved_or_detached_fraction_of_accepted_volume": 0.28029187240437875
+        },
+        "final_mantle_temperature_k": 1587.1828285988938,
+        "thermal_energy_relative_residual": 2.8618226945584715e-14,
+        "material_relative_volume_residual": 5.30275596186942e-17,
+        "first_transport_age_myr": 16.0,
+        "last_force_metrics": {
+          "basal_drag_dissipation_w": 4450274893.485547,
+          "slab_bending_dissipation_w": 0.0,
+          "slab_mantle_dissipation_w": 0.0,
+          "total_dissipation_w": 4450274893.485547,
+          "basal_source_power_w": 4231392807.410101,
+          "ridge_power_w": 218882086.07544237,
+          "slab_power_w": 0.0,
+          "total_source_power_w": 4450274893.485543,
+          "transient_net_power_w": 3.26088727587683e-07,
+          "target_torque_relative_residual": 4.3397800872936194e-16,
+          "net_power_balance_residual_w": -4.140785993212683e-06,
+          "net_power_balance_relative_residual": -9.30456228507164e-16,
+          "transient_net_power_fraction": 7.327383934530022e-17,
+          "total_drag_relative_asymmetry": 0.0,
+          "total_drag_min_normalized_eigenvalue": 0.14451038219884016,
+          "total_drag_condition_number": 2.808325687576574,
+          "basal_drag_dissipation_w_nonnegative": true,
+          "slab_bending_dissipation_w_nonnegative": true,
+          "slab_mantle_dissipation_w_nonnegative": true,
+          "total_dissipation_w_nonnegative": true
+        },
+        "production_files_changed_during_run": [
+          "tectonics/genesis_starter_continuation.py"
+        ],
+        "source_unchanged": true,
+        "parameter_overrides": {
+          "plate_dynamics.young_slab_force_model": "disabled_pending_closure"
+        }
+      }
+    ],
+    "sinking_sub4_dt1": [
+      {
+        "path": "D:\\Moon Project\\mantle-convection\\analysis\\slab_sinking_validation\\runs\\sinking_sub4_dt1\\elapsed_0050",
+        "age_myr": 50.0,
+        "step_myr": 1.0,
+        "mechanics_model_version": "young-mechanics-0.4",
+        "slab_force_model": "viscous_sinking_v1",
+        "status": "completed",
+        "checks": {
+          "material_ledger": true,
+          "clocks_agree": true,
+          "fracture_damage_matches_material": true,
+          "thermal_energy": true,
+          "liquid_water_matches_condensation": true,
+          "positive_remaining_material": true,
+          "slab_material_inventory": true
+        },
+        "mean_speed_mm_yr": 2.3750522335568176,
+        "max_speed_mm_yr": 3.7732249313433774,
+        "plates": 4,
+        "transport_commits": 57,
+        "inventory": {
+          "cumulative_accepted_area_km2": 7793798.676721935,
+          "cumulative_accepted_oceanic_volume_km3": 7588610.381416954,
+          "attached_area_km2": 5784306.468507662,
+          "attached_oceanic_volume_km3": 5627642.523405238,
+          "deep_oceanic_volume_km3": 0.0,
+          "unresolved_or_detached_oceanic_volume_km3": 1960967.8580117167,
+          "attached_mantle_volume_km3": 186165921.49420363,
+          "current_negative_buoyancy_mass_kg": 9.068381744074141e+17,
+          "initial_negative_buoyancy_mass_kg": 1.6457288577122886e+19,
+          "segment_count": 95,
+          "thermal_cohort_count": 111,
+          "unresolved_or_detached_fraction_of_accepted_volume": 0.25840934762097545
+        },
+        "final_mantle_temperature_k": 1587.1828285988938,
+        "thermal_energy_relative_residual": 2.8618226945584715e-14,
+        "material_relative_volume_residual": 1.4582578895140905e-16,
+        "first_transport_age_myr": 16.0,
+        "last_force_metrics": {
+          "basal_drag_dissipation_w": 226992414.7760947,
+          "slab_bending_dissipation_w": 806642257.9587202,
+          "slab_mantle_dissipation_w": 109516104.11612822,
+          "total_dissipation_w": 1143150776.850943,
+          "basal_source_power_w": 960957197.5137398,
+          "ridge_power_w": 24113506.04520089,
+          "slab_power_w": 158080073.29200223,
+          "total_source_power_w": 1143150776.8509429,
+          "transient_net_power_w": -1.4085884760815563e-07,
+          "target_torque_relative_residual": 1.6004497826400572e-16,
+          "net_power_balance_residual_w": -9.755973149340687e-08,
+          "net_power_balance_relative_residual": -8.534283794317695e-17,
+          "transient_net_power_fraction": -1.232198328169639e-16,
+          "total_drag_relative_asymmetry": 0.0,
+          "total_drag_min_normalized_eigenvalue": 0.04022463320232026,
+          "total_drag_condition_number": 17.277491406736736,
+          "basal_drag_dissipation_w_nonnegative": true,
+          "slab_bending_dissipation_w_nonnegative": true,
+          "slab_mantle_dissipation_w_nonnegative": true,
+          "total_dissipation_w_nonnegative": true
+        },
+        "production_files_changed_during_run": [],
+        "source_unchanged": true,
+        "parameter_overrides": {
+          "plate_dynamics.young_slab_force_model": "viscous_sinking_v1"
+        }
+      },
+      {
+        "path": "D:\\Moon Project\\mantle-convection\\analysis\\slab_sinking_validation\\runs\\sinking_sub4_dt1\\elapsed_0100",
+        "age_myr": 100.0,
+        "step_myr": 1.0,
+        "mechanics_model_version": "young-mechanics-0.4",
+        "slab_force_model": "viscous_sinking_v1",
+        "status": "completed",
+        "checks": {
+          "material_ledger": true,
+          "clocks_agree": true,
+          "fracture_damage_matches_material": true,
+          "thermal_energy": true,
+          "liquid_water_matches_condensation": true,
+          "positive_remaining_material": true,
+          "slab_material_inventory": true
+        },
+        "mean_speed_mm_yr": 1.993983092197171,
+        "max_speed_mm_yr": 3.0606297300818035,
+        "plates": 4,
+        "transport_commits": 224,
+        "inventory": {
+          "cumulative_accepted_area_km2": 17851998.98397607,
+          "cumulative_accepted_oceanic_volume_km3": 17295478.481447913,
+          "attached_area_km2": 13614044.280012488,
+          "attached_oceanic_volume_km3": 13159550.864538833,
+          "deep_oceanic_volume_km3": 0.0,
+          "unresolved_or_detached_oceanic_volume_km3": 4135927.6169090853,
+          "attached_mantle_volume_km3": 447859531.69558483,
+          "current_negative_buoyancy_mass_kg": 1.7818434179897367e+18,
+          "initial_negative_buoyancy_mass_kg": 3.877125817061585e+19,
+          "segment_count": 220,
+          "thermal_cohort_count": 259,
+          "unresolved_or_detached_fraction_of_accepted_volume": 0.23913346030556543
+        },
+        "final_mantle_temperature_k": 1582.0947824381437,
+        "thermal_energy_relative_residual": 1.0175369580652343e-13,
+        "material_relative_volume_residual": 3.183136839777638e-17,
+        "first_transport_age_myr": 16.0,
+        "last_force_metrics": {
+          "basal_drag_dissipation_w": 159597467.07239765,
+          "slab_bending_dissipation_w": 825322983.2078694,
+          "slab_mantle_dissipation_w": 229051560.42501622,
+          "total_dissipation_w": 1213972010.7052832,
+          "basal_source_power_w": 781767013.9909401,
+          "ridge_power_w": 26995387.091075502,
+          "slab_power_w": 405209609.6232671,
+          "total_source_power_w": 1213972010.705283,
+          "transient_net_power_w": 1.1595405428123306e-07,
+          "target_torque_relative_residual": 1.4696409082339322e-16,
+          "net_power_balance_residual_w": -3.5437263338279556e-07,
+          "net_power_balance_relative_residual": -2.9191169998797183e-16,
+          "transient_net_power_fraction": 9.551625017603747e-17,
+          "total_drag_relative_asymmetry": 0.0,
+          "total_drag_min_normalized_eigenvalue": 0.025631581466305356,
+          "total_drag_condition_number": 26.856146730967403,
+          "basal_drag_dissipation_w_nonnegative": true,
+          "slab_bending_dissipation_w_nonnegative": true,
+          "slab_mantle_dissipation_w_nonnegative": true,
+          "total_dissipation_w_nonnegative": true
+        },
+        "production_files_changed_during_run": [
+          "tectonics/genesis_starter_continuation.py",
+          "tectonics/young_slab_sinking.py"
+        ],
+        "source_unchanged": true,
+        "parameter_overrides": {
+          "plate_dynamics.young_slab_force_model": "viscous_sinking_v1"
+        }
+      }
+    ]
+  },
+  "frozen": [
+    {
+      "path": "D:\\Moon Project\\mantle-convection\\analysis\\slab_sinking_validation\\frozen\\harness_disabled_smoke.json",
+      "source": "D:\\Moon Project\\mantle-convection\\analysis\\young_mechanics_validation\\final_after_seed_fix\\corrected_mechanics\\elapsed_0400",
+      "time_myr": 400.8781219482422,
+      "evaluation": "frozen_counterfactual_force_probe_no_evolution",
+      "parameter_overrides": {
+        "plate_dynamics.young_slab_force_model": "disabled_pending_closure"
+      },
+      "source_unchanged": true,
+      "speeds_mm_yr": {
+        "best_rigid_fit": {
+          "mean": 8.905599165752527,
+          "median": 9.022201479949905,
+          "p90": 12.844892477724756,
+          "rms": 9.415137755790719,
+          "max": 15.048446472847743
+        },
+        "simple_area_average": {
+          "mean": 5.924603231622578,
+          "median": 6.077181448181614,
+          "p90": 8.318146525805483,
+          "rms": 6.264726586366893,
+          "max": 13.35341157404002
+        },
+        "selected_projection": {
+          "mean": 8.905599165752546,
+          "median": 9.02220147994992,
+          "p90": 12.84489247772477,
+          "rms": 9.415137755790736,
+          "max": 15.048446472847782
+        },
+        "after_memory": {
+          "mean": 8.905599165752546,
+          "median": 9.02220147994992,
+          "p90": 12.84489247772477,
+          "rms": 9.415137755790736,
+          "max": 15.048446472847782
+        },
+        "target": {
+          "mean": 9.056309571865576,
+          "median": 8.804336090705288,
+          "p90": 13.833832539008421,
+          "rms": 9.63370974332724,
+          "max": 16.35675384941645
+        },
+        "current": {
+          "mean": 8.87495928993857,
+          "median": 8.856872091692782,
+          "p90": 13.245843868738755,
+          "rms": 9.417868194209936,
+          "max": 15.185427821840008
+        },
+        "after_relaxation": {
+          "mean": 8.875021151391577,
+          "median": 8.852235643761132,
+          "p90": 13.258172009315768,
+          "rms": 9.418781029699462,
+          "max": 15.18498966850278
+        },
+        "after_net_rotation": {
+          "mean": 8.875021151391577,
+          "median": 8.852235643761132,
+          "p90": 13.258172009315768,
+          "rms": 9.418781029699462,
+          "max": 15.18498966850278
+        },
+        "actual_returned": {
+          "mean": 8.875021151391577,
+          "median": 8.852235643761132,
+          "p90": 13.258172009315768,
+          "rms": 9.418781029699462,
+          "max": 15.18498966850278
+        },
+        "local_mantle": {
+          "mean": 13.136605887934104,
+          "median": 14.180307297375489,
+          "p90": 19.711470267263937,
+          "rms": 14.173123886962873,
+          "max": 21.516623705645
+        }
+      },
+      "component_speeds_mm_yr": {
+        "mantle": {
+          "mean": 8.905599165752546,
+          "median": 9.02220147994992,
+          "p90": 12.84489247772477,
+          "rms": 9.415137755790736,
+          "max": 15.048446472847782
+        },
+        "ridge": {
+          "mean": 0.7942660444444984,
+          "median": 0.7906932370949139,
+          "p90": 1.3891505126966397,
+          "rms": 0.9258305661041106,
+          "max": 5.834820342950861
+        },
+        "slab": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        },
+        "residual_slab": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        },
+        "gpe": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        },
+        "rollback": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        },
+        "collision_resistance": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        },
+        "transform_resistance": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        }
+      },
+      "metrics": {
+        "basal_drag_dissipation_w": 3129031617.3691807,
+        "basal_source_power_w": 3083065334.405697,
+        "ridge_power_w": 60751568.356238924,
+        "slab_power_w": 0.0,
+        "total_source_power_w": 3143816902.7619376,
+        "transient_net_power_w": 14785285.392761169,
+        "target_torque_relative_residual": 4.540638459603218e-16,
+        "net_power_balance_residual_w": -4.230067133903503e-06
+      },
+      "inventory": {
+        "cumulative_accepted_area_km2": 296704211.63945854,
+        "cumulative_accepted_oceanic_volume_km3": 289975447.0424772,
+        "attached_area_km2": 65809825.533766165,
+        "attached_oceanic_volume_km3": 65054006.010335855,
+        "deep_oceanic_volume_km3": 13652695.091228481,
+        "unresolved_or_detached_oceanic_volume_km3": 211268745.94091928,
+        "attached_mantle_volume_km3": 2183198594.515651,
+        "current_negative_buoyancy_mass_kg": 2.5374039760355574e+18,
+        "initial_negative_buoyancy_mass_kg": 6.485790354573018e+20,
+        "segment_count": 993,
+        "thermal_cohort_count": 4372
+      }
+    },
+    {
+      "path": "D:\\Moon Project\\mantle-convection\\analysis\\slab_sinking_validation\\frozen\\sinking_at50\\bend_radius_thickness_ratio_2.json",
+      "source": "D:\\Moon Project\\mantle-convection\\analysis\\slab_sinking_validation\\runs\\sinking_sub4_dt1\\elapsed_0050",
+      "time_myr": 50.87812194824219,
+      "evaluation": "frozen_counterfactual_force_probe_no_evolution",
+      "parameter_overrides": {
+        "plate_dynamics.young_slab_force_model": "viscous_sinking_v1",
+        "plate_dynamics.young_slab_bend_radius_thickness_ratio": 2.0
+      },
+      "source_unchanged": true,
+      "speeds_mm_yr": {
+        "best_rigid_fit": {
+          "mean": 10.56553937755835,
+          "median": 11.390171059214774,
+          "p90": 13.991995376491912,
+          "rms": 11.02308935313491,
+          "max": 15.089619684691337
+        },
+        "simple_area_average": {
+          "mean": 7.051414474771636,
+          "median": 7.563460194107834,
+          "p90": 9.330297179062518,
+          "rms": 7.365012744650264,
+          "max": 10.305844009657113
+        },
+        "selected_projection": {
+          "mean": 0.7185253702615677,
+          "median": 0.746451245542081,
+          "p90": 0.9779206731402698,
+          "rms": 0.753236978919471,
+          "max": 1.0149683050181102
+        },
+        "after_memory": {
+          "mean": 0.7185253702615677,
+          "median": 0.746451245542081,
+          "p90": 0.9779206731402698,
+          "rms": 0.753236978919471,
+          "max": 1.0149683050181102
+        },
+        "target": {
+          "mean": 0.9175212793068774,
+          "median": 0.8310197965790459,
+          "p90": 1.628384292647917,
+          "rms": 1.0410520972307158,
+          "max": 1.7925032392188083
+        },
+        "current": {
+          "mean": 2.3750522335568176,
+          "median": 2.423670502560291,
+          "p90": 3.5443010492094684,
+          "rms": 2.536853553439626,
+          "max": 3.7732249313433774
+        },
+        "after_relaxation": {
+          "mean": 0.9175212793068774,
+          "median": 0.8310197965790459,
+          "p90": 1.628384292647917,
+          "rms": 1.0410520972307158,
+          "max": 1.7925032392188083
+        },
+        "after_net_rotation": {
+          "mean": 0.9175212793068774,
+          "median": 0.8310197965790459,
+          "p90": 1.628384292647917,
+          "rms": 1.0410520972307158,
+          "max": 1.7925032392188083
+        },
+        "actual_returned": {
+          "mean": 0.9175212793068774,
+          "median": 0.8310197965790459,
+          "p90": 1.628384292647917,
+          "rms": 1.0410520972307158,
+          "max": 1.7925032392188083
+        },
+        "local_mantle": {
+          "mean": 13.150830695740135,
+          "median": 14.189640981577071,
+          "p90": 19.712173471873037,
+          "rms": 14.183243122549046,
+          "max": 21.51662358013986
+        }
+      },
+      "component_speeds_mm_yr": {
+        "mantle": {
+          "mean": 0.7185253702615677,
+          "median": 0.746451245542081,
+          "p90": 0.9779206731402698,
+          "rms": 0.753236978919471,
+          "max": 1.0149683050181102
+        },
+        "ridge": {
+          "mean": 0.325426964744101,
+          "median": 0.3550736840172507,
+          "p90": 0.421872536387907,
+          "rms": 0.3386246417060308,
+          "max": 0.4322422137131771
+        },
+        "slab": {
+          "mean": 0.2298792239646261,
+          "median": 0.21332032273359666,
+          "p90": 0.37663207603147864,
+          "rms": 0.25308308296346954,
+          "max": 0.4096092381507173
+        },
+        "residual_slab": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        },
+        "gpe": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        },
+        "rollback": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        },
+        "collision_resistance": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        },
+        "transform_resistance": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        }
+      },
+      "metrics": {
+        "basal_drag_dissipation_w": 38226582.86250761,
+        "slab_bending_dissipation_w": 422375878.800268,
+        "slab_mantle_dissipation_w": 18434049.176040694,
+        "total_dissipation_w": 479036510.83881634,
+        "basal_source_power_w": 368051967.4553986,
+        "ridge_power_w": 10446548.859146008,
+        "slab_power_w": 100537994.52427144,
+        "total_source_power_w": 479036510.8388161,
+        "transient_net_power_w": -6.990778360601561e-08,
+        "target_torque_relative_residual": 2.0895961404651119e-16,
+        "net_power_balance_residual_w": -1.6851079549554688e-07,
+        "net_power_balance_relative_residual": -3.5177025484023387e-16,
+        "transient_net_power_fraction": -1.4593414494357365e-16,
+        "total_drag_relative_asymmetry": 0.0,
+        "total_drag_min_normalized_eigenvalue": 0.013492564107103713,
+        "total_drag_condition_number": 51.86863513004013,
+        "basal_drag_dissipation_w_nonnegative": true,
+        "slab_bending_dissipation_w_nonnegative": true,
+        "slab_mantle_dissipation_w_nonnegative": true,
+        "total_dissipation_w_nonnegative": true
+      },
+      "inventory": {
+        "cumulative_accepted_area_km2": 7793798.676721935,
+        "cumulative_accepted_oceanic_volume_km3": 7588610.381416954,
+        "attached_area_km2": 5784306.468507662,
+        "attached_oceanic_volume_km3": 5627642.523405238,
+        "deep_oceanic_volume_km3": 0.0,
+        "unresolved_or_detached_oceanic_volume_km3": 1960967.8580117167,
+        "attached_mantle_volume_km3": 186165921.49420363,
+        "current_negative_buoyancy_mass_kg": 9.068381744074141e+17,
+        "initial_negative_buoyancy_mass_kg": 1.6457288577122886e+19,
+        "segment_count": 95,
+        "thermal_cohort_count": 111,
+        "unresolved_or_detached_fraction_of_accepted_volume": 0.25840934762097545
+      }
+    },
+    {
+      "path": "D:\\Moon Project\\mantle-convection\\analysis\\slab_sinking_validation\\frozen\\sinking_at50\\bend_radius_thickness_ratio_5.json",
+      "source": "D:\\Moon Project\\mantle-convection\\analysis\\slab_sinking_validation\\runs\\sinking_sub4_dt1\\elapsed_0050",
+      "time_myr": 50.87812194824219,
+      "evaluation": "frozen_counterfactual_force_probe_no_evolution",
+      "parameter_overrides": {
+        "plate_dynamics.young_slab_force_model": "viscous_sinking_v1",
+        "plate_dynamics.young_slab_bend_radius_thickness_ratio": 5.0
+      },
+      "source_unchanged": true,
+      "speeds_mm_yr": {
+        "best_rigid_fit": {
+          "mean": 10.56553937755835,
+          "median": 11.390171059214774,
+          "p90": 13.991995376491912,
+          "rms": 11.02308935313491,
+          "max": 15.089619684691337
+        },
+        "simple_area_average": {
+          "mean": 7.051414474771636,
+          "median": 7.563460194107834,
+          "p90": 9.330297179062518,
+          "rms": 7.365012744650264,
+          "max": 10.305844009657113
+        },
+        "selected_projection": {
+          "mean": 4.70123293778626,
+          "median": 4.839424669555957,
+          "p90": 6.398190519104809,
+          "rms": 4.923229258617021,
+          "max": 6.58279649025589
+        },
+        "after_memory": {
+          "mean": 4.70123293778626,
+          "median": 4.839424669555957,
+          "p90": 6.398190519104809,
+          "rms": 4.923229258617021,
+          "max": 6.58279649025589
+        },
+        "target": {
+          "mean": 5.577340558645428,
+          "median": 5.628684996372961,
+          "p90": 7.826434946545419,
+          "rms": 5.894361277286164,
+          "max": 8.51556266672044
+        },
+        "current": {
+          "mean": 2.3750522335568176,
+          "median": 2.423670502560291,
+          "p90": 3.5443010492094684,
+          "rms": 2.536853553439626,
+          "max": 3.7732249313433774
+        },
+        "after_relaxation": {
+          "mean": 5.577340558645428,
+          "median": 5.628684996372961,
+          "p90": 7.826434946545419,
+          "rms": 5.894361277286164,
+          "max": 8.51556266672044
+        },
+        "after_net_rotation": {
+          "mean": 5.577340558645428,
+          "median": 5.628684996372961,
+          "p90": 7.826434946545419,
+          "rms": 5.894361277286164,
+          "max": 8.51556266672044
+        },
+        "actual_returned": {
+          "mean": 5.577340558645428,
+          "median": 5.628684996372961,
+          "p90": 7.826434946545419,
+          "rms": 5.894361277286164,
+          "max": 8.51556266672044
+        },
+        "local_mantle": {
+          "mean": 13.150830695740135,
+          "median": 14.189640981577071,
+          "p90": 19.712173471873037,
+          "rms": 14.183243122549046,
+          "max": 21.51662358013986
+        }
+      },
+      "component_speeds_mm_yr": {
+        "mantle": {
+          "mean": 4.70123293778626,
+          "median": 4.839424669555957,
+          "p90": 6.398190519104809,
+          "rms": 4.923229258617021,
+          "max": 6.58279649025589
+        },
+        "ridge": {
+          "mean": 0.33288139346273665,
+          "median": 0.3315508824618527,
+          "p90": 0.5293054873617805,
+          "rms": 0.35929446906929674,
+          "max": 0.5964430098479423
+        },
+        "slab": {
+          "mean": 0.8790722167027519,
+          "median": 0.8023873344436456,
+          "p90": 1.5051267516108098,
+          "rms": 0.9835011587484541,
+          "max": 1.6061322756729841
+        },
+        "residual_slab": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        },
+        "gpe": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        },
+        "rollback": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        },
+        "collision_resistance": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        },
+        "transform_resistance": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        }
+      },
+      "metrics": {
+        "basal_drag_dissipation_w": 1225445645.3765926,
+        "slab_bending_dissipation_w": 901645697.8933938,
+        "slab_mantle_dissipation_w": 586412668.9242634,
+        "total_dissipation_w": 2713504012.1942496,
+        "basal_source_power_w": 2266996490.9409056,
+        "ridge_power_w": 37874562.7534544,
+        "slab_power_w": 408632958.4998899,
+        "total_source_power_w": 2713504012.1942496,
+        "transient_net_power_w": -2.400601073524447e-07,
+        "target_torque_relative_residual": 1.7148113967598632e-16,
+        "net_power_balance_residual_w": 2.400601073524447e-07,
+        "net_power_balance_relative_residual": 8.846867602687727e-17,
+        "transient_net_power_fraction": -8.846867602687727e-17,
+        "total_drag_relative_asymmetry": 0.0,
+        "total_drag_min_normalized_eigenvalue": 0.1055201902458474,
+        "total_drag_condition_number": 5.566686994529125,
+        "basal_drag_dissipation_w_nonnegative": true,
+        "slab_bending_dissipation_w_nonnegative": true,
+        "slab_mantle_dissipation_w_nonnegative": true,
+        "total_dissipation_w_nonnegative": true
+      },
+      "inventory": {
+        "cumulative_accepted_area_km2": 7793798.676721935,
+        "cumulative_accepted_oceanic_volume_km3": 7588610.381416954,
+        "attached_area_km2": 5784306.468507662,
+        "attached_oceanic_volume_km3": 5627642.523405238,
+        "deep_oceanic_volume_km3": 0.0,
+        "unresolved_or_detached_oceanic_volume_km3": 1960967.8580117167,
+        "attached_mantle_volume_km3": 186165921.49420363,
+        "current_negative_buoyancy_mass_kg": 9.068381744074141e+17,
+        "initial_negative_buoyancy_mass_kg": 1.6457288577122886e+19,
+        "segment_count": 95,
+        "thermal_cohort_count": 111,
+        "unresolved_or_detached_fraction_of_accepted_volume": 0.25840934762097545
+      }
+    },
+    {
+      "path": "D:\\Moon Project\\mantle-convection\\analysis\\slab_sinking_validation\\frozen\\sinking_at50\\disabled.json",
+      "source": "D:\\Moon Project\\mantle-convection\\analysis\\slab_sinking_validation\\runs\\sinking_sub4_dt1\\elapsed_0050",
+      "time_myr": 50.87812194824219,
+      "evaluation": "frozen_counterfactual_force_probe_no_evolution",
+      "parameter_overrides": {
+        "plate_dynamics.young_slab_force_model": "disabled_pending_closure"
+      },
+      "source_unchanged": true,
+      "speeds_mm_yr": {
+        "best_rigid_fit": {
+          "mean": 10.56553937755835,
+          "median": 11.390171059214774,
+          "p90": 13.991995376491912,
+          "rms": 11.02308935313491,
+          "max": 15.089619684691337
+        },
+        "simple_area_average": {
+          "mean": 7.051414474771636,
+          "median": 7.563460194107834,
+          "p90": 9.330297179062518,
+          "rms": 7.365012744650264,
+          "max": 10.305844009657113
+        },
+        "selected_projection": {
+          "mean": 10.56553937755836,
+          "median": 11.390171059214788,
+          "p90": 13.991995376491985,
+          "rms": 11.023089353134926,
+          "max": 15.089619684691414
+        },
+        "after_memory": {
+          "mean": 10.56553937755836,
+          "median": 11.390171059214788,
+          "p90": 13.991995376491985,
+          "rms": 11.023089353134926,
+          "max": 15.089619684691414
+        },
+        "target": {
+          "mean": 10.685950751682965,
+          "median": 11.272452072556629,
+          "p90": 14.641520048672042,
+          "rms": 11.196590394322692,
+          "max": 16.09240843578623
+        },
+        "current": {
+          "mean": 2.3750522335568176,
+          "median": 2.423670502560291,
+          "p90": 3.5443010492094684,
+          "rms": 2.536853553439626,
+          "max": 3.7732249313433774
+        },
+        "after_relaxation": {
+          "mean": 10.685950751682965,
+          "median": 11.272452072556629,
+          "p90": 14.641520048672042,
+          "rms": 11.196590394322692,
+          "max": 16.09240843578623
+        },
+        "after_net_rotation": {
+          "mean": 10.685950751682965,
+          "median": 11.272452072556629,
+          "p90": 14.641520048672042,
+          "rms": 11.196590394322692,
+          "max": 16.09240843578623
+        },
+        "actual_returned": {
+          "mean": 10.685950751682965,
+          "median": 11.272452072556629,
+          "p90": 14.641520048672042,
+          "rms": 11.196590394322692,
+          "max": 16.09240843578623
+        },
+        "local_mantle": {
+          "mean": 13.150830695740135,
+          "median": 14.189640981577071,
+          "p90": 19.712173471873037,
+          "rms": 14.183243122549046,
+          "max": 21.51662358013986
+        }
+      },
+      "component_speeds_mm_yr": {
+        "mantle": {
+          "mean": 10.56553937755836,
+          "median": 11.390171059214788,
+          "p90": 13.991995376491985,
+          "rms": 11.023089353134926,
+          "max": 15.089619684691414
+        },
+        "ridge": {
+          "mean": 0.47528708438866485,
+          "median": 0.4670007834446082,
+          "p90": 0.8973217395388079,
+          "rms": 0.5354107883368843,
+          "max": 1.0090581988961518
+        },
+        "slab": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        },
+        "residual_slab": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        },
+        "gpe": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        },
+        "rollback": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        },
+        "collision_resistance": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        },
+        "transform_resistance": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        }
+      },
+      "metrics": {
+        "basal_drag_dissipation_w": 4421729102.776195,
+        "slab_bending_dissipation_w": 0.0,
+        "slab_mantle_dissipation_w": 0.0,
+        "total_dissipation_w": 4421729102.776195,
+        "basal_source_power_w": 4348685881.426441,
+        "ridge_power_w": 73043221.3497487,
+        "slab_power_w": 0.0,
+        "total_source_power_w": 4421729102.77619,
+        "transient_net_power_w": -9.00427802001626e-07,
+        "target_torque_relative_residual": 5.511263874184245e-16,
+        "net_power_balance_residual_w": -3.867943780029624e-06,
+        "net_power_balance_relative_residual": -8.747581975569524e-16,
+        "transient_net_power_fraction": -2.0363703453390891e-16,
+        "total_drag_relative_asymmetry": 0.0,
+        "total_drag_min_normalized_eigenvalue": 0.15121384689437267,
+        "total_drag_condition_number": 2.644957064906133,
+        "basal_drag_dissipation_w_nonnegative": true,
+        "slab_bending_dissipation_w_nonnegative": true,
+        "slab_mantle_dissipation_w_nonnegative": true,
+        "total_dissipation_w_nonnegative": true
+      },
+      "inventory": {
+        "cumulative_accepted_area_km2": 7793798.676721935,
+        "cumulative_accepted_oceanic_volume_km3": 7588610.381416954,
+        "attached_area_km2": 5784306.468507662,
+        "attached_oceanic_volume_km3": 5627642.523405238,
+        "deep_oceanic_volume_km3": 0.0,
+        "unresolved_or_detached_oceanic_volume_km3": 1960967.8580117167,
+        "attached_mantle_volume_km3": 186165921.49420363,
+        "current_negative_buoyancy_mass_kg": 9.068381744074141e+17,
+        "initial_negative_buoyancy_mass_kg": 1.6457288577122886e+19,
+        "segment_count": 95,
+        "thermal_cohort_count": 111,
+        "unresolved_or_detached_fraction_of_accepted_volume": 0.25840934762097545
+      }
+    },
+    {
+      "path": "D:\\Moon Project\\mantle-convection\\analysis\\slab_sinking_validation\\frozen\\sinking_at50\\mantle_shear_length_fraction_0p25.json",
+      "source": "D:\\Moon Project\\mantle-convection\\analysis\\slab_sinking_validation\\runs\\sinking_sub4_dt1\\elapsed_0050",
+      "time_myr": 50.87812194824219,
+      "evaluation": "frozen_counterfactual_force_probe_no_evolution",
+      "parameter_overrides": {
+        "plate_dynamics.young_slab_force_model": "viscous_sinking_v1",
+        "plate_dynamics.young_slab_mantle_shear_length_fraction": 0.25
+      },
+      "source_unchanged": true,
+      "speeds_mm_yr": {
+        "best_rigid_fit": {
+          "mean": 10.56553937755835,
+          "median": 11.390171059214774,
+          "p90": 13.991995376491912,
+          "rms": 11.02308935313491,
+          "max": 15.089619684691337
+        },
+        "simple_area_average": {
+          "mean": 7.051414474771636,
+          "median": 7.563460194107834,
+          "p90": 9.330297179062518,
+          "rms": 7.365012744650264,
+          "max": 10.305844009657113
+        },
+        "selected_projection": {
+          "mean": 1.7684326834502724,
+          "median": 1.7803582520968302,
+          "p90": 2.4191020695485945,
+          "rms": 1.855140907891046,
+          "max": 2.4805010352865007
+        },
+        "after_memory": {
+          "mean": 1.7684326834502724,
+          "median": 1.7803582520968302,
+          "p90": 2.4191020695485945,
+          "rms": 1.855140907891046,
+          "max": 2.4805010352865007
+        },
+        "target": {
+          "mean": 2.2041518397164337,
+          "median": 2.2539168448612306,
+          "p90": 3.2514233533659347,
+          "rms": 2.3556653277162,
+          "max": 3.5797973605571256
+        },
+        "current": {
+          "mean": 2.3750522335568176,
+          "median": 2.423670502560291,
+          "p90": 3.5443010492094684,
+          "rms": 2.536853553439626,
+          "max": 3.7732249313433774
+        },
+        "after_relaxation": {
+          "mean": 2.2041518397164337,
+          "median": 2.2539168448612306,
+          "p90": 3.2514233533659347,
+          "rms": 2.3556653277162,
+          "max": 3.5797973605571256
+        },
+        "after_net_rotation": {
+          "mean": 2.2041518397164337,
+          "median": 2.2539168448612306,
+          "p90": 3.2514233533659347,
+          "rms": 2.3556653277162,
+          "max": 3.5797973605571256
+        },
+        "actual_returned": {
+          "mean": 2.2041518397164337,
+          "median": 2.2539168448612306,
+          "p90": 3.2514233533659347,
+          "rms": 2.3556653277162,
+          "max": 3.5797973605571256
+        },
+        "local_mantle": {
+          "mean": 13.150830695740135,
+          "median": 14.189640981577071,
+          "p90": 19.712173471873037,
+          "rms": 14.183243122549046,
+          "max": 21.51662358013986
+        }
+      },
+      "component_speeds_mm_yr": {
+        "mantle": {
+          "mean": 1.7684326834502724,
+          "median": 1.7803582520968302,
+          "p90": 2.4191020695485945,
+          "rms": 1.855140907891046,
+          "max": 2.4805010352865007
+        },
+        "ridge": {
+          "mean": 0.25401734908256274,
+          "median": 0.2519584822523728,
+          "p90": 0.35771552313370786,
+          "rms": 0.2671898404637242,
+          "max": 0.3779512599552296
+        },
+        "slab": {
+          "mean": 0.47087415147219364,
+          "median": 0.43963311857960113,
+          "p90": 0.7894202953488403,
+          "rms": 0.5205684230814328,
+          "max": 0.8321383795838384
+        },
+        "residual_slab": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        },
+        "gpe": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        },
+        "rollback": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        },
+        "collision_resistance": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        },
+        "transform_resistance": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        }
+      },
+      "metrics": {
+        "basal_drag_dissipation_w": 195725643.7488913,
+        "slab_bending_dissipation_w": 734714422.5026377,
+        "slab_mantle_dissipation_w": 191675852.3409557,
+        "total_dissipation_w": 1122115918.5924847,
+        "basal_source_power_w": 891225006.7058849,
+        "ridge_power_w": 16564247.232879398,
+        "slab_power_w": 214326664.65372044,
+        "total_source_power_w": 1122115918.5924845,
+        "transient_net_power_w": -1.9848558727116428e-08,
+        "target_torque_relative_residual": 1.6539612442288922e-16,
+        "net_power_balance_residual_w": -2.1857002037444608e-07,
+        "net_power_balance_relative_residual": -1.9478381578313876e-16,
+        "transient_net_power_fraction": -1.7688510071235133e-17,
+        "total_drag_relative_asymmetry": 0.0,
+        "total_drag_min_normalized_eigenvalue": 0.03928261040584826,
+        "total_drag_condition_number": 17.311191760862002,
+        "basal_drag_dissipation_w_nonnegative": true,
+        "slab_bending_dissipation_w_nonnegative": true,
+        "slab_mantle_dissipation_w_nonnegative": true,
+        "total_dissipation_w_nonnegative": true
+      },
+      "inventory": {
+        "cumulative_accepted_area_km2": 7793798.676721935,
+        "cumulative_accepted_oceanic_volume_km3": 7588610.381416954,
+        "attached_area_km2": 5784306.468507662,
+        "attached_oceanic_volume_km3": 5627642.523405238,
+        "deep_oceanic_volume_km3": 0.0,
+        "unresolved_or_detached_oceanic_volume_km3": 1960967.8580117167,
+        "attached_mantle_volume_km3": 186165921.49420363,
+        "current_negative_buoyancy_mass_kg": 9.068381744074141e+17,
+        "initial_negative_buoyancy_mass_kg": 1.6457288577122886e+19,
+        "segment_count": 95,
+        "thermal_cohort_count": 111,
+        "unresolved_or_detached_fraction_of_accepted_volume": 0.25840934762097545
+      }
+    },
+    {
+      "path": "D:\\Moon Project\\mantle-convection\\analysis\\slab_sinking_validation\\frozen\\sinking_at50\\mantle_shear_length_fraction_1.json",
+      "source": "D:\\Moon Project\\mantle-convection\\analysis\\slab_sinking_validation\\runs\\sinking_sub4_dt1\\elapsed_0050",
+      "time_myr": 50.87812194824219,
+      "evaluation": "frozen_counterfactual_force_probe_no_evolution",
+      "parameter_overrides": {
+        "plate_dynamics.young_slab_force_model": "viscous_sinking_v1",
+        "plate_dynamics.young_slab_mantle_shear_length_fraction": 1.0
+      },
+      "source_unchanged": true,
+      "speeds_mm_yr": {
+        "best_rigid_fit": {
+          "mean": 10.56553937755835,
+          "median": 11.390171059214774,
+          "p90": 13.991995376491912,
+          "rms": 11.02308935313491,
+          "max": 15.089619684691337
+        },
+        "simple_area_average": {
+          "mean": 7.051414474771636,
+          "median": 7.563460194107834,
+          "p90": 9.330297179062518,
+          "rms": 7.365012744650264,
+          "max": 10.305844009657113
+        },
+        "selected_projection": {
+          "mean": 2.0344052728936957,
+          "median": 2.130927774120874,
+          "p90": 2.7539144506563593,
+          "rms": 2.1295064512479716,
+          "max": 2.848692336303391
+        },
+        "after_memory": {
+          "mean": 2.0344052728936957,
+          "median": 2.130927774120874,
+          "p90": 2.7539144506563593,
+          "rms": 2.1295064512479716,
+          "max": 2.848692336303391
+        },
+        "target": {
+          "mean": 2.524906254400388,
+          "median": 2.533785863573912,
+          "p90": 3.857845502965101,
+          "rms": 2.714528736841529,
+          "max": 4.247191729557968
+        },
+        "current": {
+          "mean": 2.3750522335568176,
+          "median": 2.423670502560291,
+          "p90": 3.5443010492094684,
+          "rms": 2.536853553439626,
+          "max": 3.7732249313433774
+        },
+        "after_relaxation": {
+          "mean": 2.524906254400388,
+          "median": 2.533785863573912,
+          "p90": 3.857845502965101,
+          "rms": 2.714528736841529,
+          "max": 4.247191729557968
+        },
+        "after_net_rotation": {
+          "mean": 2.524906254400388,
+          "median": 2.533785863573912,
+          "p90": 3.857845502965101,
+          "rms": 2.714528736841529,
+          "max": 4.247191729557968
+        },
+        "actual_returned": {
+          "mean": 2.524906254400388,
+          "median": 2.533785863573912,
+          "p90": 3.857845502965101,
+          "rms": 2.714528736841529,
+          "max": 4.247191729557968
+        },
+        "local_mantle": {
+          "mean": 13.150830695740135,
+          "median": 14.189640981577071,
+          "p90": 19.712173471873037,
+          "rms": 14.183243122549046,
+          "max": 21.51662358013986
+        }
+      },
+      "component_speeds_mm_yr": {
+        "mantle": {
+          "mean": 2.0344052728936957,
+          "median": 2.130927774120874,
+          "p90": 2.7539144506563593,
+          "rms": 2.1295064512479716,
+          "max": 2.848692336303391
+        },
+        "ridge": {
+          "mean": 0.38539576428231914,
+          "median": 0.4110620009498941,
+          "p90": 0.5119561798042399,
+          "rms": 0.40256699560444054,
+          "max": 0.5613970322378077
+        },
+        "slab": {
+          "mean": 0.5315595757106133,
+          "median": 0.493367490059526,
+          "p90": 0.88418804187922,
+          "rms": 0.5905040903035632,
+          "max": 0.9709380562985112
+        },
+        "residual_slab": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        },
+        "gpe": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        },
+        "rollback": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        },
+        "collision_resistance": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        },
+        "transform_resistance": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        }
+      },
+      "metrics": {
+        "basal_drag_dissipation_w": 259901890.09249255,
+        "slab_bending_dissipation_w": 964188135.0166035,
+        "slab_mantle_dissipation_w": 63915385.27021222,
+        "total_dissipation_w": 1288005410.3793082,
+        "basal_source_power_w": 1022184410.1942106,
+        "ridge_power_w": 20255454.385289587,
+        "slab_power_w": 245565545.7998077,
+        "total_source_power_w": 1288005410.3793077,
+        "transient_net_power_w": -9.330601224025538e-08,
+        "target_torque_relative_residual": 9.915676336865178e-17,
+        "net_power_balance_residual_w": -3.835311459628696e-07,
+        "net_power_balance_relative_residual": -2.977713780332044e-16,
+        "transient_net_power_fraction": -7.24422517858659e-17,
+        "total_drag_relative_asymmetry": 0.0,
+        "total_drag_min_normalized_eigenvalue": 0.039423341226493866,
+        "total_drag_condition_number": 17.387698723030542,
+        "basal_drag_dissipation_w_nonnegative": true,
+        "slab_bending_dissipation_w_nonnegative": true,
+        "slab_mantle_dissipation_w_nonnegative": true,
+        "total_dissipation_w_nonnegative": true
+      },
+      "inventory": {
+        "cumulative_accepted_area_km2": 7793798.676721935,
+        "cumulative_accepted_oceanic_volume_km3": 7588610.381416954,
+        "attached_area_km2": 5784306.468507662,
+        "attached_oceanic_volume_km3": 5627642.523405238,
+        "deep_oceanic_volume_km3": 0.0,
+        "unresolved_or_detached_oceanic_volume_km3": 1960967.8580117167,
+        "attached_mantle_volume_km3": 186165921.49420363,
+        "current_negative_buoyancy_mass_kg": 9.068381744074141e+17,
+        "initial_negative_buoyancy_mass_kg": 1.6457288577122886e+19,
+        "segment_count": 95,
+        "thermal_cohort_count": 111,
+        "unresolved_or_detached_fraction_of_accepted_volume": 0.25840934762097545
+      }
+    },
+    {
+      "path": "D:\\Moon Project\\mantle-convection\\analysis\\slab_sinking_validation\\frozen\\sinking_at50\\sinking_default.json",
+      "source": "D:\\Moon Project\\mantle-convection\\analysis\\slab_sinking_validation\\runs\\sinking_sub4_dt1\\elapsed_0050",
+      "time_myr": 50.87812194824219,
+      "evaluation": "frozen_counterfactual_force_probe_no_evolution",
+      "parameter_overrides": {
+        "plate_dynamics.young_slab_force_model": "viscous_sinking_v1"
+      },
+      "source_unchanged": true,
+      "speeds_mm_yr": {
+        "best_rigid_fit": {
+          "mean": 10.56553937755835,
+          "median": 11.390171059214774,
+          "p90": 13.991995376491912,
+          "rms": 11.02308935313491,
+          "max": 15.089619684691337
+        },
+        "simple_area_average": {
+          "mean": 7.051414474771636,
+          "median": 7.563460194107834,
+          "p90": 9.330297179062518,
+          "rms": 7.365012744650264,
+          "max": 10.305844009657113
+        },
+        "selected_projection": {
+          "mean": 1.9366173563690499,
+          "median": 1.9978848926137303,
+          "p90": 2.635404567939143,
+          "rms": 2.0288762371786944,
+          "max": 2.708381556189807
+        },
+        "after_memory": {
+          "mean": 1.9366173563690499,
+          "median": 1.9978848926137303,
+          "p90": 2.635404567939143,
+          "rms": 2.0288762371786944,
+          "max": 2.708381556189807
+        },
+        "target": {
+          "mean": 2.4079642766020184,
+          "median": 2.4429121456258547,
+          "p90": 3.615554014609937,
+          "rms": 2.581668935174154,
+          "max": 3.989189579884326
+        },
+        "current": {
+          "mean": 2.3750522335568176,
+          "median": 2.423670502560291,
+          "p90": 3.5443010492094684,
+          "rms": 2.536853553439626,
+          "max": 3.7732249313433774
+        },
+        "after_relaxation": {
+          "mean": 2.4079642766020184,
+          "median": 2.4429121456258547,
+          "p90": 3.615554014609937,
+          "rms": 2.581668935174154,
+          "max": 3.989189579884326
+        },
+        "after_net_rotation": {
+          "mean": 2.4079642766020184,
+          "median": 2.4429121456258547,
+          "p90": 3.615554014609937,
+          "rms": 2.581668935174154,
+          "max": 3.989189579884326
+        },
+        "actual_returned": {
+          "mean": 2.4079642766020184,
+          "median": 2.4429121456258547,
+          "p90": 3.615554014609937,
+          "rms": 2.581668935174154,
+          "max": 3.989189579884326
+        },
+        "local_mantle": {
+          "mean": 13.150830695740135,
+          "median": 14.189640981577071,
+          "p90": 19.712173471873037,
+          "rms": 14.183243122549046,
+          "max": 21.51662358013986
+        }
+      },
+      "component_speeds_mm_yr": {
+        "mantle": {
+          "mean": 1.9366173563690499,
+          "median": 1.9978848926137303,
+          "p90": 2.635404567939143,
+          "rms": 2.0288762371786944,
+          "max": 2.708381556189807
+        },
+        "ridge": {
+          "mean": 0.3278056710905512,
+          "median": 0.34303427054307234,
+          "p90": 0.44572244437967207,
+          "rms": 0.3431276804460052,
+          "max": 0.4802329821491181
+        },
+        "slab": {
+          "mean": 0.5093155263339261,
+          "median": 0.4746417733745932,
+          "p90": 0.8508754528292576,
+          "rms": 0.5647500240754986,
+          "max": 0.9184927445448866
+        },
+        "residual_slab": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        },
+        "gpe": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        },
+        "rollback": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        },
+        "collision_resistance": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        },
+        "transform_resistance": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        }
+      },
+      "metrics": {
+        "basal_drag_dissipation_w": 235083229.69239908,
+        "slab_bending_dissipation_w": 876743135.7231314,
+        "slab_mantle_dissipation_w": 115447433.98761061,
+        "total_dissipation_w": 1227273799.403141,
+        "basal_source_power_w": 974341460.206317,
+        "ridge_power_w": 18779145.078799725,
+        "slab_power_w": 234153194.11802423,
+        "total_source_power_w": 1227273799.4031408,
+        "transient_net_power_w": -7.80524444637391e-08,
+        "target_torque_relative_residual": 1.115373050751843e-16,
+        "net_power_balance_residual_w": -1.6036613463782338e-07,
+        "net_power_balance_relative_residual": -1.3066858814700852e-16,
+        "transient_net_power_fraction": -6.359823252292868e-17,
+        "total_drag_relative_asymmetry": 0.0,
+        "total_drag_min_normalized_eigenvalue": 0.03957649779436356,
+        "total_drag_condition_number": 17.27749140673675,
+        "basal_drag_dissipation_w_nonnegative": true,
+        "slab_bending_dissipation_w_nonnegative": true,
+        "slab_mantle_dissipation_w_nonnegative": true,
+        "total_dissipation_w_nonnegative": true
+      },
+      "inventory": {
+        "cumulative_accepted_area_km2": 7793798.676721935,
+        "cumulative_accepted_oceanic_volume_km3": 7588610.381416954,
+        "attached_area_km2": 5784306.468507662,
+        "attached_oceanic_volume_km3": 5627642.523405238,
+        "deep_oceanic_volume_km3": 0.0,
+        "unresolved_or_detached_oceanic_volume_km3": 1960967.8580117167,
+        "attached_mantle_volume_km3": 186165921.49420363,
+        "current_negative_buoyancy_mass_kg": 9.068381744074141e+17,
+        "initial_negative_buoyancy_mass_kg": 1.6457288577122886e+19,
+        "segment_count": 95,
+        "thermal_cohort_count": 111,
+        "unresolved_or_detached_fraction_of_accepted_volume": 0.25840934762097545
+      }
+    },
+    {
+      "path": "D:\\Moon Project\\mantle-convection\\analysis\\slab_sinking_validation\\frozen\\sinking_at50\\sinking_dt0p5.json",
+      "source": "D:\\Moon Project\\mantle-convection\\analysis\\slab_sinking_validation\\runs\\sinking_sub4_dt1\\elapsed_0050",
+      "time_myr": 50.87812194824219,
+      "evaluation": "frozen_counterfactual_force_probe_no_evolution",
+      "parameter_overrides": {
+        "plate_dynamics.young_slab_force_model": "viscous_sinking_v1"
+      },
+      "source_unchanged": true,
+      "speeds_mm_yr": {
+        "best_rigid_fit": {
+          "mean": 10.56553937755835,
+          "median": 11.390171059214774,
+          "p90": 13.991995376491912,
+          "rms": 11.02308935313491,
+          "max": 15.089619684691337
+        },
+        "simple_area_average": {
+          "mean": 7.051414474771636,
+          "median": 7.563460194107834,
+          "p90": 9.330297179062518,
+          "rms": 7.365012744650264,
+          "max": 10.305844009657113
+        },
+        "selected_projection": {
+          "mean": 1.9366173563690499,
+          "median": 1.9978848926137303,
+          "p90": 2.635404567939143,
+          "rms": 2.0288762371786944,
+          "max": 2.708381556189807
+        },
+        "after_memory": {
+          "mean": 1.9366173563690499,
+          "median": 1.9978848926137303,
+          "p90": 2.635404567939143,
+          "rms": 2.0288762371786944,
+          "max": 2.708381556189807
+        },
+        "target": {
+          "mean": 2.4079642766020184,
+          "median": 2.4429121456258547,
+          "p90": 3.615554014609937,
+          "rms": 2.581668935174154,
+          "max": 3.989189579884326
+        },
+        "current": {
+          "mean": 2.3750522335568176,
+          "median": 2.423670502560291,
+          "p90": 3.5443010492094684,
+          "rms": 2.536853553439626,
+          "max": 3.7732249313433774
+        },
+        "after_relaxation": {
+          "mean": 2.4079642766020184,
+          "median": 2.4429121456258547,
+          "p90": 3.615554014609937,
+          "rms": 2.581668935174154,
+          "max": 3.989189579884326
+        },
+        "after_net_rotation": {
+          "mean": 2.4079642766020184,
+          "median": 2.4429121456258547,
+          "p90": 3.615554014609937,
+          "rms": 2.581668935174154,
+          "max": 3.989189579884326
+        },
+        "actual_returned": {
+          "mean": 2.4079642766020184,
+          "median": 2.4429121456258547,
+          "p90": 3.615554014609937,
+          "rms": 2.581668935174154,
+          "max": 3.989189579884326
+        },
+        "local_mantle": {
+          "mean": 13.150830695740135,
+          "median": 14.189640981577071,
+          "p90": 19.712173471873037,
+          "rms": 14.183243122549046,
+          "max": 21.51662358013986
+        }
+      },
+      "component_speeds_mm_yr": {
+        "mantle": {
+          "mean": 1.9366173563690499,
+          "median": 1.9978848926137303,
+          "p90": 2.635404567939143,
+          "rms": 2.0288762371786944,
+          "max": 2.708381556189807
+        },
+        "ridge": {
+          "mean": 0.3278056710905512,
+          "median": 0.34303427054307234,
+          "p90": 0.44572244437967207,
+          "rms": 0.3431276804460052,
+          "max": 0.4802329821491181
+        },
+        "slab": {
+          "mean": 0.5093155263339261,
+          "median": 0.4746417733745932,
+          "p90": 0.8508754528292576,
+          "rms": 0.5647500240754986,
+          "max": 0.9184927445448866
+        },
+        "residual_slab": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        },
+        "gpe": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        },
+        "rollback": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        },
+        "collision_resistance": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        },
+        "transform_resistance": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        }
+      },
+      "metrics": {
+        "basal_drag_dissipation_w": 235083229.69239908,
+        "slab_bending_dissipation_w": 876743135.7231314,
+        "slab_mantle_dissipation_w": 115447433.98761061,
+        "total_dissipation_w": 1227273799.403141,
+        "basal_source_power_w": 974341460.206317,
+        "ridge_power_w": 18779145.078799725,
+        "slab_power_w": 234153194.11802423,
+        "total_source_power_w": 1227273799.4031408,
+        "transient_net_power_w": -7.80524444637391e-08,
+        "target_torque_relative_residual": 1.115373050751843e-16,
+        "net_power_balance_residual_w": -1.6036613463782338e-07,
+        "net_power_balance_relative_residual": -1.3066858814700852e-16,
+        "transient_net_power_fraction": -6.359823252292868e-17,
+        "total_drag_relative_asymmetry": 0.0,
+        "total_drag_min_normalized_eigenvalue": 0.03957649779436356,
+        "total_drag_condition_number": 17.27749140673675,
+        "basal_drag_dissipation_w_nonnegative": true,
+        "slab_bending_dissipation_w_nonnegative": true,
+        "slab_mantle_dissipation_w_nonnegative": true,
+        "total_dissipation_w_nonnegative": true
+      },
+      "inventory": {
+        "cumulative_accepted_area_km2": 7793798.676721935,
+        "cumulative_accepted_oceanic_volume_km3": 7588610.381416954,
+        "attached_area_km2": 5784306.468507662,
+        "attached_oceanic_volume_km3": 5627642.523405238,
+        "deep_oceanic_volume_km3": 0.0,
+        "unresolved_or_detached_oceanic_volume_km3": 1960967.8580117167,
+        "attached_mantle_volume_km3": 186165921.49420363,
+        "current_negative_buoyancy_mass_kg": 9.068381744074141e+17,
+        "initial_negative_buoyancy_mass_kg": 1.6457288577122886e+19,
+        "segment_count": 95,
+        "thermal_cohort_count": 111,
+        "unresolved_or_detached_fraction_of_accepted_volume": 0.25840934762097545
+      }
+    },
+    {
+      "path": "D:\\Moon Project\\mantle-convection\\analysis\\slab_sinking_validation\\frozen\\sinking_at50\\upper_bound.json",
+      "source": "D:\\Moon Project\\mantle-convection\\analysis\\slab_sinking_validation\\runs\\sinking_sub4_dt1\\elapsed_0050",
+      "time_myr": 50.87812194824219,
+      "evaluation": "frozen_counterfactual_force_probe_no_evolution",
+      "parameter_overrides": {
+        "plate_dynamics.young_slab_force_model": "full_transmission_upper_bound"
+      },
+      "source_unchanged": true,
+      "speeds_mm_yr": {
+        "best_rigid_fit": {
+          "mean": 10.56553937755835,
+          "median": 11.390171059214774,
+          "p90": 13.991995376491912,
+          "rms": 11.02308935313491,
+          "max": 15.089619684691337
+        },
+        "simple_area_average": {
+          "mean": 7.051414474771636,
+          "median": 7.563460194107834,
+          "p90": 9.330297179062518,
+          "rms": 7.365012744650264,
+          "max": 10.305844009657113
+        },
+        "selected_projection": {
+          "mean": 10.56553937755836,
+          "median": 11.390171059214788,
+          "p90": 13.991995376491985,
+          "rms": 11.023089353134926,
+          "max": 15.089619684691414
+        },
+        "after_memory": {
+          "mean": 10.56553937755836,
+          "median": 11.390171059214788,
+          "p90": 13.991995376491985,
+          "rms": 11.023089353134926,
+          "max": 15.089619684691414
+        },
+        "target": {
+          "mean": 15.548666296878357,
+          "median": 15.400958155323197,
+          "p90": 22.044391726115702,
+          "rms": 16.43309104733986,
+          "max": 24.747558139033604
+        },
+        "current": {
+          "mean": 2.3750522335568176,
+          "median": 2.423670502560291,
+          "p90": 3.5443010492094684,
+          "rms": 2.536853553439626,
+          "max": 3.7732249313433774
+        },
+        "after_relaxation": {
+          "mean": 15.548666296878357,
+          "median": 15.400958155323197,
+          "p90": 22.044391726115702,
+          "rms": 16.43309104733986,
+          "max": 24.747558139033604
+        },
+        "after_net_rotation": {
+          "mean": 15.548666296878357,
+          "median": 15.400958155323197,
+          "p90": 22.044391726115702,
+          "rms": 16.43309104733986,
+          "max": 24.747558139033604
+        },
+        "actual_returned": {
+          "mean": 15.548666296878357,
+          "median": 15.400958155323197,
+          "p90": 22.044391726115702,
+          "rms": 16.43309104733986,
+          "max": 24.747558139033604
+        },
+        "local_mantle": {
+          "mean": 13.150830695740135,
+          "median": 14.189640981577071,
+          "p90": 19.712173471873037,
+          "rms": 14.183243122549046,
+          "max": 21.51662358013986
+        }
+      },
+      "component_speeds_mm_yr": {
+        "mantle": {
+          "mean": 10.56553937755836,
+          "median": 11.390171059214788,
+          "p90": 13.991995376491985,
+          "rms": 11.023089353134926,
+          "max": 15.089619684691414
+        },
+        "ridge": {
+          "mean": 0.47528708438866485,
+          "median": 0.4670007834446082,
+          "p90": 0.8973217395388079,
+          "rms": 0.5354107883368843,
+          "max": 1.0090581988961518
+        },
+        "slab": {
+          "mean": 5.144904633393089,
+          "median": 4.665394965326165,
+          "p90": 8.994698872491025,
+          "rms": 5.796288102560237,
+          "max": 9.732469608458873
+        },
+        "residual_slab": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        },
+        "gpe": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        },
+        "rollback": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        },
+        "collision_resistance": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        },
+        "transform_resistance": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        }
+      },
+      "metrics": {
+        "basal_drag_dissipation_w": 9524870365.215666,
+        "slab_bending_dissipation_w": 0.0,
+        "slab_mantle_dissipation_w": 0.0,
+        "total_dissipation_w": 9524870365.215666,
+        "basal_source_power_w": 6276973314.350947,
+        "ridge_power_w": 103823516.5682436,
+        "slab_power_w": 3144073534.2964644,
+        "total_source_power_w": 9524870365.215656,
+        "transient_net_power_w": -2.715656873201819e-06,
+        "target_torque_relative_residual": 6.185168416954448e-16,
+        "net_power_balance_residual_w": -6.821086290860681e-06,
+        "net_power_balance_relative_residual": -7.161342915249467e-16,
+        "transient_net_power_fraction": -2.85112213507835e-16,
+        "total_drag_relative_asymmetry": 0.0,
+        "total_drag_min_normalized_eigenvalue": 0.15121384689437267,
+        "total_drag_condition_number": 2.644957064906133,
+        "basal_drag_dissipation_w_nonnegative": true,
+        "slab_bending_dissipation_w_nonnegative": true,
+        "slab_mantle_dissipation_w_nonnegative": true,
+        "total_dissipation_w_nonnegative": true
+      },
+      "inventory": {
+        "cumulative_accepted_area_km2": 7793798.676721935,
+        "cumulative_accepted_oceanic_volume_km3": 7588610.381416954,
+        "attached_area_km2": 5784306.468507662,
+        "attached_oceanic_volume_km3": 5627642.523405238,
+        "deep_oceanic_volume_km3": 0.0,
+        "unresolved_or_detached_oceanic_volume_km3": 1960967.8580117167,
+        "attached_mantle_volume_km3": 186165921.49420363,
+        "current_negative_buoyancy_mass_kg": 9.068381744074141e+17,
+        "initial_negative_buoyancy_mass_kg": 1.6457288577122886e+19,
+        "segment_count": 95,
+        "thermal_cohort_count": 111,
+        "unresolved_or_detached_fraction_of_accepted_volume": 0.25840934762097545
+      }
+    },
+    {
+      "path": "D:\\Moon Project\\mantle-convection\\analysis\\slab_sinking_validation\\frozen\\sinking_at50\\viscosity_contrast_10.json",
+      "source": "D:\\Moon Project\\mantle-convection\\analysis\\slab_sinking_validation\\runs\\sinking_sub4_dt1\\elapsed_0050",
+      "time_myr": 50.87812194824219,
+      "evaluation": "frozen_counterfactual_force_probe_no_evolution",
+      "parameter_overrides": {
+        "plate_dynamics.young_slab_force_model": "viscous_sinking_v1",
+        "plate_dynamics.young_slab_viscosity_contrast": 10.0
+      },
+      "source_unchanged": true,
+      "speeds_mm_yr": {
+        "best_rigid_fit": {
+          "mean": 10.56553937755835,
+          "median": 11.390171059214774,
+          "p90": 13.991995376491912,
+          "rms": 11.02308935313491,
+          "max": 15.089619684691337
+        },
+        "simple_area_average": {
+          "mean": 7.051414474771636,
+          "median": 7.563460194107834,
+          "p90": 9.330297179062518,
+          "rms": 7.365012744650264,
+          "max": 10.305844009657113
+        },
+        "selected_projection": {
+          "mean": 5.520369226191329,
+          "median": 5.720709933235655,
+          "p90": 7.504811185104299,
+          "rms": 5.77795771264532,
+          "max": 7.799202556691782
+        },
+        "after_memory": {
+          "mean": 5.520369226191329,
+          "median": 5.720709933235655,
+          "p90": 7.504811185104299,
+          "rms": 5.77795771264532,
+          "max": 7.799202556691782
+        },
+        "target": {
+          "mean": 6.853122724418514,
+          "median": 6.909710234229106,
+          "p90": 9.49662018887206,
+          "rms": 7.232445031119146,
+          "max": 10.381638864580921
+        },
+        "current": {
+          "mean": 2.3750522335568176,
+          "median": 2.423670502560291,
+          "p90": 3.5443010492094684,
+          "rms": 2.536853553439626,
+          "max": 3.7732249313433774
+        },
+        "after_relaxation": {
+          "mean": 6.853122724418514,
+          "median": 6.909710234229106,
+          "p90": 9.49662018887206,
+          "rms": 7.232445031119146,
+          "max": 10.381638864580921
+        },
+        "after_net_rotation": {
+          "mean": 6.853122724418514,
+          "median": 6.909710234229106,
+          "p90": 9.49662018887206,
+          "rms": 7.232445031119146,
+          "max": 10.381638864580921
+        },
+        "actual_returned": {
+          "mean": 6.853122724418514,
+          "median": 6.909710234229106,
+          "p90": 9.49662018887206,
+          "rms": 7.232445031119146,
+          "max": 10.381638864580921
+        },
+        "local_mantle": {
+          "mean": 13.150830695740135,
+          "median": 14.189640981577071,
+          "p90": 19.712173471873037,
+          "rms": 14.183243122549046,
+          "max": 21.51662358013986
+        }
+      },
+      "component_speeds_mm_yr": {
+        "mantle": {
+          "mean": 5.520369226191329,
+          "median": 5.720709933235655,
+          "p90": 7.504811185104299,
+          "rms": 5.77795771264532,
+          "max": 7.799202556691782
+        },
+        "ridge": {
+          "mean": 0.33406345229960127,
+          "median": 0.33412415833749304,
+          "p90": 0.5598006191418888,
+          "rms": 0.3653594422368782,
+          "max": 0.6310498556274301
+        },
+        "slab": {
+          "mean": 1.3474382212159624,
+          "median": 1.2660156928622497,
+          "p90": 2.2505463227627853,
+          "rms": 1.4921603565354897,
+          "max": 2.402563740342311
+        },
+        "residual_slab": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        },
+        "gpe": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        },
+        "rollback": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        },
+        "collision_resistance": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        },
+        "transform_resistance": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        }
+      },
+      "metrics": {
+        "basal_drag_dissipation_w": 1844976478.6701095,
+        "slab_bending_dissipation_w": 729002207.1851422,
+        "slab_mantle_dissipation_w": 917035890.7556102,
+        "total_dissipation_w": 3491014576.610862,
+        "basal_source_power_w": 2783664742.772133,
+        "ridge_power_w": 45047916.36988618,
+        "slab_power_w": 662301917.468843,
+        "total_source_power_w": 3491014576.610861,
+        "transient_net_power_w": 2.019246013938356e-07,
+        "target_torque_relative_residual": 1.3951155178631373e-16,
+        "net_power_balance_residual_w": -1.1555989178000855e-06,
+        "net_power_balance_relative_residual": -3.3102093744964e-16,
+        "transient_net_power_fraction": 5.784123697067674e-17,
+        "total_drag_relative_asymmetry": 0.0,
+        "total_drag_min_normalized_eigenvalue": 0.12431561659768556,
+        "total_drag_condition_number": 4.176653915463569,
+        "basal_drag_dissipation_w_nonnegative": true,
+        "slab_bending_dissipation_w_nonnegative": true,
+        "slab_mantle_dissipation_w_nonnegative": true,
+        "total_dissipation_w_nonnegative": true
+      },
+      "inventory": {
+        "cumulative_accepted_area_km2": 7793798.676721935,
+        "cumulative_accepted_oceanic_volume_km3": 7588610.381416954,
+        "attached_area_km2": 5784306.468507662,
+        "attached_oceanic_volume_km3": 5627642.523405238,
+        "deep_oceanic_volume_km3": 0.0,
+        "unresolved_or_detached_oceanic_volume_km3": 1960967.8580117167,
+        "attached_mantle_volume_km3": 186165921.49420363,
+        "current_negative_buoyancy_mass_kg": 9.068381744074141e+17,
+        "initial_negative_buoyancy_mass_kg": 1.6457288577122886e+19,
+        "segment_count": 95,
+        "thermal_cohort_count": 111,
+        "unresolved_or_detached_fraction_of_accepted_volume": 0.25840934762097545
+      }
+    },
+    {
+      "path": "D:\\Moon Project\\mantle-convection\\analysis\\slab_sinking_validation\\frozen\\sinking_at50\\viscosity_contrast_1000.json",
+      "source": "D:\\Moon Project\\mantle-convection\\analysis\\slab_sinking_validation\\runs\\sinking_sub4_dt1\\elapsed_0050",
+      "time_myr": 50.87812194824219,
+      "evaluation": "frozen_counterfactual_force_probe_no_evolution",
+      "parameter_overrides": {
+        "plate_dynamics.young_slab_force_model": "viscous_sinking_v1",
+        "plate_dynamics.young_slab_viscosity_contrast": 1000.0
+      },
+      "source_unchanged": true,
+      "speeds_mm_yr": {
+        "best_rigid_fit": {
+          "mean": 10.56553937755835,
+          "median": 11.390171059214774,
+          "p90": 13.991995376491912,
+          "rms": 11.02308935313491,
+          "max": 15.089619684691337
+        },
+        "simple_area_average": {
+          "mean": 7.051414474771636,
+          "median": 7.563460194107834,
+          "p90": 9.330297179062518,
+          "rms": 7.365012744650264,
+          "max": 10.305844009657113
+        },
+        "selected_projection": {
+          "mean": 0.2626524320155887,
+          "median": 0.2767498245172909,
+          "p90": 0.3579144428069863,
+          "rms": 0.27556127190918916,
+          "max": 0.3775845403062759
+        },
+        "after_memory": {
+          "mean": 0.2626524320155887,
+          "median": 0.2767498245172909,
+          "p90": 0.3579144428069863,
+          "rms": 0.27556127190918916,
+          "max": 0.3775845403062759
+        },
+        "target": {
+          "mean": 0.3786152051454363,
+          "median": 0.1742195968126857,
+          "p90": 0.8257092439549509,
+          "rms": 0.4905276010248379,
+          "max": 0.9049526200817346
+        },
+        "current": {
+          "mean": 2.3750522335568176,
+          "median": 2.423670502560291,
+          "p90": 3.5443010492094684,
+          "rms": 2.536853553439626,
+          "max": 3.7732249313433774
+        },
+        "after_relaxation": {
+          "mean": 0.37861520514543634,
+          "median": 0.1742195968126857,
+          "p90": 0.8257092439549509,
+          "rms": 0.4905276010248379,
+          "max": 0.9049526200817349
+        },
+        "after_net_rotation": {
+          "mean": 0.37861520514543634,
+          "median": 0.1742195968126857,
+          "p90": 0.8257092439549509,
+          "rms": 0.4905276010248379,
+          "max": 0.9049526200817349
+        },
+        "actual_returned": {
+          "mean": 0.37861520514543634,
+          "median": 0.1742195968126857,
+          "p90": 0.8257092439549509,
+          "rms": 0.4905276010248379,
+          "max": 0.9049526200817349
+        },
+        "local_mantle": {
+          "mean": 13.150830695740135,
+          "median": 14.189640981577071,
+          "p90": 19.712173471873037,
+          "rms": 14.183243122549046,
+          "max": 21.51662358013986
+        }
+      },
+      "component_speeds_mm_yr": {
+        "mantle": {
+          "mean": 0.2626524320155887,
+          "median": 0.2767498245172909,
+          "p90": 0.3579144428069863,
+          "rms": 0.27556127190918916,
+          "max": 0.3775845403062759
+        },
+        "ridge": {
+          "mean": 0.32464940880452625,
+          "median": 0.35721355437990293,
+          "p90": 0.4143416160854052,
+          "rms": 0.3375500334723608,
+          "max": 0.4262558741459377
+        },
+        "slab": {
+          "mean": 0.07873133797527795,
+          "median": 0.07280955525118595,
+          "p90": 0.12792956791010532,
+          "rms": 0.08638039945976565,
+          "max": 0.13927330111449146
+        },
+        "residual_slab": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        },
+        "gpe": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        },
+        "rollback": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        },
+        "collision_resistance": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        },
+        "transform_resistance": {
+          "mean": 0.0,
+          "median": 0.0,
+          "p90": 0.0,
+          "rms": 0.0,
+          "max": 0.0
+        }
+      },
+      "metrics": {
+        "basal_drag_dissipation_w": 8486868.035342265,
+        "slab_bending_dissipation_w": 157907044.76581523,
+        "slab_mantle_dissipation_w": 3828973.8216203307,
+        "total_dissipation_w": 170222886.62277785,
+        "basal_source_power_w": 130797596.71757203,
+        "ridge_power_w": 7434165.069286141,
+        "slab_power_w": 31991124.835919578,
+        "total_source_power_w": 170222886.6227778,
+        "transient_net_power_w": -2.3884057048904783e-08,
+        "target_torque_relative_residual": 2.6399611414966623e-16,
+        "net_power_balance_residual_w": -3.572058772648584e-08,
+        "net_power_balance_relative_residual": -2.0984597568037013e-16,
+        "transient_net_power_fraction": -1.4031049245353833e-16,
+        "total_drag_relative_asymmetry": 0.0,
+        "total_drag_min_normalized_eigenvalue": 0.004732603762466964,
+        "total_drag_condition_number": 148.6054709109842,
+        "basal_drag_dissipation_w_nonnegative": true,
+        "slab_bending_dissipation_w_nonnegative": true,
+        "slab_mantle_dissipation_w_nonnegative": true,
+        "total_dissipation_w_nonnegative": true
+      },
+      "inventory": {
+        "cumulative_accepted_area_km2": 7793798.676721935,
+        "cumulative_accepted_oceanic_volume_km3": 7588610.381416954,
+        "attached_area_km2": 5784306.468507662,
+        "attached_oceanic_volume_km3": 5627642.523405238,
+        "deep_oceanic_volume_km3": 0.0,
+        "unresolved_or_detached_oceanic_volume_km3": 1960967.8580117167,
+        "attached_mantle_volume_km3": 186165921.49420363,
+        "current_negative_buoyancy_mass_kg": 9.068381744074141e+17,
+        "initial_negative_buoyancy_mass_kg": 1.6457288577122886e+19,
+        "segment_count": 95,
+        "thermal_cohort_count": 111,
+        "unresolved_or_detached_fraction_of_accepted_volume": 0.25840934762097545
+      }
+    }
+  ],
+  "note": "A small target residual alone does not establish physical closure of a relaxed transient velocity. Inspect source power, all positive dissipations, and transient residual work together."
+}

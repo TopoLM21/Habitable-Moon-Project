@@ -98,6 +98,39 @@ def test_sample_checkpoint_resumes_actual_next_interval(cooling):
     assert [item.thermal for item in a] == [item.thermal for item in b]
 
 
+def test_passive_column_heat_never_changes_the_global_reservoir(cooling):
+    owner, _, state, _ = cooling
+    other = StarterLoadingModel(owner.thermal, owner.tides,
+        replace(owner.shell, conductivity_w_m_k=2*owner.shell.conductivity_w_m_k))
+    one, _ = owner.advance(state, 3., max_sample_myr=.25, max_thermal_step_myr=.1)
+    two, _ = other.advance(state, 3., max_sample_myr=.25, max_thermal_step_myr=.1)
+    # A different passive conductive exchange is real in that column's own
+    # ledger but cannot be added to or subtracted from global mantle enthalpy.
+    assert not np.array_equal(one.column_enthalpy, two.column_enthalpy)
+    assert one.boundary_energy_j_m2 != two.boundary_energy_j_m2
+    assert one.thermal == two.thermal
+    assert one.orbit == two.orbit
+    for loading, result in ((owner, one), (other, two)):
+        sample = loading.sample(result)
+        assert abs(sample.thermal["relative_energy_residual"]) < 2e-12
+        assert abs(sample.column_energy_residual_j_m2)/state.initial_column_energy_j_m2 < 2e-12
+
+
+def test_late_global_heat_converges_across_outer_intervals_and_internal_steps(cooling):
+    owner, _, state, _ = cooling
+    late, _ = owner.advance(state, 50., max_sample_myr=1., max_thermal_step_myr=.5)
+    coarse, _ = owner.advance(late, 100., max_sample_myr=1., max_thermal_step_myr=.5)
+    fine = deepcopy(late)
+    for end in (60., 70., 80., 90., 100.):
+        fine, _ = owner.advance(fine, end, max_sample_myr=1., max_thermal_step_myr=.1)
+    a, b = owner.sample(coarse).thermal, owner.sample(fine).thermal
+    for field in ("mantle_temperature_k", "surface_temperature_k"):
+        assert a[field] == pytest.approx(b[field], abs=2e-3)
+    assert a["mantle_to_surface_flux_w_m2"] == pytest.approx(
+        b["mantle_to_surface_flux_w_m2"], rel=2e-5)
+    assert max(abs(a["relative_energy_residual"]), abs(b["relative_energy_residual"])) < 2e-11
+
+
 def test_thermal_event_points_are_in_the_sample_history(cooling):
     _, _, final, samples = cooling
     times = np.array([item.time_myr for item in samples])

@@ -18,6 +18,7 @@ import numpy as np
 
 from .genesis import (GenesisParameters, GenesisState, SECONDS_PER_MYR, ENERGY_SCALE,
                       advance, diagnose, initial_state, temperatures)
+from .genesis_checkpoint_compat import MODEL_VERSION, require_thermal_model_version
 from .genesis_shell import (Membrane, ShellParameters, ShellState, advance_shell,
     diagnose_shell, initialize_shell, principal_tensile, shell_fields)
 from .mesh import build_icosphere
@@ -262,7 +263,7 @@ def save_onset_checkpoint(path, model, shell, thermal_state, onset, orbit, contr
             else:
                 scalars[prefix][f.name] = value
     parameters = _parameter_block(model)
-    meta = {"format": ONSET_VERSION, "parameters": parameters,
+    meta = {"format": ONSET_VERSION, "thermal_model_version": MODEL_VERSION, "parameters": parameters,
         "parameter_hash": hashlib.sha256(json.dumps(parameters, sort_keys=True).encode()).hexdigest(),
         "states": scalars, "thermal_state": asdict(thermal_state), "orbit": asdict(orbit),
         "controls": controls, "provenance": provenance}
@@ -280,6 +281,7 @@ def load_onset_checkpoint(path):
             parameters = meta["parameters"]
             if meta["format"] != ONSET_VERSION or hashlib.sha256(json.dumps(parameters, sort_keys=True).encode()).hexdigest() != meta["parameter_hash"]:
                 raise ValueError("Onset checkpoint version/parameter hash mismatch")
+            require_thermal_model_version(meta)
             model = OnsetModel(ShellParameters(**parameters["shell"]), GenesisParameters(**parameters["thermal"]),
                                OnsetParameters(**parameters["onset"]), TidalParameters(**parameters["tides"]))
             states = {}

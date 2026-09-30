@@ -124,6 +124,11 @@ def advance_slab_breakoff(
 ) -> tuple[SubductionMemoryState, SlabBreakoffDiagnostics]:
     if dt_myr <= 0.0:
         raise ValueError("dt_myr must be positive")
+    if memory.young_boundary_state is not None:
+        # The accepted-material SI mode has no calibrated necking law.  Do not
+        # delete its conservative inventory with the legacy length/age proxy.
+        memory.time_myr = float(state.time_myr + dt_myr)
+        return memory, diagnose_slab_breakoff(memory)
     if not params.enabled:
         return memory, diagnose_slab_breakoff(memory)
 

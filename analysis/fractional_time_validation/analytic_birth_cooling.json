@@ -1,0 +1,37 @@
+{
+  "scope": "Constant creation rate and constant boundary temperatures; tiny positive chemical crust, inactive reference lid cap",
+  "step_myr": 0.75,
+  "crust_thickness_km": 1e-06,
+  "coefficient_km_per_sqrt_myr": 11.863973842149502,
+  "analytic_mean_cold_thickness_km": 6.849667491423694,
+  "cases": [
+    {
+      "quadrature_nodes": 0,
+      "time_scheme": "endpoint",
+      "mean_cold_thickness_km": 0.0,
+      "relative_error": -1.0,
+      "mean_age_myr": 0.0
+    },
+    {
+      "quadrature_nodes": 2,
+      "time_scheme": "gauss",
+      "mean_cold_thickness_km": 6.92385630577879,
+      "relative_error": 0.010831009599806984,
+      "mean_age_myr": 0.375
+    },
+    {
+      "quadrature_nodes": 4,
+      "time_scheme": "gauss",
+      "mean_cold_thickness_km": 6.861595970338553,
+      "relative_error": 0.0017414683164977962,
+      "mean_age_myr": 0.375
+    },
+    {
+      "quadrature_nodes": 8,
+      "time_scheme": "gauss",
+      "mean_cold_thickness_km": 6.851402992958649,
+      "relative_error": 0.00025337018725779537,
+      "mean_age_myr": 0.37500000000000006
+    }
+  ]
+}

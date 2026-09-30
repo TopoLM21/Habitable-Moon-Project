@@ -1,0 +1,122 @@
+{
+  "first": "D:\\Moon Project\\mantle-convection\\analysis\\slab_sinking_validation\\runs\\validated_parity_cpu1\\elapsed_0051",
+  "second": "D:\\Moon Project\\mantle-convection\\analysis\\slab_sinking_followup\\runs\\legacy04_resume\\elapsed_0051",
+  "execution": [
+    {
+      "cpu_workers": 1,
+      "render_workers": 1,
+      "plate_force_backend": "numpy_si",
+      "process_priority": "normal",
+      "applied_priority": {
+        "kind": "windows_priority_class",
+        "value": 32
+      },
+      "cell_kernels": true,
+      "numeric_kernels": true,
+      "single_source_cells": true,
+      "cell_workers": 1,
+      "arc_kernels": true,
+      "assignment_columns": false,
+      "assignment_optimized": true,
+      "boundary_forces": false,
+      "frame_interval_myr": 1000000.0,
+      "surface_only_frames": true,
+      "finalize": false
+    },
+    {
+      "cpu_workers": 1,
+      "render_workers": 1,
+      "plate_force_backend": "numpy_si",
+      "process_priority": "normal",
+      "applied_priority": {
+        "kind": "windows_priority_class",
+        "value": 32
+      },
+      "cell_kernels": true,
+      "numeric_kernels": true,
+      "single_source_cells": true,
+      "cell_workers": 1,
+      "arc_kernels": true,
+      "assignment_columns": false,
+      "assignment_optimized": true,
+      "boundary_forces": false,
+      "frame_interval_myr": 1000000.0,
+      "surface_only_frames": true,
+      "finalize": false
+    }
+  ],
+  "arrays": {
+    "mature_checkpoint/state.npz": {
+      "same_array_names": true,
+      "bitwise_identical": true,
+      "differences": []
+    },
+    "young_context/starter_checkpoint.npz": {
+      "same_array_names": true,
+      "bitwise_identical": true,
+      "differences": []
+    },
+    "young_context/fracture_memory.npz": {
+      "same_array_names": true,
+      "bitwise_identical": true,
+      "differences": []
+    }
+  },
+  "scientific_metadata_equal": false,
+  "scientific_metadata_differences": [
+    {
+      "field": "subduction_memory.young_boundary_state.mechanical_detachments[54].bending_feed_resistance_n",
+      "first": null,
+      "second": 1.053182407390691e+17
+    },
+    {
+      "field": "subduction_memory.young_boundary_state.mechanical_detachments[54].cold_hinge_thickness_km",
+      "first": null,
+      "second": 33.252993234704185
+    },
+    {
+      "field": "subduction_memory.young_boundary_state.mechanical_detachments[54].feed_m_s",
+      "first": null,
+      "second": 4.672301576737115e-11
+    },
+    {
+      "field": "subduction_memory.young_boundary_state.mechanical_detachments[54].gravitational_feed_force_n",
+      "first": null,
+      "second": 2.3754668001733885e+17
+    },
+    {
+      "field": "subduction_memory.young_boundary_state.mechanical_detachments[54].mantle_feed_resistance_n",
+      "first": null,
+      "second": 3773724356844929.0
+    },
+    {
+      "field": "subduction_memory.young_boundary_state.mechanical_detachments[54].neck_strength_pa",
+      "first": null,
+      "second": 3789663.2732948363
+    },
+    {
+      "field": "subduction_memory.young_boundary_state.mechanical_detachments[54].no_eduction_reaction_n",
+      "first": null,
+      "second": 0.0
+    },
+    {
+      "field": "subduction_memory.young_boundary_state.mechanical_detachments[54].source_face",
+      "first": null,
+      "second": 4213
+    },
+    {
+      "field": "subduction_memory.young_boundary_state.mechanical_detachments[54].trench_length_km",
+      "first": null,
+      "second": 378.6170811391224
+    },
+    {
+      "field": "subduction_memory.young_boundary_state.mechanical_detachments[54].unconstrained_feed_m_s",
+      "first": null,
+      "second": 4.672301576737115e-11
+    }
+  ],
+  "physical_report_equal": true,
+  "physical_report_differences": [],
+  "all_checks_passed": true,
+  "scientific_state_bitwise_identical": false
+}

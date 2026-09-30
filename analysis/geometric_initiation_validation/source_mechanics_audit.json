@@ -1,0 +1,1238 @@
+{
+  "format": "geometric-initiation-source-mechanics-audit-1",
+  "method": "Read real Starter and saved50 checkpoints; inspect exact persisted fields; evaluate existing constitutive map for tangent-plane sign invariance.",
+  "production_sha256": {
+    "tectonics/genesis_fault_law.py": "f35aa6cde2d20c8c06b34516228ac1bdb1d8b95678d0050f35b5ccf766961ab9",
+    "tectonics/genesis_faults.py": "1d30fe2e50b1001b06dc3be7cc532ad341b9a53ab6e7496c73bd2d62402d81ef",
+    "tectonics/genesis_starter.py": "1f5f825b236d40a46fa0523e1afb951db3a348ca48d6de551a4236702e75159c",
+    "tectonics/genesis_starter_fracture.py": "40fdbf833ab9567698744e100b2f5844840271fede005f8d96ea4a9a061b36a7",
+    "tectonics/genesis_plate_membrane_diagnostic.py": "a7477b1bc8f9bc0c4ec9b8874411202eeaebe5509f8bff5accf815849452f7ae",
+    "tectonics/mantle.py": "97d21a5816fda11e3ecf58b101e62d44b5a2f5e3de294384b1b1f60e68cba376",
+    "tectonics/young_boundary.py": "6244626de6cc4acd93372b036df12ceb3941a3b8ba9037bdb81a4838c9ba7600"
+  },
+  "source_type_fields": {
+    "StarterState": [
+      "thermal_context",
+      "system",
+      "damage",
+      "cooling_stress_pa",
+      "water_access",
+      "yield_ratio",
+      "strength_pa",
+      "eligible",
+      "split_band",
+      "events",
+      "first_fracture_time_myr",
+      "thermal_samples",
+      "tidal_peak_mpa",
+      "event_time_uncertainty_myr",
+      "kinematic_fit_relative_residual",
+      "stopped_reason"
+    ],
+    "YoungFractureMemory": [
+      "damage",
+      "cooling_stress_pa",
+      "water_access",
+      "yield_ratio",
+      "strength_pa",
+      "eligible",
+      "consumed_band",
+      "first_fracture_time_myr",
+      "tidal_peak_mpa"
+    ],
+    "FaultState": [
+      "time_myr",
+      "vertices",
+      "radius_km",
+      "layer_mass_kg",
+      "column_enthalpy",
+      "elastic_strain",
+      "damage",
+      "water_access",
+      "peak_tensile_pa",
+      "weak_duration_myr",
+      "path_length_km",
+      "velocity_km_myr",
+      "tidal_stress_mpa",
+      "initial_column_energy_j",
+      "initial_mass_kg",
+      "membrane_established",
+      "boundary_energy_j",
+      "tidal_heat_received_j",
+      "first_fracture_time_myr",
+      "equilibrium_residual",
+      "last_incremental_strain",
+      "last_step_myr",
+      "accepted_steps",
+      "rejected_steps",
+      "newton_iterations",
+      "stopped_reason",
+      "fault_active",
+      "plane_normal",
+      "activation_time_myr",
+      "fault_candidate_age_myr",
+      "cumulative_shear",
+      "signed_shear",
+      "last_shear_increment",
+      "shear_stress_pa",
+      "normal_stress_pa",
+      "shear_strength_pa",
+      "friction_work_cell_j",
+      "viscous_work_cell_j",
+      "friction_work_j",
+      "viscous_fault_work_j"
+    ]
+  },
+  "tangent_plane_sign_control": {
+    "input_planes": [
+      [
+        0.6,
+        0.8
+      ],
+      [
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0
+      ]
+    ],
+    "shear_increment": [
+      0.00020775483638721512,
+      0.0015273016477433822,
+      -0.0012087903484505145
+    ],
+    "maximum_difference_after_normal_sign_flip_by_output": {
+      "elastic_strain": 0.0,
+      "stress_pa": 0.0,
+      "tangent_pa": 0.0,
+      "shear_increment": 0.0,
+      "shear_stress_pa": 0.0,
+      "normal_stress_pa": 0.0,
+      "yield_strength_pa": 0.0,
+      "friction_work_density_j_m3": 0.0,
+      "viscous_work_density_j_m3": 0.0
+    },
+    "interpretation": "n and -n produce identical in-plane return maps, including signed shear. Neither normal sign nor signed shear supplies a down-dip direction."
+  },
+  "sources": {
+    "starter": {
+      "provenance": {
+        "source": "D:\\Moon Project\\mantle-convection\\results\\genesis_runs\\starter_20260928_192306_547551\\starter_checkpoint.npz",
+        "source_sha256": {
+          "D:\\Moon Project\\mantle-convection\\results\\genesis_runs\\starter_20260928_192306_547551\\starter_checkpoint.npz": "b4584dd66208ff80aea18a178c38da2b96e353c723663251091886dee49e87f6",
+          "D:\\Moon Project\\mantle-convection\\results\\genesis_runs\\starter_20260928_192306_547551\\parameters.json": "01eec3e1cb40b5f71b6b52aec5e1c6d9bc0c40c04587a797729e09e420b30877"
+        },
+        "source_mechanics_version": "young-mechanics-0.5",
+        "source_time_myr": 0.8781219482421875,
+        "origin_time_myr": 0.8781219482421875,
+        "subdivisions": 4,
+        "radius_km": 5287.0,
+        "newborn_crust_thickness_km": 1.0
+      },
+      "checkpoint_state_fields": [
+        "time_myr",
+        "cell_plate",
+        "crust_type",
+        "crust_age_myr",
+        "crust_thickness_km",
+        "tidal_damage",
+        "rift_extension",
+        "extension_age_myr",
+        "collision_seam_weakness",
+        "intraplate_stress",
+        "supercontinent_heat",
+        "continental_fraction",
+        "continental_volume_km3",
+        "mantle_lithosphere_thickness_km",
+        "mantle_lithosphere_density_anomaly_kg_m3",
+        "sediment_volume_km3",
+        "continental_lithosphere_age_myr",
+        "mantle_depletion_fraction",
+        "craton_strength",
+        "oceanic_volume_km3"
+      ],
+      "fracture_memory_fields": [
+        "damage",
+        "cooling_stress_pa",
+        "water_access",
+        "yield_ratio",
+        "strength_pa",
+        "eligible",
+        "consumed_band",
+        "first_fracture_time_myr",
+        "tidal_peak_mpa"
+      ],
+      "fracture_fields": {
+        "damage": {
+          "shape": [
+            5120
+          ],
+          "dtype": "float64",
+          "minimum": 6.048074834951777e-05,
+          "maximum": 0.9863766642958482,
+          "nonzero_count": 5120
+        },
+        "cooling_stress_pa": {
+          "shape": [
+            5120
+          ],
+          "dtype": "float64",
+          "minimum": -431318.47202472336,
+          "maximum": 245600.96632853505,
+          "nonzero_count": 5120
+        },
+        "water_access": {
+          "shape": [
+            5120
+          ],
+          "dtype": "float64",
+          "minimum": 0.0,
+          "maximum": 0.0,
+          "nonzero_count": 0
+        },
+        "yield_ratio": {
+          "shape": [
+            5120
+          ],
+          "dtype": "float64",
+          "minimum": 0.8696751012127493,
+          "maximum": 10.626589826131816,
+          "nonzero_count": 5120
+        },
+        "strength_pa": {
+          "shape": [
+            5120
+          ],
+          "dtype": "float64",
+          "minimum": 3729839.248618724,
+          "maximum": 6516990.704621841,
+          "nonzero_count": 5120
+        }
+      },
+      "starter_effective_mantle_tensor": {
+        "shape": [
+          5120,
+          3
+        ],
+        "dtype": "float64",
+        "minimum": -0.8530342592389794,
+        "maximum": 0.8503051074833938,
+        "nonzero_count": 15360
+      },
+      "mature_intraplate_stress": {
+        "shape": [
+          5120
+        ],
+        "dtype": "float64",
+        "minimum": 0.0,
+        "maximum": 0.0,
+        "nonzero_count": 0
+      },
+      "initiation_input_availability": {
+        "damage_strength_water": true,
+        "plate_tangent_velocity": true,
+        "local_dipping_fault_geometry": false,
+        "transported_contact_stress_tensor": false,
+        "normal_radial_mantle_velocity": false,
+        "resolved_vertical_overburden_profile": false,
+        "fault_pore_pressure_profile": false
+      },
+      "raw_archive_keys": {
+        "results\\genesis_runs\\starter_20260928_192306_547551\\starter_checkpoint.npz": {
+          "cell_plate": {
+            "shape": [
+              5120
+            ],
+            "dtype": "int32"
+          },
+          "column_enthalpy": {
+            "shape": [
+              32
+            ],
+            "dtype": "float64"
+          },
+          "damage": {
+            "shape": [
+              5120
+            ],
+            "dtype": "float64"
+          },
+          "cooling_stress_pa": {
+            "shape": [
+              5120
+            ],
+            "dtype": "float64"
+          },
+          "water_access": {
+            "shape": [
+              5120
+            ],
+            "dtype": "float64"
+          },
+          "yield_ratio": {
+            "shape": [
+              5120
+            ],
+            "dtype": "float64"
+          },
+          "strength_pa": {
+            "shape": [
+              5120
+            ],
+            "dtype": "float64"
+          },
+          "eligible": {
+            "shape": [
+              5120
+            ],
+            "dtype": "bool"
+          },
+          "split_band": {
+            "shape": [
+              5120
+            ],
+            "dtype": "bool"
+          }
+        }
+      },
+      "inherited_contact_count": 0,
+      "conflicting_inherited_contacts": {},
+      "conflict_interpretation": "Both directions retain attached accepted material. Different timestamps, mass, or current effective scalar stress do not establish which history was physical. Do not silently pick newest/largest or discard one reservoir. Replay from an unambiguous earlier state under a specified initiation/contact law, or retain both unresolved until a mechanical transition explicitly accounts for both.",
+      "source_hashes_unchanged": true
+    },
+    "saved50": {
+      "provenance": {
+        "source": "D:\\Moon Project\\mantle-convection\\analysis\\slab_sinking_followup\\runs\\ordered_sub4_dt1\\elapsed_0050",
+        "source_sha256": {
+          "D:\\Moon Project\\mantle-convection\\analysis\\slab_sinking_followup\\runs\\ordered_sub4_dt1\\elapsed_0050\\mature_checkpoint\\meta.json": "53bce0fcbb1e564196d4a3be6385f22c0aa1c2a50c28c3d62ea01581fc995b45",
+          "D:\\Moon Project\\mantle-convection\\analysis\\slab_sinking_followup\\runs\\ordered_sub4_dt1\\elapsed_0050\\mature_checkpoint\\state.npz": "d9bb60f43508ec09c9ff8d602c5ae90ebd7feb892833769664ab4b7b03e5ae67",
+          "D:\\Moon Project\\mantle-convection\\analysis\\slab_sinking_followup\\runs\\ordered_sub4_dt1\\elapsed_0050\\mature_config.yaml": "2f2b198f228354bb8082e4a347c82d0c3ed98d0360e167ea23ea65c445b24c81",
+          "D:\\Moon Project\\mantle-convection\\analysis\\slab_sinking_followup\\runs\\ordered_sub4_dt1\\elapsed_0050\\young_context\\starter_checkpoint.npz": "358cc744802b928980095a39196d1cfae2a52917e679b09e04eb2dac919ade59",
+          "D:\\Moon Project\\mantle-convection\\analysis\\slab_sinking_followup\\runs\\ordered_sub4_dt1\\elapsed_0050\\young_context\\parameters.json": "01eec3e1cb40b5f71b6b52aec5e1c6d9bc0c40c04587a797729e09e420b30877",
+          "D:\\Moon Project\\mantle-convection\\analysis\\slab_sinking_followup\\runs\\ordered_sub4_dt1\\elapsed_0050\\young_context\\fracture_memory.npz": "38be6bb0872744d3d84de57474f9697f965c98ca8c527fbf4535f99b244c32d8",
+          "D:\\Moon Project\\mantle-convection\\analysis\\slab_sinking_followup\\runs\\ordered_sub4_dt1\\elapsed_0050\\continuation.json": "6ef3ac19d65ab1359383910e1652f02d395de205b5117adabb64811fbe8276b1"
+        },
+        "source_mechanics_version": "young-mechanics-0.5",
+        "source_time_myr": 50.87812194824219,
+        "origin_time_myr": 0.8781219482421875,
+        "subdivisions": 4,
+        "radius_km": 5287.0,
+        "newborn_crust_thickness_km": 1.0
+      },
+      "checkpoint_state_fields": [
+        "time_myr",
+        "cell_plate",
+        "crust_type",
+        "crust_age_myr",
+        "crust_thickness_km",
+        "tidal_damage",
+        "rift_extension",
+        "extension_age_myr",
+        "collision_seam_weakness",
+        "intraplate_stress",
+        "supercontinent_heat",
+        "continental_fraction",
+        "continental_volume_km3",
+        "mantle_lithosphere_thickness_km",
+        "mantle_lithosphere_density_anomaly_kg_m3",
+        "sediment_volume_km3",
+        "continental_lithosphere_age_myr",
+        "mantle_depletion_fraction",
+        "craton_strength",
+        "oceanic_volume_km3"
+      ],
+      "fracture_memory_fields": [
+        "damage",
+        "cooling_stress_pa",
+        "water_access",
+        "yield_ratio",
+        "strength_pa",
+        "eligible",
+        "consumed_band",
+        "first_fracture_time_myr",
+        "tidal_peak_mpa"
+      ],
+      "fracture_fields": {
+        "damage": {
+          "shape": [
+            5120
+          ],
+          "dtype": "float64",
+          "minimum": 0.0,
+          "maximum": 0.980756700554922,
+          "nonzero_count": 5117
+        },
+        "cooling_stress_pa": {
+          "shape": [
+            5120
+          ],
+          "dtype": "float64",
+          "minimum": -600784.4017550027,
+          "maximum": 342960.58587441733,
+          "nonzero_count": 5117
+        },
+        "water_access": {
+          "shape": [
+            5120
+          ],
+          "dtype": "float64",
+          "minimum": 0.0,
+          "maximum": 0.9999890729812176,
+          "nonzero_count": 5117
+        },
+        "yield_ratio": {
+          "shape": [
+            5120
+          ],
+          "dtype": "float64",
+          "minimum": 0.0,
+          "maximum": 1.354802375751502,
+          "nonzero_count": 5117
+        },
+        "strength_pa": {
+          "shape": [
+            5120
+          ],
+          "dtype": "float64",
+          "minimum": 1904241.5914946955,
+          "maximum": 12917570.040407527,
+          "nonzero_count": 5120
+        }
+      },
+      "starter_effective_mantle_tensor": {
+        "shape": [
+          5120,
+          3
+        ],
+        "dtype": "float64",
+        "minimum": -0.8530342592389794,
+        "maximum": 0.8503051074833938,
+        "nonzero_count": 15360
+      },
+      "mature_intraplate_stress": {
+        "shape": [
+          5120
+        ],
+        "dtype": "float64",
+        "minimum": 0.00024174374268743935,
+        "maximum": 0.02391461684439709,
+        "nonzero_count": 5120
+      },
+      "initiation_input_availability": {
+        "damage_strength_water": true,
+        "plate_tangent_velocity": true,
+        "local_dipping_fault_geometry": false,
+        "transported_contact_stress_tensor": false,
+        "normal_radial_mantle_velocity": false,
+        "resolved_vertical_overburden_profile": false,
+        "fault_pore_pressure_profile": false
+      },
+      "raw_archive_keys": {
+        "analysis\\slab_sinking_followup\\runs\\ordered_sub4_dt1\\elapsed_0050\\young_context\\starter_checkpoint.npz": {
+          "cell_plate": {
+            "shape": [
+              5120
+            ],
+            "dtype": "int32"
+          },
+          "column_enthalpy": {
+            "shape": [
+              32
+            ],
+            "dtype": "float64"
+          },
+          "damage": {
+            "shape": [
+              5120
+            ],
+            "dtype": "float64"
+          },
+          "cooling_stress_pa": {
+            "shape": [
+              5120
+            ],
+            "dtype": "float64"
+          },
+          "water_access": {
+            "shape": [
+              5120
+            ],
+            "dtype": "float64"
+          },
+          "yield_ratio": {
+            "shape": [
+              5120
+            ],
+            "dtype": "float64"
+          },
+          "strength_pa": {
+            "shape": [
+              5120
+            ],
+            "dtype": "float64"
+          },
+          "eligible": {
+            "shape": [
+              5120
+            ],
+            "dtype": "bool"
+          },
+          "split_band": {
+            "shape": [
+              5120
+            ],
+            "dtype": "bool"
+          }
+        },
+        "analysis\\slab_sinking_followup\\runs\\ordered_sub4_dt1\\elapsed_0050\\young_context\\fracture_memory.npz": {
+          "damage": {
+            "shape": [
+              5120
+            ],
+            "dtype": "float64"
+          },
+          "cooling_stress_pa": {
+            "shape": [
+              5120
+            ],
+            "dtype": "float64"
+          },
+          "water_access": {
+            "shape": [
+              5120
+            ],
+            "dtype": "float64"
+          },
+          "yield_ratio": {
+            "shape": [
+              5120
+            ],
+            "dtype": "float64"
+          },
+          "strength_pa": {
+            "shape": [
+              5120
+            ],
+            "dtype": "float64"
+          },
+          "eligible": {
+            "shape": [
+              5120
+            ],
+            "dtype": "bool"
+          },
+          "consumed_band": {
+            "shape": [
+              5120
+            ],
+            "dtype": "bool"
+          }
+        },
+        "analysis\\slab_sinking_followup\\runs\\ordered_sub4_dt1\\elapsed_0050\\mature_checkpoint\\state.npz": {
+          "state_cell_plate": {
+            "shape": [
+              5120
+            ],
+            "dtype": "int32"
+          },
+          "crust_type": {
+            "shape": [
+              5120
+            ],
+            "dtype": "int8"
+          },
+          "crust_age_myr": {
+            "shape": [
+              5120
+            ],
+            "dtype": "float64"
+          },
+          "crust_thickness_km": {
+            "shape": [
+              5120
+            ],
+            "dtype": "float64"
+          },
+          "tidal_damage": {
+            "shape": [
+              5120
+            ],
+            "dtype": "float64"
+          },
+          "rift_extension": {
+            "shape": [
+              5120
+            ],
+            "dtype": "float64"
+          },
+          "extension_age_myr": {
+            "shape": [
+              5120
+            ],
+            "dtype": "float64"
+          },
+          "collision_seam_weakness": {
+            "shape": [
+              5120
+            ],
+            "dtype": "float64"
+          },
+          "intraplate_stress": {
+            "shape": [
+              5120
+            ],
+            "dtype": "float64"
+          },
+          "supercontinent_heat": {
+            "shape": [
+              5120
+            ],
+            "dtype": "float64"
+          },
+          "felsic_potential": {
+            "shape": [
+              5120
+            ],
+            "dtype": "float64"
+          },
+          "elevation_m": {
+            "shape": [
+              5120
+            ],
+            "dtype": "float64"
+          },
+          "system_cell_plate": {
+            "shape": [
+              5120
+            ],
+            "dtype": "int32"
+          },
+          "baseline_cell_plate": {
+            "shape": [
+              5120
+            ],
+            "dtype": "int32"
+          },
+          "continental_fraction": {
+            "shape": [
+              5120
+            ],
+            "dtype": "float64"
+          },
+          "continental_volume_km3": {
+            "shape": [
+              5120
+            ],
+            "dtype": "float64"
+          },
+          "oceanic_volume_km3": {
+            "shape": [
+              5120
+            ],
+            "dtype": "float64"
+          },
+          "mantle_lithosphere_thickness_km": {
+            "shape": [
+              5120
+            ],
+            "dtype": "float64"
+          },
+          "mantle_lithosphere_density_anomaly_kg_m3": {
+            "shape": [
+              5120
+            ],
+            "dtype": "float64"
+          },
+          "sediment_volume_km3": {
+            "shape": [
+              5120
+            ],
+            "dtype": "float64"
+          },
+          "continental_lithosphere_age_myr": {
+            "shape": [
+              5120
+            ],
+            "dtype": "float64"
+          },
+          "mantle_depletion_fraction": {
+            "shape": [
+              5120
+            ],
+            "dtype": "float64"
+          },
+          "craton_strength": {
+            "shape": [
+              5120
+            ],
+            "dtype": "float64"
+          },
+          "mantle_cell_omega_rad_per_myr": {
+            "shape": [
+              5120,
+              3
+            ],
+            "dtype": "float64"
+          },
+          "transport_residual_quaternions": {
+            "shape": [
+              4,
+              4
+            ],
+            "dtype": "float64"
+          },
+          "transport_hold_age_myr": {
+            "shape": [
+              4
+            ],
+            "dtype": "float64"
+          },
+          "plume_centers_unit": {
+            "shape": [
+              0,
+              3
+            ],
+            "dtype": "float64"
+          },
+          "plume_ages_myr": {
+            "shape": [
+              0
+            ],
+            "dtype": "float64"
+          },
+          "plume_lifetimes_myr": {
+            "shape": [
+              0
+            ],
+            "dtype": "float64"
+          },
+          "plume_head_radii_km": {
+            "shape": [
+              0
+            ],
+            "dtype": "float64"
+          },
+          "plume_peak_fluxes": {
+            "shape": [
+              0
+            ],
+            "dtype": "float64"
+          },
+          "plume_last_flux": {
+            "shape": [
+              5120
+            ],
+            "dtype": "float64"
+          },
+          "plume_cumulative_exposure_myr": {
+            "shape": [
+              5120
+            ],
+            "dtype": "float64"
+          },
+          "plume_cumulative_root_erosion_km": {
+            "shape": [
+              5120
+            ],
+            "dtype": "float64"
+          },
+          "plume_last_head_flux": {
+            "shape": [
+              5120
+            ],
+            "dtype": "float64"
+          },
+          "plume_last_tail_flux": {
+            "shape": [
+              5120
+            ],
+            "dtype": "float64"
+          },
+          "plume_ids": {
+            "shape": [
+              0
+            ],
+            "dtype": "int64"
+          },
+          "plume_source_drift_axes_unit": {
+            "shape": [
+              0,
+              3
+            ],
+            "dtype": "float64"
+          },
+          "plume_source_drift_speeds_km_per_myr": {
+            "shape": [
+              0
+            ],
+            "dtype": "float64"
+          },
+          "plume_source_drift_segment_index": {
+            "shape": [
+              0
+            ],
+            "dtype": "int32"
+          },
+          "plume_cumulative_source_distance_km": {
+            "shape": [
+              0
+            ],
+            "dtype": "float64"
+          },
+          "plume_cumulative_source_bend_deg": {
+            "shape": [
+              0
+            ],
+            "dtype": "float64"
+          },
+          "plume_source_flow_omega_rad_per_myr": {
+            "shape": [
+              0,
+              3
+            ],
+            "dtype": "float64"
+          },
+          "plume_last_effective_source_axes_unit": {
+            "shape": [
+              0,
+              3
+            ],
+            "dtype": "float64"
+          },
+          "plume_last_effective_source_speeds_km_per_myr": {
+            "shape": [
+              0
+            ],
+            "dtype": "float64"
+          },
+          "plume_rifting_last_extension_forcing": {
+            "shape": [
+              5120
+            ],
+            "dtype": "float64"
+          },
+          "plume_rifting_cumulative_extension_impulse_myr": {
+            "shape": [
+              5120
+            ],
+            "dtype": "float64"
+          },
+          "plume_rifting_last_dynamic_uplift_m": {
+            "shape": [
+              5120
+            ],
+            "dtype": "float64"
+          },
+          "plume_rifting_last_magmatic_productivity": {
+            "shape": [
+              5120
+            ],
+            "dtype": "float64"
+          },
+          "plume_dynamic_topography_target_m": {
+            "shape": [
+              5120
+            ],
+            "dtype": "float64"
+          },
+          "plume_dynamic_topography_realized_m": {
+            "shape": [
+              5120
+            ],
+            "dtype": "float64"
+          },
+          "plume_dynamic_topography_cumulative_positive_support_m_myr": {
+            "shape": [
+              5120
+            ],
+            "dtype": "float64"
+          },
+          "plume_magmatism_extrusive_volume_km3": {
+            "shape": [
+              5120
+            ],
+            "dtype": "float64"
+          },
+          "plume_magmatism_dyke_volume_km3": {
+            "shape": [
+              5120
+            ],
+            "dtype": "float64"
+          },
+          "plume_magmatism_underplate_volume_km3": {
+            "shape": [
+              5120
+            ],
+            "dtype": "float64"
+          },
+          "plume_magmatism_track_age_myr": {
+            "shape": [
+              5120
+            ],
+            "dtype": "float64"
+          },
+          "plume_magmatism_last_emplacement_productivity": {
+            "shape": [
+              5120
+            ],
+            "dtype": "float64"
+          },
+          "hotspot_track_thermal_anomaly": {
+            "shape": [
+              5120
+            ],
+            "dtype": "float64"
+          },
+          "hotspot_track_underplate_mean_age_myr": {
+            "shape": [
+              5120
+            ],
+            "dtype": "float64"
+          },
+          "hotspot_track_underplate_eclogite_fraction": {
+            "shape": [
+              5120
+            ],
+            "dtype": "float64"
+          },
+          "hotspot_track_last_dike_localization": {
+            "shape": [
+              5120
+            ],
+            "dtype": "float64"
+          },
+          "hotspot_track_last_head_productivity": {
+            "shape": [
+              5120
+            ],
+            "dtype": "float64"
+          },
+          "hotspot_track_last_tail_productivity": {
+            "shape": [
+              5120
+            ],
+            "dtype": "float64"
+          }
+        }
+      },
+      "inherited_contact_count": 30,
+      "conflicting_inherited_contacts": {
+        "1275:1277": [
+          {
+            "segment_key": "24:1275:1:2",
+            "subducting_plate": 1,
+            "overriding_plate": 2,
+            "first_acceptance_time_myr": 17.87812194824219,
+            "last_acceptance_time_myr": 17.87812194824219,
+            "retained_cohort_time_range_myr": [
+              17.87812194824219,
+              17.87812194824219
+            ],
+            "retained_area_km2": 77136.51923020641
+          },
+          {
+            "segment_key": "24:1275:2:1",
+            "subducting_plate": 2,
+            "overriding_plate": 1,
+            "first_acceptance_time_myr": 18.87812194824219,
+            "last_acceptance_time_myr": 18.87812194824219,
+            "retained_cohort_time_range_myr": [
+              18.87812194824219,
+              18.87812194824219
+            ],
+            "retained_area_km2": 64625.19812316046
+          }
+        ],
+        "13:1249": [
+          {
+            "segment_key": "1249:1324:1:2",
+            "subducting_plate": 1,
+            "overriding_plate": 2,
+            "first_acceptance_time_myr": 16.87812194824219,
+            "last_acceptance_time_myr": 16.87812194824219,
+            "retained_cohort_time_range_myr": [
+              16.87812194824219,
+              16.87812194824219
+            ],
+            "retained_area_km2": 77160.12461204825
+          },
+          {
+            "segment_key": "13:1249:2:1:accepted:0x1.3f0664ccccccdp+5:1728",
+            "subducting_plate": 2,
+            "overriding_plate": 1,
+            "first_acceptance_time_myr": 39.87812194824219,
+            "last_acceptance_time_myr": 39.87812194824219,
+            "retained_cohort_time_range_myr": [
+              39.87812194824219,
+              39.87812194824219
+            ],
+            "retained_area_km2": 77136.51923020641
+          },
+          {
+            "segment_key": "720:1249:1:2",
+            "subducting_plate": 1,
+            "overriding_plate": 2,
+            "first_acceptance_time_myr": 17.87812194824219,
+            "last_acceptance_time_myr": 17.87812194824219,
+            "retained_cohort_time_range_myr": [
+              17.87812194824219,
+              17.87812194824219
+            ],
+            "retained_area_km2": 64794.38334584974
+          }
+        ],
+        "2402:2403": [
+          {
+            "segment_key": "2401:2402:0:3",
+            "subducting_plate": 0,
+            "overriding_plate": 3,
+            "first_acceptance_time_myr": 45.87812194824219,
+            "last_acceptance_time_myr": 45.87812194824219,
+            "retained_cohort_time_range_myr": [
+              45.87812194824219,
+              45.87812194824219
+            ],
+            "retained_area_km2": 64838.78072295298
+          },
+          {
+            "segment_key": "2402:2403:3:0",
+            "subducting_plate": 3,
+            "overriding_plate": 0,
+            "first_acceptance_time_myr": 33.87812194824219,
+            "last_acceptance_time_myr": 40.87812194824219,
+            "retained_cohort_time_range_myr": [
+              33.87812194824219,
+              40.87812194824219
+            ],
+            "retained_area_km2": 194516.34216885894
+          },
+          {
+            "segment_key": "2403:2464:3:0",
+            "subducting_plate": 3,
+            "overriding_plate": 0,
+            "first_acceptance_time_myr": 23.87812194824219,
+            "last_acceptance_time_myr": 23.87812194824219,
+            "retained_cohort_time_range_myr": [
+              23.87812194824219,
+              23.87812194824219
+            ],
+            "retained_area_km2": 77475.65170747347
+          },
+          {
+            "segment_key": "607:2403:3:0",
+            "subducting_plate": 3,
+            "overriding_plate": 0,
+            "first_acceptance_time_myr": 30.87812194824219,
+            "last_acceptance_time_myr": 30.87812194824219,
+            "retained_cohort_time_range_myr": [
+              30.87812194824219,
+              30.87812194824219
+            ],
+            "retained_area_km2": 64672.24603748648
+          },
+          {
+            "segment_key": "607:2463:3:0",
+            "subducting_plate": 3,
+            "overriding_plate": 0,
+            "first_acceptance_time_myr": 23.87812194824219,
+            "last_acceptance_time_myr": 23.87812194824219,
+            "retained_cohort_time_range_myr": [
+              23.87812194824219,
+              23.87812194824219
+            ],
+            "retained_area_km2": 77217.3203676397
+          }
+        ],
+        "320:1324": [
+          {
+            "segment_key": "1249:1324:1:2:accepted:0x1.170664ccccccdp+5:1730",
+            "subducting_plate": 1,
+            "overriding_plate": 2,
+            "first_acceptance_time_myr": 34.87812194824219,
+            "last_acceptance_time_myr": 34.87812194824219,
+            "retained_cohort_time_range_myr": [
+              34.87812194824219,
+              34.87812194824219
+            ],
+            "retained_area_km2": 77160.12461204825
+          },
+          {
+            "segment_key": "320:1324:1:2",
+            "subducting_plate": 1,
+            "overriding_plate": 2,
+            "first_acceptance_time_myr": 19.87812194824219,
+            "last_acceptance_time_myr": 50.87812194824219,
+            "retained_cohort_time_range_myr": [
+              19.87812194824219,
+              50.87812194824219
+            ],
+            "retained_area_km2": 129277.95124206363
+          },
+          {
+            "segment_key": "320:1324:2:1",
+            "subducting_plate": 2,
+            "overriding_plate": 1,
+            "first_acceptance_time_myr": 28.87812194824219,
+            "last_acceptance_time_myr": 46.87812194824219,
+            "retained_cohort_time_range_myr": [
+              28.87812194824219,
+              46.87812194824219
+            ],
+            "retained_area_km2": 154320.2492240965
+          }
+        ],
+        "327:1329": [
+          {
+            "segment_key": "1329:1332:1:2",
+            "subducting_plate": 1,
+            "overriding_plate": 2,
+            "first_acceptance_time_myr": 17.87812194824219,
+            "last_acceptance_time_myr": 17.87812194824219,
+            "retained_cohort_time_range_myr": [
+              17.87812194824219,
+              17.87812194824219
+            ],
+            "retained_area_km2": 78453.40272051792
+          },
+          {
+            "segment_key": "1329:1332:2:1",
+            "subducting_plate": 2,
+            "overriding_plate": 1,
+            "first_acceptance_time_myr": 18.87812194824219,
+            "last_acceptance_time_myr": 18.87812194824219,
+            "retained_cohort_time_range_myr": [
+              18.87812194824219,
+              18.87812194824219
+            ],
+            "retained_area_km2": 78206.16308371788
+          },
+          {
+            "segment_key": "1332:1333:1:2",
+            "subducting_plate": 1,
+            "overriding_plate": 2,
+            "first_acceptance_time_myr": 16.87812194824219,
+            "last_acceptance_time_myr": 16.87812194824219,
+            "retained_cohort_time_range_myr": [
+              16.87812194824219,
+              16.87812194824219
+            ],
+            "retained_area_km2": 77236.2304136022
+          },
+          {
+            "segment_key": "327:1329:2:1",
+            "subducting_plate": 2,
+            "overriding_plate": 1,
+            "first_acceptance_time_myr": 25.87812194824219,
+            "last_acceptance_time_myr": 25.87812194824219,
+            "retained_cohort_time_range_myr": [
+              25.87812194824219,
+              25.87812194824219
+            ],
+            "retained_area_km2": 77217.3203676397
+          }
+        ],
+        "513:2040": [
+          {
+            "segment_key": "513:1988:3:0",
+            "subducting_plate": 3,
+            "overriding_plate": 0,
+            "first_acceptance_time_myr": 16.87812194824219,
+            "last_acceptance_time_myr": 16.87812194824219,
+            "retained_cohort_time_range_myr": [
+              16.87812194824219,
+              16.87812194824219
+            ],
+            "retained_area_km2": 77217.32036763955
+          },
+          {
+            "segment_key": "513:2037:0:3",
+            "subducting_plate": 0,
+            "overriding_plate": 3,
+            "first_acceptance_time_myr": 23.87812194824219,
+            "last_acceptance_time_myr": 39.87812194824219,
+            "retained_cohort_time_range_myr": [
+              23.87812194824219,
+              39.87812194824219
+            ],
+            "retained_area_km2": 154320.24922409622
+          }
+        ],
+        "721:722": [
+          {
+            "segment_key": "188:722:1:2",
+            "subducting_plate": 1,
+            "overriding_plate": 2,
+            "first_acceptance_time_myr": 34.87812194824219,
+            "last_acceptance_time_myr": 34.87812194824219,
+            "retained_cohort_time_range_myr": [
+              34.87812194824219,
+              34.87812194824219
+            ],
+            "retained_area_km2": 64638.97562103129
+          },
+          {
+            "segment_key": "721:722:1:2",
+            "subducting_plate": 1,
+            "overriding_plate": 2,
+            "first_acceptance_time_myr": 42.87812194824219,
+            "last_acceptance_time_myr": 42.87812194824219,
+            "retained_cohort_time_range_myr": [
+              42.87812194824219,
+              42.87812194824219
+            ],
+            "retained_area_km2": 64794.383345850205
+          },
+          {
+            "segment_key": "721:722:2:1",
+            "subducting_plate": 2,
+            "overriding_plate": 1,
+            "first_acceptance_time_myr": 28.87812194824219,
+            "last_acceptance_time_myr": 28.87812194824219,
+            "retained_cohort_time_range_myr": [
+              28.87812194824219,
+              28.87812194824219
+            ],
+            "retained_area_km2": 64638.97562103129
+          }
+        ],
+        "792:795": [
+          {
+            "segment_key": "717:795:1:2",
+            "subducting_plate": 1,
+            "overriding_plate": 2,
+            "first_acceptance_time_myr": 39.87812194824219,
+            "last_acceptance_time_myr": 39.87812194824219,
+            "retained_cohort_time_range_myr": [
+              39.87812194824219,
+              39.87812194824219
+            ],
+            "retained_area_km2": 64658.709337493405
+          },
+          {
+            "segment_key": "717:795:2:1",
+            "subducting_plate": 2,
+            "overriding_plate": 1,
+            "first_acceptance_time_myr": 36.87812194824219,
+            "last_acceptance_time_myr": 36.87812194824219,
+            "retained_cohort_time_range_myr": [
+              36.87812194824219,
+              36.87812194824219
+            ],
+            "retained_area_km2": 64492.63906975814
+          }
+        ]
+      },
+      "conflict_interpretation": "Both directions retain attached accepted material. Different timestamps, mass, or current effective scalar stress do not establish which history was physical. Do not silently pick newest/largest or discard one reservoir. Replay from an unambiguous earlier state under a specified initiation/contact law, or retain both unresolved until a mechanical transition explicitly accounts for both.",
+      "source_hashes_unchanged": true
+    }
+  },
+  "integration_path": [
+    "Require explicit local 3D dipping-plane geometry and physically sourced stress/traction.",
+    "Compute closed-contact effective compression and directed slip admissibility before material removal.",
+    "Treat no admissible mode as locked/compressive and tied/opposed modes as unresolved; do not choose by plate number, coordinate order, plane-normal sign or floating-point noise.",
+    "Couple locked/compressive response to the motion/contact solve; an endpoint transport probe cannot itself store unresolved horizontal overlap as valid single-covered surface material.",
+    "Preserve all inherited slab material; replay contradictory legacy acceptance if seeking a dynamically consistent newly initiated history."
+  ]
+}

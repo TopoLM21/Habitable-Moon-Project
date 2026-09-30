@@ -3,7 +3,9 @@ from copy import deepcopy
 import numpy as np
 import pytest
 
-from tectonics.genesis_starter_topology import select_starter_cut, split_starter_band
+from tectonics.genesis_starter_topology import (
+    canonicalize_plate_seeds, select_starter_cut, split_starter_band,
+)
 from tectonics.kinematics import angular_velocity_vectors
 from tectonics.lithosphere import CrustType, LithosphereState
 from tectonics.mesh import build_icosphere, connected_components
@@ -140,6 +142,28 @@ def test_existing_child_can_split_again_while_other_plate_is_preserved(shell):
     np.testing.assert_array_equal(angular_velocity_vectors(result)[other], before_motion[other])
     for child in event.children:
         np.testing.assert_allclose(angular_velocity_vectors(result)[child], before_motion[parent], atol=1e-18)
+
+
+def test_seed_refresh_preserves_two_independent_plate_states_and_input(shell):
+    mesh, system, weak = shell
+    divided, _ = split(mesh, system, choose(mesh, system, weak))
+    divided.plates[1].euler_axis = np.array([1., 0., 0.])
+    divided.plates[1].angular_speed_rad_per_myr = np.deg2rad(.4)
+    cells = [np.flatnonzero(divided.cell_plate == pid) for pid in range(2)]
+    # A transported seed lies in another plate's current raster domain.
+    divided.plates[0].seed_cell = int(cells[1][0])
+    divided.plates[1].seed_cell = int(cells[0][0])
+    before = deepcopy(divided)
+    repaired = canonicalize_plate_seeds(mesh, divided)
+    assert repaired is not divided
+    assert [p.seed_cell for p in divided.plates] == [p.seed_cell for p in before.plates]
+    assert [p.plate_id for p in repaired.plates] == [0, 1]
+    np.testing.assert_array_equal(repaired.cell_plate, before.cell_plate)
+    np.testing.assert_array_equal(angular_velocity_vectors(repaired), angular_velocity_vectors(before))
+    for pid, plate in enumerate(repaired.plates):
+        assert plate.seed_cell == cells[pid][0]
+        assert plate.euler_axis is divided.plates[pid].euler_axis
+    assert canonicalize_plate_seeds(mesh, repaired) is repaired
 
 
 def test_stronger_supplied_band_wins_without_crossing_ineligible_cells(shell):

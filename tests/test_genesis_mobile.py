@@ -13,7 +13,7 @@ from tectonics.genesis_mobile import (
     MobileModel, MobileParameters, _RetryStep, load_mobile_checkpoint,
     mobile_parameters_from_config, save_mobile_checkpoint,
 )
-from tectonics.genesis_onset import OnsetParameters
+from tectonics.genesis_onset import OnsetParameters, advance_orbit_thermal
 from tectonics.genesis_shell import ShellParameters, rock_enthalpy
 from tectonics.genesis_tides import TidalParameters
 
@@ -161,13 +161,21 @@ def test_rejected_trial_does_not_leak_heat_or_geometry(monkeypatch):
 
 @pytest.mark.parametrize("tides", [False, True])
 def test_freezing_inside_mobile_step_closes_all_clocks_and_energy(tmp_path, tides):
+    # Synthetic cold-event fixture: 4 cm transport depth gives k/D=100 W/m2/K
+    # so the small mantle reservoir transfers orbit-mean heat to the surface.
     model = _model(tides=tides, thermal_overrides=dict(mantle_mass_fraction=.001,
-        solid_transfer_w_m2_k=100., stellar_flux_w_m2=0,
+        mantle_depth_fraction_radius=.04/(GenesisParameters().radius_km*1000), stellar_flux_w_m2=0,
         giant_absorbed_flux_w_m2=0, radiogenic_specific_power_w_kg=0))
     model = MobileModel(model.p, model.thermal, model.onset_p,
                        replace(model.tides_p, eccentricity=.01), model.mobile_p)
-    *state, rows = model.step(*_cold(model, 300.), .05)
+    initial = _cold(model, 300.)
+    if tides:
+        unheated, *_ = advance_orbit_thermal(initial[1], initial[2], model.thermal,
+            replace(model.tides_p, enabled=False), .05)
+    *state, rows = model.step(*initial, .05)
     shell, thermal, orbit = state
+    if tides:
+        assert thermal.time_myr > 1.1*unheated.time_myr
     assert 0 < thermal.time_myr < .05
     assert thermal.stopped_reason == "surface_reached_freezing_limit_ice_not_modelled"
     assert shell.time_myr == thermal.time_myr == orbit.time_myr
@@ -176,6 +184,7 @@ def test_freezing_inside_mobile_step_closes_all_clocks_and_energy(tmp_path, tide
     assert thermal.energy[2]*ENERGY_SCALE*model.thermal.area_m2 == pytest.approx(
         orbit.dissipated_energy_j, rel=1e-10, abs=1.)
     global_row, material, motion, _ = model.diagnostics(*state)
+    assert global_row["effective_heat_transfer_w_m2_k"] == pytest.approx(100.)
     assert abs(global_row["relative_energy_residual"]) < 1e-10
     assert abs(material["relative_column_energy_residual"]) < 1e-12
     assert abs(motion["orbit_heat_transfer_relative_residual"]) < 1e-10

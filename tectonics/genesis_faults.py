@@ -15,6 +15,7 @@ from pathlib import Path
 import numpy as np
 
 from .genesis import GenesisParameters, GenesisState
+from .genesis_checkpoint_compat import MODEL_VERSION, require_thermal_model_version
 from .genesis_shell import ShellParameters, Membrane
 from .genesis_onset import OnsetParameters
 from .genesis_tides import TidalParameters, TidalOrbitState
@@ -189,7 +190,7 @@ def save_fault_checkpoint(path, model, state, thermal, orbit, controls, provenan
     scalars = {f.name: getattr(state, f.name) for f in fields(state) if f.name not in arrays}
     parameters = {"shell": asdict(model.p), "thermal": asdict(model.thermal), "onset": asdict(model.onset_p),
                   "tides": asdict(model.tides_p), "mobile": asdict(model.mobile_p), "faults": asdict(model.fault_p)}
-    meta = {"format": FAULT_VERSION, "parameters": parameters,
+    meta = {"format": FAULT_VERSION, "thermal_model_version": MODEL_VERSION, "parameters": parameters,
         "parameter_hash": hashlib.sha256(json.dumps(parameters, sort_keys=True).encode()).hexdigest(),
         "state": scalars, "thermal_state": asdict(thermal), "orbit": asdict(orbit),
         "controls": controls, "provenance": provenance}
@@ -207,6 +208,7 @@ def load_fault_checkpoint(path):
             p = meta["parameters"]
             if meta["format"] != FAULT_VERSION or hashlib.sha256(json.dumps(p, sort_keys=True).encode()).hexdigest() != meta["parameter_hash"]:
                 raise ValueError("Fault checkpoint version/parameter hash mismatch")
+            require_thermal_model_version(meta)
             model = FaultModel(ShellParameters(**p["shell"]), GenesisParameters(**p["thermal"]),
                 OnsetParameters(**p["onset"]), TidalParameters(**p["tides"]), MobileParameters(**p["mobile"]),
                 WeakPlaneParameters(**p["faults"]))

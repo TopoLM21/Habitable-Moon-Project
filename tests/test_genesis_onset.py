@@ -11,7 +11,7 @@ from tectonics.genesis import (
 )
 from tectonics.genesis_onset import (
     OnsetModel, OnsetParameters, load_onset_checkpoint, save_onset_checkpoint,
-    update_water_access,
+    update_water_access, advance_orbit_thermal,
 )
 from tectonics.genesis_shell import ShellParameters, rock_enthalpy
 from tectonics.genesis_tides import tidal_parameters_from_config
@@ -100,10 +100,11 @@ def test_freezing_inside_coupled_step_preserves_terminal_event_clocks_and_heat(t
     a measurable effect on the freezing time.
     """
     base = _model(control=True, exclusive_tidal_heat=True)
-    # A smaller, still valid mantle reservoir and efficient solid heat transfer
-    # make this regression sensitive to changes in the orbit-mean heat input.
+    # A smaller mantle reservoir and a synthetic 4 cm transport depth give
+    # k/D = 100 W/m2/K in this cold conductive fixture. This deliberately
+    # unplanetary geometry makes the event sensitive to orbit-mean heat input.
     thermal_p = replace(base.thermal, mantle_mass_fraction=0.001,
-                        solid_transfer_w_m2_k=100.)
+                        mantle_depth_fraction_radius=.04/(base.thermal.radius_km*1000))
     model = OnsetModel(base.p, thermal_p, base.onset_p,
                        replace(base.tides_p, enabled=tides_enabled, eccentricity=0.01))
     shell, thermal, onset, orbit = model.initial()
@@ -128,8 +129,14 @@ def test_freezing_inside_coupled_step_preserves_terminal_event_clocks_and_heat(t
     before_global, before_shell, _, _ = model.diagnostics(shell, thermal, onset, orbit)
     assert abs(before_global["relative_energy_residual"]) < 1e-12
     assert abs(before_shell["relative_column_energy_residual"]) < 1e-12
+    assert before_global["effective_heat_transfer_w_m2_k"] == pytest.approx(100.)
+    if tides_enabled:
+        unheated, *_ = advance_orbit_thermal(thermal, orbit, model.thermal,
+            replace(model.tides_p, enabled=False), .05)
 
     shell, thermal, onset, orbit, rows = model.step(shell, thermal, onset, orbit, 0.05)
+    if tides_enabled:
+        assert thermal.time_myr > 1.1*unheated.time_myr
     assert 0 < thermal.time_myr < 0.05
     assert thermal.stopped_reason == "surface_reached_freezing_limit_ice_not_modelled"
     assert thermal.events["freezing_limit"] == thermal.time_myr

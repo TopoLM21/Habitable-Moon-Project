@@ -227,6 +227,21 @@ def remesh_continuation_state(model, starter_state, fracture, checkpoint, config
         setattr(cp, name, _refine_record(name, getattr(checkpoint, name), ancestors, weights, factor, count, conservation))
     cp.system = _system(checkpoint.system, checkpoint.system.cell_plate, mesh, target, ancestors, factor)
     cp.baseline = _system(checkpoint.baseline, checkpoint.baseline.cell_plate, mesh, target, ancestors, factor)
+    from .genesis_young_mechanics import corrected_mechanics
+    if corrected_mechanics(config) and target_subdivisions != source_subdivisions:
+        # This is a prescribed smooth field, re-evaluated with the new mesh's
+        # quadrature. Interpolating a coupled formation-era field would change
+        # both its source meaning and its dependence on handoff time.
+        from .genesis_starter_material import independent_mantle_source_omega
+        source_field = independent_mantle_source_omega(new_model)
+        cp.mantle_flow.cell_omega_rad_per_myr = source_field
+        cp.mantle_flow.formation_rms_rad_per_myr = float(np.sqrt(np.mean(np.sum(source_field**2, axis=1))))
+        if cp.subduction_memory is not None and cp.subduction_memory.young_boundary_state is not None:
+            from .young_boundary import remesh_young_inventory
+            cp.subduction_memory.young_boundary_state = remesh_young_inventory(
+                mesh, target, checkpoint.state.cell_plate, cp.state.cell_plate,
+                ancestors, checkpoint.subduction_memory.young_boundary_state,
+                new_model.thermal.radius_km)
     cp.manager.collision_contact_faces = _contact_footprints(checkpoint.manager, mesh, target,
         checkpoint.system.cell_plate, cp.system.cell_plate, ancestors)
     cfg = deepcopy(config)

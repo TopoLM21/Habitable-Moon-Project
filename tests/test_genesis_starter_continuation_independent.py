@@ -165,7 +165,8 @@ def test_installed_hooks_follow_post_topology_velocities_transport_and_liquid_wa
         model.thermal.radius_km, model.thermal.surface_gravity_m_s2, -123., coupling,
         transport_state=cp.transport_state)
     assert seen["period"] == _period(model, coupling.source_state.thermal_context.orbit)
-    base.update_plate_dynamics()
+    base.update_plate_dynamics(model.mesh, cp.state, cp.system, cp.baseline,
+        model.thermal.radius_km, .1, 4., 1., None, mantle_flow=cp.mantle_flow)
     base.PlateTopologyManager().update(model.mesh, merged_state, cp.system, [],
                                       model.thermal.radius_km, .1)
     base.remap_transport_state(cp.system, merged_system, cp.transport_state)
@@ -181,8 +182,11 @@ def test_installed_hooks_follow_post_topology_velocities_transport_and_liquid_wa
     assert seen["water"] == pytest.approx(fraction*model.thermal.water_volume_km3)
 
 
-def test_young_mechanical_thickness_is_not_reset_from_zero_chemical_ages(source):
-    model, state, bundle, cfg, _ = imported(source)
+def test_legacy_young_mechanical_thickness_is_not_reset_from_zero_chemical_ages(source):
+    model, state, config = source
+    config = deepcopy(config)
+    config["young_shell"] = {"mechanics_model_version": "legacy-young-0.2"}
+    bundle, cfg, _ = build_starter_continuation(model, deepcopy(state), config)
     cp = bundle.checkpoint
     coupling = YoungWorldCoupling(model, state, cfg, cp)
     thermal, _ = coupling.advance_heat(cp.thermal, 1.)

@@ -1,0 +1,71 @@
+{
+  "first": "D:\\Moon Project\\mantle-convection\\analysis\\slab_sinking_followup\\runs\\ordered_resume_cpu1\\elapsed_0051",
+  "second": "D:\\Moon Project\\mantle-convection\\analysis\\slab_sinking_followup\\runs\\ordered_resume_cpu4\\elapsed_0051",
+  "execution": [
+    {
+      "cpu_workers": 1,
+      "render_workers": 1,
+      "plate_force_backend": "numpy_si",
+      "process_priority": "normal",
+      "applied_priority": {
+        "kind": "windows_priority_class",
+        "value": 32
+      },
+      "cell_kernels": true,
+      "numeric_kernels": true,
+      "single_source_cells": true,
+      "cell_workers": 1,
+      "arc_kernels": true,
+      "assignment_columns": false,
+      "assignment_optimized": true,
+      "boundary_forces": false,
+      "frame_interval_myr": 1000000.0,
+      "surface_only_frames": true,
+      "finalize": false
+    },
+    {
+      "cpu_workers": 4,
+      "render_workers": 1,
+      "plate_force_backend": "numpy_si",
+      "process_priority": "normal",
+      "applied_priority": {
+        "kind": "windows_priority_class",
+        "value": 32
+      },
+      "cell_kernels": true,
+      "numeric_kernels": true,
+      "single_source_cells": true,
+      "cell_workers": 1,
+      "arc_kernels": true,
+      "assignment_columns": false,
+      "assignment_optimized": true,
+      "boundary_forces": false,
+      "frame_interval_myr": 1000000.0,
+      "surface_only_frames": true,
+      "finalize": false
+    }
+  ],
+  "arrays": {
+    "mature_checkpoint/state.npz": {
+      "same_array_names": true,
+      "bitwise_identical": true,
+      "differences": []
+    },
+    "young_context/starter_checkpoint.npz": {
+      "same_array_names": true,
+      "bitwise_identical": true,
+      "differences": []
+    },
+    "young_context/fracture_memory.npz": {
+      "same_array_names": true,
+      "bitwise_identical": true,
+      "differences": []
+    }
+  },
+  "scientific_metadata_equal": true,
+  "scientific_metadata_differences": [],
+  "physical_report_equal": true,
+  "physical_report_differences": [],
+  "all_checks_passed": true,
+  "scientific_state_bitwise_identical": true
+}

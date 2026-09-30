@@ -1,0 +1,153 @@
+{
+  "scope": "Independent fractional material experiment: prescribed frozen velocities, no coupled speed prediction",
+  "tests": {
+    "passed": 137,
+    "elapsed_seconds": 23.65,
+    "log": "final_after_area_tests.log",
+    "sha256": "2bb5193a7468a788344597b971fd2b6f24c65a370a34e151f930992991e3f23e"
+  },
+  "production_sha256": {
+    "tectonics/fractional_surface.py": "a3a74c371d1e930bc750f6d00b54ee1c8cc2538f637dcb5f20e863bffa7dd360",
+    "tectonics/fractional_surface_io.py": "75df451c38da8c3bf921e8cff1139bf81ef55854bf499f40b783cf2f7d7cf8aa",
+    "tectonics/fractional_transport.py": "33648045d25e4ce45b4b3c7c484b6257d7c007d2278dc06c19819c9628afec35",
+    "run_fractional_transport_probe.py": "9b720dd4c7759e35c7b918b0f95212cb5be4ac302bf819e63b4b61047ca6d720"
+  },
+  "previous_05_production_files_changed": [],
+  "original_starter_sha256": "b4584dd66208ff80aea18a178c38da2b96e353c723663251091886dee49e87f6",
+  "source_unchanged": true,
+  "snapshot_restart_bitwise_equal": true,
+  "cases": {
+    "starter_dt1": {
+      "cumulative_losses": {
+        "area_km2": 47.07472496754053,
+        "oceanic_volume_km3": 47.07472496754053,
+        "cold_mantle_volume_km3": 0.0,
+        "density_excess_mass_kg": 0.0
+      },
+      "cumulative_births": {
+        "area_km2": 47.0747249674896,
+        "oceanic_volume_km3": 47.0747249674896,
+        "cold_mantle_volume_km3": 0.0,
+        "density_excess_mass_kg": 0.0
+      },
+      "final_parcel_count": 12894,
+      "maximum_per_material_relative_residual": 3.721424157528192e-16
+    },
+    "saved50_dt1": {
+      "cumulative_losses": {
+        "area_km2": 146344.3427970487,
+        "oceanic_volume_km3": 142929.56694760604,
+        "cold_mantle_volume_km3": 4869108.674492222,
+        "density_excess_mass_kg": 3.26798747066839e+17
+      },
+      "cumulative_births": {
+        "area_km2": 146344.34279704874,
+        "oceanic_volume_km3": 146344.34279704874,
+        "cold_mantle_volume_km3": 0.0,
+        "density_excess_mass_kg": 0.0
+      },
+      "final_parcel_count": 12993,
+      "maximum_per_material_relative_residual": 4.3361417537486394e-16
+    },
+    "saved50_dt0p5": {
+      "cumulative_losses": {
+        "area_km2": 146341.8765309122,
+        "oceanic_volume_km3": 142927.3292185644,
+        "cold_mantle_volume_km3": 4869026.446911887,
+        "density_excess_mass_kg": 3.267932285889189e+17
+      },
+      "cumulative_births": {
+        "area_km2": 146341.87653091195,
+        "oceanic_volume_km3": 146341.87653091195,
+        "cold_mantle_volume_km3": 0.0,
+        "density_excess_mass_kg": 0.0
+      },
+      "final_parcel_count": 23665,
+      "maximum_per_material_relative_residual": 6.591427931311029e-16
+    },
+    "saved50_dt0p25": {
+      "cumulative_losses": {
+        "area_km2": 146340.56857299866,
+        "oceanic_volume_km3": 142926.14924252962,
+        "cold_mantle_volume_km3": 4868982.831612918,
+        "density_excess_mass_kg": 3.2679030145589914e+17
+      },
+      "cumulative_births": {
+        "area_km2": 146340.56857299941,
+        "oceanic_volume_km3": 146340.56857299941,
+        "cold_mantle_volume_km3": 0.0,
+        "density_excess_mass_kg": 0.0
+      },
+      "final_parcel_count": 54178,
+      "maximum_per_material_relative_residual": 1.3302338947581278e-15
+    },
+    "saved50_common_rotation": {
+      "cumulative_losses": {
+        "area_km2": 0.0,
+        "oceanic_volume_km3": 0.0,
+        "cold_mantle_volume_km3": 0.0,
+        "density_excess_mass_kg": 0.0
+      },
+      "cumulative_births": {
+        "area_km2": 0.0,
+        "oceanic_volume_km3": 0.0,
+        "cold_mantle_volume_km3": 0.0,
+        "density_excess_mass_kg": 0.0
+      },
+      "final_parcel_count": 12800,
+      "maximum_per_material_relative_residual": 2.2200150856991997e-16
+    },
+    "saved50_refined_dt1": {
+      "cumulative_losses": {
+        "area_km2": 147373.50415885495,
+        "oceanic_volume_km3": 144387.1366711081,
+        "cold_mantle_volume_km3": 4902898.084620469,
+        "density_excess_mass_kg": 3.290665829943458e+17
+      },
+      "cumulative_births": {
+        "area_km2": 147373.504158855,
+        "oceanic_volume_km3": 147373.504158855,
+        "cold_mantle_volume_km3": 0.0,
+        "density_excess_mass_kg": 0.0
+      },
+      "final_parcel_count": 36233,
+      "maximum_per_material_relative_residual": 6.4968763282755e-16
+    }
+  },
+  "time_refinement": {
+    "dt1_vs_dt0p5_plate_area_l1_fraction": 6.408367353643118e-06,
+    "dt0p5_vs_dt0p25_plate_area_l1_fraction": 3.172582800387673e-06
+  },
+  "grid_refinement": {
+    "parent_aggregated_plate_area_l1_fraction": 3.343051274900986e-05,
+    "coarse_loss": {
+      "area_km2": 146344.3427970487,
+      "oceanic_volume_km3": 142929.56694760604,
+      "cold_mantle_volume_km3": 4869108.674492222,
+      "density_excess_mass_kg": 3.26798747066839e+17
+    },
+    "fine_loss": {
+      "area_km2": 147373.50415885495,
+      "oceanic_volume_km3": 144387.1366711081,
+      "cold_mantle_volume_km3": 4902898.084620469,
+      "density_excess_mass_kg": 3.290665829943458e+17
+    }
+  },
+  "artifacts_sha256": {
+    "actual_frozen_v2/validation.json": "af61c3e387de498a2873a401e0cf5796e8d32c9aa53511586e66706269cb0f5a",
+    "cli_final_dt0p5/report.json": "d4ae3a363c93e45c2298b82476102cdba24e8dd47259705ee5579d7aa74c1658",
+    "cli_final_dt0p5/fractional_checkpoint.json": "e22c096d183d87b4d77b97d6b21747a9a6bfff7ddd3732e13aa649bb1967421c",
+    "comparison.png": "0cc6a1955fcfc26020a882e07d74128bd8588a17e2fd394d849fbc5524bd882d"
+  },
+  "incomplete_integration": [
+    "component-aware thermal and force updates",
+    "contact geometry inside mixed cells",
+    "fracture and plate topology on material components",
+    "continental and sediment transport"
+  ],
+  "limitations": [
+    "First-order upwind interface diffusion remains; convergence of the mature coupled model is untested.",
+    "Cell overlap lacks a resolved within-cell trench and cannot yet drive the slab force law.",
+    "No sparse parcel is silently discarded; exact histories grow with the number of steps."
+  ]
+}

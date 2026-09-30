@@ -1,5 +1,12 @@
 # Moon Tectonics v0.31 — Mantle-Flow-Coupled Plume Sources
 
+## Current cloud handoff — 2026-10-01
+
+The current physics work is on **`fix/genesis-mantle-convection`**.
+Start with [CLOUD_HANDOFF.md](CLOUD_HANDOFF.md) for the implemented state,
+remaining work, headless setup, source checkpoint bundle and reproducible tests.
+The `perf/gpu-compute` instructions below describe the earlier performance branch.
+
 Plate connectivity, connected collision contacts, and material-following relief
 are enabled in the canonical configuration. See the
 [repair results and validation limits](TECTONIC_REPAIRS.md), including paired

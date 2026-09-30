@@ -6,9 +6,9 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from tectonics.genesis import GenesisParameters
+from tectonics.genesis import ENERGY_SCALE, GenesisParameters, mantle_enthalpy
 from tectonics.genesis_long_term_support import begin_mechanical_transition, mechanical_sample, refresh_matched_mechanics
-from tectonics.genesis_shell import ShellParameters
+from tectonics.genesis_shell import ShellParameters, rock_enthalpy
 from tectonics.genesis_starter import StarterModel
 from tectonics.genesis_starter_continuation import YoungWorldCoupling, build_starter_continuation, project_thermal
 from tectonics.genesis_tides import TidalParameters, SYNCHRONOUS_SPIN
@@ -26,11 +26,27 @@ def near_limit():
         ShellParameters(subdivisions=2, convective_traction_pa=50000.))
     state = model.advance(model.initial_state(), 1.)
     bundle, cfg, _ = build_starter_continuation(model, state, load_config(ROOT / "configs/canonical_moon.yaml"))
-    # Move only this controlled thermal fixture near the old domain boundary;
-    # real material evolution across it is covered by the CLI replay audit.
+    # An exhausted mechanical column is a conditional regime, not an expected
+    # event at a prescribed age. Construct an independently controlled cold
+    # reservoir/near-solid column; the physical default need not reach it.
     state = deepcopy(state)
     state.thermal_context, _ = model.loading.advance(state.thermal_context, 106.,
         max_sample_myr=.25, max_thermal_step_myr=.25)
+    context = state.thermal_context
+    energy = list(context.thermal.energy)
+    mantle_k = model.thermal.solidus_k-10.
+    colder_energy = mantle_enthalpy(mantle_k, model.thermal)/ENERGY_SCALE
+    energy[3] += energy[0]-colder_energy
+    energy[0] = colder_energy
+    surface_k = model.loading.sample(context).thermal["surface_temperature_k"]
+    z = (np.arange(model.shell.column_layers)+.5)/model.shell.column_layers
+    temperature = surface_k+(mantle_k-surface_k)*z
+    temperature[-1] = model.thermal.solidus_k+.1
+    column = rock_enthalpy(temperature, model.thermal)
+    state.thermal_context = replace(context,
+        thermal=replace(context.thermal, energy=energy), column_enthalpy=column,
+        boundary_energy_j_m2=float(column.sum()*model.loading.layer_mass_kg_m2
+            -context.initial_column_energy_j_m2))
     cp = bundle.checkpoint
     cp.thermal, _ = project_thermal(model, state, ThermalParameters(**cfg["thermal"]))
     cp.state.time_myr = state.time_myr

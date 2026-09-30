@@ -80,8 +80,11 @@ def test_real_refinement_preserves_all_clocks_damage_and_material_without_new_pl
         np.testing.assert_array_equal(plate.euler_axis, cp.system.plates[pid].euler_axis)
 
 
-def test_every_grid_field_and_nonzero_volume_is_remapped_by_its_physical_kind(real_source):
+@pytest.mark.parametrize("mechanics", ["legacy", "prescribed_source"])
+def test_every_grid_field_and_nonzero_volume_is_remapped_by_its_physical_kind(real_source, mechanics):
     model, state, fracture, cp, cfg = source_copy(real_source)
+    if mechanics == "legacy":
+        cfg["young_shell"]["mechanics_model_version"] = "legacy-young-0.2"
     n = model.mesh.cell_count
     for name, attributes in CELL_FIELDS.items():
         record = getattr(cp, name)
@@ -105,6 +108,9 @@ def test_every_grid_field_and_nonzero_volume_is_remapped_by_its_physical_kind(re
                 source_density = old / model.areas
                 target_density = new / result.model.areas
                 np.testing.assert_allclose(target_density, np.repeat(source_density, 4), rtol=2e-14)
+            elif name == "mantle_flow" and mechanics == "prescribed_source":
+                from tectonics.genesis_starter_material import independent_mantle_source_omega
+                np.testing.assert_array_equal(new, independent_mantle_source_omega(result.model))
             else:
                 np.testing.assert_array_equal(new, np.repeat(old, 4, axis=0))
 

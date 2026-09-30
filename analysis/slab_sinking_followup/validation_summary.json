@@ -1,0 +1,708 @@
+{
+  "cases": {
+    "sub4_dt1": {
+      "path": "D:\\Moon Project\\mantle-convection\\analysis\\slab_sinking_validation\\runs\\validated_sinking_sub4_dt1\\elapsed_0050",
+      "origin_time_myr": 0.8781219482421875,
+      "dt_myr": 1.0,
+      "subdivisions": 4,
+      "mean_speed50_mm_yr": 4.483046969595213,
+      "max_speed50_mm_yr": 6.716120747588505,
+      "transport_commits": 63,
+      "fracture_times": [
+        6.0,
+        7.0
+      ],
+      "first_acceptance_elapsed_myr": 16.0,
+      "first_force_elapsed_myr": 17.0,
+      "first_neck_failure": {
+        "elapsed_myr": 17.0,
+        "dt_myr": 1.0,
+        "mean_speed_mm_yr": 6.119269033459065,
+        "post_transport_mean_speed_mm_yr": 6.119001371895457,
+        "transport_commits": 4,
+        "new_transport_commits": 1,
+        "accepted_now": {
+          "count": 9,
+          "area_km2": 625291.2612776223,
+          "oceanic_volume_km3": 598156.8210132004,
+          "cold_volume_km3": 18993072.23501645,
+          "initial_excess_mass_kg": 1.205222605180509e+18
+        },
+        "accepted_previous": {
+          "count": 13,
+          "area_km2": 961319.768009728,
+          "oceanic_volume_km3": 961319.768009728,
+          "cold_volume_km3": 28359044.72679256,
+          "initial_excess_mass_kg": 1.786777040968781e+18
+        },
+        "neck_failure_count": 1,
+        "failure_ratios": [
+          1.3891341171323188
+        ],
+        "section_count": 7,
+        "active_constraints": 0,
+        "basal_power_w": 2471386444.1615233,
+        "gravity_power_w": 457441785.87071496,
+        "bending_power_w": 1354897747.854938,
+        "mantle_power_w": 52972592.54269006,
+        "attached_volume_at_trace_km3": 646804.8569557029,
+        "initial_excess_mass_at_trace_kg": 1.7867770409687813e+18,
+        "current_excess_mass_at_trace_kg": 6.85619619596214e+17,
+        "section_length_over_bend_length": {
+          "count": 7,
+          "min": 1.4831080795735356,
+          "median": 1.5533624647014264,
+          "mean": 1.5781554672082696,
+          "p90": 1.682808120144843,
+          "max": 1.766180372366199
+        },
+        "section_strength_pa": {
+          "count": 7,
+          "min": 3886246.7748687514,
+          "median": 4239825.327910745,
+          "mean": 4172941.113185694,
+          "p90": 4271541.924011625,
+          "max": 4286410.143841008
+        },
+        "surviving_capacity_ratio": {
+          "count": 7,
+          "min": -12.379278832776071,
+          "median": -7.372820520629344,
+          "mean": -8.387935892613095,
+          "p90": -6.680105657600458,
+          "max": -6.492326487572817
+        }
+      },
+      "accepted_event_times": 25,
+      "parcels": 129,
+      "mechanical_detachments": 54,
+      "cumulative_accepted_oceanic_volume_km3": 8841617.630534204,
+      "parcel_volume_sum_km3": 8841617.630534204,
+      "acceptance_burst_volume_km3": {
+        "count": 25,
+        "min": 64638.9756210314,
+        "median": 336400.7419847593,
+        "mean": 353664.7052213682,
+        "p90": 653423.449074295,
+        "max": 961319.768009728
+      },
+      "parcel_statistics": {
+        "area_km2": {
+          "count": 129,
+          "min": 64492.63906975814,
+          "median": 65311.86895495699,
+          "mean": 70329.0329782439,
+          "p90": 78187.01793513386,
+          "max": 81593.76962271522
+        },
+        "oceanic_volume_km3": {
+          "count": 129,
+          "min": 63730.089969947396,
+          "median": 64838.78072295312,
+          "mean": 68539.67155452872,
+          "p90": 77399.30882475997,
+          "max": 81593.7696227152
+        },
+        "initial_thickness_km": {
+          "count": 129,
+          "min": 18.925651652141894,
+          "median": 32.94468161274416,
+          "mean": 32.0993508097731,
+          "p90": 33.26405976703483,
+          "max": 33.41940017477075
+        },
+        "length_proxy_km": {
+          "count": 129,
+          "min": 148.12636784744552,
+          "median": 176.80336391681044,
+          "mean": 175.90420414602696,
+          "p90": 188.0402036130881,
+          "max": 210.8456999705148
+        },
+        "cold_fraction_one_step_after_acceptance": {
+          "count": 129,
+          "min": 0.33977305589792267,
+          "median": 0.6151923567451032,
+          "mean": 0.6032334093958373,
+          "p90": 0.6188857214865819,
+          "max": 0.620656818124767
+        },
+        "cold_fraction_after50": {
+          "count": 129,
+          "min": 5.156015189254361e-11,
+          "median": 0.0026254565522377355,
+          "mean": 0.11897048006485479,
+          "p90": 0.34780290667912617,
+          "max": 1.0
+        }
+      },
+      "surviving_section_statistics": {
+        "slab_length_km": {
+          "count": 889,
+          "min": 148.12636784744555,
+          "median": 177.38565473875917,
+          "mean": 212.70354914559377,
+          "p90": 343.4590564754513,
+          "max": 544.8734478162855
+        },
+        "trench_length_km": {
+          "count": 889,
+          "min": 365.8434544360714,
+          "median": 382.88345395205465,
+          "mean": 402.6230624827028,
+          "p90": 435.307581559299,
+          "max": 436.3109190696559
+        },
+        "cold_hinge_thickness_km": {
+          "count": 889,
+          "min": 10.472571170075534,
+          "median": 33.090160346690716,
+          "mean": 32.169871297561464,
+          "p90": 33.241523975905885,
+          "max": 33.410851822933324
+        },
+        "length_over_bend_length": {
+          "count": 889,
+          "min": 1.1350839496925533,
+          "median": 1.40167844703967,
+          "mean": 1.728359130736217,
+          "p90": 2.6779743425941054,
+          "max": 9.533211027650916
+        },
+        "tip_dip_deg": {
+          "count": 889,
+          "min": 35.24844399012237,
+          "median": 37.569313000056844,
+          "mean": 37.760343724721686,
+          "p90": 40.549452927158555,
+          "max": 41.92460429740305
+        },
+        "neck_strength_pa": {
+          "count": 889,
+          "min": 3149742.5910609043,
+          "median": 4336770.4082620675,
+          "mean": 4273944.585268747,
+          "p90": 4430449.958117138,
+          "max": 4462444.14767296
+        },
+        "capacity_ratio": {
+          "count": 889,
+          "min": -19.19909187519617,
+          "median": -3.7618392509916867,
+          "mean": -3.98916479036448,
+          "p90": -1.2869783258683032,
+          "max": 0.9422243259004107
+        }
+      },
+      "retained_thickness_fallback_count": 0,
+      "short_section_fraction": 0.0,
+      "very_short_section_fraction": 0.0,
+      "failure_ratio_statistics": {
+        "count": 54,
+        "min": 1.0702605559110527,
+        "median": 3.649376773055124,
+        "mean": 153.10613899833734,
+        "p90": 291.58182985548893,
+        "max": 2750.658374315037
+      },
+      "failure_steps_with_previous_acceptance": 15,
+      "failure_steps_without_previous_acceptance": 0,
+      "failed_capacity_n": {
+        "count": 54,
+        "min": 1.7180876956353312e+16,
+        "median": 5.582221164052997e+16,
+        "mean": 5.505688861692841e+16,
+        "p90": 6.4285023537885e+16,
+        "max": 6.4887432101919064e+16
+      },
+      "failed_tension_n": {
+        "count": 54,
+        "min": 6.805646812867928e+16,
+        "median": 2.0719849156311155e+17,
+        "mean": 8.819749802483071e+18,
+        "p90": 1.6849241738138716e+19,
+        "max": 1.4989853999759986e+20
+      },
+      "trace_sha256": "b6c81be96c6414b6203891c315755698ef48c9ee041a2d09635ae96a4b08c6d5",
+      "report_sha256": "8a68443fd251b18890593a7d9a6f129186ae26ebbdc58f917bf3ba710bcf94bf"
+    },
+    "sub4_dt0p5": {
+      "path": "D:\\Moon Project\\mantle-convection\\analysis\\slab_sinking_validation\\runs\\validated_sinking_sub4_dt0p5\\elapsed_0050",
+      "origin_time_myr": 0.8781219482421875,
+      "dt_myr": 0.5,
+      "subdivisions": 4,
+      "mean_speed50_mm_yr": 3.8866900485195255,
+      "max_speed50_mm_yr": 7.5016838176717595,
+      "transport_commits": 172,
+      "fracture_times": [
+        6.0,
+        7.0
+      ],
+      "first_acceptance_elapsed_myr": 15.5,
+      "first_force_elapsed_myr": 16.0,
+      "first_neck_failure": {
+        "elapsed_myr": 16.5,
+        "dt_myr": 0.5,
+        "mean_speed_mm_yr": 4.638582226325517,
+        "post_transport_mean_speed_mm_yr": 4.625736729594298,
+        "transport_commits": 5,
+        "new_transport_commits": 2,
+        "accepted_now": {
+          "count": 2,
+          "area_km2": 155689.63313412011,
+          "oceanic_volume_km3": 155689.6331341201,
+          "cold_volume_km3": 4722279.171608567,
+          "initial_excess_mass_kg": 2.996565029997247e+17
+        },
+        "accepted_previous": {
+          "count": 12,
+          "area_km2": 871717.7963299274,
+          "oceanic_volume_km3": 871717.7963299274,
+          "cold_volume_km3": 26111684.732484955,
+          "initial_excess_mass_kg": 1.6504640002388124e+18
+        },
+        "neck_failure_count": 3,
+        "failure_ratios": [
+          1.3370996556683195,
+          6.9856620133637595,
+          1.3571592748201171
+        ],
+        "section_count": 23,
+        "active_constraints": 0,
+        "basal_power_w": 1896257578.2425911,
+        "gravity_power_w": 1204641481.391091,
+        "bending_power_w": 1815122746.4882174,
+        "mantle_power_w": 73960489.47162703,
+        "attached_volume_at_trace_km3": 1874861.5638816277,
+        "initial_excess_mass_at_trace_kg": 3.514978092633814e+18,
+        "current_excess_mass_at_trace_kg": 2.219872233199803e+18,
+        "section_length_over_bend_length": {
+          "count": 23,
+          "min": 1.493194240246276,
+          "median": 1.5880287962373147,
+          "mean": 3.3149160417544694,
+          "p90": 6.972180192279943,
+          "max": 7.143003990838105
+        },
+        "section_strength_pa": {
+          "count": 23,
+          "min": 3925685.8399598147,
+          "median": 4214151.299325264,
+          "mean": 4191220.127256922,
+          "p90": 4266921.2939330125,
+          "max": 4273238.1614939
+        },
+        "surviving_capacity_ratio": {
+          "count": 23,
+          "min": -11.007535636125839,
+          "median": -5.717661596948129,
+          "mean": -5.0800576201202015,
+          "p90": 0.2125662294620065,
+          "max": 0.521756398900024
+        }
+      },
+      "accepted_event_times": 59,
+      "parcels": 180,
+      "mechanical_detachments": 89,
+      "cumulative_accepted_oceanic_volume_km3": 12164666.401563201,
+      "parcel_volume_sum_km3": 12164666.4015632,
+      "acceptance_burst_volume_km3": {
+        "count": 59,
+        "min": 63896.097152871036,
+        "median": 155689.6331341201,
+        "mean": 206180.78646717287,
+        "p90": 338465.5427427167,
+        "max": 1003143.7675517001
+      },
+      "parcel_statistics": {
+        "area_km2": {
+          "count": 180,
+          "min": 63672.60975791987,
+          "median": 65052.75570953628,
+          "mean": 68430.07062941698,
+          "p90": 77236.2304136022,
+          "max": 81593.76962271522
+        },
+        "oceanic_volume_km3": {
+          "count": 180,
+          "min": 63672.60975791991,
+          "median": 64794.38334584974,
+          "mean": 67581.48000868443,
+          "p90": 77236.2304136022,
+          "max": 81593.7696227152
+        },
+        "initial_thickness_km": {
+          "count": 180,
+          "min": 10.456701556354464,
+          "median": 32.9059652910616,
+          "mean": 30.56132514839336,
+          "p90": 33.22963465571387,
+          "max": 33.383004874111165
+        },
+        "length_proxy_km": {
+          "count": 180,
+          "min": 148.12636784744598,
+          "median": 170.77599653708597,
+          "mean": 170.2714345498023,
+          "p90": 180.42553917998106,
+          "max": 201.7053400586621
+        },
+        "cold_fraction_one_step_after_acceptance": {
+          "count": 180,
+          "min": 0.1950965675264004,
+          "median": 0.72757472085024,
+          "mean": 0.6883993261855454,
+          "p90": 0.7302282472188748,
+          "max": 0.7314676488554066
+        },
+        "cold_fraction_after50": {
+          "count": 180,
+          "min": 1.2163929988757559e-41,
+          "median": 0.00387210014005883,
+          "mean": 0.08334891416662753,
+          "p90": 0.27104834734915406,
+          "max": 1.0
+        }
+      },
+      "surviving_section_statistics": {
+        "slab_length_km": {
+          "count": 1532,
+          "min": 148.5141545507479,
+          "median": 177.8037233983194,
+          "mean": 233.07180420839694,
+          "p90": 530.5724082883498,
+          "max": 1113.2556788031784
+        },
+        "trench_length_km": {
+          "count": 1532,
+          "min": 366.6362606062419,
+          "median": 431.3745536728833,
+          "mean": 413.399069916495,
+          "p90": 436.2842285427369,
+          "max": 436.8217844886754
+        },
+        "cold_hinge_thickness_km": {
+          "count": 1532,
+          "min": 7.100116749842474,
+          "median": 33.052133278098,
+          "mean": 31.131670284943823,
+          "p90": 33.24331568870799,
+          "max": 33.410451240020805
+        },
+        "length_over_bend_length": {
+          "count": 1532,
+          "min": 1.027138935400822,
+          "median": 1.380317063835363,
+          "mean": 2.137900833529224,
+          "p90": 3.9627646730215496,
+          "max": 21.01896656622403
+        },
+        "tip_dip_deg": {
+          "count": 1532,
+          "min": 35.124610187532106,
+          "median": 37.46003005283566,
+          "mean": 37.81370936334342,
+          "p90": 40.90623820562573,
+          "max": 42.00607067293091
+        },
+        "neck_strength_pa": {
+          "count": 1532,
+          "min": 3895488.0815044604,
+          "median": 4333013.995606822,
+          "mean": 4293816.215943747,
+          "p90": 4434757.405271493,
+          "max": 4489636.317011229
+        },
+        "capacity_ratio": {
+          "count": 1532,
+          "min": -30.165794761483966,
+          "median": -4.356403551226589,
+          "mean": -4.8618200445694315,
+          "p90": -2.5066081142570646,
+          "max": 0.9881246722182305
+        }
+      },
+      "retained_thickness_fallback_count": 0,
+      "short_section_fraction": 0.0,
+      "very_short_section_fraction": 0.0,
+      "failure_ratio_statistics": {
+        "count": 89,
+        "min": 1.0270108190615708,
+        "median": 4.904708463138351,
+        "mean": 1138.2473357242093,
+        "p90": 117.57589914074207,
+        "max": 47642.07128739347
+      },
+      "failure_steps_with_previous_acceptance": 39,
+      "failure_steps_without_previous_acceptance": 0,
+      "failed_capacity_n": {
+        "count": 89,
+        "min": 1.156575572163539e+16,
+        "median": 5.474398877440536e+16,
+        "mean": 5.073408931546824e+16,
+        "p90": 6.061242467535909e+16,
+        "max": 6.273702737216971e+16
+      },
+      "failed_tension_n": {
+        "count": 89,
+        "min": 2.5695725810990508e+16,
+        "median": 2.2478584058743696e+17,
+        "mean": 6.196128492412919e+19,
+        "p90": 6.856981805063206e+18,
+        "max": 2.575167025670606e+21
+      },
+      "trace_sha256": "1cc25ddf1c509f501f8591236ff902349f606d18b11671ae163381da7f8f204c",
+      "report_sha256": "41e2260feb2d55e0bd7d7399abdbd853d9d77017548a82ff56b61fbec0d56f6b"
+    },
+    "sub5_dt1": {
+      "path": "D:\\Moon Project\\mantle-convection\\analysis\\slab_sinking_validation\\runs\\validated_sinking_sub5_dt1\\elapsed_0050",
+      "origin_time_myr": 0.8781219482421875,
+      "dt_myr": 1.0,
+      "subdivisions": 5,
+      "mean_speed50_mm_yr": 3.0844143407907043,
+      "max_speed50_mm_yr": 5.623493190811956,
+      "transport_commits": 68,
+      "fracture_times": [
+        6.0,
+        7.0
+      ],
+      "first_acceptance_elapsed_myr": 11.0,
+      "first_force_elapsed_myr": 12.0,
+      "first_neck_failure": {
+        "elapsed_myr": 21.0,
+        "dt_myr": 1.0,
+        "mean_speed_mm_yr": 2.619578883016666,
+        "post_transport_mean_speed_mm_yr": 2.619578883016666,
+        "transport_commits": 16,
+        "new_transport_commits": 1,
+        "accepted_now": {},
+        "accepted_previous": {
+          "count": 10,
+          "area_km2": 184327.23518747382,
+          "oceanic_volume_km3": 181150.1862196137,
+          "cold_volume_km3": 5856617.92523761,
+          "initial_excess_mass_kg": 3.8023511982532416e+17
+        },
+        "neck_failure_count": 1,
+        "failure_ratios": [
+          2.780663132037653
+        ],
+        "section_count": 94,
+        "active_constraints": 0,
+        "basal_power_w": 1058199854.7487869,
+        "gravity_power_w": 160792623.60232058,
+        "bending_power_w": 899445231.6294916,
+        "mantle_power_w": 49232279.24998266,
+        "attached_volume_at_trace_km3": 2480619.02433338,
+        "initial_excess_mass_at_trace_kg": 4.259518190758103e+18,
+        "current_excess_mass_at_trace_kg": 5.592854716628126e+17,
+        "section_length_over_bend_length": {
+          "count": 94,
+          "min": 0.5883538453590249,
+          "median": 0.746386505875741,
+          "mean": 1.1449869247951807,
+          "p90": 1.5443416168808568,
+          "max": 6.2805454274519885
+        },
+        "section_strength_pa": {
+          "count": 94,
+          "min": 2142175.005243495,
+          "median": 4287846.192356808,
+          "mean": 4196215.035420596,
+          "p90": 4350824.275960307,
+          "max": 4370178.454676086
+        },
+        "surviving_capacity_ratio": {
+          "count": 94,
+          "min": -11.067283085567494,
+          "median": -2.5560788669049943,
+          "mean": -2.995612287001705,
+          "p90": -1.6571194055361795,
+          "max": 0.5907204197506112
+        }
+      },
+      "accepted_event_times": 37,
+      "parcels": 461,
+      "mechanical_detachments": 134,
+      "cumulative_accepted_oceanic_volume_km3": 7958435.194901201,
+      "parcel_volume_sum_km3": 7958435.194901206,
+      "acceptance_burst_volume_km3": {
+        "count": 37,
+        "min": 16194.277641375074,
+        "median": 197311.73119635682,
+        "mean": 215092.84310543802,
+        "p90": 352982.87820275995,
+        "max": 765229.7283396537
+      },
+      "parcel_statistics": {
+        "area_km2": {
+          "count": 461,
+          "min": 16120.937007359622,
+          "median": 16325.033633561332,
+          "mean": 17618.734590727687,
+          "p90": 19380.551379233504,
+          "max": 20341.84029273448
+        },
+        "oceanic_volume_km3": {
+          "count": 461,
+          "min": 16109.58354624924,
+          "median": 16207.998367772398,
+          "mean": 17263.416908679406,
+          "p90": 19364.34293618721,
+          "max": 20343.22013001935
+        },
+        "initial_thickness_km": {
+          "count": 461,
+          "min": 15.172666689248683,
+          "median": 32.93006151237475,
+          "mean": 30.611871762446857,
+          "p90": 33.24309982496764,
+          "max": 33.41971632424441
+        },
+        "length_proxy_km": {
+          "count": 460,
+          "min": 74.01083354846492,
+          "median": 88.32800305121617,
+          "mean": 86.56190682919693,
+          "p90": 92.88711087232106,
+          "max": 105.3374117931987
+        },
+        "cold_fraction_one_step_after_acceptance": {
+          "count": 461,
+          "min": 0.2095149477215252,
+          "median": 0.6150215721516678,
+          "mean": 0.5768855934105913,
+          "p90": 0.6186455998896603,
+          "max": 0.6206604057185703
+        },
+        "cold_fraction_after50": {
+          "count": 461,
+          "min": 2.2060918266500556e-21,
+          "median": 0.0019465570182678573,
+          "mean": 0.05703037254156673,
+          "p90": 0.1513467534884568,
+          "max": 1.0
+        }
+      },
+      "surviving_section_statistics": {
+        "slab_length_km": {
+          "count": 3081,
+          "min": 74.01083354846718,
+          "median": 89.2816146751303,
+          "mean": 124.36552947361253,
+          "p90": 185.46842118856682,
+          "max": 507.71816044728627
+        },
+        "trench_length_km": {
+          "count": 3081,
+          "min": 182.92172721802964,
+          "median": 207.62000449413497,
+          "mean": 202.2518101871865,
+          "p90": 217.7760111616138,
+          "max": 218.28151940090402
+        },
+        "cold_hinge_thickness_km": {
+          "count": 3081,
+          "min": 10.425030820100313,
+          "median": 32.96454861173217,
+          "mean": 31.43809253495045,
+          "p90": 33.24746680085658,
+          "max": 33.42614578649703
+        },
+        "length_over_bend_length": {
+          "count": 3081,
+          "min": 0.517787705825224,
+          "median": 0.733532487980444,
+          "mean": 1.0330912181780705,
+          "p90": 1.8126144921755845,
+          "max": 11.393887473457164
+        },
+        "tip_dip_deg": {
+          "count": 3081,
+          "min": 22.277889474923356,
+          "median": 32.52792464644743,
+          "mean": 33.35671329799137,
+          "p90": 39.228062180378465,
+          "max": 42.71680247552524
+        },
+        "neck_strength_pa": {
+          "count": 3081,
+          "min": 2080721.4316513652,
+          "median": 4297860.382992854,
+          "mean": 4205554.136815174,
+          "p90": 4418279.559239194,
+          "max": 4455696.750102427
+        },
+        "capacity_ratio": {
+          "count": 3081,
+          "min": -29.18332530956214,
+          "median": -2.7248387931513993,
+          "mean": -3.234971465349965,
+          "p90": -1.404175565668076,
+          "max": 0.9473209554912738
+        }
+      },
+      "retained_thickness_fallback_count": 0,
+      "short_section_fraction": 0.6455696202531646,
+      "very_short_section_fraction": 0.0,
+      "failure_ratio_statistics": {
+        "count": 134,
+        "min": 1.0121486685118324,
+        "median": 3.457632124918363,
+        "mean": 165.1478619395112,
+        "p90": 523.7518289196149,
+        "max": 4320.637278625663
+      },
+      "failure_steps_with_previous_acceptance": 16,
+      "failure_steps_without_previous_acceptance": 0,
+      "failed_capacity_n": {
+        "count": 134,
+        "min": 8484425177553940.0,
+        "median": 2.7538305455380424e+16,
+        "mean": 2.6661583106658136e+16,
+        "p90": 3.1628442715678028e+16,
+        "max": 3.235387122671267e+16
+      },
+      "failed_tension_n": {
+        "count": 134,
+        "min": 1.1050969062704496e+16,
+        "median": 9.10050203457178e+16,
+        "mean": 4.490202083675215e+18,
+        "p90": 1.2682507982764202e+19,
+        "max": 1.180278842859601e+20
+      },
+      "trace_sha256": "f6add316bb58a763a75e198f447509eb54aba6fe399fd92d398f02df9e23d039",
+      "report_sha256": "784aa0fd2f45355ea04958bbb82fd504435dad1cec9780474a4b8c7c3ea301ce"
+    }
+  },
+  "first_difference": {
+    "sub4_dt0p5": {
+      "elapsed_myr": 16.0,
+      "reference_speed_mm_yr": 10.610386979930759,
+      "case_speed_mm_yr": 6.886593646486587,
+      "relative_speed_difference": -0.3509573534393815,
+      "reference_failures": 0,
+      "case_failures": 0,
+      "reference_commits": 3,
+      "case_commits": 3,
+      "reference_sections": 0,
+      "case_sections": 14
+    },
+    "sub5_dt1": {
+      "elapsed_myr": 12.0,
+      "reference_speed_mm_yr": 10.610369154328831,
+      "case_speed_mm_yr": 7.888198036492827,
+      "relative_speed_difference": -0.25655762568123375,
+      "reference_failures": 0,
+      "case_failures": 0,
+      "reference_commits": 0,
+      "case_commits": 4,
+      "reference_sections": 0,
+      "case_sections": 16
+    }
+  },
+  "maximum_pre_slab_relative_difference": {
+    "sub4_dt0p5": 1.2566164879768138e-06,
+    "sub5_dt1": 0.002513371591882363
+  }
+}

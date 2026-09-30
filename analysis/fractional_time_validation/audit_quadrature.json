@@ -1,0 +1,104 @@
+{
+  "scope": "Frozen endpoint birth-time quadrature against the exact cold-depth integral.\n\nTests a uniform birth rate within each old transport step. No trajectories,\nthermal state or existing saves are changed. Density excess is not estimated\nby this closed-form cold-volume oracle.\n",
+  "cases": [
+    {
+      "case": "late_dt1",
+      "step_myr": 1.0,
+      "exact_birth_cold_volume_km3": 11462045.496184511,
+      "exact_retimed_total_thermal_source_km3": 23330212.689827524,
+      "gauss_legendre": {
+        "1": {
+          "birth_cold_volume_km3": 11769846.408862762,
+          "relative_error_vs_exact_uniform_births": 0.02685392522483987,
+          "retimed_total_thermal_source_km3": 23638013.602505773
+        },
+        "2": {
+          "birth_cold_volume_km3": 11509298.880301563,
+          "relative_error_vs_exact_uniform_births": 0.004122596104925824,
+          "retimed_total_thermal_source_km3": 23377466.073944576
+        },
+        "4": {
+          "birth_cold_volume_km3": 11468393.03311445,
+          "relative_error_vs_exact_uniform_births": 0.0005537874485013194,
+          "retimed_total_thermal_source_km3": 23336560.226757467
+        },
+        "8": {
+          "birth_cold_volume_km3": 11461757.740664996,
+          "relative_error_vs_exact_uniform_births": -2.5105075669995536e-05,
+          "retimed_total_thermal_source_km3": 23329924.934308007
+        },
+        "16": {
+          "birth_cold_volume_km3": 11461979.370903041,
+          "relative_error_vs_exact_uniform_births": -5.769064648331046e-06,
+          "retimed_total_thermal_source_km3": 23330146.564546056
+        }
+      }
+    },
+    {
+      "case": "late_dt0p5",
+      "step_myr": 0.5,
+      "exact_birth_cold_volume_km3": 11462827.456603872,
+      "exact_retimed_total_thermal_source_km3": 23332344.13736163,
+      "gauss_legendre": {
+        "1": {
+          "birth_cold_volume_km3": 11580778.766787738,
+          "relative_error_vs_exact_uniform_births": 0.0102898966795415,
+          "retimed_total_thermal_source_km3": 23450295.4475455
+        },
+        "2": {
+          "birth_cold_volume_km3": 11478643.196192095,
+          "relative_error_vs_exact_uniform_births": 0.0013797415731937601,
+          "retimed_total_thermal_source_km3": 23348159.876949854
+        },
+        "4": {
+          "birth_cold_volume_km3": 11464155.121517047,
+          "relative_error_vs_exact_uniform_births": 0.00011582351022920712,
+          "retimed_total_thermal_source_km3": 23333671.80227481
+        },
+        "8": {
+          "birth_cold_volume_km3": 11461809.538972659,
+          "relative_error_vs_exact_uniform_births": -8.880161854185609e-05,
+          "retimed_total_thermal_source_km3": 23331326.219730414
+        },
+        "16": {
+          "birth_cold_volume_km3": 11463031.156938868,
+          "relative_error_vs_exact_uniform_births": 1.7770513930148724e-05,
+          "retimed_total_thermal_source_km3": 23332547.837696627
+        }
+      }
+    },
+    {
+      "case": "late_dt0p25",
+      "step_myr": 0.25,
+      "exact_birth_cold_volume_km3": 11461244.766168071,
+      "exact_retimed_total_thermal_source_km3": 23331433.88581476,
+      "gauss_legendre": {
+        "1": {
+          "birth_cold_volume_km3": 11504553.492158651,
+          "relative_error_vs_exact_uniform_births": 0.0037787105043267655,
+          "retimed_total_thermal_source_km3": 23374742.611805346
+        },
+        "2": {
+          "birth_cold_volume_km3": 11465920.055342915,
+          "relative_error_vs_exact_uniform_births": 0.0004079215888177501,
+          "retimed_total_thermal_source_km3": 23336109.174989607
+        },
+        "4": {
+          "birth_cold_volume_km3": 11460798.166690651,
+          "relative_error_vs_exact_uniform_births": -3.8966053559685854e-05,
+          "retimed_total_thermal_source_km3": 23330987.286337342
+        },
+        "8": {
+          "birth_cold_volume_km3": 11461283.200849377,
+          "relative_error_vs_exact_uniform_births": 3.353447386444941e-06,
+          "retimed_total_thermal_source_km3": 23331472.320496064
+        },
+        "16": {
+          "birth_cold_volume_km3": 11461115.57812913,
+          "relative_error_vs_exact_uniform_births": -1.1271728470818587e-05,
+          "retimed_total_thermal_source_km3": 23331304.697775822
+        }
+      }
+    }
+  ]
+}

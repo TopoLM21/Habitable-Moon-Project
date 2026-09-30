@@ -1,0 +1,4069 @@
+{
+  "format": "legacy-source-polarity-audit-1",
+  "method": "Read existing cohorts; exclude deep transfer; check exact source mesh edge and owners.",
+  "mass_meaning": "Initial excess mass and thermally surviving excess mass are reported separately.",
+  "legacy_direction_origin": "Buoyancy, age, prior owner, nearest source, then lexicographic position.",
+  "sources": {
+    "starter": {
+      "provenance": {
+        "source": "D:\\Moon Project\\mantle-convection\\results\\genesis_runs\\starter_20260928_192306_547551\\starter_checkpoint.npz",
+        "source_sha256": {
+          "D:\\Moon Project\\mantle-convection\\results\\genesis_runs\\starter_20260928_192306_547551\\starter_checkpoint.npz": "b4584dd66208ff80aea18a178c38da2b96e353c723663251091886dee49e87f6",
+          "D:\\Moon Project\\mantle-convection\\results\\genesis_runs\\starter_20260928_192306_547551\\parameters.json": "01eec3e1cb40b5f71b6b52aec5e1c6d9bc0c40c04587a797729e09e420b30877"
+        },
+        "source_mechanics_version": "young-mechanics-0.5",
+        "source_time_myr": 0.8781219482421875,
+        "origin_time_myr": 0.8781219482421875,
+        "subdivisions": 4,
+        "radius_km": 5287.0,
+        "newborn_crust_thickness_km": 1.0
+      },
+      "cell_count": 5120,
+      "plate_count": 2,
+      "checkpoint_inventory_access": "checkpoint.subduction_memory.young_boundary_state",
+      "source_inventory_present": true,
+      "fracture_scalar_ranges": {
+        "damage": [
+          6.048074834951777e-05,
+          0.9863766642958482
+        ],
+        "cooling_stress_pa": [
+          -431318.47202472336,
+          245600.96632853505
+        ],
+        "water_access": [
+          0.0,
+          0.0
+        ],
+        "yield_ratio": [
+          0.8696751012127493,
+          10.626589826131816
+        ],
+        "strength_pa": [
+          3729839.248618724,
+          6516990.704621841
+        ]
+      },
+      "interpretation": "Saved directions are inherited raster conditions, not resolved physical initiation.",
+      "connectivity_model": "local_edge_transfer_v1",
+      "buoyancy_geometry_model": "ordered_thermal_cohorts_v1",
+      "counts": {
+        "contacts": 0,
+        "present_contacts": 0,
+        "segments": 0,
+        "attached": 0,
+        "valid_attached_history": 0,
+        "valid_exact_current_locality": 0,
+        "attached_history_contact_keys": 0,
+        "unambiguous_contact_keys": 0,
+        "conflicting_contact_keys": 0
+      },
+      "attached_contact_directions": [],
+      "segments": [],
+      "conflicting_contacts_totals": {
+        "retained_area_km2": 0.0,
+        "retained_oceanic_volume_km3": 0.0,
+        "retained_initial_cold_volume_km3": 0.0,
+        "retained_initial_excess_mass_kg": 0.0,
+        "current_thermal_excess_mass_kg": 0.0
+      },
+      "source_hashes_unchanged": true
+    },
+    "saved50": {
+      "provenance": {
+        "source": "D:\\Moon Project\\mantle-convection\\analysis\\slab_sinking_followup\\runs\\ordered_sub4_dt1\\elapsed_0050",
+        "source_sha256": {
+          "D:\\Moon Project\\mantle-convection\\analysis\\slab_sinking_followup\\runs\\ordered_sub4_dt1\\elapsed_0050\\mature_checkpoint\\meta.json": "53bce0fcbb1e564196d4a3be6385f22c0aa1c2a50c28c3d62ea01581fc995b45",
+          "D:\\Moon Project\\mantle-convection\\analysis\\slab_sinking_followup\\runs\\ordered_sub4_dt1\\elapsed_0050\\mature_checkpoint\\state.npz": "d9bb60f43508ec09c9ff8d602c5ae90ebd7feb892833769664ab4b7b03e5ae67",
+          "D:\\Moon Project\\mantle-convection\\analysis\\slab_sinking_followup\\runs\\ordered_sub4_dt1\\elapsed_0050\\mature_config.yaml": "2f2b198f228354bb8082e4a347c82d0c3ed98d0360e167ea23ea65c445b24c81",
+          "D:\\Moon Project\\mantle-convection\\analysis\\slab_sinking_followup\\runs\\ordered_sub4_dt1\\elapsed_0050\\young_context\\starter_checkpoint.npz": "358cc744802b928980095a39196d1cfae2a52917e679b09e04eb2dac919ade59",
+          "D:\\Moon Project\\mantle-convection\\analysis\\slab_sinking_followup\\runs\\ordered_sub4_dt1\\elapsed_0050\\young_context\\parameters.json": "01eec3e1cb40b5f71b6b52aec5e1c6d9bc0c40c04587a797729e09e420b30877",
+          "D:\\Moon Project\\mantle-convection\\analysis\\slab_sinking_followup\\runs\\ordered_sub4_dt1\\elapsed_0050\\young_context\\fracture_memory.npz": "38be6bb0872744d3d84de57474f9697f965c98ca8c527fbf4535f99b244c32d8",
+          "D:\\Moon Project\\mantle-convection\\analysis\\slab_sinking_followup\\runs\\ordered_sub4_dt1\\elapsed_0050\\continuation.json": "6ef3ac19d65ab1359383910e1652f02d395de205b5117adabb64811fbe8276b1"
+        },
+        "source_mechanics_version": "young-mechanics-0.5",
+        "source_time_myr": 50.87812194824219,
+        "origin_time_myr": 0.8781219482421875,
+        "subdivisions": 4,
+        "radius_km": 5287.0,
+        "newborn_crust_thickness_km": 1.0
+      },
+      "cell_count": 5120,
+      "plate_count": 4,
+      "checkpoint_inventory_access": "checkpoint.subduction_memory.young_boundary_state",
+      "source_inventory_present": true,
+      "fracture_scalar_ranges": {
+        "damage": [
+          0.0,
+          0.980756700554922
+        ],
+        "cooling_stress_pa": [
+          -600784.4017550027,
+          342960.58587441733
+        ],
+        "water_access": [
+          0.0,
+          0.9999890729812176
+        ],
+        "yield_ratio": [
+          0.0,
+          1.354802375751502
+        ],
+        "strength_pa": [
+          1904241.5914946955,
+          12917570.040407527
+        ]
+      },
+      "interpretation": "Saved directions are inherited raster conditions, not resolved physical initiation.",
+      "connectivity_model": "local_edge_transfer_v1",
+      "buoyancy_geometry_model": "ordered_thermal_cohorts_v1",
+      "counts": {
+        "contacts": 319,
+        "present_contacts": 243,
+        "segments": 100,
+        "attached": 50,
+        "valid_attached_history": 50,
+        "valid_exact_current_locality": 50,
+        "attached_history_contact_keys": 30,
+        "unambiguous_contact_keys": 22,
+        "conflicting_contact_keys": 8
+      },
+      "attached_contact_directions": [
+        {
+          "contact_key": "1275:1277",
+          "conflicting_directions": true,
+          "face_a": 1616,
+          "face_b": 1619,
+          "plate_a": 1,
+          "plate_b": 2,
+          "midpoint": [
+            -0.5333216003195539,
+            -0.25374205184575305,
+            0.806959132644087
+          ],
+          "trench_length_km": 382.5388291138337,
+          "directions": [
+            {
+              "subducting_plate": 1,
+              "overriding_plate": 2,
+              "segment_keys": [
+                "24:1275:1:2"
+              ],
+              "segment_count": 1,
+              "all_exact_current_locality": true,
+              "retained_area_km2": 77136.51923020641,
+              "retained_oceanic_volume_km3": 64625.19812316046,
+              "retained_initial_cold_volume_km3": 2352167.279891104,
+              "retained_initial_excess_mass_kg": 1.4925890565846378e+17,
+              "current_thermal_excess_mass_kg": 1915313301560.5662
+            },
+            {
+              "subducting_plate": 2,
+              "overriding_plate": 1,
+              "segment_keys": [
+                "24:1275:2:1"
+              ],
+              "segment_count": 1,
+              "all_exact_current_locality": true,
+              "retained_area_km2": 64625.19812316046,
+              "retained_oceanic_volume_km3": 77136.51923020642,
+              "retained_initial_cold_volume_km3": 1986793.4756530311,
+              "retained_initial_excess_mass_kg": 1.2709933192187963e+17,
+              "current_thermal_excess_mass_kg": 2711695514029.665
+            }
+          ]
+        },
+        {
+          "contact_key": "1325:1339",
+          "conflicting_directions": false,
+          "face_a": 1778,
+          "face_b": 1779,
+          "plate_a": 1,
+          "plate_b": 2,
+          "midpoint": [
+            -0.43295280030146294,
+            0.02066687382089365,
+            0.9011796452636915
+          ],
+          "trench_length_km": 432.46942910508676,
+          "directions": [
+            {
+              "subducting_plate": 1,
+              "overriding_plate": 2,
+              "segment_keys": [
+                "1325:1339:1:2"
+              ],
+              "segment_count": 1,
+              "all_exact_current_locality": true,
+              "retained_area_km2": 81321.63950535648,
+              "retained_oceanic_volume_km3": 81321.63950535648,
+              "retained_initial_cold_volume_km3": 2655766.0576825407,
+              "retained_initial_excess_mass_kg": 1.764411633271155e+17,
+              "current_thermal_excess_mass_kg": 96527265881198.83
+            }
+          ]
+        },
+        {
+          "contact_key": "13:1249",
+          "conflicting_directions": true,
+          "face_a": 1552,
+          "face_b": 1728,
+          "plate_a": 1,
+          "plate_b": 2,
+          "midpoint": [
+            -0.4725962678144559,
+            0.2920805564656817,
+            0.8314696123025451
+          ],
+          "trench_length_km": 415.2400089882243,
+          "directions": [
+            {
+              "subducting_plate": 1,
+              "overriding_plate": 2,
+              "segment_keys": [
+                "1249:1324:1:2",
+                "720:1249:1:2"
+              ],
+              "segment_count": 2,
+              "all_exact_current_locality": true,
+              "retained_area_km2": 141954.507957898,
+              "retained_oceanic_volume_km3": 141785.3227352085,
+              "retained_initial_cold_volume_km3": 4241703.940587356,
+              "retained_initial_excess_mass_kg": 2.6813603777876435e+17,
+              "current_thermal_excess_mass_kg": 2027804825513.0957
+            },
+            {
+              "subducting_plate": 2,
+              "overriding_plate": 1,
+              "segment_keys": [
+                "13:1249:2:1:accepted:0x1.3f0664ccccccdp+5:1728"
+              ],
+              "segment_count": 1,
+              "all_exact_current_locality": true,
+              "retained_area_km2": 77136.51923020641,
+              "retained_oceanic_volume_km3": 64594.2985503427,
+              "retained_initial_cold_volume_km3": 2570649.677668455,
+              "retained_initial_excess_mass_kg": 1.728124322787262e+17,
+              "current_thermal_excess_mass_kg": 6406816570506304.0
+            }
+          ]
+        },
+        {
+          "contact_key": "156:2401",
+          "conflicting_directions": false,
+          "face_a": 4628,
+          "face_b": 4660,
+          "plate_a": 0,
+          "plate_b": 3,
+          "midpoint": [
+            0.5504472535536321,
+            -0.02035063463534389,
+            -0.8346218740994045
+          ],
+          "trench_length_km": 378.617081139106,
+          "directions": [
+            {
+              "subducting_plate": 0,
+              "overriding_plate": 3,
+              "segment_keys": [
+                "156:2401:0:3"
+              ],
+              "segment_count": 1,
+              "all_exact_current_locality": true,
+              "retained_area_km2": 64680.497676535626,
+              "retained_oceanic_volume_km3": 64680.497676535626,
+              "retained_initial_cold_volume_km3": 2145708.2423175336,
+              "retained_initial_excess_mass_kg": 1.442393659765489e+17,
+              "current_thermal_excess_mass_kg": 6898530345027753.0
+            }
+          ]
+        },
+        {
+          "contact_key": "156:2412",
+          "conflicting_directions": false,
+          "face_a": 4648,
+          "face_b": 4660,
+          "plate_a": 0,
+          "plate_b": 3,
+          "midpoint": [
+            0.5504472535536321,
+            0.02035063463534389,
+            -0.8346218740994045
+          ],
+          "trench_length_km": 378.617081139106,
+          "directions": [
+            {
+              "subducting_plate": 3,
+              "overriding_plate": 0,
+              "segment_keys": [
+                "156:2412:3:0"
+              ],
+              "segment_count": 1,
+              "all_exact_current_locality": true,
+              "retained_area_km2": 67069.77135062768,
+              "retained_oceanic_volume_km3": 67069.77135062768,
+              "retained_initial_cold_volume_km3": 2147747.2904790947,
+              "retained_initial_excess_mass_kg": 1.4032504787052238e+17,
+              "current_thermal_excess_mass_kg": 17004216326150.95
+            }
+          ]
+        },
+        {
+          "contact_key": "1603:1634",
+          "conflicting_directions": false,
+          "face_a": 2530,
+          "face_b": 2531,
+          "plate_a": 3,
+          "plate_b": 0,
+          "midpoint": [
+            0.5450409543911117,
+            0.3781468381492782,
+            -0.7482882645305416
+          ],
+          "trench_length_km": 416.26395037530546,
+          "directions": [
+            {
+              "subducting_plate": 0,
+              "overriding_plate": 3,
+              "segment_keys": [
+                "1603:1634:0:3"
+              ],
+              "segment_count": 1,
+              "all_exact_current_locality": true,
+              "retained_area_km2": 77399.3088247597,
+              "retained_oceanic_volume_km3": 77399.30882475969,
+              "retained_initial_cold_volume_km3": 2508783.2914245552,
+              "retained_initial_excess_mass_kg": 1.65517953372939e+17,
+              "current_thermal_excess_mass_kg": 44820445337729.36
+            }
+          ]
+        },
+        {
+          "contact_key": "1604:1605",
+          "conflicting_directions": false,
+          "face_a": 2450,
+          "face_b": 2451,
+          "plate_a": 3,
+          "plate_b": 0,
+          "midpoint": [
+            0.5806900547424307,
+            0.2896836964682012,
+            -0.7608432271655914
+          ],
+          "trench_length_km": 415.958393519258,
+          "directions": [
+            {
+              "subducting_plate": 3,
+              "overriding_plate": 0,
+              "segment_keys": [
+                "1604:1605:3:0"
+              ],
+              "segment_count": 1,
+              "all_exact_current_locality": true,
+              "retained_area_km2": 64594.29855034248,
+              "retained_oceanic_volume_km3": 64594.29855034247,
+              "retained_initial_cold_volume_km3": 2068476.2583523768,
+              "retained_initial_excess_mass_kg": 1.3514580195679755e+17,
+              "current_thermal_excess_mass_kg": 16376609072422.652
+            }
+          ]
+        },
+        {
+          "contact_key": "1911:1913",
+          "conflicting_directions": false,
+          "face_a": 3216,
+          "face_b": 3219,
+          "plate_a": 3,
+          "plate_b": 0,
+          "midpoint": [
+            0.25374205184575305,
+            -0.806959132644087,
+            -0.5333216003195538
+          ],
+          "trench_length_km": 382.5388291138337,
+          "directions": [
+            {
+              "subducting_plate": 3,
+              "overriding_plate": 0,
+              "segment_keys": [
+                "1911:1913:3:0"
+              ],
+              "segment_count": 1,
+              "all_exact_current_locality": true,
+              "retained_area_km2": 64625.1981231604,
+              "retained_oceanic_volume_km3": 64625.198123160415,
+              "retained_initial_cold_volume_km3": 2147303.0516017335,
+              "retained_initial_excess_mass_kg": 1.442185066621898e+17,
+              "current_thermal_excess_mass_kg": 5.015429858385069e+16
+            }
+          ]
+        },
+        {
+          "contact_key": "1983:2022",
+          "conflicting_directions": false,
+          "face_a": 3536,
+          "face_b": 3539,
+          "plate_a": 0,
+          "plate_b": 3,
+          "midpoint": [
+            0.5195250164375778,
+            -0.36236764127032595,
+            -0.7738109910409097
+          ],
+          "trench_length_km": 436.2842285427369,
+          "directions": [
+            {
+              "subducting_plate": 3,
+              "overriding_plate": 0,
+              "segment_keys": [
+                "1983:2022:3:0",
+                "39:1983:3:0:accepted:0x1.470664ccccccdp+5:3536"
+              ],
+              "segment_count": 2,
+              "all_exact_current_locality": true,
+              "retained_area_km2": 141761.71735336684,
+              "retained_oceanic_volume_km3": 129950.84457598857,
+              "retained_initial_cold_volume_km3": 4718037.7274033185,
+              "retained_initial_excess_mass_kg": 3.170291527195181e+17,
+              "current_thermal_excess_mass_kg": 5.860832128569219e+16
+            }
+          ]
+        },
+        {
+          "contact_key": "2253:2283",
+          "conflicting_directions": false,
+          "face_a": 4304,
+          "face_b": 4307,
+          "plate_a": 1,
+          "plate_b": 2,
+          "midpoint": [
+            -0.5195250164375778,
+            -0.36236764127032595,
+            0.7738109910409097
+          ],
+          "trench_length_km": 436.2842285427369,
+          "directions": [
+            {
+              "subducting_plate": 2,
+              "overriding_plate": 1,
+              "segment_keys": [
+                "24:2253:2:1"
+              ],
+              "segment_count": 1,
+              "all_exact_current_locality": true,
+              "retained_area_km2": 77136.51923020641,
+              "retained_oceanic_volume_km3": 64625.19812316065,
+              "retained_initial_cold_volume_km3": 2352167.279891104,
+              "retained_initial_excess_mass_kg": 1.4925890565846378e+17,
+              "current_thermal_excess_mass_kg": 1915313301560.5662
+            }
+          ]
+        },
+        {
+          "contact_key": "2256:2257",
+          "conflicting_directions": false,
+          "face_a": 4182,
+          "face_b": 4183,
+          "plate_a": 2,
+          "plate_b": 1,
+          "midpoint": [
+            -0.4285485445041314,
+            -0.504694363491149,
+            0.7494196050702533
+          ],
+          "trench_length_km": 379.40616845359943,
+          "directions": [
+            {
+              "subducting_plate": 2,
+              "overriding_plate": 1,
+              "segment_keys": [
+                "576:2253:2:1"
+              ],
+              "segment_count": 1,
+              "all_exact_current_locality": true,
+              "retained_area_km2": 77160.12461204811,
+              "retained_oceanic_volume_km3": 77160.1246120481,
+              "retained_initial_cold_volume_km3": 2276232.631238076,
+              "retained_initial_excess_mass_kg": 1.4341527525282576e+17,
+              "current_thermal_excess_mass_kg": 603525961977.618
+            }
+          ]
+        },
+        {
+          "contact_key": "2266:2268",
+          "conflicting_directions": false,
+          "face_a": 4213,
+          "face_b": 4215,
+          "plate_a": 1,
+          "plate_b": 2,
+          "midpoint": [
+            -0.3420866758803421,
+            -0.6018260187546361,
+            0.7216523743015621
+          ],
+          "trench_length_km": 379.4667964893982,
+          "directions": [
+            {
+              "subducting_plate": 1,
+              "overriding_plate": 2,
+              "segment_keys": [
+                "2265:2266:1:2"
+              ],
+              "segment_count": 1,
+              "all_exact_current_locality": true,
+              "retained_area_km2": 64638.55835479573,
+              "retained_oceanic_volume_km3": 64638.55835479574,
+              "retained_initial_cold_volume_km3": 2148800.0010501547,
+              "retained_initial_excess_mass_kg": 1.4424555962107347e+17,
+              "current_thermal_excess_mass_kg": 1.4424555962107347e+17
+            }
+          ]
+        },
+        {
+          "contact_key": "2402:2403",
+          "conflicting_directions": true,
+          "face_a": 4630,
+          "face_b": 4631,
+          "plate_a": 0,
+          "plate_b": 3,
+          "midpoint": [
+            0.5479780594515429,
+            -0.09883226867196515,
+            -0.8306336310485349
+          ],
+          "trench_length_km": 379.40616845359943,
+          "directions": [
+            {
+              "subducting_plate": 0,
+              "overriding_plate": 3,
+              "segment_keys": [
+                "2401:2402:0:3"
+              ],
+              "segment_count": 1,
+              "all_exact_current_locality": true,
+              "retained_area_km2": 64838.78072295298,
+              "retained_oceanic_volume_km3": 64672.24603748648,
+              "retained_initial_cold_volume_km3": 2153757.555964933,
+              "retained_initial_excess_mass_kg": 1.4349098708644115e+17,
+              "current_thermal_excess_mass_kg": 2.8356506367731892e+16
+            },
+            {
+              "subducting_plate": 3,
+              "overriding_plate": 0,
+              "segment_keys": [
+                "2402:2403:3:0",
+                "2403:2464:3:0",
+                "607:2403:3:0",
+                "607:2463:3:0"
+              ],
+              "segment_count": 4,
+              "all_exact_current_locality": true,
+              "retained_area_km2": 413881.5602814586,
+              "retained_oceanic_volume_km3": 407759.65770717716,
+              "retained_initial_cold_volume_km3": 12552528.875727864,
+              "retained_initial_excess_mass_kg": 8.290620809457258e+17,
+              "current_thermal_excess_mass_kg": 1.3349450627727652e+16
+            }
+          ]
+        },
+        {
+          "contact_key": "2409:2411",
+          "conflicting_directions": false,
+          "face_a": 4653,
+          "face_b": 4655,
+          "plate_a": 3,
+          "plate_b": 0,
+          "midpoint": [
+            0.5936865364357556,
+            0.13943681324275428,
+            -0.7925236094701668
+          ],
+          "trench_length_km": 382.55520218409765,
+          "directions": [
+            {
+              "subducting_plate": 3,
+              "overriding_plate": 0,
+              "segment_keys": [
+                "2409:2411:3:0"
+              ],
+              "segment_count": 1,
+              "all_exact_current_locality": true,
+              "retained_area_km2": 65300.74282143387,
+              "retained_oceanic_volume_km3": 65300.74282143387,
+              "retained_initial_cold_volume_km3": 2091098.4283487385,
+              "retained_initial_excess_mass_kg": 1.3662384227455134e+17,
+              "current_thermal_excess_mass_kg": 16555714069593.566
+            }
+          ]
+        },
+        {
+          "contact_key": "2410:2411",
+          "conflicting_directions": false,
+          "face_a": 4649,
+          "face_b": 4651,
+          "plate_a": 0,
+          "plate_b": 3,
+          "midpoint": [
+            0.5479780594515429,
+            0.09883226867196515,
+            -0.8306336310485349
+          ],
+          "trench_length_km": 379.40616845359943,
+          "directions": [
+            {
+              "subducting_plate": 3,
+              "overriding_plate": 0,
+              "segment_keys": [
+                "2406:2411:3:0",
+                "2410:2411:3:0"
+              ],
+              "segment_count": 2,
+              "all_exact_current_locality": true,
+              "retained_area_km2": 130310.4846380394,
+              "retained_oceanic_volume_km3": 130310.4846380394,
+              "retained_initial_cold_volume_km3": 4007728.0730325375,
+              "retained_initial_excess_mass_kg": 2.5734766194548125e+17,
+              "current_thermal_excess_mass_kg": 16950694945965.65
+            }
+          ]
+        },
+        {
+          "contact_key": "320:1324",
+          "conflicting_directions": true,
+          "face_a": 1730,
+          "face_b": 1742,
+          "plate_a": 2,
+          "plate_b": 1,
+          "midpoint": [
+            -0.4205809477466251,
+            0.218637321324504,
+            0.8805165461912662
+          ],
+          "trench_length_km": 435.3075815592848,
+          "directions": [
+            {
+              "subducting_plate": 1,
+              "overriding_plate": 2,
+              "segment_keys": [
+                "1249:1324:1:2:accepted:0x1.170664ccccccdp+5:1730",
+                "320:1324:1:2"
+              ],
+              "segment_count": 2,
+              "all_exact_current_locality": true,
+              "retained_area_km2": 206438.07585411187,
+              "retained_oceanic_volume_km3": 194744.48704010493,
+              "retained_initial_cold_volume_km3": 6743694.2958136955,
+              "retained_initial_excess_mass_kg": 4.4742567143934835e+17,
+              "current_thermal_excess_mass_kg": 1.4577544220393424e+17
+            },
+            {
+              "subducting_plate": 2,
+              "overriding_plate": 1,
+              "segment_keys": [
+                "320:1324:2:1"
+              ],
+              "segment_count": 1,
+              "all_exact_current_locality": true,
+              "retained_area_km2": 154320.2492240965,
+              "retained_oceanic_volume_km3": 154535.82805496635,
+              "retained_initial_cold_volume_km3": 5100115.753991123,
+              "retained_initial_excess_mass_kg": 3.418079508231091e+17,
+              "current_thermal_excess_mass_kg": 4.5382123030803096e+16
+            }
+          ]
+        },
+        {
+          "contact_key": "327:1329",
+          "conflicting_directions": true,
+          "face_a": 1746,
+          "face_b": 1758,
+          "plate_a": 2,
+          "plate_b": 1,
+          "midpoint": [
+            -0.48717292128774414,
+            -0.17748121829815874,
+            0.8550806756764924
+          ],
+          "trench_length_km": 435.307581559299,
+          "directions": [
+            {
+              "subducting_plate": 1,
+              "overriding_plate": 2,
+              "segment_keys": [
+                "1329:1332:1:2",
+                "1332:1333:1:2"
+              ],
+              "segment_count": 2,
+              "all_exact_current_locality": true,
+              "retained_area_km2": 155689.63313412011,
+              "retained_oceanic_volume_km3": 155442.39349732007,
+              "retained_initial_cold_volume_km3": 4658323.83411365,
+              "retained_initial_excess_mass_kg": 2.945720194323943e+17,
+              "current_thermal_excess_mass_kg": 2329363159127.5347
+            },
+            {
+              "subducting_plate": 2,
+              "overriding_plate": 1,
+              "segment_keys": [
+                "1329:1332:2:1",
+                "327:1329:2:1"
+              ],
+              "segment_count": 2,
+              "all_exact_current_locality": true,
+              "retained_area_km2": 155423.48345135758,
+              "retained_oceanic_volume_km3": 143125.6487580044,
+              "retained_initial_cold_volume_km3": 4953484.925100664,
+              "retained_initial_excess_mass_kg": 3.231315742937988e+17,
+              "current_thermal_excess_mass_kg": 102756401364580.47
+            }
+          ]
+        },
+        {
+          "contact_key": "342:1333",
+          "conflicting_directions": false,
+          "face_a": 1754,
+          "face_b": 1777,
+          "plate_a": 2,
+          "plate_b": 1,
+          "midpoint": [
+            -0.4322698890871969,
+            -0.061862852836765035,
+            0.8996197699180689
+          ],
+          "trench_length_km": 431.3745536728833,
+          "directions": [
+            {
+              "subducting_plate": 1,
+              "overriding_plate": 2,
+              "segment_keys": [
+                "342:1333:1:2"
+              ],
+              "segment_count": 1,
+              "all_exact_current_locality": true,
+              "retained_area_km2": 78187.01793513386,
+              "retained_oceanic_volume_km3": 78187.01793513386,
+              "retained_initial_cold_volume_km3": 2599195.719974764,
+              "retained_initial_excess_mass_kg": 1.7447991484048208e+17,
+              "current_thermal_excess_mass_kg": 1.7447991484048208e+17
+            }
+          ]
+        },
+        {
+          "contact_key": "39:2022",
+          "conflicting_directions": false,
+          "face_a": 3488,
+          "face_b": 3536,
+          "plate_a": 3,
+          "plate_b": 0,
+          "midpoint": [
+            0.5266327684262672,
+            -0.3254769504768855,
+            -0.7853169308807448
+          ],
+          "trench_length_km": 415.24000898823925,
+          "directions": [
+            {
+              "subducting_plate": 0,
+              "overriding_plate": 3,
+              "segment_keys": [
+                "39:2022:0:3"
+              ],
+              "segment_count": 1,
+              "all_exact_current_locality": true,
+              "retained_area_km2": 64625.19812316046,
+              "retained_oceanic_volume_km3": 64625.19812316046,
+              "retained_initial_cold_volume_km3": 2094729.5230176733,
+              "retained_initial_excess_mass_kg": 1.3820059496764413e+17,
+              "current_thermal_excess_mass_kg": 37423204469139.34
+            }
+          ]
+        },
+        {
+          "contact_key": "39:2399",
+          "conflicting_directions": false,
+          "face_a": 4624,
+          "face_b": 4800,
+          "plate_a": 3,
+          "plate_b": 0,
+          "midpoint": [
+            0.5059926618256597,
+            -0.27144044986507426,
+            -0.8187133248919487
+          ],
+          "trench_length_km": 415.2400089882243,
+          "directions": [
+            {
+              "subducting_plate": 3,
+              "overriding_plate": 0,
+              "segment_keys": [
+                "2020:2399:0:3"
+              ],
+              "segment_count": 1,
+              "all_exact_current_locality": true,
+              "retained_area_km2": 129250.39624632092,
+              "retained_oceanic_volume_km3": 129433.35896688158,
+              "retained_initial_cold_volume_km3": 4290993.8260273505,
+              "retained_initial_excess_mass_kg": 2.8832225470115034e+17,
+              "current_thermal_excess_mass_kg": 5.704244166200736e+16
+            }
+          ]
+        },
+        {
+          "contact_key": "415:2406",
+          "conflicting_directions": false,
+          "face_a": 4641,
+          "face_b": 4652,
+          "plate_a": 0,
+          "plate_b": 3,
+          "midpoint": [
+            0.5860508859725081,
+            0.2173220063473644,
+            -0.7805866413204844
+          ],
+          "trench_length_km": 381.7573118471166,
+          "directions": [
+            {
+              "subducting_plate": 3,
+              "overriding_plate": 0,
+              "segment_keys": [
+                "415:2406:3:0"
+              ],
+              "segment_count": 1,
+              "all_exact_current_locality": true,
+              "retained_area_km2": 65311.868954956946,
+              "retained_oceanic_volume_km3": 65311.868954956946,
+              "retained_initial_cold_volume_km3": 2091454.7158780752,
+              "retained_initial_excess_mass_kg": 1.3664712064851622e+17,
+              "current_thermal_excess_mass_kg": 16558534881078.234
+            }
+          ]
+        },
+        {
+          "contact_key": "513:2037",
+          "conflicting_directions": false,
+          "face_a": 3538,
+          "face_b": 3550,
+          "plate_a": 0,
+          "plate_b": 3,
+          "midpoint": [
+            0.5030330501765242,
+            -0.43449972792986746,
+            -0.7471062420158018
+          ],
+          "trench_length_km": 435.3075815592848,
+          "directions": [
+            {
+              "subducting_plate": 3,
+              "overriding_plate": 0,
+              "segment_keys": [
+                "513:1983:3:0"
+              ],
+              "segment_count": 1,
+              "all_exact_current_locality": true,
+              "retained_area_km2": 77160.12461204811,
+              "retained_oceanic_volume_km3": 77399.30882475997,
+              "retained_initial_cold_volume_km3": 2559467.702804355,
+              "retained_initial_excess_mass_kg": 1.7205321367047328e+17,
+              "current_thermal_excess_mass_kg": 8224430378189235.0
+            }
+          ]
+        },
+        {
+          "contact_key": "513:2040",
+          "conflicting_directions": true,
+          "face_a": 3545,
+          "face_b": 3550,
+          "plate_a": 0,
+          "plate_b": 3,
+          "midpoint": [
+            0.4935881565592077,
+            -0.4699688851385701,
+            -0.7317786405096097
+          ],
+          "trench_length_km": 419.32707850560104,
+          "directions": [
+            {
+              "subducting_plate": 0,
+              "overriding_plate": 3,
+              "segment_keys": [
+                "513:2037:0:3"
+              ],
+              "segment_count": 1,
+              "all_exact_current_locality": true,
+              "retained_area_km2": 154320.24922409622,
+              "retained_oceanic_volume_km3": 141799.10023307937,
+              "retained_initial_cold_volume_km3": 5072441.93164316,
+              "retained_initial_excess_mass_kg": 3.378701012942291e+17,
+              "current_thermal_excess_mass_kg": 6453014026196242.0
+            },
+            {
+              "subducting_plate": 3,
+              "overriding_plate": 0,
+              "segment_keys": [
+                "513:1988:3:0"
+              ],
+              "segment_count": 1,
+              "all_exact_current_locality": true,
+              "retained_area_km2": 77217.32036763955,
+              "retained_oceanic_volume_km3": 77217.32036763955,
+              "retained_initial_cold_volume_km3": 2277919.912666147,
+              "retained_initial_excess_mass_kg": 1.4352158333712035e+17,
+              "current_thermal_excess_mass_kg": 603973331957.7493
+            }
+          ]
+        },
+        {
+          "contact_key": "607:2402",
+          "conflicting_directions": false,
+          "face_a": 4630,
+          "face_b": 4636,
+          "plate_a": 0,
+          "plate_b": 3,
+          "midpoint": [
+            0.545531673961212,
+            -0.13784030416317075,
+            -0.8266772303948394
+          ],
+          "trench_length_km": 369.09386021422563,
+          "directions": [
+            {
+              "subducting_plate": 3,
+              "overriding_plate": 0,
+              "segment_keys": [
+                "2400:2402:3:0",
+                "607:2400:3:0:accepted:0x1.0f0664ccccccdp+5:4636",
+                "607:2400:3:0:accepted:0x1.7e0cc9999999ap+4:4636"
+              ],
+              "segment_count": 3,
+              "all_exact_current_locality": true,
+              "retained_area_km2": 196005.1653073248,
+              "retained_oceanic_volume_km3": 196630.53532802805,
+              "retained_initial_cold_volume_km3": 6431680.210627491,
+              "retained_initial_excess_mass_kg": 4.291649989089198e+17,
+              "current_thermal_excess_mass_kg": 1336720820040639.8
+            }
+          ]
+        },
+        {
+          "contact_key": "717:718",
+          "conflicting_directions": false,
+          "face_a": 153,
+          "face_b": 155,
+          "plate_a": 2,
+          "plate_b": 1,
+          "midpoint": [
+            -0.23350644756975353,
+            0.7170588535790624,
+            0.6567353648519582
+          ],
+          "trench_length_km": 379.4017962020329,
+          "directions": [
+            {
+              "subducting_plate": 2,
+              "overriding_plate": 1,
+              "segment_keys": [
+                "717:719:2:1"
+              ],
+              "segment_count": 1,
+              "all_exact_current_locality": true,
+              "retained_area_km2": 64658.70933749338,
+              "retained_oceanic_volume_km3": 64456.29003366765,
+              "retained_initial_cold_volume_km3": 1961389.3654930233,
+              "retained_initial_excess_mass_kg": 1.2446173908056005e+17,
+              "current_thermal_excess_mass_kg": 1421864740331.286
+            }
+          ]
+        },
+        {
+          "contact_key": "721:722",
+          "conflicting_directions": true,
+          "face_a": 162,
+          "face_b": 163,
+          "plate_a": 2,
+          "plate_b": 1,
+          "midpoint": [
+            -0.45669804972323225,
+            0.3993805423210696,
+            0.7949352639016113
+          ],
+          "trench_length_km": 366.65900879763825,
+          "directions": [
+            {
+              "subducting_plate": 1,
+              "overriding_plate": 2,
+              "segment_keys": [
+                "188:722:1:2",
+                "721:722:1:2"
+              ],
+              "segment_count": 2,
+              "all_exact_current_locality": true,
+              "retained_area_km2": 129433.3589668815,
+              "retained_oceanic_volume_km3": 129906.16750529964,
+              "retained_initial_cold_volume_km3": 4288914.050963925,
+              "retained_initial_excess_mass_kg": 2.8821018472999027e+17,
+              "current_thermal_excess_mass_kg": 1.3418869814104736e+16
+            },
+            {
+              "subducting_plate": 2,
+              "overriding_plate": 1,
+              "segment_keys": [
+                "721:722:2:1"
+              ],
+              "segment_count": 1,
+              "all_exact_current_locality": true,
+              "retained_area_km2": 64638.97562103129,
+              "retained_oceanic_volume_km3": 64638.975621031284,
+              "retained_initial_cold_volume_km3": 2125305.563737929,
+              "retained_initial_excess_mass_kg": 1.4210684323047899e+17,
+              "current_thermal_excess_mass_kg": 203571955583915.3
+            }
+          ]
+        },
+        {
+          "contact_key": "724:727",
+          "conflicting_directions": false,
+          "face_a": 173,
+          "face_b": 175,
+          "plate_a": 1,
+          "plate_b": 2,
+          "midpoint": [
+            -0.3874101452203579,
+            0.4669142822704594,
+            0.7949241676991604
+          ],
+          "trench_length_km": 382.5552021840896,
+          "directions": [
+            {
+              "subducting_plate": 1,
+              "overriding_plate": 2,
+              "segment_keys": [
+                "724:727:1:2:accepted:0x1.570664ccccccdp+5:172"
+              ],
+              "segment_count": 1,
+              "all_exact_current_locality": true,
+              "retained_area_km2": 65311.86895495699,
+              "retained_oceanic_volume_km3": 64492.639069758625,
+              "retained_initial_cold_volume_km3": 2168668.14671675,
+              "retained_initial_excess_mass_kg": 1.4575752784338774e+17,
+              "current_thermal_excess_mass_kg": 1.232972777507338e+16
+            }
+          ]
+        },
+        {
+          "contact_key": "726:727",
+          "conflicting_directions": false,
+          "face_a": 169,
+          "face_b": 171,
+          "plate_a": 2,
+          "plate_b": 1,
+          "midpoint": [
+            -0.4285485445041314,
+            0.504694363491149,
+            0.7494196050702533
+          ],
+          "trench_length_km": 379.40616845359943,
+          "directions": [
+            {
+              "subducting_plate": 2,
+              "overriding_plate": 1,
+              "segment_keys": [
+                "727:728:2:1"
+              ],
+              "segment_count": 1,
+              "all_exact_current_locality": true,
+              "retained_area_km2": 64838.78072295318,
+              "retained_oceanic_volume_km3": 64638.558354795365,
+              "retained_initial_cold_volume_km3": 1966848.9795672635,
+              "retained_initial_excess_mass_kg": 1.2480818383770181e+17,
+              "current_thermal_excess_mass_kg": 1425777856740.5024
+            }
+          ]
+        },
+        {
+          "contact_key": "729:730",
+          "conflicting_directions": false,
+          "face_a": 188,
+          "face_b": 191,
+          "plate_a": 2,
+          "plate_b": 1,
+          "midpoint": [
+            -0.2888496553311739,
+            0.5977004654113023,
+            0.747877015465895
+          ],
+          "trench_length_km": 382.88345395205465,
+          "directions": [
+            {
+              "subducting_plate": 1,
+              "overriding_plate": 2,
+              "segment_keys": [
+                "184:730:1:2"
+              ],
+              "segment_count": 1,
+              "all_exact_current_locality": true,
+              "retained_area_km2": 68006.85942945868,
+              "retained_oceanic_volume_km3": 67119.18592507573,
+              "retained_initial_cold_volume_km3": 2063628.583908528,
+              "retained_initial_excess_mass_kg": 1.3094942130730261e+17,
+              "current_thermal_excess_mass_kg": 1506946581374.24
+            }
+          ]
+        },
+        {
+          "contact_key": "792:795",
+          "conflicting_directions": true,
+          "face_a": 364,
+          "face_b": 367,
+          "plate_a": 2,
+          "plate_b": 1,
+          "midpoint": [
+            -0.17855293714062984,
+            0.7871537282186846,
+            0.5903455401626063
+          ],
+          "trench_length_km": 369.919159455773,
+          "directions": [
+            {
+              "subducting_plate": 1,
+              "overriding_plate": 2,
+              "segment_keys": [
+                "717:795:1:2"
+              ],
+              "segment_count": 1,
+              "all_exact_current_locality": true,
+              "retained_area_km2": 64658.709337493405,
+              "retained_oceanic_volume_km3": 64658.709337493405,
+              "retained_initial_cold_volume_km3": 2144301.1451147785,
+              "retained_initial_excess_mass_kg": 1.4415106797493987e+17,
+              "current_thermal_excess_mass_kg": 5184606882993542.0
+            },
+            {
+              "subducting_plate": 2,
+              "overriding_plate": 1,
+              "segment_keys": [
+                "717:795:2:1"
+              ],
+              "segment_count": 1,
+              "all_exact_current_locality": true,
+              "retained_area_km2": 64492.63906975814,
+              "retained_oceanic_volume_km3": 64492.63906975815,
+              "retained_initial_cold_volume_km3": 2136220.3304792875,
+              "retained_initial_excess_mass_kg": 1.4358824342850891e+17,
+              "current_thermal_excess_mass_kg": 2187234271849837.0
+            }
+          ]
+        }
+      ],
+      "segments": [
+        {
+          "segment_key": "1249:1324:1:2",
+          "contact_key": "13:1249",
+          "subducting_plate": 1,
+          "overriding_plate": 2,
+          "checks": {
+            "attached": true,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": true,
+          "valid_exact_current_locality": true,
+          "retained_area_km2": 77160.12461204825,
+          "retained_oceanic_volume_km3": 77160.12461204824,
+          "retained_initial_cold_volume_km3": 2276232.6312380806,
+          "retained_initial_excess_mass_kg": 1.4341527525282603e+17,
+          "current_thermal_excess_mass_kg": 603525961977.6235,
+          "face_a": 1552,
+          "face_b": 1728,
+          "midpoint": [
+            -0.4725962678144559,
+            0.2920805564656817,
+            0.8314696123025451
+          ],
+          "trench_length_km": 415.2400089882243
+        },
+        {
+          "segment_key": "1249:1324:1:2:accepted:0x1.170664ccccccdp+5:1730",
+          "contact_key": "320:1324",
+          "subducting_plate": 1,
+          "overriding_plate": 2,
+          "checks": {
+            "attached": true,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": true,
+          "valid_exact_current_locality": true,
+          "retained_area_km2": 77160.12461204825,
+          "retained_oceanic_volume_km3": 65266.73069611985,
+          "retained_initial_cold_volume_km3": 2564896.0189806237,
+          "retained_initial_excess_mass_kg": 1.7232782781840826e+17,
+          "current_thermal_excess_mass_kg": 1536409577287416.5,
+          "face_a": 1730,
+          "face_b": 1742,
+          "midpoint": [
+            -0.4205809477466251,
+            0.218637321324504,
+            0.8805165461912662
+          ],
+          "trench_length_km": 435.3075815592848
+        },
+        {
+          "segment_key": "1324:1326:1:2",
+          "contact_key": "1324:1326",
+          "subducting_plate": 1,
+          "overriding_plate": 2,
+          "checks": {
+            "attached": false,
+            "contact_present": false,
+            "contact_pair_matches_segment": false,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": false,
+          "valid_exact_current_locality": false,
+          "retained_area_km2": 78453.40272051797,
+          "retained_oceanic_volume_km3": 78453.40272051796,
+          "retained_initial_cold_volume_km3": 2314384.485535436,
+          "retained_initial_excess_mass_kg": 1.4581905358829648e+17,
+          "current_thermal_excess_mass_kg": 613641639193.5845,
+          "face_a": 1740,
+          "face_b": 1743,
+          "midpoint": [
+            -0.4579335356448826,
+            0.159117077092854,
+            0.8746305692743672
+          ],
+          "trench_length_km": 420.36873002519656
+        },
+        {
+          "segment_key": "1325:1326:1:2",
+          "contact_key": "1325:1326",
+          "subducting_plate": 1,
+          "overriding_plate": 2,
+          "checks": {
+            "attached": false,
+            "contact_present": false,
+            "contact_pair_matches_segment": false,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": false,
+          "valid_exact_current_locality": false,
+          "retained_area_km2": 77236.2304136022,
+          "retained_oceanic_volume_km3": 77236.2304136022,
+          "retained_initial_cold_volume_km3": 2278477.76121674,
+          "retained_initial_excess_mass_kg": 1.435567308885326e+17,
+          "current_thermal_excess_mass_kg": 604121241305.2008,
+          "face_a": 1733,
+          "face_b": 1735,
+          "midpoint": [
+            -0.4629061528929161,
+            0.08058977400497176,
+            0.8827361904553974
+          ],
+          "trench_length_km": 416.2659687658703
+        },
+        {
+          "segment_key": "1325:1333:1:2",
+          "contact_key": "1325:1333",
+          "subducting_plate": 1,
+          "overriding_plate": 2,
+          "checks": {
+            "attached": false,
+            "contact_present": false,
+            "contact_pair_matches_segment": false,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": false,
+          "valid_exact_current_locality": false,
+          "retained_area_km2": 81593.76962271522,
+          "retained_oceanic_volume_km3": 81593.7696227152,
+          "retained_initial_cold_volume_km3": 2407025.673620366,
+          "retained_initial_excess_mass_kg": 1.5165596204247434e+17,
+          "current_thermal_excess_mass_kg": 638204753433.4924,
+          "face_a": 1776,
+          "face_b": 1779,
+          "midpoint": [
+            -0.46460979496070187,
+            0.0,
+            0.8855155212793137
+          ],
+          "trench_length_km": 436.8217844886754
+        },
+        {
+          "segment_key": "1325:1339:1:2",
+          "contact_key": "1325:1339",
+          "subducting_plate": 1,
+          "overriding_plate": 2,
+          "checks": {
+            "attached": true,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": true,
+          "valid_exact_current_locality": true,
+          "retained_area_km2": 81321.63950535648,
+          "retained_oceanic_volume_km3": 81321.63950535648,
+          "retained_initial_cold_volume_km3": 2655766.0576825407,
+          "retained_initial_excess_mass_kg": 1.764411633271155e+17,
+          "current_thermal_excess_mass_kg": 96527265881198.83,
+          "face_a": 1778,
+          "face_b": 1779,
+          "midpoint": [
+            -0.43295280030146294,
+            0.02066687382089365,
+            0.9011796452636915
+          ],
+          "trench_length_km": 432.46942910508676
+        },
+        {
+          "segment_key": "1325:1339:2:1",
+          "contact_key": "1325:1339",
+          "subducting_plate": 2,
+          "overriding_plate": 1,
+          "checks": {
+            "attached": false,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": false,
+          "valid_exact_current_locality": false,
+          "retained_area_km2": 77236.2304136022,
+          "retained_oceanic_volume_km3": 77217.32036763968,
+          "retained_initial_cold_volume_km3": 2565882.249926196,
+          "retained_initial_excess_mass_kg": 1.7235925104458582e+17,
+          "current_thermal_excess_mass_kg": 4.518368246996663e+16,
+          "face_a": 1778,
+          "face_b": 1779,
+          "midpoint": [
+            -0.43295280030146294,
+            0.02066687382089365,
+            0.9011796452636915
+          ],
+          "trench_length_km": 432.46942910508676
+        },
+        {
+          "segment_key": "1326:1327:2:1",
+          "contact_key": "1326:1327",
+          "subducting_plate": 2,
+          "overriding_plate": 1,
+          "checks": {
+            "attached": false,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": false,
+          "valid_exact_current_locality": false,
+          "retained_area_km2": 235360.20816155392,
+          "retained_oceanic_volume_km3": 220005.26331679747,
+          "retained_initial_cold_volume_km3": 7787796.593964368,
+          "retained_initial_excess_mass_kg": 5.2134308657073254e+17,
+          "current_thermal_excess_mass_kg": 6.1602569304410296e+16,
+          "face_a": 1741,
+          "face_b": 1743,
+          "midpoint": [
+            -0.42787311614710744,
+            0.14050053405904142,
+            0.8928517214004171
+          ],
+          "trench_length_km": 436.3109190696559
+        },
+        {
+          "segment_key": "1329:1332:1:2",
+          "contact_key": "327:1329",
+          "subducting_plate": 1,
+          "overriding_plate": 2,
+          "checks": {
+            "attached": true,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": true,
+          "valid_exact_current_locality": true,
+          "retained_area_km2": 78453.40272051792,
+          "retained_oceanic_volume_km3": 78206.16308371787,
+          "retained_initial_cold_volume_km3": 2379846.07289691,
+          "retained_initial_excess_mass_kg": 1.510152885438617e+17,
+          "current_thermal_excess_mass_kg": 1725241917822.3337,
+          "face_a": 1746,
+          "face_b": 1758,
+          "midpoint": [
+            -0.48717292128774414,
+            -0.17748121829815874,
+            0.8550806756764924
+          ],
+          "trench_length_km": 435.307581559299
+        },
+        {
+          "segment_key": "1329:1332:2:1",
+          "contact_key": "327:1329",
+          "subducting_plate": 2,
+          "overriding_plate": 1,
+          "checks": {
+            "attached": true,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": true,
+          "valid_exact_current_locality": true,
+          "retained_area_km2": 78206.16308371788,
+          "retained_oceanic_volume_km3": 78453.4027205179,
+          "retained_initial_cold_volume_km3": 2419210.8282749834,
+          "retained_initial_excess_mass_kg": 1.547619739142052e+17,
+          "current_thermal_excess_mass_kg": 3758166846748.274,
+          "face_a": 1746,
+          "face_b": 1758,
+          "midpoint": [
+            -0.48717292128774414,
+            -0.17748121829815874,
+            0.8550806756764924
+          ],
+          "trench_length_km": 435.307581559299
+        },
+        {
+          "segment_key": "1332:1333:1:2",
+          "contact_key": "327:1329",
+          "subducting_plate": 1,
+          "overriding_plate": 2,
+          "checks": {
+            "attached": true,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": true,
+          "valid_exact_current_locality": true,
+          "retained_area_km2": 77236.2304136022,
+          "retained_oceanic_volume_km3": 77236.2304136022,
+          "retained_initial_cold_volume_km3": 2278477.76121674,
+          "retained_initial_excess_mass_kg": 1.435567308885326e+17,
+          "current_thermal_excess_mass_kg": 604121241305.2008,
+          "face_a": 1746,
+          "face_b": 1758,
+          "midpoint": [
+            -0.48717292128774414,
+            -0.17748121829815874,
+            0.8550806756764924
+          ],
+          "trench_length_km": 435.307581559299
+        },
+        {
+          "segment_key": "138:1988:3:0",
+          "contact_key": "138:1988",
+          "subducting_plate": 3,
+          "overriding_plate": 0,
+          "checks": {
+            "attached": false,
+            "contact_present": false,
+            "contact_pair_matches_segment": false,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": false,
+          "valid_exact_current_locality": false,
+          "retained_area_km2": 77231.50829718969,
+          "retained_oceanic_volume_km3": 77231.50829718969,
+          "retained_initial_cold_volume_km3": 2278338.4582345234,
+          "retained_initial_excess_mass_kg": 1.4354795402835411e+17,
+          "current_thermal_excess_mass_kg": 604084306167.2036,
+          "face_a": 3412,
+          "face_b": 3544,
+          "midpoint": [
+            0.437129443969082,
+            -0.5555702330196022,
+            -0.7072902978253173
+          ],
+          "trench_length_km": 415.2400089882318
+        },
+        {
+          "segment_key": "138:1996:3:0",
+          "contact_key": "1996:1997",
+          "subducting_plate": 3,
+          "overriding_plate": 0,
+          "checks": {
+            "attached": false,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": false,
+          "valid_exact_current_locality": false,
+          "retained_area_km2": 77231.50829718947,
+          "retained_oceanic_volume_km3": 77231.50829718947,
+          "retained_initial_cold_volume_km3": 2278338.458234517,
+          "retained_initial_excess_mass_kg": 1.435479540283537e+17,
+          "current_thermal_excess_mass_kg": 604084306167.1986,
+          "face_a": 3433,
+          "face_b": 3435,
+          "midpoint": [
+            0.3674668432795955,
+            -0.6646083333876501,
+            -0.6505873363982881
+          ],
+          "trench_length_km": 379.40616845359125
+        },
+        {
+          "segment_key": "13:1249:2:1",
+          "contact_key": "13:720",
+          "subducting_plate": 2,
+          "overriding_plate": 1,
+          "checks": {
+            "attached": false,
+            "contact_present": false,
+            "contact_pair_matches_segment": false,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": false,
+          "valid_exact_current_locality": false,
+          "retained_area_km2": 77136.51923020641,
+          "retained_oceanic_volume_km3": 64625.19812316046,
+          "retained_initial_cold_volume_km3": 2435219.0112878475,
+          "retained_initial_excess_mass_kg": 1.5697312746804064e+17,
+          "current_thermal_excess_mass_kg": 7896050146507.994,
+          "face_a": 160,
+          "face_b": 1552,
+          "midpoint": [
+            -0.4717156601131807,
+            0.3261278061562882,
+            0.8192221860128501
+          ],
+          "trench_length_km": 365.8434544360799
+        },
+        {
+          "segment_key": "13:1249:2:1:accepted:0x1.270664ccccccdp+5:1728",
+          "contact_key": "13:1249",
+          "subducting_plate": 2,
+          "overriding_plate": 1,
+          "checks": {
+            "attached": false,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": false,
+          "valid_exact_current_locality": false,
+          "retained_area_km2": 77136.51923020641,
+          "retained_oceanic_volume_km3": 64794.38334584974,
+          "retained_initial_cold_volume_km3": 2567371.71722525,
+          "retained_initial_excess_mass_kg": 1.7256852668455702e+17,
+          "current_thermal_excess_mass_kg": 2730819957649670.5,
+          "face_a": 1552,
+          "face_b": 1728,
+          "midpoint": [
+            -0.4725962678144559,
+            0.2920805564656817,
+            0.8314696123025451
+          ],
+          "trench_length_km": 415.2400089882243
+        },
+        {
+          "segment_key": "13:1249:2:1:accepted:0x1.3f0664ccccccdp+5:1728",
+          "contact_key": "13:1249",
+          "subducting_plate": 2,
+          "overriding_plate": 1,
+          "checks": {
+            "attached": true,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": true,
+          "valid_exact_current_locality": true,
+          "retained_area_km2": 77136.51923020641,
+          "retained_oceanic_volume_km3": 64594.2985503427,
+          "retained_initial_cold_volume_km3": 2570649.677668455,
+          "retained_initial_excess_mass_kg": 1.728124322787262e+17,
+          "current_thermal_excess_mass_kg": 6406816570506304.0,
+          "face_a": 1552,
+          "face_b": 1728,
+          "midpoint": [
+            -0.4725962678144559,
+            0.2920805564656817,
+            0.8314696123025451
+          ],
+          "trench_length_km": 415.2400089882243
+        },
+        {
+          "segment_key": "13:1249:2:1:accepted:0x1.9e0cc9999999ap+4:1728",
+          "contact_key": "13:1249",
+          "subducting_plate": 2,
+          "overriding_plate": 1,
+          "checks": {
+            "attached": false,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": false,
+          "valid_exact_current_locality": false,
+          "retained_area_km2": 77136.51923020641,
+          "retained_oceanic_volume_km3": 64794.3833458499,
+          "retained_initial_cold_volume_km3": 2531432.390648162,
+          "retained_initial_excess_mass_kg": 1.6818080591016176e+17,
+          "current_thermal_excess_mass_kg": 98780081706448.47,
+          "face_a": 1552,
+          "face_b": 1728,
+          "midpoint": [
+            -0.4725962678144559,
+            0.2920805564656817,
+            0.8314696123025451
+          ],
+          "trench_length_km": 415.2400089882243
+        },
+        {
+          "segment_key": "13:722:2:1",
+          "contact_key": "13:681",
+          "subducting_plate": 2,
+          "overriding_plate": 1,
+          "checks": {
+            "attached": false,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": false,
+          "valid_exact_current_locality": false,
+          "retained_area_km2": 77136.51923020641,
+          "retained_oceanic_volume_km3": 77136.51923020642,
+          "retained_initial_cold_volume_km3": 2552221.592088001,
+          "retained_initial_excess_mass_kg": 1.7147627031311926e+17,
+          "current_thermal_excess_mass_kg": 1465764241181359.8,
+          "face_a": 80,
+          "face_b": 208,
+          "midpoint": [
+            -0.5266327684262672,
+            0.3254769504768855,
+            0.7853169308807448
+          ],
+          "trench_length_km": 415.24000898823925
+        },
+        {
+          "segment_key": "13:722:2:1:accepted:0x1.7f0664ccccccdp+5:208",
+          "contact_key": "681:722",
+          "subducting_plate": 2,
+          "overriding_plate": 1,
+          "checks": {
+            "attached": false,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": false,
+          "valid_exact_current_locality": false,
+          "retained_area_km2": 77136.51923020641,
+          "retained_oceanic_volume_km3": 64625.19812316044,
+          "retained_initial_cold_volume_km3": 2575528.3476435966,
+          "retained_initial_excess_mass_kg": 1.7297924104668413e+17,
+          "current_thermal_excess_mass_kg": 6.065229814931512e+16,
+          "face_a": 208,
+          "face_b": 211,
+          "midpoint": [
+            -0.5195250164375778,
+            0.36236764127032595,
+            0.7738109910409097
+          ],
+          "trench_length_km": 436.2842285427369
+        },
+        {
+          "segment_key": "156:2401:0:3",
+          "contact_key": "156:2401",
+          "subducting_plate": 0,
+          "overriding_plate": 3,
+          "checks": {
+            "attached": true,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": true,
+          "valid_exact_current_locality": true,
+          "retained_area_km2": 64680.497676535626,
+          "retained_oceanic_volume_km3": 64680.497676535626,
+          "retained_initial_cold_volume_km3": 2145708.2423175336,
+          "retained_initial_excess_mass_kg": 1.442393659765489e+17,
+          "current_thermal_excess_mass_kg": 6898530345027753.0,
+          "face_a": 4628,
+          "face_b": 4660,
+          "midpoint": [
+            0.5504472535536321,
+            -0.02035063463534389,
+            -0.8346218740994045
+          ],
+          "trench_length_km": 378.617081139106
+        },
+        {
+          "segment_key": "156:2401:3:0",
+          "contact_key": "156:2401",
+          "subducting_plate": 3,
+          "overriding_plate": 0,
+          "checks": {
+            "attached": false,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": false,
+          "valid_exact_current_locality": false,
+          "retained_area_km2": 129677.56144590596,
+          "retained_oceanic_volume_km3": 129477.33907774859,
+          "retained_initial_cold_volume_km3": 4082417.816543203,
+          "retained_initial_excess_mass_kg": 2.639928039037161e+17,
+          "current_thermal_excess_mass_kg": 19590887021672.883,
+          "face_a": 4628,
+          "face_b": 4660,
+          "midpoint": [
+            0.5504472535536321,
+            -0.02035063463534389,
+            -0.8346218740994045
+          ],
+          "trench_length_km": 378.617081139106
+        },
+        {
+          "segment_key": "156:2412:3:0",
+          "contact_key": "156:2412",
+          "subducting_plate": 3,
+          "overriding_plate": 0,
+          "checks": {
+            "attached": true,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": true,
+          "valid_exact_current_locality": true,
+          "retained_area_km2": 67069.77135062768,
+          "retained_oceanic_volume_km3": 67069.77135062768,
+          "retained_initial_cold_volume_km3": 2147747.2904790947,
+          "retained_initial_excess_mass_kg": 1.4032504787052238e+17,
+          "current_thermal_excess_mass_kg": 17004216326150.95,
+          "face_a": 4648,
+          "face_b": 4660,
+          "midpoint": [
+            0.5504472535536321,
+            0.02035063463534389,
+            -0.8346218740994045
+          ],
+          "trench_length_km": 378.617081139106
+        },
+        {
+          "segment_key": "1603:1634:0:3",
+          "contact_key": "1603:1634",
+          "subducting_plate": 0,
+          "overriding_plate": 3,
+          "checks": {
+            "attached": true,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": true,
+          "valid_exact_current_locality": true,
+          "retained_area_km2": 77399.3088247597,
+          "retained_oceanic_volume_km3": 77399.30882475969,
+          "retained_initial_cold_volume_km3": 2508783.2914245552,
+          "retained_initial_excess_mass_kg": 1.65517953372939e+17,
+          "current_thermal_excess_mass_kg": 44820445337729.36,
+          "face_a": 2530,
+          "face_b": 2531,
+          "midpoint": [
+            0.5450409543911117,
+            0.3781468381492782,
+            -0.7482882645305416
+          ],
+          "trench_length_km": 416.26395037530546
+        },
+        {
+          "segment_key": "1604:1605:0:3",
+          "contact_key": "1604:1605",
+          "subducting_plate": 0,
+          "overriding_plate": 3,
+          "checks": {
+            "attached": false,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": false,
+          "valid_exact_current_locality": false,
+          "retained_area_km2": 64594.2985503427,
+          "retained_oceanic_volume_km3": 64594.2985503427,
+          "retained_initial_cold_volume_km3": 2093727.9593968291,
+          "retained_initial_excess_mass_kg": 1.3813451641822874e+17,
+          "current_thermal_excess_mass_kg": 37405311123120.28,
+          "face_a": 2450,
+          "face_b": 2451,
+          "midpoint": [
+            0.5806900547424307,
+            0.2896836964682012,
+            -0.7608432271655914
+          ],
+          "trench_length_km": 415.958393519258
+        },
+        {
+          "segment_key": "1604:1605:0:3:accepted:0x1.470664ccccccdp+5:4641",
+          "contact_key": "1604:1605",
+          "subducting_plate": 0,
+          "overriding_plate": 3,
+          "checks": {
+            "attached": false,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": false,
+          "valid_exact_current_locality": false,
+          "retained_area_km2": 64594.2985503427,
+          "retained_oceanic_volume_km3": 64794.3833458499,
+          "retained_initial_cold_volume_km3": 2142648.591158179,
+          "retained_initial_excess_mass_kg": 1.4403368929850341e+17,
+          "current_thermal_excess_mass_kg": 6885053092838835.0,
+          "face_a": 2450,
+          "face_b": 2451,
+          "midpoint": [
+            0.5806900547424307,
+            0.2896836964682012,
+            -0.7608432271655914
+          ],
+          "trench_length_km": 415.958393519258
+        },
+        {
+          "segment_key": "1604:1605:3:0",
+          "contact_key": "1604:1605",
+          "subducting_plate": 3,
+          "overriding_plate": 0,
+          "checks": {
+            "attached": true,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": true,
+          "valid_exact_current_locality": true,
+          "retained_area_km2": 64594.29855034248,
+          "retained_oceanic_volume_km3": 64594.29855034247,
+          "retained_initial_cold_volume_km3": 2068476.2583523768,
+          "retained_initial_excess_mass_kg": 1.3514580195679755e+17,
+          "current_thermal_excess_mass_kg": 16376609072422.652,
+          "face_a": 2450,
+          "face_b": 2451,
+          "midpoint": [
+            0.5806900547424307,
+            0.2896836964682012,
+            -0.7608432271655914
+          ],
+          "trench_length_km": 415.958393519258
+        },
+        {
+          "segment_key": "184:730:1:2",
+          "contact_key": "729:730",
+          "subducting_plate": 1,
+          "overriding_plate": 2,
+          "checks": {
+            "attached": true,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": true,
+          "valid_exact_current_locality": true,
+          "retained_area_km2": 68006.85942945868,
+          "retained_oceanic_volume_km3": 67119.18592507573,
+          "retained_initial_cold_volume_km3": 2063628.583908528,
+          "retained_initial_excess_mass_kg": 1.3094942130730261e+17,
+          "current_thermal_excess_mass_kg": 1506946581374.24,
+          "face_a": 188,
+          "face_b": 191,
+          "midpoint": [
+            -0.2888496553311739,
+            0.5977004654113023,
+            0.747877015465895
+          ],
+          "trench_length_km": 382.88345395205465
+        },
+        {
+          "segment_key": "186:724:1:2",
+          "contact_key": "724:725",
+          "subducting_plate": 1,
+          "overriding_plate": 2,
+          "checks": {
+            "attached": false,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": false,
+          "valid_exact_current_locality": false,
+          "retained_area_km2": 64492.63906975878,
+          "retained_oceanic_volume_km3": 64503.628465730246,
+          "retained_initial_cold_volume_km3": 2142887.5192696727,
+          "retained_initial_excess_mass_kg": 1.4392194792607035e+17,
+          "current_thermal_excess_mass_kg": 5.005073061433545e+16,
+          "face_a": 166,
+          "face_b": 167,
+          "midpoint": [
+            -0.34449772262329803,
+            0.4264799230341949,
+            0.8363230203432812
+          ],
+          "trench_length_km": 379.40179620202474
+        },
+        {
+          "segment_key": "188:722:1:2",
+          "contact_key": "721:722",
+          "subducting_plate": 1,
+          "overriding_plate": 2,
+          "checks": {
+            "attached": true,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": true,
+          "valid_exact_current_locality": true,
+          "retained_area_km2": 64638.97562103129,
+          "retained_oceanic_volume_km3": 64594.298550342646,
+          "retained_initial_cold_volume_km3": 2138759.1396471006,
+          "retained_initial_excess_mass_kg": 1.4369694289152269e+17,
+          "current_thermal_excess_mass_kg": 1228542583895702.2,
+          "face_a": 162,
+          "face_b": 163,
+          "midpoint": [
+            -0.45669804972323225,
+            0.3993805423210696,
+            0.7949352639016113
+          ],
+          "trench_length_km": 366.65900879763825
+        },
+        {
+          "segment_key": "1911:1913:3:0",
+          "contact_key": "1911:1913",
+          "subducting_plate": 3,
+          "overriding_plate": 0,
+          "checks": {
+            "attached": true,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": true,
+          "valid_exact_current_locality": true,
+          "retained_area_km2": 64625.1981231604,
+          "retained_oceanic_volume_km3": 64625.198123160415,
+          "retained_initial_cold_volume_km3": 2147303.0516017335,
+          "retained_initial_excess_mass_kg": 1.442185066621898e+17,
+          "current_thermal_excess_mass_kg": 5.015429858385069e+16,
+          "face_a": 3216,
+          "face_b": 3219,
+          "midpoint": [
+            0.25374205184575305,
+            -0.806959132644087,
+            -0.5333216003195538
+          ],
+          "trench_length_km": 382.5388291138337
+        },
+        {
+          "segment_key": "1913:1992:3:0",
+          "contact_key": "1913:1993",
+          "subducting_plate": 3,
+          "overriding_plate": 0,
+          "checks": {
+            "attached": false,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": false,
+          "valid_exact_current_locality": false,
+          "retained_area_km2": 64794.383345849994,
+          "retained_oceanic_volume_km3": 64594.29855034247,
+          "retained_initial_cold_volume_km3": 2100413.494766234,
+          "retained_initial_excess_mass_kg": 1.385755972143775e+17,
+          "current_thermal_excess_mass_kg": 37582015126195.664,
+          "face_a": 3424,
+          "face_b": 3427,
+          "midpoint": [
+            0.30777224570745026,
+            -0.7735666364188122,
+            -0.5539592979559763
+          ],
+          "trench_length_km": 382.53882911384176
+        },
+        {
+          "segment_key": "1983:2022:0:3",
+          "contact_key": "1983:2022",
+          "subducting_plate": 0,
+          "overriding_plate": 3,
+          "checks": {
+            "attached": false,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": false,
+          "valid_exact_current_locality": false,
+          "retained_area_km2": 154273.03846041282,
+          "retained_oceanic_volume_km3": 141761.71735336707,
+          "retained_initial_cold_volume_km3": 4982887.23489201,
+          "retained_initial_excess_mass_kg": 3.2716836747021235e+17,
+          "current_thermal_excess_mass_kg": 68163226485556.22,
+          "face_a": 3536,
+          "face_b": 3539,
+          "midpoint": [
+            0.5195250164375778,
+            -0.36236764127032595,
+            -0.7738109910409097
+          ],
+          "trench_length_km": 436.2842285427369
+        },
+        {
+          "segment_key": "1983:2022:0:3:accepted:0x1.0f0664ccccccdp+5:3536",
+          "contact_key": "1983:2022",
+          "subducting_plate": 0,
+          "overriding_plate": 3,
+          "checks": {
+            "attached": false,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": false,
+          "valid_exact_current_locality": false,
+          "retained_area_km2": 77136.51923020641,
+          "retained_oceanic_volume_km3": 64625.198123160255,
+          "retained_initial_cold_volume_km3": 2563003.5773223233,
+          "retained_initial_excess_mass_kg": 1.7213757170399862e+17,
+          "current_thermal_excess_mass_kg": 1152956791966719.0,
+          "face_a": 3536,
+          "face_b": 3539,
+          "midpoint": [
+            0.5195250164375778,
+            -0.36236764127032595,
+            -0.7738109910409097
+          ],
+          "trench_length_km": 436.2842285427369
+        },
+        {
+          "segment_key": "1983:2022:0:3:accepted:0x1.3f0664ccccccdp+5:3536",
+          "contact_key": "1983:2022",
+          "subducting_plate": 0,
+          "overriding_plate": 3,
+          "checks": {
+            "attached": false,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": false,
+          "valid_exact_current_locality": false,
+          "retained_area_km2": 77136.51923020641,
+          "retained_oceanic_volume_km3": 64794.38334585025,
+          "retained_initial_cold_volume_km3": 2570449.5928729475,
+          "retained_initial_excess_mass_kg": 1.7279898153883194e+17,
+          "current_thermal_excess_mass_kg": 6403241897077635.0,
+          "face_a": 3536,
+          "face_b": 3539,
+          "midpoint": [
+            0.5195250164375778,
+            -0.36236764127032595,
+            -0.7738109910409097
+          ],
+          "trench_length_km": 436.2842285427369
+        },
+        {
+          "segment_key": "1983:2022:3:0",
+          "contact_key": "1983:2022",
+          "subducting_plate": 3,
+          "overriding_plate": 0,
+          "checks": {
+            "attached": true,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": true,
+          "valid_exact_current_locality": true,
+          "retained_area_km2": 64625.19812316044,
+          "retained_oceanic_volume_km3": 65311.86895495699,
+          "retained_initial_cold_volume_km3": 2146616.3807699387,
+          "retained_initial_excess_mass_kg": 1.4417238804756013e+17,
+          "current_thermal_excess_mass_kg": 5.011108764961224e+16,
+          "face_a": 3536,
+          "face_b": 3539,
+          "midpoint": [
+            0.5195250164375778,
+            -0.36236764127032595,
+            -0.7738109910409097
+          ],
+          "trench_length_km": 436.2842285427369
+        },
+        {
+          "segment_key": "1992:1997:3:0",
+          "contact_key": "1996:1997",
+          "subducting_plate": 3,
+          "overriding_plate": 0,
+          "checks": {
+            "attached": false,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": false,
+          "valid_exact_current_locality": false,
+          "retained_area_km2": 65266.73069611968,
+          "retained_oceanic_volume_km3": 65266.730696119674,
+          "retained_initial_cold_volume_km3": 1925376.130374189,
+          "retained_initial_excess_mass_kg": 1.2130937054208059e+17,
+          "current_thermal_excess_mass_kg": 510498999665.42346,
+          "face_a": 3433,
+          "face_b": 3435,
+          "midpoint": [
+            0.3674668432795955,
+            -0.6646083333876501,
+            -0.6505873363982881
+          ],
+          "trench_length_km": 379.40616845359125
+        },
+        {
+          "segment_key": "2020:2399:0:3",
+          "contact_key": "39:2399",
+          "subducting_plate": 3,
+          "overriding_plate": 0,
+          "checks": {
+            "attached": true,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": true,
+          "valid_exact_current_locality": true,
+          "retained_area_km2": 129250.39624632092,
+          "retained_oceanic_volume_km3": 129433.35896688158,
+          "retained_initial_cold_volume_km3": 4290993.8260273505,
+          "retained_initial_excess_mass_kg": 2.8832225470115034e+17,
+          "current_thermal_excess_mass_kg": 5.704244166200736e+16,
+          "face_a": 4624,
+          "face_b": 4800,
+          "midpoint": [
+            0.5059926618256597,
+            -0.27144044986507426,
+            -0.8187133248919487
+          ],
+          "trench_length_km": 415.2400089882243
+        },
+        {
+          "segment_key": "2020:2399:3:0",
+          "contact_key": "2020:2399",
+          "subducting_plate": 3,
+          "overriding_plate": 3,
+          "checks": {
+            "attached": false,
+            "contact_present": false,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": false,
+          "valid_exact_current_locality": false,
+          "retained_area_km2": 129419.58146901043,
+          "retained_oceanic_volume_km3": 129419.58146901045,
+          "retained_initial_cold_volume_km3": 3980907.5711947964,
+          "retained_initial_excess_mass_kg": 2.5564188309929782e+17,
+          "current_thermal_excess_mass_kg": 16891247473427.217,
+          "face_a": 4624,
+          "face_b": 4627,
+          "midpoint": [
+            0.5333216003195539,
+            -0.25374205184575305,
+            -0.806959132644087
+          ],
+          "trench_length_km": 382.5388291138337
+        },
+        {
+          "segment_key": "2020:2399:3:0:accepted:0x1.0f0664ccccccdp+5:4627",
+          "contact_key": "2020:2400",
+          "subducting_plate": 3,
+          "overriding_plate": 3,
+          "checks": {
+            "attached": false,
+            "contact_present": false,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": false,
+          "valid_exact_current_locality": false,
+          "retained_area_km2": 64794.383345849994,
+          "retained_oceanic_volume_km3": 64594.29855034247,
+          "retained_initial_cold_volume_km3": 2142603.8984371293,
+          "retained_initial_excess_mass_kg": 1.439025038684545e+17,
+          "current_thermal_excess_mass_kg": 920266751383934.9,
+          "face_a": 4626,
+          "face_b": 4627,
+          "midpoint": [
+            0.5600597617662908,
+            -0.2356728882587987,
+            -0.7942237423988541
+          ],
+          "trench_length_km": 415.958393519258
+        },
+        {
+          "segment_key": "2020:2399:3:0:accepted:0x1.2f0664ccccccdp+5:4627",
+          "contact_key": "2020:2400",
+          "subducting_plate": 3,
+          "overriding_plate": 3,
+          "checks": {
+            "attached": false,
+            "contact_present": false,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": false,
+          "valid_exact_current_locality": false,
+          "retained_area_km2": 64794.383345849994,
+          "retained_oceanic_volume_km3": 64456.290033667596,
+          "retained_initial_cold_volume_km3": 2147519.675795667,
+          "retained_initial_excess_mass_kg": 1.4436218588892835e+17,
+          "current_thermal_excess_mass_kg": 2934020577430703.0,
+          "face_a": 4626,
+          "face_b": 4627,
+          "midpoint": [
+            0.5600597617662908,
+            -0.2356728882587987,
+            -0.7942237423988541
+          ],
+          "trench_length_km": 415.958393519258
+        },
+        {
+          "segment_key": "2020:2399:3:0:accepted:0x1.ee0cc9999999ap+4:4627",
+          "contact_key": "2020:2400",
+          "subducting_plate": 3,
+          "overriding_plate": 3,
+          "checks": {
+            "attached": false,
+            "contact_present": false,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": false,
+          "valid_exact_current_locality": false,
+          "retained_area_km2": 64794.383345849994,
+          "retained_oceanic_volume_km3": 65311.868954956946,
+          "retained_initial_cold_volume_km3": 2135909.5423380644,
+          "retained_initial_excess_mass_kg": 1.4316589445547013e+17,
+          "current_thermal_excess_mass_kg": 375875835655090.1,
+          "face_a": 4626,
+          "face_b": 4627,
+          "midpoint": [
+            0.5600597617662908,
+            -0.2356728882587987,
+            -0.7942237423988541
+          ],
+          "trench_length_km": 415.958393519258
+        },
+        {
+          "segment_key": "2020:2400:3:0",
+          "contact_key": "2020:2400",
+          "subducting_plate": 3,
+          "overriding_plate": 3,
+          "checks": {
+            "attached": false,
+            "contact_present": false,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": false,
+          "valid_exact_current_locality": false,
+          "retained_area_km2": 65311.868954956946,
+          "retained_oceanic_volume_km3": 63948.432812002764,
+          "retained_initial_cold_volume_km3": 2167325.55980216,
+          "retained_initial_excess_mass_kg": 1.4569888879956864e+17,
+          "current_thermal_excess_mass_kg": 5260849108652385.0,
+          "face_a": 4626,
+          "face_b": 4627,
+          "midpoint": [
+            0.5600597617662908,
+            -0.2356728882587987,
+            -0.7942237423988541
+          ],
+          "trench_length_km": 415.958393519258
+        },
+        {
+          "segment_key": "2255:2266:1:2",
+          "contact_key": "2255:2268",
+          "subducting_plate": 1,
+          "overriding_plate": 2,
+          "checks": {
+            "attached": false,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": false,
+          "valid_exact_current_locality": false,
+          "retained_area_km2": 67292.04929106367,
+          "retained_oceanic_volume_km3": 67292.04929106367,
+          "retained_initial_cold_volume_km3": 2233575.5889578774,
+          "retained_initial_excess_mass_kg": 1.5011999719307926e+17,
+          "current_thermal_excess_mass_kg": 1.2677076427742078e+16,
+          "face_a": 4214,
+          "face_b": 4215,
+          "midpoint": [
+            -0.35466409602353605,
+            -0.5688979053289669,
+            0.7420030675840376
+          ],
+          "trench_length_km": 379.46679648938994
+        },
+        {
+          "segment_key": "2265:2266:1:2",
+          "contact_key": "2266:2268",
+          "subducting_plate": 1,
+          "overriding_plate": 2,
+          "checks": {
+            "attached": true,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": true,
+          "valid_exact_current_locality": true,
+          "retained_area_km2": 64638.55835479573,
+          "retained_oceanic_volume_km3": 64638.55835479574,
+          "retained_initial_cold_volume_km3": 2148800.0010501547,
+          "retained_initial_excess_mass_kg": 1.4424555962107347e+17,
+          "current_thermal_excess_mass_kg": 1.4424555962107347e+17,
+          "face_a": 4213,
+          "face_b": 4215,
+          "midpoint": [
+            -0.3420866758803421,
+            -0.6018260187546361,
+            0.7216523743015621
+          ],
+          "trench_length_km": 379.4667964893982
+        },
+        {
+          "segment_key": "2400:2402:0:3",
+          "contact_key": "607:2402",
+          "subducting_plate": 0,
+          "overriding_plate": 3,
+          "checks": {
+            "attached": false,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": false,
+          "valid_exact_current_locality": false,
+          "retained_area_km2": 65266.730696119324,
+          "retained_oceanic_volume_km3": 64638.9756210314,
+          "retained_initial_cold_volume_km3": 2156950.492390083,
+          "retained_initial_excess_mass_kg": 1.4479404121904627e+17,
+          "current_thermal_excess_mass_kg": 692252710006041.0,
+          "face_a": 4630,
+          "face_b": 4636,
+          "midpoint": [
+            0.545531673961212,
+            -0.13784030416317075,
+            -0.8266772303948394
+          ],
+          "trench_length_km": 369.09386021422563
+        },
+        {
+          "segment_key": "2400:2402:3:0",
+          "contact_key": "607:2402",
+          "subducting_plate": 3,
+          "overriding_plate": 0,
+          "checks": {
+            "attached": true,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": true,
+          "valid_exact_current_locality": true,
+          "retained_area_km2": 65471.70391508614,
+          "retained_oceanic_volume_km3": 64658.70933749344,
+          "retained_initial_cold_volume_km3": 2159572.9146054992,
+          "retained_initial_excess_mass_kg": 1.4475200462977632e+17,
+          "current_thermal_excess_mass_kg": 382744125689271.1,
+          "face_a": 4630,
+          "face_b": 4636,
+          "midpoint": [
+            0.545531673961212,
+            -0.13784030416317075,
+            -0.8266772303948394
+          ],
+          "trench_length_km": 369.09386021422563
+        },
+        {
+          "segment_key": "2401:2402:0:3",
+          "contact_key": "2402:2403",
+          "subducting_plate": 0,
+          "overriding_plate": 3,
+          "checks": {
+            "attached": true,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": true,
+          "valid_exact_current_locality": true,
+          "retained_area_km2": 64838.78072295298,
+          "retained_oceanic_volume_km3": 64672.24603748648,
+          "retained_initial_cold_volume_km3": 2153757.555964933,
+          "retained_initial_excess_mass_kg": 1.4349098708644115e+17,
+          "current_thermal_excess_mass_kg": 2.8356506367731892e+16,
+          "face_a": 4630,
+          "face_b": 4631,
+          "midpoint": [
+            0.5479780594515429,
+            -0.09883226867196515,
+            -0.8306336310485349
+          ],
+          "trench_length_km": 379.40616845359943
+        },
+        {
+          "segment_key": "2402:2403:0:3",
+          "contact_key": "607:2463",
+          "subducting_plate": 0,
+          "overriding_plate": 3,
+          "checks": {
+            "attached": false,
+            "contact_present": false,
+            "contact_pair_matches_segment": false,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": false,
+          "valid_exact_current_locality": false,
+          "retained_area_km2": 64672.24603748648,
+          "retained_oceanic_volume_km3": 64672.2460374865,
+          "retained_initial_cold_volume_km3": 2000760.3144764067,
+          "retained_initial_excess_mass_kg": 1.2799281979833248e+17,
+          "current_thermal_excess_mass_kg": 3114740337280.541,
+          "face_a": 4809,
+          "face_b": 4814,
+          "midpoint": [
+            0.4904556503485318,
+            -0.13820363394925125,
+            -0.8604376854859509
+          ],
+          "trench_length_km": 419.3270785056084
+        },
+        {
+          "segment_key": "2402:2403:3:0",
+          "contact_key": "2402:2403",
+          "subducting_plate": 3,
+          "overriding_plate": 0,
+          "checks": {
+            "attached": true,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": true,
+          "valid_exact_current_locality": true,
+          "retained_area_km2": 194516.34216885894,
+          "retained_oceanic_volume_km3": 199769.89060301744,
+          "retained_initial_cold_volume_km3": 6439850.287183485,
+          "retained_initial_excess_mass_kg": 4.327793399478195e+17,
+          "current_thermal_excess_mass_kg": 1.2926124490472152e+16,
+          "face_a": 4630,
+          "face_b": 4631,
+          "midpoint": [
+            0.5479780594515429,
+            -0.09883226867196515,
+            -0.8306336310485349
+          ],
+          "trench_length_km": 379.40616845359943
+        },
+        {
+          "segment_key": "2403:2463:0:3",
+          "contact_key": "607:2463",
+          "subducting_plate": 0,
+          "overriding_plate": 3,
+          "checks": {
+            "attached": false,
+            "contact_present": false,
+            "contact_pair_matches_segment": false,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": false,
+          "valid_exact_current_locality": false,
+          "retained_area_km2": 77475.65170747347,
+          "retained_oceanic_volume_km3": 77475.65170747347,
+          "retained_initial_cold_volume_km3": 2480970.453334801,
+          "retained_initial_excess_mass_kg": 1.6209649020295027e+17,
+          "current_thermal_excess_mass_kg": 19642421840924.85,
+          "face_a": 4809,
+          "face_b": 4814,
+          "midpoint": [
+            0.4904556503485318,
+            -0.13820363394925125,
+            -0.8604376854859509
+          ],
+          "trench_length_km": 419.3270785056084
+        },
+        {
+          "segment_key": "2403:2464:0:3",
+          "contact_key": "2403:2464",
+          "subducting_plate": 0,
+          "overriding_plate": 3,
+          "checks": {
+            "attached": false,
+            "contact_present": false,
+            "contact_pair_matches_segment": false,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": false,
+          "valid_exact_current_locality": false,
+          "retained_area_km2": 77236.2304136022,
+          "retained_oceanic_volume_km3": 77236.2304136022,
+          "retained_initial_cold_volume_km3": 2490264.979789735,
+          "retained_initial_excess_mass_kg": 1.635562306122967e+17,
+          "current_thermal_excess_mass_kg": 30139732958239.195,
+          "face_a": 4808,
+          "face_b": 4811,
+          "midpoint": [
+            0.49455263988093456,
+            -0.05992648232431738,
+            -0.8670792945878895
+          ],
+          "trench_length_km": 420.3430214189416
+        },
+        {
+          "segment_key": "2403:2464:3:0",
+          "contact_key": "2402:2403",
+          "subducting_plate": 3,
+          "overriding_plate": 0,
+          "checks": {
+            "attached": true,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": true,
+          "valid_exact_current_locality": true,
+          "retained_area_km2": 77475.65170747347,
+          "retained_oceanic_volume_km3": 77217.3203676397,
+          "retained_initial_cold_volume_km3": 1466277.1957383153,
+          "retained_initial_excess_mass_kg": 8.749052649846003e+16,
+          "current_thermal_excess_mass_kg": 4511024.835419211,
+          "face_a": 4630,
+          "face_b": 4631,
+          "midpoint": [
+            0.5479780594515429,
+            -0.09883226867196515,
+            -0.8306336310485349
+          ],
+          "trench_length_km": 379.40616845359943
+        },
+        {
+          "segment_key": "2406:2411:3:0",
+          "contact_key": "2410:2411",
+          "subducting_plate": 3,
+          "overriding_plate": 0,
+          "checks": {
+            "attached": true,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": true,
+          "valid_exact_current_locality": true,
+          "retained_area_km2": 65471.703915086284,
+          "retained_oceanic_volume_km3": 65471.703915086284,
+          "retained_initial_cold_volume_km3": 1931422.8641228387,
+          "retained_initial_excess_mass_kg": 1.2169034829147322e+17,
+          "current_thermal_excess_mass_kg": 512102245639.6679,
+          "face_a": 4649,
+          "face_b": 4651,
+          "midpoint": [
+            0.5479780594515429,
+            0.09883226867196515,
+            -0.8306336310485349
+          ],
+          "trench_length_km": 379.40616845359943
+        },
+        {
+          "segment_key": "2409:2411:3:0",
+          "contact_key": "2409:2411",
+          "subducting_plate": 3,
+          "overriding_plate": 0,
+          "checks": {
+            "attached": true,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": true,
+          "valid_exact_current_locality": true,
+          "retained_area_km2": 65300.74282143387,
+          "retained_oceanic_volume_km3": 65300.74282143387,
+          "retained_initial_cold_volume_km3": 2091098.4283487385,
+          "retained_initial_excess_mass_kg": 1.3662384227455134e+17,
+          "current_thermal_excess_mass_kg": 16555714069593.566,
+          "face_a": 4653,
+          "face_b": 4655,
+          "midpoint": [
+            0.5936865364357556,
+            0.13943681324275428,
+            -0.7925236094701668
+          ],
+          "trench_length_km": 382.55520218409765
+        },
+        {
+          "segment_key": "2410:2411:3:0",
+          "contact_key": "2410:2411",
+          "subducting_plate": 3,
+          "overriding_plate": 0,
+          "checks": {
+            "attached": true,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": true,
+          "valid_exact_current_locality": true,
+          "retained_area_km2": 64838.780722953124,
+          "retained_oceanic_volume_km3": 64838.78072295312,
+          "retained_initial_cold_volume_km3": 2076305.2089096988,
+          "retained_initial_excess_mass_kg": 1.3565731365400803e+17,
+          "current_thermal_excess_mass_kg": 16438592700325.982,
+          "face_a": 4649,
+          "face_b": 4651,
+          "midpoint": [
+            0.5479780594515429,
+            0.09883226867196515,
+            -0.8306336310485349
+          ],
+          "trench_length_km": 379.40616845359943
+        },
+        {
+          "segment_key": "24:1275:1:2",
+          "contact_key": "1275:1277",
+          "subducting_plate": 1,
+          "overriding_plate": 2,
+          "checks": {
+            "attached": true,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": true,
+          "valid_exact_current_locality": true,
+          "retained_area_km2": 77136.51923020641,
+          "retained_oceanic_volume_km3": 64625.19812316046,
+          "retained_initial_cold_volume_km3": 2352167.279891104,
+          "retained_initial_excess_mass_kg": 1.4925890565846378e+17,
+          "current_thermal_excess_mass_kg": 1915313301560.5662,
+          "face_a": 1616,
+          "face_b": 1619,
+          "midpoint": [
+            -0.5333216003195539,
+            -0.25374205184575305,
+            0.806959132644087
+          ],
+          "trench_length_km": 382.5388291138337
+        },
+        {
+          "segment_key": "24:1275:2:1",
+          "contact_key": "1275:1277",
+          "subducting_plate": 2,
+          "overriding_plate": 1,
+          "checks": {
+            "attached": true,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": true,
+          "valid_exact_current_locality": true,
+          "retained_area_km2": 64625.19812316046,
+          "retained_oceanic_volume_km3": 77136.51923020642,
+          "retained_initial_cold_volume_km3": 1986793.4756530311,
+          "retained_initial_excess_mass_kg": 1.2709933192187963e+17,
+          "current_thermal_excess_mass_kg": 2711695514029.665,
+          "face_a": 1616,
+          "face_b": 1619,
+          "midpoint": [
+            -0.5333216003195539,
+            -0.25374205184575305,
+            0.806959132644087
+          ],
+          "trench_length_km": 382.5388291138337
+        },
+        {
+          "segment_key": "24:2253:2:1",
+          "contact_key": "2253:2283",
+          "subducting_plate": 2,
+          "overriding_plate": 1,
+          "checks": {
+            "attached": true,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": true,
+          "valid_exact_current_locality": true,
+          "retained_area_km2": 77136.51923020641,
+          "retained_oceanic_volume_km3": 64625.19812316065,
+          "retained_initial_cold_volume_km3": 2352167.279891104,
+          "retained_initial_excess_mass_kg": 1.4925890565846378e+17,
+          "current_thermal_excess_mass_kg": 1915313301560.5662,
+          "face_a": 4304,
+          "face_b": 4307,
+          "midpoint": [
+            -0.5195250164375778,
+            -0.36236764127032595,
+            0.7738109910409097
+          ],
+          "trench_length_km": 436.2842285427369
+        },
+        {
+          "segment_key": "320:1324:1:2",
+          "contact_key": "320:1324",
+          "subducting_plate": 1,
+          "overriding_plate": 2,
+          "checks": {
+            "attached": true,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": true,
+          "valid_exact_current_locality": true,
+          "retained_area_km2": 129277.95124206363,
+          "retained_oceanic_volume_km3": 129477.75634398506,
+          "retained_initial_cold_volume_km3": 4178798.276833072,
+          "retained_initial_excess_mass_kg": 2.750978436209401e+17,
+          "current_thermal_excess_mass_kg": 1.4423903262664682e+17,
+          "face_a": 1730,
+          "face_b": 1742,
+          "midpoint": [
+            -0.4205809477466251,
+            0.218637321324504,
+            0.8805165461912662
+          ],
+          "trench_length_km": 435.3075815592848
+        },
+        {
+          "segment_key": "320:1324:2:1",
+          "contact_key": "320:1324",
+          "subducting_plate": 2,
+          "overriding_plate": 1,
+          "checks": {
+            "attached": true,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": true,
+          "valid_exact_current_locality": true,
+          "retained_area_km2": 154320.2492240965,
+          "retained_oceanic_volume_km3": 154535.82805496635,
+          "retained_initial_cold_volume_km3": 5100115.753991123,
+          "retained_initial_excess_mass_kg": 3.418079508231091e+17,
+          "current_thermal_excess_mass_kg": 4.5382123030803096e+16,
+          "face_a": 1730,
+          "face_b": 1742,
+          "midpoint": [
+            -0.4205809477466251,
+            0.218637321324504,
+            0.8805165461912662
+          ],
+          "trench_length_km": 435.3075815592848
+        },
+        {
+          "segment_key": "327:1329:2:1",
+          "contact_key": "327:1329",
+          "subducting_plate": 2,
+          "overriding_plate": 1,
+          "checks": {
+            "attached": true,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": true,
+          "valid_exact_current_locality": true,
+          "retained_area_km2": 77217.3203676397,
+          "retained_oceanic_volume_km3": 64672.2460374865,
+          "retained_initial_cold_volume_km3": 2534274.0968256807,
+          "retained_initial_excess_mass_kg": 1.6836960037959357e+17,
+          "current_thermal_excess_mass_kg": 98998234517832.19,
+          "face_a": 1746,
+          "face_b": 1758,
+          "midpoint": [
+            -0.48717292128774414,
+            -0.17748121829815874,
+            0.8550806756764924
+          ],
+          "trench_length_km": 435.307581559299
+        },
+        {
+          "segment_key": "341:1339:2:1",
+          "contact_key": "1325:1339",
+          "subducting_plate": 2,
+          "overriding_plate": 1,
+          "checks": {
+            "attached": false,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": false,
+          "valid_exact_current_locality": false,
+          "retained_area_km2": 81321.63950535648,
+          "retained_oceanic_volume_km3": 77475.65170747356,
+          "retained_initial_cold_volume_km3": 2666824.5545827877,
+          "retained_initial_excess_mass_kg": 1.7763603355660115e+17,
+          "current_thermal_excess_mass_kg": 137912216151509.47,
+          "face_a": 1778,
+          "face_b": 1779,
+          "midpoint": [
+            -0.43295280030146294,
+            0.02066687382089365,
+            0.9011796452636915
+          ],
+          "trench_length_km": 432.46942910508676
+        },
+        {
+          "segment_key": "342:1333:1:2",
+          "contact_key": "342:1333",
+          "subducting_plate": 1,
+          "overriding_plate": 2,
+          "checks": {
+            "attached": true,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": true,
+          "valid_exact_current_locality": true,
+          "retained_area_km2": 78187.01793513386,
+          "retained_oceanic_volume_km3": 78187.01793513386,
+          "retained_initial_cold_volume_km3": 2599195.719974764,
+          "retained_initial_excess_mass_kg": 1.7447991484048208e+17,
+          "current_thermal_excess_mass_kg": 1.7447991484048208e+17,
+          "face_a": 1754,
+          "face_b": 1777,
+          "midpoint": [
+            -0.4322698890871969,
+            -0.061862852836765035,
+            0.8996197699180689
+          ],
+          "trench_length_km": 431.3745536728833
+        },
+        {
+          "segment_key": "39:1983:3:0",
+          "contact_key": "1983:2022",
+          "subducting_plate": 3,
+          "overriding_plate": 0,
+          "checks": {
+            "attached": false,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": false,
+          "valid_exact_current_locality": false,
+          "retained_area_km2": 77136.51923020641,
+          "retained_oceanic_volume_km3": 64794.38334584985,
+          "retained_initial_cold_volume_km3": 2564563.7279723575,
+          "retained_initial_excess_mass_kg": 1.7230550216183805e+17,
+          "current_thermal_excess_mass_kg": 1538656484348523.2,
+          "face_a": 3536,
+          "face_b": 3539,
+          "midpoint": [
+            0.5195250164375778,
+            -0.36236764127032595,
+            -0.7738109910409097
+          ],
+          "trench_length_km": 436.2842285427369
+        },
+        {
+          "segment_key": "39:1983:3:0:accepted:0x1.470664ccccccdp+5:3536",
+          "contact_key": "1983:2022",
+          "subducting_plate": 3,
+          "overriding_plate": 0,
+          "checks": {
+            "attached": true,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": true,
+          "valid_exact_current_locality": true,
+          "retained_area_km2": 77136.51923020641,
+          "retained_oceanic_volume_km3": 64638.97562103158,
+          "retained_initial_cold_volume_km3": 2571421.3466333803,
+          "retained_initial_excess_mass_kg": 1.7285676467195795e+17,
+          "current_thermal_excess_mass_kg": 8497233636079950.0,
+          "face_a": 3536,
+          "face_b": 3539,
+          "midpoint": [
+            0.5195250164375778,
+            -0.36236764127032595,
+            -0.7738109910409097
+          ],
+          "trench_length_km": 436.2842285427369
+        },
+        {
+          "segment_key": "39:2022:0:3",
+          "contact_key": "39:2022",
+          "subducting_plate": 0,
+          "overriding_plate": 3,
+          "checks": {
+            "attached": true,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": true,
+          "valid_exact_current_locality": true,
+          "retained_area_km2": 64625.19812316046,
+          "retained_oceanic_volume_km3": 64625.19812316046,
+          "retained_initial_cold_volume_km3": 2094729.5230176733,
+          "retained_initial_excess_mass_kg": 1.3820059496764413e+17,
+          "current_thermal_excess_mass_kg": 37423204469139.34,
+          "face_a": 3488,
+          "face_b": 3536,
+          "midpoint": [
+            0.5266327684262672,
+            -0.3254769504768855,
+            -0.7853169308807448
+          ],
+          "trench_length_km": 415.24000898823925
+        },
+        {
+          "segment_key": "415:2406:3:0",
+          "contact_key": "415:2406",
+          "subducting_plate": 3,
+          "overriding_plate": 0,
+          "checks": {
+            "attached": true,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": true,
+          "valid_exact_current_locality": true,
+          "retained_area_km2": 65311.868954956946,
+          "retained_oceanic_volume_km3": 65311.868954956946,
+          "retained_initial_cold_volume_km3": 2091454.7158780752,
+          "retained_initial_excess_mass_kg": 1.3664712064851622e+17,
+          "current_thermal_excess_mass_kg": 16558534881078.234,
+          "face_a": 4641,
+          "face_b": 4652,
+          "midpoint": [
+            0.5860508859725081,
+            0.2173220063473644,
+            -0.7805866413204844
+          ],
+          "trench_length_km": 381.7573118471166
+        },
+        {
+          "segment_key": "433:1679:1:3",
+          "contact_key": "1678:1679",
+          "subducting_plate": 1,
+          "overriding_plate": 3,
+          "checks": {
+            "attached": false,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": false,
+          "valid_exact_current_locality": false,
+          "retained_area_km2": 63896.09715287097,
+          "retained_oceanic_volume_km3": 63896.09715287118,
+          "retained_initial_cold_volume_km3": 2122280.209296267,
+          "retained_initial_excess_mass_kg": 1.4258303063491946e+17,
+          "current_thermal_excess_mass_kg": 2.8170926938275104e+16,
+          "face_a": 2633,
+          "face_b": 2635,
+          "midpoint": [
+            0.8490342481179594,
+            -0.18442392385335632,
+            0.49510469785016453
+          ],
+          "trench_length_km": 427.1362935792272
+        },
+        {
+          "segment_key": "513:1983:3:0",
+          "contact_key": "513:2037",
+          "subducting_plate": 3,
+          "overriding_plate": 0,
+          "checks": {
+            "attached": true,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": true,
+          "valid_exact_current_locality": true,
+          "retained_area_km2": 77160.12461204811,
+          "retained_oceanic_volume_km3": 77399.30882475997,
+          "retained_initial_cold_volume_km3": 2559467.702804355,
+          "retained_initial_excess_mass_kg": 1.7205321367047328e+17,
+          "current_thermal_excess_mass_kg": 8224430378189235.0,
+          "face_a": 3538,
+          "face_b": 3550,
+          "midpoint": [
+            0.5030330501765242,
+            -0.43449972792986746,
+            -0.7471062420158018
+          ],
+          "trench_length_km": 435.3075815592848
+        },
+        {
+          "segment_key": "513:1988:3:0",
+          "contact_key": "513:2040",
+          "subducting_plate": 3,
+          "overriding_plate": 0,
+          "checks": {
+            "attached": true,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": true,
+          "valid_exact_current_locality": true,
+          "retained_area_km2": 77217.32036763955,
+          "retained_oceanic_volume_km3": 77217.32036763955,
+          "retained_initial_cold_volume_km3": 2277919.912666147,
+          "retained_initial_excess_mass_kg": 1.4352158333712035e+17,
+          "current_thermal_excess_mass_kg": 603973331957.7493,
+          "face_a": 3545,
+          "face_b": 3550,
+          "midpoint": [
+            0.4935881565592077,
+            -0.4699688851385701,
+            -0.7317786405096097
+          ],
+          "trench_length_km": 419.32707850560104
+        },
+        {
+          "segment_key": "513:2037:0:3",
+          "contact_key": "513:2040",
+          "subducting_plate": 0,
+          "overriding_plate": 3,
+          "checks": {
+            "attached": true,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": true,
+          "valid_exact_current_locality": true,
+          "retained_area_km2": 154320.24922409622,
+          "retained_oceanic_volume_km3": 141799.10023307937,
+          "retained_initial_cold_volume_km3": 5072441.93164316,
+          "retained_initial_excess_mass_kg": 3.378701012942291e+17,
+          "current_thermal_excess_mass_kg": 6453014026196242.0,
+          "face_a": 3545,
+          "face_b": 3550,
+          "midpoint": [
+            0.4935881565592077,
+            -0.4699688851385701,
+            -0.7317786405096097
+          ],
+          "trench_length_km": 419.32707850560104
+        },
+        {
+          "segment_key": "576:2253:2:1",
+          "contact_key": "2256:2257",
+          "subducting_plate": 2,
+          "overriding_plate": 1,
+          "checks": {
+            "attached": true,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": true,
+          "valid_exact_current_locality": true,
+          "retained_area_km2": 77160.12461204811,
+          "retained_oceanic_volume_km3": 77160.1246120481,
+          "retained_initial_cold_volume_km3": 2276232.631238076,
+          "retained_initial_excess_mass_kg": 1.4341527525282576e+17,
+          "current_thermal_excess_mass_kg": 603525961977.618,
+          "face_a": 4182,
+          "face_b": 4183,
+          "midpoint": [
+            -0.4285485445041314,
+            -0.504694363491149,
+            0.7494196050702533
+          ],
+          "trench_length_km": 379.40616845359943
+        },
+        {
+          "segment_key": "576:2257:1:2",
+          "contact_key": "2256:2257",
+          "subducting_plate": 1,
+          "overriding_plate": 2,
+          "checks": {
+            "attached": false,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": false,
+          "valid_exact_current_locality": false,
+          "retained_area_km2": 64672.24603748625,
+          "retained_oceanic_volume_km3": 64672.24603748625,
+          "retained_initial_cold_volume_km3": 2146053.886054957,
+          "retained_initial_excess_mass_kg": 1.44251875793244e+17,
+          "current_thermal_excess_mass_kg": 9169474207712528.0,
+          "face_a": 4182,
+          "face_b": 4183,
+          "midpoint": [
+            -0.4285485445041314,
+            -0.504694363491149,
+            0.7494196050702533
+          ],
+          "trench_length_km": 379.40616845359943
+        },
+        {
+          "segment_key": "607:2399:0:3",
+          "contact_key": "607:2460",
+          "subducting_plate": 0,
+          "overriding_plate": 3,
+          "checks": {
+            "attached": false,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": false,
+          "valid_exact_current_locality": false,
+          "retained_area_km2": 154320.24922409636,
+          "retained_oceanic_volume_km3": 154559.43343680823,
+          "retained_initial_cold_volume_km3": 5122306.635191729,
+          "retained_initial_excess_mass_kg": 3.442346911249151e+17,
+          "current_thermal_excess_mass_kg": 4.2243288021305e+16,
+          "face_a": 4802,
+          "face_b": 4814,
+          "midpoint": [
+            0.48717292128774414,
+            -0.17748121829815874,
+            -0.8550806756764924
+          ],
+          "trench_length_km": 435.307581559299
+        },
+        {
+          "segment_key": "607:2400:0:3",
+          "contact_key": "607:2402",
+          "subducting_plate": 0,
+          "overriding_plate": 3,
+          "checks": {
+            "attached": false,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": false,
+          "valid_exact_current_locality": false,
+          "retained_area_km2": 64638.975621031386,
+          "retained_oceanic_volume_km3": 77160.1246120482,
+          "retained_initial_cold_volume_km3": 2131125.559447861,
+          "retained_initial_excess_mass_kg": 1.4326533662633314e+17,
+          "current_thermal_excess_mass_kg": 4967008554669558.0,
+          "face_a": 4630,
+          "face_b": 4636,
+          "midpoint": [
+            0.545531673961212,
+            -0.13784030416317075,
+            -0.8266772303948394
+          ],
+          "trench_length_km": 369.09386021422563
+        },
+        {
+          "segment_key": "607:2400:3:0",
+          "contact_key": "607:2400",
+          "subducting_plate": 3,
+          "overriding_plate": 0,
+          "checks": {
+            "attached": false,
+            "contact_present": false,
+            "contact_pair_matches_segment": false,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": false,
+          "valid_exact_current_locality": false,
+          "retained_area_km2": 130061.11404196933,
+          "retained_oceanic_volume_km3": 129861.02924646204,
+          "retained_initial_cold_volume_km3": 4000459.7054055706,
+          "retained_initial_excess_mass_kg": 2.5688686762119872e+17,
+          "current_thermal_excess_mass_kg": 16967348681007.596,
+          "face_a": 4625,
+          "face_b": 4636,
+          "midpoint": [
+            0.5422390058901679,
+            -0.1769697803888774,
+            -0.8213760145757574
+          ],
+          "trench_length_km": 381.75731184710844
+        },
+        {
+          "segment_key": "607:2400:3:0:accepted:0x1.0f0664ccccccdp+5:4636",
+          "contact_key": "607:2402",
+          "subducting_plate": 3,
+          "overriding_plate": 0,
+          "checks": {
+            "attached": true,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": true,
+          "valid_exact_current_locality": true,
+          "retained_area_km2": 65266.730696119324,
+          "retained_oceanic_volume_km3": 67479.18692077632,
+          "retained_initial_cold_volume_km3": 2155809.358736293,
+          "retained_initial_excess_mass_kg": 1.4478941479173398e+17,
+          "current_thermal_excess_mass_kg": 915946166298061.4,
+          "face_a": 4630,
+          "face_b": 4636,
+          "midpoint": [
+            0.545531673961212,
+            -0.13784030416317075,
+            -0.8266772303948394
+          ],
+          "trench_length_km": 369.09386021422563
+        },
+        {
+          "segment_key": "607:2400:3:0:accepted:0x1.7e0cc9999999ap+4:4636",
+          "contact_key": "607:2402",
+          "subducting_plate": 3,
+          "overriding_plate": 0,
+          "checks": {
+            "attached": true,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": true,
+          "valid_exact_current_locality": true,
+          "retained_area_km2": 65266.730696119324,
+          "retained_oceanic_volume_km3": 64492.6390697583,
+          "retained_initial_cold_volume_km3": 2116297.937285698,
+          "retained_initial_excess_mass_kg": 1.3962357948740949e+17,
+          "current_thermal_excess_mass_kg": 38030528053307.13,
+          "face_a": 4630,
+          "face_b": 4636,
+          "midpoint": [
+            0.545531673961212,
+            -0.13784030416317075,
+            -0.8266772303948394
+          ],
+          "trench_length_km": 369.09386021422563
+        },
+        {
+          "segment_key": "607:2403:0:3",
+          "contact_key": "607:2463",
+          "subducting_plate": 0,
+          "overriding_plate": 3,
+          "checks": {
+            "attached": false,
+            "contact_present": false,
+            "contact_pair_matches_segment": false,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": false,
+          "valid_exact_current_locality": false,
+          "retained_area_km2": 77217.3203676397,
+          "retained_oceanic_volume_km3": 77217.32036763968,
+          "retained_initial_cold_volume_km3": 2425245.4963845112,
+          "retained_initial_excess_mass_kg": 1.563302391614986e+17,
+          "current_thermal_excess_mass_kg": 7113146689098.337,
+          "face_a": 4809,
+          "face_b": 4814,
+          "midpoint": [
+            0.4904556503485318,
+            -0.13820363394925125,
+            -0.8604376854859509
+          ],
+          "trench_length_km": 419.3270785056084
+        },
+        {
+          "segment_key": "607:2403:3:0",
+          "contact_key": "2402:2403",
+          "subducting_plate": 3,
+          "overriding_plate": 0,
+          "checks": {
+            "attached": true,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": true,
+          "valid_exact_current_locality": true,
+          "retained_area_km2": 64672.24603748648,
+          "retained_oceanic_volume_km3": 65300.74282143387,
+          "retained_initial_cold_volume_km3": 2131771.3696527,
+          "retained_initial_excess_mass_kg": 1.4288852072677614e+17,
+          "current_thermal_excess_mass_kg": 374921721262771.1,
+          "face_a": 4630,
+          "face_b": 4631,
+          "midpoint": [
+            0.5479780594515429,
+            -0.09883226867196515,
+            -0.8306336310485349
+          ],
+          "trench_length_km": 379.40616845359943
+        },
+        {
+          "segment_key": "607:2463:3:0",
+          "contact_key": "2402:2403",
+          "subducting_plate": 3,
+          "overriding_plate": 0,
+          "checks": {
+            "attached": true,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": true,
+          "valid_exact_current_locality": true,
+          "retained_area_km2": 77217.3203676397,
+          "retained_oceanic_volume_km3": 65471.70391508614,
+          "retained_initial_cold_volume_km3": 2514630.0231533633,
+          "retained_initial_excess_mass_kg": 1.6590369377267018e+17,
+          "current_thermal_excess_mass_kg": 48404411481703.66,
+          "face_a": 4630,
+          "face_b": 4631,
+          "midpoint": [
+            0.5479780594515429,
+            -0.09883226867196515,
+            -0.8306336310485349
+          ],
+          "trench_length_km": 379.40616845359943
+        },
+        {
+          "segment_key": "681:722:1:2",
+          "contact_key": "13:722",
+          "subducting_plate": 1,
+          "overriding_plate": 2,
+          "checks": {
+            "attached": false,
+            "contact_present": false,
+            "contact_pair_matches_segment": false,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": false,
+          "valid_exact_current_locality": false,
+          "retained_area_km2": 77136.51923020641,
+          "retained_oceanic_volume_km3": 64794.38334584974,
+          "retained_initial_cold_volume_km3": 2574892.9724396444,
+          "retained_initial_excess_mass_kg": 1.7296453267192205e+17,
+          "current_thermal_excess_mass_kg": 4.583381055841963e+16,
+          "face_a": 160,
+          "face_b": 208,
+          "midpoint": [
+            -0.4932363744150633,
+            0.346117057077493,
+            0.7980732182913413
+          ],
+          "trench_length_km": 415.2400089882243
+        },
+        {
+          "segment_key": "681:722:2:1",
+          "contact_key": "13:681",
+          "subducting_plate": 2,
+          "overriding_plate": 1,
+          "checks": {
+            "attached": false,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": false,
+          "valid_exact_current_locality": false,
+          "retained_area_km2": 77399.3088247597,
+          "retained_oceanic_volume_km3": 77399.30882475969,
+          "retained_initial_cold_volume_km3": 2569058.434309761,
+          "retained_initial_excess_mass_kg": 1.726680067843055e+17,
+          "current_thermal_excess_mass_kg": 1.4581172126024e+16,
+          "face_a": 80,
+          "face_b": 208,
+          "midpoint": [
+            -0.5266327684262672,
+            0.3254769504768855,
+            0.7853169308807448
+          ],
+          "trench_length_km": 415.24000898823925
+        },
+        {
+          "segment_key": "681:737:1:2",
+          "contact_key": "13:722",
+          "subducting_plate": 1,
+          "overriding_plate": 2,
+          "checks": {
+            "attached": false,
+            "contact_present": false,
+            "contact_pair_matches_segment": false,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": false,
+          "valid_exact_current_locality": false,
+          "retained_area_km2": 77399.3088247597,
+          "retained_oceanic_volume_km3": 77136.51923020641,
+          "retained_initial_cold_volume_km3": 2570513.842235761,
+          "retained_initial_excess_mass_kg": 1.53683101203783e+17,
+          "current_thermal_excess_mass_kg": 2.2887223136427764e+16,
+          "face_a": 160,
+          "face_b": 208,
+          "midpoint": [
+            -0.4932363744150633,
+            0.346117057077493,
+            0.7980732182913413
+          ],
+          "trench_length_km": 415.2400089882243
+        },
+        {
+          "segment_key": "681:737:2:1",
+          "contact_key": "681:722",
+          "subducting_plate": 2,
+          "overriding_plate": 1,
+          "checks": {
+            "attached": false,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": false,
+          "valid_exact_current_locality": false,
+          "retained_area_km2": 77160.12461204836,
+          "retained_oceanic_volume_km3": 77160.12461204836,
+          "retained_initial_cold_volume_km3": 2561737.410104877,
+          "retained_initial_excess_mass_kg": 1.7215557141248346e+17,
+          "current_thermal_excess_mass_kg": 1.930600885094869e+16,
+          "face_a": 208,
+          "face_b": 211,
+          "midpoint": [
+            -0.5195250164375778,
+            0.36236764127032595,
+            0.7738109910409097
+          ],
+          "trench_length_km": 436.2842285427369
+        },
+        {
+          "segment_key": "717:719:2:1",
+          "contact_key": "717:718",
+          "subducting_plate": 2,
+          "overriding_plate": 1,
+          "checks": {
+            "attached": true,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": true,
+          "valid_exact_current_locality": true,
+          "retained_area_km2": 64658.70933749338,
+          "retained_oceanic_volume_km3": 64456.29003366765,
+          "retained_initial_cold_volume_km3": 1961389.3654930233,
+          "retained_initial_excess_mass_kg": 1.2446173908056005e+17,
+          "current_thermal_excess_mass_kg": 1421864740331.286,
+          "face_a": 153,
+          "face_b": 155,
+          "midpoint": [
+            -0.23350644756975353,
+            0.7170588535790624,
+            0.6567353648519582
+          ],
+          "trench_length_km": 379.4017962020329
+        },
+        {
+          "segment_key": "717:795:1:2",
+          "contact_key": "792:795",
+          "subducting_plate": 1,
+          "overriding_plate": 2,
+          "checks": {
+            "attached": true,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": true,
+          "valid_exact_current_locality": true,
+          "retained_area_km2": 64658.709337493405,
+          "retained_oceanic_volume_km3": 64658.709337493405,
+          "retained_initial_cold_volume_km3": 2144301.1451147785,
+          "retained_initial_excess_mass_kg": 1.4415106797493987e+17,
+          "current_thermal_excess_mass_kg": 5184606882993542.0,
+          "face_a": 364,
+          "face_b": 367,
+          "midpoint": [
+            -0.17855293714062984,
+            0.7871537282186846,
+            0.5903455401626063
+          ],
+          "trench_length_km": 369.919159455773
+        },
+        {
+          "segment_key": "717:795:2:1",
+          "contact_key": "792:795",
+          "subducting_plate": 2,
+          "overriding_plate": 1,
+          "checks": {
+            "attached": true,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": true,
+          "valid_exact_current_locality": true,
+          "retained_area_km2": 64492.63906975814,
+          "retained_oceanic_volume_km3": 64492.63906975815,
+          "retained_initial_cold_volume_km3": 2136220.3304792875,
+          "retained_initial_excess_mass_kg": 1.4358824342850891e+17,
+          "current_thermal_excess_mass_kg": 2187234271849837.0,
+          "face_a": 364,
+          "face_b": 367,
+          "midpoint": [
+            -0.17855293714062984,
+            0.7871537282186846,
+            0.5903455401626063
+          ],
+          "trench_length_km": 369.919159455773
+        },
+        {
+          "segment_key": "720:1249:1:2",
+          "contact_key": "13:1249",
+          "subducting_plate": 1,
+          "overriding_plate": 2,
+          "checks": {
+            "attached": true,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": true,
+          "valid_exact_current_locality": true,
+          "retained_area_km2": 64794.38334584974,
+          "retained_oceanic_volume_km3": 64625.198123160255,
+          "retained_initial_cold_volume_km3": 1965471.3093492752,
+          "retained_initial_excess_mass_kg": 1.2472076252593834e+17,
+          "current_thermal_excess_mass_kg": 1424278863535.4722,
+          "face_a": 1552,
+          "face_b": 1728,
+          "midpoint": [
+            -0.4725962678144559,
+            0.2920805564656817,
+            0.8314696123025451
+          ],
+          "trench_length_km": 415.2400089882243
+        },
+        {
+          "segment_key": "720:1249:2:1",
+          "contact_key": "13:720",
+          "subducting_plate": 2,
+          "overriding_plate": 1,
+          "checks": {
+            "attached": false,
+            "contact_present": false,
+            "contact_pair_matches_segment": false,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": false,
+          "valid_exact_current_locality": false,
+          "retained_area_km2": 64625.19812316024,
+          "retained_oceanic_volume_km3": 64794.38334584974,
+          "retained_initial_cold_volume_km3": 1999135.6115373806,
+          "retained_initial_excess_mass_kg": 1.2788888415496931e+17,
+          "current_thermal_excess_mass_kg": 3106730103954.223,
+          "face_a": 160,
+          "face_b": 1552,
+          "midpoint": [
+            -0.4717156601131807,
+            0.3261278061562882,
+            0.8192221860128501
+          ],
+          "trench_length_km": 365.8434544360799
+        },
+        {
+          "segment_key": "720:721:2:1",
+          "contact_key": "13:681",
+          "subducting_plate": 2,
+          "overriding_plate": 1,
+          "checks": {
+            "attached": false,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": false,
+          "valid_exact_current_locality": false,
+          "retained_area_km2": 64794.383345850205,
+          "retained_oceanic_volume_km3": 64594.298550342646,
+          "retained_initial_cold_volume_km3": 1965502.2089221075,
+          "retained_initial_excess_mass_kg": 1.2472272328632544e+17,
+          "current_thermal_excess_mass_kg": 1424801568849.3396,
+          "face_a": 80,
+          "face_b": 208,
+          "midpoint": [
+            -0.5266327684262672,
+            0.3254769504768855,
+            0.7853169308807448
+          ],
+          "trench_length_km": 415.24000898823925
+        },
+        {
+          "segment_key": "720:722:1:2",
+          "contact_key": "13:722",
+          "subducting_plate": 1,
+          "overriding_plate": 2,
+          "checks": {
+            "attached": false,
+            "contact_present": false,
+            "contact_pair_matches_segment": false,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": false,
+          "valid_exact_current_locality": false,
+          "retained_area_km2": 64794.383345850205,
+          "retained_oceanic_volume_km3": 64794.383345850205,
+          "retained_initial_cold_volume_km3": 2035065.263238403,
+          "retained_initial_excess_mass_kg": 1.3117939597685896e+17,
+          "current_thermal_excess_mass_kg": 5968763888391.1875,
+          "face_a": 160,
+          "face_b": 208,
+          "midpoint": [
+            -0.4932363744150633,
+            0.346117057077493,
+            0.7980732182913413
+          ],
+          "trench_length_km": 415.2400089882243
+        },
+        {
+          "segment_key": "720:722:2:1",
+          "contact_key": "13:681",
+          "subducting_plate": 2,
+          "overriding_plate": 1,
+          "checks": {
+            "attached": false,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": false,
+          "valid_exact_current_locality": false,
+          "retained_area_km2": 64625.19812316063,
+          "retained_oceanic_volume_km3": 64625.19812316065,
+          "retained_initial_cold_volume_km3": 2124852.564713771,
+          "retained_initial_excess_mass_kg": 1.4207655381590826e+17,
+          "current_thermal_excess_mass_kg": 203528565165709.66,
+          "face_a": 80,
+          "face_b": 208,
+          "midpoint": [
+            -0.5266327684262672,
+            0.3254769504768855,
+            0.7853169308807448
+          ],
+          "trench_length_km": 415.24000898823925
+        },
+        {
+          "segment_key": "721:722:1:2",
+          "contact_key": "721:722",
+          "subducting_plate": 1,
+          "overriding_plate": 2,
+          "checks": {
+            "attached": true,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": true,
+          "valid_exact_current_locality": true,
+          "retained_area_km2": 64794.383345850205,
+          "retained_oceanic_volume_km3": 65311.86895495699,
+          "retained_initial_cold_volume_km3": 2150154.911316825,
+          "retained_initial_excess_mass_kg": 1.445132418384676e+17,
+          "current_thermal_excess_mass_kg": 1.2190327230209034e+16,
+          "face_a": 162,
+          "face_b": 163,
+          "midpoint": [
+            -0.45669804972323225,
+            0.3993805423210696,
+            0.7949352639016113
+          ],
+          "trench_length_km": 366.65900879763825
+        },
+        {
+          "segment_key": "721:722:2:1",
+          "contact_key": "721:722",
+          "subducting_plate": 2,
+          "overriding_plate": 1,
+          "checks": {
+            "attached": true,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": true,
+          "valid_exact_current_locality": true,
+          "retained_area_km2": 64638.97562103129,
+          "retained_oceanic_volume_km3": 64638.975621031284,
+          "retained_initial_cold_volume_km3": 2125305.563737929,
+          "retained_initial_excess_mass_kg": 1.4210684323047899e+17,
+          "current_thermal_excess_mass_kg": 203571955583915.3,
+          "face_a": 162,
+          "face_b": 163,
+          "midpoint": [
+            -0.45669804972323225,
+            0.3993805423210696,
+            0.7949352639016113
+          ],
+          "trench_length_km": 366.65900879763825
+        },
+        {
+          "segment_key": "721:724:1:2",
+          "contact_key": "724:725",
+          "subducting_plate": 1,
+          "overriding_plate": 2,
+          "checks": {
+            "attached": false,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": false,
+          "valid_exact_current_locality": false,
+          "retained_area_km2": 65311.86895495699,
+          "retained_oceanic_volume_km3": 64658.709337493565,
+          "retained_initial_cold_volume_km3": 2170377.514537212,
+          "retained_initial_excess_mass_kg": 1.457918199092743e+17,
+          "current_thermal_excess_mass_kg": 3.8244414839894456e+16,
+          "face_a": 166,
+          "face_b": 167,
+          "midpoint": [
+            -0.34449772262329803,
+            0.4264799230341949,
+            0.8363230203432812
+          ],
+          "trench_length_km": 379.40179620202474
+        },
+        {
+          "segment_key": "721:727:1:2",
+          "contact_key": "724:727",
+          "subducting_plate": 1,
+          "overriding_plate": 2,
+          "checks": {
+            "attached": false,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": false,
+          "valid_exact_current_locality": false,
+          "retained_area_km2": 65471.703915086335,
+          "retained_oceanic_volume_km3": 65266.73069611984,
+          "retained_initial_cold_volume_km3": 1986051.1550971346,
+          "retained_initial_excess_mass_kg": 1.2602667528189152e+17,
+          "current_thermal_excess_mass_kg": 1439742887454.2656,
+          "face_a": 173,
+          "face_b": 175,
+          "midpoint": [
+            -0.3874101452203579,
+            0.4669142822704594,
+            0.7949241676991604
+          ],
+          "trench_length_km": 382.5552021840896
+        },
+        {
+          "segment_key": "724:727:1:2",
+          "contact_key": "724:727",
+          "subducting_plate": 1,
+          "overriding_plate": 2,
+          "checks": {
+            "attached": false,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": false,
+          "valid_exact_current_locality": false,
+          "retained_area_km2": 130601.48564286789,
+          "retained_oceanic_volume_km3": 129804.37128716428,
+          "retained_initial_cold_volume_km3": 4198830.365608141,
+          "retained_initial_excess_mass_kg": 2.7581956240404506e+17,
+          "current_thermal_excess_mass_kg": 212717840719353.72,
+          "face_a": 173,
+          "face_b": 175,
+          "midpoint": [
+            -0.3874101452203579,
+            0.4669142822704594,
+            0.7949241676991604
+          ],
+          "trench_length_km": 382.5552021840896
+        },
+        {
+          "segment_key": "724:727:1:2:accepted:0x1.570664ccccccdp+5:172",
+          "contact_key": "724:727",
+          "subducting_plate": 1,
+          "overriding_plate": 2,
+          "checks": {
+            "attached": true,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": true,
+          "valid_exact_current_locality": true,
+          "retained_area_km2": 65311.86895495699,
+          "retained_oceanic_volume_km3": 64492.639069758625,
+          "retained_initial_cold_volume_km3": 2168668.14671675,
+          "retained_initial_excess_mass_kg": 1.4575752784338774e+17,
+          "current_thermal_excess_mass_kg": 1.232972777507338e+16,
+          "face_a": 173,
+          "face_b": 175,
+          "midpoint": [
+            -0.3874101452203579,
+            0.4669142822704594,
+            0.7949241676991604
+          ],
+          "trench_length_km": 382.5552021840896
+        },
+        {
+          "segment_key": "727:728:2:1",
+          "contact_key": "726:727",
+          "subducting_plate": 2,
+          "overriding_plate": 1,
+          "checks": {
+            "attached": true,
+            "contact_present": true,
+            "contact_pair_matches_segment": true,
+            "retained_material_positive": true,
+            "contact_faces_are_exact_mesh_edge": true,
+            "current_surface_owners_match_contact": true
+          },
+          "valid_attached_history": true,
+          "valid_exact_current_locality": true,
+          "retained_area_km2": 64838.78072295318,
+          "retained_oceanic_volume_km3": 64638.558354795365,
+          "retained_initial_cold_volume_km3": 1966848.9795672635,
+          "retained_initial_excess_mass_kg": 1.2480818383770181e+17,
+          "current_thermal_excess_mass_kg": 1425777856740.5024,
+          "face_a": 169,
+          "face_b": 171,
+          "midpoint": [
+            -0.4285485445041314,
+            0.504694363491149,
+            0.7494196050702533
+          ],
+          "trench_length_km": 379.40616845359943
+        }
+      ],
+      "conflicting_contacts_totals": {
+        "retained_area_km2": 2066205.779796469,
+        "retained_oceanic_volume_km3": 2011134.511868279,
+        "retained_initial_cold_volume_km3": 65358322.5491171,
+        "retained_initial_excess_mass_kg": 4.296245015653919e+18,
+        "current_thermal_excess_mass_kg": 2.6682998030292822e+17
+      },
+      "source_hashes_unchanged": true
+    }
+  }
+}

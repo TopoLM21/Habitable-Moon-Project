@@ -13,6 +13,7 @@ import sys
 import numpy as np
 
 from tectonics.genesis import GenesisParameters, parameters_from_config
+from tectonics.genesis_checkpoint_compat import MODEL_VERSION, require_thermal_model_version
 from tectonics.genesis_shell import ShellParameters, shell_parameters_from_config
 from tectonics.genesis_starter import StarterModel, StarterParameters
 from tectonics.genesis_tides import TidalParameters, tidal_parameters_from_config
@@ -40,6 +41,7 @@ def _resume_model(path):
     saved = json.loads((path.parent / "parameters.json").read_text(encoding="utf-8"))
     if saved.get("format") != FORMAT:
         raise ValueError("Resume requires the starter parameters.json alongside its checkpoint")
+    require_thermal_model_version(saved)
     thermal = GenesisParameters(**saved["thermal"])
     tides = TidalParameters(**saved["tides"])
     shell = ShellParameters(**saved["shell"])
@@ -107,7 +109,8 @@ def main(argv=None):
         if state.stopped_reason or args.duration_myr <= state.time_myr:
             raise ValueError("End age must follow a checkpoint that has not already stopped")
         args.output.mkdir(parents=True, exist_ok=True)
-        metadata = {"format": FORMAT, "thermal": asdict(model.thermal), "tides": asdict(model.tides),
+        metadata = {"format": FORMAT, "thermal_model_version": MODEL_VERSION,
+                    "thermal": asdict(model.thermal), "tides": asdict(model.tides),
                     "shell": asdict(model.shell), "starter": asdict(model.parameters),
                     "step_myr": args.step_myr, "provenance": provenance}
         _write_json(args.output / "parameters.json", metadata)

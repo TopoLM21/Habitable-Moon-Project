@@ -22,6 +22,8 @@ import numpy as np
 
 from .genesis import ENERGY_SCALE, SECONDS_PER_MYR
 from .genesis_shell import mantle_traction
+from .basal_coupling import (PrescribedBasalParameters, prescribed_vertex_traction,
+                             velocity_to_local_omega)
 
 
 @dataclass(frozen=True)
@@ -130,3 +132,27 @@ def independent_mantle_omega(model, starter_state):
     positions = model.mesh.centroids
     velocity -= positions*np.sum(velocity*positions, axis=1)[:, None]
     return np.cross(positions, velocity)*SECONDS_PER_MYR/(model.thermal.radius_km*1000.)
+
+
+def mantle_source_parameters(model):
+    """Uncoupled source provenance; independent of partition time and labels."""
+    return PrescribedBasalParameters(seed=model.parameters.seed,
+        convective_traction_pa=model.shell.convective_traction_pa,
+        basal_drag_pa_s_m=model.parameters.basal_drag_pa_s_m,
+        traction_coupling_depth_km=model.shell.traction_coupling_depth_km)
+
+
+def independent_mantle_source_omega(model):
+    """Uncoupled prescribed-traction velocity-equivalent, in rad/Myr.
+
+    This is a source descriptor, not a plate velocity or a solved free mantle.
+    Current transmission must be applied before using it as the effective flow.
+    Existing independent_mantle_omega retains the original transmitted meaning.
+    """
+    p = mantle_source_parameters(model)
+    traction = prescribed_vertex_traction(model.mesh, seed=p.seed,
+        convective_traction_pa=p.convective_traction_pa)
+    velocity = traction[model.mesh.faces].mean(axis=1)/p.basal_drag_pa_s_m
+    positions = model.mesh.centroids
+    velocity -= positions*np.sum(velocity*positions, axis=1)[:, None]
+    return velocity_to_local_omega(positions, velocity, model.thermal.radius_km)

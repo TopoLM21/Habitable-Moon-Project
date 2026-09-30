@@ -1,0 +1,83 @@
+{
+  "format": "geometric-initiation-validation-summary-1",
+  "tests": {
+    "passed": 420,
+    "seconds": 423.08,
+    "log_sha256": "3fe74311d9770a3b872bc281697fc0fe08b78681c88fadcf6a083b8e1f13475b"
+  },
+  "previous_code": {
+    "files_checked": 401,
+    "changed": []
+  },
+  "positive_case": {
+    "path": "admission_case/report.json",
+    "sha256": "9d3d38304c3d29845d08ff4448dc4dc3448682e0e6decdcd6245d87765fcc1d7",
+    "cohorts": 2,
+    "removed": {
+      "area_km2": 40.0,
+      "oceanic_volume_km3": 80.0,
+      "cold_mantle_volume_km3": 320.0,
+      "density_excess_mass_kg": 40000000000000.0
+    },
+    "attachment_counts": {
+      "geometric_contact": 2,
+      "unresolved_attachment": 0,
+      "unresolved_connectivity": 0,
+      "unresolved_lateral_allocation": 0
+    },
+    "maximum_relative_material_ledger_residuals": {
+      "area_km2": 0.0,
+      "oceanic_volume_km3": 0.0,
+      "cold_mantle_volume_km3": 0.0,
+      "density_excess_mass_kg": 0.0
+    },
+    "exact_restart": true,
+    "checkpoint_bytes_identical": true,
+    "code_unchanged": true,
+    "blocked_controls": [
+      "no_declared_fault",
+      "hydrostatic_locked_fault",
+      "two_admissible_opposed_faults",
+      "conflicting_inherited_history",
+      "reverse_velocity_on_initially_admitted_faults"
+    ]
+  },
+  "real_source": {
+    "path": "saved50_final/report.json",
+    "sha256": "502205ed11cca629c9615f800429c61ecc87d5c8b0688dc94a13083a9751341c",
+    "status": "unresolved_initiation",
+    "completed_steps": 0,
+    "contact_status_counts": {
+      "conflicting_local_history": 8,
+      "no_oriented_fault": 237
+    },
+    "overlap_reasons": {
+      "no_oriented_fault": 512,
+      "conflicting_local_history": 39,
+      "no_resolved_initial_contact": 8
+    },
+    "source_unchanged": true,
+    "code_unchanged": true,
+    "wall_seconds": 219.3449950000013,
+    "checkpoint_file": null,
+    "forces_active": false
+  },
+  "source_audit": {
+    "path": "source_mechanics_audit.json",
+    "sha256": "8c48a20b407659eb70f30b664b0fe9505f5234356461794a288d918969e13e4c"
+  },
+  "production_sha256": {
+    "run_geometric_initiation_probe.py": "8a81f4a8eb1e864a8544abc1634206e62e798721006dddde7584e521ec0bfbd5",
+    "run_fractional_transport_probe.py": "9b720dd4c7759e35c7b918b0f95212cb5be4ac302bf819e63b4b61047ca6d720",
+    "tectonics/spherical_polygons.py": "dd0085bd40f9bc7ec0e94d9eef3018929064f2bf405cdae3ad363870170face9",
+    "tectonics/geometric_boundary.py": "aca2332ff807a2b599192f345bc5e06f5030b9b2ffedf6509b8f62387d8b45b6",
+    "tectonics/geometric_boundary_io.py": "2ae3af3ab8f804675345757c7842a57b8c3c6d6d0b6d7e26cfa33a52f5b69f13",
+    "tectonics/geometric_contacts.py": "ea9448e7b86667a57d2bb9e773648b3008016dc71d001e5eb787e6d098aa0e5c",
+    "tectonics/geometric_initiation.py": "fd10d22bc9446b75df47edf979eaa7641b89f07250b8464ee234239a09716c0f",
+    "tectonics/geometric_initiation_adapter.py": "eb81ed8b0b66b572db2c8b8e94eebc2a566a9717d0dc09c33e5ad6313cb57877",
+    "tectonics/geometric_polarity.py": "aa43316722b513af50f53a9d3eb975cbf577fcf96120066618278cbdb65dca9a",
+    "tectonics/geometric_polarity_source.py": "c27f97cd8de8a4dfe65582754c14062887e8b7e46c13ae9d8aec65e0ae78288e",
+    "tectonics/geometric_surface.py": "e3ecf79aec7eeb1efb8d92d31beee349c86e275e1f0ae6c11747ea9763985494",
+    "tectonics/geometric_transport.py": "c89783695afd823abcb6fd5840597fd6dc7253cfc3aa9f74444551e91ac63d39"
+  }
+}

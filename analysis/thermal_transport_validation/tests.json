@@ -1,0 +1,17 @@
+{
+  "command": "QT_QPA_PLATFORM=offscreen python -m pytest tests -k 'genesis or thermal or mantle_convection' -q",
+  "branch": "fix/genesis-mantle-convection",
+  "base_commit": "72da5ad",
+  "tests": 1970,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "deselected": 616,
+  "wall_seconds": 298.15,
+  "python": "3.12.14",
+  "numpy": "2.5.2",
+  "scipy": "1.18.1",
+  "pytest": "9.1.1",
+  "scope": "Genesis, Starter, coupled paths, continuation, GUI/CLI, thermal and shared-convection exact mature regressions",
+  "mechanics_note": "Only fixtures changed: shell convergence now isolates an already load-bearing lid; no production force/damage parameters changed."
+}
