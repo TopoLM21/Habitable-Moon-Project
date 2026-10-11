@@ -1,0 +1,551 @@
+{
+  "format": "genesis-directional-quadrature-diagnosis-1",
+  "base_commit": "c2875df79441fda5af29682e5e17011569c8da2f",
+  "status": "DIRECTION_IDENTIFIED_TWO_REFINEMENT_STRATEGIES_REJECTED",
+  "cases": [
+    {
+      "case": "half_ball",
+      "baseline_pin": {
+        "path": "/workspace/genesis-ray-enclosure-half-ball-01/report.json",
+        "bytes": 28535,
+        "sha256": "ff98a3d0b2cb97b5266deb8d652d78d39a9fcd92b1a3e8c56a4ee05acf7d7b9f"
+      },
+      "baseline_nodes": 3196,
+      "baseline_error": [
+        1.48126151749983e-06,
+        1.4492087667373916e-06
+      ],
+      "baseline_final_cells": 36,
+      "variants": [
+        {
+          "variant": "diagnosis",
+          "report_pin": {
+            "path": "/workspace/genesis-direction-diagnose-half-ball-01/report.json",
+            "bytes": 68328,
+            "sha256": "b2bad4528efd6a0db2847d4ee52f49bee84e76e4d97ba245765eabb34fb39ee0"
+          },
+          "source_pins": {
+            "path": "/workspace/genesis-direction-diagnose-half-ball-01/source_pins.json",
+            "bytes": 674,
+            "sha256": "34cb7c2de7620bcdf0fd8985dc61db76890ae7de6f163e8e5647043c12a7a630"
+          },
+          "ray_records_pin": {
+            "path": "/workspace/genesis-direction-diagnose-half-ball-01/ray_certificates.json",
+            "bytes": 182528,
+            "sha256": "eb5f7983f6a4d1dc5fb71b456eb4090f5a6ccf66332aeedf4d7dbf67f5c29a95"
+          },
+          "nodes": 3400,
+          "quadrature_requests": 4368,
+          "exact_node_reuses": 968,
+          "mixed_new_nodes": 1024,
+          "final_cells": 36,
+          "error": [
+            1.48126151749983e-06,
+            1.4492087667373916e-06
+          ],
+          "coarse_true_error": [
+            5.94847059599622e-05,
+            5.066198822707237e-05
+          ],
+          "embedded_to_allowance": [
+            792.709310659962,
+            630.8480184308543
+          ],
+          "source_to_allowance": [
+            0.00024105366912051382,
+            0.00024105367679516906
+          ],
+          "analytic_gate": true,
+          "full_gate": false,
+          "seconds": 3.5267115749993536,
+          "isolation_seconds": 0.520508728990535,
+          "axes": {}
+        },
+        {
+          "variant": "eager",
+          "report_pin": {
+            "path": "/workspace/genesis-directional-half-ball-01/report.json",
+            "bytes": 53701,
+            "sha256": "e64abf7403fb413083af69603b3d13abb2fcdcee85c7246c254896ce8889861d"
+          },
+          "source_pins": {
+            "path": "/workspace/genesis-directional-half-ball-01/source_pins.json",
+            "bytes": 674,
+            "sha256": "34cb7c2de7620bcdf0fd8985dc61db76890ae7de6f163e8e5647043c12a7a630"
+          },
+          "ray_records_pin": {
+            "path": "/workspace/genesis-directional-half-ball-01/ray_certificates.json",
+            "bytes": 309858,
+            "sha256": "82d47edec765accefefe398419957972f220274cf7b9796e11f300a8adb7cc2e"
+          },
+          "nodes": 3234,
+          "quadrature_requests": 4224,
+          "exact_node_reuses": 990,
+          "mixed_new_nodes": 1056,
+          "final_cells": 18,
+          "error": [
+            1.139044134396238e-05,
+            1.135931347750965e-05
+          ],
+          "coarse_true_error": [
+            8.453922018697958e-05,
+            0.0001630405664809693
+          ],
+          "embedded_to_allowance": [
+            1224.9854941749788,
+            1537.1139138730844
+          ],
+          "source_to_allowance": [
+            0.00024105127941647476,
+            0.0002410512868162691
+          ],
+          "analytic_gate": false,
+          "full_gate": false,
+          "seconds": 3.3323295139998663,
+          "isolation_seconds": 0.8369769880155218,
+          "axes": {
+            "t": 7,
+            "s": 8
+          }
+        },
+        {
+          "variant": "lazy",
+          "report_pin": {
+            "path": "/workspace/genesis-directional-lazy-half-ball-01/report.json",
+            "bytes": 61502,
+            "sha256": "8405950731e3f2a975124523eb6134dab94813036bbb0c27514365690efb173c"
+          },
+          "source_pins": {
+            "path": "/workspace/genesis-directional-lazy-half-ball-01/source_pins.json",
+            "bytes": 674,
+            "sha256": "29a1cbaf371525e9551926abf5ac81d22ac928c60519fc849f43d0e0f66b8898"
+          },
+          "ray_records_pin": {
+            "path": "/workspace/genesis-directional-lazy-half-ball-01/ray_certificates.json",
+            "bytes": 676831,
+            "sha256": "6bcb71b424fe57bf1ee4918d72ebfb0f28dccbcd4fbfaff0a283d42a483a8cbe"
+          },
+          "nodes": 3314,
+          "quadrature_requests": 3928,
+          "exact_node_reuses": 614,
+          "mixed_new_nodes": 608,
+          "final_cells": 22,
+          "error": [
+            3.0357631121552804e-06,
+            3.06344934873163e-06
+          ],
+          "coarse_true_error": [
+            7.707464668082196e-05,
+            5.546307519530577e-05
+          ],
+          "embedded_to_allowance": [
+            671.0117510915526,
+            751.5417724213585
+          ],
+          "source_to_allowance": [
+            0.00024103544773732984,
+            0.00024104065639618356
+          ],
+          "analytic_gate": false,
+          "full_gate": false,
+          "seconds": 4.560337353999785,
+          "isolation_seconds": 1.8232813360482396,
+          "axes": {
+            "t": 9,
+            "s": 10
+          }
+        }
+      ]
+    },
+    {
+      "case": "small_half_ball",
+      "baseline_pin": {
+        "path": "/workspace/genesis-ray-enclosure-small-half-ball-01/report.json",
+        "bytes": 29821,
+        "sha256": "97248c51820d922dba871ede6ab593169b256d77e48cbdfb1be4ed37ec5fdee2"
+      },
+      "baseline_nodes": 3196,
+      "baseline_error": [
+        9.839759728499792e-07,
+        9.519215315167091e-07
+      ],
+      "baseline_final_cells": 36,
+      "variants": [
+        {
+          "variant": "diagnosis",
+          "report_pin": {
+            "path": "/workspace/genesis-direction-diagnose-small-half-ball-01/report.json",
+            "bytes": 69207,
+            "sha256": "30e837735719d5ccdb45e38fed2a184cf8219fcd69ac94b56efd6a2973711cfe"
+          },
+          "source_pins": {
+            "path": "/workspace/genesis-direction-diagnose-small-half-ball-01/source_pins.json",
+            "bytes": 674,
+            "sha256": "34cb7c2de7620bcdf0fd8985dc61db76890ae7de6f163e8e5647043c12a7a630"
+          },
+          "ray_records_pin": {
+            "path": "/workspace/genesis-direction-diagnose-small-half-ball-01/ray_certificates.json",
+            "bytes": 187900,
+            "sha256": "e30d0de780aa582adc79494362f570be66e98d24fb657739da27d6537620b616"
+          },
+          "nodes": 3400,
+          "quadrature_requests": 4368,
+          "exact_node_reuses": 968,
+          "mixed_new_nodes": 1024,
+          "final_cells": 36,
+          "error": [
+            9.839759728499792e-07,
+            9.519215315167091e-07
+          ],
+          "coarse_true_error": [
+            6.541527481128053e-05,
+            5.428794797144836e-05
+          ],
+          "embedded_to_allowance": [
+            759.8645159980175,
+            616.6220434066418
+          ],
+          "source_to_allowance": [
+            0.00022786027225671604,
+            0.00022786027971594315
+          ],
+          "analytic_gate": true,
+          "full_gate": false,
+          "seconds": 3.4088873119981145,
+          "isolation_seconds": 0.6070527310039324,
+          "axes": {}
+        },
+        {
+          "variant": "eager",
+          "report_pin": {
+            "path": "/workspace/genesis-directional-small-half-ball-01/report.json",
+            "bytes": 54850,
+            "sha256": "50222c7476aed07ddc68547ebf21d8da5e96b8056cafd0ba67763ee5fc9dd0a6"
+          },
+          "source_pins": {
+            "path": "/workspace/genesis-directional-small-half-ball-01/source_pins.json",
+            "bytes": 674,
+            "sha256": "34cb7c2de7620bcdf0fd8985dc61db76890ae7de6f163e8e5647043c12a7a630"
+          },
+          "ray_records_pin": {
+            "path": "/workspace/genesis-directional-small-half-ball-01/ray_certificates.json",
+            "bytes": 319018,
+            "sha256": "af714b5bf71becfbf0e95252680f06a4eadf402263bb68c50a301427b213e9ef"
+          },
+          "nodes": 3234,
+          "quadrature_requests": 4224,
+          "exact_node_reuses": 990,
+          "mixed_new_nodes": 1056,
+          "final_cells": 18,
+          "error": [
+            9.874875062432506e-06,
+            9.842820621311272e-06
+          ],
+          "coarse_true_error": [
+            0.00013785184488415751,
+            0.00012681003864883523
+          ],
+          "embedded_to_allowance": [
+            1491.788202378853,
+            1463.0540646396628
+          ],
+          "source_to_allowance": [
+            0.00022785824535870744,
+            0.0002278582527142706
+          ],
+          "analytic_gate": false,
+          "full_gate": false,
+          "seconds": 3.8208266159999766,
+          "isolation_seconds": 1.0432218999812903,
+          "axes": {
+            "t": 7,
+            "s": 8
+          }
+        },
+        {
+          "variant": "lazy",
+          "report_pin": {
+            "path": "/workspace/genesis-directional-lazy-small-half-ball-01/report.json",
+            "bytes": 62881,
+            "sha256": "09f873e4a069bbf770a36ba9d36944ebd8f80f29103bc6ea08999e906c3ccaf6"
+          },
+          "source_pins": {
+            "path": "/workspace/genesis-directional-lazy-small-half-ball-01/source_pins.json",
+            "bytes": 674,
+            "sha256": "29a1cbaf371525e9551926abf5ac81d22ac928c60519fc849f43d0e0f66b8898"
+          },
+          "ray_records_pin": {
+            "path": "/workspace/genesis-directional-lazy-small-half-ball-01/ray_certificates.json",
+            "bytes": 696833,
+            "sha256": "b5f4608b1356c382b3fc7ddfc8d9975af0b0d3a5d8aca057dad0280bba3c9b45"
+          },
+          "nodes": 3314,
+          "quadrature_requests": 3928,
+          "exact_node_reuses": 614,
+          "mixed_new_nodes": 608,
+          "final_cells": 22,
+          "error": [
+            2.81725246716646e-06,
+            2.8448896241794453e-06
+          ],
+          "coarse_true_error": [
+            7.625256261730114e-05,
+            6.605735335255461e-05
+          ],
+          "embedded_to_allowance": [
+            698.2812587308475,
+            753.0574730385613
+          ],
+          "source_to_allowance": [
+            0.00022784312211907706,
+            0.0002278454447704247
+          ],
+          "analytic_gate": false,
+          "full_gate": false,
+          "seconds": 4.971880089000479,
+          "isolation_seconds": 2.193124961995636,
+          "axes": {
+            "t": 9,
+            "s": 10
+          }
+        }
+      ]
+    },
+    {
+      "case": "tangent_Gamma",
+      "baseline_pin": {
+        "path": "/workspace/genesis-ray-enclosure-tangent-Gamma-01/report.json",
+        "bytes": 48630,
+        "sha256": "b818053a548857b45b7b4acb40513487d74636450c8af02d57682f2141a97d27"
+      },
+      "baseline_nodes": 3366,
+      "baseline_error": [
+        2.6094468089206485e-08,
+        0.0
+      ],
+      "baseline_final_cells": 75,
+      "variants": [
+        {
+          "variant": "diagnosis",
+          "report_pin": {
+            "path": "/workspace/genesis-direction-diagnose-tangent-Gamma-01/report.json",
+            "bytes": 93080,
+            "sha256": "6931a7899a269ce7fd9dfc855a3c2328f2dba5de1ff673261eeeb2390d157ed8"
+          },
+          "source_pins": {
+            "path": "/workspace/genesis-direction-diagnose-tangent-Gamma-01/source_pins.json",
+            "bytes": 674,
+            "sha256": "34cb7c2de7620bcdf0fd8985dc61db76890ae7de6f163e8e5647043c12a7a630"
+          },
+          "ray_records_pin": {
+            "path": "/workspace/genesis-direction-diagnose-tangent-Gamma-01/ray_certificates.json",
+            "bytes": 346619,
+            "sha256": "661e07a637c19d9a69a712afc38c4cba69e9a5425c1175c00ac4b57b28f8017b"
+          },
+          "nodes": 3387,
+          "quadrature_requests": 4260,
+          "exact_node_reuses": 873,
+          "mixed_new_nodes": 912,
+          "final_cells": 75,
+          "error": [
+            2.6094468089206485e-08,
+            0.0
+          ],
+          "coarse_true_error": [
+            2.553760751021893e-05,
+            0.0
+          ],
+          "embedded_to_allowance": [
+            129.907763926809,
+            0
+          ],
+          "source_to_allowance": [
+            0.0001205270187995658,
+            0
+          ],
+          "analytic_gate": true,
+          "full_gate": false,
+          "seconds": 3.899689448000572,
+          "isolation_seconds": 0.6861524320083845,
+          "axes": {}
+        },
+        {
+          "variant": "eager",
+          "report_pin": {
+            "path": "/workspace/genesis-directional-tangent-Gamma-01/report.json",
+            "bytes": 81361,
+            "sha256": "46f6f0900f223c97b719110597a1d8236f25c30d1fff5530ee9b430d50b31686"
+          },
+          "source_pins": {
+            "path": "/workspace/genesis-directional-tangent-Gamma-01/source_pins.json",
+            "bytes": 674,
+            "sha256": "34cb7c2de7620bcdf0fd8985dc61db76890ae7de6f163e8e5647043c12a7a630"
+          },
+          "ray_records_pin": {
+            "path": "/workspace/genesis-directional-tangent-Gamma-01/ray_certificates.json",
+            "bytes": 520052,
+            "sha256": "af3040d37bdf575b8d75c610974a4bfd7602d4c4162144ca2f1e1417eb30e9dc"
+          },
+          "nodes": 3381,
+          "quadrature_requests": 4416,
+          "exact_node_reuses": 1035,
+          "mixed_new_nodes": 1104,
+          "final_cells": 36,
+          "error": [
+            2.6238908315251615e-08,
+            0.0
+          ],
+          "coarse_true_error": [
+            4.209757098188895e-05,
+            0.0
+          ],
+          "embedded_to_allowance": [
+            168.28533271035502,
+            0
+          ],
+          "source_to_allowance": [
+            0.0001205270172639695,
+            0
+          ],
+          "analytic_gate": true,
+          "full_gate": false,
+          "seconds": 3.924685630998283,
+          "isolation_seconds": 1.0225641499782796,
+          "axes": {
+            "t": 23,
+            "s": 10
+          }
+        },
+        {
+          "variant": "lazy",
+          "report_pin": {
+            "path": "/workspace/genesis-directional-lazy-tangent-Gamma-01/report.json",
+            "bytes": 95328,
+            "sha256": "1e0c9ed2da07d99912575634e1bdc39623ccc0d69084b829acbfb966fb6e0feb"
+          },
+          "source_pins": {
+            "path": "/workspace/genesis-directional-lazy-tangent-Gamma-01/source_pins.json",
+            "bytes": 674,
+            "sha256": "29a1cbaf371525e9551926abf5ac81d22ac928c60519fc849f43d0e0f66b8898"
+          },
+          "ray_records_pin": {
+            "path": "/workspace/genesis-directional-lazy-tangent-Gamma-01/ray_certificates.json",
+            "bytes": 771399,
+            "sha256": "cf5cdb17e4582665022d0b5c80e04332de4e0271102d33fd681bfa20b01e3ff2"
+          },
+          "nodes": 3379,
+          "quadrature_requests": 4022,
+          "exact_node_reuses": 643,
+          "mixed_new_nodes": 640,
+          "final_cells": 43,
+          "error": [
+            8.350705665614226e-09,
+            0.0
+          ],
+          "coarse_true_error": [
+            2.454884099894436e-05,
+            0.0
+          ],
+          "embedded_to_allowance": [
+            98.78507010170719,
+            0
+          ],
+          "source_to_allowance": [
+            0.00012052701536679198,
+            0
+          ],
+          "analytic_gate": true,
+          "full_gate": false,
+          "seconds": 4.612533571998938,
+          "isolation_seconds": 1.5042867680349445,
+          "axes": {
+            "t": 25,
+            "s": 15
+          }
+        }
+      ]
+    }
+  ],
+  "constraints": {
+    "relative_tolerance": 2e-06,
+    "orders": [
+      3,
+      5
+    ],
+    "embedded_factor": 8,
+    "max_line_evaluations": 3400,
+    "max_cells": 2000,
+    "max_depth": 24
+  },
+  "diagnosis_pin": {
+    "path": "analysis/genesis_volume_directional_validation/diagnosis.json",
+    "bytes": 16011,
+    "sha256": "96f075d60c1a22db65bd06b992badc1d9c85379c646cdcb670f339a35260cb33"
+  },
+  "independent_audit": {
+    "report_pin": {
+      "path": "analysis/genesis_volume_directional_validation/independent_audit.json",
+      "bytes": 9291,
+      "sha256": "cb67710165352430232bea267433d8fc266fae7ab2cdb005e6920edd4ada6fb2"
+    },
+    "rays": 1624,
+    "roots": 2520,
+    "zero_fiber_checks": 9744,
+    "final_cells": 306,
+    "total_source_calls_across_nine_small_runs": 30043,
+    "every_run_within_3400": true,
+    "exact_node_cache_and_all_mixed_cost_independently_verified": true
+  },
+  "tests": {
+    "passed": 108,
+    "new_directional_tests": 8,
+    "previous_tests": 100,
+    "seconds": 15.82,
+    "modules": [
+      "tests/test_genesis_volume_directional.py",
+      "tests/test_genesis_volume_ray_enclosures.py",
+      "tests/test_genesis_volume_ray_roots.py",
+      "tests/test_genesis_volume_ray_geometry.py",
+      "tests/test_genesis_volume_ray_audit.py",
+      "tests/test_genesis_volume_exact_event_mesh.py",
+      "tests/test_genesis_volume_sphere_event_mesh.py",
+      "tests/test_genesis_volume_bank_bounds.py",
+      "tests/test_genesis_volume_source_coverage.py",
+      "tests/test_genesis_volume_event_partition.py"
+    ]
+  },
+  "disposition": "Neither eager nor selected-parent mixed-rule refinement is adopted. The previous root-enclosure experiment remains the better tested scalar reference.",
+  "exact_blocker": "Coarse quadrature is genuinely underresolved, mostly in outer t. Mixed-rule direction diagnosis costs 18\u201333 percent of radial work and leaves too few refined cells. Lazy diagnosis reduces cost but worsens both half-ball true-volume errors beyond 2e-6; no full criterion passes.",
+  "next_hypothesis": "Diagnose directions from already computed 5x5 node data, without new radial evaluations, and validate the heuristic against actual parent-to-child contraction of the unchanged 3/5 error. Test on these same fixtures under the same cap before adoption; not implemented or validated.",
+  "general_tensor_prerequisite": "Analytic-fixture root bounds do not yet cover arbitrary tensor components or cancellation between banks.",
+  "four_original_controls_rerun": false,
+  "prior_failed_components_per_original_control": [
+    1992,
+    1992,
+    1992,
+    1992
+  ],
+  "new_failed_components_per_original_control": null,
+  "history_advanced": false,
+  "physical_admission": false,
+  "production_tensor_integrator_changed": false,
+  "published": false,
+  "source_version_note": "Diagnostic and eager reports keep their pre-lazy snapshots. Lazy reports match the current driver; source versions and all outputs were preserved.",
+  "implementation_pins": {
+    "analysis/genesis_volume_directional_validation/experiment.py": {
+      "path": "analysis/genesis_volume_directional_validation/experiment.py",
+      "bytes": 15745,
+      "sha256": "c9132c5322b8c49dae844db2679c84b3b2e8c777c6c2d8cd227d63b7a567a00c"
+    },
+    "analysis/genesis_volume_directional_validation/audit.py": {
+      "path": "analysis/genesis_volume_directional_validation/audit.py",
+      "bytes": 4860,
+      "sha256": "54732e1bd7ee35195ed88adc82bcd3493f4e747b3f7e5ccbc1abf0e8f98949a3"
+    },
+    "tests/test_genesis_volume_directional.py": {
+      "path": "tests/test_genesis_volume_directional.py",
+      "bytes": 4252,
+      "sha256": "6fe9f1f96b4cd15ae6565502894d920bc794278bbd061950b9accfb63041278a"
+    }
+  }
+}

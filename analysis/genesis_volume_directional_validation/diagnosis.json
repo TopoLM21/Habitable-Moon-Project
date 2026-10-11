@@ -1,0 +1,553 @@
+{
+  "cases": [
+    {
+      "case": "half_ball",
+      "report_pin": {
+        "path": "/workspace/genesis-direction-diagnose-half-ball-01/report.json",
+        "bytes": 68328,
+        "sha256": "b2bad4528efd6a0db2847d4ee52f49bee84e76e4d97ba245765eabb34fb39ee0"
+      },
+      "diagnosed_cells": 32,
+      "total_cells": 36,
+      "covered_embedded_fraction": [
+        0.99570746752149,
+        0.995714368631124
+      ],
+      "inner_s_indicators": [
+        7.848790154344291e-07,
+        8.249337472810091e-07
+      ],
+      "outer_t_indicators": [
+        6.1675281813687154e-06,
+        5.187736646665833e-06
+      ],
+      "outer_over_inner": [
+        7.85793486650296,
+        6.288670652358048
+      ],
+      "band_indicators": {
+        "Gamma_sphere_resultant -> Delta": {
+          "s": [
+            9.665121314426523e-16,
+            7.57914614250316e-17
+          ],
+          "t": [
+            1.1307222917724137e-07,
+            7.185814759782118e-09
+          ]
+        },
+        "domain_start -> Gamma_sphere_resultant": {
+          "s": [
+            7.848790154184968e-07,
+            8.249337472429976e-07
+          ],
+          "t": [
+            6.056597066682795e-06,
+            5.189568035972728e-06
+          ]
+        }
+      },
+      "coarse_true_error": [
+        5.94847059599622e-05,
+        5.066198822707237e-05
+      ],
+      "fine_true_error": [
+        1.48126151749983e-06,
+        1.4492087667373916e-06
+      ],
+      "sum_local_abs_over_abs_global_difference": [
+        3.2506270205701586,
+        3.026455776559262
+      ],
+      "truth_used_in_refinement": false
+    },
+    {
+      "case": "small_half_ball",
+      "report_pin": {
+        "path": "/workspace/genesis-direction-diagnose-small-half-ball-01/report.json",
+        "bytes": 69207,
+        "sha256": "30e837735719d5ccdb45e38fed2a184cf8219fcd69ac94b56efd6a2973711cfe"
+      },
+      "diagnosed_cells": 32,
+      "total_cells": 36,
+      "covered_embedded_fraction": [
+        0.9955395134911554,
+        0.995570696685274
+      ],
+      "inner_s_indicators": [
+        6.0991549163605145e-16,
+        6.099510889936884e-16
+      ],
+      "outer_t_indicators": [
+        5.742286639549227e-15,
+        4.834812484789103e-15
+      ],
+      "outer_over_inner": [
+        9.414888977727037,
+        7.926557673281132
+      ],
+      "band_indicators": {
+        "Gamma_sphere_resultant -> Delta": {
+          "s": [
+            2.8890421139921485e-25,
+            2.8672395078788445e-25
+          ],
+          "t": [
+            8.251085332365194e-17,
+            1.046500167255203e-17
+          ]
+        },
+        "domain_start -> Gamma_sphere_resultant": {
+          "s": [
+            6.099154914929548e-16,
+            6.099510888491981e-16
+          ],
+          "t": [
+            5.6601618123949254e-15,
+            4.8282489281853956e-15
+          ]
+        }
+      },
+      "coarse_true_error": [
+        6.541527481128053e-05,
+        5.428794797144836e-05
+      ],
+      "fine_true_error": [
+        9.839759728499792e-07,
+        9.519215315167091e-07
+      ],
+      "sum_local_abs_over_abs_global_difference": [
+        2.860970774191524,
+        2.790659336864218
+      ],
+      "truth_used_in_refinement": false
+    },
+    {
+      "case": "tangent_Gamma",
+      "report_pin": {
+        "path": "/workspace/genesis-direction-diagnose-tangent-Gamma-01/report.json",
+        "bytes": 93080,
+        "sha256": "6931a7899a269ce7fd9dfc855a3c2328f2dba5de1ff673261eeeb2390d157ed8"
+      },
+      "diagnosed_cells": 57,
+      "total_cells": 75,
+      "covered_embedded_fraction": [
+        0.9984491176961788,
+        1.0
+      ],
+      "inner_s_indicators": [
+        4.283796808626928e-08,
+        0.0
+      ],
+      "outer_t_indicators": [
+        2.106977118021702e-06,
+        0.0
+      ],
+      "outer_over_inner": [
+        49.18480525917019,
+        0
+      ],
+      "band_indicators": {
+        "domain_start -> Delta": {
+          "s": [
+            4.283796808626928e-08,
+            0.0
+          ],
+          "t": [
+            2.106977118021702e-06,
+            0.0
+          ]
+        }
+      },
+      "coarse_true_error": [
+        2.553760751021893e-05,
+        0.0
+      ],
+      "fine_true_error": [
+        2.6094468089206485e-08,
+        0.0
+      ],
+      "sum_local_abs_over_abs_global_difference": [
+        1.2730307324619012,
+        0
+      ],
+      "truth_used_in_refinement": false
+    }
+  ],
+  "conclusion": "Real coarse-rule underresolution, mainly outer t on broad event-free bands. Conservative factor eight and absolute local summation amplify but do not alone explain failure.",
+  "observed_parent_child_contraction": {
+    "cases": [
+      {
+        "case": "half_ball",
+        "directions": {
+          "t": {
+            "records": [
+              {
+                "refinement": 0,
+                "after_over_before": 0.010777066996712176
+              },
+              {
+                "refinement": 1,
+                "after_over_before": 0.051753417218292685
+              },
+              {
+                "refinement": 2,
+                "after_over_before": 0.05175341721829335
+              },
+              {
+                "refinement": 3,
+                "after_over_before": 0.5070910372286382
+              },
+              {
+                "refinement": 4,
+                "after_over_before": 0.5070910372286382
+              },
+              {
+                "refinement": 5,
+                "after_over_before": 0.9966360164435363
+              },
+              {
+                "refinement": 6,
+                "after_over_before": 0.9966388525379909
+              },
+              {
+                "refinement": 17,
+                "after_over_before": 0.16272727663135766
+              },
+              {
+                "refinement": 18,
+                "after_over_before": 0.16272893064590144
+              }
+            ],
+            "median": 0.16272893064590144,
+            "maximum": 0.9966388525379909,
+            "increases": 0
+          },
+          "s": {
+            "records": [
+              {
+                "refinement": 7,
+                "after_over_before": 0.050611108113071554
+              },
+              {
+                "refinement": 8,
+                "after_over_before": 0.050611108113062096
+              },
+              {
+                "refinement": 9,
+                "after_over_before": 0.23013296632611388
+              },
+              {
+                "refinement": 10,
+                "after_over_before": 0.23013296632612573
+              },
+              {
+                "refinement": 11,
+                "after_over_before": 0.1354829613321123
+              },
+              {
+                "refinement": 12,
+                "after_over_before": 0.13548296133211954
+              },
+              {
+                "refinement": 13,
+                "after_over_before": 0.1926593564601596
+              },
+              {
+                "refinement": 14,
+                "after_over_before": 0.1926593563031488
+              },
+              {
+                "refinement": 15,
+                "after_over_before": 0.11034315759787176
+              },
+              {
+                "refinement": 16,
+                "after_over_before": 0.11034315759788481
+              }
+            ],
+            "median": 0.1354829613321159,
+            "maximum": 0.23013296632612573,
+            "increases": 0
+          }
+        }
+      },
+      {
+        "case": "small_half_ball",
+        "directions": {
+          "t": {
+            "records": [
+              {
+                "refinement": 0,
+                "after_over_before": 0.006891186461520023
+              },
+              {
+                "refinement": 1,
+                "after_over_before": 0.0573810506213531
+              },
+              {
+                "refinement": 2,
+                "after_over_before": 0.057381050621353104
+              },
+              {
+                "refinement": 3,
+                "after_over_before": 0.30726668665259227
+              },
+              {
+                "refinement": 4,
+                "after_over_before": 0.3072666866525922
+              },
+              {
+                "refinement": 7,
+                "after_over_before": 1.4686132566361583
+              },
+              {
+                "refinement": 9,
+                "after_over_before": 1.468613256636524
+              },
+              {
+                "refinement": 17,
+                "after_over_before": 0.13803253807044036
+              },
+              {
+                "refinement": 18,
+                "after_over_before": 0.13803253807046975
+              }
+            ],
+            "median": 0.13803253807046975,
+            "maximum": 1.468613256636524,
+            "increases": 2
+          },
+          "s": {
+            "records": [
+              {
+                "refinement": 5,
+                "after_over_before": 0.09381365219620855
+              },
+              {
+                "refinement": 6,
+                "after_over_before": 0.09381365219969616
+              },
+              {
+                "refinement": 8,
+                "after_over_before": 0.23514427265684487
+              },
+              {
+                "refinement": 10,
+                "after_over_before": 0.23514494180624784
+              },
+              {
+                "refinement": 11,
+                "after_over_before": 0.21732137427359627
+              },
+              {
+                "refinement": 12,
+                "after_over_before": 0.21732137427363643
+              },
+              {
+                "refinement": 13,
+                "after_over_before": 0.2312197126801367
+              },
+              {
+                "refinement": 14,
+                "after_over_before": 0.23121971268008612
+              },
+              {
+                "refinement": 15,
+                "after_over_before": 0.09661942552624782
+              },
+              {
+                "refinement": 16,
+                "after_over_before": 0.09661942552625288
+              }
+            ],
+            "median": 0.21732137427361636,
+            "maximum": 0.23514494180624784,
+            "increases": 0
+          }
+        }
+      },
+      {
+        "case": "tangent_Gamma",
+        "directions": {
+          "t": {
+            "records": [
+              {
+                "refinement": 0,
+                "after_over_before": 0.0036672004758289446
+              },
+              {
+                "refinement": 1,
+                "after_over_before": 0.044665248057190965
+              },
+              {
+                "refinement": 2,
+                "after_over_before": 0.0446652480571934
+              },
+              {
+                "refinement": 3,
+                "after_over_before": 0.6982388924797892
+              },
+              {
+                "refinement": 4,
+                "after_over_before": 0.6982388924798197
+              },
+              {
+                "refinement": 12,
+                "after_over_before": 0.2078925934192883
+              },
+              {
+                "refinement": 14,
+                "after_over_before": 0.20789259341928654
+              },
+              {
+                "refinement": 15,
+                "after_over_before": 0.1755419043215323
+              },
+              {
+                "refinement": 16,
+                "after_over_before": 0.17554190432157166
+              },
+              {
+                "refinement": 17,
+                "after_over_before": 0.1681880113674116
+              },
+              {
+                "refinement": 18,
+                "after_over_before": 0.16818801136729322
+              },
+              {
+                "refinement": 19,
+                "after_over_before": 0.17850628181801023
+              },
+              {
+                "refinement": 20,
+                "after_over_before": 0.17850628181811534
+              },
+              {
+                "refinement": 21,
+                "after_over_before": 0.06833376459366435
+              },
+              {
+                "refinement": 22,
+                "after_over_before": 0.06833376459353356
+              },
+              {
+                "refinement": 23,
+                "after_over_before": 0.43258983447448707
+              },
+              {
+                "refinement": 24,
+                "after_over_before": 0.43258983447447624
+              },
+              {
+                "refinement": 25,
+                "after_over_before": 0.38774067099283627
+              },
+              {
+                "refinement": 26,
+                "after_over_before": 0.387740670992826
+              },
+              {
+                "refinement": 27,
+                "after_over_before": 0.03364223162485433
+              },
+              {
+                "refinement": 28,
+                "after_over_before": 0.033642231625215145
+              },
+              {
+                "refinement": 31,
+                "after_over_before": 0.21479640267180106
+              },
+              {
+                "refinement": 32,
+                "after_over_before": 0.2147964026714711
+              },
+              {
+                "refinement": 33,
+                "after_over_before": 0.23109524858581768
+              },
+              {
+                "refinement": 34,
+                "after_over_before": 0.23109524858600106
+              }
+            ],
+            "median": 0.17850628181811534,
+            "maximum": 0.6982388924798197,
+            "increases": 0
+          },
+          "s": {
+            "records": [
+              {
+                "refinement": 5,
+                "after_over_before": 0.0645624366760305
+              },
+              {
+                "refinement": 6,
+                "after_over_before": 0.0645624366760009
+              },
+              {
+                "refinement": 7,
+                "after_over_before": 0.0724729680633065
+              },
+              {
+                "refinement": 8,
+                "after_over_before": 0.0724729680633065
+              },
+              {
+                "refinement": 9,
+                "after_over_before": 0.18103631750949117
+              },
+              {
+                "refinement": 10,
+                "after_over_before": 0.18103631750961846
+              },
+              {
+                "refinement": 11,
+                "after_over_before": 3.266674011130837
+              },
+              {
+                "refinement": 13,
+                "after_over_before": 3.266674011132049
+              },
+              {
+                "refinement": 29,
+                "after_over_before": 0.06390453532555401
+              },
+              {
+                "refinement": 30,
+                "after_over_before": 0.06390453532552193
+              },
+              {
+                "refinement": 35,
+                "after_over_before": 0.02100819067697737
+              },
+              {
+                "refinement": 36,
+                "after_over_before": 0.02100819067698972
+              },
+              {
+                "refinement": 37,
+                "after_over_before": 0.040645844073252065
+              },
+              {
+                "refinement": 38,
+                "after_over_before": 0.04064584407321673
+              },
+              {
+                "refinement": 39,
+                "after_over_before": 0.015789571137899056
+              }
+            ],
+            "median": 0.0645624366760009,
+            "maximum": 3.266674011132049,
+            "increases": 2
+          }
+        }
+      }
+    ],
+    "method": "At the pre-split allowance, ratio of maximum normalized sum of child 8*abs(Q55-Q33) to maximum normalized parent observation; reconstruct refined children from subsequent parent rules, final children from their saved observed vector.",
+    "scope": "Observed indicator contraction from serialized values, not a bound on true quadrature error"
+  }
+}
