@@ -1,0 +1,218 @@
+{
+  "format": "genesis-Duffy-ray-hypothesis-1",
+  "base_commit": "97d600756c589f3bbdb4ff1e160f8869d073f35c",
+  "status": "PROMISING_LOCAL_IMPROVEMENT_ANALYTIC_GATE_FAILED",
+  "cases": [
+    {
+      "case": "half_ball",
+      "report_pin": {
+        "path": "/workspace/genesis-ray-half-ball-02/report.json",
+        "bytes": 6908,
+        "sha256": "e8562de3eab4dec4dabfb9eb3da180536b7fd4b2080e6efd76cd1cd2f975b4fe"
+      },
+      "ray_certificates_pin": {
+        "path": "/workspace/genesis-ray-half-ball-02/ray_certificates.json",
+        "bytes": 220795,
+        "sha256": "8214ca146f48a697f21c178bb5fcd865675262bac6ad6944ec31ec77359314dd"
+      },
+      "source_pins": {
+        "path": "/workspace/genesis-ray-half-ball-02/source_pins.json",
+        "bytes": 274,
+        "sha256": "46365da7ac874ece205909ae67a955f3ebd73235528751c25a664769fea5dcac"
+      },
+      "nodes": 3128,
+      "root_box_nodes": 1564,
+      "ray_partitions": 91,
+      "relative_errors_or_absolute_for_zero_truth": [
+        3.384322458184182e-06,
+        2.9218783576923985e-05
+      ],
+      "analytic_volume_gate_passed": false,
+      "embedded_failed_components": 2,
+      "seconds": 2.8948981249995995,
+      "root_isolation_seconds": 0.6799529410236573,
+      "kernel_seconds": 1.2600578120764112,
+      "uniform_root_box_mass_upper_m3": 1.5776948908305897e-11,
+      "root_box_bound_relative_to_half_ball": 4.821080458877118e-10,
+      "root_box_bound_used_in_integrator": false
+    },
+    {
+      "case": "small_half_ball",
+      "report_pin": {
+        "path": "/workspace/genesis-ray-small-half-ball-02/report.json",
+        "bytes": 6987,
+        "sha256": "93421f99b399de8b01f8374a09cb3d57b6ab498265682a81c33a21df9b150cca"
+      },
+      "ray_certificates_pin": {
+        "path": "/workspace/genesis-ray-small-half-ball-02/ray_certificates.json",
+        "bytes": 227823,
+        "sha256": "f2b0a08f663dbba87f5317aed4e670757539a9e78ce27b6d7da1fa919a35a2c0"
+      },
+      "source_pins": {
+        "path": "/workspace/genesis-ray-small-half-ball-02/source_pins.json",
+        "bytes": 274,
+        "sha256": "46365da7ac874ece205909ae67a955f3ebd73235528751c25a664769fea5dcac"
+      },
+      "nodes": 3128,
+      "root_box_nodes": 1564,
+      "ray_partitions": 91,
+      "relative_errors_or_absolute_for_zero_truth": [
+        3.13199927340174e-06,
+        2.93329280398053e-05
+      ],
+      "analytic_volume_gate_passed": false,
+      "embedded_failed_components": 2,
+      "seconds": 2.9628933710009733,
+      "root_isolation_seconds": 0.824965288014937,
+      "kernel_seconds": 1.223111152961792,
+      "uniform_root_box_mass_upper_m3": 1.3889218133918313e-20,
+      "root_box_bound_relative_to_half_ball": 4.5572098662014603e-10,
+      "root_box_bound_used_in_integrator": false
+    },
+    {
+      "case": "tangent_Gamma",
+      "report_pin": {
+        "path": "/workspace/genesis-ray-tangent-Gamma-02/report.json",
+        "bytes": 6905,
+        "sha256": "8a0ee4e118d8a5c8d859f72fbee1a5b88aeab3c8743c2d76922d54bbe5ddedaf"
+      },
+      "ray_certificates_pin": {
+        "path": "/workspace/genesis-ray-tangent-Gamma-02/ray_certificates.json",
+        "bytes": 280153,
+        "sha256": "6b26bd1d1e9aa0019c2140f532ac12d98d6133b61366d490028416f708f2f067"
+      },
+      "source_pins": {
+        "path": "/workspace/genesis-ray-tangent-Gamma-02/source_pins.json",
+        "bytes": 274,
+        "sha256": "46365da7ac874ece205909ae67a955f3ebd73235528751c25a664769fea5dcac"
+      },
+      "nodes": 3196,
+      "root_box_nodes": 1598,
+      "ray_partitions": 133,
+      "relative_errors_or_absolute_for_zero_truth": [
+        7.580116728059867e-08,
+        0.0
+      ],
+      "analytic_volume_gate_passed": true,
+      "embedded_failed_components": 1,
+      "seconds": 2.6394180040006177,
+      "root_isolation_seconds": 0.5695472169900313,
+      "kernel_seconds": 1.1665550211073423,
+      "uniform_root_box_mass_upper_m3": 1.5776948908305897e-11,
+      "root_box_bound_relative_to_half_ball": 4.821080458877118e-10,
+      "root_box_bound_used_in_integrator": false
+    }
+  ],
+  "tolerance": 2e-06,
+  "orders": [
+    3,
+    5
+  ],
+  "max_line_evaluations": 3400,
+  "max_cells": 2000,
+  "max_depth": 24,
+  "comparison": {
+    "baseline_report_pin": {
+      "path": "/workspace/genesis-exact-events-sphere-midpoint-01/report.json",
+      "bytes": 1213608,
+      "sha256": "bd825c99f36849988d107c485495e92a078ea1ff70a5b59db8e560e468ea4da5"
+    },
+    "baseline_errors": [
+      0.0019572433450153796,
+      0.0008630015867241212
+    ],
+    "baseline_nodes": 3332,
+    "error_improvement_factors": [
+      578.326494947977,
+      29.535849240681287
+    ],
+    "wall_clock_speedup_claimed": false,
+    "reason": "Prior timing unavailable; new scalar timings are not a tensor performance benchmark"
+  },
+  "tests": {
+    "passed": 91,
+    "new_ray_tests": 20,
+    "previous_regressions": 71,
+    "seconds": 15.5,
+    "modules": [
+      "tests/test_genesis_volume_ray_roots.py",
+      "tests/test_genesis_volume_ray_geometry.py",
+      "tests/test_genesis_volume_ray_audit.py",
+      "tests/test_genesis_volume_exact_event_mesh.py",
+      "tests/test_genesis_volume_sphere_event_mesh.py",
+      "tests/test_genesis_volume_bank_bounds.py",
+      "tests/test_genesis_volume_source_coverage.py",
+      "tests/test_genesis_volume_event_partition.py"
+    ]
+  },
+  "independent_audit": {
+    "report_pin": {
+      "path": "analysis/genesis_volume_ray_validation/independent_audit.json",
+      "bytes": 1648,
+      "sha256": "60a99fa0d499f0791829faac2b656e63bef3c40d5355fa814cd6e8d2e93c77ff"
+    },
+    "rays": 315,
+    "distinct_event_roots": 497,
+    "zero_fiber_sample_checks": 1890,
+    "method": "quadratic formula with integer-square-root enclosures; independent of Sturm and polynomial substitution",
+    "scope": "Recorded rays of analytic fixtures, including planned but unevaluated rays; not general deformed-source certification"
+  },
+  "concrete_blocker": "Both non-tangent analytic cases exceed 2e-6. Half of line evaluations are spent on retained root boxes whose total true volume has a tiny uniform bound. Embedded observations remain above allowances in every case.",
+  "next_step": "Replace full quadrature only on root boxes by a proven integral enclosure charged to the unchanged error budget; retain every positive region. First validate scalar cases. General tensor use additionally needs component bounds and cancellation-safe accumulation; then repeat the original four controls.",
+  "four_original_controls_rerun": false,
+  "previous_failed_components_per_control": [
+    1992,
+    1992,
+    1992,
+    1992
+  ],
+  "new_failed_components_per_control": null,
+  "production_tensor_integrator_changed": false,
+  "previous_rejected_strategies_enabled": false,
+  "history_advanced": false,
+  "physical_admission": false,
+  "published": false,
+  "preliminary_runs_preserved": [
+    "/workspace/genesis-ray-half-ball-01",
+    "/workspace/genesis-ray-small-half-ball-01",
+    "/workspace/genesis-ray-tangent-Gamma-01"
+  ],
+  "preliminary_run_note": "01 used a stricter minimum-based allowance. 02 reuses the original max-based allowance and directed global source aggregation; final values and node counts unchanged. 02 is the comparison record.",
+  "implementation_pins": {
+    "tectonics/genesis_volume_ray_roots.py": {
+      "path": "tectonics/genesis_volume_ray_roots.py",
+      "bytes": 6104,
+      "sha256": "da97951f02caa5d2a51305a70e31417d8fc21331055739b113ef14913056ef27"
+    },
+    "analysis/genesis_volume_ray_validation/experiment.py": {
+      "path": "analysis/genesis_volume_ray_validation/experiment.py",
+      "bytes": 12584,
+      "sha256": "e14f23d4f6b2d01cd411eb3aaedd13a38097cf09ede637754981221e2cf28e20"
+    },
+    "analysis/genesis_volume_ray_validation/audit.py": {
+      "path": "analysis/genesis_volume_ray_validation/audit.py",
+      "bytes": 5307,
+      "sha256": "38f4120f13caebb9e7b91f9ec07e68e58a527b1406878ad451b190986da96c9e"
+    },
+    "analysis/genesis_volume_ray_validation/root_box_bound.py": {
+      "path": "analysis/genesis_volume_ray_validation/root_box_bound.py",
+      "bytes": 983,
+      "sha256": "c210f011b443e0fb063eb7f403dd3453eff98afe1519f546deca2a850d102531"
+    },
+    "tests/test_genesis_volume_ray_roots.py": {
+      "path": "tests/test_genesis_volume_ray_roots.py",
+      "bytes": 2681,
+      "sha256": "49d12de42687a7ec33f8302510b552271bbdaf6285285301d89d9929ad8bd2ee"
+    },
+    "tests/test_genesis_volume_ray_geometry.py": {
+      "path": "tests/test_genesis_volume_ray_geometry.py",
+      "bytes": 2673,
+      "sha256": "52e46df8f87ebb9a4d892c0387b06f367b7c3445fb89e20abbcc0e062b6bca0f"
+    },
+    "tests/test_genesis_volume_ray_audit.py": {
+      "path": "tests/test_genesis_volume_ray_audit.py",
+      "bytes": 1466,
+      "sha256": "d4f6cf1866eae7bd08f2eef638202e4c3414b03ab1495a97b840631c28c4e84d"
+    }
+  }
+}
