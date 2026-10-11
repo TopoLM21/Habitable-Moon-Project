@@ -1,0 +1,145 @@
+{
+  "status": "passed_independent_common_motion_intrinsic_geometry_audit",
+  "started_utc": "2026-10-02T05:21:17.778070+00:00",
+  "finished_utc": "2026-10-02T05:21:21.569712+00:00",
+  "seconds": 3.7916538340068655,
+  "control_directory": "analysis/geometric_intrinsic_validation/released_common_motion_control",
+  "code_sha256_before": {
+    "tectonics/geometric_intrinsic_geometry.py": "4382275a99081cbdad07af417ad62bda097910e5d144348c50babfd38b7501b2",
+    "tectonics/geometric_intrinsic_surface.py": "8336ab51413d1f605c71fd575088bfe5a4e572f44445656559827c56c49306df",
+    "analysis/geometric_intrinsic_validation/run_intrinsic_control.py": "783c429e285344929aacdeb28af92fada52215978a2f8e8b2e0d72c861bc1b47",
+    "analysis/geometric_intrinsic_validation/verify_intrinsic_geometry.py": "b72a49fac06001b1c54e92261640d8fa4ce915f17a6dbae69bbfb1db965f3620",
+    "tests/test_geometric_intrinsic_geometry.py": "33f7ba21e66f7875eb971feaf4320e017cbfb3210b828192542d30f163405cc1",
+    "tests/test_geometric_intrinsic_surface.py": "68c0b6025d9a4102be1ce39dae5a4009603602fcd762456326d9bea884dd5195"
+  },
+  "code_sha256_after": {
+    "tectonics/geometric_intrinsic_geometry.py": "4382275a99081cbdad07af417ad62bda097910e5d144348c50babfd38b7501b2",
+    "tectonics/geometric_intrinsic_surface.py": "8336ab51413d1f605c71fd575088bfe5a4e572f44445656559827c56c49306df",
+    "analysis/geometric_intrinsic_validation/run_intrinsic_control.py": "783c429e285344929aacdeb28af92fada52215978a2f8e8b2e0d72c861bc1b47",
+    "analysis/geometric_intrinsic_validation/verify_intrinsic_geometry.py": "b72a49fac06001b1c54e92261640d8fa4ce915f17a6dbae69bbfb1db965f3620",
+    "tests/test_geometric_intrinsic_geometry.py": "33f7ba21e66f7875eb971feaf4320e017cbfb3210b828192542d30f163405cc1",
+    "tests/test_geometric_intrinsic_surface.py": "68c0b6025d9a4102be1ce39dae5a4009603602fcd762456326d9bea884dd5195"
+  },
+  "code_unchanged": true,
+  "artifact_and_pose_audit": {
+    "control_report_sha256": "5e2c463598853ef7e4b13f37cec9f1f4f73decdeacd90fb2465d3d204fa69289",
+    "source_checkpoint_sha256": "7cc7a8fe4defaeeed678ce614c0ac165ce52916fb4d60392d879bfc012089782",
+    "source_reference_exact": true,
+    "source_fragment_count": 16,
+    "source_material_count": 14,
+    "projection_checks": 64,
+    "independent_precision": 220,
+    "max_relative_oracle_rotation_area_drift": "8.83498166853328203082910862636888310051066E-178",
+    "max_relative_saved_body_area_error": 1.1102230246251565e-16,
+    "min_positive_oracle_world_area_sr": "2.877094441045105915512535939717372423720556981510222606300306170254124812517727109365992266120690070664653094234040865641330067908970919414214301876905715663163489831390456676471781808288549571897229107713092813566924718E-48",
+    "three_native_byte_pairs_exact": true,
+    "checkpoints": [
+      {
+        "checkpoint": "initial.json",
+        "steps": 0,
+        "fragments": 16,
+        "full_pose_and_all_reservoirs_exact": true
+      },
+      {
+        "checkpoint": "partial.json",
+        "steps": 4,
+        "fragments": 16,
+        "full_pose_and_all_reservoirs_exact": true
+      },
+      {
+        "checkpoint": "direct_final.json",
+        "steps": 8,
+        "fragments": 16,
+        "full_pose_and_all_reservoirs_exact": true
+      },
+      {
+        "checkpoint": "resumed_final.json",
+        "steps": 8,
+        "fragments": 16,
+        "full_pose_and_all_reservoirs_exact": true
+      }
+    ],
+    "checkpoint_sha256": {
+      "direct_final.json": "6b2cd25df5305e9b2934df1d4cba8d7a0ae4eb8e1e6e1d1dbad7acc46b77a3b9",
+      "final_resaved.json": "6b2cd25df5305e9b2934df1d4cba8d7a0ae4eb8e1e6e1d1dbad7acc46b77a3b9",
+      "initial.json": "dec9dbfd49685969e5069368c44640ac51e8d8fd2e663d384d205e9b76948ca0",
+      "partial.json": "f8bce7741af63d6ae56f83d1b14ae31a155aa20d5eb0b28d9dc8a678769ddd01",
+      "partial_resaved.json": "f8bce7741af63d6ae56f83d1b14ae31a155aa20d5eb0b28d9dc8a678769ddd01",
+      "resumed_final.json": "6b2cd25df5305e9b2934df1d4cba8d7a0ae4eb8e1e6e1d1dbad7acc46b77a3b9"
+    }
+  },
+  "extreme_angles": [
+    {
+      "omega_z": 1.0,
+      "dt_myr": 1.0,
+      "selected_precision": 83,
+      "binary64_projection_exact": true
+    },
+    {
+      "omega_z": 1e+308,
+      "dt_myr": 1e+308,
+      "selected_precision": 699,
+      "binary64_projection_exact": true
+    },
+    {
+      "omega_z": 1e-308,
+      "dt_myr": 1e-308,
+      "selected_precision": 81,
+      "binary64_projection_exact": true
+    },
+    {
+      "omega_z": 5e-324,
+      "dt_myr": 1.0,
+      "selected_precision": 81,
+      "binary64_projection_exact": true
+    },
+    {
+      "omega_z": 1.0,
+      "dt_myr": 5e-324,
+      "selected_precision": 81,
+      "binary64_projection_exact": true
+    },
+    {
+      "omega_z": 1e+300,
+      "dt_myr": 1e-300,
+      "selected_precision": 83,
+      "binary64_projection_exact": true
+    },
+    {
+      "omega_z": 1e-300,
+      "dt_myr": 1e+300,
+      "selected_precision": 83,
+      "binary64_projection_exact": true
+    },
+    {
+      "omega_z": -1e+308,
+      "dt_myr": 1e+308,
+      "selected_precision": 699,
+      "binary64_projection_exact": true
+    }
+  ],
+  "ambient_contexts": [
+    {
+      "host_precision": 1,
+      "host_rounding": "ROUND_DOWN",
+      "exact": true
+    },
+    {
+      "host_precision": 2,
+      "host_rounding": "ROUND_CEILING",
+      "exact": true
+    },
+    {
+      "host_precision": 7,
+      "host_rounding": "ROUND_DOWN",
+      "exact": true
+    }
+  ],
+  "scope": {
+    "new_loaded_underthrust_steps": 0,
+    "native_differential_cuts_tested": false,
+    "new_physical_material_pairs_tested": false,
+    "certified_projection_bounds": false,
+    "reused_1284_baseline_is_not_a_new_full_profile": true
+  }
+}

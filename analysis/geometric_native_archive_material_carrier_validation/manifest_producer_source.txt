@@ -1,0 +1,70 @@
+"""Close only discovered new-component artifacts, or the final readback."""
+from pathlib import Path
+import argparse
+import hashlib
+import json
+
+ROOT=Path('/workspace/Habitable-Moon-Project')
+PARENT=ROOT/'analysis/geometric_native_archive_material_carrier_validation'
+FINAL=ROOT/'analysis/geometric_native_archive_material_carrier_final_readback'
+
+def encoded(value):
+    return json.dumps(value,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+
+def digest(path):
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+def row(path):
+    assert path.is_file() and not path.is_symlink()
+    return dict(bytes=path.stat().st_size,sha256=digest(path))
+
+def seal(path,key):
+    value=json.loads(path.read_bytes())
+    assert value[key]==hashlib.sha256(encoded({k:v for k,v in value.items() if k!=key})).hexdigest()
+    return value
+
+def run(phase,release_name):
+    if phase=='component':
+        gate=seal(PARENT/release_name/'report.json','report_sha256')
+        assert gate['status']=='PASS' and gate['source_count']==887
+        audit=seal(PARENT/'independent_audit/report.json','audit_sha256')
+        assert audit['status']=='PASS'
+        assert audit['source_packet_raw_sha256']==digest(PARENT/release_name/'native_control/source_packet.json')
+        paths=[p for p in PARENT.rglob('*') if p.is_file() and '__pycache__' not in p.parts and p.suffix!='.pyc']
+        paths.extend(ROOT/name for name in gate['additional_source_sha256'] if not (ROOT/name).is_relative_to(PARENT))
+        target=PARENT/'artifact_manifest.json'
+        assert not target.exists()
+        files={str(path.relative_to(ROOT)):row(path) for path in sorted(set(paths))}
+        result=dict(format='native-archive-material-carrier-component-manifest-1',
+            status='PASS_COMPONENT_ARTIFACTS_CLOSED',current_release=release_name,
+            source_count=887,physical_scope=gate['current_physical_scope'],
+            closed_component_file_count=len(files),files=files,
+            gate_report_selfseal=gate['report_sha256'],independent_audit_selfseal=audit['audit_sha256'],
+            executing_producer_source_raw_sha256=digest(__file__))
+        key='manifest_sha256'
+    else:
+        expected={'readback_source.txt','readback.json','console.log'}
+        assert {str(p.relative_to(FINAL)) for p in FINAL.rglob('*') if p.is_file()}==expected
+        readback=seal(FINAL/'readback.json','audit_sha256')
+        assert readback['status']=='PASS_FINAL887_EVIDENCE_READBACK_ONLY'
+        assert digest(FINAL/'readback_source.txt')==readback['executing_readback_source_raw_sha256']
+        current=seal(PARENT/'artifact_manifest.json','manifest_sha256')
+        assert digest(PARENT/'artifact_manifest.json')==readback['current_manifest_raw_sha256']
+        assert current['manifest_sha256']==readback['current_manifest_selfseal']
+        assert (FINAL/'readback.json').read_bytes()==(FINAL/'console.log').read_bytes()
+        result=dict(format='native-archive-material-carrier-final-archive-1',
+            status='PASS_FINAL887_READBACK_ARCHIVE_CLOSED',total_closed_file_count=4,
+            files={name:row(FINAL/name) for name in sorted(expected)},
+            readback_selfseal=readback['audit_sha256'],
+            executing_producer_source_raw_sha256=digest(__file__))
+        target=FINAL/'archive.json';key='archive_sha256'
+    result[key]=hashlib.sha256(encoded(result)).hexdigest()
+    with target.open('xb') as stream:stream.write(encoded(result)+b'\n')
+    print(json.dumps(dict(status=result['status'],path=str(target),
+        raw_sha256=digest(target),selfseal=result[key],
+        closed_file_count=result.get('total_closed_file_count',result.get('closed_component_file_count'))),sort_keys=True))
+
+if __name__=='__main__':
+    parser=argparse.ArgumentParser();parser.add_argument('--phase',choices=('component','readback'),required=True)
+    parser.add_argument('--release',default='release_validation_01')
+    args=parser.parse_args();run(args.phase,args.release)

@@ -1,0 +1,5 @@
+from analysis.geometric_native_common_strain_projection_validation.native_control import cold_contexts, reference_precision_equivalence
+import time
+t=time.perf_counter();print('START dual typed restore',flush=True)
+contexts=cold_contexts();print('PASS eight dual native contexts',len(contexts),'seconds',time.perf_counter()-t,flush=True)
+print('REFERENCE_EQUIVALENCE',reference_precision_equivalence(),flush=True)

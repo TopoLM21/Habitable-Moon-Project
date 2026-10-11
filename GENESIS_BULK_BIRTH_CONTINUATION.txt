@@ -1,0 +1,150 @@
+Объёмное происхождение материала из настоящего Genesis
+2026-10-09, fix/genesis-mantle-convection
+
+Цель остаётся прежней: новорождённая расплавленная планета без твёрдой
+поверхности и заданных плит, горячая плотная водная атмосфера, охлаждение,
+конденсация океана и образование первых плит. Подробная тектоника продолжает
+рассчитанную историю. Материковый химический состав требует своей физической
+дифференциации; ни отдельный механический octant-test, ни новая зрелая
+инициализация не заменяют рождения материала.
+
+Что теперь рассчитывается
+
+tectonics/genesis_bulk_birth.py ведёт пространственную историю рождения
+материала существующих проводящих колонок подробной ветки Mobile/Fault.
+Это не scalar birth-record поверхностного резервуара Starter и не история
+образования контактных связей Coupled. Все три имеют разные физические меры.
+Новая запись не добавляет массы или тепла к прежним глобальным резервуарам.
+Проводящие колонки остаются односторонней моделью с отдельным тепловым ledger.
+
+Рождение определяется настоящим surface-connected solidus-front из текущего
+producer. Ранняя оболочка тоньше расстояния до первого центра thermal cell;
+поэтому front разделяет материальный слой на интервалы внутри ячейки.
+Глубина хранится в фиксированной координате доли массы колонки q, с границами
+исходных слоёв по их массам. Отношение массы к текущей площади задаёт нынешнюю
+расчётную толщину, а не новый material ID или реконструированное 3D placement.
+
+У каждой когорты есть постоянный source/face/layer/cohort ID, исходный и живой
+массовый интервал, принятый временной bracket рождения, solidus temperature,
+радиус и chord-face metric/frame известной birth geometry. Внутреннее время
+пересечения внутри шага не придумано: bracket — между принятыми thermal
+endpoints. Геометрия задана действующим thermal-first расщеплением: old mesh
+до следующего механического исправления. Это reference chart, не восстановленная
+natural metric с вязкими/пластическими деформациями.
+
+При отступе front переплавляется именно глубинное перекрытие. Запись рождения
+остаётся в каталоге, live interval уменьшается. Повторное затвердевание создаёт
+новую идентичность. Well-mixed scalar removal из Starter здесь не применяется.
+До establishment замкнутой оболочки тепловое рождение сохраняется, но движение
+и деформации отдельных твёрдых рафтов остаются отсутствующими в producer.
+Их механическая история не объявляется рассчитанным нулём.
+
+История неизменяема и привязана к исходным параметрам, топологии и массам.
+Каждый принятый step записывает front/time interval, rejected candidate не
+публикуется. При загрузке полностью повторяются birth/retirement события,
+проверяются массы, IDs, coverage, geometry, clocks и accepted counts.
+Coupled сохраняет точный prefix source history, исходные birth records и IDs;
+дальнейшее переплавление может только уменьшать живую часть старой когорты.
+
+Сохранения и экспорт
+
+Mobile теперь genesis-mobile-0.2, Fault genesis-faults-0.2,
+Coupled genesis-coupled-0.3. Предыдущие форматы не содержат bulk birth history;
+новый loader требует повтора от расплава вместо заполнения неизвестной истории.
+Starter остаётся 0.2, его ранее добавленная surface history не изменена.
+
+Искусственные cold/geotherm механические fixtures явно задают
+bulk_birth_history=None. Это признак отсутствующего пути рождения, а не
+производственный старт планеты. Строгий physical-source exporter такое
+состояние отказывается принимать. Отсутствующее поле нового checkpoint также
+не заменяется dataclass default. Точные прежние bytes сохранены отдельно.
+
+tectonics/genesis_bulk_export.py создаёт собственный source DTO из настоящего
+Fault checkpoint. Пакет содержит исходные bytes/base64/SHA, параметры, полную
+пространственную birth history, layer/cohort IDs, нынешнюю геометрию, массы,
+энтальпию, velocity и существующую shell elastic memory. Readback повторно
+загружает embedded source и пересоздаёт весь DTO; подменённые поля отвергаются
+после reseal. Его интерфейс не выдаётся за старый native943 importer.
+Текущий plate-owner catalogue в Fault отсутствует, ownership остаётся None.
+
+Допустимое настоящее 3D вычисление — instantaneous plane-stress extension
+нынешней усреднённой shell elastic memory [exx, eyy, gamma_xy]:
+  exy = gamma_xy/2;
+  ezz = -nu*(exx+eyy)/(1-nu);
+  sxz = syz = szz = 0 по явно объявленному plane-stress замыканию.
+Поворот в мировой базис сохраняет энергию и сопряжение stress/strain.
+До несущей оболочки такое вычисление отсутствует. Это не полная историческая
+3D strain/prestress и не согласование толщины с transverse deformation.
+Исторические 3D strain/prestress/placement/natural metric явно None,
+physical_force_work_admission=False, новый native equilibrium не объявлен.
+
+Реальные проверки
+
+Настоящий canonical control запускает FaultModel.initial() из configs/genesis_moon.yaml:
+2300 K, 228.385 бар пара, нулевая твёрдая масса, без океана и зрелых плит.
+Разрешение уменьшено до 80 faces для контроля; canonical physics 20 кПа сохранена.
+В 0.8660000000000007 млн лет уже есть твёрдый precursor, но ещё нет замкнутой
+несущей оболочки. Его реальный checkpoint загружен и продолжен: всё состояние,
+тепло, орбита и birth history точно совпали с прямым формированием.
+В 0.8680000000000005 млн лет есть несущая оболочка 62.05–63.42 м,
+480 bulk cohorts и 6.614814289511227e19 кг её твёрдого материала; 438 принятых
+интервалов рождения, переплавления в этом коротком опыте нет.
+
+Перенос в Coupled сохраняет весь source birth record точно. Один год движения,
+save/load и следующий год совпадают по всем состояниям, контактным историям,
+bulk records, heat/orbit и diagnostics; итоговая история содержит 440 интервалов.
+Строгий source export и полное чтение из embedded checkpoint также совпали.
+Контроль exit0/stderr0, captured process 42.17945413698908 с.
+
+Сравнение с предыдущим настоящим canonical Fault/Coupled control сохраняет
+побитово все прежние 23 Fault arrays и 39 arrays каждого Coupled checkpoint,
+тепловые/орбитальные состояния и прежние scalar ledgers. Силы и прежняя
+механическая эволюция не перенастроены ради новой истории.
+
+Отдельный файловый verifier использует только stdlib/NumPy, без physics imports
+проекта. Собственным алгоритмом повторены рост фронта, разбиение слоёв,
+глубинное retirement и refreezing, проверены source bytes/IDs/metrics/массы,
+перенос и prefix истории, независимый 3D Hooke law и energy в мировом базисе.
+Actual readback PASS, exit0/stderr0, stdout содержит полный JSON report;
+после JSON parsing данные точно совпадают с файлом, pretty-format bytes отличаются.
+Captured process 4.9288825480034575 с. В конечном Coupled snapshot уже 640
+bulk cohorts, 440 интервалов и 6.618086000647071e19 кг твёрдого материала.
+Report: evidence/independent/report.json.
+
+Итоговая targeted series: 314 PASS за 39.93 с, captured process 41.167002828995464 с,
+exit0/stderr0. Включены новые birth/export tests, Mobile/Fault/Contact/Coupled,
+ориентация разломов, growth/restart/topology/CLI/GUI и thermal-version guards.
+Независимые тесты проверяют mass-coordinate retirement/refreeze, subcell
+coverage, immutable restart, engineering shear, 3D Hooke law, energy и rotations.
+Предварительный незахваченный pytest дал 108 PASS/2 FAIL: loader ошибочно
+классифицировал новое typed history как scalar. Классификация исправлена,
+история проверяется своим отдельным строгим validator; итоговые проверки выше
+выполнены после исправления. Отсутствие предварительных failures не заявляется.
+
+Synthetic worst case, не физический расчёт: 80 faces, 440 растущих endpoints,
+37120 cohorts; advance 14.24 с, serialization 3.63 с, строгий archive replay
+7.27 с, восстановленное состояние равно исходному. Обычный append доверяет
+только проверенному immutable parent; свежие constructed/load states проходят
+полный replay, сериализованного trust flag нет.
+
+Полные фактические sources, snapshots, stdout/stderr, checkpoints, originals
+и независимая сверка находятся в analysis/genesis_bulk_birth_validation/evidence.
+Исторические Genesis-origin и native943 архивы не переписаны.
+
+Остаток пункта 1
+
+Пункт 1 остаётся открытым по тем же трём условиям:
+1. Полная физическая объёмная память/преднапряжения, перенос сил и работы,
+   физический оператор и новое равновесие. Источник depth material IDs и births
+   теперь есть; cohort-local stresses, owner binding в native, paid work и solve
+   ещё не реализованы.
+2. Допуск всех физических пар на всём интервале, включая C5->C1.
+3. Новое принятое продолжение с независимой временной работой, балансами и restart.
+
+Следующий конкретный результат внутри условия 1: рассчитывать Maxwell memory
+каждой когорты по её собственной temperature/viscosity и stress-free activation,
+интегрировать stress/tangent/energy/work по её живому объёму в существующий Newton.
+Общую усреднённую память нельзя раздать когортам задним числом. После этого
+связывать физический source с новым подробным оператором и проверять силы/работу.
+Пункты 2–6 общего плана остаются открыты. Химическое образование континентальной
+коры и ранняя динамика отдельных рафтов этим результатом не реализованы.

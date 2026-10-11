@@ -1,0 +1,59 @@
+"""Capture real evidence-only subprocess execution outside the frozen repository packages."""
+import argparse, hashlib, json, subprocess, time
+from pathlib import Path
+
+def digest(path):
+    h=hashlib.sha256()
+    with Path(path).open('rb') as f:
+        for block in iter(lambda:f.read(1024*1024),b''):
+            h.update(block)
+    return h.hexdigest()
+
+def enc(value):
+    return json.dumps(value,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+
+p=argparse.ArgumentParser()
+p.add_argument('--directory',required=True)
+p.add_argument('--source',required=True)
+p.add_argument('--report')
+p.add_argument('command',nargs=argparse.REMAINDER)
+a=p.parse_args()
+root=Path('/workspace/Habitable-Moon-Project')
+directory=Path(a.directory).resolve()
+assert directory.is_relative_to('/workspace') and not directory.is_relative_to(root)
+directory.mkdir(exist_ok=False)
+source=Path(a.source).resolve()
+source_before=digest(source)
+snapshot=directory/'executed_source_snapshot.txt'
+snapshot.write_bytes(source.read_bytes())
+assert digest(snapshot)==source_before
+command=a.command
+if command and command[0]=='--':
+    command=command[1:]
+assert command
+out=directory/'console.log'
+err=directory/'stderr.log'
+start=time.monotonic()
+with out.open('xb') as stdout,err.open('xb') as stderr:
+    child=subprocess.run(command,cwd=root,stdout=stdout,stderr=stderr)
+facts=dict(format='joint-preparation-byte-closure-actual-execution-facts-1',
+    command=command,actual_exit_code=child.returncode,
+    actual_seconds=time.monotonic()-start,
+    actual_stdout_path=str(out),actual_stderr_path=str(err),
+    actual_stdout_raw_sha256=digest(out),actual_stderr_raw_sha256=digest(err),
+    actual_stderr_bytes=err.stat().st_size,
+    executed_source_path=str(source),executed_source_raw_sha256=source_before,
+    executed_source_after_raw_sha256=digest(source),
+    executed_source_snapshot=str(snapshot),
+    executed_capture_source_path=str(Path(__file__).resolve()),
+    executed_capture_source_raw_sha256=digest(__file__))
+if a.report:
+    report=Path(a.report).resolve()
+    facts['report_path']=str(report)
+    if report.is_file():
+        facts['report_raw_sha256']=digest(report)
+        facts['actual_stdout_equals_report']=out.read_bytes()==report.read_bytes()
+facts['sha256']=hashlib.sha256(enc(facts)).hexdigest()
+(directory/'execution_facts.json').write_bytes(enc(facts)+b'\n')
+print(enc(facts).decode())
+raise SystemExit(child.returncode)

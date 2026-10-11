@@ -1,0 +1,462 @@
+"""Stdlib final875 evidence readback; no producer/helper or physics execution.
+
+Run only after the root approves and gate03, independent audit and final
+manifest are complete. Old1633 full readback is a saved BEFORE-math receipt;
+this script rechecks its recorded dependencies and nine release closures.
+It does not rerun the ancestral baseline, source algebra, tests or quadrature.
+"""
+from pathlib import Path
+import argparse, ast, hashlib, json, sys, time
+
+ROOT = Path('/workspace/Habitable-Moon-Project')
+PARENT = ROOT / 'analysis/geometric_native_common_strain_projection_validation'
+PRIOR = ROOT / 'analysis/geometric_native_common_material_transfer_validation'
+RELEASE = PARENT / 'release_validation_03'
+MAP = '13c19fe10056af9ab621e2c8a23e63ad36b301c95e121a6835cead019378e385'
+MAP_RAW = '8f7608219c398a05913d96e80baf685b997dccff466ee9cf9eb1aa89b8124675'
+OLD_MAP = '5ba59a6e8231e7cf2408b2614b19601cc631bd204eb4f436b4241cf4fa535915'
+OLD_MAP_RAW = '340716e8267d63974e3d8c27a94ac53af60d90e6f9f2382b86874a00c0c3fe9b'
+FAILED_MAP = '48b687f8dc90dabb8fa94601a21c17afa06ded701e48c04d393cc8f390bf5474'
+FAILED_MAP_RAW = '0ee53a76f90a5a8b84f7d1e663b2e2fc16ae1185ed4ce575b193acff084ae251'
+OLD_MANIFEST_RAW = 'c2a57aa83f8b93ff03bf45779aae830897244e40060cc8604b54510cf253685a'
+OLD_MANIFEST_SEAL = 'eadbc0fe6f437975128973ae52290dcf85d7ebce7ab5faa7cd503b964884edfc'
+AUDITOR_SHA = '74090c447f56ff25f8bf3fc94b28dce3b468c3a19954ef16c4bf85550566e22e'
+BASELINE_PINS = {
+    'baseline_871_bootstrap_source.txt': '429397f48f08ce1fb9df2ef57b1c4c983b48bc6c6850c18b0400620a9a5a7752',
+    'baseline_871_bootstrap.json': '116db75c6dd43da6404bc458d628dccd684eb65362e03ad583cd704a6eff68cb',
+    'baseline_871_reusable_source.txt': '3ad31801a86dd4b3a0a00751a867c3fb0c77d49b50d15dd4435e17b1fb5966fc',
+}
+ADDED = frozenset((
+    'tectonics/geometric_native_common_strain_projection.py',
+    'tests/test_geometric_native_common_strain_projection.py',
+    'analysis/geometric_native_common_strain_projection_validation/native_control.py',
+    'analysis/geometric_native_common_strain_projection_validation/validate.py',
+))
+OUTPUTS = frozenset(('pytest.log', 'control_console.log', 'native_control/report.json', 'native_control/source_packet.json'))
+SCOPE = 'COMMON_BANKWISE_COLD_STRAIN_PROJECTION_REDUCTION_COMPONENT_ONLY'
+REMAINING = [
+    'Whole-source physical material and old-force/prestress/work handover, HOT law/mean chart, loads/drag and NEW mixed equilibrium',
+    'Whole-clock all-pair admission including reverse C5 to C1',
+    'Accepted continuation with independent path work, balances and joint restart',
+]
+ANCESTRY = (
+    ('analysis/geometric_native_affine_body_validation/release_validation_01', 826, 39, 'a5ed86778a9388a56df2c89d758d17795c861c118bd4de66c6be0b5400b084db'),
+    ('analysis/geometric_native_cold_body_validation/release_validation_01', 833, 20, 'a0843a4f9d886e61125eae0bda9c4964b60d54736b539776b1d32d46d8e56a67'),
+    ('analysis/geometric_native_common_reference_validation/release_validation_01', 841, 36, '9898f31f796006a7791140bf1c290c0e1605555a12e476e1585ce3f5992a743f'),
+    ('analysis/geometric_native_common_contact_validation/release_validation_01', 847, 25, 'e8ffabb1a29c1fb021e94fe53e815b6ad8d16ea14e9103a30b9f7428ac9ab847'),
+    ('analysis/geometric_native_common_contact_force_validation/release_validation_02', 853, 19, '1d7a6ac8113a408aab6764f1c4a9fccb09f8d48184f5118434fc685574504313'),
+    ('analysis/geometric_native_common_contact_transfer_validation/release_validation_01', 859, 21, '1b5e1695f2ddfa8ea879619e91cde6b4cfb2c7c7c89e34db04148d8765f7f9ae'),
+    ('analysis/geometric_native_common_source_allocation_validation/release_validation_02', 863, 17, '7df81606a168656cd51208a71d7ad425714751f736d9ed4ca50218263e106f95'),
+    ('analysis/geometric_native_common_source_carrier_validation/release_validation_02', 867, 18, '47b5c882c041f5a2c6d460c71eae11091a6217ff78a0df14af9b57f214ba633e'),
+    ('analysis/geometric_native_common_material_transfer_validation/release_validation_01', 871, 14, '44d12b3fb10edfef90a83c50385278b45135d1b051a5733d2b2f7d98f2755b56'),
+)
+
+# Replaced below during preparation with the explicit observed/future73 list.
+MANIFEST_FILES = ('analysis/geometric_native_common_strain_projection_validation/baseline_871_bootstrap.json', 'analysis/geometric_native_common_strain_projection_validation/baseline_871_bootstrap_console.txt', 'analysis/geometric_native_common_strain_projection_validation/baseline_871_bootstrap_source.txt', 'analysis/geometric_native_common_strain_projection_validation/baseline_871_prior867_readback.json', 'analysis/geometric_native_common_strain_projection_validation/baseline_871_reusable_source.txt', 'analysis/geometric_native_common_strain_projection_validation/baseline_after_gate.json', 'analysis/geometric_native_common_strain_projection_validation/baseline_before_independent_audit.json', 'analysis/geometric_native_common_strain_projection_validation/bootstrap_attempt01_preserved/bootstrap_source.txt', 'analysis/geometric_native_common_strain_projection_validation/bootstrap_attempt01_preserved/failure_console.log', 'analysis/geometric_native_common_strain_projection_validation/bootstrap_attempt01_preserved/preservation.json', 'analysis/geometric_native_common_strain_projection_validation/bootstrap_attempt01_preserved/prior867_readback.json', 'analysis/geometric_native_common_strain_projection_validation/cauchy_projection_intersection_probe.json', 'analysis/geometric_native_common_strain_projection_validation/cauchy_projection_intersection_probe_console.txt', 'analysis/geometric_native_common_strain_projection_validation/cauchy_projection_intersection_probe_source.txt', 'analysis/geometric_native_common_strain_projection_validation/cauchy_pure_math_guard.json', 'analysis/geometric_native_common_strain_projection_validation/cauchy_pure_math_guard_console.txt', 'analysis/geometric_native_common_strain_projection_validation/cauchy_pure_math_guard_final_test_reconciliation.json', 'analysis/geometric_native_common_strain_projection_validation/cauchy_pure_math_guard_source.txt', 'analysis/geometric_native_common_strain_projection_validation/diagnostic_development_failures_preserved/preservation.json', 'analysis/geometric_native_common_strain_projection_validation/diagnostic_development_failures_preserved/runtime_attempt02_console.txt', 'analysis/geometric_native_common_strain_projection_validation/diagnostic_development_failures_preserved/runtime_attempt02_source.txt', 'analysis/geometric_native_common_strain_projection_validation/diagnostic_development_failures_preserved/syntax_attempt01_console.txt', 'analysis/geometric_native_common_strain_projection_validation/diagnostic_development_failures_preserved/syntax_attempt01_source.txt', 'analysis/geometric_native_common_strain_projection_validation/dual_restore_preflight.json', 'analysis/geometric_native_common_strain_projection_validation/dual_restore_preflight_console.txt', 'analysis/geometric_native_common_strain_projection_validation/dual_restore_preflight_executed_controller.txt', 'analysis/geometric_native_common_strain_projection_validation/dual_restore_preflight_source.txt', 'analysis/geometric_native_common_strain_projection_validation/failed_release01_preserved/baseline_after_failed_gate.json', 'analysis/geometric_native_common_strain_projection_validation/failed_release01_preserved/core_source.txt', 'analysis/geometric_native_common_strain_projection_validation/failed_release01_preserved/frozen_source_map_875.json', 'analysis/geometric_native_common_strain_projection_validation/failed_release01_preserved/gate_console.log', 'analysis/geometric_native_common_strain_projection_validation/failed_release01_preserved/native_control_source.txt', 'analysis/geometric_native_common_strain_projection_validation/failed_release01_preserved/preservation.json', 'analysis/geometric_native_common_strain_projection_validation/failed_release01_preserved/test_source.txt', 'analysis/geometric_native_common_strain_projection_validation/failed_release01_preserved/validation_wrapper_source.txt', 'analysis/geometric_native_common_strain_projection_validation/failed_release02_preserved/baseline_after_failed_gate.json', 'analysis/geometric_native_common_strain_projection_validation/failed_release02_preserved/core_source.txt', 'analysis/geometric_native_common_strain_projection_validation/failed_release02_preserved/frozen_source_map_875.json', 'analysis/geometric_native_common_strain_projection_validation/failed_release02_preserved/gate_console.log', 'analysis/geometric_native_common_strain_projection_validation/failed_release02_preserved/independent_audit_pre_gate02_source.txt', 'analysis/geometric_native_common_strain_projection_validation/failed_release02_preserved/native_control_source.txt', 'analysis/geometric_native_common_strain_projection_validation/failed_release02_preserved/preservation.json', 'analysis/geometric_native_common_strain_projection_validation/failed_release02_preserved/test_source.txt', 'analysis/geometric_native_common_strain_projection_validation/failed_release02_preserved/validation_wrapper_source.txt', 'analysis/geometric_native_common_strain_projection_validation/frozen_source_map_875.json', 'analysis/geometric_native_common_strain_projection_validation/independent_audit.json', 'analysis/geometric_native_common_strain_projection_validation/independent_audit_console.log', 'analysis/geometric_native_common_strain_projection_validation/independent_audit_source.txt', 'analysis/geometric_native_common_strain_projection_validation/initial_precision_mismatch_probe.json', 'analysis/geometric_native_common_strain_projection_validation/initial_precision_mismatch_probe_console.txt', 'analysis/geometric_native_common_strain_projection_validation/initial_precision_mismatch_probe_source.txt', 'analysis/geometric_native_common_strain_projection_validation/native_control.py', 'analysis/geometric_native_common_strain_projection_validation/normal_branch_diagnostic.json', 'analysis/geometric_native_common_strain_projection_validation/normal_branch_diagnostic_console.txt', 'analysis/geometric_native_common_strain_projection_validation/normal_branch_diagnostic_source.txt', 'analysis/geometric_native_common_strain_projection_validation/release_validation_01/pytest.log', 'analysis/geometric_native_common_strain_projection_validation/release_validation_01/report.json', 'analysis/geometric_native_common_strain_projection_validation/release_validation_02/pytest.log', 'analysis/geometric_native_common_strain_projection_validation/release_validation_02/report.json', 'analysis/geometric_native_common_strain_projection_validation/release_validation_03/control_console.log', 'analysis/geometric_native_common_strain_projection_validation/release_validation_03/native_control/report.json', 'analysis/geometric_native_common_strain_projection_validation/release_validation_03/native_control/source_packet.json', 'analysis/geometric_native_common_strain_projection_validation/release_validation_03/pytest.log', 'analysis/geometric_native_common_strain_projection_validation/release_validation_03/report.json', 'analysis/geometric_native_common_strain_projection_validation/test_fraction_polynomial_oracle_source.txt', 'analysis/geometric_native_common_strain_projection_validation/test_pure_math_guard.json', 'analysis/geometric_native_common_strain_projection_validation/test_pure_math_guard_console.txt', 'analysis/geometric_native_common_strain_projection_validation/test_pure_math_guard_development_note.txt', 'analysis/geometric_native_common_strain_projection_validation/test_pure_math_guard_final_source_reconciliation.json', 'analysis/geometric_native_common_strain_projection_validation/test_pure_math_guard_source.txt', 'analysis/geometric_native_common_strain_projection_validation/validate.py', 'tectonics/geometric_native_common_strain_projection.py', 'tests/test_geometric_native_common_strain_projection.py')
+
+
+def enc(value):
+    return json.dumps(value, sort_keys=True, separators=(',', ':'), ensure_ascii=False, allow_nan=False).encode()
+
+
+def vd(value):
+    return hashlib.sha256(enc(value)).hexdigest()
+
+
+def exact(actual, expected, label):
+    assert type(actual) is type(expected) and actual == expected, label
+    if type(actual) in (dict, list, tuple):
+        assert enc(actual) == enc(expected), label + ' recursive literal kinds'
+
+
+def digest(path):
+    h = hashlib.sha256()
+    with Path(path).open('rb') as stream:
+        for block in iter(lambda: stream.read(1 << 20), b''):
+            h.update(block)
+    return h.hexdigest()
+
+
+def read(path):
+    return json.loads(Path(path).read_bytes())
+
+
+def sealed(path, key):
+    value = read(path)
+    assert type(value) is dict and key in value, str(path)
+    body = dict(value)
+    exact(body.pop(key), vd(body), 'selfseal ' + str(path))
+    return value
+
+
+def source_map():
+    return {str(p.relative_to(ROOT)): digest(p)
+        for directory in ('tectonics', 'tests', 'scripts', 'analysis')
+        for p in sorted((ROOT / directory).rglob('*.py'))}
+
+
+def add_pin(pins, path, pin):
+    path = Path(path).resolve()
+    assert path.is_relative_to(ROOT) or path.is_relative_to(Path('/tmp')), str(path)
+    assert type(pin) is str and len(pin) == 64, str(path)
+    name = str(path)
+    if name in pins:
+        exact(pins[name], pin, 'overlapping raw pin ' + name)
+    pins[name] = pin
+
+
+def files_from_manifest(manifest, pins):
+    for name, row in manifest['files'].items():
+        path = (ROOT / name).resolve()
+        assert path.is_relative_to(ROOT) and str(path.relative_to(ROOT)) == name, name
+        assert type(row['bytes']) is int and row['bytes'] >= 0, name
+        exact(path.stat().st_size, row['bytes'], 'literal artifact bytes ' + name)
+        add_pin(pins, path, row['sha256'])
+
+
+def closure(directory, wrapper, pins):
+    exact(set(wrapper['outputs']), set(OUTPUTS), 'strict four outputs ' + str(directory))
+    actual = {str(p.relative_to(directory)) for p in directory.rglob('*') if p.is_file()}
+    exact(actual, set(OUTPUTS) | {'report.json'}, 'strict five files ' + str(directory))
+    for name, row in wrapper['outputs'].items():
+        path = directory / name
+        exact(path.stat().st_size, row['bytes'], 'closed output bytes ' + str(path))
+        add_pin(pins, path, row['sha256'])
+
+
+def saved_baseline(path, current_map, pins):
+    receipt = sealed(path, 'audit_sha256')
+    for key, value in (
+        ('status', 'PASS_IMMUTABLE871_WITH_DECLARED_SOURCE_ADDITIONS_ONLY'),
+        ('baseline_source_count', 871), ('current_python_source_count', 875),
+        ('source_map_canonical_sha256', OLD_MAP), ('frozen_map_raw_sha256', OLD_MAP_RAW),
+        ('current_python_source_map_sha256', current_map), ('all871_python_sources_unchanged', True),
+        ('preserved_old1633_artifact_chain', True), ('recorded_dependency_count', 51),
+        ('complete_declared875_source_map_independently_checked_before_after', True),
+        ('legacy_source_projection_disclosed', True), ('physics_formula_reexecuted', False),
+        ('project_imports', False), ('pytest_or_control_or_solve_or_quadratures_reexecuted', False),
+        ('auditor_source_sha256', BASELINE_PINS['baseline_871_reusable_source.txt']),
+    ):
+        exact(receipt[key], value, 'saved baseline ' + key)
+    exact(receipt['declared_additional_source_paths'], sorted(ADDED), 'saved exact four declared paths')
+    for name, pin in receipt['recorded_dependency_raw_sha256'].items():
+        add_pin(pins, name, pin)
+    return receipt
+
+
+def literal_constants(path):
+    tree = ast.parse(Path(path).read_bytes(), filename=str(path))
+    values = {}
+    for node in tree.body:
+        if isinstance(node, ast.Assign) and len(node.targets) == 1 and isinstance(node.targets[0], ast.Name):
+            try:
+                values[node.targets[0].id] = ast.literal_eval(node.value)
+            except (TypeError, ValueError):
+                if isinstance(node.value, ast.Call) and isinstance(node.value.func, ast.Name) and node.value.func.id == 'dict':
+                    try:
+                        values[node.targets[0].id] = {k.arg: ast.literal_eval(k.value) for k in node.value.keywords if k.arg is not None}
+                    except (TypeError, ValueError):
+                        pass
+    return values, tree
+
+
+def typed_seal(value, name, schemas, constants, fmt):
+    fields = set(schemas[name])
+    exact(set(value), fields | {'format', 'scope', 'model'} | set(constants['_FLAGS']), 'typed complete keys ' + name)
+    exact(value['format'], fmt, 'typed format ' + name)
+    exact(value['scope'], SCOPE, 'typed scope ' + name)
+    exact(value['model'], constants['MODEL'], 'typed model ' + name)
+    for key, flag in constants['_FLAGS'].items():
+        exact(value[key], flag, 'typed scope flag ' + key)
+    body = {key: value[key] for key in schemas[name] if key != 'binding_sha256'}
+    exact(value['binding_sha256'], vd(body), 'complete typed binding seal ' + name)
+
+
+def run(output_path, *, artifact_manifest_path=None, document_paths=()):
+    started = time.perf_counter()
+    output_path = Path(output_path).resolve()
+    assert output_path.is_relative_to(Path('/tmp')) and output_path.suffix == '.json'
+    assert len(MANIFEST_FILES) == len(set(MANIFEST_FILES)) == 73
+    manifest_path = Path(artifact_manifest_path) if artifact_manifest_path else PARENT / 'artifact_manifest.json'
+    manifest_path = manifest_path.resolve()
+    document_file_paths = frozenset(Path(path).resolve() for path in document_paths)
+    for path in document_file_paths:
+        assert path.is_relative_to(ROOT) and path.is_file()
+        assert str(path.relative_to(ROOT)) not in MANIFEST_FILES, 'Documents are separately declared evidence'
+    pins = {}
+    producer_pin = digest(__file__)
+    before = source_map()
+    frozen = read(PARENT / 'frozen_source_map_875.json')
+    exact(len(before), 875, 'complete actual875 count')
+    exact(before, frozen, 'complete actual875 equals final freeze')
+    exact(vd(frozen), MAP, 'final875 canonical map')
+    exact(digest(PARENT / 'frozen_source_map_875.json'), MAP_RAW, 'final875 raw map')
+    old = read(PRIOR / 'frozen_source_map_871.json')
+    exact(len(old), 871, 'old871 count')
+    exact(vd(old), OLD_MAP, 'old871 canonical map')
+    add_pin(pins, PRIOR / 'frozen_source_map_871.json', OLD_MAP_RAW)
+    exact(set(frozen) - set(old), set(ADDED), 'exact four new875 Python paths')
+    for name, pin in old.items():
+        exact(before[name], pin, 'old871 source unchanged ' + name)
+
+    manifest = sealed(manifest_path, 'manifest_sha256')
+    add_pin(pins, manifest_path, digest(manifest_path))
+    exact(set(manifest['files']), set(MANIFEST_FILES), 'exact explicit73 manifest files')
+    for key, value in (('status', 'PASS_COMPONENT_EVIDENCE_CLOSED'), ('source_count', 875),
+        ('closed_component_file_count', 73), ('closed_release_output_count', 4),
+        ('source_map_canonical_sha256', MAP), ('source_map_raw_sha256', MAP_RAW),
+        ('physical_candidate_status', SCOPE), ('accepted_original_native_intervals', 1),
+        ('accepted_new_native_intervals', 0), ('original_point_1_remaining_work_blocks', 1),
+        ('original_point_1_completed', False)):
+        exact(manifest[key], value, 'final manifest metadata ' + key)
+    files_from_manifest(manifest, pins)
+    expected_parent = {name.removeprefix(str(PARENT.relative_to(ROOT)) + '/') for name in MANIFEST_FILES if name.startswith(str(PARENT.relative_to(ROOT)) + '/')}
+    actual_parent = {str(p.relative_to(PARENT)) for p in PARENT.rglob('*') if p.is_file() and '__pycache__' not in p.parts and p.suffix != '.pyc' and p.resolve() != manifest_path and p.resolve() not in document_file_paths}
+    exact(actual_parent, expected_parent, 'complete current validation parent file closure')
+    for name, pin in BASELINE_PINS.items():
+        add_pin(pins, PARENT / name, pin)
+    add_pin(pins, PARENT / 'baseline_871_prior867_readback.json', '5fdda3135fe9b9e99e79292c1fe9efaf5f06ef4adb534c441cf7e6bc30739f76')
+    exact(digest(PARENT / 'baseline_871_bootstrap_console.txt'), BASELINE_PINS['baseline_871_bootstrap.json'], 'exact bootstrap console/report bytes')
+
+    wrapper = sealed(RELEASE / 'report.json', 'report_sha256')
+    native = sealed(RELEASE / 'native_control/report.json', 'report_sha256')
+    packet = sealed(RELEASE / 'native_control/source_packet.json', 'packet_sha256')
+    audit = sealed(PARENT / 'independent_audit.json', 'audit_packet_sha256')
+    for key, value in (('status', 'PASS'), ('source_count', 875), ('pytest_counts', {'passed': 14}),
+        ('pytest_exit_code', 0), ('source_map_before_sha256', MAP), ('source_map_after_sha256', MAP),
+        ('prior_source_map_sha256', OLD_MAP), ('verified_prior_python_sources', 871),
+        ('verified_prior_artifacts', 1633), ('changed_python_paths', []), ('historical_tests_reexecuted', False),
+        ('execution_mode', 'same_python_process'), ('pytest_import_mode', 'importlib'),
+        ('prior_artifacts_and_python_sources_preserved_after', True), ('physical_candidate_status', SCOPE)):
+        exact(wrapper[key], value, 'fresh gate03 receipt ' + key)
+    exact(wrapper['format'], 'native-common-bankwise-strain-projection-same-process-validation-1', 'gate03 format')
+    exact(wrapper['verified_current_baseline_evidence'], BASELINE_PINS, 'gate03 pinned baseline evidence')
+    exact(wrapper['added_python_sources'], {k: frozen[k] for k in sorted(ADDED)}, 'gate03 four Python pins')
+    closure(RELEASE, wrapper, pins)
+    exact(native['status'], 'PASS', 'native status')
+    exact(native['format'], 'native-common-bankwise-cold-strain-projection-control-1', 'native format')
+    exact(packet['format'], 'native-common-bankwise-cold-strain-projection-packet-1', 'packet format')
+    for key, expected in (
+        ('source_packet_sha256', packet['packet_sha256']),
+        ('global_queries_sha256', vd(packet['global_queries'])),
+        ('authentic_cold_contexts_sha256', vd(packet['authentic_cold_contexts'])),
+        ('reference_precision_equivalence_sha256', packet['reference_precision_equivalence']['equivalence_sha256']),
+        ('strain_projection_sha256', packet['strain_projection']['binding_sha256']),
+        ('material_transfer_sha256', packet['material_transfer']['binding_sha256'])):
+        exact(native[key], expected, 'native/packet identity ' + key)
+    exact(len(packet['global_queries']), 2, 'complete two bankwise queries')
+    exact(len(packet['authentic_cold_contexts']), 8, 'complete eight genuine contexts')
+    constants, core_ast = literal_constants(ROOT / 'tectonics/geometric_native_common_strain_projection.py')
+    auditor_constants, _ = literal_constants(PARENT / 'independent_audit_source.txt')
+    schemas = auditor_constants['SCHEMAS']
+    core_schemas = {node.name: tuple(item.target.id for item in node.body if isinstance(item, ast.AnnAssign) and isinstance(item.target, ast.Name)) for node in core_ast.body if isinstance(node, ast.ClassDef)}
+    exact(schemas, {name: core_schemas[name] for name in schemas}, 'six frozen core/auditor DTO schemas')
+    typed_seal(packet['strain_projection'], 'NativeCommonStrainProjectionSystem', schemas, constants, constants['FORMAT'])
+    for row, branch in zip(packet['global_queries'], ('relaxed_zero_strength_shear', 'frozen_elastic_predictor')):
+        exact(set(row), {'arguments', 'response'}, 'query envelope')
+        exact(row['arguments'], dict(coordinate_increments=packet['strain_projection']['bound_coordinate_increments'], branch=branch, precision=96), 'literal complete92 query arguments')
+        response = row['response']
+        typed_seal(response, 'NativeCommonStrainProjectionResponse', schemas, constants, constants['RESPONSE_FORMAT'])
+        for key in ('coordinate_increments', 'branch', 'precision'):
+            exact(response[key], row['arguments'][key], 'whole response/query association ' + key)
+        exact(response['system_binding_sha256'], packet['strain_projection']['binding_sha256'], 'response/full system identity')
+
+    for key, value in (('status', 'PASS'), ('audit_scope', SCOPE), ('final_python_sources', 875),
+        ('unchanged_prior_python_sources', 871), ('fresh_tests', 14), ('source_map_canonical_sha256', MAP),
+        ('frozen_source_map_raw_sha256', MAP_RAW), ('source_map_before_after_identical', True),
+        ('preserved_old1633_artifact_chain', True), ('preserved_871_closed_manifest_file_count', 23),
+        ('preserved_871_recorded_dependency_count', 51), ('independent_global_query_count', 2),
+        ('preserved_authoritative_ancestry_release_closure_count_after_math', 9),
+        ('project_imports', False), ('old_pytest_or_control_reexecuted', False),
+        ('historical_force_solver_reexecuted', False), ('old_tensor_quadratures_reexecuted', False),
+        ('old_contact_force_or_Hessian_quadratures_reexecuted', False),
+        ('accepted_original_native_intervals', 1), ('accepted_new_native_intervals', 0),
+        ('original_point_1_remaining_work_blocks', 1), ('remaining_physical_condition_count', 3),
+        ('original_point_1_completed', False), ('physical_source_material_handover_certified', False),
+        ('new_mixed_force_equilibrium_certified', False), ('whole_clock_all_pair_admission_authorized', False),
+        ('executing_producer_raw_sha256_checked_before_after', True), ('auditor_script_sha256', AUDITOR_SHA)):
+        exact(audit[key], value, 'completed independent audit ' + key)
+    exact(audit['remaining_physical_conditions'], REMAINING, 'same one block/three conditions')
+    add_pin(pins, PARENT / 'independent_audit_source.txt', AUDITOR_SHA)
+    for filename, rawkey, sealkey, value in (
+        ('report.json', 'wrapper_raw_sha256', 'wrapper_selfseal', wrapper['report_sha256']),
+        ('native_control/report.json', 'native_raw_sha256', 'native_selfseal', native['report_sha256']),
+        ('native_control/source_packet.json', 'source_packet_raw_sha256', 'source_packet_selfseal', packet['packet_sha256'])):
+        add_pin(pins, RELEASE / filename, audit[rawkey])
+        exact(audit[sealkey], value, 'audit/gate03 seal association ' + sealkey)
+    for filename, pin in audit['initial_current_release_raw_sha256'].items():
+        add_pin(pins, filename, pin)
+    exact(set(audit['initial_current_release_raw_sha256']), {str(RELEASE / name) for name in OUTPUTS | {'report.json'}}, 'audit exact current5 initial pins')
+    for key, value in (('wrapper_selfseal', wrapper['report_sha256']), ('native_selfseal', native['report_sha256']),
+        ('packet_selfseal', packet['packet_sha256']), ('independent_audit_selfseal', audit['audit_packet_sha256']),
+        ('exact_independent_producer_raw_sha256', AUDITOR_SHA)):
+        exact(manifest[key], value, 'manifest live receipt seal ' + key)
+    console_lines = (PARENT / 'independent_audit_console.log').read_text().splitlines()
+    exact(json.loads(next(line for line in reversed(console_lines) if line.startswith('{'))), audit, 'audit exact final console JSON')
+
+    after_gate = saved_baseline(PARENT / 'baseline_after_gate.json', MAP, pins)
+    before_audit = saved_baseline(PARENT / 'baseline_before_independent_audit.json', MAP, pins)
+    exact(audit['baseline871_readback_selfseal'], before_audit['audit_sha256'], 'audit saved before-math baseline seal')
+    add_pin(pins, PARENT / 'baseline_before_independent_audit.json', audit['baseline871_readback_raw_sha256'])
+    old_manifest = sealed(PRIOR / 'artifact_manifest.json', 'manifest_sha256')
+    exact(old_manifest['manifest_sha256'], OLD_MANIFEST_SEAL, 'old871 manifest seal')
+    exact(len(old_manifest['files']), 23, 'old871 manifest23 count')
+    add_pin(pins, PRIOR / 'artifact_manifest.json', OLD_MANIFEST_RAW)
+    files_from_manifest(old_manifest, pins)
+    prior_audit = sealed(PRIOR / 'independent_audit.json', 'audit_packet_sha256')
+    exact(len(prior_audit['dependency_raw_sha256']), 51, 'exact recorded51 prior dependency pins')
+    for name, pin in prior_audit['dependency_raw_sha256'].items():
+        add_pin(pins, name, pin)
+        exact(audit['dependency_raw_sha256'][name], pin, 'full final audit retains prior51 pin ' + name)
+    for name, pin in audit['dependency_raw_sha256'].items():
+        add_pin(pins, name, pin)
+    for name, count, tests, pin in ANCESTRY:
+        directory = ROOT / name
+        old_wrapper = sealed(directory / 'report.json', 'report_sha256')
+        for key, expected in (('status', 'PASS'), ('source_count', count), ('pytest_counts', {'passed': tests})):
+            exact(old_wrapper[key], expected, 'preserved authoritative ancestry ' + str(count) + ' ' + key)
+        add_pin(pins, directory / 'report.json', pin)
+        exact(audit['ancestry_release_wrapper_raw_sha256'][str(directory / 'report.json')], pin, 'audit exact ancestral wrapper pin')
+        closure(directory, old_wrapper, pins)
+
+    failed = sealed(PARENT / 'failed_release01_preserved/preservation.json', 'preservation_sha256')
+    exact(failed['status'], 'PRESERVED_FAILED_FROZEN_ATTEMPT', 'failed01 remains failed preservation')
+    exact(len(failed['files']), 9, 'failed01 exactly nine preserved payload files')
+    exact(failed['source_map_canonical_sha256'], FAILED_MAP, 'failed01 old875 canonical freeze')
+    failed_map = read(PARENT / 'failed_release01_preserved/frozen_source_map_875.json')
+    exact(len(failed_map), 875, 'failed875 count')
+    exact(vd(failed_map), FAILED_MAP, 'failed875 canonical map')
+    add_pin(pins, PARENT / 'failed_release01_preserved/frozen_source_map_875.json', FAILED_MAP_RAW)
+    exact(set(failed_map), set(frozen), 'both875 map path catalogues preserved')
+    changed = {name for name in frozen if failed_map[name] != frozen[name]}
+    exact(changed, {'tectonics/geometric_native_common_strain_projection.py', 'tests/test_geometric_native_common_strain_projection.py'}, 'only core/test changed between frozen attempts')
+    for name, row in failed['files'].items():
+        add_pin(pins, ROOT / name, row['sha256'])
+        exact((ROOT / name).stat().st_size, row['bytes'], 'failed preserved literal bytes ' + name)
+    bad_wrapper = sealed(PARENT / 'release_validation_01/report.json', 'report_sha256')
+    exact(bad_wrapper['status'], 'FAIL', 'failed native gate01 not promoted')
+    exact(bad_wrapper['pytest_counts'], {'failed': 10, 'passed': 4}, 'literal failed01 test counts')
+    exact(bad_wrapper['report_sha256'], failed['wrapper_selfseal'], 'failed01 wrapper seal')
+    exact({str(f.relative_to(PARENT / 'release_validation_01')) for f in (PARENT / 'release_validation_01').rglob('*') if f.is_file()}, {'pytest.log', 'report.json'}, 'failed01 exact partial output closure')
+    saved_baseline(PARENT / 'failed_release01_preserved/baseline_after_failed_gate.json', FAILED_MAP, pins)
+    for source_name, archive_name in (
+        ('tectonics/geometric_native_common_strain_projection.py', 'core_source.txt'),
+        ('tests/test_geometric_native_common_strain_projection.py', 'test_source.txt'),
+        ('analysis/geometric_native_common_strain_projection_validation/native_control.py', 'native_control_source.txt'),
+        ('analysis/geometric_native_common_strain_projection_validation/validate.py', 'validation_wrapper_source.txt')):
+        add_pin(pins, PARENT / 'failed_release01_preserved' / archive_name, failed_map[source_name])
+    failed02 = sealed(PARENT / 'failed_release02_preserved/preservation.json', 'preservation_sha256')
+    exact(failed02['status'], 'PRESERVED_FAILED_FROZEN_ATTEMPT', 'failed02 remains failed preservation')
+    exact(len(failed02['files']), 10, 'failed02 exactly ten preserved payload files')
+    failed02_map = read(PARENT / 'failed_release02_preserved/frozen_source_map_875.json')
+    exact(len(failed02_map), 875, 'failed02 source count')
+    exact(vd(failed02_map), '342fcc03cff43fb649f410f1530105899b50c35fd535687773c38b6a777b39f0', 'failed02 old875 canonical map')
+    add_pin(pins, PARENT / 'failed_release02_preserved/frozen_source_map_875.json', '15fce46feaa399b8e86ee15b1f4c47592d03d46aac743cce0cf9f472373b3a5b')
+    exact(set(failed02_map), set(frozen), 'failed02/current875 same full path catalogue')
+    exact({name for name in frozen if failed02_map[name] != frozen[name]}, {'tests/test_geometric_native_common_strain_projection.py'}, 'only test source changed after failed02')
+    for name, row in failed02['files'].items():
+        add_pin(pins, ROOT / name, row['sha256'])
+        exact((ROOT / name).stat().st_size, row['bytes'], 'failed02 preserved bytes ' + name)
+    bad02_wrapper = sealed(PARENT / 'release_validation_02/report.json', 'report_sha256')
+    exact(bad02_wrapper['status'], 'FAIL', 'failed02 not promoted to current gate03')
+    exact(bad02_wrapper['pytest_counts'], {'failed': 1, 'passed': 13}, 'literal failed02 counts')
+    exact(bad02_wrapper['report_sha256'], failed02['wrapper_selfseal'], 'failed02 wrapper preservation seal')
+    exact({str(f.relative_to(PARENT / 'release_validation_02')) for f in (PARENT / 'release_validation_02').rglob('*') if f.is_file()}, {'pytest.log', 'report.json'}, 'failed02 exact partial output closure')
+    saved_baseline(PARENT / 'failed_release02_preserved/baseline_after_failed_gate.json', vd(failed02_map), pins)
+    for source_name, archive_name in (
+        ('tectonics/geometric_native_common_strain_projection.py', 'core_source.txt'),
+        ('tests/test_geometric_native_common_strain_projection.py', 'test_source.txt'),
+        ('analysis/geometric_native_common_strain_projection_validation/native_control.py', 'native_control_source.txt'),
+        ('analysis/geometric_native_common_strain_projection_validation/validate.py', 'validation_wrapper_source.txt')):
+        add_pin(pins, PARENT / 'failed_release02_preserved' / archive_name, failed02_map[source_name])
+    add_pin(pins, PARENT / 'failed_release02_preserved/independent_audit_pre_gate02_source.txt', 'c87dcc82aebd7f6f28141302024049c4af92aa9a395afd9d6d875b88b0f81150')
+    reconciliation = sealed(PARENT / 'cauchy_pure_math_guard_final_test_reconciliation.json', 'reconciliation_sha256')
+    exact(reconciliation['status'], 'PASS_SOURCE_RECONCILIATION_ONLY', 'guard reconciliation is source-only evidence')
+    changed_test = 'test_source_prestress_multiplies_the_projection_second_derivative_in_every_bank'
+    for key, value in (('only_changed_test_function', changed_test),
+        ('core_sha256', frozen['tectonics/geometric_native_common_strain_projection.py']),
+        ('executed_pure_guard_test_sha256', failed02_map['tests/test_geometric_native_common_strain_projection.py']),
+        ('final_test_sha256', frozen['tests/test_geometric_native_common_strain_projection.py']),
+        ('selected_pure_math_helpers_and_polynomial_guard_ast_unchanged', True),
+        ('fresh_full_pytest_reexecuted_by_this_receipt', False), ('real_data_math_executed', False)):
+        exact(reconciliation[key], value, 'source-only test reconciliation ' + key)
+    old_test_ast = ast.parse((PARENT / 'failed_release02_preserved/test_source.txt').read_bytes())
+    new_test_ast = ast.parse((ROOT / 'tests/test_geometric_native_common_strain_projection.py').read_bytes())
+    def retained_module_ast(tree):
+        return ast.dump(ast.Module(body=[node for node in tree.body if not (isinstance(node, ast.FunctionDef) and node.name == changed_test)], type_ignores=[]), include_attributes=False)
+    exact(retained_module_ast(old_test_ast), retained_module_ast(new_test_ast), 'all remaining test/pure-helper/import/constant AST unchanged')
+    cauchy_guard = sealed(PARENT / 'cauchy_pure_math_guard.json', 'guard_sha256')
+    exact(cauchy_guard['core_raw_sha256'], reconciliation['core_sha256'], 'pure guard ran this unchanged core')
+    exact(cauchy_guard['test_raw_sha256'], reconciliation['executed_pure_guard_test_sha256'], 'guard retains old executed test hash truthfully')
+    diagnostic = sealed(PARENT / 'diagnostic_development_failures_preserved/preservation.json', 'preservation_sha256')
+    exact(len(diagnostic['exact_files']), 4, 'four scratch diagnostic failure payloads')
+    for name, row in diagnostic['exact_files'].items():
+        path = PARENT / 'diagnostic_development_failures_preserved' / name
+        add_pin(pins, path, row['sha256'])
+        exact(path.stat().st_size, row['bytes'], 'diagnostic failure literal bytes')
+    bootstrap_failure = sealed(PARENT / 'bootstrap_attempt01_preserved/preservation.json', 'preservation_sha256')
+    add_pin(pins, PARENT / 'bootstrap_attempt01_preserved/preservation.json', '5f139e8ec36fbb6dd17a43d9ee94129b2d8826db640abf4515235682b8118331')
+    for original, archived in (
+        ('/tmp/native_common_material_transfer_baseline871_bootstrap_20261006_attempt01_source.py', 'bootstrap_source.txt'),
+        ('/tmp/native_common_material_transfer_baseline871_bootstrap_20261006_attempt01_failure.log', 'failure_console.log'),
+        ('/tmp/native_common_material_transfer_baseline871_bootstrap_20261006_attempt01_prior867_readback.json', 'prior867_readback.json')):
+        row = bootstrap_failure['files'][original]
+        path = PARENT / 'bootstrap_attempt01_preserved' / archived
+        add_pin(pins, path, row['sha256'])
+        exact(path.stat().st_size, row['bytes'], 'preserved failed bootstrap literal bytes')
+    for relative, seal_key in (
+        ('baseline_871_bootstrap.json', 'audit_sha256'),
+        ('baseline_871_prior867_readback.json', 'audit_sha256'),
+        ('bootstrap_attempt01_preserved/prior867_readback.json', 'audit_sha256'),
+        ('bootstrap_attempt01_preserved/preservation.json', 'preservation_sha256'),
+        ('test_pure_math_guard.json', 'receipt_sha256'),
+        ('test_pure_math_guard_final_source_reconciliation.json', 'receipt_sha256'),
+        ('dual_restore_preflight.json', 'preflight_sha256'),
+        ('initial_precision_mismatch_probe.json', 'preservation_sha256'),
+        ('normal_branch_diagnostic.json', 'diagnostic_sha256'),
+        ('cauchy_projection_intersection_probe.json', 'probe_sha256'),
+        ('cauchy_pure_math_guard.json', 'guard_sha256')):
+        sealed(PARENT / relative, seal_key)
+
+    documents = {}
+    for path in sorted(document_file_paths):
+        documents[str(path)] = digest(path)
+    assert str(output_path) not in pins and str(output_path) not in documents, 'Output must not overwrite input evidence'
+    for name, pin in pins.items():
+        exact(digest(name), pin, 'final recorded raw pin ' + name)
+    after = source_map()
+    exact(after, before, 'complete actual875 source bytes unchanged before/after')
+    for name, pin in documents.items():
+        exact(digest(name), pin, 'optional report/document hash association ' + name)
+    exact(digest(__file__), producer_pin, 'scratch cheap-closure producer before/after')
+    report = dict(status='PASS_FINAL875_EVIDENCE_READBACK_ONLY', final_python_source_count=875,
+        unchanged_prior_python_sources=871, current_manifest_file_count=73, current_manifest_selfseal=manifest['manifest_sha256'],
+        current_manifest_raw_sha256=pins[str(manifest_path.resolve())], source_map_canonical_sha256=MAP,
+        frozen_source_map_raw_sha256=MAP_RAW, complete_actual875_source_map_before_after_identical=True,
+        current_release='release_validation_03', current_release_closed_output_count=4, fresh_saved_tests=14,
+        wrapper_selfseal=wrapper['report_sha256'], native_selfseal=native['report_sha256'], packet_selfseal=packet['packet_sha256'],
+        independent_audit_selfseal=audit['audit_packet_sha256'], old871_manifest_file_count=23,
+        old871_recorded_dependency_pin_count=51, authoritative_ancestry_release_closure_count=9,
+        failed_native_attempt01_preserved=True, failed_native_attempt01_preserved_payload_count=9,
+        failed_native_attempt01_literal_counts=bad_wrapper['pytest_counts'], diagnostic_scratch_failures_preserved=True,
+        failed_native_attempt02_preserved=True, failed_native_attempt02_preserved_payload_count=10,
+        failed_native_attempt02_literal_counts=bad02_wrapper['pytest_counts'], final_test_only_source_reconciliation_preserved=True,
+        old1633_full_readback_timing='SAVED_BEFORE_INDEPENDENT_MATH_RECEIPT_ONLY_NO_BASELINE_RERUN',
+        recorded_raw_dependency_pin_count=len(pins), dependency_raw_sha256=pins, document_raw_sha256=documents,
+        document_hashes_are_separate_from_component_manifest=True, accepted_original_native_intervals=1,
+        accepted_new_native_intervals=0, original_point_1_remaining_work_blocks=1, remaining_physical_conditions=REMAINING,
+        project_imports=False, baseline_reexecuted=False, math_or_solver_or_test_or_quadrature_reexecuted=False,
+        auditor_source_sha256=producer_pin, seconds=time.perf_counter() - started)
+    report['audit_sha256'] = vd(report)
+    output_path.write_bytes(enc(report) + b'\n')
+    print(enc(report).decode(), flush=True)
+    return report
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--out', default='/tmp/native_common_strain_projection_final_cheap_readback_20261006.json')
+    parser.add_argument('--manifest')
+    parser.add_argument('--document', action='append', default=[])
+    args = parser.parse_args()
+    run(args.out, artifact_manifest_path=args.manifest, document_paths=args.document)

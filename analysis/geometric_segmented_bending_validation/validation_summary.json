@@ -1,0 +1,455 @@
+{
+  "format": "geometric-segmented-bending-cloud-validation-1",
+  "status": "complete_with_known_original_head_legacy_failure",
+  "date": "2026-10-01",
+  "branch": "fix/genesis-mantle-convection",
+  "base_commit": "224a07ac1b981b95163cdf6633f424af1599b2f2",
+  "validated_head": "224a07ac1b981b95163cdf6633f424af1599b2f2",
+  "runtime": {
+    "python": "3.12.14",
+    "platform": "Linux-6.18.44-x86_64-with-glibc2.41",
+    "packages": {
+      "numpy": "2.5.3",
+      "scipy": "1.18.1",
+      "PyYAML": "6.0.3",
+      "pytest": "9.1.1"
+    }
+  },
+  "cloud_sources": {
+    "files": 9,
+    "source_bytes": 2110696,
+    "verified": true,
+    "bundle_sha256": {
+      "cloud_sources.zip": "6418f8e711bd36e72b2c01b55c30e57c64f644fdc6cd9de863b0d32785d7d14f",
+      "cloud_sources_manifest.json": "30c5bceb3643175e9824c96e802268504f002818b16fddecb095eee3899db3b2"
+    }
+  },
+  "checks": {
+    "focused_cloud_profile": {
+      "passed": 1039,
+      "seconds": 1419.9,
+      "runner_seconds": 1420.604606863999,
+      "log": "analysis/geometric_segmented_bending_validation/final_cloud_tests.log",
+      "receipt": "analysis/geometric_segmented_bending_validation/cloud_test_receipt.json",
+      "code_and_tests_unchanged": true,
+      "bound_code_and_test_file_count": 397
+    },
+    "expanded_legacy_dependencies": {
+      "passed": 223,
+      "failed": 1,
+      "seconds": 37.82,
+      "runner_seconds": 38.44547597000201,
+      "log": "analysis/geometric_segmented_bending_validation/dependency_tests.log",
+      "receipt": "analysis/geometric_segmented_bending_validation/dependency_test_receipt.json",
+      "baseline_reproduction_receipt": "analysis/geometric_fault_transport_validation/legacy_slab_constraint_baseline_receipt.json"
+    },
+    "new_targeted_tests_included_in_profile": {
+      "total": 186,
+      "moving_reference": 36,
+      "segmented_bending_core": 39,
+      "incremental_contact_gauge": 21,
+      "physical_rigid_mantle_source": 19,
+      "compact_owner_rotations": 40,
+      "segmented_core_checkpoint_io": 19,
+      "actual_physical_motion_and_checkpoint_io": 12
+    },
+    "git_diff_check": "passed",
+    "all_current_control_code_hashes_match": true,
+    "current_control_code_hash_count": 154,
+    "checkpoint_hash_count": 10,
+    "all_checkpoint_payload_digests_match": true,
+    "all_three_restart_pairs_byte_identical": true
+  },
+  "control": {
+    "report": "analysis/geometric_segmented_bending_validation/cloud_control/report.json",
+    "report_sha256": "8a4a5f5468946e3a7394a2eddc6345e482c9ff24d842dfb190e00b11151ea92c",
+    "report_byte_count": 213729,
+    "independent_recovery_audit_receipt": "analysis/geometric_segmented_bending_validation/cloud_control/recovered_control_audit_receipt.json",
+    "full_output_directory": "results/cloud_segmented_bending_control_final",
+    "elapsed_seconds": 486.8893931499988,
+    "point_count": 16,
+    "changing_source_segments": 4,
+    "retained_seed": {
+      "previously_accepted_steps": 1,
+      "previously_accumulated_source_work_j": 247716071538260.78,
+      "preparation_work_j": 2.3935944027350803e+17,
+      "nonzero_plastic_history_point_count": 16,
+      "full_original_seed_unchanged": true,
+      "local_and_radial_histories_exact_at_initialization": true
+    },
+    "source_work": {
+      "exact_seed_plus_segment_work_j": 803011170988509.6,
+      "incorrect_newest_source_times_total_rotation_j": -103588726391860.88,
+      "relative_mismatch": 1.129000355330478,
+      "current_load_changes_are_nonproportional": true,
+      "history_work_is_never_reassigned": true
+    },
+    "sliding_point_steps": 64,
+    "mixed_branch_trace_steps": 0,
+    "maximum_resultant_torque_relative_residual": 5.219386990188414e-15,
+    "maximum_generalized_force_relative_residual": 1.3813170093140443e-15,
+    "maximum_incremental_work_relative_residual": 6.939936500052821e-15,
+    "maximum_physical_virtual_work_relative_error": 4.248617152716168e-14,
+    "independent_locked_continuum_control": {
+      "point_count": 32,
+      "source_intervals": 4,
+      "cases": [
+        {
+          "sequence": 1,
+          "all_coordinates_relative_error": 2.8900911805503478e-15,
+          "exact_rotation_path_rad": [
+            [
+              -3.389982212027495e-07,
+              1.6486896584584479e-06,
+              -4.8474419007503606e-08
+            ],
+            [
+              1.8559318696352338e-07,
+              -1.4697902190004177e-06,
+              -1.281006282966118e-07
+            ]
+          ],
+          "exact_transverse_displacement_m": [
+            [
+              -6.155700703074105,
+              13.080272099734103
+            ],
+            [
+              -5.143692704889575,
+              10.929852412053327
+            ],
+            [
+              -4.47225852156219,
+              9.503119333461814
+            ],
+            [
+              -3.8996164490420995,
+              8.286309991094367
+            ]
+          ],
+          "source_work_j": 232340925395272.62
+        },
+        {
+          "sequence": 2,
+          "all_coordinates_relative_error": 4.309270783279273e-16,
+          "exact_rotation_path_rad": [
+            [
+              -2.5516419518448255e-07,
+              8.788920667461939e-07,
+              5.494523005990948e-07
+            ],
+            [
+              1.7074173823883784e-07,
+              -7.25904172901448e-07,
+              -6.436830682918888e-07
+            ]
+          ],
+          "exact_transverse_displacement_m": [
+            [
+              -6.15340138146053,
+              13.075386262393861
+            ],
+            [
+              -5.146013517341158,
+              10.934783915357908
+            ],
+            [
+              -4.456919709126431,
+              9.470525831921629
+            ],
+            [
+              -3.915032972467082,
+              8.319068621014416
+            ]
+          ],
+          "source_work_j": 116125606673144.8
+        },
+        {
+          "sequence": 3,
+          "all_coordinates_relative_error": 3.976704527171879e-16,
+          "exact_rotation_path_rad": [
+            [
+              -5.954419740661066e-07,
+              2.406604495586234e-06,
+              2.9360480240587626e-07
+            ],
+            [
+              1.257640241084819e-07,
+              -2.072297512347993e-06,
+              -2.1507396149607324e-07
+            ]
+          ],
+          "exact_transverse_displacement_m": [
+            [
+              -6.165982662680302,
+              13.1021202752473
+            ],
+            [
+              -5.133314643925922,
+              10.907800030396043
+            ],
+            [
+              -4.477696304143888,
+              9.51467409858421
+            ],
+            [
+              -3.894151117035356,
+              8.274696686092723
+            ]
+          ],
+          "source_work_j": 158783905359685.66
+        },
+        {
+          "sequence": 4,
+          "all_coordinates_relative_error": 6.243967590468122e-16,
+          "exact_rotation_path_rad": [
+            [
+              -5.744127895923961e-07,
+              1.939087302160529e-06,
+              -3.716458422631389e-08
+            ],
+            [
+              1.4277717933792276e-07,
+              -1.7488889054575104e-06,
+              4.867978493610274e-08
+            ]
+          ],
+          "exact_transverse_displacement_m": [
+            [
+              -6.158022153326263,
+              13.085204958303555
+            ],
+            [
+              -5.141349556971896,
+              10.924873448030935
+            ],
+            [
+              -4.476549611111759,
+              9.512237486149871
+            ],
+            [
+              -3.895303619555688,
+              8.277145643130877
+            ]
+          ],
+          "source_work_j": 20483186169260.93
+        }
+      ],
+      "maximum_all_coordinates_relative_error": 2.8900911805503478e-15,
+      "derivation": "Independent exact great-circle first and second moments and k=3EI*length/L^3; (D_k/dt+K_elastic)x_k=T_k-preload+(D_k/dt)x_(k-1). No solver rows or tangent are read"
+    },
+    "passive_cartesian_covariance_control": {
+      "cases": [
+        {
+          "sequence": 1,
+          "rotation": [
+            [
+              0.9384210854048176,
+              -0.20012875869176988,
+              -0.28162802845621604
+            ],
+            [
+              0.12987953292158588,
+              0.9597027582889127,
+              -0.2492025735435401
+            ],
+            [
+              0.3201517974269621,
+              0.19727923275688233,
+              0.9265979338025426
+            ]
+          ],
+          "projected_component_count": 32,
+          "independently_rotated_quadratic_source_torque_relative_error": 2.5177756987542897e-15,
+          "independently_rotated_quadratic_source_drag_relative_error": 2.250324224630542e-16,
+          "segmented_material_coordinates_relative_error": 1.833061942485689e-16,
+          "segmented_source_work_relative_error": 6.446782504988163e-16,
+          "point_traction_history_maximum_relative_error": 2.1289306764446732e-14,
+          "radial_tip_memory_preserved": true
+        },
+        {
+          "sequence": 2,
+          "rotation": [
+            [
+              0.911144221763522,
+              -0.3311224068609033,
+              0.24530421688505136
+            ],
+            [
+              0.2870876849030027,
+              0.9370932543458563,
+              0.19858724489887708
+            ],
+            [
+              -0.2956296134083663,
+              -0.1105178009830759,
+              0.9488882691560082
+            ]
+          ],
+          "projected_component_count": 32,
+          "independently_rotated_quadratic_source_torque_relative_error": 3.815666374418014e-15,
+          "independently_rotated_quadratic_source_drag_relative_error": 2.0006264372929446e-16,
+          "segmented_material_coordinates_relative_error": 1.602371282119276e-16,
+          "segmented_source_work_relative_error": 1.6380460505839671e-16,
+          "point_traction_history_maximum_relative_error": 2.476844375700197e-14,
+          "radial_tip_memory_preserved": true
+        }
+      ],
+      "trusted_full_source_restart_exact": true,
+      "interpretation": "Zero-duration changes of Cartesian representation. Footprints, mesh and physical source components transform together; original point measure and bending stiffness are carried exactly. These controls do not claim physical advection"
+    },
+    "nonempty_passive_archive": {
+      "cohort_count": 2,
+      "retained_physical_polarity_interval_count": 2,
+      "source_segments": 3,
+      "original_acceptance_events_and_cohort_payloads_unchanged": true,
+      "original_surface_and_archive_preserved": true,
+      "restart_exact": true,
+      "checkpoint_bytes_identical": true,
+      "material_total_residual": {
+        "area_km2": 0.0,
+        "oceanic_volume_km3": 0.0,
+        "cold_mantle_volume_km3": 0.0,
+        "density_excess_mass_kg": 0.0
+      }
+    },
+    "accepted_physical_common_motion": {
+      "accepted_physical_steps": 3,
+      "cohort_count": 2,
+      "retained_polarity_interval_count": 2,
+      "source_model": "Explicit fully transmitted rigid mantle traction with independent positive drag",
+      "chronological_rotation_matrix": [
+        [
+          0.999997950665585,
+          -0.0018993222090098439,
+          0.0007008849951019075
+        ],
+        [
+          0.0019004424983102,
+          0.9999969122284662,
+          -0.0016012032487838059
+        ],
+        [
+          -0.0006978416300377177,
+          0.001602531959014057,
+          0.9999984724530232
+        ]
+      ],
+      "independent_SO3_composition_matrix_error": 2.611430743114511e-16,
+      "maximum_independent_footprint_vertex_error": 2.277701048413e-16,
+      "actual_material_elapsed_time_myr": 9.506426344208711e-05,
+      "actual_archive_transactions_added": 3,
+      "actual_surface_and_archive_are_matching_current_endpoint": true,
+      "original_loss_payloads_and_material_properties_preserved": true,
+      "material_total_residual": {
+        "area_km2": 0.0,
+        "oceanic_volume_km3": 0.0,
+        "cold_mantle_volume_km3": 0.0,
+        "density_excess_mass_kg": 0.0
+      },
+      "source_work_sum_j": 8.682524336481231e+20,
+      "restart_exact": true,
+      "checkpoint_bytes_identical": true,
+      "differential_motion_rejected_atomically": "Computed differential motion requires spatial material admission and contact-history matching",
+      "differential_rejection_preserves_geometry_archive_mechanics_and_work": true,
+      "interpretation": "Genuine beginning-stage force/source solve followed by complete actual material transport over the same dt; common paired material maps only. Quadrature and geometry are frozen within each interval, making this a first-order coupled step, not exact time integration or general differential underthrust"
+    },
+    "accepted_physical_geometry_steps": 3,
+    "actual_physical_cohort_count": 2,
+    "underthrust_admitted_material_km2": 0.0,
+    "new_slab_cohorts": 0,
+    "all_four_material_total_residuals_zero": true,
+    "restart_pairs": [
+      {
+        "control": "changing_source_core",
+        "direct_file": "direct_final.json",
+        "resumed_file": "resumed_final.json",
+        "bytes_identical": true,
+        "sha256": "a2ef283fb2a4a3e283e51eb0d372c74a781e715eff929d2f065badb396526b2d",
+        "byte_count": 65337
+      },
+      {
+        "control": "nonempty_passive_archive",
+        "direct_file": "archive_direct_final.json",
+        "resumed_file": "archive_resumed_final.json",
+        "bytes_identical": true,
+        "sha256": "3a314964dd03ad42d1dd4e61a5b4e7dd9829c468c1c55fccdc1b0c21f70cd46e",
+        "byte_count": 63351
+      },
+      {
+        "control": "actual_physical_common_motion",
+        "direct_file": "physical_direct_final.json",
+        "resumed_file": "physical_resumed_final.json",
+        "bytes_identical": true,
+        "sha256": "e09efac8c7fa4d21ee559dda88a78c5416781f06c49045b5344e21c9da116505",
+        "byte_count": 169364
+      }
+    ]
+  },
+  "known_original_head_failure": {
+    "test": "tests/test_young_slab_constraints.py::test_actual_rank_deficient_trench_problem_matches_independent_primal_qp[young_slab_constraint_noisy_support.json]",
+    "source_identity_matches": true,
+    "unchanged_solver_test_fixture_count": 3,
+    "primal_relative_violation": 2.5054326766449742e-11,
+    "test_primal_tolerance": 2e-11,
+    "production_primal_tolerance": 2e-08,
+    "independent_primal_oracle_success": true,
+    "baseline_receipt": "analysis/geometric_fault_transport_validation/legacy_slab_constraint_baseline_receipt.json",
+    "interpretation": "The unchanged rank-deficient legacy solve passes its production KKT gate and independent primal oracle comparison, but exceeds its tighter regression primal tolerance on this runtime; the identical result occurs before finite fault transport changes."
+  },
+  "original_six_step_plan": [
+    {
+      "step": 1,
+      "status": "partial",
+      "scope": "Bending and transverse deformation, physical fault motion and spatial underthrust admission"
+    },
+    {
+      "step": 2,
+      "status": "pending",
+      "scope": "Couple geometric events and cooling in one simulation clock"
+    },
+    {
+      "step": 3,
+      "status": "pending",
+      "scope": "Full slab material dynamics, stretching, thinning, breakoff, slab pull and ridge forces"
+    },
+    {
+      "step": 4,
+      "status": "pending",
+      "scope": "Stress-driven fracture, new faults, history transfer and topology changes"
+    },
+    {
+      "step": 5,
+      "status": "pending",
+      "scope": "Main loop and GUI integration, compatible save formats"
+    },
+    {
+      "step": 6,
+      "status": "pending",
+      "scope": "Long runs, time and mesh convergence, performance optimization"
+    }
+  ],
+  "scope": "Accepted increments with independently bound changing sources, preserved preparation/plastic/radial histories and exact source work segments; continuous evolving gap harmonics and zero-duration Cartesian covariance. A separate declared manufactured rigid-mantle experiment accepts actual complete common material transport and current two-cohort archive transactions; differential motion is atomically rejected. No cooling, general spatial rematching or differential material admission is inferred",
+  "limitations": [
+    "Three short physical steps use independently declared manufactured rigid mantle inputs and an initially unloaded common interface; they do not test loaded differential bending during physical advection.",
+    "Changing-source core tests retain evolved plastic/radial histories on the original material support; passive Cartesian covariance is a separate zero-duration check.",
+    "Quadrature and force geometry are frozen at the beginning of each accepted physical interval; this is a first-order coupled step.",
+    "Underthrust admission is zero and no new slab cohorts are created. General differential motion, spatial contact matching, cooling and long-run convergence remain outside this control."
+  ],
+  "next_step": "Spatial material-pair matching and differential underthrust admission, preserving existing force/source work and history before conservative acceptance.",
+  "evidence_sha256": {
+    "analysis/geometric_segmented_bending_validation/cloud_test_receipt.json": "d218011846145176905dbc18fd2f7a3687a9bb380c915fd465f74fc9669fefaa",
+    "analysis/geometric_segmented_bending_validation/final_cloud_tests.log": "e877640c145cf1a9a7270889f696124d83b550d60f266eb6adde74a05f119698",
+    "analysis/geometric_segmented_bending_validation/dependency_test_receipt.json": "facee6af8ef816787edf5e834830694b4df394e75757c9902abe0c1ee98dcc44",
+    "analysis/geometric_segmented_bending_validation/dependency_tests.log": "86fdc060dfc539542d321cf54f9f423f563761451bb703fe4904aa06adce16ca",
+    "analysis/geometric_fault_transport_validation/legacy_slab_constraint_baseline_receipt.json": "36c685f4fa6c61494a64a456926ea0a7a16246aba4c5a5a6cf93eebf3505e6c2",
+    "analysis/geometric_segmented_bending_validation/cloud_control/recovered_control_audit_receipt.json": "cce78821efad2be3246e998f3ab796a48db8fc78fe2f999e2e9326bad0986455",
+    "analysis/geometric_segmented_bending_validation/summarize_validation.py": "735ca2ac03bab68b567b15e61b7c4365d8836125cd51456890d5f40dd08ffbd7"
+  },
+  "notes": [
+    "New targeted counts are included in the 1039-test profile; counts overlap.",
+    "The final control finished during a transport outage and was independently audited after environment recovery; it was not rerun.",
+    "Partial and interrupted profile logs are not accepted as final validation.",
+    "All changes remain local in the requested branch; no commit or push was performed."
+  ]
+}

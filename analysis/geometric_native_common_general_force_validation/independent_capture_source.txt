@@ -1,0 +1,27 @@
+"""Actual child capture with complete source snapshots; no physics edits."""
+import argparse,hashlib,json,subprocess,time
+from pathlib import Path
+ROOT=Path('/workspace/Habitable-Moon-Project')
+def sha(p):
+ h=hashlib.sha256()
+ with Path(p).open('rb') as f:
+  while b:=f.read(1<<20):h.update(b)
+ return h.hexdigest()
+def enc(x):return json.dumps(x,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+p=argparse.ArgumentParser();p.add_argument('--directory',required=True);p.add_argument('--source',required=True);p.add_argument('--report');p.add_argument('--watch',action='append',default=[]);p.add_argument('command',nargs=argparse.REMAINDER);a=p.parse_args()
+d=Path(a.directory).resolve();d.mkdir(parents=True,exist_ok=False)
+source=Path(a.source).resolve();watch=list(dict.fromkeys([source]+[(ROOT/v).resolve() if not Path(v).is_absolute() else Path(v).resolve() for v in a.watch]))
+def key(p):return str(p.relative_to(ROOT)) if p.is_relative_to(ROOT) else str(p)
+before={key(s):sha(s) for s in watch};snapshots={}
+for i,s in enumerate(watch):
+ dst=d/('source_'+str(i)+'_'+s.name+'.txt');dst.write_bytes(s.read_bytes());snapshots[key(s)]=str(dst)
+command=a.command
+if command and command[0]=='--':command=command[1:]
+start=time.monotonic()
+with (d/'console.log').open('xb') as out,(d/'stderr.log').open('xb') as err:
+ child=subprocess.run(command,cwd=ROOT,stdout=out,stderr=err)
+facts=dict(format='basal-independent-actual-subprocess-facts-1',command=command,actual_exit_code=child.returncode,actual_child_exit_code=child.returncode,actual_seconds=time.monotonic()-start,source_before_sha256=before,source_after_sha256={key(s):sha(s) for s in watch},source_snapshots=snapshots,actual_stdout_path=str(d/'console.log'),actual_stderr_path=str(d/'stderr.log'),actual_stdout_raw_sha256=sha(d/'console.log'),actual_stderr_raw_sha256=sha(d/'stderr.log'),actual_stderr_bytes=(d/'stderr.log').stat().st_size,executed_source_path=str(source),executed_source_raw_sha256=before[key(source)],executed_source_after_raw_sha256=sha(source),executed_source_snapshot=snapshots[key(source)],executed_capture_source_path=str(Path(__file__).resolve()),executed_capture_source_raw_sha256=sha(__file__))
+if a.report:
+ report=Path(a.report).resolve();facts['report_path']=str(report)
+ if report.exists():facts.update(report_raw_sha256=sha(report),actual_stdout_equals_report=(d/'console.log').read_bytes()==report.read_bytes())
+facts['sha256']=hashlib.sha256(enc(facts)).hexdigest();(d/'execution_facts.json').write_bytes(enc(facts)+b'\n');print(enc(facts).decode());raise SystemExit(child.returncode)

@@ -1,0 +1,134 @@
+Independent read-only review: new HOT/finite-mean core and native source
+Review status: FORMULAS PASS; PRE-FREEZE REFERENCE AND DIAGNOSTIC FIXES IDENTIFIED
+Sources reviewed: tectonics/geometric_native_common_hot_mean.py;
+analysis/geometric_native_common_hot_mean_validation/native_control.py;
+immutable common_reference/common_hot/affine_body/affine_bulk sources;
+authenticated 879 and priorcommonHOT full JSON (read-only source extraction).
+No project tests/solvers/old mains/quad controls executed by this reviewer.
+Only workspace TXT edited.
+
+Confirmed defect (ROOT native):
+PriorcommonHOT probe order is xx,yy,zz,xy,xz,yz. Both originalbody and
+coefficient_kernel.body coordinate_order confirm it directly. The initial new
+native commentary incorrectly said xx,yy,zz,yz,xz,xy and diagnostic_coordinates
+reversed a3/a5. Correct shear entries are a3,a4,a5. New core generators correct.
+
+Reference recommendation (ROOT requested further evidence):
+Authentic841/879 common HOT maps source-world mask labels using Qshared(z),
+without additional owner Q. `_normalized_native_vertex_bounds` already applies
+source polygon.pose exactly once. common_hot point uses bound_joint_layer_point
+with commonbank.layer and inputray; commonbasal rotates normalized sourceworld
+vertices by common depth rate only. common_reference_bank_point likewise only
+applies commonrate to sourceworld u. Source_owner_history_json is retained source
+historymetadata, not an instruction to apply ownerpose again.
+Therefore minimally extend authentic HOT map as
+ X0=s_owner Qshared(z) r_original(z) u_source_world,
+using same fixed895 owner scale, preserving ownerhistory as metadata ONLY.
+Cold original-parent labels are unposed and needQowner; HOT vacancyworldlabels
+have different semantics and do not justify applyingQowner a second time.
+Original proposed s Qowner Qshared map is mathematically invertible but adds a
+NEW gratuitous reference preparationrotation. It is not authentic old HOT pose.
+All physical referencework/allpair/time/equilibrium flags remainFalse eitherway.
+
+Finite mean/root correctness:
+T(b) symmetrictracefree; rho=max row absolute sum encloses ||T||2.
+h0=R*q/rb interval; hbracket=[h0.lo-rho,h0.hi+rho] with R+h0.lo>2rho
+makes every F=tI+T/R SPD. At each unitray all low endpoint radius changes <=q
+and high endpoint >=q. Authentic positive totalarea implies exact integral root.
+M_h=(rb/R)<v^T Fv/|Fv|> lies in [(rb/R)*lambda_min/lambda_max,rb/R].
+Strictpositive derivative givesunique root. Newton centre is only trialpoint;
+I(centre)-(M(centre)-q)/M_h(interval) intersects provenbracket, so no physical
+rootmidpoint substitution. Isotropic exacth=R*q/rb correct.
+
+Radial twojet correctness:
+Using exact identity |v|=1 is legitimate even though intervalcone loses that
+correlation: it remains true on every actual sourceunitray. Radial integrand
+ d=rb*(|Fv|-1) is evaluated using cancellation-safe factored s²-1 over s+1.
+first_i=rb*(Fv).(Ki v)/(R*s).
+second_ij=rb/R²*((Ki v).(Kj v)/s-
+ ((Fv).Ki v)*((Fv).Kj v)/s³).
+The isotropic h/h and h/b second derivatives are exactly zero on positive branch,
+while b/b curvature remains included. Pointwise spectral range intersection is
+valid; no correlated root/quadrature quantity is replaced by a midpoint.
+
+Implicit coordinate correctness:
+J=d(h,b)/d(q,b) has hq=1/Mh, hb=-Mb/Mh and identity b rows.
+h_ab=-(J_a^T Hess(M) J_b)/Mh is indexed correctly in current source.
+Energy gradient J^Tg; Hess J^THJ+g_h Hess(h) correct.
+Physical g_h equals Cartesianf_xx+f_yy+f_zz, so retained curvature is right.
+
+Bulk and basal correctness:
+Green E=(F^TF-I)/2; Ei=sym(F^TKi/R); Eij=sym(Ki^TKj/R²).
+V_original times tensor energy/fullforce/H contains stress:Eij curvature.
+Source E1e9/G4e8 yields nu1/4 and lambda=mu4e8; positive tensor.
+Original material measure (no extra s³ factor) is explicit newconstitutive
+reference convention consistent cold899. Physicalmass density needs s³detF.
+Finite radialbasal .5rho*gR² int(d-birth)^2 carries g_i*g_j+(d-birth)*d_ij,
+including nonisotropic variance. It is a declared NEW radialextension of prior
+reference-normal law. No oldscalarfoundation energy should be added twice.
+Objectivity follows Greenstrain and radiusnorm; the original fixed source frame
+is explicit. Otherbody coupling and mixedsource/contact law are not asserted.
+
+Whole support/measure correctness:
+Complete convex nativepiece lies in positive cone of normalized rotatedvertices.
+`_unit_cone_bounds` chooses a certified positivehemisphere c>0; midpoint is used
+only to choose proofdirection, lowerdot bound verifieswholecone norm, not material.
+Rangeintegral area*wholecone function bound encloses every positive materialpiece.
+Curvedpositive correction uses own deltaarea, containingchart only boundsintegrand.
+It contributes once. Tiny sourceareas remain exactpositive Fractions; no floor.
+Actualtotalarea normalization is appropriate. Suggest add/save consistency overlap
+between freshsum polygon areas+positive delta and authenticactualarea.
+Coneenclosures may be broad: record actualroot/force/H widths honestly.
+
+Other prefreeze safeguards suggested to core:
+* Explicit guard exact six old100 HOT coordinate names xx,yy,zz,xy,xz,yz.
+* Guard closure source_bank/actual bank id/support as sourcebody, not only scalars.
+* Metadata field conditional_old19_coordinate_decimal was repr(physicalmetre
+  float from oldstep); rename as literal physicalmetre record or store actual
+  source dimensionless coordinates_decimal. Full oldstep is already retained.
+
+Scope review:
+All5 fullbirth/material/sourcehistory/support and source100catalogue retained;
+sourceHOT30 exact0; nonzero30diagnostics explicitly NEW and unaccepted.
+Cold899 savedoperator associated, not recomputed or reinterpreted underHOTchart.
+Individualwholebody SPD/injectivity valid by composition of radialnorm-preserving
+common map, fixedscale and constantSPD F. This doesnot prove cold/HOTpairclearance,
+acceptedbirthtrajectory, followerlaw, sourceforcehandover, workofreference,
+newmixedsolve or temporalwork. ExistingFalse flags are appropriate.
+
+FINAL PRE-FREEZE READONLY REVIEW: PASS
+Final reread/core source rawSHA256:
+ff4a208d5c1c0b4195f77954c9cf8a1c621bfe53cc381af166f7f49bb6ce5892
+Native source rawSHA256 at reread:
+476ce5455d9a133666e1aa8881d07b7b1147567333c1e5db778c9084dd7028b6
+Both compile syntax PASS (compile-only, no import/projectmath execution).
+
+All identified material issues now corrected:
+* Minimal authentic sourceworld HOT map is s Qshared r u, sourcepolygon.pose once;
+  owner_pose_bounds/histories remain retained metadata and are never applied.
+  Both cell receipts and rootcertificate explicitly distinguish this; inverse
+  is Qdepth transpose with no owner inverse. Rootnative points agree.
+* ROOT native diagnostic xy/xz/yz uses a3/a4/a5; diagnostic prose matches actual
+  sourceorder. Binder guards exact old100 and oldbody/kernel sixmode labels.
+* HOT closure source bank='over', actual bankid and supporthash guarded.
+* Freshsum complete sourcepiece areas including ownpositivecurveddelta checked
+  for overlap with authenticactualtotal; sum preserved inrootcertificate.
+* Conditionalold19 exactcoordinates_decimal sourceindex retained alongside
+  separately named source physical radialfloatJSON and fulloldstep.
+* Exact rootenclosurewidth retained, so broadcone accuracy limitation reviewable.
+
+No unresolved mathematical flaw found in reviewed core/native. Wholemaskcone
+integration is rigorous but maybroad; neither hmidpoint nor accurate30forces
+is claimed. Allpair/admission/fullreferencework/sourceforcehandover/mixedsolve/
+finite-meanequilibrium/timework/clocks remainFalse; acceptednew0 unchanged.
+This review is prefreeze source/formula review, not substitute for newtests,
+actualnewnative queries, independentnumerical audit or finalevidencereadback.
+Reviewer STOP; no repo edits performed.
+
+FINAL NATIVE TYPE-ONLY FIX REREAD: PASS
+Native final raw31c0d5a5bb7f6cccacd7c816ea9a0a7108ceff0650e97d9ec3bd79ce83212b45.
+compile-only syntax PASS. Pointhelper uses I(int(i == j)) for identityentry,
+matching strict FractionInterval integer kinds rather than rejected bool.
+Sourceworld Qdepth-only pointmap, scale/Green F and diagnostic a3/a4/a5
+remain unchanged and correct. No project imports or mathruns by reviewer.
+Freeze903 review now links finalnative31 in addition to coreff4. ReviewerSTOP.

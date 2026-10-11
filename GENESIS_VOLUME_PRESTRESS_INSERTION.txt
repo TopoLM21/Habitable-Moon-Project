@@ -1,0 +1,99 @@
+ПЕРЕХОД PRESTRESS / РЕАКЦИЯ СВЯЗЕЙ / РАБОТА ПОВЕРХНОСТИ GENESIS
+10.10.2026; fix/genesis-mantle-convection; автоматическая цель выключена.
+
+Результат: новый source-bound вычислительный переход сохраняет полную
+реакцию связей принятого интервала при замене её силами поверхности.
+Добавлен закон разрушения с начальной тягой и согласованной работой.
+Это продолжение первого из прежних трёх условий пункта 1.
+
+НАСТОЯЩИЙ ИСТОЧНИК
+Принят прежний Genesis checkpoint: 0.8684000000000005 Myr, 800 когорт,
+80 граней, 42 вершины, 252 DOF, четыре принятых интервала по 100 лет.
+Он полностью воспроизведён один раз публичным checkpoint loader.
+Новых принятых шагов текущей ветви Genesis: 0; before/after byte-identical.
+Источник — прежнее формирование из расплава; зрелая инициализация не введена.
+Parent raw SHA 62579a0bad128830a66e2f44579cf2b1f5d3835b691225b8d431102f3e4486d7
+Parent self SHA 5d282ceeccc8d76acc38427d08a7e65575fddb509fc4b93115cbe6d318e91349
+Formation SHA cd79ee2a5139c4b91abdb1b4714a761c9153cc9f4490f5aa63fa2facba458c89
+
+ЧТО ДОБАВЛЕНО
+1. Calculated onset prerequisite вычисляется из полного принятого состояния
+   тем же accepted-start stress/rule, которым пользуется VolumeSlipModel.
+   Witness связывает источник, часы, damage/water/persistence, напряжения,
+   полный candidate history и материальные IDs. Caller stress/cuts не принимает.
+   Actual source: 0 active planes, новое событие отсутствует; память не меняется.
+2. Реакция связей восстановлена из полного последнего принятого интервала:
+   rs = 2 Ms (R du - dt R v0)/dt² + Ds R du/dt + f_average - Fs;
+   eta = -(J J^T)^-1 J rs; h = J^T eta. Это внутренний знак слева.
+   Полные average strain0/1 используются при НУЛЕВОМ новом increment.
+   Сохранены after-mass/comoving convention, basal drag/forcing и parent residual.
+   Endpoint stress не подменяет среднюю силу принятого интервала.
+3. Материальная paired side-depth Gamma использует прежние banks/surface без
+   переделки. Minimum area-L2 traction воспроизводит h с полными A/P modes.
+   Thin-depth scaling сохраняет P. Непредставимый остаток вызывает отказ.
+   В расчёте rs+h заменено на rs+G t0: сохранять обе силы было бы удвоением.
+4. Prospective prestress law сохраняет вычислительную начальную тягу при
+   нулевом добавленном раскрытии. h*_t=t0_t/k; h*_n=t0_n/k при
+   растяжении и t0_n/kc при сжатии. B*=k r*²/2:
+   delta_f = 2 (Gc+B*)/T;
+   Psi = (1-d)(B-B*) + (C-C*); D = (Gc+B*)s - B*d.
+   Поэтому при полном cohesive failure D=Gc, а не ошибочное Gc-B*.
+   Нулевая относительная Psi/D при seed — вычислительный выбор опоры.
+   Signed unloading Psi может быть отрицательной; это не новая историческая
+   энергия Genesis и не доказательство финансирования физического release.
+   Погрешность virgin peak ограничена 32 machine epsilon и явно записана;
+   настоящая overstrength не маскируется исходным damage.
+5. Полные global bank displacement paths дают оба tangential jumps и P.
+   Force/trace virtual work, интеграл тяги, необратимость, unload/reload и
+   полный direct/resumed fixture replay проверены отдельно от Genesis.
+
+ГРАНИЦЫ РЕЗУЛЬТАТА
+Закрытый контур первой грани — заданная вычислительная опора, не рассчитанный
+физический разлом. Source event задаёт ориентацию, но не location/dip Gamma.
+Восстановлена средняя реакция интервала; instantaneous birth traction не заявлена.
+Первоначальный пример T=1e8 Pa, Gc=1e8 J/m², k=1e10, kc=2e10 Pa/m
+отвергает source-derived начальную тягу до 3.239571e9 Pa как overstrength.
+Этот отказ сохранён; представимость реакции не даёт допуска её разрушения.
+Отдельный пример Gc=1e8 J/m², T=1e10 Pa, k=1e14, kc=2e14 Pa/m
+проверяет вычислительную работу при неизменённой source-derived тяге.
+Его прочность не является калибровкой или source-calculated toughness.
+Physical cut/release/contact/underthrust: нет; Genesis creation debit=0.
+Компрессионная опора нового закона сама не даёт unilateral contact admission.
+Вся прежняя strain memory, IDs, births и signed ledgers сохранены.
+
+ПРОВЕРКИ
+138 новых тестов PASS; официальный capture 266.044439 s.
+Actual control PASS; 309.260593 s.
+Producer-free independent audit PASS; 36.196769 s.
+Resealed negative controls PASS; 80.791124 s.
+Все четыре exit=0, stderr=0; source_before=after, added source=0.
+Прежние 409/94/169 проверок повторно не запускались: все 331 source pins
+сохранены. Девять sealed packages / 12290 members / 1154279464 bytes
+и native 6 pins сохранены. Новая приёмка не переопределяет прежнюю.
+Control self SHA 4d12eb026937db9475573383782910ecec8632370b5910b4349954048db24395
+Independent self SHA 0c0c2222810344e9aacad73f244f19146f947542f3da78e9e4fb21d5920d4980
+Negative controls self SHA 12bd82c5f2149a3396265d85a73b5c104c3640e6172e02983a89ef7cad63ca54
+Первичная readback сверка остановилась из-за прежнего имени флага работы
+в проверяющем helper. Исправлены только два употребления имени флага;
+физические исходники и все четыре успешных запуска не менялись.
+Первый пакет, его manifest/helper и точная причина отказа сохранены
+в /workspace/genesis_volume_insertion_preliminary_readback_20261010_01/.
+Новый пакет включает запись отказа и исходные manifest/helper отдельно.
+
+ОСТАТОК ТОГО ЖЕ ПУНКТА 1 — ТРИ ПРЕЖНИХ УСЛОВИЯ
+1. Физическое рождение материальной Gamma, source creation law/funding и
+   prestress-preserving physical insertion/release с through-depth force/work.
+   Вычислительный перенос памяти, depth surface, reaction replacement и закон
+   работы внутри этого условия готовы; физическое освобождение ещё открыто.
+2. All-pair full-time contact/underthrust admission, включая reverse C5->C1.
+3. Настоящее active fault/contact/underthrust continuation с independent
+   work/balances/restart. Fixture restart не считается active Genesis restart.
+До полного закрытия пункта 1 ещё существенная работа. Пункты 2–6 открыты.
+Следующая часть условия 1: source-bound расположение Gamma внутри материала
+и физический insertion/release operator, включая источник его энергии.
+
+CONTROL empty_reference_support
+{"accepted_computational_path_segments": 1, "canonical_jump_rows": 0, "computational_work_fixture_peak_traction_pa": 10000000000.0, "direct_resumed_computational_state_byte_equal": true, "largest_initial_cohesive_traction_pa": 0.0, "law_calibrated_from_Genesis": false, "law_provenance": "computational_only_after_declared_overstrength_refusal", "name": "empty_reference_support", "normal_contact_admitted": false, "original_declared_peak_traction_pa": 100000000.0, "original_prospective_virgin_refusal": {"actual_initial_traction_unchanged": true, "declared_law": {"cohesive_stiffness_pa_m": 10000000000.0, "compression_stiffness_pa_m": 20000000000.0, "fracture_energy_j_m2": 100000000.0, "peak_traction_pa": 100000000.0}, "declared_peak_traction_pa": 100000000.0, "exception_type": null, "largest_initial_cohesive_traction_pa": 0.0, "law_calibrated_from_Genesis": false, "original_parameters_retained": true, "physical_creation_admitted": false, "physical_release_admitted": false, "reason": null, "status": "empty_surface_no_traction_to_refuse"}, "paired_interface_area_m2": 0.0, "paired_patch_count": 0, "physical_creation_admitted": false, "physical_release_admitted": false, "reaction_trace_range_relative_errors_A_P": [0.0, 0.0], "reaction_traction_rank": 0, "reconstructed_force_relative_errors_A_P": [0.0, 0.0], "reference_energy_debited_from_Genesis_j": 0.0, "seeded_birth_force_replacement_relative_errors_A_P": [0.0, 0.0], "seeded_birth_retained_residual_relative_errors_A_P": [0.0, 0.0], "seeded_zero_gap_work_j": 0.0, "terminal_cumulative_cohesive_work_j": 0.0, "terminal_cumulative_fracture_work_j": 0.0, "terminal_signed_stored_interface_energy_j": 0.0}
+
+CONTROL supplied_closed_first_face_reference_cycle
+{"accepted_computational_path_segments": 11, "canonical_jump_rows": 18, "computational_work_fixture_peak_traction_pa": 10000000000.0, "direct_resumed_computational_state_byte_equal": true, "largest_initial_cohesive_traction_pa": 3239571006.851125, "law_calibrated_from_Genesis": false, "law_provenance": "computational_only_after_declared_overstrength_refusal", "name": "supplied_closed_first_face_reference_cycle", "normal_contact_admitted": false, "original_declared_peak_traction_pa": 100000000.0, "original_prospective_virgin_refusal": {"actual_initial_traction_unchanged": true, "declared_law": {"cohesive_stiffness_pa_m": 10000000000.0, "compression_stiffness_pa_m": 20000000000.0, "fracture_energy_j_m2": 100000000.0, "peak_traction_pa": 100000000.0}, "declared_peak_traction_pa": 100000000.0, "exception_type": "PrestressCreationRefusal", "largest_initial_cohesive_traction_pa": 3239571006.851125, "law_calibrated_from_Genesis": false, "original_parameters_retained": true, "physical_creation_admitted": false, "physical_release_admitted": false, "reason": "Prestress creation requires a virgin initial cohesive traction no greater than peak strength", "status": "typed_virgin_overstrength_refusal"}, "paired_interface_area_m2": 682808959.7620907, "paired_patch_count": 57, "physical_creation_admitted": false, "physical_release_admitted": false, "reaction_trace_range_relative_errors_A_P": [7.981622096205994e-13, 1.885496102048832e-15], "reaction_traction_rank": 18, "reconstructed_force_relative_errors_A_P": [7.206646943782877e-13, 1.57132302571093e-15], "reference_energy_debited_from_Genesis_j": 0.0, "seeded_birth_force_replacement_relative_errors_A_P": [7.424813362535788e-13, 1.6540147457957188e-15], "seeded_birth_retained_residual_relative_errors_A_P": [7.424813362535788e-13, 1.6540147457957188e-15], "seeded_zero_gap_work_j": 0.0, "terminal_cumulative_cohesive_work_j": 1.1015225248349736e+20, "terminal_cumulative_fracture_work_j": 6.828089597620906e+16, "terminal_signed_stored_interface_energy_j": 1.1008397158750179e+20}

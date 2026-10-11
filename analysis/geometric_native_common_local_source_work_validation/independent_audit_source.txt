@@ -1,0 +1,729 @@
+"""Independent stdlib audit of the declared100 local/internal source potential.
+Execution requires the frozen883 source map and a fresh sealed gate PASS.
+Complete older certified field/integral bounds are authenticated INPUTS;
+this audit independently derives new local attachment/work/potential algebra.
+Old helper mains, project modules, tests, solvers and quadratures are excluded.
+"""
+from fractions import Fraction as F
+from pathlib import Path
+import math, argparse, ast, hashlib, io, json, sys, time, types
+from contextlib import redirect_stdout
+
+ROOT=Path('/workspace/Habitable-Moon-Project')
+SOURCE_COUNT=883
+FORCE_BASIS='archival_old_reference'
+
+def f(v):
+ assert type(v) is list and len(v)==2 and all(type(x) is int for x in v)
+ assert v[1]>0;q=F(*v);assert v==[q.numerator,q.denominator];return q
+
+def b(v,c):
+ assert type(v) is dict and set(v)=={'lo','hi'}
+ return c['I'](f(v['lo']),f(v['hi']))
+def vbound(v,c):return tuple(b(x,c) for x in v)
+def mbound(v,c):return tuple(vbound(row,c) for row in v)
+def rnd(x,c):
+ x=x if hasattr(x,'lo') else c['I'](x)
+ return c['I'](*outward_relative_grid((x.lo,x.hi),256))
+def dot(a,b):return sum((x*y for x,y in zip(a,b)),F(0))
+def add(a,b):return tuple(x+y for x,y in zip(a,b))
+def sub(a,b):return tuple(x-y for x,y in zip(a,b))
+def neg(a):return tuple(-x for x in a)
+def sc(a,t):return tuple(x*t for x in a)
+def cross(a,b):return (a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0])
+def mv(M,v):return tuple(dot(row,v) for row in M)
+def sym2(a,b,v):return sc(add(cross(a,cross(b,v)),cross(b,cross(a,v))),F(1,2))
+def unitaxis(name):return tuple(F(int(k==name)) for k in 'xyz')
+def square(v,c):return c['I'](F(0) if v.lo<=0<=v.hi else min(v.lo*v.lo,v.hi*v.hi),max(v.lo*v.lo,v.hi*v.hi))
+def sqrtcap(q,precision=256):
+ assert q>=0;scale=10**precision;n=math.isqrt((q*scale*scale).numerator//(q*scale*scale).denominator)
+ if F(n,scale)**2<q:n+=1
+ assert F(n,scale)**2>=q and (n==0 or F(n-1,scale)**2<q)
+ return F(n,scale)
+
+def local_side(field,source_position,source_direction,body_indices,radial_index,coordinates,c):
+ """F and G live in frozen world Cartesian; fresh owner rotation is separate."""
+ I=c['I'];X=vbound(field['reference_position_bounds_m'],c);p=tuple(asI(x) for x in source_position)
+ v=tuple(asI(x) for x in source_direction);lever=sub(p,X);r=coordinates[radial_index]
+ modes=tuple(vbound(x,c) for x in field['mode_displacement_columns'])
+ grads=tuple(mbound(x,c) for x in field['mode_spatial_gradient_columns_per_m'])
+ a=tuple(coordinates[i] for i in body_indices);L=add(lever,sc(v,r))
+ u=tuple(rnd(sum((x*psi[j] for x,psi in zip(a,modes)),I(0)),c) for j in range(3))
+ G=tuple(tuple(rnd(sum((x*g[i][j] for x,g in zip(a,grads)),I(0)),c) for j in range(3)) for i in range(3))
+ completeF=tuple(tuple(G[i][j]+I(int(i==j)) for j in range(3)) for i in range(3))
+ # This correlated reference form preserves p+r*v exactly at a=0.
+ delta=add(sc(v,r),add(u,mv(G,L)));y=tuple(rnd(x+d,c) for x,d in zip(p,delta))
+ x=add(X,u);convected_lever=mv(completeF,L)
+ columns=tuple(tuple(rnd(z,c) for z in add(psi,mv(g,L))) for psi,g in zip(modes,grads))
+ first={i:C for i,C in zip(body_indices,columns)};first[radial_index]=mv(completeF,v)
+ mixed={tuple(sorted((i,radial_index))):mv(g,v) for i,g in zip(body_indices,grads)}
+ return dict(X=X,x=x,p=p,v=v,lever=lever,L=L,u=u,F=completeF,y=y,delta=delta,
+             modes=modes,G=grads,body_indices=body_indices,radial_index=radial_index,
+             first=first,mixed=mixed,convected_lever=convected_lever,coordinates=coordinates)
+
+def scalar_twojets(subside,overside,frame,coordinate_order,subowner,overowner,c):
+ """Independent receiver cancellation h=e0.yo-(Ro e0).(Rs ys).
+
+    The receiver point/director rotation cancels before interval arithmetic.
+    Thus owner/over-body and owner/over-radial mixed entries are EXACT zero.
+    """
+ assert subowner!=overowner
+ I=c['I'];n=len(coordinate_order);ys=subside['y'];B=[I(0)]*n;H=[[I(0) for _ in range(n)] for _ in range(n)]
+ eta=rnd(dot(frame,sub(overside['delta'],subside['delta'])),c)
+ owners={owner:{name:i for i,co in enumerate(coordinate_order) if co[0]=='owner' and co[1]==owner for name in (co[2],)} for owner in (subowner,overowner)}
+ for owner in (subowner,overowner):assert set(owners[owner])==set('xyz')
+ for i,col in subside['first'].items():B[i]=rnd(B[i]-dot(frame,col),c)
+ for i,col in overside['first'].items():B[i]=rnd(B[i]+dot(frame,col),c)
+ for (i,j),value in subside['mixed'].items():H[i][j]=H[j][i]=rnd(H[i][j]-dot(frame,value),c)
+ for (i,j),value in overside['mixed'].items():H[i][j]=H[j][i]=rnd(H[i][j]+dot(frame,value),c)
+ for name,idx in owners[subowner].items():B[idx]=rnd(-dot(unitaxis(name),cross(ys,frame)),c)
+ for name,idx in owners[overowner].items():B[idx]=rnd(dot(unitaxis(name),cross(ys,frame)),c)
+ for owner in (subowner,overowner):
+  for na,i in owners[owner].items():
+   for nb,j in owners[owner].items():
+    H[i][j]=rnd(-dot(frame,sym2(unitaxis(na),unitaxis(nb),ys)) if owner==subowner
+                else -dot(sym2(unitaxis(na),unitaxis(nb),frame),ys),c)
+ for ns,i in owners[subowner].items():
+  for no,j in owners[overowner].items():H[i][j]=H[j][i]=rnd(-dot(cross(unitaxis(no),frame),cross(unitaxis(ns),ys)),c)
+ for index,col in subside['first'].items():
+  for name,i in owners[subowner].items():H[i][index]=H[index][i]=rnd(-dot(frame,cross(unitaxis(name),col)),c)
+  for name,i in owners[overowner].items():H[i][index]=H[index][i]=rnd(-dot(cross(unitaxis(name),frame),col),c)
+ return eta,tuple(B),tuple(tuple(row) for row in H)
+
+def atom_oracle(source,subside,overside,coordinate_order,branch,c):
+ # Physical force/moment/modal work is minus the potential gradient.
+ assert subside['coordinates']==overside['coordinates']
+ assert all(subside['coordinates'][i]==0 for i,co in enumerate(coordinate_order) if co[0]=='owner')
+ I=c['I'];frames=tuple(vbound(e,c) for e in source['archival_old_reference']['receiver_director_bounds'])
+ scalars=tuple(scalar_twojets(subside,overside,e,coordinate_order,source['sub_owner'],source['over_owner'],c) for e in frames)
+ eta=tuple(x[0] for x in scalars);B=tuple(x[1] for x in scalars);H=tuple(x[2] for x in scalars)
+ t=tuple(f(x) for x in source['literal_source_tractions_pa']);rawK=tuple(f(x) for x in source['series_stiffness_exact_pa_m'])
+ relaxed=branch=='relaxed_zero_strength_shear';K=(rawK[0],F(0) if relaxed else rawK[1]);A=f(source['original_area_m2'])
+ if relaxed:assert t[1]==0
+ traction=tuple(rnd(I(t0)+k*d,c) for t0,k,d in zip(t,K,eta));assert traction[0].hi<0,'strict compressed normal branch'
+ E0=sum((f(x) for x in source['stored_source_energy_components_j']),F(0))
+ E=rnd(I(E0)+A*sum((I(t0)*d+k*square(d,c)/2 for t0,k,d in zip(t,K,eta)),I(0)),c)
+ n=len(coordinate_order);active=tuple(sorted(set(subside['first'])|set(overside['first'])|{i for i,co in enumerate(coordinate_order) if co[0]=='owner' and co[1] in (source['sub_owner'],source['over_owner'])}))
+ gg=[I(0)]*n;hh=[[I(0) for _ in range(n)] for _ in range(n)]
+ for i in active:
+  gg[i]=rnd(A*sum((traction[a]*B[a][i] for a in range(2)),I(0)),c)
+  for j in active:hh[i][j]=rnd(A*sum((K[a]*B[a][i]*B[a][j]+traction[a]*H[a][i][j] for a in range(2)),I(0)),c)
+ g=tuple(gg);h=tuple(tuple(row) for row in hh)
+ curvature=tuple(tuple(rnd(A*sum((traction[a]*H[a][i][j] for a in range(2)),I(0)),c) if i in active and j in active else I(0) for j in range(n)) for i in range(n))
+ Fworld=tuple(rnd(A*sum((traction[a]*frames[a][j] for a in range(2)),I(0)),c) for j in range(3))
+ forces=(Fworld,neg(Fworld));sheets=(subside,overside)
+ force_moments=tuple(cross(s['x'],force) for s,force in zip(sheets,forces))
+ lever_moments=tuple(cross(s['convected_lever'],force) for s,force in zip(sheets,forces))
+ director_couple=cross(sub(overside['y'],subside['y']),Fworld)
+ owner_moments=(add(force_moments[0],lever_moments[0]),add(add(force_moments[1],lever_moments[1]),director_couple))
+ hyperstress=tuple(tuple(tuple(force[i]*side['L'][j] for j in range(3)) for i in range(3)) for side,force in zip(sheets,forces))
+ modal_work=tuple(tuple(rnd(dot(force,psi)+sum((P[i][j]*G[i][j] for i in range(3) for j in range(3)),I(0)),c)
+                 for psi,G in zip(side['modes'],side['G'])) for side,force,P in zip(sheets,forces,hyperstress))
+ internal_work=tuple(rnd(dot(force,mv(side['F'],side['v'])),c) for side,force in zip(sheets,forces))
+ return dict(eta=eta,B=B,H=H,traction=traction,K=K,energy=E,gradient=g,hessian=h,source_energy0=E0,
+             active=active,prestress_curvature=curvature,frames=frames,world_forces=forces,material_point_force_moments=force_moments,
+             convected_lever_moments=lever_moments,receiver_director_couple=director_couple,
+             owner_total_moments=owner_moments,hyperstress=hyperstress,
+             material_point_and_gradient_modal_work=modal_work,internal_driver_work=internal_work)
+
+def projection_oracle(block,c):
+ """Cold integrals are authenticated inputs; no quadrature is performed.
+    dN/hN already differentiate N/2. Cauchy is an enclosure of the SAME p/k.
+    """
+ I=c['I'];k=b(block['reference_tip_strain_stiffness_n_m'],c);p=b(block['projection_remainder_n'],c)
+ dp=vbound(block['projection_remainder_gradient_n_m'],c);hp=mbound(block['projection_remainder_hessian_n_m2'],c)
+ N=b(block['remainder_strain_inner_product_j'],c);dN=vbound(block['remainder_local_gradient_n'],c);hN=mbound(block['remainder_local_hessian_n_m'],c)
+ assert k.lo>0 and N.hi>=0;cap=sqrtcap(N.hi/k.lo);raw=p/k;q=I(max(raw.lo,-cap),min(raw.hi,cap))
+ a=tuple(f(x) for x in block['coordinates_m']);s=rnd(I(a[0])+q,c);ds=tuple(rnd(I(int(i==0))+dp[i]/k,c) for i in range(7))
+ hs=tuple(tuple(rnd(hp[i][j]/k,c) for j in range(7)) for i in range(7));R=rnd(N/2-square(p,c)/(2*k),c)
+ assert R.hi>=0;R=I(max(F(0),R.lo),R.hi)
+ gR=tuple(rnd(dN[i]-q*dp[i],c) for i in range(7));hR=tuple(tuple(rnd(hN[i][j]-dp[i]*dp[j]/k-q*hp[i][j],c) for j in range(7)) for i in range(7))
+ return dict(s=s,ds=ds,hs=hs,R=R,gR=gR,hR=hR,k=k,p=p,quotient=q,independent_cauchy_cap=cap)
+
+def beam_oracle(beam,projection,body_indices,radial_index,coordinates,n,c):
+ I=c['I'];k=f(beam['stiffness_exact_n_m']);w=f(beam['reference_displacement_m']);r=coordinates[radial_index]
+ d=projection['s']+r;D=[I(0)]*n;DD=[[I(0) for _ in range(n)] for _ in range(n)]
+ for i,x in zip(body_indices,projection['ds']):D[i]=x
+ D[radial_index]=I(1)
+ for ii,i in enumerate(body_indices):
+  for jj,j in enumerate(body_indices):DD[i][j]=projection['hs'][ii][jj]
+ force=rnd(k*(I(w)+d),c);E=rnd(k*(I(w)*d+square(d,c)/2),c)
+ active=tuple(body_indices)+(radial_index,);gg=[I(0)]*n;hh=[[I(0) for _ in range(n)] for _ in range(n)]
+ for i in active:
+  gg[i]=rnd(force*D[i],c)
+  for j in active:hh[i][j]=rnd(k*D[i]*D[j]+force*DD[i][j],c)
+ g=tuple(gg);h=tuple(tuple(row) for row in hh)
+ return dict(driver=d,first=tuple(D),second=tuple(tuple(row) for row in DD),energy_increment=E,force=force,gradient=g,hessian=h)
+
+def fixed_owner_atom_path(source,subside,overside,body_steps,radial_steps,branch,c):
+ """Independent polynomial path: a(t)=a+t da,r(t)=r+t dr.
+    Eta is quadratic; traction*eta' is cubic. No stored historical work changes.
+    """
+ I=c['I'];coeff=[]
+ for side in (subside,overside):
+  da=tuple(body_steps.get(i,F(0)) for i in side['body_indices']);dr=radial_steps.get(side['radial_index'],F(0))
+  du=tuple(sum((x*psi[j] for x,psi in zip(da,side['modes'])),I(0)) for j in range(3))
+  dG=tuple(tuple(sum((x*g[i][j] for x,g in zip(da,side['G'])),I(0)) for j in range(3)) for i in range(3))
+  c1=add(add(du,mv(dG,side['L'])),sc(mv(side['F'],side['v']),dr))
+  c2=sc(mv(dG,side['v']),dr);coeff.append((side['delta'],c1,c2))
+ frames=tuple(vbound(e,c) for e in source['archival_old_reference']['receiver_director_bounds']);A=f(source['original_area_m2'])
+ t=tuple(f(x) for x in source['literal_source_tractions_pa']);K=tuple(f(x) for x in source['series_stiffness_exact_pa_m'])
+ if branch=='relaxed_zero_strength_shear':K=(K[0],F(0));assert t[1]==0
+ out=[]
+ for channel,(e,t0,k) in enumerate(zip(frames,t,K)):
+  eta=tuple(dot(e,sub(coeff[1][i],coeff[0][i])) for i in range(3));c0,c1,c2=eta;tref=I(t0)+k*c0
+  bernstein=(c0,c0+c1/2,c0+c1+c2)
+  interval_range=I(min(x.lo for x in bernstein),max(x.hi for x in bernstein))
+  traction_range=I(t0)+k*interval_range
+  if channel==0:assert traction_range.hi<0,'WHOLE joint path stays on compressed normal branch'
+  power=(tref*c1,2*tref*c2+k*c1*c1,3*k*c1*c2,2*k*c2*c2)
+  integral=rnd(A*sum((x/F(i+1) for i,x in enumerate(power)),I(0)),c)
+  increment=rnd(A*(tref*(c1+c2)+k*square(c1+c2,c)/2),c)
+  out.append(dict(eta_polynomial=eta,power_polynomial=power,work_integral=integral,potential_difference=increment,
+                  scalar_range_bound=interval_range,traction_range_bound=traction_range,
+                  power_convention='PLUS_POTENTIAL_DIFFERENTIAL_DU',
+                  equality_is_correlated_algebra=True))
+ # Physical point/attachment power uses the independently expanded vector
+ # force against both complete quadratic driver velocities, hence -dU/dt.
+ forcepoly=tuple(tuple(A*sum(((I(t[a])+K[a]*out[a]['eta_polynomial'][0]) if degree==0 else K[a]*out[a]['eta_polynomial'][degree])*frames[a][j] for a in range(2)) for j in range(3)) for degree in range(3))
+ velocity0=sub(coeff[0][1],coeff[1][1]);velocity1=sc(sub(coeff[0][2],coeff[1][2]),F(2))
+ physical=(dot(forcepoly[0],velocity0),dot(forcepoly[1],velocity0)+dot(forcepoly[0],velocity1),dot(forcepoly[2],velocity0)+dot(forcepoly[1],velocity1),dot(forcepoly[2],velocity1))
+ plus=tuple(A*sum((channel['power_polynomial'][i] for channel in out),I(0)) for i in range(4))
+ for actual,potential in zip(physical,plus):
+  residual=actual+potential;assert residual.lo<=0<=residual.hi,'whole polynomial physical power is MINUS potential power'
+ physical_integral=rnd(sum((coefficient/F(i+1) for i,coefficient in enumerate(physical)),I(0)),c)
+ for channel in out:
+  channel['complete_physical_attachment_power_polynomial']=physical
+  channel['complete_physical_work_integral']=physical_integral
+  channel['physical_power_convention']='MINUS_POTENTIAL_DIFFERENTIAL_DU'
+ return tuple(out)
+
+
+# Exact frozen public dataclass field schemas read statically, without project import.
+SCHEMAS={'NativeCommonLocalSourcePointField': ('point_id', 'trace_id', 'side', 'original_parent_id', 'original_material_id', 'owner', 'original_label_membership', 'archive_cohort_id', 'component_id', 'material_response_binding_sha256', 'body_snapshot_sha256', 'coordinate_order', 'coordinates_m', 'body_coordinate_indices', 'owner_coordinate_indices', 'residual_coordinate_index', 'material_reference_position_bounds_m', 'source_reference_position_bounds_m', 'source_virtual_radial_direction_bounds', 'mode_displacement_columns', 'mode_spatial_gradient_columns_per_m', 'material_depth_bounds_m', 'source_material_parent_json', 'source_material_allocation_json', 'source_archive_cohort_json'), 'NativeCommonLocalSourceSideResponse': ('field', 'residual_increment_m', 'actual_material_position_bounds_m', 'virtual_source_position_bounds_m', 'virtual_source_displacement_bounds_m', 'reference_internal_arm_bounds_m', 'internal_arm_bounds_m', 'convected_internal_arm_bounds_m', 'deformation_gradient_bounds', 'virtual_radial_driver_bounds', 'body_driver_columns'), 'NativeCommonLocalSourceAtomResponse': ('point_id', 'trace_id', 'source_accounting_bucket', 'original_area_m2', 'sub', 'over', 'active_coordinate_indices', 'receiver_director_bounds', 'scalar_increment_bounds_m', 'scalar_free_anchor_bounds_m', 'scalar_first_derivative_bounds', 'scalar_second_derivative_bounds', 'traction_bounds_pa', 'effective_tangent_stiffness_pa_m', 'potential_bounds_j', 'potential_gradient_bounds', 'potential_hessian_bounds', 'prestress_curvature_hessian_bounds', 'force_on_sub_n', 'force_on_over_n', 'sub_material_hyperstress_bounds_nm', 'over_material_hyperstress_bounds_nm', 'force_attachment_torque_on_sub_nm', 'force_attachment_torque_on_over_nm', 'lever_couple_on_sub_nm', 'lever_couple_on_over_nm', 'receiver_carrier_couple_on_over_nm', 'complete_attachment_torque_on_sub_nm', 'complete_attachment_torque_on_over_nm', 'action_reaction_residual_bounds_n', 'world_moment_residual_bounds_nm', 'virtual_work_residual_bounds', 'proposed_plastic_increment_bounds_m', 'stored_source_energy_components_j', 'original_source_state_json', 'source_work_lineage_id', 'archival_literal_world_reactions_json', 'archival_mathematical_minus_literal_reaction_bounds', 'series_stiffness_binary64_pa_m', 'traction_rounding_residual_pa', 'source_energy_rounding_residual_j'), 'NativeCommonLocalSourceBeamResponse': ('trace_id', 'side', 'source_coordinate_index', 'active_coordinate_indices', 'projected_body_increment_bounds_m', 'residual_increment_m', 'driver_increment_bounds_m', 'potential_increment_bounds_j', 'potential_gradient_bounds', 'potential_hessian_bounds', 'stiffness_exact_n_m', 'reference_force_exact_n', 'reference_energy_exact_j'), 'NativeCommonLocalSourceReferenceCertificate': ('system_binding_sha256', 'source_coordinate_order', 'source_coordinate_increments', 'source_to_global_injection', 'branch', 'potential_bounds_j', 'gradient_bounds', 'hessian_bounds', 'old_source_potential_bounds_j', 'old_source_gradient_bounds', 'old_source_hessian_bounds', 'source_energy_identity_residual_bounds_j', 'source_first_variation_residual_bounds', 'source_second_variation_residual_bounds', 'atom_scalar_first_identity_residual_bounds', 'atom_scalar_second_identity_residual_bounds', 'atom_scalar_increment_identity_residual_bounds', 'precision', 'binding_sha256', 'cold_body_zero_is_a_symbolic_restriction_not_a_bulk_query', 'source_atoms_and_beams_only', 'zero_bulk_hessian_claimed', 'original875_nonzero_anchor_operator_identity_claimed', 'full_registered_nonzero_bulk_work_identified_with_old_source'), 'NativeCommonLocalSourceWorkSystem': ('projection_system_binding_sha256', 'material_system_binding_sha256', 'carrier_system_binding_sha256', 'source_snapshot_sha256', 'reference_snapshot_sha256', 'material_reference_snapshot_sha256', 'coordinate_order', 'source_coordinate_order', 'source_to_global_injection', 'bound_coordinate_increments', 'material_point_fields', 'projection_blocks', 'genuine_surface_response_binding_sha256', 'hot_zero_coordinate_indices', 'original_source_work_lineages', 'complete_original_source_material_state_json', 'complete_current_source_states_json', 'complete_current_source_memory_json', 'complete_before_work_ledgers_json', 'complete_unaccepted_candidate_work_ledgers_json', 'source_serial_reference_energy_j', 'source_beam_literal_reference_energy_j', 'source_beam_energy_rounding_residual_j', 'source_contact_elapsed_time_s', 'source_contact_step_count', 'source_memory_elapsed_time_s', 'source_geometry_elapsed_time_s', 'material_geometry_elapsed_time_s', 'provenance', 'precision', 'binding_sha256', 'scope', 'local_source_attachment_law', 'receiver_mechanical_director_law', 'energetic_owner', 'source_internal_coordinate_count', 'source_state_or_work_advanced', 'source_force_basis'), 'NativeCommonLocalSourceWorkResponse': ('system_binding_sha256', 'coordinate_order', 'coordinate_increments', 'branch', 'source_atom_responses', 'source_beam_responses', 'source_potential_bounds_j', 'source_gradient_bounds', 'source_hessian_bounds', 'orthogonal_energy_bounds_j', 'orthogonal_gradient_bounds', 'orthogonal_hessian_bounds', 'potential_bounds_j', 'potential_gradient_bounds', 'potential_hessian_bounds', 'hot_zero_coordinate_indices', 'original_source_work_lineages', 'genuine_surface_response_binding_sha256', 'source_contact_elapsed_time_s', 'source_memory_elapsed_time_s', 'source_geometry_elapsed_time_s', 'material_geometry_elapsed_time_s', 'precision', 'binding_sha256', 'scope', 'energetic_owner', 'source_state_or_work_advanced', 'source_internal_coordinate_count', 'hot_thirty_source_coupling_exact_zero')}
+FLAGS={'local_material_source_gradient_and_prestress_hessian_defined': True, 'old_sixteen_projected_atom_terms_replaced': True, 'eight_genuine_internal_material_residuals_retained': True, 'all_hundred_coordinates_necessary_proved': False, 'ninety_two_coordinate_reduction_impossible_proved': False, 'source_literal_area_energy_state_work_and_clocks_preserved': True, 'old_mechanical_directors_replaced_by_nanson_normals': False, 'source_state_or_work_advanced': False, 'continuous_face_energy_energized': False, 'original875_nonzero_atom_operator_identity_claimed': False, 'zero_bulk_quadrature_or_zero_bulk_hessian_invented': False, 'physical_archived_three_dimensional_handover_certified': False, 'current_common_face_force_transition_certified': False, 'hot_receiving_law_certified': False, 'new_mixed_equilibrium_certified': False, 'whole_clock_all_pair_admission_authorized': False, 'physical_material_admission_authorized': False, 'accepted_new_native_intervals': 0, 'original_point_1_completed': False}
+
+def expected_summary():
+    return dict(physical_candidate_status=PHYSICAL_SCOPE, global_coordinate_count=100, owner_coordinate_count=6, cold_coordinate_count=56, hot_coordinate_count=30, explicit_authentic_source_internal_coordinate_count=8, local_source_atom_count=16, original_material_attachment_count=32, archived_original_donor_attachment_count=8, genuine_geometry_only_surface_binding_count=5, complete_local_source_query_count=4, complete_source_reference_query_count=4, complete_prestress_second_variation_defined=True, body_internal_mixed_second_variations_retained=True, force_hyperstress_and_internal_virtual_work_defined=True, joint_body_internal_atom_path_work_defined=True, literal_global_beams_and_registered_bulk_remainders_energized_once=True, old_source14_structural_body_zero_first_second_variations_certified=True, full_nonzero_common_body_probe_is_registered_and_fixed=True, local_force_work_component_changes_old875_potential=True, geometry_only_surface_measure_and_memory_bindings_retained=True, source_internal_links_reduced_into_common_body_modes=False, unconditional92_coordinate_reduction_impossibility_proved=False, old875_nonzero_source_force_identity_claimed=False, unknown_body_zero_bulk_hessian_supplied=False, physical_source_material_handover_certified=False, full_three_dimensional_rod_endpoints_recovered=False, whole_archived_three_dimensional_history_recovered=False, whole_face_measure_or_memory_integral_certified=False, current_deformed_follower_normal_contact_law_defined=False, old_mechanical_atom_areas_smeared_into_continuous_density=False, continuous_face_energy_added_to_old_source_potential=False, hot_receiving_contact_law_inferred=False, new_mixed_force_equilibrium_certified=False, whole_clock_all_pair_admission_authorized=False, physical_material_admission_authorized=False, source_history_advanced=False, fresh_tensor_quadrature_executed=False, historical_force_solve_reexecuted=False, accepted_original_native_intervals=1, accepted_new_native_intervals=0, original_point_1_remaining_work_blocks=1, original_point_1_completed=False, remaining_physical_conditions=list(REMAINING_CONDITIONS))
+
+PARENT=ROOT/'analysis/geometric_native_common_local_source_work_validation'
+PRIOR=ROOT/'analysis/geometric_native_common_material_surface_transport_validation'
+SCOPE=PHYSICAL_SCOPE='LOCAL_SOURCE_FORCE_WORK_WITH_DECLARED_INTERNAL_RESIDUAL_COMPONENT_ONLY'
+NEW_MAP='5ec421080c7450b362ae5a5b3d02e1b3f82ecf67ee514034a56e60b4a86d4c51'
+NEW_MAP_RAW='1638c727bea07487d9f9c734e0aa5469bde0e79032221b3d1f4134379905a360'
+OLD_MAP='4a75d4bc7d404fc11d5d252302fe6b6d961797b4a637f921c38acb679485b79c'
+OLD_MAP_RAW='1b948eace979f3125756f6f0dea803fb55d0d2e87650890a2236c07502b0c336'
+OLD_MANIFEST_RAW='1347310d09095ce8e3dff7db970262524c323a5542861fa2402bb1431c7f7e4b'
+OLD_MANIFEST_SEAL='651f204118935dadff0a6326b5534772e30a7e2af9374c41ba5ac099641cde66'
+BASELINE_RAW='0ab740087c8a1ca3f8aee474e2d4b114d6ab8805eaf035419bb85248c42ecb25'
+BASELINE_EVIDENCE={
+'baseline_879_bootstrap_source.txt':'f23843c4065d8d8bd4095a9f0b1ecbf948386e92ea1047506f09104bbf7a66f1',
+'baseline_879_bootstrap.json':'cd9654ddb97418eb5fede3c445730dee88cfeee2eaeca09d56d2ec3a03e549a9',
+'baseline_879_bootstrap_console.log':'cd9654ddb97418eb5fede3c445730dee88cfeee2eaeca09d56d2ec3a03e549a9',
+'baseline_879_bootstrap_archive_association.json':'a4612fd93eb0aa5208f840f72d515efe8233831ba01ebfa984eac33727a5da41',
+'baseline_879_reusable_source.txt':BASELINE_RAW}
+ADDED=frozenset(('tectonics/geometric_native_common_local_source_work.py','tests/test_geometric_native_common_local_source_work.py','analysis/geometric_native_common_local_source_work_validation/native_control.py','analysis/geometric_native_common_local_source_work_validation/validate.py'))
+OUTPUTS=frozenset(('pytest.log','control_console.log','native_control/report.json','native_control/source_packet.json'))
+BRANCHES=('relaxed_zero_strength_shear','frozen_elastic_predictor')
+MOTION_LAW='FRESH_OWNER_OF_ARCHIVAL_P0_PLUS_RV_PLUS_LOCAL_U_PLUS_F_MINUS_I_TIMES_L_PLUS_RV'
+DIRECTOR_LAW='FRESH_RECEIVER_OWNER_ROTATION_OF_LITERAL_ARCHIVAL_MECHANICAL_MICRODIRECTORS'
+ENERGY_OWNERSHIP='LOCAL16_REPLACE_PROJECTED16_WITH_SOURCE_BEAM8_AND_ORTHOGONAL_REMAINDER8_ONCE'
+REMAINING_CONDITIONS=[
+'Whole-source physical material and old-force/prestress/work handover, HOT law/mean chart, loads/drag and NEW mixed equilibrium',
+'Whole-clock all-pair admission including reverse C5 to C1',
+'Accepted continuation with independent path work, balances and joint restart']
+OLD_PACKETS={
+'carrier':('analysis/geometric_native_common_source_carrier_validation/release_validation_02/native_control/source_packet.json','265206430b4c864db32bce1be0a9a75b71fa180158f3d81e4f52131bebdf320c',None),
+'material':('analysis/geometric_native_common_material_transfer_validation/release_validation_01/native_control/source_packet.json','a9fcc7874c0e68940e20ded658748300f55d9f1d296db5c9d67b59269ac8b3ed','cd1e2457a857b47891cd40a89219abfac3aa2228028aa9636f0e77f7a10082dd'),
+'projection':('analysis/geometric_native_common_strain_projection_validation/release_validation_03/native_control/source_packet.json','2ddf12415b9abecbbeead78a203ba82d7e18fea84bc9197aa789a607514939b2','f4c5f9519698c28bf12b9854dc05f78704f25068fca427478a0cfc98786f1a8d'),
+'surface':('analysis/geometric_native_common_material_surface_transport_validation/release_validation_02/native_control/source_packet.json','f2884284f663564d304537f91614efbb01e5b7df5ebdab86ac7eb6e77287ee64','368a524a954ac5f2ba3a6b92c182d34d1c3567ba7df1314c0afd02b2cff2c23e')}
+
+class Interval:
+ """Exact rational interval arithmetic; no floating point or midpoint."""
+ __slots__=('lo','hi')
+ def __init__(self,lo,hi=None):
+  self.lo=F(lo);self.hi=self.lo if hi is None else F(hi);assert self.lo<=self.hi
+ def __add__(self,o):
+  o=asI(o);return Interval(self.lo+o.lo,self.hi+o.hi)
+ __radd__=__add__
+ def __neg__(self):return Interval(-self.hi,-self.lo)
+ def __sub__(self,o):return self+-asI(o)
+ def __rsub__(self,o):return asI(o)+-self
+ def __mul__(self,o):
+  o=asI(o);p=(self.lo*o.lo,self.lo*o.hi,self.hi*o.lo,self.hi*o.hi);return Interval(min(p),max(p))
+ __rmul__=__mul__
+ def __truediv__(self,o):
+  o=asI(o);assert not o.lo<=0<=o.hi;return self*Interval(1/o.hi,1/o.lo)
+ def __rtruediv__(self,o):return asI(o)/self
+ def __eq__(self,o):
+  o=asI(o);return self.lo==o.lo and self.hi==o.hi
+ def __repr__(self):return f'Interval({self.lo!r},{self.hi!r})'
+def asI(v):return v if type(v) is Interval else Interval(v)
+def outward_relative_grid(value,precision):
+ """Pinned cold stdlib helper's relative-grid rule, evaluated independently."""
+ maximum=max(abs(value[0]),abs(value[1]))
+ if not maximum:return F(0),F(0)
+ exponent=maximum.numerator.bit_length()-maximum.denominator.bit_length()
+ below=maximum.numerator < maximum.denominator<<exponent if exponent>=0 else maximum.numerator<<(-exponent)<maximum.denominator
+ exponent-=int(below);shift=(3322*precision+999)//1000+8-exponent
+ factor=F(1<<shift) if shift>=0 else F(1,1<<(-shift));low,high=value[0]*factor,value[1]*factor
+ return F(low.numerator//low.denominator)/factor,F(-(-high.numerator//high.denominator))/factor
+
+def enc(v):return json.dumps(v,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+def vd(v):return hashlib.sha256(enc(v)).hexdigest()
+def digest(path):
+ h=hashlib.sha256()
+ with Path(path).open('rb') as stream:
+  for chunk in iter(lambda:stream.read(1<<20),b''):h.update(chunk)
+ return h.hexdigest()
+def read(path):return json.loads(Path(path).read_bytes())
+def payload(v):
+ if type(v) is F:return [v.numerator,v.denominator]
+ if type(v) is Interval:return {'lo':payload(v.lo),'hi':payload(v.hi)}
+ if type(v) in (tuple,list):return [payload(x) for x in v]
+ if type(v) is dict:return {k:payload(x) for k,x in v.items()}
+ return v
+def exact(actual,expected,label):
+ assert type(actual) is type(expected) and actual==expected,label
+ if type(actual) in (list,tuple,dict):assert enc(payload(actual))==enc(payload(expected)),label+' recursive literal kinds'
+def sealed(path,key):
+ v=read(path);exact(v.get(key),vd({k:x for k,x in v.items() if k!=key}),'complete selfseal '+str(path));return v
+def contains(raw,value,c,label):
+ observed=b(raw,c);expected=asI(value)
+ assert observed.lo<=expected.lo<=expected.hi<=observed.hi,label
+ return observed
+def tree(raw,value,c,label):
+ if type(value) in (tuple,list):
+  assert type(raw) is list and len(raw)==len(value),label+' shape'
+  return tuple(tree(a,e,c,label+':'+str(i)) for i,(a,e) in enumerate(zip(raw,value)))
+ return contains(raw,value,c,label)
+def zero_tree(raw,c,label):
+ if type(raw) is list:
+  for i,x in enumerate(raw):zero_tree(x,c,label+':'+str(i))
+ else:
+  v=b(raw,c);assert v.lo<=0<=v.hi,label
+
+def dataclass_schema(raw,name):
+ exact(set(raw),set(SCHEMAS[name]),'complete raw dataclass schema '+name)
+def typed(raw,name,format_name):
+ schema=set(SCHEMAS[name]);extra=set(FLAGS)|{'format','scope'}
+ exact(set(raw),schema|extra,'strict exported schema '+name)
+ exact(raw['format'],format_name,'format '+name);exact(raw['scope'],SCOPE,'scope '+name)
+ for key,v in FLAGS.items():exact(raw[key],v,'scopeflag '+key)
+ exact(raw['binding_sha256'],vd({k:raw[k] for k in SCHEMAS[name] if k!='binding_sha256'}),'full typed selfseal '+name)
+ return raw
+
+def source_map():
+ return {str(p.relative_to(ROOT)):digest(p) for d in ('tectonics','tests','scripts','analysis') for p in sorted((ROOT/d).rglob('*.py'))}
+def complete_noncached_files(directory):
+ return {str(p.relative_to(directory)) for p in directory.rglob('*') if p.is_file() and '__pycache__' not in p.parts}
+
+def closure(directory,wrapper):
+ exact(set(wrapper['outputs']),set(OUTPUTS),'strict four gate outputs')
+ exact({str(p.relative_to(directory)) for p in directory.rglob('*') if p.is_file()},set(OUTPUTS)|{'report.json'},'strict five closed gate files')
+ for name,row in wrapper['outputs'].items():
+  exact(digest(directory/name),row['sha256'],'closed literal output raw '+str(directory/name));exact((directory/name).stat().st_size,row['bytes'],'closed output bytes '+name)
+def summary(raw):
+ result=expected_summary()
+ for key,v in result.items():exact(raw[key],v,'fixed physical scope '+key)
+ return result
+
+def load_baseline(path):
+ exact(digest(path),BASELINE_RAW,'frozen stdlib879 reusable producer')
+ m=types.ModuleType('_local_source_work883_stdlib_879_preservation');m.__file__=str(path)
+ exec(compile(path.read_bytes(),str(path),'exec'),m.__dict__)
+ return m
+
+def audit_baseline(baseline,before,out):
+ bm=load_baseline(baseline);p=out.with_name(out.stem+'_baseline879_readback.json');assert not p.exists(),'fresh baseline path'
+ with redirect_stdout(io.StringIO()):prior=bm.run(ADDED,output_path=p,source_stage='DECLARED883',bootstrap_source_path=PARENT/'baseline_879_bootstrap_source.txt',bootstrap_report_path=PARENT/'baseline_879_bootstrap.json')
+ exact(prior,read(p),'returned/saved full ancestry receipt');sealed(p,'audit_sha256')
+ for key,v in (('status','PASS_IMMUTABLE879_WITH_DECLARED_SOURCE_ADDITIONS_ONLY'),('baseline_source_count',879),('current_python_source_count',883),('source_stage','DECLARED883'),('preserved_closed879_manifest_file_count',83),('recorded_raw_dependency_pin_count',277),('preserved_879_recorded_raw_dependency_pin_count',271),('old_final879_readback_archive_closed_file_count',6),('project_imports',False),('baseline1633_reexecuted',False),('all277_preserved_dependency_and_archive_raw_sha256_hashed_before_after',True),('complete_declared883_or_frozen879_source_map_before_after_identical',True),('current_python_source_map_sha256',vd(before)),('frozen879_source_map_canonical_sha256',OLD_MAP),('frozen879_source_map_raw_sha256',OLD_MAP_RAW)):
+  exact(prior[key],v,'before math preservation metadata '+key)
+ exact(prior['declared_additional_source_paths'],sorted(ADDED),'exact four authorized paths')
+ exact(prior['additional_python_sources'],{k:before[k] for k in sorted(ADDED)},'exact new883 pins')
+ exact(len(prior['dependency_raw_sha256']),277,'complete old271 plus six dependency pins')
+ projected=Path(prior['projected_reader_report_path']);pin=prior['projected_reader_report_raw_sha256'];exact(digest(projected),pin,'actual nested preservation raw before math')
+ return prior,p,digest(p),projected,pin
+
+ANCESTRY_RELEASES=(('analysis/geometric_native_affine_body_validation/release_validation_01', 826, 39, 'a5ed86778a9388a56df2c89d758d17795c861c118bd4de66c6be0b5400b084db'), ('analysis/geometric_native_cold_body_validation/release_validation_01', 833, 20, 'a0843a4f9d886e61125eae0bda9c4964b60d54736b539776b1d32d46d8e56a67'), ('analysis/geometric_native_common_reference_validation/release_validation_01', 841, 36, '9898f31f796006a7791140bf1c290c0e1605555a12e476e1585ce3f5992a743f'), ('analysis/geometric_native_common_contact_validation/release_validation_01', 847, 25, 'e8ffabb1a29c1fb021e94fe53e815b6ad8d16ea14e9103a30b9f7428ac9ab847'), ('analysis/geometric_native_common_contact_force_validation/release_validation_02', 853, 19, '1d7a6ac8113a408aab6764f1c4a9fccb09f8d48184f5118434fc685574504313'), ('analysis/geometric_native_common_contact_transfer_validation/release_validation_01', 859, 21, '1b5e1695f2ddfa8ea879619e91cde6b4cfb2c7c7c89e34db04148d8765f7f9ae'), ('analysis/geometric_native_common_source_allocation_validation/release_validation_02', 863, 17, '7df81606a168656cd51208a71d7ad425714751f736d9ed4ca50218263e106f95'), ('analysis/geometric_native_common_source_carrier_validation/release_validation_02', 867, 18, '47b5c882c041f5a2c6d460c71eae11091a6217ff78a0df14af9b57f214ba633e'), ('analysis/geometric_native_common_material_transfer_validation/release_validation_01', 871, 14, '44d12b3fb10edfef90a83c50385278b45135d1b051a5733d2b2f7d98f2755b56'), ('analysis/geometric_native_common_strain_projection_validation/release_validation_03', 875, 14, 'a7e74fc5d8774eaaabdcf3919357d27dbd6c35f0c79ea741cb0a89057e51e10e'), ('analysis/geometric_native_common_material_surface_transport_validation/release_validation_02', 879, 14, '82f3b165a6a4da350ae83a587ea77ce114aef97f7794d7e6e7a871dfd900715c'))
+
+def prior_ancestry():
+ receipts=[]
+ for name,count,tests,pin in ANCESTRY_RELEASES:
+  directory=ROOT/name;exact(digest(directory/'report.json'),pin,'fixed old authoritative wrapper '+name)
+  w=sealed(directory/'report.json','report_sha256');exact(w['status'],'PASS','old archived PASS');exact(w['source_count'],count,'old source count');exact(w['pytest_counts'],{'passed':tests},'old tests not reexecuted')
+  closure(directory,w);receipts.append((directory,w,pin))
+ return receipts
+
+def matrix_slice(M,indices):return tuple(tuple(M[i][j] for j in indices) for i in indices)
+def sparse_g(g,indices):return tuple(g[i] for i in indices)
+def sums(values,c):return rnd(sum(values,c['I'](0)),c)
+def scatter(G,H,indices,g,h):
+ for a,i in enumerate(indices):
+  G[i]=G[i]+g[a]
+  for bb,j in enumerate(indices):H[i][j]=H[i][j]+h[a][bb]
+
+def authenticate_system(system,packets,c):
+ typed(system,'NativeCommonLocalSourceWorkSystem','native-common-local-source-work-system-1')
+ source=packets['carrier']['carrier_system'];transfer=packets['projection']['material_transfer'];projection=packets['projection']['strain_projection'];surface=packets['surface']
+ exact(surface['material_transfer'],transfer,'ENTIRE875→879 material transfer unchanged')
+ exact(transfer,packets['material']['material_transfer'],'ENTIRE authentic871 material/source/beam catalogue unchanged')
+ exact(surface['common_reference'],packets['carrier']['common_reference'],'ENTIRE current COMMON reference unchanged')
+ exact(surface['allocation'],packets['carrier']['allocation'],'ENTIRE genuine source allocation unchanged')
+ order=tuple(tuple(x) for x in transfer['coordinate_order']);sourceorder=tuple(tuple(x) for x in transfer['source_coordinate_order'])
+ exact(len(order),100,'hundred catalogue');exact(len(sourceorder),14,'old14 catalogue')
+ exact(system['coordinate_order'],payload(order),'complete100 order');exact(system['source_coordinate_order'],payload(sourceorder),'complete old14 order')
+ exact(projection['coordinate_order'],payload(order[:92]),'old92 common catalogue unchanged')
+ exact(system['source_to_global_injection'],transfer['source_to_global_injection'],'single immutable871 owner/internal injection')
+ T=tuple(tuple(f(x) for x in row) for row in system['source_to_global_injection']);support=tuple(transfer['source_support_indices'])
+ exact(support,tuple(range(6))+tuple(range(92,100)),'complete source14 global support')
+ assert len(T)==100 and all(len(row)==14 for row in T)
+ for i,row in enumerate(T):
+  for j,x in enumerate(row):exact(x,F(int(i==support[j])),'identity source14 injection, no body duplication')
+ expectedbound=projection['bound_coordinate_increments']+[[0,1]]*8
+ exact(system['bound_coordinate_increments'],expectedbound,'NONZERO registered92 plus zero internal origin')
+ bound=tuple(f(x) for x in expectedbound);assert not any(bound[:6]);assert any(bound[6:92])
+ exact(system['projection_system_binding_sha256'],projection['binding_sha256'],'whole projection system binding')
+ exact(system['material_system_binding_sha256'],transfer['binding_sha256'],'complete material system binding')
+ exact(system['carrier_system_binding_sha256'],source['binding_sha256'],'complete archival carrier binding')
+ exact(transfer['source_carrier_binding_sha256'],source['binding_sha256'],'old carrier dependency binding')
+ for key in ('source_snapshot_sha256','reference_snapshot_sha256','original_source_work_lineages','complete_original_source_material_state_json','complete_current_source_states_json','complete_current_source_memory_json','complete_before_work_ledgers_json','complete_unaccepted_candidate_work_ledgers_json','source_serial_reference_energy_j','source_beam_literal_reference_energy_j','source_beam_energy_rounding_residual_j','source_contact_elapsed_time_s','source_contact_step_count','source_memory_elapsed_time_s','source_geometry_elapsed_time_s','material_geometry_elapsed_time_s'):
+  exact(system[key],projection[key],'complete source energy/work/state/clock unchanged '+key)
+ exact(system['material_reference_snapshot_sha256'],transfer['reference_snapshot_sha256'],'complete material geometry reference binding')
+ exact(system['projection_blocks'],projection['projection_blocks'],'ALL authenticated raw projection/bulk receipts retained')
+ exact(system['hot_zero_coordinate_indices'],projection['hot_zero_coordinate_indices'],'authentic HOT30 explicit zero catalogue');hot=tuple(system['hot_zero_coordinate_indices']);exact(len(hot),30,'HOT coordinate count')
+ for key,v in (('local_source_attachment_law',MOTION_LAW),('receiver_mechanical_director_law',DIRECTOR_LAW),('energetic_owner',ENERGY_OWNERSHIP),('source_force_basis',FORCE_BASIS),('source_internal_coordinate_count',8),('precision',96)):
+  exact(system[key],v,'declared local component law '+key)
+ assert type(system['provenance']) is str and system['provenance'].strip()
+ exact(f(system['source_contact_elapsed_time_s']),F(2000000),'contact epoch2e6')
+ exact(f(system['source_memory_elapsed_time_s']),F(1000000),'memory epoch1e6')
+ exact(f(system['source_geometry_elapsed_time_s']),F(0),'archival virtual source geometry epoch0')
+ exact(f(system['material_geometry_elapsed_time_s']),F(1000000),'actual material geometry epoch1e6')
+ E0=sum((sum((f(e) for e in atom['stored_source_energy_components_j']),F(0)) for atom in source['carriers']),F(0))
+ exact(f(system['source_serial_reference_energy_j']),E0,'literal contact+serial column energy once')
+ exact(f(system['source_serial_reference_energy_j']),f(source['all16_source_energy_exact_j']),'all16 literal serial energy')
+ exact(system['source_beam_literal_reference_energy_j'],transfer['beam_reference_energy_j'],'literal global old beam E0 once')
+ exact(system['source_beam_energy_rounding_residual_j'],transfer['beam_energy_rounding_residual_j'],'signed beam calibration residue preserved')
+ exact(f(transfer['beam_reference_energy_j'])-sum((f(row['reference_energy_exact_j']) for row in transfer['beams']),F(0)),f(transfer['beam_energy_rounding_residual_j']),'global beam exact reference plus signed old literal residual')
+ blocks={row['component_id']:row for row in projection['projection_blocks']};exact(len(blocks),8,'eight distinct projection banks')
+ fields=system['material_point_fields'];exact(len(fields),32,'all32 genuine original label fields')
+ originals={}
+ for row in surface['original_material_queries']:
+  a=row['arguments']
+  if a['material_depth_bounds_m']==payload(c['I'](0)):
+   key=(a['point_id'],a['side']);assert key not in originals;originals[key]=row['response']
+ exact(len(originals),32,'all32 prior top-depth NONZERO material fields')
+ expectedkeys=[(atom['point_id'],side) for atom in source['carriers'] for side in ('sub','over')]
+ exact([(p['point_id'],p['side']) for p in fields],expectedkeys,'original source once-only ordering')
+ attachments={(a['point_id'],a['side']):a for a in transfer['attachments']};sourcebyid={a['point_id']:a for a in source['carriers']}
+ mapped={};counts=[0,0,0];radius=f(source['source_radius_m'])
+ for field,key in zip(fields,expectedkeys):
+  dataclass_schema(field,'NativeCommonLocalSourcePointField');r=originals[key];a=attachments[key];atom=sourcebyid[key[0]];basis=atom['archival_old_reference'];side=key[1]
+  block=blocks[r['geometry_field_component_id']];bodyindices=tuple(block['global_coordinate_indices']);owner=atom[side+'_owner']
+  expected=dict(point_id=r['point_id'],trace_id=r['trace_id'],side=side,original_parent_id=r['original_parent_id'],original_material_id=r['original_material_id'],owner=owner,original_label_membership=r['original_label_membership'],archive_cohort_id=r['archive_cohort_id'],component_id=r['geometry_field_component_id'],material_response_binding_sha256=r['binding_sha256'],body_snapshot_sha256=r['body_snapshot_sha256'],coordinate_order=r['coordinate_order'],coordinates_m=r['coordinates_m'],body_coordinate_indices=list(bodyindices),owner_coordinate_indices=[order.index(('owner',owner,axis)) for axis in 'xyz'],residual_coordinate_index=order.index(('source_internal',atom['trace_id'],side)),material_reference_position_bounds_m=r['reference_position_bounds_m'],source_reference_position_bounds_m=basis[side+'_position_bounds_m'],source_virtual_radial_direction_bounds=basis[side+'_direction_bounds'],mode_displacement_columns=r['mode_displacement_columns'],mode_spatial_gradient_columns_per_m=r['mode_spatial_gradient_columns_per_m'],material_depth_bounds_m=r['material_depth_bounds_m'],source_material_parent_json=r['complete_original_parent_json'],source_material_allocation_json=r['complete_parent_allocation_json'],source_archive_cohort_json=r['complete_archive_cohort_json'])
+  exact(field,expected,'COMPLETE original point field binding '+str(key))
+  for meta in ('original_parent_id','original_material_id','owner','original_label_membership','archive_cohort_id'):
+   exact(r[meta],a[meta],'authentic original attachment '+meta)
+  exact(r['geometry_field_component_id'],a['geometry_field_component_id'],'original same-parent field bank')
+  exact(r['coordinate_order'],[order[i][2] for i in bodyindices],'genuine7 body mode order')
+  exact(r['coordinates_m'],block['coordinates_m'],'authentic nonzero projection coordinates')
+  exact([payload(bound[i]) for i in bodyindices],block['coordinates_m'],'entire bound coordinates associated with bank')
+  exact(r['material_depth_bounds_m'],payload(c['I'](0)),'original topdepth restriction')
+  literalq=tuple(f(x) for x in r['original_direction_literal']);tree(basis[side+'_direction_bounds'],literalq,c,'literal source q remains unnormalized')
+  tree(basis[side+'_position_bounds_m'],sc(literalq,radius),c,'archival basis source radius times literal q')
+  assert r['original_material_membership_authenticated'] is True and r['same_parent_original_quarter_field_extension_declared'] is True
+  assert r['current_live_mask_membership_authenticated'] is False and r['deformed_source_rod_endpoint_equivalence_certified'] is False
+  if side=='over':counts[2]+=1
+  elif field['archive_cohort_id'] is not None:counts[0]+=1
+  else:counts[1]+=1
+  mapped[key]=dict(field=field,original=r,position=vbound(basis[side+'_position_bounds_m'],c),direction=vbound(basis[side+'_direction_bounds'],c),body_indices=bodyindices,radial_index=field['residual_coordinate_index'])
+ exact(counts,[8,8,16],'original archive8/live8/receiver16 label counts')
+ surfaces=[surface['surface_queries'][2*i+1]['response'] for i in range(5)]
+ exact(system['genuine_surface_response_binding_sha256'],[r['binding_sha256'] for r in surfaces],'all5 authentic geometry-only current surface bindings')
+ assert len({r['receiving_cell_id'] for r in surfaces})==5
+ for r in surfaces:
+  for side in ('donor','receiver'):
+   fld=r[side];blk=blocks[fld['component_id']]
+   exact(fld['coordinates_m'],blk['coordinates_m'],'surface field same authentic nonzero coordinates');exact(fld['coordinate_order'],[order[i][2] for i in blk['global_coordinate_indices']],'surface full genuine mode order')
+  for name in ('source_contact_elapsed_time_s','source_memory_elapsed_time_s'):
+   exact(r[name],system[name],'surface literal source clocks')
+  assert r['current_normals_used_as_constitutive_directors'] is False and r['new_energy_or_force_law_added'] is False
+ return dict(source=source,transfer=transfer,projection=projection,order=order,sourceorder=sourceorder,T=T,support=support,bound=bound,points=mapped,blocks=blocks,hot=hot,system=system)
+
+def checked_projection(block,packets,c):
+ rows={r['component_id']:r for r in packets['projection']['authentic_cold_contexts']};receipt=rows[block['component_id']];raw=receipt['raw_integrals']
+ for name,key in (('body_snapshot_sha256','body_snapshot_sha256'),('material_snapshot_sha256','material_snapshot_sha256'),('raw_integral_sha256','integral_snapshot_sha256'),('coordinates_m','coordinates_m')):
+  exact(block[name],raw[key],'projection full raw context '+name)
+ for name,key in (('reference_tip_strain_stiffness_n_m','reference_tip_strain_stiffness_n_m'),('projection_remainder_n','projection_remainder_n'),('projection_remainder_gradient_n_m','projection_remainder_gradient_n_m'),('projection_remainder_hessian_n_m2','projection_hessian_n_m2'),('remainder_strain_inner_product_j','remainder_strain_inner_product_j'),('remainder_local_gradient_n','remainder_local_gradient_n'),('remainder_local_hessian_n_m','remainder_local_hessian_n_m')):
+  exact(block[name],raw[key],'genuine full certified integral input '+name)
+ # Original full raw73 and its exact declared channel semantics remain immutable.
+ actual=raw['actual_material_integral_bounds'];exact(len(actual),73,'all73 retained integration channels')
+ exact(raw['projection_remainder_n'],actual[1],'raw p channel1')
+ exact(raw['projection_remainder_gradient_n_m'],actual[2:9],'raw Dp channels2:9')
+ upper=[actual[k] for k in range(9,37)];hp=[[None]*7 for _ in range(7)];k=0
+ for i in range(7):
+  for j in range(i,7):hp[i][j]=hp[j][i]=upper[k];k+=1
+ exact(raw['projection_hessian_n_m2'],hp,'raw symmetric Hp upper triangle9:37')
+ exact(raw['remainder_strain_inner_product_j'],actual[37],'raw actual N channel37')
+ exact(raw['remainder_local_gradient_n'],actual[38:45],'halfN gradient already derivative, no extra half')
+ hn=[[None]*7 for _ in range(7)];k=45
+ for i in range(7):
+  for j in range(i,7):hn[i][j]=hn[j][i]=actual[k];k+=1
+ exact(raw['remainder_local_hessian_n_m'],hn,'halfN Hessian already derivative, no extra half')
+ p=projection_oracle(block,c)
+ for name,value in (('projection_increment_bounds_m',p['s']),('projection_gradient_bounds',p['ds']),('projection_hessian_bounds',p['hs']),('orthogonal_energy_bounds_j',p['R']),('orthogonal_gradient_bounds_n',p['gR']),('orthogonal_hessian_bounds_n_m',p['hR']),('projection_quotient_bounds_m',p['quotient'])):
+  tree(block[name],value,c,'independent retained projection/'+name)
+ cap=f(block['projection_quotient_cauchy_absolute_upper_bound_m']);ratio=b(block['remainder_strain_inner_product_j'],c).hi/p['k'].lo
+ assert cap>=0 and cap*cap>=ratio
+ # Production cap is the minimal upward dyadic grid point at precision96.
+ bits=(3322*(96+16)+999)//1000+8;assert cap*(1<<bits)==int(cap*(1<<bits))
+ if cap:assert (cap-F(1,1<<bits))**2<ratio,'minimal production dyadic Cauchy cap'
+ return p
+
+def side_oracle(point,coordinates,c):
+ return local_side(point['original'],point['position'],point['direction'],point['body_indices'],point['radial_index'],coordinates,c)
+
+def audit_side(raw,point,value,coordinates,c):
+ dataclass_schema(raw,'NativeCommonLocalSourceSideResponse');exact(raw['field'],point['field'],'complete atom-side original label binding')
+ exact(f(raw['residual_increment_m']),coordinates[point['radial_index']],'genuine internal increment')
+ for key,name in (('actual_material_position_bounds_m','x'),('virtual_source_position_bounds_m','y'),('virtual_source_displacement_bounds_m','delta'),('reference_internal_arm_bounds_m','lever'),('internal_arm_bounds_m','L'),('convected_internal_arm_bounds_m','convected_lever'),('deformation_gradient_bounds','F')):
+  tree(raw[key],value[name],c,'independent finite convected side '+key)
+ tree(raw['virtual_radial_driver_bounds'],mv(value['F'],value['v']),c,'full F*v internal driver')
+ tree(raw['body_driver_columns'],tuple(value['first'][i] for i in point['body_indices']),c,'Psi+G*(lever+r*v) authentic local columns')
+
+def audit_atom(raw,source,subside,overside,context,coordinates,branch,c):
+ dataclass_schema(raw,'NativeCommonLocalSourceAtomResponse');value=atom_oracle(source,subside,overside,context['order'],branch,c)
+ key=source['point_id'];audit_side(raw['sub'],context['points'][key,'sub'],subside,coordinates,c);audit_side(raw['over'],context['points'][key,'over'],overside,coordinates,c)
+ for name,keyname in (('point_id','point_id'),('trace_id','trace_id'),('source_accounting_bucket','source_accounting_bucket'),('original_area_m2','original_area_m2'),('stored_source_energy_components_j','stored_source_energy_components_j'),('original_source_state_json','source_local_state_json'),('source_work_lineage_id','original_source_work_lineage_id'),('archival_literal_world_reactions_json','archival_literal_world_reactions_json'),('archival_mathematical_minus_literal_reaction_bounds','archival_mathematical_minus_literal_reaction_bounds'),('series_stiffness_binary64_pa_m','series_stiffness_binary64_pa_m'),('traction_rounding_residual_pa','traction_rounding_residual_pa'),('source_energy_rounding_residual_j','energy_rounding_residual_j')):
+  exact(raw[name],source[keyname],'literal immutable atom source '+name)
+ active=value['active'];exact(raw['active_coordinate_indices'],list(active),'full owner6/body14/internal2 atom sparse22 support');exact(len(active),22,'genuine complete atom support count')
+ tree(raw['receiver_director_bounds'],value['frames'],c,'original mechanical directors, no Nanson substitution')
+ tree(raw['scalar_increment_bounds_m'],value['eta'],c,'local projected scalar increments')
+ tree(raw['scalar_free_anchor_bounds_m'],tuple(asI(f(a))+d for a,d in zip(source['stored_free_anchors_m'],value['eta'])),c,'literal free anchors plus current increment without reset')
+ tree(raw['scalar_first_derivative_bounds'],tuple(sparse_g(v,active) for v in value['B']),c,'full scalar first variations')
+ tree(raw['scalar_second_derivative_bounds'],tuple(matrix_slice(v,active) for v in value['H']),c,'full scalar second variations including Gv and spins')
+ tree(raw['traction_bounds_pa'],value['traction'],c,'traction from potential');exact(raw['effective_tangent_stiffness_pa_m'],payload(value['K']),'branch exact stiffness')
+ for name,keyname in (('potential_bounds_j','energy'),('potential_gradient_bounds','gradient'),('potential_hessian_bounds','hessian'),('prestress_curvature_hessian_bounds','prestress_curvature')):
+  x=value[keyname];x=sparse_g(x,active) if keyname=='gradient' else matrix_slice(x,active) if keyname in ('hessian','prestress_curvature') else x
+  tree(raw[name],x,c,'complete atom potential/'+name)
+ forcefields=(('force_on_sub_n',value['world_forces'][0]),('force_on_over_n',value['world_forces'][1]),('sub_material_hyperstress_bounds_nm',value['hyperstress'][0]),('over_material_hyperstress_bounds_nm',value['hyperstress'][1]),('force_attachment_torque_on_sub_nm',value['material_point_force_moments'][0]),('force_attachment_torque_on_over_nm',value['material_point_force_moments'][1]),('lever_couple_on_sub_nm',value['convected_lever_moments'][0]),('lever_couple_on_over_nm',value['convected_lever_moments'][1]),('receiver_carrier_couple_on_over_nm',value['receiver_director_couple']),('complete_attachment_torque_on_sub_nm',value['owner_total_moments'][0]),('complete_attachment_torque_on_over_nm',value['owner_total_moments'][1]))
+ for name,x in forcefields:tree(raw[name],x,c,'independent material point/couple/hyperstress '+name)
+ tree(raw['action_reaction_residual_bounds_n'],(c['I'](0),)*3,c,'all3 force action/reaction components');tree(raw['world_moment_residual_bounds_nm'],(c['I'](0),)*3,c,'all3 complete moment balance components');tree(raw['virtual_work_residual_bounds'],(c['I'](0),)*len(active),c,'all22 physical virtual work components')
+ physical={}
+ for side,work,radial,moment in zip((subside,overside),value['material_point_and_gradient_modal_work'],value['internal_driver_work'],value['owner_total_moments']):
+  for i,x in zip(side['body_indices'],work):physical[i]=physical.get(i,c['I'](0))+x
+  physical[side['radial_index']]=physical.get(side['radial_index'],c['I'](0))+radial
+ for owner,moment in zip((source['sub_owner'],source['over_owner']),value['owner_total_moments']):
+  for axis,x in zip('xyz',moment):
+   index=context['order'].index(('owner',owner,axis));physical[index]=physical.get(index,c['I'](0))+x
+ for i in active:
+  residual=value['gradient'][i]+physical[i];assert residual.lo<=0<=residual.hi,'independent complete physical point/P:G/r/owner virtual-work sign'
+ plastic=value['eta'][1] if branch==BRANCHES[0] else c['I'](0);tree(raw['proposed_plastic_increment_bounds_m'],plastic,c,'proposed plastic increment, no state advance')
+ # A genuine joint local-body/internal path, with all coefficients retained.
+ da={subside['body_indices'][0]:F(1,10**8),subside['body_indices'][4]:-F(1,3*10**8),overside['body_indices'][1]:F(1,7*10**8)}
+ dr={subside['radial_index']:F(1,10**8),overside['radial_index']:-F(1,2*10**8)}
+ path=fixed_owner_atom_path(source,subside,overside,da,dr,branch,c)
+ for channel in path:
+  residual=channel['work_integral']-channel['potential_difference'];assert residual.lo<=0<=residual.hi,'independent exact polynomial path work/energy identity'
+ return value,dict(point_id=source['point_id'],trace_id=source['trace_id'],branch=branch,active_coordinate_indices=list(active),normal_traction_bounds_pa=payload(value['traction'][0]),joint_body_steps=payload(da),joint_internal_steps=payload(dr),joint_path_channels=payload(path),physical_force_hyperstress_internal_owner_work_is_minus_gradient=True,source_state_or_work_advanced=False)
+
+
+def audit_beam(raw,beam,block,projection,coordinates,context,c):
+ dataclass_schema(raw,'NativeCommonLocalSourceBeamResponse');radial=context['order'].index(('source_internal',beam['trace_id'],beam['side']));indices=tuple(block['global_coordinate_indices'])+(radial,)
+ expected=beam_oracle(beam,projection,tuple(block['global_coordinate_indices']),radial,coordinates,100,c)
+ for key in ('trace_id','side','source_coordinate_index','stiffness_exact_n_m','reference_force_exact_n','reference_energy_exact_j'):exact(raw[key],beam[key],'literal authentic old beam '+key)
+ exact(raw['active_coordinate_indices'],list(indices),'beam cold7/internal1 support order')
+ exact(f(raw['residual_increment_m']),coordinates[radial],'beam same genuine internal residual')
+ for key,x in (('projected_body_increment_bounds_m',projection['s']),('driver_increment_bounds_m',expected['driver']),('potential_increment_bounds_j',expected['energy_increment']),('potential_gradient_bounds',sparse_g(expected['gradient'],indices)),('potential_hessian_bounds',matrix_slice(expected['hessian'],indices))):tree(raw[key],x,c,'single beam s+r potential/'+key)
+ return expected
+
+def audit_evaluation(row,expected_args,context,projections,c,index):
+ exact(set(row),{'arguments','response'},'literal query envelope');exact(row['arguments'],expected_args,'EXACT immutable871/875 composed query arguments')
+ raw=typed(row['response'],'NativeCommonLocalSourceWorkResponse','native-common-local-source-work-response-1');system=context['system']
+ coords=tuple(f(x) for x in expected_args['coordinate_increments']);branch=expected_args['branch'];assert branch in BRANCHES
+ assert coords[:92]==context['bound'][:92] and coords[:6]==(F(0),)*6
+ exact(raw['coordinate_increments'],expected_args['coordinate_increments'],'queried100→returned100 association');exact(raw['branch'],branch,'returned branch');exact(raw['precision'],96,'returned query precision')
+ for key in ('coordinate_order','original_source_work_lineages','genuine_surface_response_binding_sha256','hot_zero_coordinate_indices','source_contact_elapsed_time_s','source_memory_elapsed_time_s','source_geometry_elapsed_time_s','material_geometry_elapsed_time_s','energetic_owner','source_internal_coordinate_count','source_state_or_work_advanced'):
+  exact(raw[key],system[key],'complete response system binding '+key)
+ exact(raw['system_binding_sha256'],system['binding_sha256'],'registered response system binding');exact(raw['hot_thirty_source_coupling_exact_zero'],True,'explicit HOT zero semantics')
+ atoms=raw['source_atom_responses'];beams=raw['source_beam_responses'];exact(len(atoms),16,'once-only16 local atoms');exact(len(beams),8,'once-only8 old beams')
+ n=100;G=[c['I'](0)]*n;H=[[c['I'](0) for _ in range(n)] for _ in range(n)];energies=[];paths=[]
+ for a,source in zip(atoms,context['source']['carriers']):
+  subside=side_oracle(context['points'][source['point_id'],'sub'],coords,c);overside=side_oracle(context['points'][source['point_id'],'over'],coords,c)
+  value,path=audit_atom(a,source,subside,overside,context,coords,branch,c);energies.append(value['energy']);paths.append(path)
+  scatter(G,H,value['active'],sparse_g(value['gradient'],value['active']),matrix_slice(value['hessian'],value['active']))
+ blocks_by_source={b['source_coordinate_index']:b for b in context['blocks'].values()};beamE=[]
+ for rawbeam,beam in zip(beams,context['transfer']['beams']):
+  block=blocks_by_source[beam['source_coordinate_index']];p=projections[block['component_id']]
+  value=audit_beam(rawbeam,beam,block,p,coords,context,c);beamE.append(value['energy_increment']);active=tuple(rawbeam['active_coordinate_indices'])
+  scatter(G,H,active,sparse_g(value['gradient'],active),matrix_slice(value['hessian'],active))
+ Esource=sums([c['I'](f(system['source_beam_literal_reference_energy_j']))]+energies+beamE,c)
+ G=tuple(rnd(x,c) for x in G);H=tuple(tuple(rnd(x,c) for x in r) for r in H)
+ GR=[c['I'](0)]*n;HR=[[c['I'](0) for _ in range(n)] for _ in range(n)];RR=[]
+ for block in context['blocks'].values():
+  p=projections[block['component_id']];RR.append(p['R']);scatter(GR,HR,tuple(block['global_coordinate_indices']),p['gR'],p['hR'])
+ R=sums(RR,c);GR=tuple(rnd(x,c) for x in GR);HR=tuple(tuple(rnd(x,c) for x in r) for r in HR)
+ totalG=tuple(rnd(a+d,c) for a,d in zip(G,GR));totalH=tuple(tuple(rnd(a+d,c) for a,d in zip(ar,dr)) for ar,dr in zip(H,HR));totalE=rnd(Esource+R,c)
+ for key,value in (('source_potential_bounds_j',Esource),('source_gradient_bounds',G),('source_hessian_bounds',H),('orthogonal_energy_bounds_j',R),('orthogonal_gradient_bounds',GR),('orthogonal_hessian_bounds',HR),('potential_bounds_j',totalE),('potential_gradient_bounds',totalG),('potential_hessian_bounds',totalH)):
+  tree(raw[key],value,c,'independent COMPLETE100 assembly '+key)
+ for i in context['hot']:
+  exact(raw['potential_gradient_bounds'][i],payload(c['I'](0)),'HOT zero gradient exactly')
+  for j in range(n):
+   exact(raw['potential_hessian_bounds'][i][j],payload(c['I'](0)),'HOT zero Hessian row');exact(raw['potential_hessian_bounds'][j][i],payload(c['I'](0)),'HOT zero Hessian column')
+ print('INDEPENDENT local-source100 query',index+1,'/4 PASS; complete16 atoms,8 beams,R8;16 joint paths',flush=True)
+ return dict(query_index=index,branch=branch,coordinate_increments=expected_args['coordinate_increments'],potential_bounds_j=payload(totalE),source_potential_bounds_j=payload(Esource),orthogonal_energy_bounds_j=payload(R),atom_joint_path_receipts=paths,complete100_first_and_second_variations=True,source_atom_count=16,beam_count=8,orthogonal_bulk_owner_count=8,hot_zero_count=30)
+
+
+def original_source_side(source,basis,side,z,sourceorder,c):
+ """Direct old driver p0+r*v, independently of any COMMON cold field."""
+ p=vbound(basis[side+'_position_bounds_m'],c);v=vbound(basis[side+'_direction_bounds'],c);i=sourceorder.index(('radial',source['trace_id'],side));r=z[i]
+ delta=sc(v,r);y=add(p,delta);Fidentity=tuple(tuple(c['I'](int(a==bb)) for bb in range(3)) for a in range(3))
+ return dict(X=p,x=y,p=p,v=v,lever=(c['I'](0),)*3,L=(c['I'](0),)*3,u=(c['I'](0),)*3,F=Fidentity,y=y,delta=delta,modes=(),G=(),body_indices=(),radial_index=i,first={i:v},mixed={},convected_lever=(c['I'](0),)*3,coordinates=z)
+
+
+def audit_reference(row,expected_args,context,c,index):
+ exact(set(row),{'arguments','response'},'source14 query envelope');exact(row['arguments'],expected_args,'immutable871 authentic old14 exact query')
+ raw=typed(row['response'],'NativeCommonLocalSourceReferenceCertificate','native-common-local-source-original14-certificate-1');system=context['system']
+ z=tuple(f(x) for x in expected_args['source_coordinate_increments']);branch=expected_args['branch'];assert z[:6]==(F(0),)*6 and branch in BRANCHES
+ for key,v in (('system_binding_sha256',system['binding_sha256']),('source_coordinate_order',system['source_coordinate_order']),('source_coordinate_increments',expected_args['source_coordinate_increments']),('source_to_global_injection',system['source_to_global_injection']),('branch',branch),('precision',96),('cold_body_zero_is_a_symbolic_restriction_not_a_bulk_query',True),('source_atoms_and_beams_only',True),('zero_bulk_hessian_claimed',False),('original875_nonzero_anchor_operator_identity_claimed',False),('full_registered_nonzero_bulk_work_identified_with_old_source',False)):
+  exact(raw[key],v,'truthful source-only structural14 '+key)
+ q=tuple(sum((context['T'][i][j]*z[j] for j in range(14)),F(0)) for i in range(100));assert q[6:92]==(F(0),)*86
+ supports=context['support'];Enew=[c['I'](f(system['source_beam_literal_reference_energy_j']))];Eold=list(Enew);Gnew=[c['I'](0)]*14;Gold=list(Gnew);Hnew=[[c['I'](0) for _ in range(14)] for _ in range(14)];Hold=[[c['I'](0) for _ in range(14)] for _ in range(14)]
+ identityrows={key:raw[key] for key in ('atom_scalar_first_identity_residual_bounds','atom_scalar_second_identity_residual_bounds','atom_scalar_increment_identity_residual_bounds')}
+ for key,rows in identityrows.items():
+  assert type(rows) is list and len(rows)==16
+  exact([r[0] for r in rows],[a['point_id'] for a in context['source']['carriers']],'all16 scalar identity ordering')
+ for a,source in enumerate(context['source']['carriers']):
+  local_s=side_oracle(context['points'][source['point_id'],'sub'],q,c);local_o=side_oracle(context['points'][source['point_id'],'over'],q,c)
+  new=atom_oracle(source,local_s,local_o,context['order'],branch,c)
+  basis=source['archival_old_reference'];old_s=original_source_side(source,basis,'sub',z,context['sourceorder'],c);old_o=original_source_side(source,basis,'over',z,context['sourceorder'],c)
+  old=atom_oracle(source,old_s,old_o,context['sourceorder'],branch,c)
+  for channel in range(2):
+   for label,l,r in (('eta',new['eta'][channel],old['eta'][channel]),):
+    d=l-r;assert d.lo<=0<=d.hi,'independent direct-old scalar identity '+label
+   for i,gi in enumerate(supports):
+    d=new['B'][channel][gi]-old['B'][channel][i];assert d.lo<=0<=d.hi,'independent complete old14 scalar first identity'
+    for j,gj in enumerate(supports):
+     d=new['H'][channel][gi][gj]-old['H'][channel][i][j];assert d.lo<=0<=d.hi,'independent complete old14 scalar second identity'
+  for key,rows in identityrows.items():
+   zeros=((c['I'](0),)*14,)*2 if key=='atom_scalar_first_identity_residual_bounds' else (((c['I'](0),)*14,)*14,)*2 if key=='atom_scalar_second_identity_residual_bounds' else (c['I'](0),)*2
+   exact(len(rows[a]),2,'point/residual identity pair shape');tree(rows[a][1],zeros,c,'sealed complete source14 scalar residual '+key)
+  Enew.append(new['energy']);Eold.append(old['energy'])
+  for i,gi in enumerate(supports):
+   Gnew[i]+=new['gradient'][gi];Gold[i]+=old['gradient'][i]
+   for j,gj in enumerate(supports):Hnew[i][j]+=new['hessian'][gi][gj];Hold[i][j]+=old['hessian'][i][j]
+ for beam in context['transfer']['beams']:
+  i=beam['source_coordinate_index'];r=z[i];k=f(beam['stiffness_exact_n_m']);w=f(beam['reference_displacement_m']);increment=c['I'](k*(w*r+r*r/2))
+  Enew.append(increment);Eold.append(increment);Gnew[i]+=k*(w+r);Gold[i]+=k*(w+r);Hnew[i][i]+=k;Hold[i][i]+=k
+ Enew=sums(Enew,c);Eold=sums(Eold,c);Gnew=tuple(rnd(x,c) for x in Gnew);Gold=tuple(rnd(x,c) for x in Gold);Hnew=tuple(tuple(rnd(x,c) for x in row) for row in Hnew);Hold=tuple(tuple(rnd(x,c) for x in row) for row in Hold)
+ for key,value in (('potential_bounds_j',Enew),('gradient_bounds',Gnew),('hessian_bounds',Hnew),('old_source_potential_bounds_j',Eold),('old_source_gradient_bounds',Gold),('old_source_hessian_bounds',Hold)):
+  tree(raw[key],value,c,'independent full old14 source/beam restriction '+key)
+ for key,zeros in (('source_energy_identity_residual_bounds_j',c['I'](0)),('source_first_variation_residual_bounds',(c['I'](0),)*14),('source_second_variation_residual_bounds',((c['I'](0),)*14,)*14)):
+  tree(raw[key],zeros,c,'complete old14 original derivative/energy identity '+key)
+ print('INDEPENDENT structural source14 query',index+1,'/4 PASS;16 direct original atoms,8 beams,NO bulk query',flush=True)
+ return dict(query_index=index,branch=branch,source_coordinate_increments=expected_args['source_coordinate_increments'],potential_bounds_j=payload(Eold),cold_zero_is_symbolic_source_restriction=True,old14_owner_internal_identity_injection=True,full_first_and_second_variations=True,bulk_energy_or_hessian_at_zero_supplied=False,original_nonzero875_operator_identity_claimed=False)
+
+
+def run(release,baseline,out):
+ started=time.perf_counter();release=Path(release).resolve();baseline=Path(baseline).resolve();out=Path(out).resolve()
+ assert out.is_relative_to(Path('/tmp')) and out.suffix=='.json' and not out.exists(),'fresh scratch report only'
+ assert release==PARENT/'release_validation_01','only authoritative selected release01'
+ producer=Path(__file__).resolve();producerpin=digest(producer);archived=PARENT/'independent_audit_source.txt';exact(digest(archived),producerpin,'executing scratch bytes==closed archived source BEFORE math')
+ currentpins={str(release/name):digest(release/name) for name in sorted(set(OUTPUTS)|{'report.json'})}
+ oldpath=PRIOR/'frozen_source_map_879.json';exact(digest(oldpath),OLD_MAP_RAW,'frozen old879 raw map');old=read(oldpath);exact(len(old),879,'old879 source count');exact(vd(old),OLD_MAP,'old879 canonical map')
+ frozenpath=PARENT/'frozen_source_map_883.json';exact(digest(frozenpath),NEW_MAP_RAW,'frozen883 raw map');frozen=read(frozenpath);exact(len(frozen),883,'actual883 source count');exact(vd(frozen),NEW_MAP,'frozen883 canonical map')
+ before=source_map();exact(before,frozen,'ALL883 actual source bytes BEFORE new mechanical mathematics');exact(set(before)-set(old),set(ADDED),'EXACT four allowed source additions')
+ for name,pin in old.items():exact(before[name],pin,'ALL879 old source unchanged '+name)
+ freeze=sealed(PARENT/'source_freeze_883.json','freeze_sha256');exact(freeze['freeze_sha256'],'13f56e1afe8678f1c555e7e859c0af3c25a89163423164c5f632cd443f741367','root authoritative883 freeze seal');freezepin=digest(PARENT/'source_freeze_883.json')
+ wrapper=sealed(release/'report.json','report_sha256');exact(wrapper['status'],'PASS','fresh authoritative SEALED root gate PASS required BEFORE baseline/math')
+ exact(digest(release/'report.json'),currentpins[str(release/'report.json')],'wrapper raw linked to initial sealed wrapper')
+ for key,v in (('format','native-common-local-source-work-same-process-validation-1'),('source_count',883),('verified_prior_python_sources',879),('verified_prior_artifacts',1633),('source_map_before_sha256',NEW_MAP),('source_map_after_sha256',NEW_MAP),('prior_source_map_sha256',OLD_MAP),('pytest_counts',{'passed':14}),('pytest_exit_code',0),('changed_python_paths',[]),('execution_mode','same_python_process'),('pytest_import_mode','importlib'),('historical_tests_reexecuted',False),('baseline1633_reexecuted',False),('prior_artifacts_and_python_sources_preserved_after',True),('test_paths',['tests/test_geometric_native_common_local_source_work.py']),('control','analysis.geometric_native_common_local_source_work_validation.native_control:run')):
+  exact(wrapper[key],v,'full fresh sealed gate metadata '+key)
+ exact(wrapper['added_python_sources'],{k:frozen[k] for k in sorted(ADDED)},'new4 raw source pins');exact(wrapper['verified_current_baseline_evidence'],BASELINE_EVIDENCE,'allfive actual bootstrap/reusable evidence pins');closure(release,wrapper);scope=summary(wrapper)
+ for name,pin in BASELINE_EVIDENCE.items():exact(digest(PARENT/name),pin,'actual preserved baseline evidence BEFOREmath')
+ native=sealed(release/'native_control/report.json','report_sha256');packet=sealed(release/'native_control/source_packet.json','packet_sha256');summary(native);summary(packet)
+ exact(native['status'],'PASS','strict native PASS');exact(native['format'],'native-common-local-source-work-control-1','native format');exact(packet['format'],'native-common-local-source-work-packet-1','packet format')
+ exact(set(packet),set(scope)|{'format','prior_875_packet_raw_sha256','prior_875_packet_selfseal','prior_879_packet_raw_sha256','prior_879_packet_selfseal','local_source_work_system','evaluation_queries','source_reference_queries','packet_sha256'},'ENTIRE complete current packet schema')
+ exact(set(native),set(scope)|{'format','status','source_packet_sha256','local_source_work_system_sha256','evaluation_queries_sha256','source_reference_queries_sha256','seconds','report_sha256'},'ENTIRE current native report schema')
+ exact(native['source_packet_sha256'],packet['packet_sha256'],'native complete packet linkage')
+ for key in ('local_source_work_system','evaluation_queries','source_reference_queries'):exact(native[key+'_sha256'],vd(packet[key]),'entire bound current output '+key)
+ currentseals={str(release/'report.json'):wrapper['report_sha256'],str(release/'native_control/report.json'):native['report_sha256'],str(release/'native_control/source_packet.json'):packet['packet_sha256']}
+ oldparentfiles=complete_noncached_files(PRIOR)
+ oldfinaldir=ROOT/'analysis/geometric_native_common_material_surface_transport_final_readback';oldfinalfiles=complete_noncached_files(oldfinaldir)
+ exact(oldfinalfiles,{'archive.json','console.log','readback.json','manifest_console.log','manifest_producer_source.txt','readback_source.txt'},'EXACT six oldfinal archive file names BEFOREmath')
+ prior,baselinepath,baselinepin,projected,projectedpin=audit_baseline(baseline,before,out)
+ print('BEFORE NEW MATH immutable879 stdlib preservation PASS:83 manifestfiles,271+6=277 raw dependencies',flush=True)
+ ancestry=prior_ancestry()
+ exact(digest(PRIOR/'artifact_manifest.json'),OLD_MANIFEST_RAW,'closed immutable879 manifest83 raw');manifest=sealed(PRIOR/'artifact_manifest.json','manifest_sha256');exact(manifest['manifest_sha256'],OLD_MANIFEST_SEAL,'immutable879 manifest seal');exact(len(manifest['files']),83,'closed old83 manifest file count')
+ priorartifactpins={}
+ for name,row in manifest['files'].items():
+  p=ROOT/name;assert p.is_relative_to(ROOT) and not p.is_symlink();exact(digest(p),row['sha256'],'old883 predecessor manifest raw '+name);exact(p.stat().st_size,row['bytes'],'old83 manifest literal size');priorartifactpins[str(p)]=row['sha256']
+ dependencies={**prior['dependency_raw_sha256'],**priorartifactpins,**currentpins,str(producer):producerpin,str(archived):producerpin,str(baselinepath):baselinepin,str(projected):projectedpin,str(PRIOR/'artifact_manifest.json'):OLD_MANIFEST_RAW,str(oldpath):OLD_MAP_RAW,str(frozenpath):NEW_MAP_RAW,str(PARENT/'source_freeze_883.json'):freezepin,**{str(PARENT/name):pin for name,pin in BASELINE_EVIDENCE.items()}}
+ # Each old wrapper keeps the INITIAL literal pin, never a newly sampled digest.
+ for directory,w,pin in ancestry:
+  p=str(directory/'report.json')
+  if p in dependencies:exact(dependencies[p],pin,'old pinned wrapper preserved when merging dependencies')
+  dependencies[p]=pin
+  for name,row in w['outputs'].items():
+   p=str(directory/name)
+   if p in dependencies:exact(dependencies[p],row['sha256'],'old complete closed output pin association')
+   dependencies[p]=row['sha256']
+ for name,row in wrapper['outputs'].items():exact(currentpins[str(release/name)],row['sha256'],'initial current raw/output selfseal association')
+ for path,pin in dependencies.items():exact(digest(path),pin,'ALL saved raw input/dependency pins BEFORE new mechanics '+path)
+ packets={}
+ for name,(path,pin,seal) in OLD_PACKETS.items():
+  p=ROOT/path;exact(digest(p),pin,'WHOLE immutable old mechanical/geometry packet '+name);packets[name]=sealed(p,'packet_sha256')
+  if seal is not None:exact(packets[name]['packet_sha256'],seal,'immutable predecessor selfseal '+name)
+  if str(p) in dependencies:exact(dependencies[str(p)],pin,'wholeoldpacket already bound preservation bytes')
+  dependencies[str(p)]=pin
+ for name,oldname in (('875','projection'),('879','surface')):
+  exact(packet['prior_'+name+'_packet_raw_sha256'],OLD_PACKETS[oldname][1],'declared fullold packet raw');exact(packet['prior_'+name+'_packet_selfseal'],packets[oldname]['packet_sha256'],'declared fullold packet seal')
+ c={'I':Interval};context=authenticate_system(packet['local_source_work_system'],packets,c)
+ projections={}
+ for block in context['blocks'].values():projections[block['component_id']]=checked_projection(block,packets,c)
+ print('INDEPENDENT all32 original-label local-field bindings and8 authentic raw73 projection/remainder algebra PASS',flush=True)
+ evaluations=packet['evaluation_queries'];references=packet['source_reference_queries'];exact(len(evaluations),4,'exact4 hundred-coordinate queries');exact(len(references),4,'exact4 source14 certificates')
+ evalreceipts=[];refreceipts=[]
+ oldrows=packets['material']['global_queries'][:4];exact(len(oldrows),4,'authentic literal871 existingzero/positive query catalogue')
+ for i,(row,oldrow) in enumerate(zip(evaluations,oldrows)):
+  args=oldrow['arguments'];expected=dict(coordinate_increments=payload(context['bound'][:92])+args['coordinate_increments'][92:],branch=args['branch'],precision=96)
+  evalreceipts.append(audit_evaluation(row,expected,context,projections,c,i))
+ for i,(row,oldrow) in enumerate(zip(references,oldrows)):
+  args=oldrow['arguments'];expected=dict(source_coordinate_increments=[args['coordinate_increments'][j] for j in context['support']],branch=args['branch'],precision=96)
+  refreceipts.append(audit_reference(row,expected,context,c,i))
+ exact(source_map(),before,'ALL883 actual source bytes AFTER complete new mathematical audit');closure(release,wrapper)
+ exact(complete_noncached_files(PRIOR),oldparentfiles,'old879 complete parent file set unchanged AFTERmath')
+ exact(complete_noncached_files(oldfinaldir),oldfinalfiles,'EXACT six oldfinal archive files AFTERmath')
+ for directory,w,pin in ancestry:
+  exact(digest(directory/'report.json'),pin,'fixed old authoritative wrapper AFTERmath');closure(directory,w)
+ for path,pin in dependencies.items():exact(digest(path),pin,'ALL raw dependencies unchanged AFTERnewmathematics '+path)
+ exact(source_map(),before,'ALL883 final source endpoint guard AFTER dependencyhashes')
+ exact(complete_noncached_files(PRIOR),oldparentfiles,'old879 parent closure final endpoint')
+ exact(complete_noncached_files(oldfinaldir),oldfinalfiles,'old six archive closure final endpoint')
+ assert not any(name=='tectonics' or name.startswith('tectonics.') or name=='tests' or name.startswith('tests.') for name in sys.modules),'no project/test imports'
+ report=dict(status='PASS',audit_scope=SCOPE,final_python_sources=883,unchanged_prior_python_sources=879,fresh_tests=14,source_map_canonical_sha256=NEW_MAP,frozen_source_map_raw_sha256=NEW_MAP_RAW,source_map_before_after_identical=True,added_python_source_count=4,added_python_sources={k:frozen[k] for k in sorted(ADDED)},output_closure_count=4,output_manifest=wrapper['outputs'],wrapper_raw_sha256=currentpins[str(release/'report.json')],wrapper_selfseal=wrapper['report_sha256'],native_raw_sha256=currentpins[str(release/'native_control/report.json')],native_selfseal=native['report_sha256'],source_packet_raw_sha256=currentpins[str(release/'native_control/source_packet.json')],source_packet_selfseal=packet['packet_sha256'],initial_current_release_raw_sha256=currentpins,initial_current_release_selfseal_by_path=currentseals,
+ independent_complete100_query_count=4,independent_source14_reference_query_count=4,independent_local_atom_query_count=64,independent_source_beam_query_count=32,independent_joint_body_internal_atom_path_count=64,independent_registered_projection_and_bulk_remainder_count=8,independent_original_material_attachment_count=32,independent_archived_original_donor_attachment_count=8,independent_live_original_donor_attachment_count=8,independent_live_original_receiver_attachment_count=16,independent_geometry_only_genuine_surface_binding_count=5,global_coordinate_count=100,owner_coordinate_count=6,cold_coordinate_count=56,hot_coordinate_count=30,source_internal_coordinate_count=8,
+ complete100_potential_gradient_and_prestress_hessian_rederived=True,body_internal_Gv_second_variations_retained=True,fresh_owner_material_internal_spin_and_director_couples_retained=True,receiver_owner_over_material_mixed_scalar_terms_cancel_exactly=True,force_hyperstress_internal_and_owner_physical_work_is_minus_energy_gradient=True,joint_atom_path_potential_work_is_plus_energy_difference=True,joint_atom_paths_wholly_strict_compressed_by_quadratic_bernstein_bound=True,old16projected_atom_terms_replaced=True,serial_contact_and_column16_stores_retained_once=True,literal_global_beam_reference_energy_and_signed_residual_retained_once=True,beam_driver_is_common_strain_projection_plus_authentic_internal_residual=True,orthogonal_bulk_remainder8_retained_once=True,full_common_calibrated_cold_or_continuous_face_energy_added=False,
+ old14_first_second_and_energy_source_only_restriction_rederived=True,old14_owner_internal_embedding_is_single_identity_injection=True,cold_zero_reference_is_symbolic_not_bulk_query=True,unknown_body_zero_bulk_energy_or_hessian_supplied=False,original875_nonzero_operator_equivalence_claimed=False,current_mechanical_directors_are_original_archival_owner_rotated_microdirectors=True,nanson_normals_substituted_into_contact_law=False,all_hundred_coordinates_necessary_proved=False,ninety_two_coordinate_reduction_impossible_proved=False,literal_original_q_normalized_in_source_mechanics=False,
+ complete_old_certified_mode_and_integral_bounds_are_authenticated_inputs=True,previous879_field_or_nanson_mathematics_reexecuted=False,previous875_integral_quadrature_reexecuted=False,current_local_attachment_and_potential_algebra_independently_rederived=True,geometry_only_density_state_binding_tokens_reconstructed=False,source_state_or_work_advanced=False,old_work_ledgers_and_memory_stores_retained_without_reset=True,source_contact_epoch_s=2000000,source_memory_epoch_s=1000000,actual_material_reference_geometry_epoch_s=1000000,virtual_archival_source_geometry_epoch_s=0,
+ physical_archived_three_dimensional_handover_certified=False,current_common_face_force_transition_certified=False,hot_receiving_law_certified=False,full_three_dimensional_rod_endpoints_recovered=False,whole_archived_three_dimensional_history_recovered=False,whole_face_measure_or_memory_integral_certified=False,new_mixed_force_equilibrium_certified=False,whole_clock_all_pair_admission_authorized=False,physical_material_admission_authorized=False,accepted_original_native_intervals=1,accepted_new_native_intervals=0,original_point_1_completed=False,original_point_1_remaining_work_blocks=1,remaining_physical_condition_count=3,remaining_physical_conditions=REMAINING_CONDITIONS,
+ preserved_old1633_artifact_chain=True,old1633_preservation_is_saved_before_math_receipt_and_recorded277_raw_dependencies_and_strict_closures_only=True,baseline1633_reexecuted=False,preserved_879_closed_manifest_file_count=83,complete_old879_noncached_parent_file_set_checked_before_after_math=True,complete_old_final879_six_file_archive_closure_checked_before_after_math=True,preserved_879_recorded_raw_dependency_pin_count=271,preserved_old_final879_separate_readback_archive_file_count=6,preserved_879_and_separate_archive_raw_dependency_pin_count=277,preserved_authoritative_ancestry_release_closure_count_after_math=11,ancestry_release_wrapper_raw_sha256={str(directory/'report.json'):pin for directory,w,pin in ancestry},complete_recorded_dependency_hashes_checked_before_after_math=True,dependency_raw_sha256=dependencies,
+ project_imports=False,old_pytest_or_control_reexecuted=False,historical_force_solver_reexecuted=False,old_contact_force_or_Hessian_quadratures_reexecuted=False,old_tensor_quadratures_reexecuted=False,old_auditor_mains_reexecuted=False,independent_fraction_geometry_uses_no_midpoint_or_tolerance_classification=True,baseline879_reusable_producer_sha256=BASELINE_RAW,baseline879_readback_path=str(baselinepath),baseline879_readback_raw_sha256=baselinepin,baseline879_readback_selfseal=prior['audit_sha256'],baseline879_readback_timing='BEFORE_NEW_LOCAL_SOURCE_FORCE_WORK_MATHEMATICS',baseline879_projected_reader_report_path=str(projected),baseline879_projected_reader_report_raw_sha256=projectedpin,baseline879_projected_reader_selfseal=prior['projected_reader_selfseal'],executing_producer_raw_sha256_checked_before_after=True,auditor_script_sha256=producerpin,evaluation_query_receipts=evalreceipts,source_reference_query_receipts=refreceipts,seconds=time.perf_counter()-started)
+ report['audit_packet_sha256']=vd(report)
+ with out.open('xb') as stream:stream.write(enc(report)+b'\n')
+ print(enc(report).decode(),flush=True);return report
+
+
+def main():
+ parser=argparse.ArgumentParser();parser.add_argument('--release',required=True);parser.add_argument('--baseline',required=True);parser.add_argument('--out',required=True);args=parser.parse_args()
+ try:run(args.release,args.baseline,args.out)
+ except Exception as error:
+  path=Path(args.out).resolve()
+  failure=dict(status='FAIL',audit_scope=SCOPE,failure_type=type(error).__name__,failure_message=str(error),auditor_script_sha256=digest(__file__),project_imports=False,old_auditor_mains_reexecuted=False)
+  failure['audit_packet_sha256']=vd(failure)
+  if path.is_relative_to(Path('/tmp')) and not path.exists():
+   with path.open('xb') as stream:stream.write(enc(failure)+b'\n')
+  print(enc(failure).decode(),flush=True);raise
+
+if __name__=='__main__':main()

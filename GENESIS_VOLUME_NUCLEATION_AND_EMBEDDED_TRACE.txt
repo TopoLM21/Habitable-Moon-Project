@@ -1,0 +1,129 @@
+ПЕРСПЕКТИВНОЕ ЗАРОЖДЕНИЕ И ВНУТРЕННЯЯ ПОВЕРХНОСТЬ GENESIS
+10.10.2026; fix/genesis-mantle-convection; автоматическая цель выключена.
+
+РЕЗУЛЬТАТ
+Добавлен явный перспективный закон выбора зародыша из полного поля напряжений:
+место в исходном материале, трёхмерная ориентация и условие конечного размера.
+Добавлены квадратура внутренних сечений, обе площади/нормали, полный A/P trace,
+его сопряжённая виртуальная сила и reference-work перенос сохранённых напряжений.
+Закон, геометрия и начальная когезионная тяга теперь вычислимы; физическая
+вставка, источник работы и раскрытие ещё не выполнены.
+
+ПРОИСХОЖДЕНИЕ И НЕИЗМЕННОСТЬ НАСТОЯЩЕГО СОСТОЯНИЯ
+Тот же принятый Genesis: 0.8684000000000005 Myr / 800 когорт / 4 интервала.
+Parent raw SHA 62579a0bad128830a66e2f44579cf2b1f5d3835b691225b8d431102f3e4486d7
+Parent self SHA 5d282ceeccc8d76acc38427d08a7e65575fddb509fc4b93115cbe6d318e91349
+Formation SHA cd79ee2a5139c4b91abdb1b4714a761c9153cc9f4490f5aa63fa2facba458c89
+Окончательный Actual control один раз прошёл полное восстановление от formation.
+Parent before/after и оригинал byte-identical. Новых принятых интервалов,
+births, физических поверхностей, released DOFs и creation debit: 0.
+Max damage .039591572199468364 < .65; persistence age=0; actual active planes=0.
+Прежняя история появления материала из расплава не переинициализирована.
+Gc, длина зародыша и механика sharp birth отсутствовали в прежнем source;
+они не объявлены восстановленными из сохранений.
+
+ЗАКОН ВЫБОРА ЗАРОДЫША
+Входы без defaults: tensile strength, cohesion, friction, seed radius и
+ProspectiveCreationLaw(Gc, peak traction, opening/shear stiffness, compression
+stiffness). Их provenance — explicit new prospective constitutive input.
+В контрольном примере заданные числа не являются калибровкой настоящей планеты.
+Прежний accepted-start damage/persistence gate ОБЯЗАТЕЛЕН. Существующим active
+finite-width planes задним числом не назначается неизвестная sharp поверхность.
+При eigenvalues s1 >= s2 >= s3 используются Rankine и classical UNCLAMPED
+Mohr-Coulomb: f_t=s1/T-1;
+f_s=((sqrt(1+mu^2)+mu)*s1+(sqrt(1+mu^2)-mu)*(-s3))/(2c)-1.
+Это новый явный constitutive choice, не прежний compression-clamped slip rule.
+f=max(f_t,f_s) выпукла. Сохранённый tensor affine по N и inverse lambda,
+поэтому глобальный максимум каждой когорты точно достигается в одном из
+шести angular/radial corners; сканирование центров не подменяет максимум.
+Только уникальный надпороговый максимум задаёт место. Равные максимумы,
+неразрешимые eigenvectors/mode ties и невыбранные conjugate planes дают отказ.
+Tensile normal — principal eigenvector; shear — рассчитанные conjugate normals,
+с явным strict alignment preference к унаследованной source orientation.
+Dip отсчитывается от current lambda=1 column-top triangle X+A.
+Конечный seed определён как plane intersect sphere(radius) intersect selected
+ORIGINAL live cohort. Пока это определение: clipping и положительная конечная
+площадь seed ещё не рассчитаны. Supporting/touch-only planes отвергаются.
+Actual source с law=None и с explicit example одинаково возвращает noevent;
+полное поле локально надпороговое, но inherited gate оно не обходит.
+
+ВНУТРЕННЯЯ МАТЕРИАЛЬНАЯ ПОВЕРХНОСТЬ
+Использовано прежнее inside-face section geometry без переделки.
+Рассчитываются N(s,lambda), N_lambda и N_s с полным
+x=N[lambda(X+P)+(A-P)]; обе производные содержат изменение углового пересечения.
+Раздельно хранятся current/reference points, oriented normals, differential
+area и volume Jacobians. Положительность current chart проверена по всем трём
+N-вершинам и экстремумам lambda-квадратики во всей когорте, а не только nodes.
+Boundary-only sheets имеют нулевую площадь, общие границы не считаются дважды.
+Gauss по аналитическим lambda pieces и Duffy triangle даёт приближённый
+геометрический интеграл; общая warped площадь не объявлена аналитически точной.
+Виртуальный trace оригинальных мод T_i=N_i[I,(lambda-1)I]; paired trace=[-T,+T].
+При одинаковых parent fields jump=0; force/work identity точна алгебраически
+для одной выбранной квадратуры. Pair не создаёт два набора физических DOFs.
+N/q/IDs фиксируются при birth pullback; дальнейшее движение того же материала
+считается x_ref+T*U, без повторного пересечения фиксированной мировой плоскости.
+Замороженные метрики — snapshot, новая геометрия после движения ими не заявлена.
+
+ПРАВИЛЬНАЯ МЕРА РАБОТЫ И КОГЕЗИОННЫЙ SEED
+Сохранённое sigma=C*epsilon в fixed inherited frame относится к small-strain
+reference work. t_ref=sigma_world*n_ref на исходную площадь dA_ref.
+Эквивалентная density на birth area: t_birth=t_ref*dA_ref/dA_birth.
+Использовать sigma*n_birth без этого преобразования было бы иной работой.
+Gc, peak, stiffness и cohesive seed traction все относятся к REFERENCE area.
+Seed использует birth normal/tangent basis только как ортонормальную систему
+компонент; его traction density остаётся reference-area density.
+Gc включает две созданные стороны один раз на площадь Gamma.
+Полная вычислительная цена separations=Gc*reference area explicit plane.
+Эта цена не является доступным источником работы или Genesis debit.
+Исходные память/напряжения не обновляются повторно абсолютным displacement.
+Полная constraint reaction разделённого объёма пока не заменена этой локальной
+boundary traction: для такой замены ещё нужны bulk partition/insertion и solve.
+
+ОФИЦИАЛЬНЫЕ ПРОВЕРКИ
+148 новых тестов PASS; real capture 316.594798 s.
+Actual control PASS; 712.108576 s.
+Producer-free independent audit PASS; 22.019098 s.
+3 intended-math/source resealed negatives PASS; 33.158182 s.
+Во всех четырёх launches exit=0/stderr=0/source_before=source_after.
+Actual geometry: 3 прежние explicit planes на faces0/40/79, по 10 живых когорт,
+quadrature orders4/8/12; сохранён order8 и convergence. Проверены обе силы A/P,
+нулевой tied jump, frozen material follow и work обеих measures.
+Независимо восстановлено всё source stress field: 800 cohorts/4800 corners;
+сверены parent/context/memory/IDs, весь observer, все quadrature metrics/nodes,
+seed reference work, четыре producer resealed context barriers.
+Opaque section dataclass hash связан как integrity link, но не объявляется
+независимо реконструированным; численная геометрия проверена отдельно.
+Подмены current traction measure, удаления P trace и выдуманного funding
+отвергаются после nested/top reseals по intended math/source reason.
+Прежние 11 packages / 15975 members / 1411237234 bytes, 351 Python pins и
+6 native pins сохранены; прежние suites не повторялись.
+Control SHA 4136c65c33944738d95af0de4687e26d29c8c16c5d2f36921b53943cf275ca00
+Independent SHA de93776895d6fc7acacce23289d0a2a336690f27b7d7e00e7c6d48c7724bbac1
+Negative SHA 0b260315d89e147e00fb3b2c5825fec6c605d242998157acd76690191cbdbcf2
+
+СОХРАНЁННЫЙ ПЕРВЫЙ КОНТРОЛЬ И КОРРЕКЦИЯ
+Первый официальный suite146 PASS. Actual01 exit1 на третьей плоскости:
+повторная нормализация уже normalized n/d меняла offset ещё на1ULP
+(5.820766091346741e-11 m), поэтому source binding canonical DTO не совпадал.
+Теперь новый surface хранит literal declared_normal_xyz/declared_offset_m
+и adapter повторно использует их. Строгое полное сравнение сохранено; прежний
+normalizer, физические thresholds, source history и material geometry не менялись.
+Две новые регрессии проверяют literal thirdplane на настоящей formation geometry.
+Первый capture/partialtree/исходники сохранены отдельно. Окончательные148tests
+и Actual02 выполнены на исправленных версиях; initial146 не засчитаны повторно.
+
+ОСТАТОК ПУНКТА 1 — ТЕ ЖЕ ТРИ УСЛОВИЯ
+1. Физическое рождение/insertion/release с source law, сохранением prestress,
+   силой/работой по глубине и финансированием. Внутри этого условия теперь
+   готовы критерий/выбор seed, обе метрики, материальный trace и корректная
+   работа local prestress. Остаются конечное clipping/area seed, partitioned
+   bulk operator и замена его реакции, рассчитанный оплачиваемый release.
+   Новые mesh DOFs при subdivision должны оставаться constrained к исходной
+   интерполяции до физического разрешения release. Gc не брать из прошлой
+   damage/slip dissipation; новой калибровки source здесь нет.
+2. All-pair full-time contact/underthrust admission, включая reverse C5->C1.
+3. Настоящее active fault/contact/underthrust continuation с independent
+   work/balances/restart.
+Пункт1 ещё открыт; до закрытия существенная работа. Пункты2–6 открыты.
+Следующая часть условия1 — конечный material seed и partitioned/constrained
+insertion с сохранением памяти/реакции, затем funded work trajectory.

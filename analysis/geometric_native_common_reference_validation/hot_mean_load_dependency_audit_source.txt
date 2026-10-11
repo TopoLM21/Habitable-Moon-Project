@@ -1,0 +1,111 @@
+"""Read-only standard-library derivation receipt; no quadrature or project imports."""
+from pathlib import Path
+from fractions import Fraction as F
+from decimal import Decimal as D, localcontext
+import hashlib, json
+
+ROOT=Path('/workspace/Habitable-Moon-Project')
+PACKET=ROOT/'analysis/geometric_native_affine_body_validation/release_validation_01/native_control/source_packet.json'
+EXPECTED='ccd511b2b82e66ba103d0d900b993a18d02953288f447c71ac9e589dc70c7d1e'
+OUT=Path('/tmp/native_common_hot_mean_load_dependency_audit_20261005.json')
+def encoded(x): return json.dumps(x,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+raw=PACKET.read_bytes(); assert hashlib.sha256(raw).hexdigest()==EXPECTED
+p=json.loads(raw); q=dict(p); seal=q.pop('packet_sha256'); assert hashlib.sha256(encoded(q)).hexdigest()==seal
+load=p['current_load']; source=load['source']
+assert source['angular_velocity_rad_s']==[0.0,0.0,1.1e-12]
+assert source['basal_drag_pa_s_m']==120000000000000.0
+assert source['amplitude_constant']==1.0 and source['amplitude_gradient']==[0.17,0.0,0.0]
+assert len(load['material_cell_measures'])==68 and len(load['correction_cell_measures'])==1
+components=p['affine_body_components']; assert len(components)==5
+for component in components:
+ domain=component['domain']
+ assert domain['radius_m']==[100000,1] and domain['areal_material_thickness_m']==[2000,1]
+ assert domain['roof_radial_displacement_m']==[0,1]
+foundations=p['full_reference_face_birth_support']['foundations']; assert len(foundations)==5
+assert all(f['declaration']['radial_birth_m']==0.0 and f['declaration']['parameters']['density_kg_m3']==2800.0
+ and f['declaration']['parameters']['gravity_m_s2']==1.5 for f in foundations)
+correction=load['correction_cell_measures'][0]
+assert correction['cell']==15 and correction['owner']==1
+assert correction['negative_component_id'].startswith('native-first-entry-live-domain:221a2c74')
+assert correction['positive_component_id'].startswith('native-first-entry-actual-vacancy:295fbe04')
+with localcontext() as ctx:
+ ctx.prec=100
+ R=D(100000); H=D(2000); rb=(R**3-3*R**2*H)**(D(1)/D(3))
+ numeric=dict(base_radius_m=str(rb),base_radius_over_R=str(rb/R),isotropic_base_h_per_q=str(R/rb),
+  volume_mean_radius_over_R=str(3*(R**4-rb**4)/(4*R*(R**3-rb**3))))
+files=(
+ 'tectonics/geometric_native_birth_continuum_motion.py',
+ 'tectonics/geometric_native_implicit_mantle_loading.py',
+ 'tectonics/geometric_native_mantle_loading.py',
+ 'tectonics/geometric_spatial_mantle_loading.py',
+ 'tectonics/geometric_native_birth_contact_network.py',
+ 'tectonics/geometric_native_common_hot.py',
+ 'tectonics/geometric_native_common_reference.py',
+)
+audit=dict(format='native-common-hot-finite-base-mean-and-same-field-load-dependency-audit-1',
+ status='READ_ONLY_MATHEMATICAL_DEPENDENCY_AUDIT',scope='Necessary force-field connection within existing point1 condition1',
+ repository_python_edits=False,quadratures_or_benchmarks_performed=False,
+ source_packet_raw_sha256=EXPECTED,source_packet_seal_sha256=seal,
+ source_code_raw_sha256={f:hashlib.sha256((ROOT/f).read_bytes()).hexdigest() for f in files},
+ current_load_sha256=load['load_sha256'],source_parameters=source,material_cell_measure_count=68,
+ old_dof_count=19,new_dof_count=92,no_duplicate_old_14_coordinate_block_or_106_dof_body=True,dof_count_decomposition=dict(owner_rotations=6,cold_7_modes_each=56,hot_6_modes_each=30),
+ source_foundation_radial_births_m=[f['declaration']['radial_birth_m'] for f in foundations],
+ true_hot_base=dict(radius_m=[100000,1],areal_depth_m=[2000,1],roof_offset_m=[0,1],
+  radius_cube_m3=[940000000000000,1],physical_volume_depth_m=[2000,1],
+  numerical_approximations_not_certified_enclosures=numeric),
+ finite_mean_chart=dict(
+  explicit_new_chart_not_recovery_of_historical_3D_mean=True,
+  source_old_foundation_scope='Source registers one scalar w/R per HOT patch, with birth w=0 and uniform Winkler energy .5*rho*g*actual_area*(w-w_birth)^2. It does not specify a finite spatial mean, base-vs-roof measure, or whole3D lifting of this scalar',
+  preserved_zero_source_state='The immutable accepted/source HOT birth scalar remains0. NEW q=0,b=0 gives h=0 and a=0, preserving this exact zero state without redefining a historical nonzero scalar',
+  explicit_new_mean_provenance='Choose q as actual finite radial change averaged on the true common-reference base in declared R^2 dOmega. This is an explicit NEW six-coordinate chart; no historical roof-shift/column-offset or volume-mean identity is asserted',
+  material_mean_measure='Normalize the authentic base Lagrangian R^2 dOmega by its actual source area; use positive correction inclusion',
+  direction='v(u)=Q(A_star*tau_b)u; tau_b=2000m; r_b=(R^3-3R^2*H)^(1/3)',
+  six_coordinates='z=(q,b1,b2,b3,b4,b5) replaces, rather than supplements, the six affine amplitudes',
+  generators='K0=I; B1=diag(1,-1,0); B2=diag(1,1,-2); B3=E_xy; B4=E_xz; B5=E_yz',
+  physical_amplitudes='a=(h+b1+b2,h-b1+b2,h-2b2,b3,b4,b5)',
+  deformation='F=(1+h/R)I+sum(bj*Bj)/R, positive definite near the accepted reference',
+  mean_equation='M(h,b)=r_b*<|F v|-1>_actual_Omega=q; actual area, not proxy or midpoint, normalizes the integral',
+  linear_reference_normal_is_different='(r_b/R)*<v^T(sum(ai*Ei))v> is only reference-normal displacement, not finite actual radius change',
+  volume_mean_is_different='The whole-volume isotropic coefficient mu=<r>/R is 0.989863..., while the true-base coefficient r_b/R is 0.979586...',
+  isotropic_exact='b=0 gives M=r_b*h/R and h=R*q/r_b on the positive branch, independently of the actual angular mask',
+  monotonicity='M_h=(r_b/R)<v^T F v/|Fv|> >= (r_b/R)*lambda_min(F)/lambda_max(F)>0',
+  safe_bracket='If rho>=norm(T)_2 in metres and R+R*q/r_b>2*rho, h lies in [R*q/r_b-rho,R*q/r_b+rho], with both endpoint F positive definite',
+  first_derivative='Set y=Fv,s=|y|,d_p=Kp*v/R. M_p=r_b*<y.dot(d_p)/s>',
+  second_derivative='M_pq=r_b*<d_p.dot(d_q)/s-(y.dot(d_p))*(y.dot(d_q))/s^3>',
+  implicit_derivatives='h_q=1/M_h; h_bj=-M_bj/M_h; for any chart indices a,b, h_ab=-(J_a^T Hess(M) J_b)/M_h, J=d(h,b)/d(q,b)',
+  physical_chain_rule='A=d(a)/d(z)=C*J; U_z=A^T U_a; Hess_z=A^T Hess_a A+(sum of physical diagonal forces)*Hess(h)',
+  load_chain_rule='A^T f_a; fixed dead-load tangent includes the same coordinate second derivatives; D_z=A^T D_a A',
+  required_integrals='M and all first/second derivatives on the complete actual mask, including its positive curve; no nonzero b midpoint or linear-mean substitute',
+  mean_chart_implemented=False,independent_seventh_unpriced_mode=False,old_scalar_foundation_added_again=False),
+ same_field_operators=dict(
+  old_operator_scope='birth_continuum_motion.py:174-187 copies only 6x6 owner D and 6 owner torques, explicitly zeroing 13 radial rows; this is not a new92 basis projection',
+  field='Use the very same complete physical placement x_o(X,a)=O_o*(X+u_o(X,a)); owner virtual field is e_k cross x_o under a spatial angular convention, modal traces are O_o*d(u_o)/d(a_i)',
+  load='f_i=integral_Gamma traction.dot(psi_i) dA0; preserve actual per-material masks/correlations, trace surface, physical source parameters and declared measure',
+  tangential_drag='D_ij=beta*integral_Gamma (P_n psi_i).dot(P_n psi_j) dA0 with P_n=I-n*n^T; retains owner-modal and modal-modal cross terms; PSD by the full Gram integral',
+  dimensioned_blocks='owner-owner D is N*m*s; owner-modal D is N*s; modal-modal D is N*s/m, for angles dimensionless and modal amplitudes metres',
+  source_traction='Source supplies beta*R*(1+0.17*n_x)*(Omega cross n), beta=1.2e14 Pa*s/m, Omega=(0,0,1.1e-12) /s; global prescribed independently of owners',
+  exact_reference_radial_nulls='If the extended traction and tangent projector use the true common-base radial n, pure isotropic HOT and cold tip psi0=chi*n have zero direct tangential source/drag; elastic/contact cross coupling remains',
+  normal_damping_unidentified='Original rotation traces are tangential: beta*I and beta*P_n coincide on them. They do not identify a nonzero normal damping coefficient for new radial modes',
+  not_inherited='Normal viscous drag, normal mantle traction, side-face stress, and an actual-current-area/follower extension are not supplied by the old owner-only source operator',
+  source_centroid_rule='The saved source certifies a fixed nominal-sphere cell-centroid rule, not continuum quadrature. Moving the traction evaluation to a true base or integrating varying physical mode traces needs an explicit new rule and fresh certificate',
+  centroid_material_membership='A physical cell centroid need not belong to a tiny component. Never assume that membership or erase its positive reservoir; analytic field extensions or interval integration over the actual cell intersection must be explicit',
+  geometry_moments='For continuous true-base manufactured tangential source, HOT forces use angular moments degree<=3 and tangent Gram blocks degree<=4; COLD chi and true endpoint/curve masks require their own actual supported angular integrals',
+  physical_clock='Use actual a(z(t)) velocity/path work. J(z)*Delta_z/dt is not exactly (a_new-a_old)/dt for a finite nonlinear chart step'),
+ correction=dict(source_record=correction,
+  new_operator_term='deltaA*(traction.dot(psi_C1)-traction.dot(psi_C6)); corresponding signed Gram differences retained with the same correlated deltaA',
+  old_owner_only_cancellation_is_not_modal_cancellation=True,
+  single_accounting='Saved material_cell_measure.area_bounds already contains signed correction. Use either proxy+one shared deltaA or the final material measures with retained correlation, never add both',
+  pure_owner_cancellation_condition='Only if the two chosen physical owner traces coincide, such as the old common nominal R trace; different true bases do not satisfy this automatically'),
+ can_compute_from_authenticated_inputs=[
+  'all92 same-field virtual traces once the physical boundary/source extension is declared',
+  'true HOT base, common Q, authentic masks and area, exact isotropic finite chart, its SPD monotonicity and implicit derivatives',
+  'tangential beta law and manufactured traction coefficients; complete material/cell/correction inputs',
+  'fresh modal force/drag projections and required Gram blocks, with authentic correlated positive/negative corrections'],
+ not_established=[
+  'nonisotropic finite mean integral/interval chart solve and its derivatives',
+  'a selected and certified physical traction surface/measure/discretization extension',
+  'normal damping/normal mantle stress parameters',
+  'new92 solved force equilibrium','whole-clock all-pair spatial admission','a new accepted mixed interval or joint restart'])
+audit['audit_sha256']=hashlib.sha256(encoded(audit)).hexdigest()
+OUT.write_text(json.dumps(audit,indent=2,sort_keys=True,ensure_ascii=False,allow_nan=False)+'\n')
+print(json.dumps(dict(output=str(OUT),raw_sha256=hashlib.sha256(OUT.read_bytes()).hexdigest(),seal=audit['audit_sha256'],producer_raw_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest())))

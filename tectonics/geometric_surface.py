@@ -7,9 +7,11 @@ projected into mixed cells without reconstructing or changing their geometry.
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass, replace
+from collections.abc import Mapping
 import hashlib
 import json
 import math
+from numbers import Real
 from pathlib import Path
 
 import numpy as np
@@ -17,7 +19,8 @@ from scipy.spatial import cKDTree
 
 from .fractional_surface import SurfaceParcel, EXTENSIVE_FIELDS, split_parcel
 from .spherical_polygons import (GeometryDiagnostics, normalize_polygon, polygon_area,
-                                 rotate_polygon, intersect_convex)
+                                 rotate_polygon, intersect_convex,
+                                 _rigid_rotation_projection, _polygon_projection_area_error)
 
 VERSION = "geometric-surface-1"
 AREA_REL_TOL = 2e-10
@@ -111,6 +114,13 @@ def from_fractional_surface(mesh, surface, radius_km):
 
 
 def rotations(state, omega, dt):
+    if isinstance(omega, Mapping):
+        from .geometric_rotation_vectors import compact_rotation_vectors
+        if (isinstance(dt, (bool, np.bool_)) or not isinstance(dt, Real)
+                or not math.isfinite(dt) or dt <= 0.
+                or state.time_myr+dt <= state.time_myr):
+            raise ValueError("Geometric rotation requires a positive advancing timestep")
+        return compact_rotation_vectors(omega, (f.parcel.plate for f in state.fragments))
     values = np.asarray(omega, dtype=float)
     if (not math.isfinite(dt) or dt <= 0. or state.time_myr+dt <= state.time_myr
             or values.ndim != 2 or values.shape[1] != 3 or not np.isfinite(values).all()
@@ -119,7 +129,74 @@ def rotations(state, omega, dt):
     return values
 
 
+class _RigidlyAdvectedCandidates:
+    """Nonpersistable trial projection, with an immutable rigid-map witness.
+
+    Binary64 world coordinates can retain a positive thin feature but round
+    its area beyond the persisted surface's relative tolerance.  Such a trial
+    may be inspected for physical overlap decisions only after its unchanged
+    mass and actual rigid map are certified.  Resolved/persisted surfaces still
+    require the ordinary strict GeometricSurfaceState constructor.
+    """
+    __slots__ = ("time_myr", "radius_km", "fragments", "known_material_ids", "phase",
+                 "version", "_source_surface", "_rotation_vectors", "_dt_myr",
+                 "_projection_area_errors_km2")
+
+    def __setattr__(self, name, value):
+        raise AttributeError("Rigid candidate projection and witness are immutable")
+
+
+def _certify_rigid_candidates(before, moved, omega, dt):
+    if (not isinstance(before, GeometricSurfaceState)
+            or isinstance(dt, (bool, np.bool_)) or not isinstance(dt, Real)):
+        raise ValueError("Rigid projection needs a strict source and explicit real timestep")
+    # An ordinary strict constructor verifies the original material/geometry
+    # contract; no uncertainty allowance is introduced for source/import data.
+    checked = GeometricSurfaceState(before.time_myr, before.radius_km,
+        before.fragments, before.known_material_ids, before.phase, before.version)
+    if checked.phase != "partition":
+        raise ValueError("Rigid projection witness requires a resolved source partition")
+    dt = float(dt)
+    omega = rotations(checked, omega, dt)
+    owners = sorted({f.parcel.plate for f in checked.fragments})
+    if all(np.array_equal(omega[owner], omega[owners[0]]) for owner in owners):
+        raise ValueError("Temporary rigid projection requires differential owner motion")
+    audit_partition(checked)
+    bounds = []
+    for old, new in zip(checked.fragments, moved, strict=True):
+        target, coordinate_errors = _rigid_rotation_projection(old.polygon, omega[old.parcel.plate], dt)
+        expected = replace(old, polygon=tuple(map(tuple, target)),
+                           parcel=replace(old.parcel, age_myr=old.parcel.age_myr+dt))
+        if _digest(asdict(expected)) != _digest(asdict(new)):
+            raise ValueError("Rigid candidate differs from its unchanged material and actual rotation")
+        measured = polygon_area(new.polygon)*checked.radius_km**2
+        if not np.isfinite(coordinate_errors).all():
+            raise ValueError("Rigid candidate projection has no resolved positive area certificate")
+        if np.array_equal(np.asarray(new.polygon), np.asarray(target)[::-1]):
+            coordinate_errors = coordinate_errors[::-1]
+        uncertainty = (_polygon_projection_area_error(new.polygon, coordinate_errors)
+                       *checked.radius_km**2)
+        if not math.isfinite(uncertainty) or not 0. <= uncertainty < measured:
+            raise ValueError("Rigid candidate projection has no resolved positive area certificate")
+        allowed = uncertainty+AREA_REL_TOL*max(measured, new.parcel.area_km2)
+        if abs(measured-new.parcel.area_km2) > allowed:
+            raise ValueError("Rigid candidate area change exceeds its arithmetic projection certificate")
+        bounds.append((new.fragment_id, uncertainty))
+    candidate = object.__new__(_RigidlyAdvectedCandidates)
+    payload = dict(time_myr=checked.time_myr+dt, radius_km=checked.radius_km,
+        fragments=tuple(moved), known_material_ids=checked.known_material_ids,
+        phase="advected_candidates", version=checked.version, _source_surface=checked,
+        _rotation_vectors=tuple((owner, tuple(map(float, omega[owner]))) for owner in owners),
+        _dt_myr=dt, _projection_area_errors_km2=tuple(bounds))
+    for name, value in payload.items():
+        object.__setattr__(candidate, name, value)
+    return candidate
+
+
 def rotate_surface(state, omega_rad_per_myr, dt_myr):
+    if isinstance(omega_rad_per_myr, Mapping) and (
+            isinstance(dt_myr, (bool, np.bool_)) or not isinstance(dt_myr, Real)):
+        raise ValueError("Compact rotation requires an explicit real timestep")
     dt = float(dt_myr)
     omega = rotations(state, omega_rad_per_myr, dt)
     owners = sorted({f.parcel.plate for f in state.fragments})
@@ -127,6 +204,10 @@ def rotate_surface(state, omega_rad_per_myr, dt_myr):
     moved = tuple(replace(f, polygon=tuple(map(tuple, rotate_polygon(f.polygon, omega[f.parcel.plate], dt))),
                           parcel=replace(f.parcel, age_myr=f.parcel.age_myr+dt)) for f in state.fragments)
     phase = state.phase if common else "advected_candidates"
+    if not common and state.phase == "partition" and any(not math.isclose(
+            polygon_area(f.polygon)*state.radius_km**2, f.parcel.area_km2,
+            rel_tol=AREA_REL_TOL, abs_tol=0.) for f in moved):
+        return _certify_rigid_candidates(state, moved, omega, dt)
     return replace(state, time_myr=state.time_myr+dt, fragments=moved, phase=phase)
 
 
@@ -223,6 +304,8 @@ def _digest(payload):
 
 
 def save_geometric_checkpoint(path, state, *, provenance=None):
+    if isinstance(state, _RigidlyAdvectedCandidates):
+        raise ValueError("Rigid candidate projection is temporary and cannot be checkpointed")
     payload = dict(format=VERSION, state=asdict(state), provenance=provenance or {})
     payload["payload_sha256"] = _digest(payload)
     path = Path(path)

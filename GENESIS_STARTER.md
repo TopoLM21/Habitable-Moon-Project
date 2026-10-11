@@ -218,3 +218,16 @@ Seed задаёт гладкие неоднородности нагрузки �
 коэффициенты повреждения и времена переходов. Новый стартер — явная
 параметризация уровня геологической модели, а не воспроизведение того
 конвективного расчёта или продолжение прежнего контактного FEM.
+
+## Birth history update, 2026-10-09
+
+Starter checkpoints now use `genesis-starter-0.2`. Accepted thermal samples
+record the birth and remelting of the existing surface silicate reservoir;
+the age passed to the young tectonic continuation is derived from retained
+solid material, rather than elapsed time since import. No extra crust mass,
+heat reservoir, or continent is created by this history.
+
+Checkpoints of Starter 0.1 do not contain that birth history. Keep those saved
+results as historical evidence and repeat formation from the same molten
+parameters for a 0.2 continuation; the loader refuses to invent past births.
+See `GENESIS_ORIGIN_CONTINUATION.txt` for the calculation and validation.

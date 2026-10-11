@@ -1,0 +1,305 @@
+"""Read-only source-accounting decomposition; stdlib, no project imports."""
+from pathlib import Path
+from fractions import Fraction as F
+import json, hashlib, math, sys
+
+ROOT=Path('/workspace/Habitable-Moon-Project')
+PACKET=ROOT/'analysis/geometric_native_common_reference_validation/release_validation_01/native_control/source_packet.json'
+HIST=ROOT/'analysis/geometric_native_common_reference_validation/contact_history_audit.json'
+OUT=Path('/tmp/native_common_contact_energy_decomposition_audit_20261005.json')
+def enc(x):
+    return json.dumps(x,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+def sha(x):return hashlib.sha256(x).hexdigest()
+def rat(x):
+    x=F(x);return [x.numerator,x.denominator]
+def number(x):return dict(exact_F=rat(x),display_binary64=float(x))
+def literal(x):
+    assert isinstance(x,(int,float)) and not isinstance(x,bool) and math.isfinite(x)
+    return F(x)
+def rational(x):
+    assert isinstance(x,list) and len(x)==2 and all(isinstance(a,int) for a in x)
+    return F(*x)
+def close_check(a,b,scale_factor):
+    scale=max(abs(a),abs(b),F(sys.float_info.min))
+    return dict(residual=number(a-b),allowed_absolute_residual=number(scale_factor*scale),
+                within_source_tolerance=abs(a-b)<=scale_factor*scale)
+EPS=F(sys.float_info.epsilon)
+LOCAL_CLOSE=512*EPS
+WORK_CLOSE=F(2e-10)
+
+raw=PACKET.read_bytes()
+assert sha(raw)=='dc8f820dbd926c53223a5c141a10296d1c7135efc6bf1077763785866dda9275'
+p=json.loads(raw);unsigned=dict(p);packet_seal=unsigned.pop('packet_sha256')
+assert sha(enc(unsigned))==packet_seal
+hist_raw=HIST.read_bytes();assert sha(hist_raw)=='6da68ccda2089921fbe197293a05e4f84c3ea83fd2abb648b98d20f9b1813901'
+hist=json.loads(hist_raw)
+b=p['before'];s=b['snapshot'];h=b['original_physical_history'];r=h['original_reference']
+nodes=h['quadrature_histories'];states=dict(s['states'])
+assert len(nodes)==len(states)==16
+assert all(states[n['point_id']]==n['unaccepted_candidate_state'] for n in nodes)
+assert s['spatial_memory']==h['contact_time_path']['step']['memory']
+assert all(a[0]==q[0] and a[1]==q[1]['coefficients'] and a[2]==q[2]['coefficients']
+           for a,q in zip(s['free_anchor_fields'],h['contact_time_path']['step']['anchor_fields']))
+membership={x['point_id']:x for x in hist['independent_all16_source_label_membership']}
+assert set(membership)==set(states)
+source_files=(
+    'tectonics/geometric_contact_mechanics.py',
+    'tectonics/genesis_contact_law.py',
+    'tectonics/geometric_bending.py',
+    'tectonics/geometric_bending_contact_dynamics.py',
+    'tectonics/geometric_contact_dynamics.py',
+    'tectonics/geometric_native_cold_body.py',
+    'tectonics/geometric_native_common_cold.py',
+    'analysis/geometric_native_common_reference_validation/native_control.py')
+source_text={f:(ROOT/f).read_text() for f in source_files}
+assert 'bulk = .5*state.area_m2*(kn*(state.gap_m-state.gap_free_m)**2' in source_text[source_files[0]]
+assert 'contact = .5*state.area_m2*(law.normal_stiffness_pa_m*state.gap_m**2' in source_text[source_files[0]]
+assert 'normal_energy = .5*kn*np.where(gap < 0, gap**2, (1-damage)*gap**2)' in source_text[source_files[1]]
+assert 'stiffness = np.zeros((size, size))' in source_text[source_files[3]]
+assert 'bending_strip_stiffness_n_m(bank, length_m)*radius_m*radius_m)' in source_text[source_files[3]]
+assert 'stored = math.fsum(step.bulk_energy_increment_j+step.contact_energy_increment_j for step in steps)' in source_text[source_files[4]]
+assert 'stored = math.fsum((stored, bending_increment))' in source_text[source_files[4]]
+assert 'reference_energy, reference_force = old_k*wref*wref/2, old_k*wref' in source_text[source_files[6]]
+
+rows=[]
+sum_contact=sum_rod=sum_contact_normal=sum_contact_shear=F(0)
+sum_sub_rod=sum_over_rod=F(0)
+sum_stored_contact=sum_stored_rod=sum_stored_old=sum_external=sum_dissipation=F(0)
+float_replay_bulk_equal=float_replay_contact_equal=0
+for n in nodes:
+    st=states[n['point_id']];prev=n['previous_state'];label=membership[n['point_id']]
+    pars=n['original_material'];c=pars['columns'];law=pars['law']
+    assert st['area_m2']==n['original_area_m2']==n['original_point']['area_m2']
+    assert st['columns_signature']==[c[k] for k in (
+        'sub_length_m','sub_normal_modulus_pa','sub_shear_modulus_pa',
+        'over_length_m','over_normal_modulus_pa','over_shear_modulus_pa')]
+    assert st['law_signature']==[law[k] for k in (
+        'normal_stiffness_pa_m','tangential_stiffness_pa_m','tensile_strength_pa',
+        'fracture_energy_j_m2','cohesion_pa','friction_dry','friction_wet',
+        'wet_cohesion_fraction','viscosity_pa_s_m')]
+    assert st['water']==pars['water']==.7
+    assert st['gap_m']<0 and st['gap_free_m']<0
+    assert law['friction_dry']==law['friction_wet']==law['cohesion_pa']==law['viscosity_pa_s_m']==0
+    A=literal(st['area_m2']);gc=literal(st['gap_m']);gf=literal(st['gap_free_m'])
+    jc=literal(st['jump_m']);jf=literal(st['jump_free_m']);plastic=literal(st['plastic_slip_m'])
+    knc=literal(law['normal_stiffness_pa_m']);ktc=literal(law['tangential_stiffness_pa_m'])
+    # Exactly the source property arithmetic, then lift the resulting literal.
+    kn_float=1./(c['sub_length_m']/c['sub_normal_modulus_pa']+c['over_length_m']/c['over_normal_modulus_pa'])
+    kt_float=1./(c['sub_length_m']/c['sub_shear_modulus_pa']+c['over_length_m']/c['over_shear_modulus_pa'])
+    kn=literal(kn_float);kt=literal(kt_float)
+    csn=literal(c['sub_length_m'])/literal(c['sub_normal_modulus_pa'])
+    con=literal(c['over_length_m'])/literal(c['over_normal_modulus_pa'])
+    cst=literal(c['sub_length_m'])/literal(c['sub_shear_modulus_pa'])
+    cot=literal(c['over_length_m'])/literal(c['over_shear_modulus_pa'])
+    physical_kn=1/(csn+con);physical_kt=1/(cst+cot)
+    # Preserve the property binary64 arithmetic separately from the exact
+    # material-ratio split. Source kt is 199999.99999999997, not silently
+    # replaced by exact200000. Current source shear shortening is zero.
+    assert kn==physical_kn
+    property_kt_check=close_check(kt,physical_kt,LOCAL_CLOSE)
+    assert property_kt_check['within_source_tolerance']
+    dn=gc-gf;dt=jc-jf
+    cn=A*knc*gc*gc/2;ct=A*ktc*(jc-plastic)**2/2
+    bn=A*kn*dn*dn/2;bt=A*kt*dt*dt/2
+    subn=A*(dn*csn/(csn+con))**2/(2*csn)
+    overn=A*(dn*con/(csn+con))**2/(2*con)
+    subt=A*(dt*cst/(cst+cot))**2/(2*cst)
+    overt=A*(dt*cot/(cst+cot))**2/(2*cot)
+    assert subn+overn==bn and subt+overt==bt and dt==0
+    stored_contact=literal(st['contact_energy_j']);stored_rod=literal(st['bulk_energy_j'])
+    contact_check=close_check(stored_contact,cn+ct,LOCAL_CLOSE)
+    rod_check=close_check(stored_rod,bn+bt,LOCAL_CLOSE)
+    assert contact_check['within_source_tolerance'] and rod_check['within_source_tolerance']
+    # Two distinct source arithmetic forms: validator (area first) and
+    # return-map producer (area times density). No rewritten source literals.
+    validator_bulk=.5*st['area_m2']*(kn_float*(st['gap_m']-st['gap_free_m'])**2+kt_float*(st['jump_m']-st['jump_free_m'])**2)
+    validator_contact=.5*st['area_m2']*(law['normal_stiffness_pa_m']*st['gap_m']**2+law['tangential_stiffness_pa_m']*(st['jump_m']-st['plastic_slip_m'])**2)
+    producer_contact=st['area_m2']*(.5*law['normal_stiffness_pa_m']*st['gap_m']**2+.5*law['tangential_stiffness_pa_m']*(st['jump_m']-st['plastic_slip_m'])**2)
+    float_replay_bulk_equal+=validator_bulk==st['bulk_energy_j']
+    float_replay_contact_equal+=producer_contact==st['contact_energy_j']
+    assert abs(validator_bulk-st['bulk_energy_j'])<=float(LOCAL_CLOSE)*max(abs(validator_bulk),abs(st['bulk_energy_j']))
+    assert abs(validator_contact-st['contact_energy_j'])<=float(LOCAL_CLOSE)*max(abs(validator_contact),abs(st['contact_energy_j']))
+    Pstored=-literal(st['traction_normal_pa']);Pgap=-knc*gc
+    pressure_check=close_check(Pstored,Pgap,LOCAL_CLOSE)
+    assert pressure_check['within_source_tolerance']
+    normal_equilibrium=kn*dn+knc*gc
+    normal_scale=max(abs(knc*gc),kn*(abs(gc)+abs(gf)),F(sys.float_info.min))
+    assert abs(normal_equilibrium)<=LOCAL_CLOSE*normal_scale
+    shear_equilibrium=kt*dt+ktc*(jc-plastic)
+    shear_scale=max(abs(ktc*(jc-plastic)),kt*(abs(jc)+abs(jf)),F(sys.float_info.min))
+    assert abs(shear_equilibrium)<=LOCAL_CLOSE*shear_scale
+    # The pressure-symbol NEW contact-only rest coordinate, distinct from
+    # stored gc by the original binary64 multiplication rounding.
+    gref=-Pstored/knc;jref=plastic+literal(st['traction_shear_pa'])/ktc
+    symbol_contact=A*(knc*gref*gref+ktc*(jref-plastic)**2)/2
+    symbol_check=close_check(stored_contact,symbol_contact,LOCAL_CLOSE)
+    assert symbol_check['within_source_tolerance']
+    ledger_fields=('cumulative_external_work_j','cumulative_friction_work_j',
+                   'cumulative_viscous_work_j','cumulative_numerical_dissipation_j')
+    ext=literal(st[ledger_fields[0]])
+    diss=sum((literal(st[k]) for k in ledger_fields[1:]),F(0))
+    ledger_check=close_check(ext,stored_contact+stored_rod+diss,WORK_CLOSE)
+    assert ledger_check['within_source_tolerance']
+    source_validator_accounted=math.fsum((validator_bulk,validator_contact,
+        st['cumulative_friction_work_j'],st['cumulative_viscous_work_j'],
+        st['cumulative_numerical_dissipation_j']))
+    source_validator_ledger_check=close_check(ext,literal(source_validator_accounted),WORK_CLOSE)
+    assert source_validator_ledger_check['within_source_tolerance']
+    rows.append(dict(point_id=n['point_id'],trace_id=n['trace_id'],
+        original_label_membership_status=label['membership_status'],
+        donor_original_parent_id=label['donor_original_parent_id'],
+        receiver_original_parent_id=label['receiver_original_parent_id'],
+        authentic_original_point=n['original_point'],authentic_computational_angle=n['computational_angle'],
+        literal_current_state=st,literal_current_state_canonical_sha256=sha(enc(st)),
+        immutable_original_material=pars,
+        source_column_kn_pa_m=number(kn),source_column_kt_pa_m=number(kt),
+        exact_material_ratio_kn_pa_m=number(physical_kn),exact_material_ratio_kt_pa_m=number(physical_kt),
+        source_kt_property_arithmetic_close_check=property_kt_check,
+        source_contact_kn_pa_m=number(knc),source_contact_kt_pa_m=number(ktc),
+        pressure_from_stored_traction_pa=number(Pstored),pressure_from_contact_gap_pa=number(Pgap),
+        pressure_source_close_check=pressure_check,
+        current_contact_gap_m=number(gc),current_free_anchor_gap_m=number(gf),
+        total_serial_rod_normal_shortening_m=number(dn),total_serial_rod_shear_offset_m=number(dt),
+        exact_F_contact_energy_j=dict(normal=number(cn),shear=number(ct),total=number(cn+ct)),
+        exact_F_old_1000m_rod_energy_j=dict(sub_normal=number(subn),over_normal=number(overn),
+            sub_shear=number(subt),over_shear=number(overt),total=number(bn+bt)),
+        source_contact_energy_check=contact_check,source_bulk_rod_energy_check=rod_check,
+        float_arithmetic_replay=dict(validator_bulk_energy_j=validator_bulk,
+            validator_contact_energy_j=validator_contact,return_map_producer_contact_energy_j=producer_contact,
+            stored_bulk_bit_equal=validator_bulk==st['bulk_energy_j'],
+            stored_contact_bit_equal_producer=producer_contact==st['contact_energy_j']),
+        source_equilibrium_residual_pa=dict(normal=number(normal_equilibrium),shear=number(shear_equilibrium)),
+        NEW_pressure_symbol_contact_only_reference=dict(contact_gap_m=number(gref),
+            contact_jump_m=number(jref),gap_difference_from_stored_literal_m=number(gref-gc),
+            contact_energy_j=number(symbol_contact),stored_contact_close_check=symbol_check,
+            free_anchor_copied=False,old_rod_energy_included=False,implemented=False),
+        current_local_clock_s=st['elapsed_time_s'],current_local_step_count=st['step_count'],
+        cumulative_literal_work_ledger={k:st[k] for k in ledger_fields},
+        exact_F_cumulative_source_work_balance=ledger_check,
+        source_validator_float_work_accounted_j=source_validator_accounted,
+        source_validator_float_work_balance=source_validator_ledger_check,
+        previous_literal_state_canonical_sha256=sha(enc(prev)),
+        previous_local_stored_energy_j=number(literal(prev['bulk_energy_j'])+literal(prev['contact_energy_j']))))
+    sum_contact+=cn+ct;sum_rod+=bn+bt;sum_contact_normal+=cn;sum_contact_shear+=ct
+    sum_sub_rod+=subn+subt;sum_over_rod+=overn+overt
+    sum_stored_contact+=stored_contact;sum_stored_rod+=stored_rod
+    sum_stored_old+=literal(prev['bulk_energy_j'])+literal(prev['contact_energy_j'])
+    sum_external+=ext;sum_dissipation+=diss
+
+# Global historical stiffness is cantilever-only. The exact reference energy
+# uses source K/R^2 and the accepted literal physical tip coordinates.
+K=r['stiffness'];assert len(K)==14 and all(len(x)==14 for x in K)
+assert all(K[i][j]==0 for i in range(14) for j in range(14) if i!=j or i<6)
+R=literal(r['surface']['radius_km'])*1000
+tips={t[0]:t[1:] for t in s['transverse_displacement_m']}
+initial=h['accepted_before']['initial_mechanics']
+assert all(t[1:]==[0.0,0.0] for t in initial['transverse_displacement_m'])
+trace_order=[t[0] for t in s['transverse_displacement_m']]
+cold=[];beam=F(0)
+for c in p['cold_components']:
+    old=c['body']['original_body'];bank=old['source_bank']
+    trace=old['trace_id']
+    idx=6+2*trace_order.index(trace)+(0 if bank=='sub' else 1)
+    k=rational(old['source_old_tip_stiffness_n_m']);w=rational(old['accepted_tip_displacement_m'])
+    assert k==literal(K[idx][idx])/(R*R)
+    assert w==literal(tips[trace][0 if bank=='sub' else 1])
+    energy=k*w*w/2
+    assert energy==rational(c['diagnostic_response']['reference_energy_j'])
+    cold.append(dict(component_id=c['component_id'],bank_alias=old['bank_alias'],
+        original_parent_id=old['original_parent_id'],trace_id=trace,source_bank=bank,
+        original_global_stiffness_index=idx,source_old_tip_stiffness_n_m=number(k),
+        accepted_tip_displacement_m=number(w),exact_F_beam_reference_energy_j=number(energy),
+        complete_source_bending_parameters_json=old['complete_source_bending_parameters_json'],
+        calibrated_reference_contains_old_contact_rod_energy=False))
+    beam+=energy
+assert len(cold)==8 and len({x['original_global_stiffness_index'] for x in cold})==8
+assert beam==rational(p['accepted_reference_total_beam_energy_j'])
+source_bending=literal(h['actual_candidate']['diagnostics']['bending_energy_increment_j'])
+beam_check=close_check(source_bending,beam,LOCAL_CLOSE)
+assert beam_check['within_source_tolerance']
+candidate_ledger=dict(h['unaccepted_candidate_work_ledgers'])
+assert candidate_ledger['stored_energy_increment_j']==h['actual_candidate']['diagnostics']['stored_energy_increment_j']
+exact_local_increment=sum_stored_rod+sum_stored_contact-sum_stored_old
+source_global_stored=literal(candidate_ledger['stored_energy_increment_j'])
+global_stored_check=close_check(source_global_stored,exact_local_increment+source_bending,LOCAL_CLOSE)
+assert global_stored_check['within_source_tolerance']
+source_local_increment_replay=math.fsum(
+    (states[n['point_id']]['bulk_energy_j']-n['previous_state']['bulk_energy_j'])
+    +(states[n['point_id']]['contact_energy_j']-n['previous_state']['contact_energy_j'])
+    for n in nodes)
+source_global_stored_replay=math.fsum((source_local_increment_replay,float(source_bending)))
+source_global_float_check=close_check(source_global_stored,literal(source_global_stored_replay),LOCAL_CLOSE)
+assert source_global_float_check['within_source_tolerance']
+group_totals={}
+for status in sorted(set(x['original_label_membership_status'] for x in rows)):
+    rr=[x for x in rows if x['original_label_membership_status']==status]
+    group_totals[status]=dict(atom_count=len(rr),point_ids=[x['point_id'] for x in rr],
+        source_stored_contact_energy_j=number(sum((literal(x['literal_current_state']['contact_energy_j']) for x in rr),F(0))),
+        source_stored_rod_energy_j=number(sum((literal(x['literal_current_state']['bulk_energy_j']) for x in rr),F(0))))
+assert sorted(x['atom_count'] for x in group_totals.values())==[8,8]
+
+a=dict(format='native-common-contact-source-energy-state-decomposition-readonly-audit-1',
+    status='SOURCE_ACCOUNTING_ONLY',project_imports=False,quadratures=False,
+    repository_python_or_docs_edits=False,source_state_advanced=False,
+    common841_packet_raw_sha256=sha(raw),common841_packet_seal_sha256=packet_seal,
+    source_history_audit_raw_sha256=sha(hist_raw),source_history_binding_sha256=h['binding_sha256'],
+    source_snapshot_sha256=p['source_snapshot_sha256'],
+    source_file_raw_sha256={f:sha((ROOT/f).read_bytes()) for f in source_files},
+    source_definitions=dict(
+        rods='ElasticColumnParameters: kn=1/(Ls/Es+Lo/Eo), kt=1/(Ls/Gs+Lo/Go). Source lengths are along declared fault normal, not radial thickness.',
+        local_bulk='bulk_energy_j=.5*area*(kn*(g_contact-g_free)^2+kt*(j_contact-j_free)^2)',
+        local_contact='contact_energy_j=area*(.5*kn_contact*g_contact^2+.5*kt_contact*(j_contact-plastic)^2) on compressed branch',
+        water='water changes friction/cohesion strength only. Compressed normal and elastic shear recoverable energy have no guessed water multiplier. Here water=.7, friction/cohesion/viscosity=0.',
+        old_beam='Original K is zero apart from eight cantilever tip diagonals. K_tip=k_beam*R^2. Source global energy=.5*q^T*K*q; physical tip reference sum=.5*k_beam*w_ref^2.',
+        global_accounting='Source _equilibrate_contact_network stored first sums local rod+contact energy increments, then explicitly adds bending_increment. Thus old rods are a separate stored carrier, not part of the beam reference calibration.',
+        local_energy_check='512*binary64_epsilon relative tolerance; exact F lifts source float literals, with source arithmetic replay separately reported',
+        cumulative_work_check='2e-10 relative tolerance from _validate_state; signed external work equals rods+contact+friction+viscous+numerical dissipation from zero birth'),
+    current_source_selection=dict(snapshot_equals_all16_unaccepted_candidate_state_literals=True,
+        current_continuous_memory_equals_step_memory=True,current_continuous_clock_fraction=[1,1],
+        native_geometry_elapsed_s=s['elapsed_time_s'],
+        local_contact_clocks_s=sorted(set(x['current_local_clock_s'] for x in rows)),
+        local_contact_step_counts=sorted(set(x['current_local_step_count'] for x in rows)),
+        frozen_atom_count=16,all_states_preserved_once=True,archived_and_retained_label_groups=group_totals),
+    all16_current_atoms=rows,eight_cold_beam_calibration_rows=cold,
+    totals=dict(exact_F_contact_energy_j=number(sum_contact),exact_F_contact_normal_energy_j=number(sum_contact_normal),
+        exact_F_contact_shear_energy_j=number(sum_contact_shear),exact_F_old_rod_energy_j=number(sum_rod),
+        exact_F_sub_rod_energy_j=number(sum_sub_rod),exact_F_over_rod_energy_j=number(sum_over_rod),
+        source_stored_contact_energy_j=number(sum_stored_contact),source_stored_rod_energy_j=number(sum_stored_rod),
+        source_stored_local_rod_plus_contact_energy_j=number(sum_stored_contact+sum_stored_rod),
+        exact_F_accepted_reference_total_beam_energy_j=number(beam),
+        source_global_bending_energy_increment_j=number(source_bending),source_global_bending_check=beam_check,
+        source_previous_local_energy_j=number(sum_stored_old),exact_F_local_energy_increment_j=number(exact_local_increment),
+        source_global_stored_energy_increment_j=number(source_global_stored),source_global_stored_decomposition_check=global_stored_check,
+        source_local_stored_energy_increment_float_replay_j=source_local_increment_replay,
+        source_global_stored_energy_increment_float_replay_j=source_global_stored_replay,
+        source_global_stored_increment_replay_bit_equal=source_global_stored_replay==candidate_ledger['stored_energy_increment_j'],
+        source_global_stored_increment_float_check=source_global_float_check,
+        source_cumulative_local_external_work_j=number(sum_external),source_cumulative_local_dissipation_j=number(sum_dissipation),
+        source_cumulative_local_work_balance=close_check(sum_external,sum_stored_contact+sum_stored_rod+sum_dissipation,WORK_CLOSE),
+        source_bulk_float_replay_bit_equal_atom_count=float_replay_bulk_equal,
+        source_contact_float_producer_replay_bit_equal_atom_count=float_replay_contact_equal),
+    minimal_NEW_compressed_contact_reference=dict(implemented=False,
+        definition='For pressure Pstar from the current source, g_c_ref=-Pstar/kn_contact. With finite commonbody port delta_g, U_contact=.5*kn_contact*(g_c_ref+delta_g)^2 per explicitly declared interface measure. Retain plastic/current clocks and original histories.',
+        zero_increment_identity='Preserves source CONTACT spring pressure and energy symbol at zero port increment, subject to original literal rounding enclosure. It does not preserve or transfer old rod stored energy.',
+        source_free_gap_copied=False,old_series_effective_stiffness_used_as_contact_stiffness=False,
+        pressure_symbol_based_rest_coordinate_not_geometric_clearance=True,
+        old_1000m_rods_charged_in_new_contact_only_law=False),
+    once_only_separation_contract=dict(
+        historical_archive='Keep all16 original states/labels/areas/plastic/cumulative slip/work/dissipation/clocks and separate old rod/contact stored energies as immutable source accounting. Archived8 donor labels stay present. Their source area remains original1000m interface measure.',
+        calibrated_NEW_bulk='Current eight common COLD energy laws preserve beam reference energy and tip force, using declared nonlocal full Green strain calibration. Their source reference energy is beam-only. This is not a source-authenticated transfer of old1D rod preload, rest strain, stress field, energy density, or material ownership into new3D bulk.',
+        active_reference_energy='Before active contact/bulk integration, declare exactly which source CONTACT spring energy becomes the NEW contact reference energy, which old carriers are historical only, and which physical carrier receives old rod preload/energy. Explicitly enumerate each source carrier once. No all16-area distribution over five cuts, full10km depth, face J, or born HOT interface follows from the source.',
+        rod_transfer='A physical rod-to-bulk transfer requires an explicit reference/rest-strain or prestress field and material/measure map in the same92body field, its energy/work balance and finite derivatives. The scalar old rod energy alone cannot identify that field or certify its tractions. A constant archive ledger can document history, but cannot certify physical preload or energy transfer.',
+        unresolved_rod_disposition='Old rods are separate from beam calibration. Therefore retaining only beam-calibrated NEW bulk plus contact-only springs omits old rod stored energy from an active physical state unless an explicit transfer/model change is declared. Conversely adding old rods as an active spring carrier plus a bulk transfer of the same rods would duplicate that source carrier. No actual duplicate has been inferred merely from new bulk and old frozen archive coexistence.',
+        dissipation='Original cumulative dissipation/work is historical and preserved once; it is not reusable elastic reference energy or newly assigned heat/work.',
+        reference_shift='A constant energy-reference offset may be declared for accounting convention, but it does not create source stress, rods-to-bulk material transfer, or correct generalized forces.',
+        current_scope='Read-only accounting audit. No contact law adopted, force solution, full-face/depth distribution, physical rod transfer, whole-clock admission, material advance, or restart certification.'),
+    force_equilibrium_certified=False,material_admission_authorized=False,
+    physical_rod_energy_transfer_certified=False)
+assert a['totals']['source_cumulative_local_work_balance']['within_source_tolerance']
+a['audit_sha256']=sha(enc(a))
+OUT.write_text(json.dumps(a,sort_keys=True,indent=2,ensure_ascii=False,allow_nan=False)+'\n')
+print(json.dumps(dict(output=str(OUT),raw_sha256=sha(OUT.read_bytes()),seal_sha256=a['audit_sha256'],
+    producer_raw_sha256=sha(Path(__file__).read_bytes()),atom_count=len(rows),beam_energy_j=float(beam),
+    stored_contact_energy_j=float(sum_stored_contact),stored_rod_energy_j=float(sum_stored_rod),
+    sub_rod_energy_j=float(sum_sub_rod),over_rod_energy_j=float(sum_over_rod),
+    bulk_float_replay_equal_count=float_replay_bulk_equal,contact_float_replay_equal_count=float_replay_contact_equal)))

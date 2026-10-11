@@ -1,0 +1,61 @@
+"""Independent exact-rational audit; no project imports or historical maths."""
+from fractions import Fraction as F
+from pathlib import Path
+import json,hashlib,time,argparse
+
+def enc(x):return json.dumps(x,sort_keys=True,separators=(',',':')).encode()
+def tensor(x,depth):
+ if depth==0:return F(*x)
+ return tuple(tensor(v,depth-1) for v in x)
+def inverse(A):
+ n=len(A);a=[list(row)+[F(i==j) for j in range(n)] for i,row in enumerate(A)]
+ determinant=F(1)
+ for i in range(n):
+  pivot=next(k for k in range(i,n) if a[k][i])
+  if pivot!=i:a[i],a[pivot]=a[pivot],a[i];determinant=-determinant
+  v=a[i][i];determinant*=v;a[i]=[x/v for x in a[i]]
+  for k in range(n):
+   if k!=i:
+    v=a[k][i];a[k]=[x-v*y for x,y in zip(a[k],a[i])]
+ return determinant,tuple(tuple(row[n:]) for row in a)
+def mul(A,B):return tuple(tuple(sum((a*b for a,b in zip(row,col)),F(0)) for col in zip(*B)) for row in A)
+def transpose(A):return tuple(zip(*A))
+def main(input,output):
+ t=time.perf_counter();raw=Path(input).read_bytes();packet=json.loads(raw)
+ assert packet['sha256']==hashlib.sha256(enc({k:v for k,v in packet.items() if k!='sha256'})).hexdigest()
+ comparisons=0
+ def check(a,b):
+  nonlocal comparisons
+  if isinstance(a,(tuple,list)):
+   assert len(a)==len(b)
+   for x,y in zip(a,b):check(x,y)
+  else:assert a==b;(None);comparisons+=1
+ rows=[]
+ for row in packet['cases']:
+  B=tensor(row['bridge'],2);oldF=tensor(row['old_deformation'],2)
+  J,inv=inverse(B);check(J,tensor(row['volume_ratio'],0));check(inv,tensor(row['inverse'],2))
+  check(mul(oldF,inv),tensor(row['new_deformation'],2))
+  p=tensor(row['old_gradient'],1);H=tensor(row['old_hessian'],2);n=len(p);d=row['mode_count']
+  # Independent dense chain matrix old_channel = L new_channel.
+  L=tuple(tuple(B[b%3][a%3] if a<9 and b<9 and a//3==b//3 else F(a==b and a>=9) for b in range(n)) for a in range(n))
+  newp=tuple(sum((L[a][b]*p[a] for a in range(n)),F(0))/J for b in range(n))
+  newH=tuple(tuple(v/J for v in r) for r in mul(transpose(L),mul(H,L)))
+  oldE=tensor(row['old_energy'],0);check(oldE/J,tensor(row['new_energy'],0));check(newp,tensor(row['new_gradient'],1));check(newH,tensor(row['new_hessian'],2))
+  D=tensor(row['first'],2);Q=tensor(row['second'],3)
+  # Coefficients of W(F(q),z(q)) through q^2, including linear prestress*Q.
+  g=tuple(F(17)*sum((p[a]*D[a][i] for a in range(n)),F(0)) for i in range(d))
+  elastic=mul(transpose(D),mul(H,D))
+  modalH=tuple(tuple(F(17)*(elastic[i][j]+sum((p[a]*Q[a][i][j] for a in range(n)),F(0))) for j in range(d)) for i in range(d))
+  expected=(oldE*17,g,modalH)
+  check(expected,tuple(tensor(row['original_modal'][k],k) for k in range(3)))
+  check(expected,tuple(tensor(row['transported_modal'][k],k) for k in range(3)))
+  Pold=tuple(p[3*i:3*i+3] for i in range(3));Pnew=tuple(newp[3*i:3*i+3] for i in range(3))
+  check(mul(Pold,transpose(oldF)),tuple(tuple(J*v for v in r) for r in mul(Pnew,transpose(mul(oldF,inv)))))
+  rows.append(dict(mode_count=d,reference_volume_ratio=str(J),all_density_and_modal_derivatives_checked=True))
+ assert packet['physical_preparation_work_paid'] is False and packet['reference_gap_resolved'] is False
+ result=dict(status='PASS_INDEPENDENT_EXACT_REFERENCE_COVARIANCE_AUDIT',cases=rows,comparisons=comparisons,native_raw_sha256=hashlib.sha256(raw).hexdigest(),project_imports=False,historical_math_replayed=False,physical_preparation_work_certified=False,seconds=time.perf_counter()-t)
+ result['sha256']=hashlib.sha256(enc(result)).hexdigest()
+ with Path(output).open('xb') as f:f.write(enc(result)+b'\n')
+ print(enc(result).decode())
+if __name__=='__main__':
+ p=argparse.ArgumentParser();p.add_argument('--input',required=True);p.add_argument('--output',required=True);a=p.parse_args();main(a.input,a.output)

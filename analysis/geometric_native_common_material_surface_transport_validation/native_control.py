@@ -1,0 +1,290 @@
+"""Finite local surface transport on genuine cuts and original material labels.
+
+The saved875 NONZERO coordinates are immutable geometric probes. No old
+force solver, tensor quadrature, energy assembly or history advance runs here.
+"""
+from __future__ import annotations
+
+from fractions import Fraction as F
+from functools import lru_cache
+import hashlib
+import json
+from pathlib import Path
+import time
+
+from tectonics.geometric_native_pose import FractionInterval as I
+from tectonics.geometric_native_common_contact_ports import _encoded as encoded, _payload as payload
+from analysis.geometric_native_common_material_transfer_validation.native_control import (
+    source_context as reference_context, material_system,
+)
+
+ROOT = Path(__file__).resolve().parents[2]
+PRIOR_875_PACKET = ROOT / "analysis/geometric_native_common_strain_projection_validation/release_validation_03/native_control/source_packet.json"
+PRIOR_875_PACKET_RAW = "2ddf12415b9abecbbeead78a203ba82d7e18fea84bc9197aa789a607514939b2"
+PRIOR_875_PACKET_SEAL = "f4c5f9519698c28bf12b9854dc05f78704f25068fca427478a0cfc98786f1a8d"
+PHYSICAL_SCOPE = "FINITE_LOCAL_MATERIAL_SURFACE_MEASURE_AND_MEMORY_TRANSPORT_COMPONENT_ONLY"
+PACKET_FORMAT = "native-common-material-surface-transport-packet-1"
+CONTROL_FORMAT = "native-common-material-surface-transport-control-1"
+REMAINING_CONDITIONS = (
+    "Whole-source physical material and old-force/prestress/work handover, HOT law/mean chart, loads/drag and NEW mixed equilibrium",
+    "Whole-clock all-pair admission including reverse C5 to C1",
+    "Accepted continuation with independent path work, balances and joint restart",
+)
+
+
+def digest(value):
+    return hashlib.sha256(encoded(value)).hexdigest()
+
+
+def _fraction(value):
+    if (type(value) is not list or len(value) != 2
+            or any(type(x) is not int for x in value) or value[1] <= 0):
+        raise ValueError("An immutable query requires literal Fraction pairs")
+    return F(*value)
+
+
+def _interval(value):
+    if type(value) is not dict or set(value) != {"lo", "hi"}:
+        raise ValueError("An immutable query requires complete interval endpoints")
+    return I(_fraction(value["lo"]), _fraction(value["hi"]))
+
+
+@lru_cache(maxsize=1)
+def bound_coordinates():
+    raw = PRIOR_875_PACKET.read_bytes()
+    if hashlib.sha256(raw).hexdigest() != PRIOR_875_PACKET_RAW:
+        raise ValueError("The completed875 source packet changed")
+    packet = json.loads(raw)
+    if (packet.get("packet_sha256") != PRIOR_875_PACKET_SEAL
+            or digest({k: v for k, v in packet.items() if k != "packet_sha256"}) != PRIOR_875_PACKET_SEAL):
+        raise ValueError("The completed875 query seal changed")
+    system = packet["strain_projection"]
+    order = tuple(tuple(row) for row in system["coordinate_order"])
+    values = tuple(_fraction(row) for row in system["bound_coordinate_increments"])
+    if len(order) != len(values) or len(order) != 92:
+        raise ValueError("Exactly the complete saved92 coordinates are required")
+    bodies = {}
+    for coordinate, value in zip(order, values):
+        if coordinate[0] == "body":
+            bodies.setdefault(coordinate[1], []).append((coordinate[2], value))
+        elif coordinate[0] != "owner" or value:
+            raise ValueError("The frozen probe must retain zero owner increments")
+    cold = {cid: tuple(v for _, v in rows) for cid, rows in bodies.items() if len(rows) == 7}
+    if (len(cold) != 8 or any(not all(row) for row in cold.values())
+            or any(v for rows in bodies.values() if len(rows) == 6 for _, v in rows)):
+        raise ValueError("The saved probe requires eight NONZERO cold fields and HOT30 zero")
+    return cold
+
+
+@lru_cache(maxsize=1)
+def ports():
+    from tectonics.geometric_native_common_contact_ports import bind_native_common_contact_ports
+    _, reference, cuts, *_ = reference_context()
+    return bind_native_common_contact_ports(reference, cuts=cuts, precision=96)
+
+
+def cold_ports():
+    result = tuple(p for p in ports().ports if p.cut.receiver_material_kind == "original_live")
+    if len(result) != 5:
+        raise ValueError("Exactly five genuine original-receiver cuts are required")
+    return result
+
+
+@lru_cache(maxsize=1)
+def hot_case():
+    """One authentic HOT geometry query for rejection of a borrowed source law."""
+    from tectonics.geometric_native_common_contact_ports import evaluate_native_common_contact_port
+    _, reference, *_ = reference_context()
+    candidates = tuple(p for p in ports().ports if p.cut.receiver_material_kind == "hot_birth")
+    if len(candidates) != 1:
+        raise ValueError("Exactly one genuine curved HOT receiver is required")
+    port = candidates[0]
+    p, c = port.cut.parameter_guaranteed_bounds, port.cut.common_physical_radius_cubed_bounds_m3
+    return evaluate_native_common_contact_port(reference, port,
+        parameter_bounds=I(p.lo+(p.hi-p.lo)/3), physical_radius_cubed_bounds_m3=I(c.lo+(c.hi-c.lo)/3),
+        donor_coordinates_m=(F(0),)*7, receiver_coordinates_m=(F(0),)*6, precision=96)
+
+
+@lru_cache(maxsize=8)
+def cold_body(component_id):
+    """Typed geometry restoration for the independent original-material oracle."""
+    from tectonics.geometric_native_common_cold import bind_native_common_cold_body
+    _, reference, *_ = reference_context()
+    return bind_native_common_cold_body(component_id, reference=reference, precision=96)
+
+
+def original_cold_body_contexts():
+    """Complete eight authentic finite-field inputs, without bulk integrals."""
+    from tectonics.geometric_native_common_cold import native_common_cold_body_to_dict
+    return [native_common_cold_body_to_dict(cold_body(cid)) for cid in sorted(bound_coordinates())]
+
+
+def surface_arguments(index, nonzero=True):
+    port = cold_ports()[index]
+    parameter = port.cut.parameter_guaranteed_bounds
+    cube = port.cut.common_physical_radius_cubed_bounds_m3
+    fraction = F(2, 3) if nonzero else F(1, 3)
+    coordinate_map = bound_coordinates()
+    return dict(cut_id=port.cut.cut_id,
+        parameter_bounds=I(parameter.lo+(parameter.hi-parameter.lo)*fraction),
+        physical_radius_cubed_bounds_m3=I(cube.lo+(cube.hi-cube.lo)*fraction),
+        donor_coordinates_m=coordinate_map[port.donor_body.component_id] if nonzero else (F(0),)*7,
+        receiver_coordinates_m=coordinate_map[port.receiver_body.component_id] if nonzero else (F(0),)*7,
+        precision=96, order=28)
+
+
+@lru_cache(maxsize=16)
+def surface_case(index, nonzero=True):
+    from tectonics.geometric_native_common_contact_ports import evaluate_native_common_contact_port
+    from tectonics.geometric_native_common_material_surface_transport import evaluate_native_common_surface_transport
+    _, reference, _, allocation, _ = reference_context()
+    arguments = dict(surface_arguments(index, nonzero))
+    arguments.pop("cut_id")
+    port_response = evaluate_native_common_contact_port(reference, cold_ports()[index], **arguments)
+    result = evaluate_native_common_surface_transport(reference, port_response, allocation, precision=96)
+    return port_response, result
+
+
+def original_arguments(index, depth_fraction=F(1, 2), nonzero=True):
+    a = material_system().attachments[index]
+    return dict(point_id=a.point_id, side=a.side,
+        material_depth_bounds_m=I(a.areal_material_thickness_m*depth_fraction),
+        coordinates_m=bound_coordinates()[a.geometry_field_component_id] if nonzero else (F(0),)*7,
+        precision=96)
+
+
+@lru_cache(maxsize=160)
+def original_case(index, depth_fraction=F(1, 2), nonzero=True):
+    from tectonics.geometric_native_common_material_surface_transport import evaluate_native_common_original_material_transport
+    return evaluate_native_common_original_material_transport(material_system(),
+        **original_arguments(index, depth_fraction, nonzero))
+
+
+def summary():
+    return dict(physical_candidate_status=PHYSICAL_SCOPE,
+        genuine_cold_cut_count=5, complete_surface_query_count=10,
+        complete_original_material_query_count=64, original_material_attachment_count=32,
+        archived_original_donor_attachment_count=8, original_material_query_depth_count=2,
+        authentic_saved_nonzero_cold_coordinate_count=56,
+        finite_local_nanson_surface_measure_transport_defined=True,
+        current_source_memory_material_scalars_retained=True,
+        same_parent_original_material_field_extension_declared=True,
+        both_deformed_material_surface_sides_stored=True,
+        physical_source_material_handover_certified=False,
+        whole_face_measure_or_memory_integral_certified=False,
+        whole_archived_three_dimensional_history_recovered=False,
+        current_donor_receiver_sheets_assumed_glued=False,
+        current_deformed_follower_normal_contact_law_defined=False,
+        old_mechanical_atom_areas_smeared_into_continuous_density=False,
+        old_source_mechanical_potential_modified=False,
+        continuous_face_energy_added_to_old_source_potential=False,
+        hot_receiving_contact_law_inferred=False,
+        historical_cumulative_work_reconstructed_from_current_stretch=False,
+        new_mixed_force_equilibrium_certified=False,
+        whole_clock_all_pair_admission_authorized=False,
+        physical_material_admission_authorized=False,
+        source_history_advanced=False, fresh_tensor_quadrature_executed=False,
+        historical_force_solve_reexecuted=False,
+        accepted_original_native_intervals=1, accepted_new_native_intervals=0,
+        original_point_1_remaining_work_blocks=1, original_point_1_completed=False,
+        remaining_physical_conditions=list(REMAINING_CONDITIONS))
+
+
+def replay_packet(packet):
+    from tectonics import geometric_native_common_material_surface_transport as api
+    from tectonics.geometric_native_common_contact_ports import native_common_contact_port_response_to_dict
+    from tectonics.geometric_native_common_reference import native_common_reference_to_dict
+    from tectonics.geometric_native_common_source_allocation import native_common_source_allocation_to_dict
+    from tectonics.geometric_native_common_material_transfer import native_common_material_transfer_to_dict
+    expected = set(summary()) | {"format", "prior_875_packet_raw_sha256", "prior_875_packet_selfseal",
+        "common_reference", "allocation", "material_transfer", "original_cold_body_contexts", "surface_queries",
+        "original_material_queries", "packet_sha256"}
+    if (type(packet) is not dict or set(packet) != expected
+            or packet.get("packet_sha256") != digest({k: v for k, v in packet.items() if k != "packet_sha256"})
+            or packet.get("format") != PACKET_FORMAT
+            or packet.get("prior_875_packet_raw_sha256") != PRIOR_875_PACKET_RAW
+            or packet.get("prior_875_packet_selfseal") != PRIOR_875_PACKET_SEAL):
+        raise ValueError("The complete finite material-surface packet identity changed")
+    if encoded({k: packet[k] for k in summary()}) != encoded(summary()):
+        raise ValueError("The complete finite transport scope changed")
+    _, reference, _, allocation, _ = reference_context()
+    for name, dto in (("common_reference", native_common_reference_to_dict(reference)),
+            ("allocation", native_common_source_allocation_to_dict(allocation)),
+            ("material_transfer", native_common_material_transfer_to_dict(material_system())),
+            ("original_cold_body_contexts", original_cold_body_contexts())):
+        if encoded(packet[name]) != encoded(dto):
+            raise ValueError("A complete authentic prior input changed: " + name)
+    surface_expected = tuple(surface_arguments(i, nz) for i in range(5) for nz in (False, True))
+    if type(packet["surface_queries"]) is not list or len(packet["surface_queries"]) != len(surface_expected):
+        raise ValueError("Exactly ten genuine surface queries are required")
+    for row, arguments in zip(packet["surface_queries"], surface_expected):
+        if (type(row) is not dict or set(row) != {"arguments", "port_response", "response"}
+                or encoded(row["arguments"]) != encoded(arguments)):
+            raise ValueError("A surface receipt was transplanted to another physical query")
+        i = next(i for i, p in enumerate(cold_ports()) if p.cut.cut_id == arguments["cut_id"])
+        original_port, original_response = surface_case(i, any(arguments["donor_coordinates_m"]))
+        # Authenticate every serialized field against this actual native query.
+        # The old generic decoder rebuilds all six cuts/ports per row; the
+        # corresponding genuine typed factory response is already available.
+        if (type(row["port_response"]) is not dict
+                or encoded(row["port_response"]) != encoded(
+                    native_common_contact_port_response_to_dict(original_port))):
+            raise ValueError("The full current material-field port changed")
+        rebuilt = api.native_common_surface_transport_from_dict(row["response"],
+            reference=reference, port_response=original_port, allocation=allocation)
+        if encoded(api.native_common_surface_transport_to_dict(rebuilt)) != encoded(
+                api.native_common_surface_transport_to_dict(original_response)):
+            raise ValueError("The complete finite surface response changed")
+    original_expected = tuple(original_arguments(i, depth) for i in range(32) for depth in (F(0), F(1, 2)))
+    if type(packet["original_material_queries"]) is not list or len(packet["original_material_queries"]) != 64:
+        raise ValueError("Exactly64 original-material point queries are required")
+    for row, arguments in zip(packet["original_material_queries"], original_expected):
+        if (type(row) is not dict or set(row) != {"arguments", "response"}
+                or encoded(row["arguments"]) != encoded(arguments)):
+            raise ValueError("An original-material receipt was transplanted to another label/depth")
+        rebuilt = api.native_common_original_material_transport_from_dict(row["response"], material_system=material_system())
+        direct = api.evaluate_native_common_original_material_transport(material_system(), **arguments)
+        if encoded(api.native_common_original_material_transport_to_dict(rebuilt)) != encoded(
+                api.native_common_original_material_transport_to_dict(direct)):
+            raise ValueError("The full original-material field response changed")
+    return summary()
+
+
+def run(out):
+    from tectonics import geometric_native_common_material_surface_transport as api
+    from tectonics.geometric_native_common_contact_ports import native_common_contact_port_response_to_dict
+    from tectonics.geometric_native_common_reference import native_common_reference_to_dict
+    from tectonics.geometric_native_common_source_allocation import native_common_source_allocation_to_dict
+    from tectonics.geometric_native_common_material_transfer import native_common_material_transfer_to_dict
+    started = time.perf_counter()
+    out = Path(out); out.mkdir(parents=True, exist_ok=False)
+    _, reference, _, allocation, _ = reference_context()
+    surface_queries = []
+    for index in range(5):
+        for nonzero in (False, True):
+            port, response = surface_case(index, nonzero)
+            surface_queries.append(dict(arguments=payload(surface_arguments(index, nonzero)),
+                port_response=native_common_contact_port_response_to_dict(port),
+                response=api.native_common_surface_transport_to_dict(response)))
+    original_queries = [dict(arguments=payload(original_arguments(index, depth)),
+        response=api.native_common_original_material_transport_to_dict(original_case(index, depth)))
+        for index in range(32) for depth in (F(0), F(1, 2))]
+    packet = dict(format=PACKET_FORMAT, prior_875_packet_raw_sha256=PRIOR_875_PACKET_RAW,
+        prior_875_packet_selfseal=PRIOR_875_PACKET_SEAL, **summary(),
+        common_reference=native_common_reference_to_dict(reference),
+        allocation=native_common_source_allocation_to_dict(allocation),
+        material_transfer=native_common_material_transfer_to_dict(material_system()),
+        original_cold_body_contexts=original_cold_body_contexts(),
+        surface_queries=surface_queries, original_material_queries=original_queries)
+    packet["packet_sha256"] = digest(packet)
+    replay_packet(packet)
+    (out / "source_packet.json").write_bytes(encoded(packet)+b"\n")
+    report = dict(format=CONTROL_FORMAT, status="PASS", **summary(),
+        source_packet_sha256=packet["packet_sha256"], surface_queries_sha256=digest(surface_queries),
+        original_material_queries_sha256=digest(original_queries),
+        original_cold_body_contexts_sha256=digest(packet["original_cold_body_contexts"]),
+        seconds=time.perf_counter()-started)
+    report["report_sha256"] = digest(report)
+    (out / "report.json").write_bytes(encoded(report)+b"\n")
+    print(encoded(report).decode(), flush=True)
+    return report

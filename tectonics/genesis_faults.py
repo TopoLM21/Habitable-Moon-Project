@@ -19,11 +19,13 @@ from .genesis_checkpoint_compat import MODEL_VERSION, require_thermal_model_vers
 from .genesis_shell import ShellParameters, Membrane
 from .genesis_onset import OnsetParameters
 from .genesis_tides import TidalParameters, TidalOrbitState
-from .genesis_mobile import MobileModel, MobileState, MobileParameters, _RetryStep, _validate_loaded
+from .genesis_mobile import (MobileModel, MobileState, MobileParameters, _RetryStep,
+    _validate_loaded, _encoded_bulk_birth, _decoded_bulk_birth,
+    _encoded_cohort_mechanics, _decoded_cohort_mechanics)
 from .genesis_material import face_deformation, polar_increment, rotate_tensor
 from .genesis_fault_law import WeakPlaneParameters, return_map, select_plane
 
-FAULT_VERSION = "genesis-faults-0.1"
+FAULT_VERSION = "genesis-faults-0.3"
 
 
 def transport_plane_normals(plane_normal, deformation):
@@ -157,6 +159,17 @@ class FaultModel(MobileModel):
             friction_work_cell_j=friction_work, viscous_work_cell_j=viscous_work,
             friction_work_j=float(friction_work.sum()), viscous_fault_work_j=float(viscous_work.sum()))
 
+    def _cohort_plastic_increment(self, state):
+        # A single persistent through-thickness weak plane uses the common
+        # gamma. Each Maxwell cohort receives its own beta_i times this flow;
+        # the existing aggregate return map is exact for the common elastic C.
+        normal = state.plane_normal
+        tangent = np.column_stack((-normal[:, 1], normal[:, 0]))
+        flow = np.column_stack((tangent[:, 0]*normal[:, 0],
+            tangent[:, 1]*normal[:, 1],
+            tangent[:, 0]*normal[:, 1]+tangent[:, 1]*normal[:, 0]))
+        return state.last_shear_increment[:, None]*flow
+
     def fields(self, state, thermal):
         data = super().fields(state, thermal)
         rate = (np.abs(state.last_shear_increment)*self.fault_p.band_width_km/state.last_step_myr*.1
@@ -187,7 +200,10 @@ class FaultModel(MobileModel):
 
 def save_fault_checkpoint(path, model, state, thermal, orbit, controls, provenance):
     arrays = {f.name: getattr(state, f.name) for f in fields(state) if isinstance(getattr(state, f.name), np.ndarray)}
-    scalars = {f.name: getattr(state, f.name) for f in fields(state) if f.name not in arrays}
+    scalars = {f.name: getattr(state, f.name) for f in fields(state)
+               if f.name not in arrays and f.name not in {"bulk_birth_history", "cohort_mechanics"}}
+    scalars["bulk_birth_history"] = _encoded_bulk_birth(model, state, thermal)
+    scalars["cohort_mechanics"] = _encoded_cohort_mechanics(state)
     parameters = {"shell": asdict(model.p), "thermal": asdict(model.thermal), "onset": asdict(model.onset_p),
                   "tides": asdict(model.tides_p), "mobile": asdict(model.mobile_p), "faults": asdict(model.fault_p)}
     meta = {"format": FAULT_VERSION, "thermal_model_version": MODEL_VERSION, "parameters": parameters,
@@ -205,6 +221,10 @@ def load_fault_checkpoint(path):
     try:
         with np.load(path, allow_pickle=False) as archive:
             meta = json.loads(str(archive["metadata"]))
+            if meta.get("format") == "genesis-faults-0.1":
+                raise ValueError("Fault 0.1 has no bulk birth history; replay from molten formation")
+            if meta.get("format") == "genesis-faults-0.2":
+                raise ValueError("Fault 0.2 has no cohort constitutive memory; replay from molten formation")
             p = meta["parameters"]
             if meta["format"] != FAULT_VERSION or hashlib.sha256(json.dumps(p, sort_keys=True).encode()).hexdigest() != meta["parameter_hash"]:
                 raise ValueError("Fault checkpoint version/parameter hash mismatch")
@@ -212,7 +232,10 @@ def load_fault_checkpoint(path):
             model = FaultModel(ShellParameters(**p["shell"]), GenesisParameters(**p["thermal"]),
                 OnsetParameters(**p["onset"]), TidalParameters(**p["tides"]), MobileParameters(**p["mobile"]),
                 WeakPlaneParameters(**p["faults"]))
-            state = FaultState(**meta["state"], **{k: archive[k].copy() for k in archive.files if k != "metadata"})
+            scalars = dict(meta["state"])
+            scalars["bulk_birth_history"] = _decoded_bulk_birth(scalars)
+            scalars["cohort_mechanics"] = _decoded_cohort_mechanics(scalars)
+            state = FaultState(**scalars, **{k: archive[k].copy() for k in archive.files if k != "metadata"})
         thermal, orbit = GenesisState(**meta["thermal_state"]), TidalOrbitState(**meta["orbit"])
         _validate_loaded(model, state, thermal, orbit)
         _validate_fault_history(model, state)

@@ -1,0 +1,504 @@
+"""Two-phase stdlib903 evidence closure; no physical math/project imports.
+
+Invoke prepare_manifest only after gate/audit PASS and final documents. Invoke
+the emitted readback_source.txt separately with true stdout/stderr capture,
+then invoke close_archive. Every closure output is exclusive; no overwrites.
+Mutable handoff documents stay outside immutable manifest dependency rows.
+"""
+from pathlib import Path
+import argparse
+import ast
+import hashlib
+import json
+import sys
+import time
+import types
+
+ROOT = Path('/workspace/Habitable-Moon-Project')
+PARENT = ROOT / 'analysis/geometric_native_common_hot_mean_validation'
+FINAL = ROOT / 'analysis/geometric_native_common_hot_mean_final_readback'
+STAGE = Path('/workspace/hot_mean_baseline_20261007')
+TEMPLATE = STAGE / 'final903_readback_template.txt'
+TEMPLATE_RAW = 'c117fe7158c23d1f53d2eb92cbc1fc357bd3b528d3f22ece2862e25bc329c64b'
+GUARD = STAGE / 'baseline_899_preservation_source.txt'
+GUARD_RAW = '7410ed4264a972cd4a08e3af4fae4c2f0b7113225a81c8fd9d525e25f0ccbc62'
+SCOPE = 'DECLARED_COMPLETE_HOT_FINITE_BASE_MEAN_ENDPOINT_ONLY'
+ADDED = frozenset((
+    'tectonics/geometric_native_common_hot_mean.py',
+    'tests/test_geometric_native_common_hot_mean.py',
+    'analysis/geometric_native_common_hot_mean_validation/native_control.py',
+    'analysis/geometric_native_common_hot_mean_validation/validate.py',
+))
+PAYLOADS = frozenset(('pytest.log', 'control_console.log',
+                      'native_control/report.json', 'native_control/source_packet.json'))
+DOCUMENT_NAMES = ('CLOUD_HANDOFF.md', 'GEOMETRIC_NATIVE_COMMON_HOT_MEAN_IMPLEMENTATION.md')
+BASELINE_NAMES = (
+    'fresh899_executed_source.txt', 'fresh899_readback.json', 'fresh899_actual_console.log',
+    'fresh899_stderr.log', 'fresh899_facts.json', 'fresh899_prior895_preservation.json',
+    'baseline_899_preservation_source.txt',
+)
+
+
+def encoded(value):
+    return json.dumps(value, sort_keys=True, separators=(',', ':'),
+                      ensure_ascii=False, allow_nan=False).encode()
+
+
+def value_digest(value):
+    return hashlib.sha256(encoded(value)).hexdigest()
+
+
+def require(condition, label):
+    if not condition:
+        raise ValueError(label)
+
+
+def exact(actual, expected, label):
+    require(type(actual) is type(expected) and actual == expected, label)
+    if type(actual) in (dict, list, tuple):
+        require(encoded(actual) == encoded(expected), label + ' complete literal encoding')
+
+
+def regular(path):
+    path = Path(path)
+    require(path.is_absolute() and path.resolve() == path and not path.is_symlink()
+            and path.is_file(), 'Canonical regular file ' + str(path))
+    return path
+
+
+def digest(path):
+    h = hashlib.sha256()
+    with regular(path).open('rb') as stream:
+        for block in iter(lambda: stream.read(1 << 20), b''):
+            h.update(block)
+    return h.hexdigest()
+
+
+def pin(path):
+    path = regular(path)
+    return dict(bytes=path.stat().st_size, sha256=digest(path))
+
+
+def sealed(path, key):
+    value = json.loads(regular(path).read_bytes())
+    require(type(value) is dict and key in value, 'Complete sealed object ' + str(path))
+    exact(value[key], value_digest({k: v for k, v in value.items() if k != key}),
+          'Complete selfseal ' + str(path))
+    return value
+
+
+def fresh(path):
+    path = Path(path)
+    require(path.is_absolute() and path.resolve() == path and not path.exists()
+            and not path.is_symlink() and path.parent.is_dir()
+            and path.parent.resolve() == path.parent, 'Fresh canonical exclusive output ' + str(path))
+    return path
+
+
+def write_new(path, value):
+    with fresh(path).open('xb') as stream:
+        stream.write(encoded(value) + b'\n')
+
+
+def copy_new(source, target):
+    source = regular(source)
+    expected = pin(source)
+    with fresh(target).open('xb') as stream, source.open('rb') as incoming:
+        for block in iter(lambda: incoming.read(1 << 20), b''):
+            stream.write(block)
+    exact(pin(target), expected, 'Exact exclusive archived copy ' + str(target))
+    return expected
+
+
+def all_files(directory):
+    return {str(path.relative_to(directory)) for path in directory.rglob('*') if path.is_file()}
+
+
+def meaningful_files(directory):
+    return {str(path.relative_to(directory)) for path in directory.rglob('*')
+            if path.is_file() and '__pycache__' not in path.parts and path.suffix != '.pyc'}
+
+
+def source_map():
+    return {str(path.relative_to(ROOT)): digest(path)
+            for directory in ('tectonics', 'tests', 'scripts', 'analysis')
+            for path in sorted((ROOT / directory).rglob('*.py'))}
+
+
+def project_modules():
+    return {name: module for name, module in sys.modules.items()
+            if name in ('tectonics', 'tests', 'analysis', 'scripts') or
+            name.startswith(('tectonics.', 'tests.', 'analysis.', 'scripts.'))}
+
+
+def unchanged_modules(before):
+    after = project_modules()
+    exact(set(after), set(before), 'Caller project module names preserved')
+    require(all(after[name] is module for name, module in before.items()),
+            'Caller project module identities preserved')
+
+
+def document_pins():
+    return {str(ROOT / name): digest(ROOT / name) for name in DOCUMENT_NAMES}
+
+
+def template_literals():
+    exact(digest(TEMPLATE), TEMPLATE_RAW, 'Reviewed reader template raw')
+    tree = ast.parse(TEMPLATE.read_bytes())
+    imports = []
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            imports.extend(alias.name for alias in node.names)
+        elif isinstance(node, ast.ImportFrom):
+            imports.append(node.module)
+    require(set(imports) <= {'pathlib', 'argparse', 'hashlib', 'json', 'sys', 'time', 'types'},
+            'Reviewed reader has stdlib imports only')
+    values = {}
+    for name in ('EXPECTED_NATIVE', 'REMAINING_CONDITIONS'):
+        matches = [node.value for node in tree.body if isinstance(node, ast.Assign)
+                   and any(isinstance(target, ast.Name) and target.id == name for target in node.targets)]
+        exact(len(matches), 1, 'Exactly one reviewed reader literal ' + name)
+        values[name] = ast.literal_eval(matches[0])
+    return values
+
+
+def preservation(additions, output):
+    exact(digest(GUARD), GUARD_RAW, 'Reviewed immutable899 guard raw')
+    module = types.ModuleType('_private_903_closure_preservation')
+    module.__file__ = str(GUARD)
+    exec(compile(GUARD.read_bytes(), str(GUARD), 'exec'), module.__dict__)
+    result = module.run(additions, output_path=output)
+    for key, expected in (
+            ('status', 'PASS_IMMUTABLE899_WITH_EXACT_FOUR_DECLARED_SOURCE_ADDITIONS'),
+            ('current_python_source_count', 903), ('prior_python_source_count', 899),
+            ('all899_python_sources_unchanged', True),
+            ('complete_actual_source_map_checked_before_after', True),
+            ('preserved_current899_manifest_file_count', 36),
+            ('preserved_current899_final_readback_archive_file_count', 4),
+            ('preserved_prior895_manifest_file_count', 50),
+            ('preserved_prior895_final_readback_archive_file_count', 4),
+            ('preserved_prior891_manifest_file_count', 44),
+            ('preserved_prior891_final_readback_archive_file_count', 4),
+            ('preserved_prior887_manifest_file_count', 41),
+            ('preserved_prior887_final_readback_archive_file_count', 4),
+            ('preserved_prior883_raw_dependency_pin_count', 341),
+            ('temporary_dependency_copy_association_count', 15),
+            ('authoritative_ancestry_release_closure_count', 11),
+            ('project_modules_imported_reloaded_or_replaced', False),
+            ('prior_reader_or_auditor_or_preservation_main_reexecuted', False),
+            ('math_or_solver_or_test_or_quadrature_reexecuted', False),
+            ('executing_preservation_source_raw_sha256', GUARD_RAW)):
+        exact(result[key], expected, 'Complete closure preservation ' + key)
+    exact(result['additional_python_source_sha256'], additions, 'Actual exact four903 additions')
+    exact(sealed(output, 'preservation_sha256'), result, 'Actual guard receipt equals returned result')
+    return result
+
+
+def release_path(release_name):
+    require(type(release_name) is str and release_name.startswith('release_validation_')
+            and '/' not in release_name and '\\' not in release_name and '..' not in release_name,
+            'Simple completed current release name')
+    release = PARENT / release_name
+    require(release.is_dir() and release.resolve() == release and not release.is_symlink(),
+            'Canonical completed release directory')
+    return release
+
+
+def completed_component(release_name, gate_console, gate_stderr):
+    release = release_path(release_name)
+    exact(all_files(release), set(PAYLOADS) | {'report.json'}, 'Complete current903 five-file gate')
+    gate = sealed(release / 'report.json', 'report_sha256')
+    for key, expected in (('status', 'PASS'), ('source_count', 903), ('previous_source_count', 899),
+                          ('current_physical_scope', SCOPE), ('tests_exit_code', 0),
+                          ('tests_failed', 0), ('tests_skipped', 0), ('native_control_succeeded', True),
+                          ('old_force_tests_or_tensor_quadrature_reexecuted', False)):
+        exact(gate[key], expected, 'Completed903 gate ' + key)
+    require(type(gate['tests_collected']) is int and gate['tests_collected'] > 0,
+            'Positive actual test collection')
+    exact(gate['tests_passed'], gate['tests_collected'], 'Every actually collected test PASS')
+    exact(json.loads(regular(gate_console).read_bytes()), gate, 'Actual external gate stdout equals sealed report')
+    exact(regular(gate_stderr).stat().st_size, 0, 'Actual external gate stderr empty')
+    exact(set(gate['output_raw_sha256']), set(PAYLOADS), 'Complete four output raw map')
+    for name, expected in gate['output_raw_sha256'].items():
+        exact(digest(release / name), expected, 'Completed gate output raw ' + name)
+    exact(set(gate['additional_source_sha256']), set(ADDED), 'Exact four new903 sources')
+    frozen_path = ROOT / gate['frozen_source_map_path']
+    require(frozen_path.resolve() == frozen_path and frozen_path.is_relative_to(PARENT), 'Current frozen map in P')
+    exact(digest(frozen_path), gate['frozen_source_map_raw_sha256'], 'Current frozen map raw')
+    frozen = json.loads(frozen_path.read_bytes())
+    exact(len(frozen), 903, 'Full frozen903 source count')
+    exact(source_map(), frozen, 'Actual full903 source map equals completed gate')
+    exact(value_digest(frozen), gate['frozen_source_map_sha256'], 'Current canonical frozen map')
+    exact({name: frozen[name] for name in ADDED}, gate['additional_source_sha256'], 'Frozen exact four additions')
+    for position in ('before', 'after'):
+        saved_guard = sealed(PARENT / (release_name + '_prior899_' + position + '.json'),
+                             'preservation_sha256')
+        exact(saved_guard['preservation_sha256'], gate[position + '_preservation_sha256'],
+              'Gate actual ' + position + ' preservation selfseal link')
+        exact(saved_guard['status'], 'PASS_IMMUTABLE899_WITH_EXACT_FOUR_DECLARED_SOURCE_ADDITIONS',
+              'Gate actual ' + position + ' guard PASS')
+        exact(saved_guard['current_python_source_count'], 903, 'Gate guard actual903 source count')
+        exact(saved_guard['prior_python_source_count'], 899, 'Gate guard actual899 prior count')
+        exact(saved_guard['additional_python_source_sha256'], gate['additional_source_sha256'],
+              'Gate guard exactly frozen four current sources')
+        exact(saved_guard['executing_preservation_source_raw_sha256'], GUARD_RAW,
+              'Gate guard actual reviewed executing source')
+    directory = PARENT / 'source_snapshots' / release_name
+    snapshots = {str(directory.relative_to(ROOT) / (name.replace('/', '__') + '.txt')): expected
+                 for name, expected in gate['additional_source_sha256'].items()}
+    exact(gate['executing_source_snapshots'], snapshots, 'Exact four executing frozen source snapshots')
+    exact(all_files(directory), {Path(name).name for name in snapshots}, 'Strict four snapshot payload namespace')
+    for name, expected in snapshots.items():
+        exact(digest(ROOT / name), expected, 'Executing source snapshot raw')
+    native = sealed(release / 'native_control/report.json', 'report_sha256')
+    packet = sealed(release / 'native_control/source_packet.json', 'packet_sha256')
+    exact(native['status'], 'PASS', 'Native control PASS')
+    exact(native['physical_candidate_status'], SCOPE, 'Native report exact endpoint scope')
+    exact(packet['physical_candidate_status'], SCOPE, 'Native packet exact endpoint scope')
+    literals = template_literals()
+    for key, expected in literals['EXPECTED_NATIVE'].items():
+        exact(native[key], expected, 'Native report endpoint boundary ' + key)
+        exact(packet[key], expected, 'Native packet endpoint boundary ' + key)
+    for row in (native, packet):
+        exact(row['remaining_physical_conditions'], literals['REMAINING_CONDITIONS'],
+              'Same three literal original point1 remaining conditions')
+    exact(gate['native_control_report_sha256'], native['report_sha256'], 'Gate native report link')
+    exact(native['source_packet_sha256'], packet['packet_sha256'], 'Native complete packet link')
+    exact(native['source_packet_raw_sha256'], digest(release / 'native_control/source_packet.json'),
+          'Native packet actual raw link')
+    audit_dir = PARENT / 'independent_audit'
+    audit = sealed(audit_dir / 'report.json', 'audit_sha256')
+    exact(audit['status'], 'PASS', 'Independent audit PASS')
+    exact(audit['source_packet_raw_sha256'], digest(release / 'native_control/source_packet.json'),
+          'Independent audit actual current packet raw link')
+    exact(audit['executing_source_raw_sha256'], digest(audit_dir / 'audit_source.txt'),
+          'Independent audit actual executing TXT link')
+    exact(json.loads(regular(audit_dir / 'actual_console.log').read_bytes()), audit,
+          'Actual independent audit stdout equals sealed report')
+    exact(regular(audit_dir / 'actual_stderr.log').stat().st_size, 0, 'Actual independent audit stderr empty')
+    return gate, audit, frozen
+
+
+def manifest_files():
+    files = {str(path.relative_to(ROOT)): pin(path) for path in sorted(PARENT.rglob('*'))
+             if path.is_file() and '__pycache__' not in path.parts and path.suffix != '.pyc'
+             and path != PARENT / 'artifact_manifest.json'}
+    for name in ADDED:
+        files[name] = pin(ROOT / name)
+    exact({name for name in files if name.endswith('.py')}, set(ADDED), 'Exactly four component Python rows')
+    document_names = {str(ROOT / name) for name in DOCUMENT_NAMES}
+    require(not any(str(ROOT / name) in document_names for name in files),
+            'Mutable handoff documents excluded from immutable dependency rows')
+    return files
+
+
+def check_manifest(manifest):
+    exact(manifest_files(), manifest['files'], 'Complete current903 component raw map unchanged')
+    expected_parent = {str((ROOT / name).relative_to(PARENT)) for name in manifest['files']
+                       if (ROOT / name).is_relative_to(PARENT)}
+    exact(meaningful_files(PARENT), expected_parent | {'artifact_manifest.json'}, 'Strict complete903 P namespace')
+    exact(len(manifest['files']), manifest['closed_component_file_count'], 'Complete903 manifest row count')
+
+
+def reader_source(manifest):
+    template_literals()
+    text = TEMPLATE.read_text()
+    raw_marker = '__ROOT_FILL_CLOSED903_MANIFEST_RAW__'
+    seal_marker = '__ROOT_FILL_CLOSED903_MANIFEST_SEAL__'
+    count_marker = 'MANIFEST_FILE_COUNT = 0  # ROOT_FILL only after complete903 component closure'
+    for marker in (raw_marker, seal_marker, count_marker):
+        exact(text.count(marker), 1, 'Exactly one unresolved reviewed reader marker')
+    text = text.replace(raw_marker, digest(PARENT / 'artifact_manifest.json'))
+    text = text.replace(seal_marker, manifest['manifest_sha256'])
+    text = text.replace(count_marker, 'MANIFEST_FILE_COUNT = ' + str(manifest['closed_component_file_count']))
+    require('__ROOT_FILL_' not in text, 'All three reader placeholders filled')
+    compile(text, str(FINAL / 'readback_source.txt'), 'exec')
+    return text.encode()
+
+
+def prepare_manifest(args):
+    started = time.perf_counter()
+    modules_before = project_modules()
+    require(args.release is not None and args.gate_console is not None and args.gate_stderr is not None,
+            'prepare_manifest requires --release, --gate-console, --gate-stderr')
+    exact(args.gate_exit_code, 0, 'Actual gate process exit0 required')
+    exact(args.audit_exit_code, 0, 'Actual audit process exit0 required')
+    require(not (PARENT / 'artifact_manifest.json').exists() and not FINAL.exists()
+            and not FINAL.is_symlink(), 'Fresh903 manifest and final directory only')
+    gate_console = regular(Path(args.gate_console))
+    gate_stderr = regular(Path(args.gate_stderr))
+    require(not gate_console.is_relative_to(ROOT) and not gate_stderr.is_relative_to(ROOT),
+            'True outer gate captures outside repository')
+    producer = regular(Path(__file__).absolute())
+    producer_raw = digest(producer)
+    docs = document_pins()
+    gate, audit, frozen = completed_component(args.release, gate_console, gate_stderr)
+    copies = [(STAGE / name, PARENT / name) for name in BASELINE_NAMES]
+    copies.extend(((TEMPLATE, PARENT / 'final903_readback_template.txt'),
+                   (producer, PARENT / 'close_evidence_source.txt'),
+                   (gate_console, PARENT / 'gate_actual_console.log'),
+                   (gate_stderr, PARENT / 'gate_actual_stderr.log')))
+    input_pins = {str(source): pin(source) for source, target in copies}
+    before_path = STAGE / 'closure_prepare_prior899_before.json'
+    after_path = STAGE / 'closure_prepare_prior899_after.json'
+    fact_path = STAGE / 'prepare_manifest_actual_facts.json'
+    for path in (before_path, after_path, fact_path, PARENT / 'artifact_manifest.json',
+                 PARENT / 'closure_prior899_before.json', PARENT / 'closure_prior899_after.json'):
+        fresh(path)
+    for source, target in copies:
+        fresh(target)
+    before = preservation(gate['additional_source_sha256'], before_path)
+    for source, target in copies:
+        copy_new(source, target)
+    copy_new(before_path, PARENT / 'closure_prior899_before.json')
+    after = preservation(gate['additional_source_sha256'], after_path)
+    copy_new(after_path, PARENT / 'closure_prior899_after.json')
+    for name, expected in input_pins.items():
+        exact(pin(Path(name)), expected, 'Closure input unchanged AFTER archival copy')
+    exact(document_pins(), docs, 'Final documents unchanged during component closure')
+    exact(source_map(), frozen, 'Full actual903 sources unchanged during component closure')
+    exact(digest(producer), producer_raw, 'Executing closure source unchanged')
+    completed_component(args.release, PARENT / 'gate_actual_console.log', PARENT / 'gate_actual_stderr.log')
+    files = manifest_files()
+    manifest = dict(
+        format='native-common-hot-mean-component-manifest-1',
+        status='PASS_COMPONENT_ARTIFACTS_CLOSED', source_count=903, physical_scope=SCOPE,
+        current_release=args.release, closed_component_file_count=len(files), files=files,
+        gate_report_selfseal=gate['report_sha256'], independent_audit_selfseal=audit['audit_sha256'],
+        document_raw_sha256=docs,
+        before_closure_preservation_selfseal=before['preservation_sha256'],
+        after_closure_preservation_selfseal=after['preservation_sha256'],
+        executing_closure_source_raw_sha256=producer_raw,
+    )
+    manifest['manifest_sha256'] = value_digest(manifest)
+    write_new(PARENT / 'artifact_manifest.json', manifest)
+    check_manifest(manifest)
+    ready_reader = reader_source(manifest)
+    FINAL.mkdir(exist_ok=False)
+    with fresh(FINAL / 'readback_source.txt').open('xb') as stream:
+        stream.write(ready_reader)
+    exact(all_files(FINAL), {'readback_source.txt'}, 'Ready final directory contains reader source only')
+    exact(document_pins(), docs, 'Final documents unchanged AFTER manifest closure')
+    exact(source_map(), frozen, 'Full actual903 sources unchanged AFTER manifest closure')
+    unchanged_modules(modules_before)
+    facts = dict(
+        status='PASS_903_MANIFEST_CLOSED_READER_READY', source_count=903,
+        current_release=args.release, manifest_raw_sha256=digest(PARENT / 'artifact_manifest.json'),
+        manifest_selfseal=manifest['manifest_sha256'], manifest_file_count=len(files),
+        reader_path=str(FINAL / 'readback_source.txt'), reader_raw_sha256=digest(FINAL / 'readback_source.txt'),
+        documents_sha256=docs, gate_exit_code=args.gate_exit_code, audit_exit_code=args.audit_exit_code,
+        baseline_archived_file_count=len(BASELINE_NAMES), project_imports=False,
+        math_or_tests_or_solver_or_quadrature_reexecuted=False,
+        executing_closure_source_raw_sha256=producer_raw, seconds=time.perf_counter() - started,
+    )
+    write_new(fact_path, facts)
+    print(encoded(facts).decode())
+    return facts
+
+
+def close_archive(args):
+    started = time.perf_counter()
+    modules_before = project_modules()
+    require(args.readback_stderr is not None, 'close_archive requires --readback-stderr')
+    exact(args.readback_exit_code, 0, 'Actual reader process exit0 required')
+    stderr = regular(Path(args.readback_stderr))
+    require(not stderr.is_relative_to(ROOT), 'True reader stderr outside repository')
+    exact(stderr.stat().st_size, 0, 'Actual reader stderr empty')
+    exact(all_files(FINAL), {'readback_source.txt', 'readback.json', 'console.log'},
+          'Strict completed three-payload final namespace before archive')
+    fresh(FINAL / 'archive.json')
+    before_path = STAGE / 'closure_archive_prior899_before.json'
+    after_path = STAGE / 'closure_archive_prior899_after.json'
+    fact_path = STAGE / 'closure_actual_facts.json'
+    for path in (before_path, after_path, fact_path):
+        fresh(path)
+    manifest = sealed(PARENT / 'artifact_manifest.json', 'manifest_sha256')
+    for key, expected in (('format', 'native-common-hot-mean-component-manifest-1'),
+                          ('status', 'PASS_COMPONENT_ARTIFACTS_CLOSED'), ('source_count', 903),
+                          ('physical_scope', SCOPE)):
+        exact(manifest[key], expected, 'Actual903 closed manifest ' + key)
+    exact(digest(regular(Path(__file__).absolute())), manifest['executing_closure_source_raw_sha256'],
+          'Actual closing helper equals source archived before manifest closure')
+    check_manifest(manifest)
+    gate, audit, frozen = completed_component(manifest['current_release'],
+        PARENT / 'gate_actual_console.log', PARENT / 'gate_actual_stderr.log')
+    exact(manifest['gate_report_selfseal'], gate['report_sha256'], 'Closed manifest actual gate link')
+    exact(manifest['independent_audit_selfseal'], audit['audit_sha256'], 'Closed manifest actual audit link')
+    exact((FINAL / 'readback_source.txt').read_bytes(), reader_source(manifest), 'Exact filled reviewed reader source')
+    readback = sealed(FINAL / 'readback.json', 'audit_sha256')
+    exact((FINAL / 'console.log').read_bytes(), (FINAL / 'readback.json').read_bytes(),
+          'Actual reader stdout exactly equals complete saved readback')
+    for key, expected in (('status', 'PASS_FINAL903_EVIDENCE_READBACK_ONLY'), ('source_count', 903),
+                          ('physical_scope', SCOPE), ('current_manifest_raw_sha256', digest(PARENT / 'artifact_manifest.json')),
+                          ('current_manifest_selfseal', manifest['manifest_sha256']),
+                          ('current_manifest_file_count', manifest['closed_component_file_count']),
+                          ('executing_readback_source_raw_sha256', digest(FINAL / 'readback_source.txt')),
+                          ('prior_899_sources_unchanged', True), ('prior_899_manifest_file_count', 36),
+                          ('prior_899_final_archive_file_count', 4), ('prior_895_manifest_file_count', 50),
+                          ('prior_895_final_archive_file_count', 4), ('prior_891_manifest_file_count', 44),
+                          ('prior_891_final_archive_file_count', 4), ('prior_887_manifest_file_count', 41),
+                          ('prior_887_final_archive_file_count', 4), ('prior_883_dependency_pin_count', 341),
+                          ('temporary_alias_count', 15), ('strict_ancestry_closure_count', 11),
+                          ('project_imports', False), ('math_or_tests_or_solver_or_quadrature_reexecuted', False)):
+        exact(readback[key], expected, 'Actual successful903 final readback ' + key)
+    literals = template_literals()
+    for key, expected in literals['EXPECTED_NATIVE'].items():
+        exact(readback[key], expected, 'Saved readback exact endpoint boundary ' + key)
+    exact(readback['remaining_physical_conditions'], literals['REMAINING_CONDITIONS'], 'Saved literal original conditions')
+    docs = document_pins()
+    exact(readback['document_raw_sha256'], docs, 'Readback current final document pins')
+    exact(manifest['document_raw_sha256'], docs, 'Documents finished before manifest/readback closure')
+    before = preservation(gate['additional_source_sha256'], before_path)
+    prior_path = Path(readback['prior_899_preservation_path'])
+    exact(digest(prior_path), readback['prior_899_preservation_raw_sha256'], 'Actual reader899 preservation raw link')
+    prior = sealed(prior_path, 'preservation_sha256')
+    exact(prior['preservation_sha256'], readback['prior_899_preservation_selfseal'], 'Actual reader899 preservation seal link')
+    payload_rows = {name: pin(FINAL / name) for name in ('readback_source.txt', 'readback.json', 'console.log')}
+    archive = dict(
+        format='native-common-hot-mean-final-archive-1',
+        status='PASS_FINAL903_READBACK_ARCHIVE_CLOSED', total_closed_file_count=4,
+        files=payload_rows, readback_selfseal=readback['audit_sha256'],
+    )
+    archive['archive_sha256'] = value_digest(archive)
+    write_new(FINAL / 'archive.json', archive)
+    after = preservation(gate['additional_source_sha256'], after_path)
+    exact(all_files(FINAL), set(payload_rows) | {'archive.json'}, 'Strict closed final903 four-file namespace')
+    exact(sealed(FINAL / 'archive.json', 'archive_sha256'), archive, 'Actual closed final archive seal')
+    for name, expected in payload_rows.items():
+        exact(pin(FINAL / name), expected, 'Final archived payload unchanged AFTER')
+    check_manifest(manifest)
+    exact(sealed(PARENT / 'artifact_manifest.json', 'manifest_sha256'), manifest, 'Closed903 manifest unchanged AFTER')
+    exact(document_pins(), docs, 'Final documents unchanged AFTER archive closure')
+    exact(source_map(), frozen, 'Full actual903 sources unchanged AFTER archive closure')
+    unchanged_modules(modules_before)
+    facts = dict(
+        status='PASS_COMPLETE903_COMPONENT_AND_FINAL_CLOSURE', source_count=903,
+        manifest_raw_sha256=digest(PARENT / 'artifact_manifest.json'), manifest_selfseal=manifest['manifest_sha256'],
+        manifest_file_count=manifest['closed_component_file_count'], archive_raw_sha256=digest(FINAL / 'archive.json'),
+        archive_selfseal=archive['archive_sha256'], readback_raw_sha256=digest(FINAL / 'readback.json'),
+        readback_selfseal=readback['audit_sha256'], reader_raw_sha256=digest(FINAL / 'readback_source.txt'),
+        readback_seconds=readback['seconds'], readback_exit_code=args.readback_exit_code,
+        true_readback_stderr_path=str(stderr), true_readback_stderr_raw_sha256=digest(stderr),
+        before_archive_preservation_selfseal=before['preservation_sha256'],
+        after_archive_preservation_selfseal=after['preservation_sha256'], documents_sha256=docs,
+        project_imports=False, math_or_tests_or_solver_or_quadrature_reexecuted=False,
+        seconds=time.perf_counter() - started,
+    )
+    write_new(fact_path, facts)
+    print(encoded(archive).decode())
+    print(encoded(facts).decode())
+    return archive, facts
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--phase', choices=('prepare_manifest', 'close_archive'), required=True)
+    parser.add_argument('--release')
+    parser.add_argument('--gate-console')
+    parser.add_argument('--gate-stderr')
+    parser.add_argument('--gate-exit-code', type=int)
+    parser.add_argument('--audit-exit-code', type=int)
+    parser.add_argument('--readback-stderr')
+    parser.add_argument('--readback-exit-code', type=int)
+    args = parser.parse_args()
+    prepare_manifest(args) if args.phase == 'prepare_manifest' else close_archive(args)

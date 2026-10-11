@@ -1,0 +1,150 @@
+"""Density two-jet covariance under a fixed material reference change.
+
+B = dX_new/dX_old, F_new = F_old B^-1. The physical map y is
+unchanged. This transports supplied energy/prestress/tangent; it does not
+choose a constitutive law, move material, close a gap or pay preparation work.
+B may vary in space, but must be independent of the differentiated modes.
+Reference measures must be transformed too: dV_new = det(B) dV_old.
+"""
+from dataclasses import dataclass
+from fractions import Fraction
+
+from .geometric_native_pose import FractionInterval
+
+
+def _scalar(x):
+    if type(x) not in (Fraction, FractionInterval):
+        raise ValueError("Reference transport requires exact fractions or outward intervals")
+    return x
+
+
+def _vector(x, n):
+    if type(x) is not tuple or len(x) != n:
+        raise ValueError("Invalid immutable reference-transport vector")
+    return tuple(_scalar(v) for v in x)
+
+
+def _matrix(x, n, m):
+    if type(x) is not tuple or len(x) != n:
+        raise ValueError("Invalid immutable reference-transport matrix")
+    return tuple(_vector(row, m) for row in x)
+
+
+def _det(a):
+    return (a[0][0]*(a[1][1]*a[2][2]-a[1][2]*a[2][1])
+            -a[0][1]*(a[1][0]*a[2][2]-a[1][2]*a[2][0])
+            +a[0][2]*(a[1][0]*a[2][1]-a[1][1]*a[2][0]))
+
+
+def _cofactor(a):
+    rows = []
+    for i in range(3):
+        r, s = tuple(k for k in range(3) if k != i)
+        row = []
+        for j in range(3):
+            u, v = tuple(k for k in range(3) if k != j)
+            minor = a[r][u]*a[s][v]-a[r][v]*a[s][u]
+            row.append((-1 if (i+j)%2 else 1)*minor)
+        rows.append(tuple(row))
+    return tuple(rows)
+
+
+def _sum(xs):
+    return sum(xs, Fraction(0))
+
+
+@dataclass(frozen=True)
+class ReferenceDensityTwoJet:
+    """Density derivatives in row-major F9 followed by unchanged extra channels."""
+    energy_density: object
+    gradient: tuple
+    hessian: tuple
+
+    def __post_init__(self):
+        _scalar(self.energy_density)
+        if type(self.gradient) is not tuple or len(self.gradient) < 9:
+            raise ValueError("Reference density needs all nine gradient channels")
+        n = len(self.gradient)
+        _vector(self.gradient, n)
+        _matrix(self.hessian, n, n)
+        if any(self.hessian[i][j] != self.hessian[j][i]
+               for i in range(n) for j in range(i)):
+            raise ValueError("A potential two-jet requires a symmetric Hessian")
+
+
+@dataclass(frozen=True)
+class ReferenceDensityTransport:
+    bridge: tuple
+    inverse_bridge: tuple
+    reference_volume_ratio: object
+    new_deformation_gradient: tuple
+    new_density: ReferenceDensityTwoJet
+
+
+def transport_reference_density(bridge, old_deformation_gradient, old_density):
+    """Transport a supplied local potential without resetting its prestress.
+
+    Wnew(Fnew,z)=Wold(Fnew B,z)/J. Gradient and Hessian include all
+    extra-channel couplings. The bridge is fixed in configuration space;
+    mode-dependent reference changes require additional bridge derivatives.
+    No new physical material configuration or preparation work is inferred.
+    """
+    B = _matrix(bridge, 3, 3)
+    Fold = _matrix(old_deformation_gradient, 3, 3)
+    if type(old_density) is not ReferenceDensityTwoJet:
+        raise ValueError("Reference transport requires a typed source density two-jet")
+    J = _det(B)
+    lower = J.lo if type(J) is FractionInterval else J
+    if lower <= 0:
+        raise ValueError("Reference bridge must have a strictly positive determinant")
+    C = _cofactor(B)
+    inv = tuple(tuple(C[j][i]/J for j in range(3)) for i in range(3))
+    Fnew = tuple(tuple(_sum(Fold[i][k]*inv[k][j] for k in range(3))
+                       for j in range(3)) for i in range(3))
+    n = len(old_density.gradient)
+    # Sparse old-channel/new-channel Jacobian: F_old=F_new B, extras fixed.
+    columns = tuple(tuple((3*i+k, B[j][k]) for k in range(3))
+                    for i in range(3) for j in range(3)) + tuple(
+                    ((a, Fraction(1)),) for a in range(9, n))
+    p = tuple(_sum(old_density.gradient[a]*v for a,v in col)/J
+              for col in columns)
+    H = tuple(tuple(_sum(old_density.hessian[a][b]*v*w
+                         for a,v in left for b,w in right)/J
+                    for right in columns) for left in columns)
+    return ReferenceDensityTransport(B, inv, J, Fnew,
+        ReferenceDensityTwoJet(old_density.energy_density/J, p, H))
+
+
+def pullback_density_to_modes(density, channel_first, channel_second, reference_volume):
+    """Pull back a density to arbitrary modes including prestress curvature.
+
+    channel_first[channel][mode], channel_second[channel][mode][mode].
+    The supplied reference volume is fixed with respect to these modes.
+    Returns total energy, modal gradient and complete modal Hessian.
+    """
+    if type(density) is not ReferenceDensityTwoJet:
+        raise ValueError("Modal work requires a typed density two-jet")
+    _scalar(reference_volume)
+    lower = reference_volume.lo if type(reference_volume) is FractionInterval else reference_volume
+    if lower <= 0:
+        raise ValueError("Material reference volume must be strictly positive")
+    n = len(density.gradient)
+    if type(channel_first) is not tuple or len(channel_first) != n or not channel_first:
+        raise ValueError("Modal derivative channels differ from the density")
+    if type(channel_first[0]) is not tuple or not channel_first[0]:
+        raise ValueError("At least one differentiated mode is required")
+    d = len(channel_first[0])
+    D = _matrix(channel_first, n, d)
+    if type(channel_second) is not tuple or len(channel_second) != n:
+        raise ValueError("Second variation channels differ from the density")
+    Q = tuple(_matrix(q, d, d) for q in channel_second)
+    if any(q[i][j] != q[j][i] for q in Q for i in range(d) for j in range(i)):
+        raise ValueError("Modal second variations must be symmetric")
+    g = tuple(reference_volume*_sum(density.gradient[a]*D[a][i] for a in range(n))
+              for i in range(d))
+    h = tuple(tuple(reference_volume*(
+        _sum(density.hessian[a][b]*D[a][i]*D[b][j]
+             for a in range(n) for b in range(n))+
+        _sum(density.gradient[a]*Q[a][i][j] for a in range(n)))
+        for j in range(d)) for i in range(d))
+    return density.energy_density*reference_volume, g, h

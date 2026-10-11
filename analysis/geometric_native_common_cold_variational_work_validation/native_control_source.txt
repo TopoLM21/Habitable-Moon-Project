@@ -1,0 +1,34 @@
+"""New source-bound variational/work control; no historical quadrature/force replay."""
+from pathlib import Path
+from fractions import Fraction as F
+import json,hashlib,sys,time,argparse
+ROOT=Path(__file__).resolve().parents[2];sys.path.insert(0,str(ROOT))
+from tectonics import geometric_native_common_cold_variational_work as api
+SOURCE=ROOT/'analysis/geometric_native_common_cold_continuum_energy_validation/release_validation_01/native_control/source_packet.json'
+def enc(x):return json.dumps(x,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+def main(output):
+ t=time.perf_counter();packet=json.loads(SOURCE.read_bytes());source=api.bind_native_cold_variational_source(packet)
+ saved=[]
+ for row in packet['evaluation_queries']:
+  label=row['label'];moments=api.saved_native_cold_strain_moments(source,label)
+  raw=api.native_cold_strain_moments_to_dict(source,moments)
+  replay=api.native_cold_strain_moments_from_dict(raw,source=source)
+  assert api.native_cold_strain_moments_to_dict(source,replay)==raw
+  saved.append(dict(label=label,moments=raw,response=api.native_cold_variational_work_to_dict(api.evaluate_native_cold_variational_work(source,moments))))
+ # Declared100-channel algebra fixture, separate from the genuine56 source catalogue.
+ n=100;z=F(0);Z=tuple(tuple(z for j in range(n)) for i in range(n))
+ tipfirst=tuple(tuple(F((k+1)*(i+2),101) for i in range(n)) for k in range(8))
+ tipsecond=tuple(tuple(tuple(F(k+1,103) if {i,j}=={0,99} else z for j in range(n)) for i in range(n)) for k in range(8))
+ rsecond=tuple(tuple(tuple(F(k+2,107) if {i,j}=={1,98} else z for j in range(n)) for i in range(n)) for k in range(8))
+ fixture=api.declare_native_cold_strain_moments(source,coordinate_order=tuple(('declared_algebra_channel',str(i)) for i in range(n)),tip_coefficients_m=(z,)*8,tip_first=tipfirst,tip_second=tipsecond,remainder_projection_n=(z,)*8,remainder_projection_first=tuple((z,)*n for k in range(8)),remainder_projection_second=rsecond,half_remainder_norm_j=z,half_remainder_norm_first=(z,)*n,half_remainder_norm_second=Z,provenance='Declared100-channel curvature/low-rank algebra fixture; no genuine new material preparation or integration certificate')
+ declared=[dict(label='declared_100_channel_curvature',moments=api.native_cold_strain_moments_to_dict(source,fixture),response=api.native_cold_variational_work_to_dict(api.evaluate_native_cold_variational_work(source,fixture)))]
+ assert declared[0]['response']['whole_original_integral_certified'] is False
+ path=[api.evaluate_native_cold_affine_modal_path_work(source,F(k,4)) for k in range(5)]
+ before='prepared_zero_cold_reference';after='registered_cold_endpoint'
+ context={name:api._payload(getattr(source,name)) for name in ('binding_sha256','source_raw_sha256','source_packet_sha256','tip_coordinate_indices','literal_reference_energies_j','literal_reference_forces_n','tip_stiffnesses_n_m','gram_bounds_n_m','inverse_gram_bounds_m_n')}
+ result=dict(status='PASS_SOURCE_BOUND_COLD_VARIATIONAL_WORK_CONTROL',source_context=context,saved_cases=saved,declared_cases=declared,affine_path=path,saved_state_work=api.compare_saved_native_cold_state_work(source,before,after),reversed_state_work=api.compare_saved_native_cold_state_work(source,after,before),moments_restart_verified=True,old_quadrature_or_force_controls_replayed=False,reference_gap_resolved=False,reference_preparation_work_paid=False,new_mixed_equilibrium_certified=False,accepted_new_intervals=0,seconds=time.perf_counter()-t)
+ result['sha256']=hashlib.sha256(enc(result)).hexdigest()
+ with Path(output).open('xb') as f:f.write(enc(result)+b'\n')
+ print(enc({k:v for k,v in result.items() if k not in ('source_context','saved_cases','declared_cases','affine_path','saved_state_work','reversed_state_work')}).decode())
+if __name__=='__main__':
+ p=argparse.ArgumentParser();p.add_argument('--output',required=True);main(p.parse_args().output)

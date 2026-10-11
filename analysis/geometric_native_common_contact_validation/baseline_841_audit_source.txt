@@ -1,0 +1,65 @@
+"""Pure stdlib frozen841 ancestry/authentication for additive retained cuts.
+
+New Python paths are recorded separately; their creation is not alteration of
+any previous841 source. No component quadrature or genuine case is reexecuted.
+"""
+import argparse,hashlib,json,sys,time,types
+from pathlib import Path
+ROOT=Path('/workspace/Habitable-Moon-Project')
+BASE=ROOT/'analysis/geometric_native_common_reference_validation'
+RELEASE=BASE/'release_validation_01'
+MAP_SHA='dc109894fb7fb219b38a617cb1212f31dd7f758316658b5bdaba9335afaa6c35'
+MAP_RAW='89beb81ef3d1e9bc10ad37e08d23f1134b5b8af8f6c0922f364649db31e32345'
+HELPER_SHA='17420e0c5d81fcd6ee5cc56355f1a1486793a5247d2b6acd6b71e35b40c47c99'
+AUDIT_RAW='e28bcca1a1031b72b0561ff46e2006147886921926cc1972c294a723c5351eed'
+AUDIT_SEAL='b7616d141334b25aac97d4bb7f4eb0996a026c163a8ba170841afccf1dadd1e5'
+PIN={
+ 'report.json':('9898f31f796006a7791140bf1c290c0e1605555a12e476e1585ce3f5992a743f','report_sha256','5b86eb947fd07789ea4db0b13419bad4f22b38a4cc8ef2ddb1b60ef2f5ae6997'),
+ 'native_control/report.json':('0a8880d58a849cfeabf3f80aa6694c282eff6c24ce646740fb89b70a30320c40','report_sha256','a2d2eb23324f207e63480bf59c9a814b2546626cf18abf57bdd5a3e802f9b483'),
+ 'native_control/source_packet.json':('dc8f820dbd926c53223a5c141a10296d1c7135efc6bf1077763785866dda9275','packet_sha256','60259e6e56bb7335fa994988adfbbac5ac933b524ca164b0298c2e0a16a40446')}
+OUTPUTS={'pytest.log','control_console.log','native_control/report.json','native_control/source_packet.json'}
+def encoded(x):return json.dumps(x,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+def vd(x):return hashlib.sha256(encoded(x)).hexdigest()
+def raw(path):return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+def read(path):return json.loads(Path(path).read_bytes())
+def sealed(path,key):
+ v=read(path);d=dict(v);assert d.pop(key)==vd(d),str(path);return v
+
+def authenticate_841():
+ helper=BASE/'independent_audit_source.txt';assert raw(helper)==HELPER_SHA
+ m=types.ModuleType('retained_cut_841_stdlib_helper');m.__file__=str(helper);sys.modules[m.__name__]=m
+ exec(compile(helper.read_bytes(),str(helper),'exec'),m.__dict__)
+ h=m.load_helper();old,prior,affine,ancestry,standalone=m.authenticate_prior(h)
+ baseline=read(BASE/'frozen_source_map_841.json');assert raw(BASE/'frozen_source_map_841.json')==MAP_RAW and len(baseline)==841 and vd(baseline)==MAP_SHA
+ assert len(old)==833 and all(baseline[k]==v for k,v in old.items())
+ current=m.source_maps();assert all(current.get(k)==v for k,v in baseline.items())
+ values={}
+ for name,(sha,key,seal) in PIN.items():
+  path=RELEASE/name;assert raw(path)==sha;values[name]=sealed(path,key);assert values[name][key]==seal
+ wrapper=values['report.json'];native=values['native_control/report.json'];packet=values['native_control/source_packet.json']
+ for v in (wrapper,native):
+  assert v['status']==v['regression_validation_status']=='PASS' and v['physical_candidate_status']=='COMMON_REFERENCE_COMPONENT_ONLY'
+  assert v['accepted_original_native_intervals']==1 and v['accepted_new_native_intervals']==0
+  for key in h.FALSE_SCOPE:assert v[key] is False,key
+ assert wrapper['source_count']==841 and wrapper['pytest_counts']=={'passed':36} and wrapper['pytest_exit_code']==0
+ assert wrapper['source_map_before_sha256']==wrapper['source_map_after_sha256']==MAP_SHA and wrapper['changed_python_paths']==[] and wrapper['prior_artifacts_and_python_sources_preserved_after'] is True
+ assert wrapper['added_python_sources']=={k:baseline[k] for k in set(baseline)-set(old)} and set(wrapper['added_python_sources'])==m.ADDITIONS
+ assert native['source_packet_sha256']==packet['packet_sha256'] and native['accepted_input_complete_typed_state_unchanged'] is True
+ assert packet['accepted_input_unchanged'] is True
+ for name in (*h.SOURCE_FIELDS,'coordinates_decimal','literal_owner_axes'):assert packet[name]==prior[name],name
+ ancestry['outputs'](RELEASE,wrapper,4);assert set(wrapper['outputs'])==OUTPUTS
+ assert {str(p.relative_to(RELEASE)) for p in RELEASE.rglob('*') if p.is_file()}==OUTPUTS|{'report.json'}
+ assert raw(BASE/'independent_audit.json')==AUDIT_RAW;independent=sealed(BASE/'independent_audit.json','audit_packet_sha256')
+ assert independent['audit_packet_sha256']==AUDIT_SEAL and independent['status']=='PASS' and independent['auditor_script_sha256']==HELPER_SHA
+ assert independent['source_map_canonical_sha256']==MAP_SHA and independent['fresh_tests']==36 and independent['final_python_sources']==841
+ for name,key in (('report.json','wrapper_raw_sha256'),('native_control/report.json','native_raw_sha256'),('native_control/source_packet.json','source_packet_raw_sha256')):assert independent[key]==PIN[name][0]
+ assert independent['second_certified_tensor_quadrature_performed'] is False and independent['material_admission_authorized'] is False
+ after=m.source_maps();assert all(after.get(k)==v for k,v in baseline.items())
+ return baseline,after,wrapper,native,packet,h,m
+
+def run(result):
+ t=time.perf_counter();baseline,current,wrapper,native,packet,h,m=authenticate_841()
+ report=dict(status='PASS_BASELINE_AUTHENTICATION_ONLY',scope='SEALED841_ANCESTRY_AND_RAW_SELFSEAL_REPLAY_ONLY',baseline_source_count=841,prior_source_count=833,baseline_source_map_sha256=MAP_SHA,baseline_source_map_raw_sha256=MAP_RAW,old841_python_sources_unchanged=True,old833_python_sources_unchanged=True,current_python_source_count=len(current),new_python_sources={k:v for k,v in current.items() if k not in baseline},new_source_paths_are_not_old_source_changes=True,baseline_outputs_preserved=True,baseline_release_output_closure_count=4,baseline_wrapper_raw_sha256=PIN['report.json'][0],baseline_native_raw_sha256=PIN['native_control/report.json'][0],baseline_packet_raw_sha256=PIN['native_control/source_packet.json'][0],baseline_independent_audit_raw_sha256=AUDIT_RAW,baseline_independent_audit_source_sha256=HELPER_SHA,all_four_complete_source_dtos_unchanged=True,historical_saved_reference_unchanged=True,baseline_fresh_tests=36,component_arithmetic_or_quadrature_reexecuted=False,material_admission_authorized=False,accepted_original_native_intervals=1,accepted_new_native_intervals=0,original_point_1_remaining_work_blocks=1,remaining_physical_condition_count=3,source_script_sha256=raw(__file__),seconds=time.perf_counter()-t)
+ report['audit_sha256']=vd(report);Path(result).write_bytes(encoded(report)+b'\n');print(encoded(report).decode())
+if __name__=='__main__':
+ p=argparse.ArgumentParser();p.add_argument('--result',required=True);a=p.parse_args();run(a.result)

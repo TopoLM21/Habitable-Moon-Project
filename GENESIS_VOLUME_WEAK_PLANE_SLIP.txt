@@ -1,0 +1,189 @@
+ОБЪЁМНОЕ СКОЛЬЖЕНИЕ СЛАБОЙ ПЛОСКОСТИ В ПРОДОЛЖЕНИИ GENESIS
+09.10.2026. Ветка fix/genesis-mantle-convection.
+
+Результат
+
+Реализован следующий указанный этап: finite-width 3D weak-plane slip с полной
+памятью когорт, согласованными силами и отдельным учётом трения/вязких потерь.
+VolumeSlipModel продолжает настоящий Genesis; новая инициализация планеты не
+создавалась. На настоящем источнике приняты два шага по 100 лет, результаты
+совпали с предыдущим sealed damage-control по всей физике, direct/restarted
+сохранения побайтово равны. Активных разломов здесь по-прежнему ноль.
+Активный оператор проверен отдельно на явно синтетических механических
+примерах. Это завершённая часть условия 1 исходного пункта 1; весь пункт открыт.
+Автоматическая цель выключена и не менялась; работа разрешена вручную.
+
+Происхождение и неизменность истории
+
+Literal source: analysis/genesis_cohort_mechanics_validation/evidence/control/material_export.json.
+Raw SHA256: b959aea6af2968120e97bdbce64b8bf8ad23b12fd5960a37c996be421c9141f1.
+Настоящий встроенный Fault0.3 checkpoint: cd79ee2a5139c4b91abdb1b4714a761c9153cc9f4490f5aa63fa2facba458c89.
+Источник получен формированием из расплава 2300 K, без твёрдой поверхности
+и океана, при водной атмосфере 228.384889 бар. Полное формирование в этой фазе
+не перезапускалось. Сохранены source bytes, IDs, birth-prefix, память strain/
+stress/fault и source work. Native943 R100km octant-source — механический тест.
+Source t=0.8680000000000005 Myr, 480 когорт / 438 birth intervals / 80 граней /
+42 узла. Одно связное мафическое тело 62.056–63.427 м; химические материковые
+плиты не получены. Начальная память 4.276852389239655e19 J; face-mean дал бы
+3.788398148994852e19 J. Вариация 11.42% сохраняется в полном операторе.
+Неизвестные исторические natural metric, 3D total strain, placement и раннее
+движение рафтов остаются неизвестными. Новая prospective closure их не заменяет.
+
+Закон и его границы
+
+На активной грани n,m — ортонормальные физические 3D векторы; инженерный
+shear tensor q=sym(m⊗n). Одна signed gamma на грань действует на каждую когорту,
+сохраняя её собственные Maxwell beta/theta и angular/radial memory variance.
+Все шесть компонентов strain0/strain1 интегрируются по полному объёму.
+
+Новая явная временная closure использует среднюю по интервалу traction при
+постоянной скорости plastic shear, а не endpoint return map прежней мембраны:
+gamma = sign(tau_trial) max(abs(tau_trial)-Y,0)/(H+eta_fault/dt),
+H = integral(theta*q:C:q dV)/V,
+Y = cohesion(damage,water)+mu(water)*max(-sigma_normal_average,0).
+Изотропный non-dilatant slip не меняет normal pressure. Исходные strength,
+viscosity и activation parameters сохранены. Instantaneous pointwise Coulomb
+trajectory и равенство endpoint stress среднему не заявлены. Это дискретная
+interval-average closure с точной работой на принятом affine strain path.
+
+D_slip = V*gamma*tau_average = D_friction + D_viscous >= 0.
+Maxwell memory продвигается на NET механическом increment (delta_epsilon-
+gamma*q). Базовый loading_response/work остаётся NET driver; новые state/report
+хранят TOTAL физическую работу и два отдельных fault-loss ledgers. В глобальном
+балансе fault dissipation вычитается один раз. Трение не выдаётся за уже внесённое
+тепло: совместный thermal/mechanical reservoir ещё не замкнут.
+
+Полная 3D projection даёт обычно non-associated, nonsymmetric consistent
+tangent. Активный Newton solve использует general matrix; reference scaling
+получено из положительной elastic+inertia формы, без искусственных опор/floors.
+n,m и вода принятого START заморожены на весь private predictor и FINAL solve.
+Оба начинаются с ORIGINAL q/v/memory и одного thermal/birth trial; принимается
+только FINAL. Damage/endpoint water/persistence рассчитываются исходным законом,
+но новая вода влияет на slip со следующего интервала. Peak = max(old,predictor,
+final). Runtime damage не переписывает literal thermal source baseline.
+
+После acceptance source 2D co-normal переносится inverse-transpose TOP-face F2,
+затем поднимается в текущую 3D геометрию. Это bounded top-face policy, не точный
+finite through-depth transport. Произвольный dip/polarity не вводится. Полное
+исчезновение старого материала активной грани вызывает typed refusal; дефект
+не наследуется несвязанным новорождённым материалом. Limiter отвергает слишком
+большой gamma, не обрезает работу скрытым clipping.
+
+Activation остаётся исходной: damage>=0.65 и принятый endpoint timer>=0.05 Myr,
+plane выбирается по stress в начале следующего trial. 50 тыс. лет — persistence
+ПОСЛЕ достижения порога, не прогноз появления разлома. Continuous finite-width
+plane не создаёт sharp cut, свободные берега или spatial underthrust contact.
+
+Сохранения
+
+genesis-volume-slip-checkpoint-0.1 сохраняет настоящий source ровно один раз,
+полную базовую volume memory, runtime fault history, physical plane vectors,
+TOTAL physical work, friction/viscous ledgers и все closure identifiers.
+Untrusted load повторяет ВСЕ private/final solves от literal formation source
+и сравнивает полный canonical packet; resealed forged memory/history/plane/
+work/source/policy отвергаются. Duplicate JSON keys/nonfinite values запрещены;
+запись atomic. Синтетическая subclass модель не допускается этим checkpoint API.
+Старые VolumeModel/VolumeFaultModel/default checkpoint0.1 не переопределены.
+Оба настоящих старых двухшаговых checkpoint воспроизведены точно текущим кодом,
+каждый со своими исходными public thread controls. Active actual-source restart
+пока не доказан: в настоящем расчёте нет активных плоскостей.
+
+Настоящий final control
+
+Source: 480 когорт, t=0.8680000000000005 Myr,
+M=6.614812670017126e19 kg, E=4.276852389239655e19 J, K=4561.093225696536 J.
++100 yr: 560 когорт, M=6.7770587067633795e19 kg,
+E=4.033056725693343e19 J, K=4664.325741699129 J,
+max damage=0.03692826969004512.
++200 yr: 640 когорт, t=0.8682000000000005 Myr,
+M=6.938978538222743e19 kg, E=3.814191287901717e19 J, K=4788.307247140131 J,
+max damage=0.03826314346740867 (source 0.03498505110952482).
+Signed cumulative damage energy=-5.492297564458694e16 J.
+Active planes, gamma, runtime fault friction/viscous work, water access и
+candidate age остаются нулевыми. Настоящая активация не изготовлена нагрузкой,
+порогом или дополнительной инициализацией. Все четыре принятых состояния по
+физике canonical-identical предыдущему sealed 100+100-летнему damage control.
+Новый формат/метаданные явны; полные direct/resumed JSON bytes равны.
+
+Независимые проверки и активные механические примеры
+
+409 tests PASS в 17 модулях; pytest 2618.22 с,
+реальный capture 2619.228719 с.
+Настоящий control 320.674855 с;
+producer-free independent audit 80.640068 с.
+Worst actual momentum residual 2.01891e-14, discrete work 2.10085e-12.
+Stdlib/NumPy auditor независимо интегрирует geometry, full force, Maxwell
+memory/energy/dissipation, damage/work/source/clock/planes и private/final
+slip report; проверяет два интервала и restart. Producer imports отсутствуют.
+
+Четыре declared synthetic MATERIAL controls: signed forward/reverse shear,
+inactive plane и pure compression. Independent angular/radial/time quadrature
+и scalar bisection проверяют все 18 force DOF, gamma, память, traction,
+friction/viscous work, objectivity и angular variance. Active gamma max около
+6.423e-4, relative work error <=4.04e-16. Это не исходное состояние планеты.
+
+Отдельный declared synthetic COUPLED fixture сохраняет literal substrate
+source/thermal/birth/memory, затем явно задаёт активную грань, water=0.25,
+dead body force и basal_drag=1e7 вместо настоящего 1e14. Strength/viscosity
+не меняются; реальный VolumeSlipModel.step не переопределяется. Два шага по
+одному году проверяют active nonsymmetric momentum/Maxwell, original damage/
+healing/water law, lagged water, signed damage energy, cumulative work и
+endpoint covector transport. Producer-free audit повторно проверяет оба
+private predictors и оба accepted intervals, full18 force DOF, thermal/birth/
+remelt/mass и work. Это runtime VIEW, не authentic checkpoint/restart и не
+возникновение разлома при формировании. Все три независимых final audits PASS.
+
+Фактические captures, сохранённые внутри нового пакета
+
+Все семь final execution captures: exit0, stderr0, source-before=after=snapshot=
+live. Actual control:291pins; tests:312pins; остальные пять:295pins.
+Public numerical controls: OPENBLAS/OMP/MKL threads=1. Legacy base replay
+использует исходные default controls; legacy fault replay — threads=1.
+Actual independent capture с именем preflight01 принят как FINAL после
+повторной проверки всех pins; название и сырые файлы не переименованы/переписаны.
+Предварительный legacy report имел all_checks_pass=false только из-за изменения
+трёх неисполнявшихся новых audit/test файлов при широком inventory. Физические
+replays были точны, но он не принят за final. Fresh final02 повторил реальные
+дочерние расчёты с явным executing scope и прошёл все проверки. Preliminary
+coupled DEV02 также имел изменённые unused audit sources; final01 повторён
+после HOLD. Raw предварительные результаты сохранены отдельно. Один DEV
+тест comparing tuple DTO к JSON list был исправлен на canonical comparison;
+он не был физической ошибкой. Незавершённого final run здесь не принято.
+Неизменны все пять прежних sealed packages / 4049 members и native4PY/P/F.
+
+Что осталось в исходном пункте 1
+
+1. Полная доступная память/prestress, discrete force/work и теперь bounded
+   finite-width 3D slip готовы. Остались calculated sharp cut/creation work,
+   привязка обоих физических берегов к материалу и приёмка их physical
+   force/work trajectory; top-face-only plane policy ещё не закрывает общий
+   through-depth finite transport. Unknown history не восполнять придуманной.
+2. All-pair full-time admission, включая reverse C5->C1. Connected-body proof
+   готов; split banks/contact/underthrust path остаётся не принят.
+3. Detailed fault/underthrust continuation с независимыми work/balances/restart.
+   Connected actual restart и активный synthetic coupled operator готовы;
+   настоящий detailed active fault/contact continuation ещё не получен.
+
+Следующий конкретный шаг — calculated cut/creation witness и material bank
+binding на этой же source-bound ветви. При отсутствии необходимых данных
+состояние должно получать явный отказ, а не выдуманные берега/готовую плиту.
+Текущий source weak-plane law не задаёт surface creation-energy law. Default
+fracture energy отдельной native contact ветви не считается рассчитанным свойством
+этого Genesis. До допуска sharp cut нужно явно определить prospective law и
+проверить создание площади без повторного списания уже учтённой slip dissipation.
+До завершения пункта 1 остаётся существенная работа в тех же трёх условиях;
+новых глобальных пунктов не добавлено. Пункты 2–6 не закрыты. Whole heat/work
+reservoir, chemical continental plates, continuous physical trajectory,
+mainloop/GUI, большие времена и temporal/spatial convergence не заявлены.
+
+Артефакты и точка продолжения
+
+analysis/genesis_volume_slip_validation/evidence/PACKAGE_README.txt
+analysis/genesis_volume_slip_validation/evidence/package_manifest.json
+analysis/genesis_volume_slip_validation/evidence/final_verification.json
+tectonics/genesis_volume_fault_slip.py — constitutive 3D kernel.
+tectonics/genesis_volume_slip_dynamics.py — source-bound coupled continuation.
+tectonics/genesis_volume_slip_checkpoint.py — strict replay checkpoint.
+analysis/genesis_volume_slip_validation — actual/material/coupled controls,
+producer-free auditors и real subprocess captures. Старые документы сохранены
+буквальным суффиксом в CLOUD_HANDOFF/GENESIS_ARCHITECTURE и в originals пакета.

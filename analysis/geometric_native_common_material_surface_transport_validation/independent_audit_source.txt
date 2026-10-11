@@ -1,0 +1,765 @@
+"""Independent stdlib local material-surface transport audit.
+
+No project import, historical audit main, test, solver or quadrature is used.
+Only an exact frozen879 source map and fresh sealed gate PASS admit run/main.
+Execution requires a fresh sealed gate; mathematical receipts are never guessed.
+Nanson uses the COMPLETE finite incremental F=I+sum(a_i G_i), not I+F.
+The gate authenticates each serialized port by complete canonical DTO equality
+against its corresponding genuine typed factory query, then passes that typed
+port to the new strict response decoder. The old generic port decoder is unused.
+It certifies local measure/director jets, not global history, force/work/energy,
+retained-mask membership of archived labels or physical admission.
+"""
+from dataclasses import dataclass
+from fractions import Fraction as F
+from pathlib import Path
+import argparse, ast, hashlib, io, json, math, sys, time, types
+from contextlib import redirect_stdout
+
+ROOT=Path('/workspace/Habitable-Moon-Project')
+PARENT=ROOT/'analysis/geometric_native_common_material_surface_transport_validation'
+PRIOR=ROOT/'analysis/geometric_native_common_strain_projection_validation'
+SCOPE='FINITE_LOCAL_MATERIAL_SURFACE_MEASURE_AND_MEMORY_TRANSPORT_COMPONENT_ONLY'
+OLD_MAP='13c19fe10056af9ab621e2c8a23e63ad36b301c95e121a6835cead019378e385'
+OLD_MAP_RAW='8f7608219c398a05913d96e80baf685b997dccff466ee9cf9eb1aa89b8124675'
+OLD_MANIFEST_RAW='035c7eeae472676924792d07e1d05b8e3660a4a9d0fa9d8cfe8f55df71862412'
+OLD_MANIFEST_SEAL='519d42468d7291b2af3db6894943a2ec91e2c12f490643e2d18f4b16d63777a2'
+NEW_MAP='4a75d4bc7d404fc11d5d252302fe6b6d961797b4a637f921c38acb679485b79c'
+NEW_MAP_RAW='1b948eace979f3125756f6f0dea803fb55d0d2e87650890a2236c07502b0c336'
+ADDED=frozenset(('tectonics/geometric_native_common_material_surface_transport.py','tests/test_geometric_native_common_material_surface_transport.py','analysis/geometric_native_common_material_surface_transport_validation/native_control.py','analysis/geometric_native_common_material_surface_transport_validation/validate.py'))
+OUTPUTS=frozenset(('pytest.log','control_console.log','native_control/report.json','native_control/source_packet.json'))
+SOURCE_HELPER=ROOT/'analysis/geometric_native_common_source_carrier_validation/independent_audit_source.txt'
+SOURCE_HELPER_RAW='3e3226705f7a1931e01d9147046686492e73d728d5a7b33a01d1e4555eaa43f4'
+MATERIAL_HELPER=ROOT/'analysis/geometric_native_common_material_transfer_validation/independent_audit_source.txt'
+MATERIAL_HELPER_RAW='06d07d554a7265f96e132327e0526e2a7baf83d18b29d0d620413e3acf7eaaf7'
+GEOMETRY_HELPER=ROOT/'analysis/geometric_native_cold_body_validation/independent_audit_source.txt'
+GEOMETRY_HELPER_RAW='ee031938177a3497aa7821c883650a89397a9942f6b177e48b9a655153297f6e'
+
+
+def enc(v):return json.dumps(v,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+def vd(v):return hashlib.sha256(enc(v)).hexdigest()
+def digest(p):
+ h=hashlib.sha256()
+ with Path(p).open('rb') as f:
+  for b in iter(lambda:f.read(1<<20),b''):h.update(b)
+ return h.hexdigest()
+def read(p):return json.loads(Path(p).read_bytes())
+def payload(v):
+ if type(v) is F:return [v.numerator,v.denominator]
+ if hasattr(v,'lo') and hasattr(v,'hi'):return dict(lo=payload(v.lo),hi=payload(v.hi))
+ if type(v) in (tuple,list):return [payload(x) for x in v]
+ if type(v) is dict:return {k:payload(x) for k,x in v.items()}
+ return v
+
+def exact(a,b,label):
+ assert type(a) is type(b) and a==b,label
+ if type(a) in (dict,list,tuple):assert enc(payload(a))==enc(payload(b)),label+' recursive scalar kinds'
+
+def frac(v):
+ assert type(v) is list and len(v)==2 and all(type(x) is int for x in v) and v[1]>0
+ q=F(*v);exact(v,[q.numerator,q.denominator],'canonical literal Fraction');return q
+
+def literal(v):
+ assert type(v) in (int,float);return F.from_float(v) if type(v) is float else F(v)
+
+def interval(v,c):
+ exact(set(v),{'lo','hi'},'interval schema');return c['I'](frac(v['lo']),frac(v['hi']))
+
+def rounded(v,c,precision=256):
+ if not hasattr(v,'lo'):v=c['I'](v)
+ return c['I'](*c['geometry']._rounded((v.lo,v.hi),precision))
+
+def square(v,c):
+ return c['I'](F(0) if v.lo<=0<=v.hi else min(v.lo*v.lo,v.hi*v.hi),max(v.lo*v.lo,v.hi*v.hi))
+
+def sqrt_interval(v,c,precision=300):
+ assert v.lo>=0
+ scale=10**precision
+ def floorroot(q):return math.isqrt((q*scale*scale).numerator//(q*scale*scale).denominator)
+ lower=floorroot(v.lo);upper=floorroot(v.hi)
+ if F(upper,scale)**2<v.hi:upper+=1
+ assert F(lower,scale)**2<=v.lo and F(upper,scale)**2>=v.hi
+ return c['I'](F(lower,scale),F(upper,scale))
+
+
+def dot(a,b):return sum((x*y for x,y in zip(a,b)),F(0))
+def scale(v,a):return tuple(x*a for x in v)
+def add(a,b):return tuple(x+y for x,y in zip(a,b))
+def cross(a,b):return (a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0])
+def mapped(M,v):return tuple(dot(row,v) for row in M)
+def transpose(M):return tuple(tuple(M[j][i] for j in range(len(M))) for i in range(len(M[0])))
+def matmul(A,B):return tuple(tuple(dot(row,col) for col in transpose(B)) for row in A)
+
+
+def contains(raw,v,c,label):
+ a=interval(raw,c);v=v if hasattr(v,'lo') else c['I'](v)
+ assert a.lo<=v.lo<=v.hi<=a.hi,label;return a
+
+def tree(raw,v,c,label):
+ if type(v) in (tuple,list):
+  assert type(raw) is list and len(raw)==len(v),label+' shape'
+  return tuple(tree(x,y,c,label+':'+str(i)) for i,(x,y) in enumerate(zip(raw,v)))
+ return contains(raw,v,c,label)
+
+
+@dataclass(frozen=True)
+class Jet2:
+ """Independent full value, gradient and symmetric Hessian body-coordinate jet."""
+ value: object
+ gradient: tuple
+ hessian: tuple
+
+
+def jconstant(v,c,n=7):
+ I=c['I'];return Jet2(v if hasattr(v,'lo') else I(v),(I(0),)*n,tuple((I(0),)*n for _ in range(n)))
+
+def jlinear(v,derivatives,c):
+ I=c['I'];n=len(derivatives);return Jet2(v,tuple(derivatives),tuple((I(0),)*n for _ in range(n)))
+
+def jadd(a,b,c):
+ n=len(a.gradient);assert n==len(b.gradient)
+ return Jet2(rounded(a.value+b.value,c),tuple(rounded(a.gradient[i]+b.gradient[i],c) for i in range(n)),tuple(tuple(rounded(a.hessian[i][j]+b.hessian[i][j],c) for j in range(n)) for i in range(n)))
+
+def jneg(a,c):
+ return Jet2(-a.value,tuple(-x for x in a.gradient),tuple(tuple(-x for x in row) for row in a.hessian))
+
+def jmul(a,b,c):
+ n=len(a.gradient);assert n==len(b.gradient)
+ return Jet2(rounded(a.value*b.value,c),tuple(rounded(a.gradient[i]*b.value+a.value*b.gradient[i],c) for i in range(n)),tuple(tuple(rounded(a.hessian[i][j]*b.value+a.gradient[i]*b.gradient[j]+a.gradient[j]*b.gradient[i]+a.value*b.hessian[i][j],c) for j in range(n)) for i in range(n)))
+
+def jscale(a,v,c):return jmul(a,jconstant(v,c,len(a.gradient)),c)
+
+def jinverse(a,c):
+ assert not a.value.lo<=0<=a.value.hi;n=len(a.gradient);inv=1/a.value
+ return Jet2(rounded(inv,c),tuple(rounded(-a.gradient[i]*inv*inv,c) for i in range(n)),tuple(tuple(rounded(2*a.gradient[i]*a.gradient[j]*inv*inv*inv-a.hessian[i][j]*inv*inv,c) for j in range(n)) for i in range(n)))
+
+def jsqrt(a,c):
+ assert a.value.lo>0;n=len(a.gradient);v=sqrt_interval(a.value,c)
+ return Jet2(rounded(v,c),tuple(rounded(a.gradient[i]/(2*v),c) for i in range(n)),tuple(tuple(rounded(a.hessian[i][j]/(2*v)-a.gradient[i]*a.gradient[j]/(4*v*v*v),c) for j in range(n)) for i in range(n)))
+
+def jdot(a,b,c):
+ assert len(a)==len(b);result=jconstant(0,c,len(a[0].gradient))
+ for x,y in zip(a,b):result=jadd(result,jmul(x,y,c),c)
+ return result
+
+
+def jnorm_squared(vector,c):
+ raw=jdot(vector,vector,c)
+ value=rounded(sum((square(x.value,c) for x in vector),c['I'](0)),c)
+ return Jet2(value,raw.gradient,raw.hessian)
+
+
+def cofactor_jet(Fmatrix,c):
+ """Signed 2x2 minors: cofactor(F)=det(F) F^{-T}, without matrix inverse."""
+ rows=[]
+ for i in range(3):
+  row=[];rr=[r for r in range(3) if r!=i]
+  for j in range(3):
+   cc=[k for k in range(3) if k!=j]
+   v=jadd(jmul(Fmatrix[rr[0]][cc[0]],Fmatrix[rr[1]][cc[1]],c),jneg(jmul(Fmatrix[rr[0]][cc[1]],Fmatrix[rr[1]][cc[0]],c),c),c)
+   row.append(v if (i+j)%2==0 else jneg(v,c))
+  rows.append(tuple(row))
+ return tuple(rows)
+
+
+def nanson_jet(gradient_matrix,mode_gradient_matrices,reference_normal,c):
+ """Finite F is already I+du/dX; seven-mode F''=0, cofactor'' nonzero."""
+ assert len(mode_gradient_matrices)==7
+ Fmatrix=tuple(tuple(jlinear(gradient_matrix[i][j],tuple(M[i][j] for M in mode_gradient_matrices),c) for j in range(3)) for i in range(3));C=cofactor_jet(Fmatrix,c)
+ determinant=jdot(Fmatrix[0],C[0],c);assert determinant.value.lo>0,'LOCAL finite incremental deformation preserves orientation'
+ normal=tuple(jconstant(x,c) for x in reference_normal);area=tuple(jdot(row,normal,c) for row in C)
+ norm2=jnorm_squared(area,c)
+ # At exact identity F, the authentic reference unit normal has norm exactly1.
+ # Preserve that correlated source identity rather than widen its known value.
+ if all(gradient_matrix[i][j]==c['I'](int(i==j)) for i in range(3) for j in range(3)):
+  norm2=Jet2(c['I'](1),norm2.gradient,norm2.hessian)
+ js=jsqrt(norm2,c);unit=tuple(jmul(v,jinverse(js,c),c) for v in area)
+ return dict(F=Fmatrix,cofactor=C,determinant=determinant,oriented_area=area,surface_ratio=js,current_normal=unit)
+
+
+def convected_tangent_jet(Fmatrix,reference_tangent,c):
+ v=tuple(jdot(row,tuple(jconstant(x,c) for x in reference_tangent),c) for row in Fmatrix);norm=jsqrt(jnorm_squared(v,c),c)
+ return tuple(jmul(x,jinverse(norm,c),c) for x in v)
+
+
+def current_material_density_jet(reference_measure_density,reference_surface_jacobian,nanson,c):
+ """Fixed material numerator / current physical area Jacobian; no extra js factor."""
+ J=jscale(nanson['surface_ratio'],reference_surface_jacobian,c)
+ density=jscale(jinverse(J,c),reference_measure_density,c)
+ return dict(current_surface_jacobian=J,current_measure_density=density)
+
+
+
+
+# Independent reference geometry and cold7 finite field. No copied project
+# function is executed: only the pinned stdlib quaternion/Phi operators below.
+AFFINE=tuple(tuple(tuple(F(int((i,j)==pair or (j,i)==pair)) for j in range(3)) for i in range(3)) for pair in ((0,0),(1,1),(2,2),(0,1),(0,2),(1,2)))
+AXIS_NAMES=('old_tip_increment','xx','yy','zz','xy','xz','yz')
+
+
+def load(path,name,pin):
+ exact(digest(path),pin,'immutable stdlib helper '+str(path));m=types.ModuleType(name);m.__file__=str(path);sys.modules[name]=m
+ exec(compile(Path(path).read_bytes(),str(path),'exec'),m.__dict__);return m
+
+
+def sealed(path,key):
+ raw=read(path);body=dict(raw);exact(body.pop(key),vd(body),'selfseal '+str(path));return raw
+
+
+def trig_point(x,c):
+ """Outward rational Taylor sums; explicit decreasing-tail bound, no floats."""
+ I=c['I'];assert abs(x)<4
+ if not x:return I(0),I(1)
+ results=[]
+ for sine in (True,False):
+  term=I(x if sine else 1);partial=term;k=0
+  while True:
+   a=2*k+(2 if sine else 1);nextterm=rounded(-term*x*x/(a*(a+1)),c,320)
+   tail=max(abs(nextterm.lo),abs(nextterm.hi));ratio=abs(x*x)/F((a+2)*(a+3))
+   if ratio<1 and tail<F(1,10**310):
+    results.append(rounded(partial+I(-tail/(1-ratio),tail/(1-ratio)),c,300));break
+   partial=rounded(partial+nextterm,c,320);term=nextterm;k+=1
+ return tuple(results)
+
+
+def trig_range(a,c):
+ """Endpoint monotonicity plus exact extrema, for source angles in [0,pi]."""
+ I=c['I'];pi=c['geometry'].interval_pi(320);assert 0<=a.lo<=a.hi<=pi.hi
+ sl,cl=trig_point(a.lo,c);sh,ch=trig_point(a.hi,c)
+ sine=I(min(sl.lo,sh.lo),max(sl.hi,sh.hi));cosine=I(min(cl.lo,ch.lo),max(cl.hi,ch.hi))
+ if a.lo<=pi.hi/2 and a.hi>=pi.lo/2:sine=I(sine.lo,max(sine.hi,F(1)))
+ if a.hi>=pi.lo:cosine=I(min(cosine.lo,F(-1)),cosine.hi);sine=I(min(sine.lo,F(0)),sine.hi)
+ return sine,cosine
+
+
+def unit(v,c):
+ norm=sqrt_interval(sum((square(x,c) if hasattr(x,'lo') else c['I'](x*x) for x in v),c['I'](0)),c)
+ assert norm.lo>0;return tuple(rounded(x/norm,c) for x in v)
+
+
+def rotation_history(rows,c):
+ return c['geometry'].certify_rotation_history(tuple(c['geometry'].rotation_increment_from_dict(r) for r in rows),350).intervals
+
+
+def native_ray(row,c):
+ I=c['I'];assert row['kind'] in ('seed','cross') and row['sign'] in (-1,1)
+ if row['kind']=='seed':v=tuple(I(F(x)) for x in row['reference'])
+ else:
+  assert len(row['planes'])==2
+  v=cross(*(tuple(c['geometry']._plane_values(plane,350)[1]) for plane in row['planes']))
+ v=scale(v,F(row['sign']));return unit(mapped(rotation_history(row['rotations'],c),v),c)
+
+
+def native_arc_frame(row,c):
+ S=native_ray(row['start'],c);end=native_ray(row['end'],c)
+ N=unit(c['geometry']._plane_values(row['plane'],350)[1],c);T=unit(cross(N,S),c);sign=dot(T,end)
+ assert not sign.lo<=0<=sign.hi,'source minor arc has a strict forward tangent'
+ if sign.hi<0:T=scale(T,F(-1))
+ return S,T
+
+
+def cut_geometry(cut,arguments,reference,c):
+ """Independent genuine cold great-circle geometry, COMMON depth shear."""
+ assert cut['kind'] in ('native_arc','implicit_terminal_trim')
+ I=c['I'];parameter=interval(arguments['parameter_bounds'],c);cube=interval(arguments['physical_radius_cubed_bounds_m3'],c)
+ assert parameter.lo==parameter.hi and cube.lo==cube.hi,'finite sealed probes use literal points'
+ R=frac(reference['radius_m']);A=tuple(frac(v) for v in reference['angular_rate_per_physical_volume_depth_m'])
+ S,T=native_arc_frame(json.loads(cut['genuine_native_arc_json']),c);sine,cosine=trig_range(parameter,c)
+ U=add(scale(S,cosine),scale(T,sine));Up=add(scale(S,-sine),scale(T,cosine));N=cross(S,T);tangent=cross(N,U)
+ r=c['geometry'].interval_cbrt(cube,340);tau=(I(R**3)-cube)/(3*R*R);rotation=scale(A,tau)
+ c0=cube/(R*R)*dot(A,tangent);metric=sqrt_interval(I(1)+square(c0,c),c)
+ rotate=lambda v:c['material_helper'].exp_rotate(v,rotation,c)
+ X=scale(rotate(U),r);Xp=scale(rotate(Up),r)
+ Xt=rotate(add(scale(U,-R*R/(r*r)),scale(cross(A,U),r)))
+ normal=scale(rotate(scale(add(N,scale(U,-c0)),F(cut['receiving_normal_orientation']))),1/metric)
+ down=scale(rotate(add(scale(U,F(-1)),scale(N,-c0))),1/metric)
+ angular=scale(rotate(tangent),F(cut['receiving_normal_orientation']))
+ J=R*R/r*metric
+ return dict(U=U,Up=Up,N=normal,down=down,angular=angular,X=X,Xp=Xp,Xt=Xt,J=J,r=r,tau=tau,A=A,R=R,rotation=rotation)
+
+
+def original_axes(bank,c):
+ binding=next(row for row in c['bindings'].values() if bank['original_parent_id'] in (row['donor_fragment_id'],row['receiver_fragment_id']))
+ side='sub' if binding['donor_fragment_id']==bank['original_parent_id'] else 'over';tid=binding['trace_id']
+ trace=next(row for row in c['material']['original_mechanics_payload']['fault_traces']['traces'] if row['trace_id']==tid)
+ S,T=(tuple(literal(x) for x in trace[name]) for name in ('start','end'));N=scale(cross(S,T),F(-1 if side=='sub' else 1))
+ assert dot(S,S)==dot(T,T)==dot(N,N)==1 and dot(S,T)==0
+ parameters=next(row for row in c['material']['original_mechanics_payload']['bending_parameters'] if row['trace_id']==tid)[side]
+ b=literal(parameters['width_m'])/c['radius'];assert 0<b<F(1,4)
+ return S,T,N,b,tid,side
+
+
+def refine_quarter(q,pid,c):
+ """Intersect only exact original Cartesian quarter supports of a genuine cut."""
+ parent=next(p for p in c['material']['journal']['source_surface']['fragments'] if p['fragment_id']==pid);q=list(q)
+ for plane in parent['geometry']['supports']:
+  assert not plane['rotations'];axes=[i for i,x in enumerate(plane['normal']) if x];assert len(axes)==1
+  j=axes[0];sign=F(plane['normal'][j]);assert abs(sign)==1;margin=sign*q[j];assert margin.hi>=0
+  q[j]=sign*c['I'](max(F(0),margin.lo),margin.hi)
+ return tuple(q)
+
+
+def cold7_field(bank,q,X,r,tau,coordinates,c,*,literal_original_q=None):
+ """Independent global world-mode expressions; no improper-frame shortcut."""
+ I=c['I'];R=frac(bank['radius_m']);A=tuple(frac(x) for x in bank['angular_rate_per_physical_volume_depth_m']);owner=bank['owner'];O=c['poses']['current_objective'][owner]
+ S,T,N,b,tid,side=original_axes(bank,c)
+ if literal_original_q is None:labels=tuple(dot(axis,q) for axis in (S,T,N))
+ else:
+  # Exact original support contractions precede geometry normalization.
+  norm=sqrt_interval(I(dot(literal_original_q,literal_original_q)),c)
+  labels=tuple(I(dot(axis,literal_original_q))/norm for axis in (S,T,N))
+ assert all(v.lo>=0 for v in labels)
+ horizontal=sqrt_interval(square(labels[0],c)+square(labels[1],c),c);assert horizontal.lo>0
+ beta=c['geometry'].interval_atan(labels[2]/horizontal,300);assert not beta.lo<b<beta.hi
+ active=beta.lo<b;e=tuple(rounded(x/r,c) for x in X)
+ if active:
+  worldN=mapped(O,N);rotN=c['material_helper'].exp_rotate(worldN,scale(A,tau),c);ray=mapped(O,q)
+  rate=dot(worldN,cross(A,ray))/horizontal
+  gb=tuple(rounded((rotN[i]-e[i]*labels[2])/(r*horizontal)+(r*r/R**2)*rate*e[i],c) for i in range(3))
+  t=beta/b;chi=rounded((I(1)-t)*(I(1)-t)*(t+2)/2,c);slope=rounded(-F(3,2)*(I(1)-t)*(I(1)+t)/b,c)
+  modes=[scale(e,chi)];gradients=[tuple(tuple(rounded(chi/r*(I(int(i==j))-e[i]*e[j])+slope*e[i]*gb[j],c) for j in range(3)) for i in range(3))]
+  for E in AFFINE:
+   direction=scale(mapped(E,X),F(1)/R);modes.append(scale(direction,chi))
+   gradients.append(tuple(tuple(rounded(chi*E[i][j]/R+slope*direction[i]*gb[j],c) for j in range(3)) for i in range(3)))
+ else:
+  chi=slope=I(0);gb=(I(0),)*3;modes=[(I(0),)*3]*7;gradients=[((I(0),)*3,)*3]*7
+ u=tuple(rounded(sum((a*v[i] for a,v in zip(coordinates,modes)),I(0)),c) for i in range(3));Fbody=tuple(tuple(rounded(I(int(i==j))+sum((a*g[i][j] for a,g in zip(coordinates,gradients)),I(0)),c) for j in range(3)) for i in range(3))
+ return dict(labels=labels,beta=beta,gb=gb,chi=chi,slope=slope,active=active,modes=tuple(modes),gradients=tuple(gradients),u=u,F=Fbody,Y=add(X,u),b=b,tid=tid,side=side)
+
+
+SCHEMAS={'NativeCommonFiniteSurfaceSide': ('component_id', 'material_kind', 'body_snapshot_sha256', 'owner', 'coordinate_order', 'coordinates_m', 'reference_position_bounds_m', 'displacement_increment_bounds_m', 'current_position_bounds_m', 'mode_displacement_columns', 'incremental_gradient_bounds', 'mode_spatial_gradient_columns_per_m', 'determinant_bounds', 'determinant_gradient_bounds', 'determinant_hessian_bounds', 'cofactor_bounds', 'cofactor_first_derivative_bounds', 'cofactor_second_derivative_bounds', 'reference_normal_bounds', 'cofactor_normal_bounds', 'cofactor_normal_first_derivative_bounds', 'cofactor_normal_second_derivative_bounds', 'surface_stretch_bounds', 'surface_stretch_gradient_bounds', 'surface_stretch_hessian_bounds', 'current_unit_normal_bounds', 'current_normal_first_derivative_bounds', 'current_normal_second_derivative_bounds', 'reference_area_density_bounds', 'current_area_density_bounds', 'current_area_density_gradient_bounds', 'current_area_density_hessian_bounds'), 'NativeCommonSurfaceTransportResponse': ('source_snapshot_sha256', 'reference_snapshot_sha256', 'cut_snapshot_sha256', 'geometry_bounds_sha256', 'port_response_binding_sha256', 'allocation_binding_sha256', 'density_binding_sha256', 'state_binding_sha256', 'receiving_trace_id', 'receiving_cell_id', 'parameter_bounds', 'physical_radius_cubed_bounds_m3', 'receiving_computational_angle_bounds_radians', 'donor', 'receiver', 'reference_measure_density_bounds', 'receiver_current_measure_density_bounds', 'receiver_current_measure_density_gradient_bounds', 'receiver_current_measure_density_hessian_bounds', 'receiver_measure_conservation_residual_bounds', 'source_current_memory_sha256', 'source_current_atom_states_sha256', 'source_current_memory_trace_json', 'memory_piece_intersections', 'plastic_slip_bounds_m', 'cumulative_slip_bounds_m', 'source_native_elapsed_time_s', 'source_memory_elapsed_time_s', 'source_memory_stage_count', 'source_contact_elapsed_time_s', 'source_contact_step_count', 'precision', 'binding_sha256', 'material_measure_pullback_identity_exact', 'material_memory_scalars_unchanged', 'owner_covariance_law', 'owner_scalar_measure_first_and_second_derivatives_exact_zero', 'current_normals_used_as_constitutive_directors', 'finite_local_nanson_measure_transport_defined', 'source_state_or_work_advanced', 'new_energy_or_force_law_added'), 'NativeCommonOriginalMaterialTransportResponse': ('material_system_binding_sha256', 'reference_snapshot_sha256', 'source_snapshot_sha256', 'source_material_point_binding_sha256', 'body_snapshot_sha256', 'point_id', 'trace_id', 'side', 'original_parent_id', 'original_material_id', 'owner', 'original_label_membership', 'archive_cohort_id', 'geometry_field_component_id', 'original_direction_literal', 'normalized_material_ray_bounds', 'current_world_material_ray_bounds', 'material_owner_pose_bounds', 'material_depth_bounds_m', 'areal_material_thickness_m', 'roof_radial_displacement_m', 'radius_bounds_m', 'physical_volume_depth_bounds_m', 'input_position_bounds_m', 'reference_position_bounds_m', 'reference_gradient_bounds', 'coordinate_order', 'coordinates_m', 'original_quarter_labels_bounds', 'material_beta_bounds_radians', 'material_beta_gradient_bounds_per_m', 'source_shape_bounds', 'source_shape_beta_derivative_bounds', 'field_active_inside_material_clamp', 'mode_displacement_columns', 'mode_spatial_gradient_columns_per_m', 'displacement_increment_bounds_m', 'current_position_bounds_m', 'incremental_gradient_bounds', 'determinant_bounds', 'cofactor_bounds', 'incremental_green_strain_bounds', 'total_material_gradient_bounds', 'total_original_cartesian_gradient_bounds', 'complete_original_parent_json', 'complete_parent_allocation_json', 'complete_archive_cohort_json', 'source_contact_elapsed_time_s', 'source_memory_elapsed_time_s', 'source_geometry_elapsed_time_s', 'precision', 'binding_sha256', 'original_material_membership_authenticated', 'same_parent_original_quarter_field_extension_declared', 'extension_law', 'reference_gradient_input_frame', 'total_original_gradient_input_frame', 'current_live_mask_membership_authenticated', 'current_contact_cut_membership_claimed', 'deformed_source_rod_endpoint_equivalence_certified', 'local_archive_force_or_work_handover_certified', 'source_state_or_work_advanced', 'new_energy_or_force_law_added'), 'NativeCommonContactPort': ('cut', 'donor_body', 'receiver_body', 'reference_snapshot_sha256', 'source_snapshot_sha256', 'donor_mode_order', 'receiver_mode_order', 'owner_rotation_coordinate_order', 'geometry_enclosure_precision', 'binding_sha256'), 'NativeCommonBodyPortFields': ('component_id', 'material_kind', 'body_snapshot_sha256', 'reference_snapshot_sha256', 'coordinates_m', 'coordinate_order', 'original_unit_direction_bounds', 'original_quarter_labels_bounds', 'material_beta_bounds_radians', 'material_beta_gradient_bounds_per_m', 'source_shape_bounds', 'source_shape_beta_derivative_bounds', 'field_active_inside_material_clamp', 'mode_displacement_columns', 'mode_spatial_gradient_columns_per_m', 'displacement_increment_bounds_m', 'displaced_point_bounds_m', 'incremental_gradient_bounds'), 'NativeCommonContactPortResponse': ('port', 'geometry', 'donor_fields', 'receiver_fields', 'mode_coordinate_order', 'displacement_jump_bounds_m', 'normal_jump_bounds_m', 'down_jump_bounds_m', 'angular_jump_bounds_m', 'mode_jump_columns', 'mode_jump_spatial_gradient_columns_per_m', 'mode_jump_parameter_derivative_columns', 'mode_jump_material_depth_derivative_columns', 'projected_mode_jacobian_bounds', 'owner_rotation_jump_columns_m', 'projected_owner_rotation_jacobian_bounds_m', 'owner_body_mode_cross_derivative_columns', 'projected_owner_body_mode_cross_derivative_bounds', 'precision', 'rotation_order', 'binding_sha256', 'one_common_reference_point_used', 'owner_columns_are_infinitesimal_left_chart_at_displaced_sides', 'projection_frame_is_reference_geometry', 'unresolved_parameter_bands_promoted_to_material'), 'NativeCommonContactCut': ('cut_id', 'kind', 'donor_component_id', 'receiver_component_id', 'donor_original_parent_id', 'receiver_original_parent_id', 'incoming_donor_trace_id', 'receiving_trace_id', 'receiving_family_id', 'source_snapshot_sha256', 'source_epoch_sha256', 'reference_snapshot_sha256', 'donor_bank_snapshot_sha256', 'receiver_bank_snapshot_sha256', 'common_physical_radius_cubed_bounds_m3', 'parameter_bounds', 'parameter_endpoint_bounds', 'source_parameter_expression', 'start_unit_bounds', 'tangent_unit_bounds', 'receiving_normal_orientation', 'genuine_native_arc_json', 'complete_donor_mask_source_json', 'complete_receiver_mask_source_json', 'complete_source_sweep_json', 'complete_source_history_json', 'complete_source_owner_histories_json', 'complete_source_trace_bindings_json', 'complete_paired_correction_source_json', 'exact_terminal_slope_expression', 'terminal_slope_bounds', 'maximum_ratio_time_fraction_bounds', 'maximum_ratio_bounds', 'native_untrimmed_angle_endpoint_bounds', 'source_live_cut_endpoint_margins', 'geometry_enclosure_precision', 'cut_snapshot_sha256'), 'NativeCommonContactCutBounds': ('cut', 'parameter_bounds', 'parameter_expression', 'source_unit_world_direction_bounds', 'source_unit_world_direction_parameter_derivative_bounds', 'source_angular_speed_bounds', 'donor_original_unit_direction_bounds', 'receiver_original_unit_direction_bounds', 'receiver_owner_local_unit_direction_bounds', 'donor_material_depth_bounds_m', 'receiver_material_depth_bounds_m', 'common_physical_radius_cubed_bounds_m3', 'physical_radius_bounds_m', 'common_physical_volume_depth_bounds_m', 'world_position_bounds_m', 'donor_world_position_bounds_m', 'receiver_world_position_bounds_m', 'parameter_tangent_bounds_m', 'material_depth_tangent_bounds', 'angular_unit_tangent_bounds', 'receiver_inward_unit_normal_bounds', 'inward_unit_down_direction_bounds', 'area_density_bounds_m2_per_parameter_per_material_m', 'receiving_native_angle_bounds_radians', 'receiving_computational_angle_bounds_radians', 'genuine_query_support_certified', 'every_point_of_parameter_enclosure_is_material', 'original_quarter_constraints_refined_from_true_cut_proof', 'geometry_enclosure_precision', 'rotation_order', 'bounds_snapshot_sha256')}
+FLAGS={'finite_local_nanson_measure_transport_defined': True, 'literal_material_memory_advected_without_change': True, 'owner_rigid_geometry_covariance_defined': True, 'source_state_or_work_advanced': False, 'new_energy_or_force_law_added': False, 'old_atom_area_smeared_into_continuous_density': False, 'historical_cumulative_slip_reinterpreted_as_current_stretch_work': False, 'deformed_sides_glued_or_injective_certified': False, 'whole_face_measure_integral_certified': False, 'local_archive_force_or_work_handover_certified': False, 'hot_material_receiving_law_certified': False, 'force_equilibrium_certified': False, 'physical_material_admission_authorized': False, 'original_point_1_completed': False}
+SURFACE_FORMAT='native-common-finite-material-surface-transport-1'
+ORIGINAL_FORMAT='native-common-original-material-finite-field-transport-1'
+EXTENSION='SAME_ORIGINAL_PARENT_SEVEN_MODE_COMMON_FIELD_EXTENSION_ON_AUTHENTIC_ORIGINAL_QUARTER'
+OWNER_COVARIANCE='FRESH_LEFT_RIGID_OWNER_ROTATION_AFTER_FROZEN_COMMON_REFERENCE_AND_BODY_DEFORMATION'
+PORT_FLAGS=('contact_constitutive_law_inferred','contact_stiffness_or_rest_metric_inferred','force_equilibrium_certified','physical_material_admission_authorized','finite_owner_motion_or_whole_clock_certified','original_sixteen_coordinate_history_modified')
+BASELINE_RAW='ad75a879a8485a22e21b44b97f42e89c43c408e399b4abd3a11cfcdb1adf8682'
+BASELINE_EVIDENCE={'baseline_875_bootstrap_source.txt':'85de6cb6261971ed36e78756c038455a3ec114bccac65f2a6ea3704bcc30355e','baseline_875_bootstrap.json':'1bae41cd1b0f5abc11decd794878c4084742e61e68c2e537fa8026275aeaaf1d','baseline_875_reusable_source.txt':BASELINE_RAW}
+OLD_PACKET_RAW='2ddf12415b9abecbbeead78a203ba82d7e18fea84bc9197aa789a607514939b2'
+OLD_PACKET_SEAL='f4c5f9519698c28bf12b9854dc05f78704f25068fca427478a0cfc98786f1a8d'
+OLD_WRAPPER_RAW='a7e74fc5d8774eaaabdcf3919357d27dbd6c35f0c79ea741cb0a89057e51e10e'
+CARRIER_PACKET=ROOT/'analysis/geometric_native_common_source_carrier_validation/release_validation_02/native_control/source_packet.json'
+CARRIER_PACKET_RAW='265206430b4c864db32bce1be0a9a75b71fa180158f3d81e4f52131bebdf320c'
+REMAINING=('Whole-source physical material and old-force/prestress/work handover, HOT law/mean chart, loads/drag and NEW mixed equilibrium','Whole-clock all-pair admission including reverse C5 to C1','Accepted continuation with independent path work, balances and joint restart')
+
+
+def strict(raw,name,extra=()):exact(set(raw),set(SCHEMAS[name])|set(extra),'strict entire '+name+' DTO')
+
+
+def bare(raw,name,seal='binding_sha256'):
+ strict(raw,name);body=dict(raw);exact(body.pop(seal),vd(body),'bare typed source seal '+name)
+
+
+def typed(raw,name,fmt):
+ strict(raw,name,('format','scope',*FLAGS));exact(raw['format'],fmt,'typed format');exact(raw['scope'],SCOPE,'typed scope')
+ for k,v in FLAGS.items():exact(raw[k],v,'truthful typed scope '+k)
+ body={k:raw[k] for k in SCHEMAS[name] if k!='binding_sha256'};exact(raw['binding_sha256'],vd(body),'complete typed seal retains overlapping flags')
+
+
+def summary(raw):
+ scope=dict(physical_candidate_status=SCOPE,genuine_cold_cut_count=5,complete_surface_query_count=10,
+ complete_original_material_query_count=64,original_material_attachment_count=32,archived_original_donor_attachment_count=8,
+ original_material_query_depth_count=2,authentic_saved_nonzero_cold_coordinate_count=56,
+ finite_local_nanson_surface_measure_transport_defined=True,current_source_memory_material_scalars_retained=True,
+ same_parent_original_material_field_extension_declared=True,both_deformed_material_surface_sides_stored=True,
+ physical_source_material_handover_certified=False,whole_face_measure_or_memory_integral_certified=False,
+ whole_archived_three_dimensional_history_recovered=False,current_donor_receiver_sheets_assumed_glued=False,
+ current_deformed_follower_normal_contact_law_defined=False,old_mechanical_atom_areas_smeared_into_continuous_density=False,
+ old_source_mechanical_potential_modified=False,continuous_face_energy_added_to_old_source_potential=False,
+ hot_receiving_contact_law_inferred=False,historical_cumulative_work_reconstructed_from_current_stretch=False,
+ new_mixed_force_equilibrium_certified=False,whole_clock_all_pair_admission_authorized=False,
+ physical_material_admission_authorized=False,source_history_advanced=False,fresh_tensor_quadrature_executed=False,
+ historical_force_solve_reexecuted=False,accepted_original_native_intervals=1,accepted_new_native_intervals=0,
+ original_point_1_remaining_work_blocks=1,original_point_1_completed=False,remaining_physical_conditions=list(REMAINING))
+ for k,v in scope.items():exact(raw[k],v,'complete honest summary '+k)
+ return scope
+
+
+def jet_trees(vector,which):
+ if type(vector) is tuple:return tuple(jet_trees(x,which) for x in vector)
+ return getattr(vector,which)
+
+
+def mode_first(vector):
+ return tuple(tuple(v.gradient[a] for v in vector) for a in range(7))
+
+
+def mode_second(vector):
+ return tuple(tuple(tuple(v.hessian[a][b] for v in vector) for b in range(7)) for a in range(7))
+
+
+def matrix_first(M):
+ return tuple(tuple(tuple(v.gradient[a] for v in row) for row in M) for a in range(7))
+
+
+def matrix_second(M):
+ return tuple(tuple(tuple(tuple(v.hessian[a][b] for v in row) for row in M) for b in range(7)) for a in range(7))
+
+
+def audit_field(raw,oracle,c):
+ pairs=(('original_quarter_labels_bounds','labels'),('material_beta_bounds_radians','beta'),
+ ('material_beta_gradient_bounds_per_m','gb'),('source_shape_bounds','chi'),('source_shape_beta_derivative_bounds','slope'),
+ ('mode_displacement_columns','modes'),('mode_spatial_gradient_columns_per_m','gradients'),
+ ('displacement_increment_bounds_m','u'),('incremental_gradient_bounds','F'))
+ for key,name in pairs:tree(raw[key],oracle[name],c,'independent world cold7 '+key)
+ exact(raw['field_active_inside_material_clamp'],oracle['active'],'authentic material clamp sign, no midpoint')
+
+
+def audit_nanson_side(raw,field,geom,normal,bank,body,coordinates,c):
+ strict(raw,'NativeCommonFiniteSurfaceSide')
+ for k,v in (('component_id',bank['component_id']),('material_kind','original_live'),('owner',bank['owner']),('body_snapshot_sha256',body['body_snapshot_sha256']),('coordinates_m',payload(coordinates)),('coordinate_order',body['original_body']['coordinate_order'])):exact(raw[k],v,'authentic finite material side '+k)
+ for key,value in (('reference_position_bounds_m',geom['X']),('displacement_increment_bounds_m',field['u']),('current_position_bounds_m',field['Y']),('mode_displacement_columns',field['modes']),('incremental_gradient_bounds',field['F']),('mode_spatial_gradient_columns_per_m',field['gradients']),('reference_normal_bounds',normal),('reference_area_density_bounds',geom['J'])):tree(raw[key],value,c,'independent side finite source geometry '+key)
+ j=nanson_jet(field['F'],field['gradients'],normal,c);J=jscale(j['surface_ratio'],geom['J'],c)
+ pairs=(('determinant_bounds',j['determinant'].value),('determinant_gradient_bounds',j['determinant'].gradient),('determinant_hessian_bounds',j['determinant'].hessian),
+ ('cofactor_bounds',jet_trees(j['cofactor'],'value')),('cofactor_first_derivative_bounds',matrix_first(j['cofactor'])),('cofactor_second_derivative_bounds',matrix_second(j['cofactor'])),
+ ('cofactor_normal_bounds',jet_trees(j['oriented_area'],'value')),('cofactor_normal_first_derivative_bounds',mode_first(j['oriented_area'])),('cofactor_normal_second_derivative_bounds',mode_second(j['oriented_area'])),
+ ('surface_stretch_bounds',j['surface_ratio'].value),('surface_stretch_gradient_bounds',j['surface_ratio'].gradient),('surface_stretch_hessian_bounds',j['surface_ratio'].hessian),
+ ('current_unit_normal_bounds',jet_trees(j['current_normal'],'value')),('current_normal_first_derivative_bounds',mode_first(j['current_normal'])),('current_normal_second_derivative_bounds',mode_second(j['current_normal'])),
+ ('current_area_density_bounds',J.value),('current_area_density_gradient_bounds',J.gradient),('current_area_density_hessian_bounds',J.hessian))
+ for key,value in pairs:tree(raw[key],value,c,'independent full Nanson2jet '+key)
+ assert interval(raw['determinant_bounds'],c).lo>0 and interval(raw['surface_stretch_bounds'],c).lo>0
+ return j,J
+
+
+def memory_field(coefficients,theta,c):
+ assert len(coefficients)==5;s1,c1=trig_range(theta,c);s2,c2=trig_range(theta*2,c)
+ return rounded(coefficients[0]+coefficients[1]*c1+coefficients[2]*s1+coefficients[3]*c2+coefficients[4]*s2,c)
+
+
+def memory_oracle(raw,theta_observed,theta_true,tid,c):
+ memory=c['snapshot']['spatial_memory'];trace=next(row for row in memory['traces'] if row['trace_id']==tid)
+ exact(raw['source_current_memory_trace_json'],enc(trace).decode(),'ENTIRE literal current memory trace')
+ pieces=[];plastics=[];cumulatives=[]
+ for index,piece in enumerate(trace['pieces']):
+  lo=max(theta_observed.lo,literal(piece['low_radians']));hi=min(theta_observed.hi,literal(piece['high_radians']))
+  if lo>hi:continue
+  pieces.append((index,c['I'](lo,hi),piece));actual_lo=max(theta_true.lo,literal(piece['low_radians']));actual_hi=min(theta_true.hi,literal(piece['high_radians']))
+  if actual_lo<=actual_hi:
+   actual=c['I'](actual_lo,actual_hi);plastics.append(memory_field(tuple(literal(x) for x in piece['plastic_slip']['coefficients']),actual,c));cumulatives.append(memory_field(tuple(literal(x) for x in piece['cumulative_slip']['coefficients']),actual,c))
+ exact(len(raw['memory_piece_intersections']),len(pieces),'all closed current piece intersections, no selection by midpoint')
+ reached=theta_observed.lo
+ for row,(index,domain,piece) in zip(raw['memory_piece_intersections'],pieces):
+  exact(set(row),{'piece_index','computational_angle_bounds','original_piece_json','plastic_slip_bounds_m','cumulative_slip_bounds_m'},'entire literal current piece schema')
+  exact(row['piece_index'],index,'original piece index');exact(row['original_piece_json'],enc(piece).decode(),'entire original memory polynomial');exact(row['computational_angle_bounds'],payload(domain),'exact closed query/piece intersection')
+  assert domain.lo<=reached;reached=max(reached,domain.hi)
+  # This per-piece proof uses its genuine observed closed interval, with
+  # independent higher-precision trigonometry and literal coefficients.
+  for key in ('plastic_slip','cumulative_slip'):contains(row[key+'_bounds_m'],memory_field(tuple(literal(x) for x in piece[key]['coefficients']),domain,c),c,'unchanged full current piece '+key)
+ exact(reached,theta_observed.hi,'complete memory interval coverage')
+ assert plastics and cumulatives
+ p=c['I'](min(v.lo for v in plastics),max(v.hi for v in plastics));acc=c['I'](min(v.lo for v in cumulatives),max(v.hi for v in cumulatives))
+ contains(raw['plastic_slip_bounds_m'],p,c,'unchanged material plastic scalar');contains(raw['cumulative_slip_bounds_m'],acc,c,'unchanged material cumulative scalar')
+ for k,v in (('source_current_memory_sha256',vd(memory)),('source_current_atom_states_sha256',vd(c['snapshot']['states'])),('source_memory_stage_count',memory['stage_count']),('source_contact_step_count',2)):
+  exact(raw[k],v,'literal unchanged memory context '+k)
+ for k,v in (('source_native_elapsed_time_s',F(1000000)),('source_memory_elapsed_time_s',F(1000000)),('source_contact_elapsed_time_s',F(2000000))):exact(frac(raw[k]),v,'distinct unchanged actual clock '+k)
+ return p,acc,len(pieces)
+
+
+def receiving_angle(ray,family,c):
+ I=c['I'];trace=json.loads(family['complete_source_trace_json']);S,T=(tuple(literal(v) for v in trace[name]) for name in ('start','end'));x,y=dot(S,ray),dot(T,ray)
+ assert x.lo>=0 and y.lo>=0 and (x.lo>0 or y.lo>0)
+ if x.lo>0:theta=c['geometry'].interval_atan(y/x,300)
+ else:theta=c['geometry'].interval_pi(320)/2-c['geometry'].interval_atan(x/y,300)
+ extent=frac(family['source_computational_extent_radians']);comp=theta*extent/(c['geometry'].interval_pi(320)/2)
+ return theta,I(max(F(0),comp.lo),min(extent,comp.hi))
+
+
+def allocated_measure(family,cell,geom,c):
+ I=c['I'];R=frac(family['source_radius_m']);whole=interval(cell['common_physical_radius_cubed_bounds_m3'],c)
+ tlo=(R**3-whole.hi)/(3*R*R);thi=(R**3-whole.lo)/(3*R*R);span=thi-tlo;assert span>0
+ z=(geom['tau']-tlo)/span;assert 0<=z.lo<=z.hi<=1
+ coeffs=tuple(frac(v) for v in family['depth_profile_coefficients']);assert coeffs and min(coeffs)>=0
+ if len(set(coeffs))==1:profile=I(coeffs[0])
+ else:
+  n=len(coeffs)-1;profile=sum((coeffs[k]*math.comb(n,k)*I(z.lo**k,z.hi**k)*I((1-z.hi)**(n-k),(1-z.lo)**(n-k)) for k in range(n+1)),I(0))
+ C=frac(family['source_interface_area_density_m2_per_computational_radian']);extent=frac(family['source_computational_extent_radians'])
+ assert C>0 and extent>0
+ return C*extent/(c['geometry'].interval_pi(320)/2)*profile/span
+
+
+def old_nonzero_coordinates(packet):
+ order=packet['strain_projection']['coordinate_order'];values=packet['strain_projection']['bound_coordinate_increments'];exact(len(order),92,'authentic COMMON92 order');exact(len(values),92,'literal saved92 query coordinates')
+ grouped={}
+ for coord,value in zip(order,values):
+  q=frac(value)
+  if coord[0]=='owner':assert q==0
+  else:assert coord[0]=='body';grouped.setdefault(coord[1],[]).append((coord[2],q))
+ cold={cid:tuple(v for name,v in rows) for cid,rows in grouped.items() if len(rows)==7};assert len(cold)==8 and all(all(v) for v in cold.values())
+ for cid,rows in grouped.items():
+  if len(rows)==6:assert all(v==0 for name,v in rows)
+  else:exact([name for name,v in rows],['old_tip_increment','xx','yy','zz','xy','xz','yz'],'genuine cold seven mode order')
+ return cold
+
+
+def audit_surface(row,index,cut,banks,bodies,coordinates,reference,allocation,c):
+ exact(set(row),{'arguments','port_response','response'},'strict surface query row keys');args=row['arguments'];expectednz=bool(index%2);fraction=F(2,3) if expectednz else F(1,3)
+ p=interval(cut['parameter_bounds'],c);end=interval(cut['parameter_endpoint_bounds'],c)
+ # The declared genuine core is a computed property of the sealed source cut:
+ # great circles start at0 and end at the lower certified true endpoint.
+ genuine=c['I'](p.lo,end.lo)
+ cube=interval(cut['common_physical_radius_cubed_bounds_m3'],c)
+ ds=coordinates[cut['donor_component_id']] if expectednz else (F(0),)*7;rs=coordinates[cut['receiver_component_id']] if expectednz else (F(0),)*7
+ expected=dict(cut_id=cut['cut_id'],parameter_bounds=payload(c['I'](genuine.lo+(genuine.hi-genuine.lo)*fraction)),physical_radius_cubed_bounds_m3=payload(c['I'](cube.lo+(cube.hi-cube.lo)*fraction)),donor_coordinates_m=payload(ds),receiver_coordinates_m=payload(rs),precision=96,order=28)
+ exact(args,expected,'literal zero/nonzero surface query linkage to authentic saved875 probe')
+ portrow=row['port_response'];strict(portrow,'NativeCommonContactPortResponse',('format','scope',*PORT_FLAGS));exact(portrow['format'],'native-common-contact-body-ports-1','authentic port response format');exact(portrow['scope'],'AUTHENTIC_COMMON_CUT_BODY_KINEMATICS_ONLY','port scope')
+ for k in PORT_FLAGS:exact(portrow[k],False,'port no new constitutive law '+k)
+ exact(portrow['binding_sha256'],vd({k:portrow[k] for k in SCHEMAS['NativeCommonContactPortResponse'] if k!='binding_sha256'}),'complete authentic port response seal')
+ port=portrow['port'];bare(port,'NativeCommonContactPort');exact(port['cut'],cut,'ENTIRE authentic cold cut, no new fabricated geometry')
+ for key,value in (('precision',96),('rotation_order',28),('one_common_reference_point_used',True),('owner_columns_are_infinitesimal_left_chart_at_displaced_sides',True),('projection_frame_is_reference_geometry',True),('unresolved_parameter_bands_promoted_to_material',False)):exact(portrow[key],value,'entire port query metadata '+key)
+ for key,value in (('reference_snapshot_sha256',reference['reference_snapshot_sha256']),('source_snapshot_sha256',reference['source_snapshot_sha256']),('geometry_enclosure_precision',96),('donor_mode_order',list(AXIS_NAMES)),('receiver_mode_order',list(AXIS_NAMES)),('owner_rotation_coordinate_order',[[owner,axis] for owner in (0,1) for axis in ('x','y','z')])):exact(port[key],value,'whole authentic port metadata '+key)
+ geometry=portrow['geometry'];bare(geometry,'NativeCommonContactCutBounds','bounds_snapshot_sha256');exact(geometry['cut'],cut,'same geometric cut');exact(geometry['parameter_bounds'],args['parameter_bounds'],'same geometry parameter');exact(geometry['common_physical_radius_cubed_bounds_m3'],args['physical_radius_cubed_bounds_m3'],'same physical radius')
+ for key,value in (('parameter_expression','interval'),('geometry_enclosure_precision',96),('rotation_order',28)):exact(geometry[key],value,'entire geometry query metadata '+key)
+ exact(geometry['genuine_query_support_certified'],True,'local support genuinely certified');exact(geometry['every_point_of_parameter_enclosure_is_material'],True,'query within strict certified cut core');exact(geometry['original_quarter_constraints_refined_from_true_cut_proof'],True,'quarter clipping uses actual source cut proof')
+ geom=cut_geometry(cut,args,reference,c)
+ contains(geometry['source_angular_speed_bounds'],F(1),c,'authentic cold great-circle unit speed')
+ for key,name in (('source_unit_world_direction_bounds','U'),('source_unit_world_direction_parameter_derivative_bounds','Up'),('physical_radius_bounds_m','r'),('common_physical_volume_depth_bounds_m','tau'),('world_position_bounds_m','X'),('donor_world_position_bounds_m','X'),('receiver_world_position_bounds_m','X'),('parameter_tangent_bounds_m','Xp'),('material_depth_tangent_bounds','Xt'),('receiver_inward_unit_normal_bounds','N'),('inward_unit_down_direction_bounds','down'),('angular_unit_tangent_bounds','angular'),('area_density_bounds_m2_per_parameter_per_material_m','J')):tree(geometry[key],geom[name],c,'independent entire true COMMON cut '+key)
+ response=row['response'];typed(response,'NativeCommonSurfaceTransportResponse',SURFACE_FORMAT)
+ for k,v in (('source_snapshot_sha256',reference['source_snapshot_sha256']),('reference_snapshot_sha256',reference['reference_snapshot_sha256']),('cut_snapshot_sha256',cut['cut_snapshot_sha256']),('geometry_bounds_sha256',geometry['bounds_snapshot_sha256']),('port_response_binding_sha256',portrow['binding_sha256']),('allocation_binding_sha256',allocation['binding_sha256']),('parameter_bounds',args['parameter_bounds']),('physical_radius_cubed_bounds_m3',args['physical_radius_cubed_bounds_m3']),('receiving_trace_id',cut['receiving_trace_id']),('precision',96),('material_measure_pullback_identity_exact',True),('material_memory_scalars_unchanged',True),('owner_covariance_law',OWNER_COVARIANCE),('owner_scalar_measure_first_and_second_derivatives_exact_zero',True),('current_normals_used_as_constitutive_directors',False)):
+  exact(response[k],v,'entire surface identity metadata '+k)
+ sides={};nansons={}
+ for side,coord in (('donor',ds),('receiver',rs)):
+  bank=banks[cut[side+'_component_id']];body=bodies[bank['component_id']];exact(port[side+'_body'],{k:body[k] for k in ('original_body','embedding_bank','body_snapshot_sha256')},'complete authentic explicit current96 cold body context '+side)
+  O=c['poses']['current_objective'][bank['owner']];q=refine_quarter(mapped(transpose(O),geom['U']),bank['original_parent_id'],c)
+  tree(geometry[side+'_original_unit_direction_bounds'],q,c,'independent genuine original bank label '+side)
+  contains(geometry[side+'_material_depth_bounds_m'],(c['I']((geom['R']+frac(bank['roof_radial_displacement_m']))**3)-interval(args['physical_radius_cubed_bounds_m3'],c))/(3*geom['R']**2),c,'genuine same physical radius, separate bank material depth '+side)
+  if side=='receiver':tree(geometry['receiver_owner_local_unit_direction_bounds'],q,c,'same genuine receiver owner-local ray')
+  fields=portrow[side+'_fields'];strict(fields,'NativeCommonBodyPortFields');exact(fields['coordinates_m'],payload(coord),'same literal side seven coordinates');exact(fields['component_id'],bank['component_id'],'same cold field parent');exact(fields['material_kind'],'original_live','no HOT borrowed cold law');exact(fields['body_snapshot_sha256'],body['body_snapshot_sha256'],'authentic full cold body binding');exact(fields['coordinate_order'],body['original_body']['coordinate_order'],'genuine field mode order');exact(fields['reference_snapshot_sha256'],reference['reference_snapshot_sha256'],'same strict96 field reference');exact(fields['original_unit_direction_bounds'],geometry[side+'_original_unit_direction_bounds'],'field and geometry retain exactly the same original query ray')
+  field=cold7_field(bank,q,geom['X'],geom['r'],geom['tau'],coord,c);audit_field(fields,field,c);tree(fields['displaced_point_bounds_m'],field['Y'],c,'independent finite displaced material side')
+  sideNormal=geom['N'] if side=='receiver' else scale(geom['N'],F(-1));nansons[side]=audit_nanson_side(response[side],field,geom,sideNormal,bank,body,coord,c);sides[side]=field
+ jump=add(sides['receiver']['u'],scale(sides['donor']['u'],F(-1)));tree(portrow['displacement_jump_bounds_m'],jump,c,'two genuinely distinct displaced sides, commonX cancels symbolically')
+ active=[cell for cell in allocation['cells'] if cell['active'] and cell['cut_snapshot_sha256']==cut['cut_snapshot_sha256']];assert len(active)==1;cell=active[0];family=next(row for row in allocation['families'] if row['trace_id']==cell['trace_id']);exact(response['receiving_cell_id'],cell['cell_id'],'once-only allocated receiving cell');exact(cell['trace_id'],cut['receiving_trace_id'],'same receiver family')
+ mu=allocated_measure(family,cell,geom,c);contains(response['reference_measure_density_bounds'],mu,c,'once-only authentic family material measure, no atom smearing/support fraction')
+ nj,J=nansons['receiver'];density=jscale(jinverse(J,c),mu,c)
+ for k,v in (('receiver_current_measure_density_bounds',density.value),('receiver_current_measure_density_gradient_bounds',density.gradient),('receiver_current_measure_density_hessian_bounds',density.hessian)):tree(response[k],v,c,'independent transported receiver density full2jet '+k)
+ residual=interval(response['receiver_measure_conservation_residual_bounds'],c);assert residual.lo<=0<=residual.hi,'material pullback balances exactly rho*Jcur=mu'
+ qreceiver=refine_quarter(mapped(transpose(c['poses']['current_objective'][banks[cut['receiver_component_id']]['owner']]),geom['U']),cut['receiver_original_parent_id'],c)
+ native_angle,angle=receiving_angle(qreceiver,family,c);tree(geometry['receiving_native_angle_bounds_radians'],native_angle,c,'independent original receiver theta');tree(geometry['receiving_computational_angle_bounds_radians'],angle,c,'independent computational angle source rescaling');exact(response['receiving_computational_angle_bounds_radians'],geometry['receiving_computational_angle_bounds_radians'],'same receiver memory material label')
+ plastic,cumulative,pieces=memory_oracle(response,interval(response['receiving_computational_angle_bounds_radians'],c),angle,cell['trace_id'],c)
+ if not expectednz:
+  for side in ('donor','receiver'):exact(response[side]['surface_stretch_bounds'],payload(c['I'](1)),'zero finite field exact Nanson normalization correlation')
+ return dict(cut_id=cut['cut_id'],nonzero=expectednz,receiving_trace_id=cell['trace_id'],receiver_density_bounds=payload(density.value),plastic_slip_bounds_m=payload(plastic),cumulative_slip_bounds_m=payload(cumulative),current_memory_piece_count=pieces,seven_coordinate_full_nanson_twojets_per_side=True,two_surfaces_remain_distinct_not_glued=True)
+
+
+def audit_original_attachment(attachment,atom,side,banks,c):
+ q=tuple(literal(v) for v in atom['original_point']['position']);binding=c['bindings'][atom['trace_id']]
+ pid=binding['donor_fragment_id' if side=='sub' else 'receiver_fragment_id'];owner=atom['original_material']['subducting_plate' if side=='sub' else 'overriding_plate']
+ parent=next(row for row in c['material']['journal']['source_surface']['fragments'] if row['fragment_id']==pid)
+ allocation=next(row for row in c['material']['parent_allocations'] if row['fragment_id']==pid)
+ bank=next(row for row in banks.values() if row['material_kind']=='original_live' and row['original_parent_id']==pid)
+ archived,endpoint,divided=c['material_helper'].membership(c['material'],q,c);archived=archived and side=='sub'
+ status='ARCHIVED_ORIGINAL_MATERIAL' if archived else 'LIVE_ORIGINAL_MATERIAL'
+ for k,v in (('point_id',atom['point_id']),('side',side),('trace_id',atom['trace_id']),('original_parent_id',pid),('owner',owner),('original_material_id',allocation['material_id']),('original_direction_literal',payload(q)),('original_label_membership',status),('geometry_field_component_id',bank['component_id']),('geometry_field_material_kind','original_live'),('complete_original_parent_json',enc(parent).decode()),('complete_parent_allocation_json',enc(allocation).decode()),('current_live_cold_mask_membership_claimed',False),('archived_three_dimensional_body_motion_certified',False)):
+  exact(attachment[k],v,'independent original label identity '+k)
+ exact(bank['owner'],owner,'genuine original owner, not archive receiver ancestry');exact(bank['material_id'],allocation['material_id'],'genuine material lineage');exact(parent['parcel']['plate'],owner,'original parcel owner');exact(parent['parcel']['material_id'],allocation['material_id'],'original parcel material')
+ supports=[];assert not parent['geometry']['pose']
+ for plane in parent['geometry']['supports']:
+  assert not plane['rotations'];value=dot(tuple(F(x) for x in plane['normal']),q);assert value>=0;supports.append(value)
+ tree(attachment['original_parent_support_predicate_bounds'],supports,c,'literal q original supports BEFORE normalization')
+ cohort=next(row for row in c['material']['archive_cohorts'] if row['original_parent_id']==pid) if archived else None
+ exact(attachment['archive_cohort_id'],None if cohort is None else cohort['cohort_id'],'cohort only for actual original label membership');exact(attachment['complete_archive_cohort_json'],None if cohort is None else enc(cohort).decode(),'complete unchanged genuine archive cohort')
+ for k in ('live_domain_id','archive_domain_id'):exact(attachment[k],allocation[k],'original material domain '+k)
+ norm=sqrt_interval(c['I'](dot(q,q)),c);qhat=tuple(c['I'](v)/norm for v in q);O=c['poses']['current_objective'][owner];ray=mapped(O,qhat)
+ tree(attachment['normalized_material_ray_bounds'],qhat,c,'geometry-only q normalization');tree(attachment['current_world_material_ray_bounds'],ray,c,'true full current owner prefix');tree(attachment['material_owner_pose_bounds'],O,c,'complete current owner pose')
+ return dict(q=q,qhat=qhat,ray=ray,O=O,bank=bank,pid=pid,owner=owner,status=status,archived=archived,cohort=cohort,parent=parent,allocation=allocation)
+
+
+def audit_original(row,attachment,identity,coordinates,material,c):
+ exact(set(row),{'arguments','response'},'strict original material query keys');args=row['arguments'];raw=row['response'];typed(raw,'NativeCommonOriginalMaterialTransportResponse',ORIGINAL_FORMAT)
+ depth=interval(args['material_depth_bounds_m'],c);assert depth.lo==depth.hi
+ H=frac(identity['bank']['areal_material_thickness_m']);assert depth.lo in (F(0),H/2)
+ expected=dict(point_id=attachment['point_id'],side=attachment['side'],material_depth_bounds_m=payload(depth),coordinates_m=payload(coordinates[identity['bank']['component_id']]),precision=96);exact(args,expected,'authentic original label/depth/nonzero finite seven coordinates')
+ exact(raw['body_snapshot_sha256'],c['bodies'][identity['bank']['component_id']]['body_snapshot_sha256'],'original field body belongs to exact same authentic current96 parent context')
+ priorpoint=c['old_passive_points'][attachment['point_id'],attachment['side'],enc(args['material_depth_bounds_m'])]
+ exact(raw['source_material_point_binding_sha256'],priorpoint['binding_sha256'],'same authentic old871 frozen reference-chart point binding')
+ for key,oldkey in (('normalized_material_ray_bounds','normalized_material_ray_bounds'),('current_world_material_ray_bounds','current_world_material_ray_bounds'),('input_position_bounds_m','input_position_bounds_m'),('reference_position_bounds_m','world_position_bounds_m'),('reference_gradient_bounds','reference_gradient_bounds'),('radius_bounds_m','radius_bounds_m'),('physical_volume_depth_bounds_m','physical_volume_depth_bounds_m')):exact(raw[key],priorpoint[oldkey],'entire immutable passive chart source receipt '+key)
+ for k in ('point_id','trace_id','side','original_parent_id','original_material_id','owner','original_label_membership','archive_cohort_id','geometry_field_component_id','original_direction_literal','areal_material_thickness_m','roof_radial_displacement_m','complete_original_parent_json','complete_parent_allocation_json','complete_archive_cohort_json'):
+  exact(raw[k],attachment[k],'entire original material lineage copied exactly '+k)
+ for k,v in (('material_system_binding_sha256',material['binding_sha256']),('reference_snapshot_sha256',material['reference_snapshot_sha256']),('source_snapshot_sha256',material['source_snapshot_sha256']),('material_depth_bounds_m',args['material_depth_bounds_m']),('coordinates_m',args['coordinates_m']),('coordinate_order',['old_tip_increment','xx','yy','zz','xy','xz','yz']),('original_material_membership_authenticated',True),('same_parent_original_quarter_field_extension_declared',True),('extension_law',EXTENSION),('reference_gradient_input_frame','OWNER_CURRENT_CARTESIAN_INPUT_TO_COMMON_PHI'),('total_original_gradient_input_frame','ORIGINAL_MATERIAL_CARTESIAN_BEFORE_OWNER_POSE'),('current_live_mask_membership_authenticated',False),('current_contact_cut_membership_claimed',False),('deformed_source_rod_endpoint_equivalence_certified',False),('local_archive_force_or_work_handover_certified',False),('precision',96)):
+  exact(raw[k],v,'truthful finite original field metadata '+k)
+ for k,v in (('source_contact_elapsed_time_s',F(2000000)),('source_memory_elapsed_time_s',F(1000000)),('source_geometry_elapsed_time_s',F(0))):exact(frac(raw[k]),v,'preserved separate virtual-source clock '+k)
+ phi=material_phi(identity['bank'],identity['ray'],depth.lo,c)
+ for k,v in (('normalized_material_ray_bounds',identity['qhat']),('current_world_material_ray_bounds',identity['ray']),('material_owner_pose_bounds',identity['O']),('radius_bounds_m',phi['r']),('physical_volume_depth_bounds_m',phi['tau']),('input_position_bounds_m',phi['input']),('reference_position_bounds_m',phi['X']),('reference_gradient_bounds',phi['gradient'])):tree(raw[k],v,c,'independent full original same-parent COMMON material Phi '+k)
+ coord=coordinates[identity['bank']['component_id']];field=cold7_field(identity['bank'],identity['qhat'],phi['X'],phi['r'],phi['tau'],coord,c,literal_original_q=identity['q']);audit_field(raw,field,c);tree(raw['current_position_bounds_m'],field['Y'],c,'independent finite original X+u')
+ C=cofactor_value(field['F']);det=dot(field['F'][0],C[0]);assert det.lo>0
+ tree(raw['determinant_bounds'],det,c,'independent original finite det>0');tree(raw['cofactor_bounds'],C,c,'independent original full3D cofactor')
+ assert interval(raw['determinant_bounds'],c).lo>0
+ gram=matmul(transpose(field['F']),field['F']);green=tuple(tuple(rounded((gram[i][j]-int(i==j))/2,c) for j in range(3)) for i in range(3));total=matmul(field['F'],phi['gradient']);original=matmul(total,identity['O'])
+ tree(raw['incremental_green_strain_bounds'],green,c,'independent finite Green strain including quadratic term');tree(raw['total_material_gradient_bounds'],total,c,'bodyF times COMMON gradient once');tree(raw['total_original_cartesian_gradient_bounds'],original,c,'original Cartesian gradient includes RIGHT ownerQ')
+ return dict(point_id=attachment['point_id'],side=attachment['side'],material_depth_m=payload(depth.lo),original_parent_id=identity['pid'],original_label_membership=identity['status'],geometry_component_id=identity['bank']['component_id'],independent_finite_determinant_bounds=payload(det),original_material_support_and_same_parent_field_checked=True,current_live_mask_membership_claimed=False,local_archive_force_or_work_handover_certified=False)
+
+
+def cofactor_value(M):
+ return transpose(tuple(cross(transpose(M)[j],transpose(M)[k]) for j,k in ((1,2),(2,0),(0,1))))
+
+
+def material_phi(bank,ray,z,c):
+ """Independent COMMON material mapping with cached depth-only SO(3).
+
+ The same exact radial/depth exponential appears for four authentic labels
+ per bank. Caching that unchanged mathematical factor avoids recalculating
+ it; each label's position and full gradient remain independently evaluated.
+ """
+ I=c['I'];R=frac(bank['radius_m']);roof=frac(bank['roof_radial_displacement_m']);H=frac(bank['areal_material_thickness_m']);assert type(z) is F and 0<=z<=H
+ A=tuple(frac(v) for v in bank['angular_rate_per_physical_volume_depth_m']);key=(R,roof,A,z)
+ cache=c.setdefault('material_depth_operators',{})
+ if key not in cache:
+  cube=(R+roof)**3-3*R*R*z;assert cube>0;r=c['geometry'].interval_cbrt(I(cube),340);tau=I((R**3-cube)/(3*R*R))
+  Q=transpose(tuple(c['material_helper'].exp_rotate(tuple(I(int(i==j)) for i in range(3)),scale(A,tau),c) for j in range(3)))
+  cache[key]=(cube,r,tau,Q)
+ cube,r,tau,Q=cache[key];X=scale(mapped(Q,ray),r);shear=cross(A,ray)
+ rank=tuple(tuple(rounded(I(int(i==j))-cube/R**2*shear[i]*ray[j],c) for j in range(3)) for i in range(3));gradient=matmul(Q,rank)
+ return dict(X=X,input=scale(ray,r),Q=Q,gradient=gradient,r=r,tau=tau,z=I(z))
+
+
+ANCESTRY_RELEASES=(
+ ('analysis/geometric_native_affine_body_validation/release_validation_01',826,39,'a5ed86778a9388a56df2c89d758d17795c861c118bd4de66c6be0b5400b084db'),
+ ('analysis/geometric_native_cold_body_validation/release_validation_01',833,20,'a0843a4f9d886e61125eae0bda9c4964b60d54736b539776b1d32d46d8e56a67'),
+ ('analysis/geometric_native_common_reference_validation/release_validation_01',841,36,'9898f31f796006a7791140bf1c290c0e1605555a12e476e1585ce3f5992a743f'),
+ ('analysis/geometric_native_common_contact_validation/release_validation_01',847,25,'e8ffabb1a29c1fb021e94fe53e815b6ad8d16ea14e9103a30b9f7428ac9ab847'),
+ ('analysis/geometric_native_common_contact_force_validation/release_validation_02',853,19,'1d7a6ac8113a408aab6764f1c4a9fccb09f8d48184f5118434fc685574504313'),
+ ('analysis/geometric_native_common_contact_transfer_validation/release_validation_01',859,21,'1b5e1695f2ddfa8ea879619e91cde6b4cfb2c7c7c89e34db04148d8765f7f9ae'),
+ ('analysis/geometric_native_common_source_allocation_validation/release_validation_02',863,17,'7df81606a168656cd51208a71d7ad425714751f736d9ed4ca50218263e106f95'),
+ ('analysis/geometric_native_common_source_carrier_validation/release_validation_02',867,18,'47b5c882c041f5a2c6d460c71eae11091a6217ff78a0df14af9b57f214ba633e'),
+ ('analysis/geometric_native_common_material_transfer_validation/release_validation_01',871,14,'44d12b3fb10edfef90a83c50385278b45135d1b051a5733d2b2f7d98f2755b56'),
+ ('analysis/geometric_native_common_strain_projection_validation/release_validation_03',875,14,OLD_WRAPPER_RAW),
+)
+
+
+def source_map():
+ return {str(p.relative_to(ROOT)):digest(p) for folder in ('tectonics','tests','scripts','analysis') for p in sorted((ROOT/folder).rglob('*.py'))}
+
+
+def closure(directory,wrapper):
+ exact(set(wrapper['outputs']),set(OUTPUTS),'strict four output manifest')
+ exact({str(p.relative_to(directory)) for p in directory.rglob('*') if p.is_file()},set(OUTPUTS)|{'report.json'},'strict five release files')
+ for name,row in wrapper['outputs'].items():
+  p=directory/name;exact(digest(p),row['sha256'],'literal closed output bytes '+str(p));exact(p.stat().st_size,row['bytes'],'literal closed output sizes '+str(p))
+
+
+def ancestry_receipts():
+ receipts=[]
+ for name,count,tests,pin in ANCESTRY_RELEASES:
+  directory=ROOT/name;exact(digest(directory/'report.json'),pin,'pinned old authoritative wrapper '+name);w=sealed(directory/'report.json','report_sha256')
+  exact(w['status'],'PASS','preserved old release status');exact(w['source_count'],count,'old source count');exact(w['pytest_counts'],{'passed':tests},'old successful tests NOT reexecuted');exact(set(w['outputs']),set(OUTPUTS),'old literal four outputs')
+  exact({str(p.relative_to(directory)) for p in directory.rglob('*') if p.is_file()},set(OUTPUTS)|{'report.json'},'old strict closure before new math')
+  for output,row in w['outputs'].items():exact((directory/output).stat().st_size,row['bytes'],'old output literal size before new math')
+  receipts.append((directory,w,pin))
+ return receipts
+
+
+def audit_body_frame(body,bank,c):
+ original=body['original_body'];S,T,N,b,tid,side=original_axes(bank,c)
+ exact(body['embedding_bank'],bank,'entire genuine COMMON bank retained')
+ for k,v in (('component_id',bank['component_id']),('original_parent_id',bank['original_parent_id']),('owner',bank['owner']),('source_trace_id',tid)):
+  # source_trace_id is a property in some historical body DTOs; trace_id
+  # itself is authenticated by the complete stored source trace below.
+  if k in original:exact(original[k],v,'true source cold body '+k)
+ for k,v in (('original_quarter_start',S),('original_quarter_end',T),('original_quarter_inward',N)):
+  exact(original[k],payload(v),'source literal quarter axes '+k)
+ exact(frac(original['beta_cut_radians']),b,'source physical clamp width/R')
+ histories=dict(c['snapshot']['owner_histories']);exact(json.loads(original['source_owner_history_json']),histories[bank['owner']],'body owner word equals complete genuine current native word')
+ tree(original['owner_rotation_matrix_bounds'],c['poses']['current_objective'][bank['owner']],c,'independent full body owner matrix')
+ for k,v in (('current_quarter_start_bounds',mapped(c['poses']['current_objective'][bank['owner']],S)),('current_quarter_tangent_bounds',mapped(c['poses']['current_objective'][bank['owner']],T)),('current_quarter_inward_bounds',mapped(c['poses']['current_objective'][bank['owner']],N))):tree(original[k],v,c,'independent body original quarter carried by full owner word '+k)
+
+
+def run(release,baseline,out):
+ started=time.perf_counter();release=Path(release).resolve();baseline=Path(baseline).resolve();out=Path(out).resolve()
+ assert out.is_relative_to(Path('/tmp')) and out.suffix=='.json' and not out.exists(),'fresh scratch result only'
+ assert not NEW_MAP.startswith('UNFROZEN') and not NEW_MAP_RAW.startswith('UNFROZEN'),'freeze879 is required before any math'
+ producer=Path(__file__).resolve();producer_pin=digest(producer);archived=PARENT/'independent_audit_source.txt';exact(digest(archived),producer_pin,'executing EXACT archived producer before replay')
+ current_pins={str(release/name):digest(release/name) for name in sorted(set(OUTPUTS)|{'report.json'})}
+ old=read(PRIOR/'frozen_source_map_875.json');exact(len(old),875,'closed old875 source count');exact(vd(old),OLD_MAP,'old canonical875 map');exact(digest(PRIOR/'frozen_source_map_875.json'),OLD_MAP_RAW,'old875 raw map')
+ frozen=read(PARENT/'frozen_source_map_879.json');exact(len(frozen),879,'final879 source count');exact(vd(frozen),NEW_MAP,'new canonical879 map');exact(digest(PARENT/'frozen_source_map_879.json'),NEW_MAP_RAW,'new879 raw map')
+ before=source_map();exact(before,frozen,'all879 Python source bytes BEFORE audit');exact(set(before)-set(old),set(ADDED),'EXACT four allowed new source paths')
+ for name,pin in old.items():exact(before[name],pin,'all875 immutable source bytes '+name)
+ wrapper=sealed(release/'report.json','report_sha256');exact(wrapper['status'],'PASS','fresh sealed root gate PASS REQUIRED before new independent math')
+ exact(wrapper['format'],'native-common-material-surface-transport-same-process-validation-1','same-process release format')
+ for k,v in (('source_count',879),('verified_prior_python_sources',875),('verified_prior_artifacts',1633),('source_map_before_sha256',NEW_MAP),('source_map_after_sha256',NEW_MAP),('prior_source_map_sha256',OLD_MAP),('pytest_counts',{'passed':14}),('pytest_exit_code',0),('changed_python_paths',[]),('execution_mode','same_python_process'),('pytest_import_mode','importlib'),('historical_tests_reexecuted',False),('baseline1633_reexecuted',False),('prior_artifacts_and_python_sources_preserved_after',True),('test_paths',['tests/test_geometric_native_common_material_surface_transport.py']),('control','analysis.geometric_native_common_material_surface_transport_validation.native_control:run')):exact(wrapper[k],v,'fresh sealed gate metadata '+k)
+ exact(wrapper['added_python_sources'],{k:frozen[k] for k in sorted(ADDED)},'four new879 pins');exact(wrapper['verified_current_baseline_evidence'],BASELINE_EVIDENCE,'authentic875 bootstrap/reusable inputs');closure(release,wrapper);summary(wrapper)
+ for name,pin in BASELINE_EVIDENCE.items():exact(digest(PARENT/name),pin,'pinned current baseline evidence '+name)
+ bm=load(baseline,'surface879_stdlib_875_ancestry_reader',BASELINE_RAW);baselinepath=out.with_name(out.stem+'_baseline875_readback.json')
+ with redirect_stdout(io.StringIO()):prior=bm.run(ADDED,output_path=baselinepath,bootstrap_source_path=PARENT/'baseline_875_bootstrap_source.txt',bootstrap_report_path=PARENT/'baseline_875_bootstrap.json')
+ baseline_pin=digest(baselinepath);projected=Path(prior['projected_reader_report_path']);projected_pin=prior['projected_reader_report_raw_sha256'];exact(digest(projected),projected_pin,'nested immutable875 readback raw receipt before math')
+ exact(prior['status'],'PASS_IMMUTABLE875_WITH_DECLARED_SOURCE_ADDITIONS_ONLY','complete immutable875 readback');exact(prior['preserved_closed875_manifest_file_count'],73,'closed875 manifest73');exact(prior['recorded_raw_dependency_pin_count'],180,'all180 saved raw dependencies');exact(prior['project_imports'],False,'baseline no project imports');exact(prior['baseline1633_reexecuted'],False,'old1633 saved receipt and raw pins only')
+ ancestry=ancestry_receipts();native=sealed(release/'native_control/report.json','report_sha256');packet=sealed(release/'native_control/source_packet.json','packet_sha256');scope=summary(packet);summary(native);exact(native['status'],'PASS','native component PASS')
+ exact(packet['format'],'native-common-material-surface-transport-packet-1','complete native packet format');exact(native['format'],'native-common-material-surface-transport-control-1','native report format')
+ exact(set(packet),set(scope)|{'format','prior_875_packet_raw_sha256','prior_875_packet_selfseal','common_reference','allocation','material_transfer','original_cold_body_contexts','surface_queries','original_material_queries','packet_sha256'},'strict ENTIRE new packet schema')
+ exact(set(native),set(scope)|{'format','status','source_packet_sha256','surface_queries_sha256','original_material_queries_sha256','original_cold_body_contexts_sha256','seconds','report_sha256'},'strict ENTIRE native report schema')
+ for k,v in (('source_packet_sha256',packet['packet_sha256']),('surface_queries_sha256',vd(packet['surface_queries'])),('original_material_queries_sha256',vd(packet['original_material_queries'])),('original_cold_body_contexts_sha256',vd(packet['original_cold_body_contexts']))):exact(native[k],v,'complete output linkage '+k)
+ exact(packet['prior_875_packet_raw_sha256'],OLD_PACKET_RAW,'authentic875 predecessor raw');exact(packet['prior_875_packet_selfseal'],OLD_PACKET_SEAL,'authentic875 predecessor seal')
+ oldpath=PRIOR/'release_validation_03/native_control/source_packet.json';exact(digest(oldpath),OLD_PACKET_RAW,'whole completed875 packet raw');oldpacket=sealed(oldpath,'packet_sha256');exact(oldpacket['packet_sha256'],OLD_PACKET_SEAL,'old875 packet seal');exact(packet['material_transfer'],oldpacket['material_transfer'],'ENTIRE material transfer/work/32attachments retained from875')
+ exact(digest(PRIOR/'artifact_manifest.json'),OLD_MANIFEST_RAW,'immutable875 closed73 manifest raw');manifest=sealed(PRIOR/'artifact_manifest.json','manifest_sha256');exact(manifest['manifest_sha256'],OLD_MANIFEST_SEAL,'immutable875 manifest seal');exact(len(manifest['files']),73,'literal closed manifest73')
+ prior_artifacts={}
+ for name,row in manifest['files'].items():
+  path=(ROOT/name).resolve();assert path.is_relative_to(ROOT) and str(path.relative_to(ROOT))==name;exact(digest(path),row['sha256'],'literal old875 artifact raw '+name);exact(path.stat().st_size,row['bytes'],'literal old875 artifact bytes '+name);prior_artifacts[str(path)]=row['sha256']
+ exact(digest(CARRIER_PACKET),CARRIER_PACKET_RAW,'old strict96 carrier/common geometry packet raw');carrier=sealed(CARRIER_PACKET,'packet_sha256');exact(packet['common_reference'],carrier['common_reference'],'ENTIRE authentic strict96 COMMON reference retained');exact(packet['allocation'],carrier['allocation'],'ENTIRE once-only source allocation family/cell budget retained')
+ reference=packet['common_reference']['reference'];banks={b['component_id']:b for b in reference['banks']};exact(len(banks),13,'authentic13 COMMON banks')
+ cuts=tuple(cut for cut in carrier['cut_set']['cuts'] if cut['kind']!='true_curved_envelope');exact(len(cuts),5,'five genuine original receiver cuts only')
+ exact(digest(COMMON841),COMMON841_RAW,'closed original full body source188MB raw');closed841=sealed(COMMON841,'packet_sha256');exact(closed841['packet_sha256'],COMMON841_SEAL,'closed841 source seal')
+ bodies={row['original_body']['component_id']:row for row in packet['original_cold_body_contexts']};exact(len(bodies),8,'eight explicit current96 full cold contexts');exact(len(packet['original_cold_body_contexts']),8,'no duplicate new cold contexts');exact([row['original_body']['component_id'] for row in packet['original_cold_body_contexts']],sorted(bodies),'eight explicit contexts in sorted literal component order')
+ helper=load(SOURCE_HELPER,'surface879_independent_stdlib_source_geometry',SOURCE_HELPER_RAW);c=helper.source_context();c['material_helper']=load(MATERIAL_HELPER,'surface879_independent_stdlib_cartesian_exp_and_predicates',MATERIAL_HELPER_RAW)
+ for owner,rows in c['snapshot']['owner_histories']:c['poses']['current_objective'][owner]=rotation_history(rows,c)
+ oldbodies={row['component_id']:row['body'] for row in closed841['cold_components']}
+ for cid,body in bodies.items():audit_fresh_cold_body(body,oldbodies[cid],banks[cid],c)
+ exact(digest(MATERIAL_PACKET),MATERIAL_PACKET_RAW,'unchanged authentic871 passive material-point receipts');pointpacket=sealed(MATERIAL_PACKET,'packet_sha256');exact(pointpacket['packet_sha256'],MATERIAL_PACKET_SEAL,'old871 passive material-point packet seal');c['old_passive_points']={(r['arguments']['point_id'],r['arguments']['side'],enc(r['arguments']['material_depth_bounds_m'])):r['response'] for r in pointpacket['material_point_queries']};exact(len(c['old_passive_points']),64,'saved old87164 authentic frozen chart point receipts');c['bodies']=bodies
+ coordinates=old_nonzero_coordinates(oldpacket);del oldpacket,closed841;surface_receipts=[];exact(len(packet['surface_queries']),10,'all five cuts times zero/nonzero')
+ for i,row in enumerate(packet['surface_queries']):
+  surface_receipts.append(audit_surface(row,i,cuts[i//2],banks,bodies,coordinates,reference,packet['allocation'],c));print('INDEPENDENT local material-surface Nanson+memory query',i+1,'/10 PASS',flush=True)
+ material=packet['material_transfer'];attachments=material['attachments'];exact(len(attachments),32,'exact32 original material labels');expected=[(atom,side) for atom in c['atoms'] for side in ('sub','over')];identities={}
+ for a,(atom,side) in zip(attachments,expected):identities[a['point_id'],side]=audit_original_attachment(a,atom,side,banks,c)
+ counts=(sum(x['archived'] for x in identities.values()),sum(side=='sub' and not x['archived'] for (point,side),x in identities.items()),sum(side=='over' and not x['archived'] for (point,side),x in identities.items()));exact(counts,(8,8,16),'independent true original labels archived8/live8/receiver16')
+ original_receipts=[];exact(len(packet['original_material_queries']),64,'each of32 labels has top and half-depth query')
+ for i,row in enumerate(packet['original_material_queries']):
+  a=attachments[i//2];identity=identities[a['point_id'],a['side']];expected_depth=F(0) if i%2==0 else frac(a['areal_material_thickness_m'])/2
+  exact(row['arguments']['material_depth_bounds_m'],payload(c['I'](expected_depth)),'literal top/half depth order');original_receipts.append(audit_original(row,a,identity,coordinates,material,c));print('INDEPENDENT original same-parent material finite field query',i+1,'/64 PASS',flush=True)
+ after=source_map();exact(after,before,'all879 Python sources unchanged after math');closure(release,wrapper)
+ dependencies={str(producer):producer_pin,str(archived):producer_pin,str(baselinepath):baseline_pin,str(projected):projected_pin,**current_pins,**prior['dependency_raw_sha256'],**prior_artifacts,str(PRIOR/'artifact_manifest.json'):OLD_MANIFEST_RAW,str(PRIOR/'frozen_source_map_875.json'):OLD_MAP_RAW,str(PARENT/'frozen_source_map_879.json'):NEW_MAP_RAW,str(SOURCE_HELPER):SOURCE_HELPER_RAW,str(MATERIAL_HELPER):MATERIAL_HELPER_RAW,str(GEOMETRY_HELPER):GEOMETRY_HELPER_RAW,str(helper.SOURCE):helper.SOURCE_RAW,str(CARRIER_PACKET):CARRIER_PACKET_RAW,str(COMMON841):COMMON841_RAW,str(MATERIAL_PACKET):MATERIAL_PACKET_RAW,**{str(PARENT/name):pin for name,pin in BASELINE_EVIDENCE.items()}}
+ for directory,w,pin in ancestry:
+  if str(directory/'report.json') in dependencies:exact(dependencies[str(directory/'report.json')],pin,'initial pinned old wrapper association')
+  dependencies[str(directory/'report.json')]=pin;exact(digest(directory/'report.json'),pin,'unchanged authoritative old wrapper after math');closure(directory,w)
+  for name,row in w['outputs'].items():
+   path=str(directory/name)
+   if path in dependencies:exact(dependencies[path],row['sha256'],'initial old output raw pin/selfseal association')
+   else:dependencies[path]=row['sha256']
+ for name,row in wrapper['outputs'].items():exact(current_pins[str(release/name)],row['sha256'],'initial current raw/output selfseal association')
+ for path,pin in dependencies.items():exact(digest(path),pin,'ALL closed dependency bytes unchanged after new math '+path)
+ exact(source_map(),before,'complete879 final source endpoint guard after dependency checks')
+ assert all(not(name=='tectonics' or name.startswith('tectonics.') or name=='tests' or name.startswith('tests.')) for name in sys.modules),'no project imports'
+ report=dict(status='PASS',audit_scope=SCOPE,final_python_sources=879,unchanged_prior_python_sources=875,fresh_tests=14,source_map_canonical_sha256=NEW_MAP,frozen_source_map_raw_sha256=NEW_MAP_RAW,source_map_before_after_identical=True,added_python_source_count=4,added_python_sources={k:frozen[k] for k in sorted(ADDED)},output_closure_count=4,output_manifest=wrapper['outputs'],wrapper_raw_sha256=current_pins[str(release/'report.json')],wrapper_selfseal=wrapper['report_sha256'],native_raw_sha256=current_pins[str(release/'native_control/report.json')],native_selfseal=native['report_sha256'],source_packet_raw_sha256=current_pins[str(release/'native_control/source_packet.json')],source_packet_selfseal=packet['packet_sha256'],independent_genuine_cold_cut_count=5,independent_surface_query_count=10,independent_complete_finite_surface_side_count=20,independent_body_nanson_first_derivative_coordinate_count=7,independent_body_nanson_second_derivative_coordinate_pair_count=49,independent_complete_nanson_and_density_twojets=True,finite_incremental_gradient_was_already_I_plus_Du=True,independent_complete_original_cold_body_context_count=8,independent_precision_dependent_original_body_field_allowlist_count=6,independent_prior_passive_point_binding_association_count=64,density_and_state_binding_tokens_authenticated_by_gate_replay_not_independently_reconstructed=True,gate_port_serialization_authentication='COMPLETE_CANONICAL_DTO_EQUALITY_WITH_CORRESPONDING_GENUINE_TYPED_FACTORY_QUERY',generic_historical_port_decoder_executed_by_gate=False,independent_original_material_attachment_count=32,independent_original_material_query_count=64,independent_archived_original_donor_attachment_count=8,independent_live_original_donor_attachment_count=8,independent_live_original_receiver_attachment_count=16,independent_original_material_query_depth_count=2,same_parent_original_quarter_field_extension_declared=True,literal_original_support_dots_contracted_before_geometry_normalization=True,full_original_cartesian_gradient_includes_right_owner_pose=True,authentic_saved_nonzero_cold_coordinate_count=56,original_material_membership_authenticated=True,current_live_mask_membership_of_archived_labels_claimed=False,local_nanson_material_measure_pullback_balance_once=True,current_source_memory_all_closed_piece_intersections_retained=True,current_plastic_and_cumulative_memory_scalars_unchanged=True,historical_cumulative_work_reconstructed_from_current_stretch=False,old_atom_area_smeared_into_continuous_density=False,current_material_sides_glued_or_injective_certified=False,current_normals_used_as_constitutive_directors=False,whole_archived_three_dimensional_history_recovered=False,local_archive_force_or_work_handover_certified=False,old_source_mechanical_potential_modified=False,new_energy_or_force_law_added=False,whole_face_measure_or_memory_integral_certified=False,physical_source_material_handover_certified=False,hot_material_receiving_law_certified=False,new_mixed_force_equilibrium_certified=False,whole_clock_all_pair_admission_authorized=False,physical_material_admission_authorized=False,source_state_or_work_advanced=False,original_point_1_completed=False,accepted_original_native_intervals=1,accepted_new_native_intervals=0,original_point_1_remaining_work_blocks=1,remaining_physical_condition_count=3,remaining_physical_conditions=REMAINING,source_contact_epoch_s=2000000,source_memory_epoch_s=1000000,genuine_current_reference_geometry_epoch_s=1000000,virtual_original_source_geometry_epoch_s=0,preserved_old1633_artifact_chain=True,old1633_preservation_is_saved_before_math_receipt_and_recorded180_raw_dependencies_and_strict_closures_only=True,baseline1633_reexecuted=False,preserved_875_closed_manifest_file_count=73,preserved_875_recorded_raw_dependency_pin_count=180,preserved_authoritative_ancestry_release_closure_count_after_math=10,ancestry_release_wrapper_raw_sha256={str(directory/'report.json'):pin for directory,w,pin in ancestry},complete_recorded_dependency_hashes_checked_after_math=True,dependency_raw_sha256=dependencies,project_imports=False,old_pytest_or_control_reexecuted=False,historical_force_solver_reexecuted=False,old_contact_force_or_Hessian_quadratures_reexecuted=False,old_tensor_quadratures_reexecuted=False,independent_fraction_geometry_uses_no_midpoint_or_tolerance_classification=True,pure_stdlib_source_geometry_helper_sha256=SOURCE_HELPER_RAW,pure_stdlib_quaternion_helper_sha256=GEOMETRY_HELPER_RAW,pure_stdlib_cartesian_exponential_and_original_membership_helper_sha256=MATERIAL_HELPER_RAW,old_auditor_mains_reexecuted=False,baseline875_reusable_producer_sha256=BASELINE_RAW,baseline875_readback_path=str(baselinepath),baseline875_readback_raw_sha256=baseline_pin,baseline875_readback_selfseal=prior['audit_sha256'],baseline875_readback_timing='BEFORE_NEW_LOCAL_SURFACE_AND_ORIGINAL_FIELD_MATHEMATICS',baseline875_projected_reader_report_path=str(projected),baseline875_projected_reader_report_raw_sha256=projected_pin,baseline875_projected_reader_selfseal=prior['projected_reader_selfseal'],initial_current_release_raw_sha256=current_pins,executing_producer_raw_sha256_checked_before_after=True,auditor_script_sha256=producer_pin,surface_query_receipts=surface_receipts,original_material_query_receipts=original_receipts,seconds=time.perf_counter()-started)
+ report['audit_packet_sha256']=vd(report);out.write_bytes(enc(report)+b'\n');print(enc(report).decode(),flush=True);return report
+
+
+def main():
+ parser=argparse.ArgumentParser();parser.add_argument('--release',required=True);parser.add_argument('--baseline',required=True);parser.add_argument('--out',required=True);args=parser.parse_args();run(args.release,args.baseline,args.out)
+
+
+
+COMMON841=ROOT/'analysis/geometric_native_common_reference_validation/release_validation_01/native_control/source_packet.json'
+COMMON841_RAW='dc8f820dbd926c53223a5c141a10296d1c7135efc6bf1077763785866dda9275'
+COMMON841_SEAL='60259e6e56bb7335fa994988adfbbac5ac933b524ca164b0298c2e0a16a40446'
+MATERIAL_PACKET=ROOT/'analysis/geometric_native_common_material_transfer_validation/release_validation_01/native_control/source_packet.json'
+MATERIAL_PACKET_RAW='a9fcc7874c0e68940e20ded658748300f55d9f1d296db5c9d67b59269ac8b3ed'
+MATERIAL_PACKET_SEAL='cd1e2457a857b47891cd40a89219abfac3aa2228028aa9636f0e77f7a10082dd'
+BODY_PRECISION_FIELDS=frozenset(('geometry_enclosure_precision','geometry_source_sha256','owner_rotation_matrix_bounds','current_quarter_start_bounds','current_quarter_tangent_bounds','current_quarter_inward_bounds'))
+
+
+def audit_fresh_cold_body(body,old,bank,c):
+ """Full physical source equality; fresh96 owner enclosure authenticated.
+
+ Historical160 DTOs remain byte-frozen, with no newly copied seal. The six
+ explicit current96 precision-dependent fields are read as new geometry;
+ every other original-body physical/material/source field is EXACTLY equal.
+ No old body energy, strain quadrature, raw73 or diagnostic is evaluated.
+ """
+ exact(set(body),{'original_body','embedding_bank','body_snapshot_sha256','mathematical_body_view'},'entire explicit cold body export')
+ original=body['original_body'];oldoriginal=old['original_body'];exact(set(original),set(oldoriginal),'entire original body schema unchanged')
+ exact(oldoriginal['geometry_enclosure_precision'],160,'immutable original body160 provenance');exact(original['geometry_enclosure_precision'],96,'explicit fresh current96 body precision')
+ exact({k:v for k,v in original.items() if k not in BODY_PRECISION_FIELDS},{k:v for k,v in oldoriginal.items() if k not in BODY_PRECISION_FIELDS},'ALL original physical/source fields identical except exhaustive six enclosure/binding keys')
+ exact(original['geometry_source_sha256'],vd({k:v for k,v in original.items() if k!='geometry_source_sha256'}),'complete source cold body seal')
+ commonid=vd([original['geometry_source_sha256'],bank['bank_snapshot_sha256'],bank['reference_snapshot_sha256'],bank['component_id'],'fixed_global_symmetric_generators_in_orthogonal_computational_frame']);exact(body['body_snapshot_sha256'],commonid,'entire current original-parent COMMON body binding')
+ view=dict(original);view.update(geometry_source_sha256=commonid,body_snapshot_sha256=commonid,source_body_snapshot_sha256=original['geometry_source_sha256'],reference_snapshot_sha256=bank['reference_snapshot_sha256'],embedding_bank_snapshot_sha256=bank['bank_snapshot_sha256'],historical_angular_rate_per_physical_volume_depth_m=original['angular_rate_per_physical_volume_depth_m'],angular_rate_per_physical_volume_depth_m=bank['angular_rate_per_physical_volume_depth_m'],angular_rate_role='NEW_computational_embedding_not_original_saved128_source',reference_model='NEW_shared_radial_volume_reference_with_transported_source_masks_and_clamps',historical_three_dimensional_clamp_inherited=False,new_transported_three_dimensional_clamp_used=True)
+ exact(body['mathematical_body_view'],view,'entire explicit mathematical COMMON body view')
+ audit_body_frame(body,bank,c)
+
+if __name__=='__main__':main()

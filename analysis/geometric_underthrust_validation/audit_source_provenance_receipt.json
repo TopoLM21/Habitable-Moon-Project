@@ -1,0 +1,41 @@
+{
+  "artifacts": [
+    {
+      "audit": "independent_stdlib",
+      "receipt": "analysis/geometric_underthrust_validation/final_control_audit_receipt.json",
+      "receipt_sha256": "94f86d6416ceb733bedee5fc426c5bc0f2db3522480165a0eb6f04398ddf6df6",
+      "reproduction_command": ".venv/bin/python analysis/geometric_underthrust_validation/stdlib_final_audit_source.txt",
+      "source": "analysis/geometric_underthrust_validation/stdlib_final_audit_source.txt",
+      "source_bytes": 11946,
+      "source_provenance": "Exact source file executed for this frozen-code audit; byte-identical copy of the prior preserved stdlib audit. SHA independently equals audit_script_sha256 in the passed receipt.",
+      "source_sha256": "4a396fa2b73a398c421c658eb30fcf1288fd135acaa8f7bc5e47ece274d5d229"
+    },
+    {
+      "audit": "actual_source_rigid_candidate_witness",
+      "receipt": "analysis/geometric_underthrust_validation/rigid_candidate_independent_audit_receipt.json",
+      "receipt_sha256": "9a797474edc746fc52fd4487f14e3fc6c35eba3548ef3202e32074c24a9bfdf4",
+      "reproduction_command": "PYTHONPATH=. .venv/bin/python analysis/geometric_underthrust_validation/rigid_candidate_audit_source.txt",
+      "source": "analysis/geometric_underthrust_validation/rigid_candidate_audit_source.txt",
+      "source_bytes": 8746,
+      "source_provenance": "Exact source file executed for this frozen-code audit. Derived from the prior preserved audit by adding geometric_boundary.py to the explicit before/after code-hash scope; all physical/witness assertions unchanged.",
+      "source_sha256": "ee9aa07bda87349409f3893fe03798f150deb68c53c10120da885d533917cffd"
+    }
+  ],
+  "checkpoint_sha256": "7cc7a8fe4defaeeed678ce614c0ac165ce52916fb4d60392d879bfc012089782",
+  "code_sha256": {
+    "tectonics/geometric_boundary.py": "21be9b4eeee32c0a74d3da42c337959cdc2c55d18afbca995f29f1e7048b28a3",
+    "tectonics/geometric_surface.py": "fa0d391f834e9931040d0a1002a04699de7f06067539dfa30dfe889df754ed34",
+    "tectonics/geometric_transport.py": "be49773029831e94682c814f876a0c83197a4af7c733aef5159c3288c04737de",
+    "tectonics/geometric_underthrust_motion.py": "7b0d85dffd58ebabb483d9e6dce2585102e9c9e349da1a37f7783cd7d8457338",
+    "tectonics/geometric_underthrust_motion_io.py": "29952a2a61fa7d4b3479e0a2d47e15fd4949ca0b60ffa0a87296eb4059d405af",
+    "tectonics/spherical_polygons.py": "b00c24e788e4704cb39775500744192262ff39835e3b8013d0b943844890b7e0"
+  },
+  "method": "Source SHA preservation and linkage only; no additional physical or test run. Existing passed receipts remain unchanged.",
+  "passed_receipts_rewritten": false,
+  "production_tests_scripts_changed": false,
+  "recorded_utc": "2026-10-01T23:08:32.563393+00:00",
+  "reproduction_context": "Run from repository root with the same frozen code, restored nine source files, and completed cloud_control report/checkpoints. Both scripts exclusively create their receipt, so use a separate copy with corresponding receipt outputs absent; historical artifacts must be preserved.",
+  "same_frozen_code_for_rigid_audit_verified": true,
+  "source_file_extension": ".txt; preserved executable Python text outside production/test/script snapshot",
+  "status": "passed"
+}

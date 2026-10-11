@@ -9,6 +9,7 @@ import pytest
 from tectonics.genesis import ENERGY_SCALE, GenesisParameters, mantle_enthalpy
 from tectonics.genesis_long_term_support import begin_mechanical_transition, mechanical_sample, refresh_matched_mechanics
 from tectonics.genesis_shell import ShellParameters, rock_enthalpy
+from tectonics.genesis_solidification import advance_solidification_history
 from tectonics.genesis_starter import StarterModel
 from tectonics.genesis_starter_continuation import YoungWorldCoupling, build_starter_continuation, project_thermal
 from tectonics.genesis_tides import TidalParameters, SYNCHRONOUS_SPIN
@@ -30,8 +31,14 @@ def near_limit():
     # event at a prescribed age. Construct an independently controlled cold
     # reservoir/near-solid column; the physical default need not reach it.
     state = deepcopy(state)
-    state.thermal_context, _ = model.loading.advance(state.thermal_context, 106.,
+    previous = model.loading.sample(state.thermal_context).thermal
+    state.thermal_context, samples = model.loading.advance(state.thermal_context, 106.,
         max_sample_myr=.25, max_thermal_step_myr=.25)
+    for sample in samples:
+        state.solidification_history = advance_solidification_history(
+            state.solidification_history, previous, sample.thermal, model.thermal)
+        previous = sample.thermal
+    state.thermal_samples += len(samples)
     context = state.thermal_context
     energy = list(context.thermal.energy)
     mantle_k = model.thermal.solidus_k-10.

@@ -1,0 +1,65 @@
+"""Captured mathematical certificate diagnostic; no physical-source claim."""
+import hashlib,json,runpy,sys,time
+from copy import deepcopy
+from pathlib import Path
+from fractions import Fraction as F
+
+ROOT=Path('/workspace/Habitable-Moon-Project')
+SNAPSHOT=Path('/workspace/joint_preparation_rotation_certificate_control01_source_snapshot.txt')
+OUTPUT=Path('/workspace/joint_preparation_rotation_certificate_control01/report.json')
+oracle=runpy.run_path(str(SNAPSHOT))
+sys.path.insert(0,str(ROOT))
+from tectonics.geometric_native_common_preparation_contacts import _preparation_matrix_exponential,_payload
+from tectonics.geometric_native_pose import FractionInterval as I
+started=time.monotonic()
+counts={'exact_rotation_certificate_checks':0,'rotation_receipt_count':0}
+def singleton(v):return {'lo':[v,1],'hi':[v,1]}
+position=[singleton(0),singleton(0),singleton(0)]
+identity=[[singleton(int(i==j)) for j in range(3)] for i in range(3)]
+cur={'binding_sha256':'actual-mathematical-diagnostic-point',
+     'position_bounds_m':position,'original_cartesian_gradient_bounds':identity,
+     'allocation':'live','archive_debits':0}
+expected={'fixture':{'frozen_point':{'current':cur},'angular_rate_exact':(F(0),F(0),F(1))}}
+cases=[]
+for p,tau in ((96,F(0)),(96,F(1,10000)),(96,F(32)),(512,F(1,1000))):
+    K=((I(0),I(-tau),I(0)),(I(tau),I(0),I(0)),(I(0),I(0),I(0)))
+    Q,c=_preparation_matrix_exponential(K,precision=p)
+    c.update(preparation_fraction_exact=F(1),original_material_point_binding_sha256=cur['binding_sha256'],
+             preparation_binding_sha256='diagnostic-declaration')
+    receipt=dict(rotation_certificate=_payload(c),original_material_point_binding_sha256=cur['binding_sha256'],
+        original_position_bounds_m=position,original_cartesian_gradient_bounds=identity,
+        allocation='live',archive_debits=0,physical_volume_depth_bounds_m=_payload(I(tau)),
+        preparation_rotation_bounds=_payload(Q))
+    oracle['audit_rotation_certificate'](expected,receipt,'synthetic mathematical case',counts,F(1),'diagnostic-declaration')
+    cases.append(dict(precision=p,depth_exact=[tau.numerator,tau.denominator],
+        squarings=c['scaling_squaring_count'],terms=c['taylor_term_count'],receipt=receipt))
+
+base=cases[2]['receipt']; rejected=[]
+mutations={
+    'understated_norm':lambda r:r['rotation_certificate'].__setitem__('unscaled_generator_infinity_norm_upper',[0,1]),
+    'altered_scaling':lambda r:r['rotation_certificate'].__setitem__('scaling_squaring_count',0),
+    'understated_tail':lambda r:r['rotation_certificate'].__setitem__('tail_scaled_matrix_upper',[0,1]),
+    'wrong_lambda_binding':lambda r:r['rotation_certificate'].__setitem__('preparation_fraction_exact',[0,1]),
+    'wrong_point_binding':lambda r:r['rotation_certificate'].__setitem__('original_material_point_binding_sha256','other point'),
+    'midpoint_flag':lambda r:r['rotation_certificate'].__setitem__('midpoint_inputs_used',True),
+    'wrong_work_precision':lambda r:r['rotation_certificate'].__setitem__('work_precision_decimal_digits',96),
+    'boolean_terms':lambda r:r['rotation_certificate'].__setitem__('taylor_term_count',True),
+    'shrunken_final_rotation':lambda r:r['preparation_rotation_bounds'][0].__setitem__(0,singleton(0)),
+}
+for name,mutate in mutations.items():
+    r=deepcopy(base);mutate(r)
+    try:oracle['audit_rotation_certificate'](expected,r,name,counts,F(1),'diagnostic-declaration')
+    except AssertionError:rejected.append(name)
+    else:raise AssertionError('Corrupted certificate accepted: '+name)
+
+result=dict(status='PASS_EXACT_RATIONAL_ROTATION_CERTIFICATE_DIAGNOSTICS',
+    cases=[{k:v for k,v in c.items() if k!='receipt'} for c in cases],
+    rejected_corruptions=rejected,counts=counts,
+    executed_oracle_raw_sha256=hashlib.sha256(SNAPSHOT.read_bytes()).hexdigest(),
+    executed_driver_raw_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+    old_force_quadrature_or_audit_or_test_mains_called=False,
+    mathematical_synthetic_inputs_are_physical_source_receipts=False,
+    elapsed_seconds=time.monotonic()-started)
+result['report_sha256']=oracle['digest'](result)
+OUTPUT.write_bytes(oracle['encoded'](result)+b'\n')
+print(oracle['encoded'](result).decode())

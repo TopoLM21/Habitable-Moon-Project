@@ -1,0 +1,192 @@
+GENESIS VOLUME INTEGRAL BOUNDS — 11.10.2026 12:31 UTC
+Branch fix/genesis-mantle-convection. Additive numerical bounds; accepted history unchanged.
+
+Итог: selected true-source integral certificates PASS; angular/general/physical OPEN.
+Исходная планета: 0.8684000000000005 Myr, 800 cohorts, четыре accepted100-year
+интервала. Это продолжение генезиса расплавленной планеты и сохранённой памяти
+рождения, а не новая зрелая инициализация или отдельная механическая история.
+Original cohort/face supports: 1/0 at100m; 1/0 atoriginal4.024215510221975m;
+41/40 at100m; 80/79 at100m. Original full18, W18×15(rank15,null3), parent basis
+I18 and five original probes retained. Four computational probes do not become
+physical initial states; the saved accepted-mean probe retains genuine memory.
+Whole-parent work remains distinct from the clipped source integral.
+
+| Cohort / face | Original radius,m | Complete source line integrals | Completed/attempted angular nodes | Angular | Failed components |
+|---|---:|---|---:|---|---|
+| 1 / 0 | 100 | 2536 PASS | 3400/3400 | OPEN | 1992 |
+| 1 / 0 | 4.02421551022 | 2536 PASS | 3332/3332 | OPEN | 1992 |
+| 41 / 40 | 100 | 2536 PASS | 3400/3400 | OPEN | 1992 |
+| 80 / 79 | 100 | 2536 PASS | 3366/3366 | OPEN | 1992 |
+
+Что завершено в этом подэтапе:
+1. Полная направленная цепочка от literal source coefficients через contractions,
+   source determinant/reference volume и density до Γ-моментов и интегралов.
+   Учитываются sphere/cohort endpoints вне represented radial interval и разрез
+   Γ в возникающем endpoint sliver. Исходная мелкая граница R4 не заменяется
+   нулевой ошибкой и не получает произвольное расширение own-span allowance.
+2. Producer-free Fraction polynomial oracle и integer sqrt256 bounds строят
+   истинные source integrals. Canonical exact certificate equality отвергает
+   согласованно пересохранённое завышение. Независимое построение и повторная
+   проверка охватывают2536 components per line /10144 total, из них10136 saved
+   full18/W15/probe components. Runtime construction recomputed canonically;
+   all four runtime enclosures contain the independent complete-source targets.
+   Authenticity of the old saved arithmetic-budget recipe remains false.
+3. На каждом успешно измеренном angular node полный радиальный source error
+   добавлен к погрешности component integral вместе с направленной агрегацией.
+   Strict acceptance, with directed upper errors and downward allowance:
+     Eembedded + E3 + E5 ≤ 2e−6 × max(|I3sum|, |I5sum|).
+   For each non-volume component Eembedded is the outward cell sum of
+   outward 8×|I5cell − I3cell|. For the two volume entries each cell takes
+   the maximum of that observation and the positive candidate upper volume
+   when its fine-rule sample is zero. The sum retains unsampled candidate
+   volumes instead of declaring them empty. Factor8 is a finite-order
+   observation convention, not a rigorous quadrature remainder theorem.
+   E3 and E5 include source-integral uncertainty and directed aggregation.
+   Each component uses its own original signed scale; no global budget, positive
+   scale floor, weak-row borrowing or uncertainty credit. Nodes/weights remain
+   literal binary quadrature operands; node-map accuracy is not thereby proved.
+   Unmeasured line raises OPEN and is never replaced by zero.
+4. Первая initial whole-parent K/M byte guard и итоговая проверка сохраняют
+   подготовленный parent; принятые raw history files закреплены исходными pins.
+   No accepted timestep/material cohort/history reinitialization/public restore,
+   physical Γ activation/release/source work admission or funding debit.
+
+Detailed actual case observations:
+Case 0: cohort 1, face 0, fixed_100m_clipped_support, radius 100 m. Completed source-bound nodes 3400, attempted 3400, positive native 2405, empty native 995. Combined failed components: 1992; source-uncertainty failures: 22; embedded angular failures: 1992. Reason: Predeclared angular cell or radial-line work budget exhausted. Historical saved-budget sufficiency failures against complete source: 0. Certificate build 39.093080391 s; independent canonical verification 39.950981854 s; angular observation 2003.147564451 s; case 2084.733652562 s. Node trace SHA256 fff6cdbceac7eb678760c0ae7785c9b972619efe09c5ddce26c895081a65ede2; this digest records completed sampled operands and is not a global angular proof.
+Case 1: cohort 1, face 0, original_radius_baseline, radius 4.0242155102219748 m. Completed source-bound nodes 3332, attempted 3332, positive native 1443, empty native 1889. Combined failed components: 1992; source-uncertainty failures: 26; embedded angular failures: 1992. Reason: Predeclared angular cell or radial-line work budget exhausted. Historical saved-budget sufficiency failures against complete source: 0. Certificate build 66.258494970 s; independent canonical verification 50.278551171 s; angular observation 1146.590072906 s; case 1266.992282124 s. Node trace SHA256 9d3b43dc9cf060c29da876f46bc2ab4473f70fcdab3d954c8e57465a4b135fa3; this digest records completed sampled operands and is not a global angular proof.
+Case 2: cohort 41, face 40, fixed_100m_clipped_support, radius 100 m. Completed source-bound nodes 3400, attempted 3400, positive native 2564, empty native 836. Combined failed components: 1992; source-uncertainty failures: 20; embedded angular failures: 1992. Reason: Predeclared angular cell or radial-line work budget exhausted. Historical saved-budget sufficiency failures against complete source: 0. Certificate build 35.423322909 s; independent canonical verification 35.441963611 s; angular observation 1760.331314222 s; case 1833.618861947 s. Node trace SHA256 18c0c88793758677814c3e57c80f057f9f3c98a8d0d15efca30c9247fe36bc8c; this digest records completed sampled operands and is not a global angular proof.
+Case 3: cohort 80, face 79, fixed_100m_clipped_support, radius 100 m. Completed source-bound nodes 3366, attempted 3366, positive native 2896, empty native 470. Combined failed components: 1992; source-uncertainty failures: 24; embedded angular failures: 1992. Reason: Predeclared angular cell or radial-line work budget exhausted. Historical saved-budget sufficiency failures against complete source: 0. Certificate build 39.226583556 s; independent canonical verification 39.395243319 s; angular observation 2101.540194888 s; case 2182.712496391 s. Node trace SHA256 038366e781ad37e7a682cb003510ac6cf28f0ff5b1f9532bcab60bd951d823c9; this digest records completed sampled operands and is not a global angular proof.
+
+Selected radial precision diagnostic (not angular acceptance):
+| Cohort / face | Radius,m | Directed bound > selected own scale | Actual error lower > own scale | Actual error upper > own scale | Global angular source-uncertainty failures |
+|---|---:|---:|---:|---:|---|
+| 1 / 0 | 100 | 129 | 6 | 6 | 22 |
+| 1 / 0 | 4.02421551022 | 327 | 30 | 30 | 26 |
+| 41 / 40 | 100 | 123 | 8 | 8 | 20 |
+| 80 / 79 | 100 | 156 | 41 | 41 | 24 |
+The selected-line threshold is 2e−6×|native radial component|. It diagnoses
+weak components locally and does not replace the final angular-sum allowance.
+A wide directed bound alone can reflect overestimation; a true-source residual
+lower bound already above that selected threshold also reveals actual native
+precision loss there. Neither count alone decides global angular acceptance.
+Complete true-bound construction/proof does not imply own-relative precision
+admission. Final global source-uncertainty failures: 22/26/20/24.
+Финальные angular суммы также имеют превышения собственного бюджета
+source uncertainty. В этом же численном блоке нужны уточнение бюджетов слабых
+компонент и, где точная ошибка уже превышает допуск, повышение точности
+вычисления. Корректное enclosure само по себе не допускает own-relative
+precision. Эту причину отказа нужно устранить вместе с угловой ошибкой.
+
+/workspace/genesis_volume_integral_selected_precision_20261011.json: 11450 B; raw SHA256 24569f146fcccf2d763b11f9dbeb8c89d3f3964335041e5c11ab1d5b87c13bbf; sha256 2662c94eb96f31ccb13e3c9ab8f161e11a2f886977803472206dfacb4d889328.
+
+Отдельная пассивная подготовка на тех же четырёх выбранных линиях: точные source коэффициенты и W/probe projections перед переводом в LD плюс bounded fallback для26 слабых mass pairs (8/4/6/8) дали10144/10144 source containment и own-original2e−6 checks PASS,0fail. Старые native failures сохранены; метод ещё не принят в текущий producer, не проверен для глобального N/angular допуска и не меняет Genesis history. Report raw SHA256 cac483b19413eb6dea650c57bb5bc91e238e32c323b4bfa7f241ce830c860452, self 0bfbada183f3bdbb1d489983ccbe91726aa8e92c0a0a617c20245f32d9424894; receipt raw SHA256 1ace3e12ca5d268fc14635c64c971077956a9fa880be120d56f3e90927880ffb, self 2f3168dbb908f57bbfa722a8449c38a1d8fc3ba6033d47d692e30e982ada5a8e.
+
+Selected oldbudget sufficiency comparisons with complete source integrals:
+0 failed saved component comparisons across four lines.
+This is an observation on old selected budgets; fresh directed runtime intervals
+supply current source errors and do not authenticate old arbitraryN budget DAGs.
+
+Completed controls and actual timing:
+- 80 tests PASS in 75.96 s; childexit0;
+  capture 76.647023767 s; stderr 0 B.
+- Four-line/strict-angular control: childexit0;
+  body 2185.590251878 s; capture 2187.457214893 s;
+  attempted angular calls 13498; completed source-bound calls 13498;
+  stderr 0 B. Cases run in four independent processes,
+  each using OPENBLAS_NUM_THREADS=OMP_NUM_THREADS=MKL_NUM_THREADS=1.
+- Prior sealed tests and source proofs are retained; this new numerical lane
+  does not rerun their unchanged implementations or reinterpret old OPENs.
+
+Scope still open:
+- All four angular controls OPEN. Source-uncertainty failed counts from their
+  final angular sums: 22/26/20/24. If these are positive,
+  weak-component error budgets and numerical precision remain open within
+  this same numerical block as well as angular geometry/convergence.
+  Embedded (3,5) differences are finite-order
+  observations; they do not bound complete spatial quadrature error.
+- Angular node mapping/source support/candidate geometry and event-aware
+  sphere/cohort/Γ integration need independent control and convergence.
+  Candidate geometry retains the previous auditor's shared EPS-based bounds;
+  this lane does not issue a new directed angular-geometry certificate.
+  Event-polynomial classification and local grading with finite-order
+  convergence are the next practical work within this same numerical block.
+
+- Completed literal N radial bounds do not certify every N in a support cell.
+  A rolling digest binds sampled results; it does not store all node witnesses
+  or replace a global angular proof. Attempted but refused lines remain OPEN.
+- Physical source activation/prospective work law/reaction replacement/jump-null
+  work/moving mass-heat-work and active faults/contact/underthrust remain open.
+
+Preserved provenance and passive refusals:
+Preliminary control01: actual child exit -15; capture 47.983046872 s; facts self 568b0b09f3a00eea9101d5611a1bf3f2688fec29e48af0a85fa2bc1c22a8f8bc. Its literal artifacts and earlier new-source snapshots remain passive; no final source version or verdict is inferred.
+Preliminary tests01: actual child exit 0; capture 85.592710537 s; facts self cdf6cea39d37162b7f2db602c965b00a5dd82f869de5bf2ab002db7b8b270332. Its literal artifacts and earlier new-source snapshots remain passive; no final source version or verdict is inferred.
+Control01 was stopped before adding the initial whole-parent K/M byte guard. This added check authenticates the prepared parent before computation and repeats the byte check afterward. Termination itself supplies no numerical accuracy verdict. Original accepted Genesis was not replaced or advanced.
+
+Authoritative completed input/output raw and canonical pins:
+/workspace/genesis_volume_integral_control_20261011_02/request.json: 931 B; raw SHA256 9bb3badc9cd6605c729a15eb5aaaceec04acbfefd4725b22a052390e0b20b692; request_sha256 31cbf4344d4bc4958db0ba61b147a5907c595ff930d22f7d017232e0dd9f40c6.
+/workspace/genesis_volume_integral_control_20261011_02/authentication.json: 120462 B; raw SHA256 9e93f96d972967e4a72eede7cef34dbbe33a19455c3987e31a51210cdfa0fa51; sha256 778da4bc2e714e50028943bf63977823799e21a70550d7a3e15ad4129d730ca7.
+/workspace/genesis_volume_integral_control_20261011_02/source_fixture.json: 859444 B; raw SHA256 5a3fa6ba9ca1538691ce0772b5df9f9ace5f5d255e6cdb8ab0461973a15a5b1e; source_fixture_sha256 505aa339c65011b809e14319885cf417cf05338c69403a11116639a5d404dd4e.
+/workspace/genesis_volume_integral_control_20261011_02/control_report.json: 2128840 B; raw SHA256 a4468c5c996d6107e9667ae50a7524c43e9148bdc20b7336d52c8f2ecd2ccd02; report_sha256 0362805d4c47b5abe091381db005f816d12f1abcb701b800dccf4a096a81ef7b.
+/workspace/genesis_volume_integral_control_capture_20261011_02/execution_facts.json: 129899 B; raw SHA256 229c1d6578c2a43728bac04740d4961efca7a0ac4c7f9eb1e862adff2efda99c; sha256 44a79c03472080c9329152122299c8332b9b2fec4d19c943fc64549bba6023dc.
+/workspace/genesis_volume_integral_tests_capture_20261011_02/execution_facts.json: 131131 B; raw SHA256 538b30b206431cfc34434be758acc9e48ccb740255c6c07add03f0d55915e3c0; sha256 fb4c3fe38b8238c329e0574cce941f966403221f449adeb75ccabd73ae19a9c4.
+case_000_fixed_100m_clipped_support/true_source_certificate.json: 19701241 B; raw 3424a743ea03a9de01e4d512f4a473cc80cb2142aac5775ee3cd9d0c6e38a264; certificate_sha256 32bf2ade38bfe9fab0bc66655c221b28a70101551873e0d1ee0d4d1c9270f82b.
+case_000_fixed_100m_clipped_support/runtime_integral_bounds.json: 431412 B; raw 072e7233d2986625b1d37e659f126bf7676af63ef887ba369b494333c8f2034e; integral_bounds_sha256 3737045dd00c3339fd0ad782b11d4e0aa733c28d0bb42e02ecb2b672b422a5a8.
+case_000_fixed_100m_clipped_support/angular_report.json: 522940 B; raw 1d2b74699e73f597b344ee8ca574d4deec4b38052a2dd0a276d842a9db0b74b2; angular_report_sha256 9a8787089e37653d6ea1df3ff2c9eeb7ce404740d842083e4b22cdf7889233a9.
+case_000_fixed_100m_clipped_support/case_report.json: 528595 B; raw 51c0cc8e4c3b18edd1b65549f02faae397169e7a04a6fb4ad23b78ae5ca288ce; case_report_sha256 fee18489e38940aad351c905080a2be1d6321df0b404f01465421263e43f52dd.
+case_001_original_radius_baseline/true_source_certificate.json: 57518430 B; raw f616a7d9babf49c2998f5877aad90ae68ef7fb4574dc2abd7da218eaa05dc506; certificate_sha256 11aeaa24fa35ef4e13b9d34d4fdcc3b3b92d03248e10d56da307a799d4fb70f8.
+case_001_original_radius_baseline/runtime_integral_bounds.json: 434001 B; raw 2fa24553cce922a989453c0a4a5088d773945a90b1be9ef027edb85f581d04ab; integral_bounds_sha256 90f344d337c431713a89eed5fce476cdaca1a21eb12291bb4b6bba2eb924d38c.
+case_001_original_radius_baseline/angular_report.json: 535166 B; raw 242eec563b346d51e86e79042e6743b605904008f99abccf923ea2b3ecf88a2f; angular_report_sha256 5613053849b4871c25f263a99e5774f639d4f948023c01cf8af45251df8fd044.
+case_001_original_radius_baseline/case_report.json: 540821 B; raw 4d0aa5466e1fda23f9141c2c352a30c5e0184194944c833d79e50fd1b946bf87; case_report_sha256 b267517ea82999b36b7606ddd217ecfa90aaefe83d621f8d4232c1eef3707889.
+case_002_fixed_100m_clipped_support/true_source_certificate.json: 19610341 B; raw cc31da92ce0ad311d8d670250fcdfd3d501ae88b350d91eb0ad50c3414ec3351; certificate_sha256 efb54eebe69c9187774c369c50d2f417eda92b9a182371161cbfea7e0ef2b6ef.
+case_002_fixed_100m_clipped_support/runtime_integral_bounds.json: 431133 B; raw 427a6469a8c454905aa5100fc158ec08c3d4b7f433d296537de15ba1e339cd1e; integral_bounds_sha256 7e4fb99c5ad7427d064dc86cb469f72908851a69fab2728e7f7dad03ff4615d0.
+case_002_fixed_100m_clipped_support/angular_report.json: 522721 B; raw e9397a478beed06d8b440913b3f0f4e9d1baf5cfa25b0eff668fba37b6918838; angular_report_sha256 6682fa3db927d4925ba3ebb0ab286a6e9185e6007c0e74c39f45369be2054c1c.
+case_002_fixed_100m_clipped_support/case_report.json: 528378 B; raw ea05c0afce33c94d3c314d104f227598148d802074db6df5cd3240a8c645b2b2; case_report_sha256 5b5cece7a2f7af0437fac01a4cc3c5ac940b1ee3a1de46169734f0d993b0ff5d.
+case_003_fixed_100m_clipped_support/true_source_certificate.json: 19284220 B; raw 08607004b25220b91fba222228738309d91fc3413ea660a0f39b41a0cab6c050; certificate_sha256 4e8ce239e0a6ee57421b0eaa99c7d343fd248e5157ebb2d602395f64c468d920.
+case_003_fixed_100m_clipped_support/runtime_integral_bounds.json: 438027 B; raw eafec5822ff4447479a307c0de053e7757aa099588d43ccd7eba2d358cbf0843; integral_bounds_sha256 faf5717128ec20147446ed496ae36ed9633f4d6c6152e705cc848ce015a99b47.
+case_003_fixed_100m_clipped_support/angular_report.json: 523537 B; raw 2b4c9dbc020619d15ddc35d00800622f5f99becfd93858e0f343e216f2b6c471; angular_report_sha256 5d258641cdd77355f1853f78288679075c439b380a271e6b65700fc8e1839569.
+case_003_fixed_100m_clipped_support/case_report.json: 529193 B; raw 21643a88dc25603ac31bc213472e2293f61fd9a85b50fce89bc160fa8207301c; case_report_sha256 654a69369ea37eef615e321cb62c51666524fd5ed24cb895bd35b858621d01a4.
+
+Parent raw SHA256 62579a0bad128830a66e2f44579cf2b1f5d3835b691225b8d431102f3e4486d7.
+Birth memory raw SHA256 a98ff7cc89aeb59eb004c05b8ac87f75f2e39a4f10d4454fdf93c288153c9c0e.
+800-cohort memory digest 1216a018a75ca788b718d774f2159cdc754222ec3d0b037aa25af390ea09c1bc.
+Prior frozen sources458; current capture union469. Previous18
+package anchors:40088 members/8007223239 B. Final one-pass payload preservation,
+nineteenth-package assembly and archived standalone metadata readback follow
+this documentation. No future PASS is claimed. Metadata PASS establishes byte,
+source, seal and reference preservation and does not promote numerical/physical
+accuracy. Large original24MBparent/167MBmemory remain authoritative references;
+prior5GBclipped shards are not restored or duplicated.
+
+Те же три условия закрытия пункта 1:
+1. Физическое рождение, вставка и раскрытие: рассчитанный источник работы,
+   полная замена реакции, prospective law и точность интегралов физически
+   выбранной области. Jump-null остаётся tied либо получает собственный допуск
+   работы. Подвижные материальные и тепловые границы переносят массу, тепло
+   и работу.
+2. Контакт и поддвиг всех пар на всём интервале, включая обратный C5→C1.
+3. Действительное продолжение Genesis с действующими разломами, контактом
+   и поддвигом, независимыми балансами и работой, проверкой restart.
+Пункт 1 открыт; работы ещё существенно. Пункты 2–6 общего плана открыты.
+
+Финальные angular суммы также имеют превышения собственного бюджета
+source uncertainty. В этом же численном блоке нужны уточнение бюджетов слабых
+компонент и, где точная ошибка уже превышает допуск, повышение точности
+вычисления. Корректное enclosure само по себе не допускает own-relative
+precision. Эту причину отказа нужно устранить вместе с угловой ошибкой.
+
+Конкретный следующий ход в том же численном блоке — перенести и повторно
+проверить подготовленные tighter centers: точные source coefficients/W/probe
+projections до LD и ограниченный fallback слабых mass pairs. Получить fresh
+source errors на прежних Genesis inputs/N и повторно проверить исходный
+own2e−6 budget, сохраняя0history reset; пассивный selected PASS не является
+current producer/global angular PASS. Затем — геометрия угловых событий
+и интегрирование
+по границам sphere/когорта/Γ на тех же четырёх областях. Практический путь —
+классификация событий по их полиномам, локальное сгущение около границ
+и проверка сходимости при увеличении конечных угловых порядков и разрешения.
+Нужны собственные оценки отображения узлов и покрытия candidate cells;
+исходный допуск 2e−6 сохранить. Завершённые source line bounds использовать без нового расчёта рождения
+или подмены памяти. После допуска объёмных интегралов — prospective activation
+и источник работы с полной заменой реакции; физическое раскрытие не разрешать
+до выполнения его отдельного закона. Новая инициализация не нужна.
+

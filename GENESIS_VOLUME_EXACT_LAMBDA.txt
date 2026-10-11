@@ -1,0 +1,185 @@
+Точный центрированный λ-интеграл и полный исходный bulk Genesis
+11.10.2026 09:03 UTC; branch fix/genesis-mantle-convection
+Статус: λ kernel/218 tests PASS; actual angularOPEN;
+independent represented primitives4/4PASS; full independent OPEN; physicalfalse.
+
+Что выполнено
+Предыдущий CLOUD_HANDOFF предписывал точный центрированный λ-интеграл.
+Этот ограниченный шаг реализован. При фиксированном исходном N интегрируются
+полные поля внутри sphere∩исходная когорта с обеими Γ-сторонами. Применяются
+исходные b/a, literal binary64 source vertex B0/B1 и reference λ² Jacobian.
+Максимальные степени crossK/force/work≤8,Kself/workself≤14,Mcross≤10,Mself≤16.
+Signed cross moments двух сторон складываются совместно, selfH² отдельно;
+малые интервалы не получаются вычитанием почти равных λ^k. W18×15 и пять
+declared probes применяются до произведений. Полные parent18 используются
+буквально (original parent_basisNone означает старый I18 по API).
+
+Происхождение и повторное использование
+Это механический контроль перехода на настоящем принятом Genesis,
+а не новый принятый динамический шаг. Планета остаётся 0.8684000000000005Myr,
+800 когорт/4 принятых100-year интервала,80faces/42vertices/252DOFs.
+Источник direct_after_second.json self5d282ceeccc8d76acc38427d08a7e65575fddb509fc4b93115cbe6d318e91349,
+raw62579a0bad128830a66e2f44579cf2b1f5d3835b691225b8d431102f3e4486d7;
+memory fixture rawa98ff7cc89aeb59eb004c05b8ac87f75f2e39a4f10d4454fdf93c288153c9c0e.
+Использованы original cohort1/face0,41/face40,80/face79; сохранены полные
+X/A/P,C/Q,e0/e1, source birth journal, accepted average memory/reaction,
+old CSR K/M/D252×252. Локальные parentK/M проверены byte-equal; весь parent
+work считается однажды вне clipped angular integral. Public restore0;
+большие clipped point shards не прочитаны и не пересобраны.
+800-source memory digest1216a018a75ca788b718d774f2159cdc754222ec3d0b037aa25af390ea09c1bc.
+Прежние surface clipping, cohesive law/kernel, Γ surface basis, native15
+release solver и материалы повторно использованы. Virtual Γ/W/probes —
+вычислительные инструменты; физическая Γ не родилась. R100m заранее задан,
+а R4.024215510221975m первого участка сохранён из предыдущего baseline.
+Source damage≈0.0396<0.65, activation/prospective law отсутствуют.
+
+Исправленная арифметика
+Первый независимый preflight старой new-phase версии выявил расхождения
+sourcefields178 и directline components122 на первомR100. Представленный
+полиномиальный примитив уже проходил все2534 компонента. Причина была до
+интегрирования: несовпадение центрированных координат и представленной λchart.
+Kernel исправлен только в двух новых файлах: относительные координаты иΓ
+вычисляются из exact binary source operands в едином λmid/h; bubble-distance
+равны λmid−originallower/originalupper−λmid. История, исходные C/D, N и нормы
+не заменяются. Новый genuine thin-chart Fraction/Decimal regression
+отвергает read-only kernelactual02 по3/6Y coefficients (max1.46144632e−13,
+relative0.00116017); новый проходит own4EPSLD. Root/geometry propagation
+при этом не сертифицирована.
+
+Angular control и лимиты
+Исходные R100/R4 и relative tolerance2e−6 неизменны. Predeclared request:
+maxcells2000,maxdepth24, angularorders3/5,maxangularlinecalls3400;
+одна centroid witness line учитывается отдельно, total=angular+1.
+Embedded evidence8abs(fine−coarse); допуск каждой компоненты использует
+собственные signed coarse/fine values и собственные arithmetic bounds.
+Нет масштаба другой компоненты, relative coefficient envelope или floor.
+Положительные несэмплированные candidate cells удерживаются с integer
+counter; все окончательные ошибки/суммы заново редуцируются из activeleaves.
+Bounds сферы/исходного материала/Γ заимствованы из прежнего immutable
+geometry auditor: это shared support helper, не второй независимый angular
+oracle. Embedded difference не rigorous error enclosure.
+Исправлена оценка coarse/fine reduction operands: берётся их собственный
+максимум. Уточняется ячейка с максимальным вкладом ошибки относительно
+GLOBAL allowance той же компоненты. Старый local ratio уточнял почти
+исчезнувшие ячейки и оставлял крупные вклады. Polynomialu^10 regression
+подтверждает исправление; это отдельный тест, не история новой планеты.
+
+Actual03: отказавшие компоненты по собственным допускам
+| Когорта | Радиус m | Статус | Volume | Full18 | W15 | Пробы | Angularcalls |
+|---|---:|---|---:|---:|---:|---:|---:|
+| 1 | 100 | OPEN | 2/2 | 882/1314 | 975/1005 | 115/215 | 3400 |
+| 1 | 4.02421551 | OPEN | 2/2 | 882/1314 | 969/1005 | 115/215 | 3332 |
+| 41 | 100 | OPEN | 2/2 | 882/1314 | 973/1005 | 115/215 | 3366 |
+| 80 | 100 | OPEN | 2/2 | 882/1314 | 969/1005 | 115/215 | 3332 |
+Каждая область содержит2536 компонентов:2volume+2534full/W/probes.
+В отличие от старого clippedcontrol220 probe values, здесь215: пять
+whole-parent works сохранены отдельно и не интегрируются по clipped support.
+Actual03 childexit0, body699.470726s, capture700.544879s;
+statusCOMPLETED_WITH_NUMERICAL_REFUSALS, numericalOPEN.
+Эти3/5 adaptive diagnostics не являются прямым повтором старой12→16
+квадратуры: разные orders/разбиения. Отказы не превращены в допуск.
+
+Независимый80-digit контроль четырёх исходных centroid lines
+Без импорта producer использованы исходные binary operands, точные
+классификации Fraction, независимо продублированный literal float64B0/B1,
+direct inverse-X fields и положительные Gauss12/20. Для каждой линии с
+доверенным direct oracle сравниваются2534full18/W/probe компонента;
+represented-polynomial primitive отдельно проверяется для всех4 линий.
+Barycentric N сохранён точными binary
+ratios без нормализации. Represented polynomial primitive проверяется
+отдельно от true-source coefficients, geometry и бюджета их построения.
+cohort1/fixed_100m_clipped_support: numeric field 0, direct component 0; unresolved own-bound scopes field 234, component 1446; primitive PASS, geometry observation PASS.
+cohort1/original_radius_baseline: numeric field 0, direct component 0; unresolved own-bound scopes field 228, component 1455; primitive PASS, geometry observation OPEN.
+cohort41/fixed_100m_clipped_support: numeric field 0, direct component 0; unresolved own-bound scopes field 228, component 1449; primitive PASS, geometry observation PASS.
+cohort80/fixed_100m_clipped_support: numeric field 0, direct component 0; unresolved own-bound scopes field 256, component 1474; primitive PASS, geometry observation PASS.
+StatusOPEN; sourcebindingPASS;
+geometry observationOPEN;
+resealed mathematical negativesPASS.
+Проверены 10136 direct components; отказов получить доверенный
+direct oracle0/4. Refused line не записывается как0 mismatches:
+сравнение producer с её direct результатом имеет statusNOT_EVALUATED.
+Проверен примитив представленных полиномов. Полный construction-operand budget независимо
+не доказан: own-field-scale observation не включает все operands отмены
+коэффициентов. Такие scopes остаются UNRESOLVED, сертификатfalse;
+никакой коэффициент65536 не увеличен ради PASS. Также false geometry-root
+propagation, angular accuracy, general/physical contraction certificate.
+Три genuine consistently-resealed отрицательные пробы меняют w coefficient,
+memoryhat coefficient и privateW projected stiffness, одновременно native
+ratios/public aliases/seals. Отклонение основано на возросшей targeted
+математической ошибке, а не на исходном OPEN или несовпавшем raw hash.
+
+Верификация и фактические версии
+218 новых тестов PASS (39kernel,15bulk,16angular и новый independent/driver).
+Formal captureexit0,39.027045s, currentunion447=434old+13new,
+sources before/after equal,stderr0. Последующие дублирующие прогоны не нужны.
+Tests facts self63a9efc38221d96af216546c4437e430959a3af94fe1709b7003237f2f86601d.
+Actual03 facts self5ea6f90de35546b63477d9144c6bb912998be884d9b39469fe8a8ea714b44134.
+Independent captureexit0,79.527801s,
+facts self4c54228a7997d135e2b047d28b32763bc0861a108184eb9fe6e9ae272befc5b0; report self680508b979af1b2514e329aff3b498faad19bec411085f43e0267c8cdb8301cd.
+Ни one-line PASS, ни metadata PASS не подтверждают физическую работу,
+creation funding, источник зарождения или сходимость angularintegral.
+
+Actual01 намеренно остановлен до codeedit: actualchild−15,wrapper241,
+65.217093207s,440sourcesunchanged; контрольного вердикта нет.
+Actual02 завершён на прежней newphase арифметике/localpriority:
+child0,560.946421094s,440sourcesunchanged,все4OPEN. Его source snapshots,
+reports и предварительные numeric failures сохранены пассивно; они не
+сливаются с final447current sourceunion. Неудачный sourcepreflight01
+(literal parent_basisNone первоначально прочитан неверно), superseded
+sourcepreflight02 и все intermediate arithmetic diagnostics сохраняются
+с действительными статусами. Старые434sources и16sealedpackages неизменны.
+Independentcapture01 сохранён с actualexit1: прежний driver остановился
+на bounded direct-quadrature refusal исходногоR4. Окончательный driver
+сохраняет такой отказ и продолжает остальные проверки. Preliminary204tests
+capture01 относится к прежней newphase версии oracle/driver и сохранён
+пассивно; финальный testscapture02 проверяет действительную текущую версию.
+Дополнительно исправлена конкретная независимая arithmetic operation:
+absoluteMPλ округлялась до вычисления малых λ−bounds/λ−1/worldoffset.
+Теперь sourceGaussλ передаётся exact rational affine mid+h*node, локальные
+разности из literalbinarysourcebits вычисляются до округления в том же
+MP80context. Precision80,orders12/20 и ownbudgets не повышены.
+Исходные437 ownchecks с отказом, прежний oracle и новый genuineR4preflight
+сохранены раздельно с фактическими статусами. Driver поддерживает дальнейшие
+structured refusals; trusted oracle отсутствует при любом новом отказе.
+
+Воспроизводимость и сохранность
+Новый компактный пакет analysis/genesis_volume_exact_lambda_validation/evidence
+содержит source447 snapshots, actual03 request/source/fourreports, три
+formalcaptures, независимые fullresults/mutants, предыдущую baseline,
+все preliminary/interrupted/failed данные и preservationhelpers/receipts.
+Старые16packages/native/parent/readbacks проверяются в прежнем месте
+streaming metadata auditor, без producer/replay/historyrestore.
+Полный набор для восстановления — этот новый компактный пакет вместе с16
+неизменёнными предыдущими пакетами: accepted parent24MB и birthmemory167MB
+сохраняются в них и указаны pinnedreferences, не дублируются в новой фазе.
+mpmath1.3.0 был отсутствующим offline runtime dependency. 94pure-Python
+files/metadata сохранены с точным payloadmanifest и receipt; восстановление
+из evidence/dependencies/mpmath_payload выполняется копированием manifest
+members в .venv/lib/python3.12/site-packages с проверкой94pins (точный prefix
+смотреть package inventory). Установка не читает сеть и не меняет Genesis.
+Использовать OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1.
+Сборка/readback запускаются после записи документа; здесь будущему запуску
+не присвоен PASS. Итоговый отдельный readback:
+/workspace/genesis_volume_exact_lambda_final_readback_20261011.json;
+его metadataonlyPASS удостоверяет сохранность, не точность интеграла.
+
+Что осталось
+Те же три условия закрытия пункта1:
+1. Физическое рождение, вставка и раскрытие: рассчитанный источник работы,
+   полная замена реакции, source prospective law и точность объёмных интегралов
+   физически выбранной области. Jump-null остаётся tied либо получает отдельный
+   допуск работы. Для подвижных материальных/тепловых границ нужен перенос
+   массы, тепла и работы.
+2. Контакт и поддвиг всех пар на всём интервале, включая обратный C5→C1.
+3. Действительное продолжение Genesis с действующими разломами, контактом
+   и поддвигом, независимыми балансами/работой и restart.
+Пункт1 открыт; работы ещё существенно. Пункты2–6 общего плана открыты.
+
+Следующий ограниченный шаг остаётся внутри условия1: получить независимые
+component construction-operand bounds, затем улучшить угловое интегрирование
+по событиям sphere/исходные границы/Γ и проверить каждую слабую компоненту.
+Сохранить исходные радиусы, допуск2e−6 и literal source B0/B1; никакого подбора
+состояния, радиуса или positive floor ради PASS. До source activation и
+prospective law физическое рождение не допускается.
+
+Автоматическая цель OFF. Accepted steps/material/physicalΓ/release/debit0.

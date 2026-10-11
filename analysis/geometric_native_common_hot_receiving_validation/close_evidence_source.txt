@@ -1,0 +1,70 @@
+"""Two-phase909 byte-evidence closure; execute reader separately between phases."""
+from pathlib import Path
+import argparse,hashlib,json,time,types
+ROOT=Path('/workspace/Habitable-Moon-Project');P=ROOT/'analysis/geometric_native_common_hot_receiving_validation'
+F=ROOT/'analysis/geometric_native_common_hot_receiving_final_readback';STAGE=Path('/workspace/hot_receiving_baseline_20261007')
+ADDED=('tectonics/geometric_native_common_hot_receiving.py','tests/test_geometric_native_common_hot_receiving.py')
+DOCS=('CLOUD_HANDOFF.md','GEOMETRIC_NATIVE_COMMON_HOT_RECEIVING_IMPLEMENTATION.md')
+def enc(x):return json.dumps(x,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+def digest(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def row(p):return dict(bytes=Path(p).stat().st_size,sha256=digest(p))
+def write(p,x):
+ with Path(p).open('xb') as f:f.write(enc(x)+b'\n')
+def sealed(p,k):
+ x=json.loads(Path(p).read_bytes());assert hashlib.sha256(enc({a:b for a,b in x.items() if a!=k})).hexdigest()==x[k];return x
+def files(p):return {str(x.relative_to(p)) for x in p.rglob('*') if x.is_file() and '__pycache__' not in x.parts and x.suffix!='.pyc'}
+def manifest_rows():
+ result={str(x.relative_to(ROOT)):row(x) for x in P.rglob('*') if x.is_file() and '__pycache__' not in x.parts and x.suffix!='.pyc' and x.name!='artifact_manifest.json'}
+ result.update({name:row(ROOT/name) for name in ADDED});return result
+def guard():
+ p=P/'preservation_source.txt';assert digest(p)=='33cb3857e322bb805b254f9557d80a94c2ce5409825f671b2420ac27a78b5e79'
+ m=types.ModuleType('_909_close_guard');m.__file__=str(p);exec(compile(p.read_bytes(),str(p),'exec'),m.__dict__);return m
+def prepare():
+ t=time.perf_counter();assert not (P/'artifact_manifest.json').exists() and not F.exists()
+ gate=sealed(P/'report.json','report_sha256');audit=sealed(P/'audit_report.json','audit_sha256');assert gate['status']==audit['status']=='PASS'
+ assert gate['tests_passed']==10 and gate['actual_point_query_count']==60 and audit['scalar_contains_count']==71640
+ assert json.loads((P/'gate_actual_console.log').read_bytes())==gate and (P/'audit_actual_console.log').read_bytes()==(P/'audit_report.json').read_bytes()
+ assert (P/'gate_actual_stderr.log').stat().st_size==(P/'audit_actual_stderr.log').stat().st_size==0
+ for source,name in ((Path(__file__).resolve(),'close_evidence_source.txt'),):
+  with (P/name).open('xb') as f:f.write(source.read_bytes())
+ docs={str(ROOT/name):digest(ROOT/name) for name in DOCS}
+ g=guard();before=g.run(gate['additional_source_sha256'],STAGE/'closure_before.json')
+ with (P/'closure_before.json').open('xb') as f:f.write((STAGE/'closure_before.json').read_bytes())
+ after=g.run(gate['additional_source_sha256'],STAGE/'closure_after.json')
+ with (P/'closure_after.json').open('xb') as f:f.write((STAGE/'closure_after.json').read_bytes())
+ rows=manifest_rows();assert {n for n in rows if n.endswith('.py')}==set(ADDED)
+ manifest=dict(status='PASS_COMPONENT_ARTIFACTS_CLOSED',source_count=909,files=rows,
+  document_names=list(DOCS),document_raw_sha256=docs,gate_sha256=gate['report_sha256'],audit_sha256=audit['audit_sha256'],
+  executing_closure_source_raw_sha256=digest(Path(__file__).resolve()),before_preservation_sha256=before['preservation_sha256'],after_preservation_sha256=after['preservation_sha256'])
+ manifest['manifest_sha256']=hashlib.sha256(enc(manifest)).hexdigest();write(P/'artifact_manifest.json',manifest)
+ assert manifest_rows()==rows and all(digest(name)==pin for name,pin in docs.items())
+ template=(P/'readback_template.txt').read_text();assert template.count('__MANIFEST_RAW__')==1
+ source=template.replace('__MANIFEST_RAW__',digest(P/'artifact_manifest.json'));compile(source,str(F/'readback_source.txt'),'exec')
+ F.mkdir();
+ with (F/'readback_source.txt').open('x') as f:f.write(source)
+ facts=dict(status='PASS_MANIFEST909_CLOSED_READER_READY',manifest_file_count=len(rows),manifest_raw_sha256=digest(P/'artifact_manifest.json'),reader_raw_sha256=digest(F/'readback_source.txt'),seconds=time.perf_counter()-t)
+ write(STAGE/'prepare_actual_facts.json',facts);print(enc(facts).decode())
+def close(stderr_path):
+ t=time.perf_counter();assert files(F)=={'readback_source.txt','readback.json','console.log'} and Path(stderr_path).stat().st_size==0
+ manifest=sealed(P/'artifact_manifest.json','manifest_sha256');assert manifest_rows()==manifest['files']
+ assert digest(Path(__file__).resolve())==manifest['executing_closure_source_raw_sha256']
+ r=sealed(F/'readback.json','audit_sha256');assert r['status']=='PASS_FINAL909_EVIDENCE_READBACK_ONLY'
+ assert r['manifest_raw_sha256']==digest(P/'artifact_manifest.json') and r['manifest_sha256']==manifest['manifest_sha256']
+ assert (F/'console.log').read_bytes()==(F/'readback.json').read_bytes()
+ assert r['document_raw_sha256']==manifest['document_raw_sha256']
+ assert all(digest(name)==pin for name,pin in r['document_raw_sha256'].items())
+ gate=sealed(P/'report.json','report_sha256');g=guard();before=g.run(gate['additional_source_sha256'],STAGE/'archive_before.json')
+ rows={name:row(F/name) for name in ('readback_source.txt','readback.json','console.log')}
+ archive=dict(status='PASS_FINAL909_READBACK_ARCHIVE_CLOSED',total_closed_file_count=4,files=rows,readback_sha256=r['audit_sha256'])
+ archive['archive_sha256']=hashlib.sha256(enc(archive)).hexdigest();write(F/'archive.json',archive)
+ after=g.run(gate['additional_source_sha256'],STAGE/'archive_after.json')
+ assert files(F)==set(rows)|{'archive.json'} and manifest_rows()==manifest['files']
+ assert all(row(F/name)==pin for name,pin in rows.items()) and all(digest(name)==pin for name,pin in r['document_raw_sha256'].items())
+ facts=dict(status='PASS_COMPLETE909_COMPONENT_AND_FINAL_CLOSURE',manifest_file_count=len(manifest['files']),
+  manifest_raw_sha256=digest(P/'artifact_manifest.json'),archive_raw_sha256=digest(F/'archive.json'),archive_sha256=archive['archive_sha256'],
+  readback_raw_sha256=digest(F/'readback.json'),actual_stdout_equals_readback=True,actual_stderr_bytes=0,
+  before_preservation_sha256=before['preservation_sha256'],after_preservation_sha256=after['preservation_sha256'],seconds=time.perf_counter()-t)
+ write(STAGE/'closure_actual_facts.json',facts);print(enc(facts).decode())
+if __name__=='__main__':
+ parser=argparse.ArgumentParser();parser.add_argument('--phase',choices=('prepare','close'),required=True);parser.add_argument('--stderr');args=parser.parse_args()
+ prepare() if args.phase=='prepare' else close(args.stderr)

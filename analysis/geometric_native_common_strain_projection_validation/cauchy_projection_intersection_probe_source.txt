@@ -1,0 +1,43 @@
+"""Only exact Fraction interval identities on the same sealed source inputs."""
+from fractions import Fraction as F
+from pathlib import Path
+from math import isqrt
+import hashlib,importlib.util,json,time
+BASE=Path('/tmp/native_common_strain_projection_normal_branch_diagnostic_20261006.py')
+spec=importlib.util.spec_from_file_location('independent_normal_diagnostic',BASE);m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
+Z=F(0),F(0)
+def intersect(*xs):
+ lo=max(x[0]for x in xs);hi=min(x[1]for x in xs);assert lo<=hi,'True quadratic/cauchy identities yielded an empty intersection';return lo,hi
+def scaled(x,c):return m.mul(x,(c,c))
+def sqrt_upper(v):
+ assert v>=0
+ scale=1<<384;n=-((-v.numerator*scale*scale)//v.denominator);r=isqrt(n)
+ if r*r<n:r+=1
+ out=F(r,scale);assert out*out>=v;return out
+def sum_i(values):return m.sum_interval(values)
+def main():
+ started=time.perf_counter();original=json.loads(Path('/tmp/native_common_strain_projection_normal_branch_diagnostic_20261006.json').read_bytes());body0={x['component_id']:x for x in original['projection_rows']};inputs={};dep=[]
+ cached_path=Path('/tmp/strain_projection_closed_841_context.json');cached_bytes=cached_path.read_bytes();cache_pin=json.loads((m.ROOT/'analysis/geometric_native_common_strain_projection_validation/initial_precision_mismatch_probe.json').read_bytes())['original_scratch_selected_input_raw_sha256'];assert m.SHA(cached_bytes)==cache_pin;cached=json.loads(cached_bytes)
+ assert cached['raw_sha256']==original['dependencies'][0]['raw_sha256'] and cached['packet_sha256']==original['dependencies'][0]['packet_sha256']
+ dep=original['dependencies'];beam=body0;projections={};bodyrows=[]
+
+ for row in cached['cold_components']:
+  raw=row['diagnostic_response']['raw_integrals'];q=tuple(m.scalar(x)for x in raw['coordinates_m']);k=m.interval(raw['reference_tip_strain_stiffness_n_m']);p=m.interval(raw['projection_remainder_n']);dp=tuple(m.interval(x)for x in raw['projection_remainder_gradient_n_m']);hp=tuple(tuple(m.interval(x)for x in rr)for rr in raw['projection_hessian_n_m2']);N=m.interval(raw['remainder_strain_inner_product_j']);assert k[0]>0 and N[1]>=0
+  P1=m.sub(sum_i(scaled(dp[i],q[i])for i in range(7)),sum_i(scaled(hp[i][j],q[i]*q[j]/2)for i in range(7)for j in range(7)))
+  P2=m.sub(m.add(sum_i(scaled(dp[i],q[i])for i in range(1,7)),scaled(hp[0][0],q[0]*q[0]/2)),sum_i(scaled(hp[i][j],q[i]*q[j]/2)for i in range(1,7)for j in range(1,7)))
+  D0=sum_i(scaled(hp[0][j],q[j])for j in range(7));d0=intersect(dp[0],D0);assert q[0]>0;H00_alt=m.div(m.sub(dp[0],sum_i(scaled(hp[0][j],q[j])for j in range(1,7))),(q[0],q[0]));H00_new=intersect(hp[0][0],H00_alt);P2H=m.sub(m.add(sum_i(scaled(dp[i],q[i])for i in range(1,7)),scaled(H00_new,q[0]*q[0]/2)),sum_i(scaled(hp[i][j],q[i]*q[j]/2)for i in range(1,7)for j in range(1,7)));p12=intersect(p,P1,P2,P2H)
+  absP=sqrt_upper(k[1]*N[1]);pC=intersect(p12,(-absP,absP));ratioC=sqrt_upper(N[1]/k[0]);ratios=(m.div(p,k),m.div(p12,k),intersect(m.div(pC,k),(-ratioC,ratioC)))
+  S=tuple(m.rounded(m.add((q[0],q[0]),x))for x in ratios);old=m.interval(body0[row['component_id']]['projection_bounds_m']);assert S[0]==old
+  Dorig=m.rounded(m.add((F(1),F(1)),m.div(dp[0],k)));Dnew=m.rounded(m.add((F(1),F(1)),m.div(d0,k)));coordinates=beam[row['component_id']]['trace_id'],beam[row['component_id']]['side'];projections[coordinates]=S
+  item=dict(component_id=row['component_id'],trace_id=coordinates[0],side=coordinates[1],coordinates_m=[m.encode_scalar(x)for x in q],recorded_k_bounds=m.encode_interval(k),recorded_p_bounds=m.encode_interval(p),recorded_dp_tip_bounds=m.encode_interval(dp[0]),recorded_N_bounds=m.encode_interval(N),P1_bounds=m.encode_interval(P1),P2_zero_origin_tip_linear_coefficient_bounds=m.encode_interval(P2),H00_linear_slab_intersection_bounds=m.encode_interval(H00_new),P2_contracted_H00_bounds=m.encode_interval(P2H),quadratic_p_intersection_bounds=m.encode_interval(p12),cauchy_absolute_p_upper=m.encode_scalar(absP),cauchy_projection_ratio_upper=m.encode_scalar(ratioC),cauchy_p_intersection_bounds=m.encode_interval(pC),Dp_tip_quadratic_identity_bounds=m.encode_interval(D0),Dp_tip_intersection_bounds=m.encode_interval(d0),original_Ds_tip_bounds=m.encode_interval(Dorig),intersected_Ds_tip_bounds=m.encode_interval(Dnew),original_Ds_tip_decimal=m.show(Dorig),intersected_Ds_tip_decimal=m.show(Dnew),original_Ds_tip_strictly_positive=Dorig[0]>0,intersected_Ds_tip_strictly_positive=Dnew[0]>0,projection_stages_bounds=[m.encode_interval(x)for x in S],projection_stages_decimal=[m.show(x)for x in S],p_width_ratio=float((p12[1]-p12[0])/(p[1]-p[0]))if p[0]!=p[1]else 1.)
+  bodyrows.append(item);print('BODY',row['component_id'][-8:],'s stages',*[m.show(x)for x in S],'Ds_tip',m.show(Dorig),'->',m.show(Dnew),'p_width_ratio',item['p_width_ratio'],flush=True)
+ stages=('ORIGINAL','QUADRATIC_IDENTITIES_INTERSECTED','QUADRATIC_AND_CAUCHY_INTERSECTED');rows=[]
+ for c in original['source_mechanisms']:
+  ks=m.scalar(c['sub_normal_contraction_exact']);ko=m.scalar(c['over_normal_contraction_exact']);kn=m.scalar(c['normal_series_stiffness_pa_m']);tn=m.scalar(c['original_normal_traction_pa']);p=[]
+  for name,ds,do in zip(stages,projections[c['trace_id'],'sub'],projections[c['trace_id'],'over']):
+   eta=m.rounded(scaled(m.sub(do,ds),ks)if ks==ko else m.sub(scaled(do,ko),scaled(ds,ks)));traction=m.rounded(m.add((tn,tn),scaled(eta,kn)));p.append(dict(stage=name,eta_bounds_m=m.encode_interval(eta),eta_decimal_m=m.show(eta),traction_bounds_pa=m.encode_interval(traction),traction_decimal_pa=m.show(traction),classification=m.classify(traction)))
+  rows.append(dict(point_id=c['point_id'],trace_id=c['trace_id'],opening_eta_m=m.encode_scalar(-tn/kn),opening_eta_decimal_m=float(-tn/kn),stages=p));print('ATOM',c['point_id'],*[x['classification']for x in p],flush=True)
+ counts={name:{cls:sum(row['stages'][i]['classification']==cls for row in rows)for cls in ('STRICTLY_COMPRESSED','STRICTLY_OPEN','TOUCHES_OPEN_THRESHOLD','CROSSES_OPEN_THRESHOLD')}for i,name in enumerate(stages)}
+ report=dict(format='common-cold-projection-rigorous-quadratic-intersection-probe-1',status='PASS_READ_ONLY_ALGEBRA_PROBE',seconds=time.perf_counter()-started,dependencies=dep,selected_cached_source_input_raw_sha256=cache_pin,selected_cached_source_input_bytes=len(cached_bytes),original_whole_packet_source_readback_reused_without_fresh_whole_packet_reload=True,original_diagnostic_sha256=original['diagnostic_sha256'],original_diagnostic_producer_raw_sha256=m.SHA(BASE.read_bytes()),body_projection_rows=bodyrows,normal_source_rows=rows,classifications=counts,strict_positive_original_Ds_tip_count=sum(x['original_Ds_tip_strictly_positive']for x in bodyrows),strict_positive_intersected_Ds_tip_count=sum(x['intersected_Ds_tip_strictly_positive']for x in bodyrows),source_code_changed=False,raw_integral_fields_rewritten=False,original_diagnostic_rewritten=False,project_modules_imported=False,quadratures_reexecuted=False,force_solvers_reexecuted=False,midpoint_selected=False,arbitrary_remainder_norm_reconstruction_used=False)
+ report['probe_sha256']=m.SHA(m.ENC(report));Path('/tmp/native_common_strain_projection_normal_intersection_probe_20261006.json').write_bytes(m.ENC(report)+b'\n');print('COUNTS',counts,flush=True);print('TIP_POSITIVE',report['strict_positive_original_Ds_tip_count'],report['strict_positive_intersected_Ds_tip_count'],flush=True)
+if __name__=='__main__':main()

@@ -1,0 +1,39 @@
+"""Actual frozen-source 913 gate, independent child pytest/native runs."""
+from pathlib import Path
+import subprocess,json,hashlib,time,types,sys
+ROOT=Path('/workspace/Habitable-Moon-Project')
+P=ROOT/'analysis/geometric_native_common_receiving_face_validation'
+def enc(x):return json.dumps(x,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+def sha(x):return hashlib.sha256(x).hexdigest()
+def run():
+ started=time.perf_counter();source=Path(__file__);(P/'gate_source.txt').write_bytes(source.read_bytes())
+ guard=types.ModuleType('_new_receiving_gate_guard');guard.__file__=str(P/'preservation_source.txt')
+ exec(compile((P/'preservation_source.txt').read_bytes(),guard.__file__,'exec'),guard.__dict__)
+ added=json.loads((P/'additive_source_map.json').read_bytes());before=guard.run(added,P/'before_gate_preservation.json')
+ full=before['source_sha256'];(P/'frozen_source_map_913.json').write_bytes(enc(full)+b'\n')
+ outputs=[];children=[]
+ for name,args in [('tests',[str(ROOT/'.venv/bin/python'),'-m','pytest','-q','tests/test_geometric_native_common_receiving_face.py']),
+                   ('native',[sys.executable,'-m','analysis.geometric_native_common_receiving_face_validation.native_control','--output',str(P/'native_control.json')])]:
+  out=(P/(name+'_console.log')).open('xb');err=(P/(name+'_stderr.log')).open('xb')
+  child=subprocess.Popen(args,cwd=ROOT,stdout=out,stderr=err)
+  children.append((name,child,out,err,time.perf_counter(),args))
+ for name,child,out,err,start,args in children:
+  code=child.wait();out.close();err.close()
+  outputs.append(dict(name=name,actual_exit_code=code,seconds=time.perf_counter()-start,args=args,
+      console_sha256=sha((P/(name+'_console.log')).read_bytes()),stderr_bytes=(P/(name+'_stderr.log')).stat().st_size))
+ after=guard.run(added,P/'after_gate_preservation.json')
+ assert before['dependency_raw_sha256']==after['dependency_raw_sha256']
+ assert all(v['actual_exit_code']==0 and v['stderr_bytes']==0 for v in outputs),outputs
+ native=json.loads((P/'native_control.json').read_bytes())
+ assert sha(enc({k:v for k,v in native.items() if k!='packet_sha256'}))==native['packet_sha256']
+ assert b'10 passed' in (P/'tests_console.log').read_bytes()
+ report=dict(status='PASS_FROZEN913_COMPLETE_CURVED_FACE_GATE',source_count=len(full),tests_passed=10,
+    point_query_count=native['point_query_count'],whole_face_operator_count=native['whole_face_operator_count'],
+    native_packet_sha256=native['packet_sha256'],native_packet_raw_sha256=sha((P/'native_control.json').read_bytes()),
+    child_executions=outputs,before_preservation_sha256=before['preservation_sha256'],
+    after_preservation_sha256=after['preservation_sha256'],old909_and_ancestry_preserved=True,
+    old_physical_math_or_solver_or_mains_executed=False,seconds=time.perf_counter()-started)
+ report['gate_sha256']=sha(enc(report))
+ with (P/'report.json').open('xb') as f:f.write(enc(report)+b'\n')
+ print(enc(report).decode())
+if __name__=='__main__':run()

@@ -1,0 +1,279 @@
+#!/usr/bin/env python3
+"""Independent high precision physical-depth-map audit, no project imports.
+
+Closed913 source fields remain immutable correlated interval inputs. Their
+rational centers are algebra diagnostics for a globally defined map, never
+substituted material points, chronology roots, or physical admission.
+Derivatives come from mpmath.diff applied to scalar Rodrigues composition,
+independently of production Cartesian two-jet formulas.
+"""
+from pathlib import Path
+from fractions import Fraction as F
+import argparse
+import hashlib
+import json
+import mmap
+import time
+import mpmath as mp
+
+ROOT=Path('/workspace/Habitable-Moon-Project')
+SOURCE=ROOT/'analysis/geometric_native_common_receiving_face_validation/native_control.json'
+SOURCE_RAW_SHA='a1d0a1f7a4e765c015980fdc4536842a44a085fbc0b6d9c96ec2105d202d8dc9'
+mp.mp.dps=220
+TOLERANCE=mp.mpf('1e-180')
+
+
+def enc(value): return json.dumps(value,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+
+
+def sha(path):
+    h=hashlib.sha256()
+    with open(path,'rb') as f:
+        while chunk:=f.read(1<<20): h.update(chunk)
+    return h.hexdigest()
+
+
+def rational(raw):
+    if type(raw) is not list or len(raw)!=2 or any(type(x) is not int for x in raw) or raw[1]<=0:
+        raise ValueError('A literal rational pair is required')
+    return F(*raw)
+
+
+def number(value):
+    if type(value) is F: return mp.mpf(value.numerator)/value.denominator
+    return mp.mpf(value)
+
+
+def endpoints(raw):
+    if type(raw) is dict and set(raw)=={'lo','hi'}: return rational(raw['lo']),rational(raw['hi'])
+    exact=rational(raw);return exact,exact
+
+
+def center(raw):
+    lo,hi=endpoints(raw);return number((lo+hi)/2)
+
+
+def tree(raw):
+    if type(raw) is dict and set(raw)=={'lo','hi'}: return center(raw)
+    if type(raw) is list and len(raw)==2 and all(type(x) is int for x in raw): return center(raw)
+    return tuple(tree(x) for x in raw)
+
+
+def first_source_point():
+    """Parse only the first sealed source row, without loading1.1GB JSON."""
+    with SOURCE.open('rb') as f,mmap.mmap(f.fileno(),0,access=mmap.ACCESS_READ) as mm:
+        token=b'"point_queries":[';index=mm.find(token)
+        if index<0: raise AssertionError('Source paired query array absent')
+        index+=len(token);extent=1<<20
+        while extent<=1<<28:
+            prefix=mm[index:min(len(mm),index+extent)]
+            try:
+                text=prefix.decode('utf-8')
+            except UnicodeDecodeError:
+                # A trailing partial codepoint is outside the decoded first
+                # JSON item. Removing it does not change source item bytes.
+                text=prefix.decode('utf-8',errors='ignore')
+            try: return json.JSONDecoder().raw_decode(text)[0]
+            except json.JSONDecodeError: extent*=2
+        raise AssertionError('First source row exceeds explicit256MiB limit')
+
+
+def compare(value,raw,label,counts):
+    lo,hi=map(number,endpoints(raw));margin=TOLERANCE*max(1,abs(value))
+    if value<lo-margin or value>hi+margin: raise AssertionError('Independent numerical value outside '+label)
+    counts['high_precision_scalar_enclosure_checks']+=1
+
+
+def compare_tree(value,raw,label,counts):
+    if isinstance(value,(tuple,list)):
+        if len(value)!=len(raw): raise AssertionError('Incomplete array '+label)
+        for i,(v,r) in enumerate(zip(value,raw)): compare_tree(v,r,label+'.'+str(i),counts)
+    else: compare(value,raw,label,counts)
+
+
+def identity(value,label,counts):
+    if abs(value)>TOLERANCE: raise AssertionError('Independent analytic identity mismatch '+label)
+    counts['high_precision_analytic_identity_checks']+=1
+
+
+def cross(a,b): return (a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0])
+def dot(a,b): return sum((x*y for x,y in zip(a,b)),mp.mpf(0))
+def norm(x): return mp.sqrt(dot(x,x))
+def mm(a,b): return tuple(tuple(sum((a[i][k]*b[k][j] for k in range(3)),mp.mpf(0)) for j in range(3)) for i in range(3))
+def mv(a,b): return tuple(dot(row,b) for row in a)
+def tr(a): return tuple(zip(*a))
+I=tuple(tuple(mp.mpf(int(i==j)) for j in range(3)) for i in range(3))
+
+
+class MapOracle:
+    def __init__(self,R,s,omega):
+        self.R,self.s,self.omega=R,s,omega;self.rate=norm(omega)
+        if not self.rate: raise AssertionError('Authentic common rate must be nonzero')
+        self.axis=tuple(w/self.rate for w in omega)
+    def tau(self,*x): return (self.R**3-(norm(x)/self.s)**3)/(3*self.R**2)
+    def rotate(self,x,angle):
+        cosine,sine=mp.cos(angle),mp.sin(angle);axial=dot(self.axis,x);turn=cross(self.axis,x)
+        return tuple(cosine*v+sine*w+(1-cosine)*u*axial for v,w,u in zip(x,turn,self.axis))
+    def component(self,k):
+        return lambda x,y,z,lam:self.rotate((x,y,z),lam*self.rate*self.tau(x,y,z))[k]
+    def value(self,x,lam): return self.rotate(x,lam*self.rate*self.tau(*x))
+    def partial(self,k,x,lam,orders): return mp.diff(self.component(k),tuple(x)+(lam,),tuple(orders))
+    def derivatives(self,x,lam):
+        D=[];H=[];velocity=[];acceleration=[];D_rate=[]
+        for k in range(3):
+            d=[];h=[];rate=[]
+            for i in range(3):
+                orders=[0]*4;orders[i]=1;d.append(self.partial(k,x,lam,orders))
+                orders[3]=1;rate.append(self.partial(k,x,lam,orders))
+                row=[]
+                for j in range(3):
+                    orders=[0]*4;orders[i]+=1;orders[j]+=1
+                    row.append(self.partial(k,x,lam,orders))
+                h.append(tuple(row))
+            D.append(tuple(d));H.append(tuple(h));D_rate.append(tuple(rate))
+            velocity.append(self.partial(k,x,lam,(0,0,0,1)))
+            acceleration.append(self.partial(k,x,lam,(0,0,0,2)))
+        return tuple(D),tuple(H),tuple(velocity),tuple(acceleration),tuple(D_rate)
+
+
+def flags(field):
+    for key in ('preparation_work_paid','source_reference_or_rest_metric_reset','physical_material_admission_authorized',
+            'new_mixed_force_equilibrium_certified','physical_elapsed_time_added'):
+        if field[key] is not False: raise AssertionError('Unauthorised physical inference '+key)
+    if field['accepted_new_native_intervals']!=0: raise AssertionError('New interval accepted')
+    if field['radius_preservation_identity'] is not True or field['global_inverse_identity'] is not True:
+        raise AssertionError('Global map identities were omitted')
+    if endpoints(field['map_volume_jacobian_bounds'])!=(F(1),F(1)):
+        raise AssertionError('Exact determinant-one identity absent')
+
+
+def run(native_path,output):
+    started=time.monotonic();source_before=sha(SOURCE)
+    if source_before!=SOURCE_RAW_SHA: raise AssertionError('Closed913 genuine input source raw pin changed')
+    native_path=Path(native_path).resolve();native_before=sha(native_path);native=json.load(open(native_path))
+    if native['sha256']!=hashlib.sha256(enc({k:v for k,v in native.items() if k!='sha256'})).hexdigest():
+        raise AssertionError('New preparation native selfseal differs')
+    if native['source_raw_sha256']!=SOURCE_RAW_SHA: raise AssertionError('New preparation source authority differs')
+    if native['source_locator']!={'array':'point_queries','index':0,'label':'start','hot_query_label':'genuine_zero_hot_source'}:
+        raise AssertionError('Genuine source locator changed')
+    source_row=first_source_point();response=source_row['response'];cold=json.loads(response['cold_field_json']);bank=json.loads(cold['source_bank_json'])
+    if source_row['label']!='start' or response['hot_query_label']!='genuine_zero_hot_source': raise AssertionError('Source row mismatch')
+    if response['binding_sha256']!=native['source_point_binding_sha256']: raise AssertionError('Source point binding differs')
+    inputs=native['input'];decl=inputs['declaration']
+    expected={'position_bounds_m':cold['position_bounds_m'],'original_gradient_bounds':cold['original_cartesian_gradient_bounds'],
+        'mode_displacement_columns':cold['mode_displacement_columns'],'mode_original_gradient_columns_per_m':cold['mode_original_gradient_columns_per_m'],
+        'hot_position_bounds_m':response['hot_spatial_values'][:3],
+        'current_receiver_unit_normal_bounds':response['current_receiver_unit_normal_bounds'],'old_gap_bounds_m':response['gap_bounds_m']}
+    for key,value in expected.items():
+        if inputs[key]!=value: raise AssertionError('Compact preparation input differs from closed913 literal field '+key)
+    if (decl['radius_m']!=bank['radius_m'] or decl['fixed_radial_scale']!=cold['fixed_radial_scale']
+            or decl['angular_rate_per_physical_volume_depth_m']!=bank['angular_rate_per_physical_volume_depth_m']):
+        raise AssertionError('Whole-owner preparation declaration differs from source bank parameters')
+    counts={'high_precision_scalar_enclosure_checks':0,'high_precision_analytic_identity_checks':0,
+        'source_literal_input_fields_verified':len(expected)+3,'independent_composed_mode_gradient_checks':0}
+    x=tree(inputs['position_bounds_m']);A=tree(inputs['original_gradient_bounds']);modes=tree(inputs['mode_displacement_columns']);gradients=tree(inputs['mode_original_gradient_columns_per_m'])
+    hot=tree(inputs['hot_position_bounds_m']);normal=tree(inputs['current_receiver_unit_normal_bounds'])
+    oracle=MapOracle(center(decl['radius_m']),center(decl['fixed_radial_scale']),tree(decl['angular_rate_per_physical_volume_depth_m']))
+    tau=oracle.tau(*x);dtau=tuple(mp.diff(oracle.tau,x,tuple(int(i==j) for i in range(3))) for j in range(3))
+    ddtau=tuple(tuple(mp.diff(oracle.tau,x,tuple(int(k==i)+int(k==j) for k in range(3))) for j in range(3)) for i in range(3))
+    # Independent Green coefficients are recovered by differentiating DT^TDT
+    # at zero, rather than reading the native rank-one strain formula.
+    D0,H0,V0,B0,D1=oracle.derivatives(x,mp.mpf(0))
+    D2=[]
+    for k in range(3):
+        row=[]
+        for j in range(3):
+            orders=[0]*4;orders[j]=1;orders[3]=2
+            row.append(oracle.partial(k,x,mp.mpf(0),orders))
+        D2.append(tuple(row))
+    D2=tuple(D2)
+    Lleft,Lright=mm(tr(D0),D1),mm(tr(D1),D0)
+    L=tuple(tuple((Lleft[i][j]+Lright[i][j])/2 for j in range(3)) for i in range(3))
+    Qleft,Qcenter,Qright=mm(tr(D2),D0),mm(tr(D1),D1),mm(tr(D0),D2)
+    Q=tuple(tuple((Qleft[i][j]+2*Qcenter[i][j]+Qright[i][j])/4 for j in range(3)) for i in range(3))
+    originalL=mm(mm(tr(A),L),A);originalQ=mm(mm(tr(A),Q),A)
+    if len(modes)!=56 or len(gradients)!=56: raise AssertionError('Complete56 original cold columns required')
+    if tuple(rational(row['preparation_fraction']) for row in native['queries'])!=(F(0),F(1,2),F(1)):
+        raise AssertionError('All3 physical preparation parameter queries required')
+    gap_values=[]
+    for row in native['queries']:
+        lam=center(row['preparation_fraction']);label='prep_'+str(rational(row['preparation_fraction']));field=row['field'];flags(field)
+        if field['declaration']!=decl or field['original_position_bounds_m']!=inputs['position_bounds_m']:
+            raise AssertionError('Field changed declared source input')
+        compare(lam,field['preparation_fraction_bounds'],label+'.fraction',counts)
+        y=oracle.value(x,lam);D,H,velocity,acceleration,D_rate=oracle.derivatives(x,lam)
+        compare_tree(y,field['position_bounds_m'],label+'.position',counts)
+        compare_tree(D,field['spatial_gradient_bounds'],label+'.DT',counts)
+        compare_tree(H,field['spatial_hessian_bounds_per_m'],label+'.D2T',counts)
+        compare_tree(velocity,field['preparation_velocity_bounds_m'],label+'.velocity',counts)
+        compare_tree(acceleration,field['preparation_acceleration_bounds_m'],label+'.acceleration',counts)
+        compare_tree(D_rate,field['preparation_spatial_gradient_rate_bounds'],label+'.DT_rate',counts)
+        compare(norm(x),field['radius_bounds_m'],label+'.radius',counts)
+        compare(tau,field['physical_volume_depth_bounds_m'],label+'.depth',counts)
+        compare_tree(dtau,field['physical_volume_depth_gradient_bounds'],label+'.depth_gradient',counts)
+        compare_tree(ddtau,field['physical_volume_depth_hessian_bounds_per_m'],label+'.depth_H',counts)
+        angle=lam*oracle.rate*tau
+        rotation=tuple(tuple(oracle.rotate(tuple(mp.mpf(int(i==j)) for i in range(3)),angle)[k] for j in range(3)) for k in range(3))
+        compare_tree(rotation,field['rotation_bounds'],label+'.rotation',counts)
+        inverseD=tuple(tuple(mp.diff(lambda a,b,c,k=k:oracle.value((a,b,c),-lam)[k],y,
+            tuple(int(t==j) for t in range(3))) for j in range(3)) for k in range(3))
+        compare_tree(inverseD,field['inverse_spatial_gradient_bounds'],label+'.inverse_DT',counts)
+        identity(mp.det(mp.matrix(D))-1,label+'.det1',counts)
+        identity(norm(y)-norm(x),label+'.radius_preserved',counts)
+        for i,v in enumerate(oracle.value(y,-lam)): identity(v-x[i],label+'.globalinverse'+str(i),counts)
+        inverse_product=mm(D,inverseD)
+        for i in range(3):
+            for j in range(3): identity(inverse_product[i][j]-I[i][j],label+'.inversegradient'+str(i)+str(j),counts)
+        compare_tree(mm(D,A),field['original_cartesian_gradient_bounds'],label+'.original_DT_A',counts)
+        compare_tree(mm(D_rate,A),field['preparation_original_gradient_rate_bounds'],label+'.original_DT_rate_A',counts)
+        compare_tree(L,field['relative_green_strain_linear_coefficients'],label+'.green_L',counts)
+        compare_tree(Q,field['relative_green_strain_quadratic_coefficients'],label+'.green_Q',counts)
+        compare_tree(originalL,field['original_green_strain_linear_coefficients'],label+'.originalgreen_L',counts)
+        compare_tree(originalQ,field['original_green_strain_quadratic_coefficients'],label+'.originalgreen_Q',counts)
+        geometric=mm(tr(D),D);green=tuple(tuple((geometric[i][j]-I[i][j])/2 for j in range(3)) for i in range(3))
+        compare_tree(green,field['relative_green_strain_bounds'],label+'.green_from_DT',counts)
+        for i in range(3):
+            for j in range(3): identity(green[i][j]-(lam*L[i][j]+lam*lam*Q[i][j]),label+'.green_quadratic_identity'+str(i)+str(j),counts)
+        for m,(v,G) in enumerate(zip(modes,gradients)):
+            compare_tree(mv(D,v),field['mode_displacement_columns'][m],label+'.mode_'+str(m),counts)
+            DG=mm(D,G)
+            pushed=tuple(tuple(DG[k][j]+sum((H[k][i][l]*v[i]*A[l][j] for i in range(3) for l in range(3)),mp.mpf(0)) for j in range(3)) for k in range(3))
+            compare_tree(pushed,field['mode_original_gradient_columns_per_m'][m],label+'.mode_gradient_'+str(m),counts)
+            if m in (0,7,35,49):
+                # Differentiate T(x+A*xi+v*a+G*xi*a) directly. No use of
+                # the mode-gradient chain-rule formula for these controls.
+                for k in range(3):
+                    for j in range(3):
+                        def composition(xi,amplitude):
+                            moved=tuple(x[t]+A[t][j]*xi+v[t]*amplitude+G[t][j]*xi*amplitude for t in range(3))
+                            return oracle.value(moved,lam)[k]
+                        derivative=mp.diff(composition,(mp.mpf(0),mp.mpf(0)),(1,1))
+                        compare(derivative,field['mode_original_gradient_columns_per_m'][m][k][j],label+'.direct_composed_mode'+str(m)+','+str(k)+','+str(j),counts)
+                        counts['independent_composed_mode_gradient_checks']+=1
+        gap=dot(tuple(h-c for h,c in zip(hot,y)),normal)
+        compare(gap,row['gap_bounds_m'],label+'.actualgap',counts)
+        gap_values.append(mp.nstr(gap,70))
+    oldgap=dot(tuple(h-c for h,c in zip(hot,x)),normal)
+    compare(oldgap,inputs['old_gap_bounds_m'],'old_gap_reproduced',counts)
+    for key in ('all_pair_material_admission_certified','clocks_advanced','new_mixed_equilibrium_certified','old_material_or_root_midpoint_used','whole_source_preparation_work_paid'):
+        if native[key] is not False: raise AssertionError('Uncertified native physical scope '+key)
+    if native['accepted_new_intervals']!=0: raise AssertionError('New physical interval accepted')
+    if sha(SOURCE)!=source_before or sha(native_path)!=native_before: raise AssertionError('Audit inputs changed')
+    report=dict(format='native-cold-depth-preparation-independent-audit-1',status='PASS',
+        source_raw_sha256=source_before,native_packet_raw_sha256=native_before,audit_source_raw_sha256=sha(__file__),
+        counts=counts,decimal_precision=mp.mp.dps,independent_derivative_method='MPMATH_PARTIAL_DIFF_OF_RODRIGUES_SCALAR_COMPOSITION',
+        complete_mode_column_count=56,preparation_parameter_query_count=3,gap_algebra_diagnostics_m=gap_values,
+        source_input_representatives_are_algebra_diagnostics_only=True,material_labels_or_roots_midpoint_substituted=False,
+        original_source_reference_or_rest_metric_reset=False,global_volume_preservation_and_inverse_analytic_identity_checked=True,
+        old_mathematical_controls_reexecuted=False,project_modules_imported=False,
+        whole_source_preparation_work_certified=False,all_pair_material_admission_certified=False,
+        new_mixed_equilibrium_certified=False,clocks_advanced=False,accepted_new_intervals=0,
+        elapsed_seconds=time.monotonic()-started)
+    report['report_sha256']=hashlib.sha256(enc(report)).hexdigest()
+    with Path(output).resolve().open('xb') as f:f.write(enc(report)+b'\n')
+    print(enc(report).decode())
+
+
+if __name__=='__main__':
+    parser=argparse.ArgumentParser();parser.add_argument('--native',required=True);parser.add_argument('--output',required=True)
+    args=parser.parse_args();run(args.native,args.output)

@@ -1,0 +1,51 @@
+{
+  "status": "passed_opaque_native_format_boundary_audit",
+  "checks": [
+    "immutable_reference_surface",
+    "cannot_delete_reference_surface",
+    "immutable_rotations",
+    "cannot_delete_rotations",
+    "immutable_version",
+    "cannot_delete_version",
+    "immutable__fragments",
+    "cannot_delete__fragments",
+    "immutable__time_myr",
+    "cannot_delete__time_myr",
+    "legacy_writer_rejected_before_path_creation",
+    "legacy_writer_existing_destination_unchanged",
+    "save_rejects_forged_derived_time_before_path_creation",
+    "advance_rejects_forged_derived_time",
+    "save_rejects_forged_derived_fragments_before_path_creation",
+    "advance_rejects_forged_derived_fragments",
+    "save_rejects_forged_version_before_path_creation",
+    "advance_rejects_forged_version",
+    "advance_and_native_restart_exact"
+  ],
+  "count": 19,
+  "started_utc": "2026-10-02T05:18:35.680319+00:00",
+  "finished_utc": "2026-10-02T05:18:45.363666+00:00",
+  "seconds": 9.683352207008284,
+  "code_sha256_before": {
+    "tectonics/geometric_intrinsic_geometry.py": "4382275a99081cbdad07af417ad62bda097910e5d144348c50babfd38b7501b2",
+    "tectonics/geometric_intrinsic_surface.py": "8336ab51413d1f605c71fd575088bfe5a4e572f44445656559827c56c49306df",
+    "tests/test_geometric_intrinsic_geometry.py": "33f7ba21e66f7875eb971feaf4320e017cbfb3210b828192542d30f163405cc1",
+    "tests/test_geometric_intrinsic_surface.py": "68c0b6025d9a4102be1ce39dae5a4009603602fcd762456326d9bea884dd5195",
+    "analysis/geometric_intrinsic_validation/run_intrinsic_control.py": "783c429e285344929aacdeb28af92fada52215978a2f8e8b2e0d72c861bc1b47",
+    "analysis/geometric_intrinsic_validation/verify_intrinsic_geometry.py": "b72a49fac06001b1c54e92261640d8fa4ce915f17a6dbae69bbfb1db965f3620"
+  },
+  "code_sha256_after": {
+    "tectonics/geometric_intrinsic_geometry.py": "4382275a99081cbdad07af417ad62bda097910e5d144348c50babfd38b7501b2",
+    "tectonics/geometric_intrinsic_surface.py": "8336ab51413d1f605c71fd575088bfe5a4e572f44445656559827c56c49306df",
+    "tests/test_geometric_intrinsic_geometry.py": "33f7ba21e66f7875eb971feaf4320e017cbfb3210b828192542d30f163405cc1",
+    "tests/test_geometric_intrinsic_surface.py": "68c0b6025d9a4102be1ce39dae5a4009603602fcd762456326d9bea884dd5195",
+    "analysis/geometric_intrinsic_validation/run_intrinsic_control.py": "783c429e285344929aacdeb28af92fada52215978a2f8e8b2e0d72c861bc1b47",
+    "analysis/geometric_intrinsic_validation/verify_intrinsic_geometry.py": "b72a49fac06001b1c54e92261640d8fa4ce915f17a6dbae69bbfb1db965f3620"
+  },
+  "code_unchanged": true,
+  "source_sha256": "65cba671cbddb71ae5d077e174bca82f8ccca9a9f9ababe2a8a3de62fa699283",
+  "source_path": "analysis/geometric_intrinsic_validation/opaque_format_boundary_audit_source.txt",
+  "command": [
+    "/workspace/Habitable-Moon-Project/.venv/bin/python",
+    "/tmp/intrinsic_opaque_boundary_audit.py"
+  ]
+}

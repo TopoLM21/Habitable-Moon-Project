@@ -1,0 +1,416 @@
+"""Stdlib audit of original-material passive charts and one reduced potential.
+
+No production imports, historical tests, physical source solve or certified
+force/Hessian/tensor quadrature.  Pinned rational/quaternion helper routines
+supply true source geometry; original material membership, COMMON Phi, beam
+calibration and T14->100 variational assembly are independently reconstructed.
+The declared archival0 conservative embedding is not current objective physical
+transport, body86 reduction, mixed equilibrium or whole-clock admission.
+"""
+from contextlib import redirect_stdout
+from fractions import Fraction as F
+from pathlib import Path
+import argparse, ast, hashlib, io, json, math, re, sys, time, types
+
+ROOT=Path('/workspace/Habitable-Moon-Project')
+PARENT=ROOT/'analysis/geometric_native_common_material_transfer_validation'
+PRIOR=ROOT/'analysis/geometric_native_common_source_carrier_validation'
+OLD_MAP='bfabfa58dbe49ce1102ef9ab72680a301f8cea6fb30093442150d8d4bda45ef8'
+OLD_MAP_RAW='4b2b98b406cf1f955260dcc24770b9a860cf330e49adc72b4d47e018a140ffc6'
+NEW_MAP='5ba59a6e8231e7cf2408b2614b19601cc631bd204eb4f436b4241cf4fa535915'
+NEW_MAP_RAW='340716e8267d63974e3d8c27a94ac53af60d90e6f9f2382b86874a00c0c3fe9b'
+PRIOR_PACKET_RAW='265206430b4c864db32bce1be0a9a75b71fa180158f3d81e4f52131bebdf320c'
+PRIOR_WRAPPER_RAW='47b5c882c041f5a2c6d460c71eae11091a6217ff78a0df14af9b57f214ba633e'
+HELPER=PRIOR/'independent_audit_source.txt'
+HELPER_RAW='3e3226705f7a1931e01d9147046686492e73d728d5a7b33a01d1e4555eaa43f4'
+PRIOR_MANIFEST_RAW='e0ebc4fbd1086285035fc868181f3ba7cb34833df897d8c576537b71716a91bb'
+PRIOR_MANIFEST_SEAL='503525b0c461b4e905844aff4d0178536b763446b56bc6c2b4a4a44d3f7f9160'
+BASELINE_RAW='50eca1fa73aac54061f82f8104ecfc88c1d94ba696cd23ab2a573a2b66ba58cc'
+BASELINE_EVIDENCE={
+ 'baseline_867_bootstrap_source.txt':'8e86273fadec1d0246132f4ff2be0c33f497d1d617dc6ec9221c09a8b5e415d6',
+ 'baseline_867_bootstrap.json':'17d4094a5b3a16edaaa36519c29c0a96d1eeba741e8a826f7686fddd16dc1f83',
+ 'baseline_867_reusable_source.txt':BASELINE_RAW}
+AUDIT_INPUTS=(
+ ('analysis/geometric_native_common_reference_validation/contact_history_audit.json','6da68ccda2089921fbe197293a05e4f84c3ea83fd2abb648b98d20f9b1813901'),
+ ('analysis/geometric_native_common_contact_validation/contact_energy_decomposition_audit.json','b164936ac0217e4c8c4feaebc8d7495731edd218e4da93db36e1d2660a3815b0'))
+ADDED=frozenset((
+ 'tectonics/geometric_native_common_material_transfer.py',
+ 'tests/test_geometric_native_common_material_transfer.py',
+ 'analysis/geometric_native_common_material_transfer_validation/native_control.py',
+ 'analysis/geometric_native_common_material_transfer_validation/validate.py'))
+OUTPUTS=frozenset(('pytest.log','control_console.log','native_control/report.json','native_control/source_packet.json'))
+SCOPE='COMMON_ORIGINAL_MATERIAL_EXTENDED_REDUCED_SOURCE_COMPONENT_ONLY'
+FORCE_BASIS='archival_old_reference'
+BEAM_OWNER='INTERNAL_SOURCE_BEAMS_REPLACE_COMMON_CALIBRATED_BEAM_ENERGY'
+CHART_LAW='SAME_ORIGINAL_PARENT_PASSIVE_COMMON_PHI_ARCHIVE_EXTENSION'
+INTERNAL_MOTION_LAW='FRESH_OWNER_ROTATION_OF_FROZEN_PHI_POINT_PLUS_INTERNAL_LITERAL_SOURCE_DIRECTION_DISPLACEMENT_WITH_FIXED_MATERIAL_LEVER'
+BRANCHES=('relaxed_zero_strength_shear','frozen_elastic_predictor')
+FLAGS=dict(same_original_material_identity_authenticated=True,
+ passive_archive_chart_extension_declared=True,one_global_source_embedding_defined=True,
+ one_potential_derivatives_defined=True,separate_global_beam_energized_once=True,
+ source_work_ledgers_retained_without_advance=True,original_literal_q_normalized_in_source_mechanics=False,
+ source_internal_links_reduced_into_common_body_modes=False,physical_source_material_handover_certified=False,
+ authentic_archived_three_dimensional_body_motion_certified=False,full_three_dimensional_rod_endpoints_recovered=False,
+ common_body_modal_coupling_certified=False,new_mixed_force_equilibrium_certified=False,
+ whole_clock_all_pair_admission_authorized=False,physical_material_admission_authorized=False,
+ source_history_advanced=False,original_point_1_completed=False)
+FRESH_TESTS=14
+SCHEMAS={'NativeCommonOriginalMaterialAttachment': ('point_id', 'trace_id', 'side', 'original_parent_id', 'original_material_id', 'owner', 'original_direction_literal', 'original_parent_support_predicate_bounds', 'original_label_membership', 'receiver_endpoint_predicate_bounds', 'whole_clock_receiver_predicate_divided_by_u_bounds', 'live_domain_id', 'archive_domain_id', 'archive_cohort_id', 'complete_parent_allocation_json', 'complete_archive_cohort_json', 'complete_original_parent_json', 'geometry_field_component_id', 'geometry_field_material_kind', 'normalized_material_ray_bounds', 'current_world_material_ray_bounds', 'material_depth_bounds_m', 'areal_material_thickness_m', 'roof_radial_displacement_m', 'material_owner_pose_bounds', 'genuine_current_attachment_world_m', 'material_reference_position_bounds_m', 'source_tip_reference_bounds_m', 'source_direction_reference_bounds', 'material_local_lever_bounds_m', 'material_local_internal_direction_bounds', 'inherited_receiver_directors_material_local_bounds', 'chosen_force_basis', 'passive_chart_law', 'original_material_membership_authenticated', 'current_live_cold_mask_membership_claimed', 'archived_three_dimensional_body_motion_certified', 'internal_material_motion_law'), 'NativeCommonOriginalBeam': ('trace_id', 'side', 'original_parent_id', 'component_id', 'original_global_stiffness_index', 'source_coordinate_index', 'global_coordinate_index', 'stiffness_exact_n_m', 'reference_displacement_m', 'reference_force_exact_n', 'reference_energy_exact_j', 'stiffness_binary64_n_m', 'literal_reduced_beam_binary_force_evaluation_n', 'literal_reduced_beam_binary_energy_evaluation_j', 'binary_force_evaluation_minus_exact_n', 'binary_energy_evaluation_minus_exact_j', 'complete_source_bending_parameters_json', 'complete_immutable_beam_audit_row_json', 'archived_old_binary_force_replayed', 'energetic_owner'), 'NativeCommonMaterialTransferSystem': ('source_snapshot_sha256', 'reference_snapshot_sha256', 'source_carrier_binding_sha256', 'source_mechanical_context_sha256', 'common_geometry_context_sha256', 'source_history_binding_sha256', 'source_epoch_sha256', 'force_basis', 'coordinate_order', 'source_coordinate_order', 'source_support_indices', 'source_to_global_injection', 'global_zero_coordinate_indices', 'attachments', 'beams', 'complete_original_material_state_json', 'complete_current_source_states_json', 'complete_current_source_memory_json', 'complete_before_work_ledgers_json', 'complete_unaccepted_candidate_work_ledgers_json', 'original_source_work_lineages', 'source_contact_elapsed_time_s', 'source_contact_step_count', 'source_memory_elapsed_time_s', 'source_geometry_elapsed_time_s', 'material_geometry_elapsed_time_s', 'source_serial_reference_energy_j', 'beam_reference_energy_j', 'beam_mathematical_reference_energy_j', 'beam_energy_rounding_residual_j', 'audit_input_raw_sha256', 'archived_donor_attachment_count', 'live_donor_attachment_count', 'live_receiver_attachment_count', 'provenance', 'precision', 'binding_sha256', 'energetic_owner', 'reduced_coordinate_map_second_derivative_exact_zero', 'common_body_source_coupling_exact_zero', 'internal_material_motion_law', 'material_point_queries_are_frozen_reference_chart_queries'), 'NativeCommonOriginalMaterialPoint': ('system_binding_sha256', 'point_id', 'side', 'original_parent_id', 'original_material_id', 'original_label_membership', 'geometry_field_component_id', 'original_direction_literal', 'normalized_material_ray_bounds', 'current_world_material_ray_bounds', 'material_depth_bounds_m', 'world_position_bounds_m', 'input_position_bounds_m', 'reference_gradient_bounds', 'rotation_matrix_bounds', 'radius_bounds_m', 'physical_volume_depth_bounds_m', 'determinant_exact', 'signed_material_chart_jacobian_exact', 'precision', 'binding_sha256', 'original_material_membership_authenticated', 'passive_chart_law', 'existing_common_live_mask_membership_authenticated', 'physical_material_admission_authorized', 'reference_chart_query_not_internal_deformed_position'), 'NativeCommonMaterialAtomResponse': ('point_id', 'trace_id', 'source_accounting_bucket', 'basis', 'branch', 'original_area_m2', 'sub_position_bounds_m', 'over_position_bounds_m', 'sub_direction_bounds', 'over_direction_bounds', 'receiver_director_bounds', 'projected_geometry_bounds_m', 'scalar_increment_bounds_m', 'scalar_free_anchor_bounds_m', 'scalar_first_derivative_bounds', 'scalar_second_derivative_bounds', 'traction_bounds_pa', 'effective_tangent_stiffness_pa_m', 'potential_bounds_j', 'potential_gradient_bounds', 'potential_hessian_bounds', 'stored_source_energy_components_j', 'world_reactions', 'source_reference_world_reactions', 'sub_attachment_position_bounds_m', 'over_attachment_position_bounds_m', 'sub_virtual_lever_bounds_m', 'over_virtual_lever_bounds_m', 'force_attachment_torque_on_sub_nm', 'force_attachment_torque_on_over_nm', 'lever_couple_on_sub_nm', 'lever_couple_on_over_nm', 'receiver_carrier_couple_on_over_nm', 'complete_attachment_torque_on_sub_nm', 'complete_attachment_torque_on_over_nm', 'attachment_torque_closure_residual_bounds_nm', 'proposed_plastic_increment_bounds_m', 'source_work_lineage_id', 'archival_literal_world_reactions_json', 'archival_mathematical_minus_literal_reaction_bounds', 'archival_literal_reaction_replay_certified', 'original_source_state_json'), 'NativeCommonMaterialBeamResponse': ('trace_id', 'side', 'source_coordinate_index', 'global_coordinate_index', 'coordinate_increment_m', 'potential_increment_j', 'gradient_n', 'hessian_n_m', 'reference_energy_exact_j', 'reference_force_exact_n'), 'NativeCommonMaterialTransferResponse': ('system_binding_sha256', 'source_snapshot_sha256', 'force_basis', 'branch', 'coordinate_order', 'coordinate_increments', 'source_coordinate_order', 'source_coordinate_increments', 'source_support_indices', 'global_zero_coordinate_indices', 'atom_responses', 'beam_responses', 'potential_j', 'potential_gradient_bounds', 'potential_hessian_bounds', 'source_pullback_gradient_bounds', 'source_pullback_hessian_bounds', 'source_serial_potential_j', 'beam_potential_j', 'beam_reference_energy_j', 'beam_energy_rounding_residual_j', 'complete_unaccepted_candidate_work_ledgers_json', 'original_source_work_lineages', 'source_contact_elapsed_time_s', 'source_geometry_elapsed_time_s', 'material_geometry_elapsed_time_s', 'precision', 'binding_sha256', 'energetic_owner', 'common_body_source_coupling_exact_zero', 'global_coordinate_map_second_derivative_exact_zero', 'source_state_or_work_advanced', 'physical_source_material_handover_certified', 'old_force_archive_reproduced_in_current_objective_pose', 'internal_material_motion_law')}
+
+
+def enc(value):return json.dumps(value,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+def vd(value):return hashlib.sha256(enc(value)).hexdigest()
+def read(path):return json.loads(Path(path).read_bytes())
+def digest(path):
+ h=hashlib.sha256()
+ with Path(path).open('rb') as stream:
+  for block in iter(lambda:stream.read(1<<20),b''):h.update(block)
+ return h.hexdigest()
+def exact(actual,expected,label):assert type(actual) is type(expected) and actual==expected,label
+
+def sealed(path,key):
+ value=read(path);body=dict(value);exact(body.pop(key),vd(body),'selfseal '+str(path));return value
+
+def load(path,name,pin):
+ exact(digest(path),pin,'pinned stdlib-only producer '+str(path))
+ module=types.ModuleType(name);module.__file__=str(path);sys.modules[name]=module
+ exec(compile(Path(path).read_bytes(),str(path),'exec'),module.__dict__);return module
+
+def source_map():return {str(p.relative_to(ROOT)):digest(p) for folder in ('tectonics','tests','scripts','analysis') for p in sorted((ROOT/folder).rglob('*.py'))}
+
+def closure(directory,wrapper):
+ exact(set(wrapper['outputs']),set(OUTPUTS),'strict four-output manifest')
+ exact({str(p.relative_to(directory)) for p in directory.rglob('*') if p.is_file()},set(OUTPUTS)|{'report.json'},'strict gate output closure')
+ for name,row in wrapper['outputs'].items():
+  p=directory/name;exact(digest(p),row['sha256'],'closed output SHA '+name);exact(p.stat().st_size,row['bytes'],'closed output bytes '+name)
+
+def frac(raw):
+ assert type(raw) is list and len(raw)==2 and all(type(x) is int for x in raw),'exact fraction shape'
+ v=F(*raw);exact([v.numerator,v.denominator],raw,'canonical fraction');return v
+
+def literal(v):
+ assert type(v) in (float,int),'original literal source number';return F.from_float(v) if type(v) is float else F(v)
+
+def payload(v):
+ if type(v) is F:return [v.numerator,v.denominator]
+ if hasattr(v,'lo') and hasattr(v,'hi'):return {'lo':payload(v.lo),'hi':payload(v.hi)}
+ if type(v) in (tuple,list):return [payload(x) for x in v]
+ if type(v) is dict:return {k:payload(x) for k,x in v.items()}
+ return v
+
+def strict(raw,name,extra=()):exact(set(raw),set(SCHEMAS[name])|set(extra),'strict '+name+' schema')
+
+def typed(raw,name,format_value,extra=None):
+ extra={} if extra is None else extra
+ strict(raw,name,('format','scope',*extra));exact(raw['format'],format_value,'DTO format');exact(raw['scope'],SCOPE,'DTO scope')
+ for key,v in extra.items():exact(raw[key],v,'DTO scope '+key)
+ body={key:raw[key] for key in SCHEMAS[name] if key!='binding_sha256'}
+ exact(raw['binding_sha256'],vd(body),'complete registered DTO selfseal '+name)
+
+
+def dot(a,b):return sum((x*y for x,y in zip(a,b)),F(0))
+def add(a,b):return tuple(x+y for x,y in zip(a,b))
+def scale(v,k):return tuple(x*k for x in v)
+def minus(a,b):return add(a,scale(b,F(-1)))
+def cross(a,b):return (a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0])
+def mapped(M,v):return tuple(dot(row,v) for row in M)
+def transpose(M):return tuple(tuple(M[j][i] for j in range(3)) for i in range(3))
+
+
+def parse(raw,c):
+ exact(set(raw),{'lo','hi'},'interval DTO');return c['I'](frac(raw['lo']),frac(raw['hi']))
+
+def contains(raw,v,c,label):
+ a=parse(raw,c);v=v if hasattr(v,'lo') else c['I'](v)
+ assert a.lo<=v.lo<=v.hi<=a.hi,label
+ return a
+
+def tree(raw,v,c,label):
+ if type(v) in (tuple,list):
+  assert type(raw) is list and len(raw)==len(v),label+' shape'
+  return tuple(tree(x,y,c,label+':'+str(i)) for i,(x,y) in enumerate(zip(raw,v)))
+ return contains(raw,v,c,label)
+
+
+def rounded(v,c,precision=320):
+ if not hasattr(v,'lo'):v=c['I'](v)
+ return c['I'](*c['geometry']._rounded((v.lo,v.hi),precision))
+
+def exp_rotate(v,rotation,c):
+ """Independent Cartesian exponential and proven absolute Taylor remainder.
+
+ Each operation is outward-rounded at320 decimal digits.  Infinity-norm
+ matrix bound ||[a]x|| <= sum|a| <1/4 gives a geometric tail majorant.
+ """
+ I=c['I'];a=tuple(rounded(x,c) for x in rotation);v=tuple(rounded(x,c) for x in v)
+ alpha=sum((max(abs(x.lo),abs(x.hi)) for x in a),F(0));assert alpha<F(1,4)
+ term=v;total=v;N=220
+ for n in range(1,N+1):
+  term=tuple(rounded(x/n,c) for x in cross(a,term));total=tuple(rounded(x+y,c) for x,y in zip(total,term))
+ mag=max(max(abs(x.lo),abs(x.hi)) for x in v)
+ tail=mag*alpha**(N+1)/math.factorial(N+1)/(1-alpha/F(N+2))
+ return tuple(rounded(x+I(-tail,tail),c) for x in total)
+
+
+def phi(bank,ray,z,c):
+ I=c['I'];R=frac(bank['radius_m']);roof=frac(bank['roof_radial_displacement_m']);H=frac(bank['areal_material_thickness_m'])
+ assert type(z) is F and 0<=z<=H
+ cube=(R+roof)**3-3*R*R*z;assert cube>0
+ r=c['geometry'].interval_cbrt(I(cube),340);tau=I((R**3-cube)/(3*R*R))
+ rate=tuple(frac(x) for x in bank['angular_rate_per_physical_volume_depth_m'])
+ rotation=tuple(tau*x for x in rate)
+ rot=exp_rotate(ray,rotation,c);X=tuple(rounded(r*x,c) for x in rot)
+ Qcols=tuple(exp_rotate(tuple(I(int(i==j)) for i in range(3)),rotation,c) for j in range(3))
+ Q=transpose(Qcols);shear=cross(rate,ray)
+ rank=tuple(tuple(rounded(I(int(i==j))-cube/R**2*shear[i]*ray[j],c) for j in range(3)) for i in range(3))
+ gradient=tuple(tuple(rounded(sum((Q[i][k]*rank[k][j] for k in range(3)),I(0)),c) for j in range(3)) for i in range(3))
+ return dict(X=X,input=tuple(r*x for x in ray),Q=Q,gradient=gradient,r=r,tau=tau,z=I(z),determinant=F(1),jacobian=-R*R)
+
+
+def horner(values,domain,c):
+ result=c['I'](0)
+ for x in reversed(values):result=rounded(result*domain+x,c)
+ return result
+
+
+def membership(material,q,c):
+ rows={r['name']:r for r in material['sweep_certificate']['analytic_polynomials']}
+ exact(q[0],F(0),'literal contact plane x=0')
+ p={n:(tuple(frac(v) for v in rows[n]['coefficients']),tuple(frac(v) for v in rows[n]['derivative_tails'])) for n in ('C','Y','Z')}
+ exact((p['Y'][0][0],p['Z'][0][0]),(F(0),F(0)),'source first-entry germ Y(0)=Z(0)=0')
+ I=c['I'];endpoint=-q[0]*(horner(p['C'][0],I(1),c)+I(-p['C'][1][0],p['C'][1][0]));divided=I(0)
+ for n,k in (('Y',q[1]),('Z',q[2])):
+  values,tails=p[n];endpoint+=k*(horner(values,I(1),c)+I(-tails[0],tails[0]));divided+=k*(horner(values[1:],I(0,1),c)+I(-tails[1],tails[1]))
+ if endpoint.lo>0 and divided.lo>0:return True,endpoint,divided
+ assert endpoint.hi<0 and divided.hi<0,'unambiguous independent whole-clock original donor membership'
+ return False,endpoint,divided
+
+
+def summary(raw):
+ expected=dict(physical_candidate_status=SCOPE,original_material_attachment_count=32,
+ original_source_mechanism_count=16,archived_original_donor_attachment_count=8,
+ live_original_donor_attachment_count=8,live_original_receiver_attachment_count=16,
+ extended_coordinate_count=100,declared_common_coordinate_count=92,
+ independent_internal_source_coordinate_count=8,source_coordinate_count=14,
+ common_body_coordinates_without_source_reduction=86,independent_global_beam_count=8,
+ complete_global_query_count=6,complete_material_point_query_count=64,chosen_force_basis=FORCE_BASIS,
+ source_material_identity_preserved=True,one_global_source_embedding_defined=True,
+ separate_global_beam_energized_once=True,original_source_work_lineages_retained=True,
+ literal_source_interface_measures_retained=True,physical_source_material_handover_certified=False,
+ source_internal_links_reduced_into_common_body_modes=False,full_three_dimensional_rod_endpoints_recovered=False,
+ continuous_measure_and_literal_atoms_energized_together=False,hot_receiving_contact_law_inferred=False,
+ new_mixed_force_equilibrium_certified=False,whole_clock_all_pair_admission_authorized=False,
+ physical_material_admission_authorized=False,source_history_advanced=False,original_point_1_completed=False,
+ accepted_original_native_intervals=1,accepted_new_native_intervals=0,original_point_1_remaining_work_blocks=1,
+ remaining_physical_conditions=[
+ 'Whole-source physical material and old-force/prestress/work handover, HOT law/mean chart, loads/drag and NEW mixed equilibrium',
+ 'Whole-clock all-pair admission including reverse C5 to C1',
+ 'Accepted continuation with independent path work, balances and joint restart'])
+ for k,v in expected.items():exact(raw[k],v,'component report scope '+k)
+ return expected
+
+
+def audit_system(system,prior,c):
+ typed(system,'NativeCommonMaterialTransferSystem','native-common-original-material-reduced-transfer-system-1',FLAGS)
+ carrier=prior['carrier_system'];ref=prior['common_reference']['reference'];before=c['before'];H=c['history'];S=c['snapshot'];material=c['material']
+ for k in ('source_snapshot_sha256','source_history_binding_sha256','source_epoch_sha256'):exact(system[k],carrier[k],'unchanged867 source receipt '+k)
+ exact(system['reference_snapshot_sha256'],ref['reference_snapshot_sha256'],'same COMMON reference')
+ exact(system['source_carrier_binding_sha256'],carrier['binding_sha256'],'full genuine867 carrier source');exact(system['source_mechanical_context_sha256'],vd([carrier['source_radius_m'],carrier['carriers']]),'complete compact runtime source mechanics receipt');exact(system['common_geometry_context_sha256'],vd([ref['reference_snapshot_sha256'],ref['radius_m'],ref['angular_rate_per_physical_volume_depth_m'],ref['banks']]),'complete runtime COMMON bank geometry receipt');exact(system['internal_material_motion_law'],INTERNAL_MOTION_LAW,'explicit new material internal displacement law');exact(system['material_point_queries_are_frozen_reference_chart_queries'],True,'reference chart queries distinct from deformed attachment queries')
+ exact(system['force_basis'],FORCE_BASIS,'declared archival0 virtual source force basis');exact(system['provenance'],'Explicit same-original-material live/archive charts and independent internal source links; one archival-force potential with separate global beams','declared scope and conservative embedding provenance')
+ order=c['order'];banks=ref['banks'];body=tuple(('body',b['component_id'],name) for b in sorted(banks,key=lambda b:b['component_id']) for name in (('old_tip_increment','xx','yy','zz','xy','xz','yz') if b['material_kind']=='original_live' else ('xx','yy','zz','xy','xz','yz')))
+ global_order=order[:6]+body+tuple(('source_internal',tid,side) for _,tid,side in order[6:]);support=tuple(range(6))+tuple(range(92,100))
+ exact((len(body),len(global_order)),(86,100),'complete genuine COMMON92 and internal8 catalog')
+ exact(system['coordinate_order'],payload(global_order),'complete100 coordinate order');exact(system['source_coordinate_order'],payload(order),'complete14 source coordinate order')
+ exact(system['source_support_indices'],list(support),'T source support');exact(system['global_zero_coordinate_indices'],list(range(6,92)),'no body86 source reduction claimed')
+ T=tuple(tuple(F(int(i==support[j])) for j in range(14)) for i in range(100));exact(system['source_to_global_injection'],payload(T),'one global T100x14 injection')
+ exact(system['reduced_coordinate_map_second_derivative_exact_zero'],True,'linear T derivative');exact(system['common_body_source_coupling_exact_zero'],True,'declared zero body coupling')
+ exact(system['energetic_owner'],BEAM_OWNER,'distinct once-only energy owner')
+ for key,source_key in (('complete_current_source_states_json','complete_current_source_states_json'),('complete_current_source_memory_json','complete_current_source_memory_json'),('complete_before_work_ledgers_json','complete_before_work_ledgers_json'),('complete_unaccepted_candidate_work_ledgers_json','complete_unaccepted_candidate_work_ledgers_json')):exact(system[key],carrier[source_key],'full source stores not advanced '+key)
+ exact(system['complete_original_material_state_json'],enc(material).decode(),'complete true original material state')
+ lineages=[x['original_source_work_lineage_id'] for x in carrier['carriers']];assert len({enc(x) for x in lineages})==16
+ exact(system['original_source_work_lineages'],lineages,'16 unique whole work lineages')
+ for key,v in (('source_contact_elapsed_time_s',F(2000000)),('source_memory_elapsed_time_s',F(1000000)),('source_geometry_elapsed_time_s',F(0)),('material_geometry_elapsed_time_s',F(1000000))):exact(frac(system[key]),v,'distinct unchanged clocks '+key)
+ exact(system['source_contact_step_count'],2,'unchanged unaccepted source step');exact(system['precision'],96,'declared precision')
+ exact(system['audit_input_raw_sha256'],payload(AUDIT_INPUTS),'pinned audits as evidence inputs')
+ audits=[]
+ for path,pin in AUDIT_INPUTS:exact(digest(ROOT/path),pin,'frozen independent evidence '+path);audits.append(read(ROOT/path))
+ parents={x['fragment_id']:x for x in material['journal']['source_surface']['fragments']};allocs={x['fragment_id']:x for x in material['parent_allocations']};cohorts={x['original_parent_id']:x for x in material['archive_cohorts']}
+ bankbyparent={x['original_parent_id']:x for x in banks if x['material_kind']=='original_live'};oldcarriers={x['point_id']:x for x in carrier['carriers']}
+ peers={x['point_id']:x for x in audits[0]['independent_all16_source_label_membership']};attachment_oracles={};assert len(system['attachments'])==32
+ expected_attachments=[(a['point_id'],side) for a in c['atoms'] for side in ('sub','over')];exact([(a['point_id'],a['side']) for a in system['attachments']],expected_attachments,'32 once-only attachment order')
+ for a in system['attachments']:
+  strict(a,'NativeCommonOriginalMaterialAttachment');point=a['point_id'];side=a['side'];atom=next(x for x in c['atoms'] if x['point_id']==point);q=tuple(literal(x) for x in atom['original_point']['position']);tid=atom['trace_id'];binding=c['bindings'][tid]
+  archived,endpoint,divided=membership(material,q,c);archived=archived and side=='sub';pid=binding['donor_fragment_id' if side=='sub' else 'receiver_fragment_id'];owner=atom['original_material']['subducting_plate' if side=='sub' else 'overriding_plate'];parent,alloc,bank=parents[pid],allocs[pid],bankbyparent[pid]
+  exact(a['trace_id'],tid,'attachment source trace');exact(a['original_parent_id'],pid,'true original parent');exact(a['owner'],owner,'true original material owner (archive receiver ancestry does not change it)')
+  exact(a['original_material_id'],alloc['material_id'],'original material id');exact(alloc['owner'],owner,'genuine allocation owner');exact(parent['parcel']['plate'],owner,'genuine parcel owner');exact(parent['parcel']['material_id'],alloc['material_id'],'genuine parcel material');exact(bank['owner'],owner,'current original bank owner');exact(bank['material_id'],alloc['material_id'],'current original bank material')
+  exact(a['original_direction_literal'],payload(q),'unmodified literal source q')
+  supports=[];assert not parent['geometry']['pose']
+  for plane in parent['geometry']['supports']:
+   assert not plane['rotations'];value=dot(tuple(F(x) for x in plane['normal']),q);assert value>=0;supports.append(value)
+  assert any(x>0 for x in supports);tree(a['original_parent_support_predicate_bounds'],supports,c,'original parent support predicates')
+  status='ARCHIVED_ORIGINAL_MATERIAL' if archived else 'LIVE_ORIGINAL_MATERIAL';exact(a['original_label_membership'],status,'independent whole-clock original material classification')
+  contains(a['receiver_endpoint_predicate_bounds'],endpoint,c,'independent source endpoint polynomial');contains(a['whole_clock_receiver_predicate_divided_by_u_bounds'],divided,c,'independent source whole-clock g/u polynomial')
+  peer=peers[point];peer_status='ARCHIVED_ORIGINAL_DONOR_LABEL_ABSENT_FROM_RETAINED_COLD_MASK' if membership(material,q,c)[0] else 'ORIGINAL_DONOR_LABEL_RETAINED';exact(peer['membership_status'],peer_status,'pinned audit agrees with independent own-polynomial classification')
+  for key in ('live_domain_id','archive_domain_id'):exact(a[key],alloc[key],'original domain lineage '+key)
+  exact(a['complete_parent_allocation_json'],enc(alloc).decode(),'complete original allocation');exact(a['complete_original_parent_json'],enc(parent).decode(),'complete original source parent')
+  cohort=cohorts[pid] if archived else None
+  exact(a['archive_cohort_id'],None if cohort is None else cohort['cohort_id'],'cohort only for genuinely archived original donor label');exact(a['complete_archive_cohort_json'],None if cohort is None else enc(cohort).decode(),'complete genuine archive cohort')
+  if cohort:
+   for key in ('archive_domain_id','material_id','owner','cohort_id'):exact(cohort[key],alloc[key],'genuine archived original lineage '+key)
+  exact(a['geometry_field_component_id'],bank['component_id'],'same original parent COMMON chart');exact(a['geometry_field_material_kind'],'original_live','passive archive extension uses its original chart');exact(a['geometry_field_material_kind'],bank['material_kind'],'no HOT or other live substitute')
+  Q=c['poses']['current_objective'][owner];norm=c['geometry'].interval_sqrt(c['I'](dot(q,q)),340);qhat=tuple(c['I'](x)/norm for x in q);ray=mapped(Q,qhat);ph=phi(bank,ray,F(0),c);X=ph['X'];p=scale(q,c['radius']);Qt=transpose(Q)
+  tree(a['normalized_material_ray_bounds'],qhat,c,'geometry-only normalized ray');tree(a['current_world_material_ray_bounds'],ray,c,'genuine full-prefix current owner ray');tree(a['material_owner_pose_bounds'],Q,c,'genuine full owner matrix')
+  contains(a['material_depth_bounds_m'],F(0),c,'top attachment depth');exact(frac(a['areal_material_thickness_m']),frac(bank['areal_material_thickness_m']),'unchanged original material thickness');exact(frac(a['roof_radial_displacement_m']),frac(bank['roof_radial_displacement_m']),'unchanged original source bank roof')
+  tree(a['genuine_current_attachment_world_m'],X,c,'independent true COMMON Phi material attachment');tree(a['material_reference_position_bounds_m'],mapped(Qt,X),c,'material local reference point');tree(a['source_tip_reference_bounds_m'],p,c,'archival0 literal source virtual tip');tree(a['source_direction_reference_bounds'],q,c,'archival0 literal source internal direction')
+  lever=minus(p,X);tree(a['material_local_lever_bounds_m'],mapped(Qt,lever),c,'declared correlated material-local rigid lever');tree(a['material_local_internal_direction_bounds'],mapped(Qt,q),c,'source internal material-local direction')
+  directors=tuple(tuple(literal(v) for v in atom['original_point'][key]) for key in ('normal','down_dip'))
+  expected_directors=tuple(mapped(Qt,e) for e in directors) if side=='over' else ();tree(a['inherited_receiver_directors_material_local_bounds'],expected_directors,c,'inherited archival0 receiver directors pulled to true current material pose')
+  exact(a['internal_material_motion_law'],INTERNAL_MOTION_LAW,'explicit frozen material point plus literal internal source displacement law');exact(a['chosen_force_basis'],FORCE_BASIS,'explicit reference embedding force frame');exact(a['passive_chart_law'],CHART_LAW,'declared passive archive chart');exact(a['original_material_membership_authenticated'],True,'original material label authenticated');exact(a['current_live_cold_mask_membership_claimed'],False,'passive chart does not claim current live-mask admission');exact(a['archived_three_dimensional_body_motion_certified'],False,'archive physical 3D motion remains uncertified')
+  attachment_oracles[point,side]=dict(q=q,ray=ray,qhat=qhat,Q=Q,X=X,p=p,lever=lever,bank=bank,archived=archived,status=status,pid=pid,owner=owner,material=alloc['material_id'])
+  print('INDEPENDENT original material attachment',len(attachment_oracles),'PASS',flush=True)
+ counts=(sum(a['archived'] for a in attachment_oracles.values()),sum(side=='sub' and not a['archived'] for (point,side),a in attachment_oracles.items()),sum(side=='over' and not a['archived'] for (point,side),a in attachment_oracles.items()));exact(counts,(8,8,16),'all32 independent classification counts')
+ exact(tuple(system[k] for k in ('archived_donor_attachment_count','live_donor_attachment_count','live_receiver_attachment_count')),counts,'system genuine membership counts')
+ # Only original old stiffness diagonal and genuine current w are evidence.
+ # The missing old solved radial q forbids claiming archived beam-force replay.
+ beam_audit=audits[1];rows=beam_audit['eight_cold_beam_calibration_rows'];exact(len(rows),8,'genuine beam audit8');tips=c['radial']['current_objective'];beam_oracles=[];exact(len(system['beams']),8,'global beam stores once')
+ for b,row in zip(system['beams'],rows):
+  strict(b,'NativeCommonOriginalBeam');tid,side=row['trace_id'],row['source_bank'];j=order.index(('radial',tid,side));authentic_trace_order=[r['trace_id'] for r in H['accepted_before']['initial_mechanics']['fault_traces']['traces']];authentic_j=6+2*authentic_trace_order.index(tid)+(0 if side=='sub' else 1);exact(j,authentic_j,'true original stiffness coordinate order');exact(j,row['original_global_stiffness_index'],'pinned true source stiffness index');K=H['original_reference']['stiffness'][j][j];k=literal(K)/c['radius']**2;w=tips[tid][0 if side=='sub' else 1];kf=K/(float(c['radius'])*float(c['radius']));wf=float(w);bf=literal(kf*wf);be=literal(kf*wf*wf/2)
+  for key,v in (('trace_id',tid),('side',side),('original_parent_id',row['original_parent_id']),('component_id',row['component_id']),('original_global_stiffness_index',j),('source_coordinate_index',j),('global_coordinate_index',support[j]),('archived_old_binary_force_replayed',False),('energetic_owner',BEAM_OWNER)):exact(b[key],v,'genuine distinct beam '+key)
+  for key,v in (('stiffness_exact_n_m',k),('reference_displacement_m',w),('reference_force_exact_n',k*w),('reference_energy_exact_j',k*w*w/2),('stiffness_binary64_n_m',literal(kf)),('literal_reduced_beam_binary_force_evaluation_n',bf),('literal_reduced_beam_binary_energy_evaluation_j',be),('binary_force_evaluation_minus_exact_n',bf-k*w),('binary_energy_evaluation_minus_exact_j',be-k*w*w/2)):exact(frac(b[key]),v,'independent reduced beam arithmetic '+key)
+  exact(b['complete_source_bending_parameters_json'],row['complete_source_bending_parameters_json'],'source beam full lineage');exact(b['complete_immutable_beam_audit_row_json'],enc(row).decode(),'pinned complete beam decomposition')
+  exact(k,frac(row['source_old_tip_stiffness_n_m']['exact_F']),'genuine independent exact stiffness');exact(w,frac(row['accepted_tip_displacement_m']['exact_F']),'genuine independent source w')
+  beam_oracles.append(dict(j=j,k=k,w=w,tid=tid,side=side,global_j=support[j]))
+ assert len({b['j'] for b in beam_oracles})==8
+ serial=sum((literal(a['unaccepted_candidate_state'][key]) for a in c['atoms'] for key in ('contact_energy_j','bulk_energy_j')),F(0));beam0=literal(dict(H['unaccepted_candidate_work_ledgers'])['bending_energy_increment_j']);exact(beam0,literal(H['actual_candidate']['diagnostics']['bending_energy_increment_j']),'true literal beam baseline ledger');beam_math=sum((b['k']*b['w']**2/2 for b in beam_oracles),F(0))
+ for key,v in (('source_serial_reference_energy_j',serial),('beam_reference_energy_j',beam0),('beam_mathematical_reference_energy_j',beam_math),('beam_energy_rounding_residual_j',beam0-beam_math)):exact(frac(system[key]),v,'combined potential preserves calibrated reference '+key)
+ assert beam0-beam_math!=0,'genuine signed beam calibration residual retained'
+ return dict(order=order,global_order=global_order,support=support,T=T,attachments=attachment_oracles,beams=beam_oracles,serial=serial,beam0=beam0,beam_math=beam_math,carrier=carrier,oldcarriers=oldcarriers,lineages=lineages)
+
+
+def audit_material_point(row,a,system,c):
+ exact(set(row),{'arguments','response'},'full material point envelope');args=row['arguments'];strict_args={'point_id','side','material_depth_bounds_m','precision'};exact(set(args),strict_args,'complete material point arguments')
+ point,side=a;ao=system['attachments'][point,side];z=parse(args['material_depth_bounds_m'],c);exact(z.lo,z.hi,'exact material point depth')
+ result=row['response'];typed(result,'NativeCommonOriginalMaterialPoint','native-common-original-material-passive-point-1')
+ for key,v in (('point_id',point),('side',side),('original_parent_id',ao['pid']),('original_material_id',ao['material']),('original_label_membership',ao['status']),('geometry_field_component_id',ao['bank']['component_id']),('precision',96),('original_material_membership_authenticated',True),('passive_chart_law',CHART_LAW),('existing_common_live_mask_membership_authenticated',False),('physical_material_admission_authorized',False),('reference_chart_query_not_internal_deformed_position',True)):exact(result[key],v,'original full-depth material point '+key)
+ exact(result['system_binding_sha256'],system['binding'],'material point authentic binding');exact(result['material_depth_bounds_m'],args['material_depth_bounds_m'],'same depth query DTO');exact(result['original_direction_literal'],payload(ao['q']),'material point original literal q')
+ tree(result['normalized_material_ray_bounds'],ao['qhat'],c,'full-depth qhat');tree(result['current_world_material_ray_bounds'],ao['ray'],c,'full-depth true current ray')
+ p=phi(ao['bank'],ao['ray'],z.lo,c)
+ for key,v in (('world_position_bounds_m',p['X']),('input_position_bounds_m',p['input']),('reference_gradient_bounds',p['gradient']),('rotation_matrix_bounds',p['Q']),('radius_bounds_m',p['r']),('physical_volume_depth_bounds_m',p['tau'])):tree(result[key],v,c,'independent material Phi '+key)
+ exact(frac(result['determinant_exact']),F(1),'COMMON chart volume determinant');exact(frac(result['signed_material_chart_jacobian_exact']),-c['radius']**2,'signed original material depth Jacobian')
+ return p
+
+
+def audit_atom(raw,atom,delta,branch,system,c,helper):
+ strict(raw,'NativeCommonMaterialAtomResponse');point=atom['point_id'];old=system['oldcarriers'][point];m=helper.mechanical_oracle(c,atom,FORCE_BASIS,branch,delta);zero=helper.mechanical_oracle(c,atom,FORCE_BASIS,branch,(F(0),)*14)
+ for key,v in (('point_id',point),('trace_id',atom['trace_id']),('source_accounting_bucket',old['source_accounting_bucket']),('basis',FORCE_BASIS),('branch',branch),('original_area_m2',payload(m['area'])),('stored_source_energy_components_j',payload(m['components'])),('source_work_lineage_id',old['original_source_work_lineage_id']),('archival_literal_world_reactions_json',old['archival_literal_world_reactions_json']),('archival_literal_reaction_replay_certified',True),('original_source_state_json',enc(atom['unaccepted_candidate_state']).decode())):exact(raw[key],v,'unchanged literal atom mechanical receipt '+key)
+ for key,v in (('sub_position_bounds_m',m['ps']),('over_position_bounds_m',m['po']),('sub_direction_bounds',m['qs']),('over_direction_bounds',m['qo']),('receiver_director_bounds',m['e']),('projected_geometry_bounds_m',m['h']),('scalar_increment_bounds_m',m['eta']),('scalar_free_anchor_bounds_m',m['free']),('scalar_first_derivative_bounds',m['B']),('scalar_second_derivative_bounds',m['H']),('traction_bounds_pa',m['traction']),('potential_bounds_j',m['energy']),('potential_gradient_bounds',m['gradient']),('potential_hessian_bounds',m['hessian']),('proposed_plastic_increment_bounds_m',m['plastic'])):tree(raw[key],v,c,'independent full14 source mechanism '+key)
+ exact(raw['effective_tangent_stiffness_pa_m'],payload(m['effective']),'same explicit relaxed/frozen branch')
+ for key,expected in (('world_reactions',m['reactions']),('source_reference_world_reactions',zero['reactions'])):
+  exact(set(dict(raw[key])),set(expected),'full world reaction names');assert len(raw[key])==len(expected)
+  for name,v in expected.items():tree(dict(raw[key])[name],v,c,'independent world force/torque '+name)
+ # Direct binary archived receipt and its mathematically exact source residual.
+ archived=c['history']['actual_candidate']['physical_points'][c['atoms'].index(atom)];exact(raw['archival_literal_world_reactions_json'],enc(archived).decode(),'authentic actual old archive reactions')
+ residual=dict(raw['archival_mathematical_minus_literal_reaction_bounds']);exact(set(residual),set(archived),'archive residual complete components')
+ for key,v in zero['reactions'].items():tree(residual[key],tuple(x-literal(y) for x,y in zip(v,archived[key])),c,'signed source archive mathematical-minus-binary residual')
+ jsub,jover=(system['order'].index(('radial',atom['trace_id'],side)) for side in ('sub','over'));ds,do=delta[jsub],delta[jover];sa,oa=(system['attachments'][point,side] for side in ('sub','over'))
+ xs=add(sa['X'],scale(m['q'],ds));xo=add(oa['X'],scale(m['q'],do));ls,lo=sa['lever'],oa['lever'];Fs,Fo=m['reactions']['force_on_sub_n'],m['reactions']['force_on_over_n']
+ force_s,force_o=cross(xs,Fs),cross(xo,Fo);couple_s,couple_o=cross(ls,Fs),cross(lo,Fo);receiver=m['reactions']['carrier_couple_on_over_nm'];total_s=add(force_s,couple_s);total_o=add(add(force_o,couple_o),receiver)
+ for key,v in (('sub_attachment_position_bounds_m',xs),('over_attachment_position_bounds_m',xo),('sub_virtual_lever_bounds_m',ls),('over_virtual_lever_bounds_m',lo),('force_attachment_torque_on_sub_nm',force_s),('force_attachment_torque_on_over_nm',force_o),('lever_couple_on_sub_nm',couple_s),('lever_couple_on_over_nm',couple_o),('receiver_carrier_couple_on_over_nm',receiver),('complete_attachment_torque_on_sub_nm',total_s),('complete_attachment_torque_on_over_nm',total_o)):tree(raw[key],v,c,'declared true material attachment force+lever '+key)
+ tree(raw['attachment_torque_closure_residual_bounds_nm'],((F(0),)*3,(F(0),)*3),c,'correlated symbolic archive0 force closure')
+ # This is the signed virtual work, independently of interval arithmetic.
+ for j,coord in enumerate(system['order']):
+  if coord[0]=='owner':value=-m['reactions']['torque_on_sub_nm' if coord[1]==m['sub'] else 'torque_on_over_nm']['xyz'.index(coord[2])]
+  else:value=-m['reactions']['radial_force_n'][0 if coord[2]=='sub' else 1] if coord[1]==atom['trace_id'] else c['I'](0)
+  tree(raw['potential_gradient_bounds'][j],value,c,'signed world-to-potential virtual work')
+ return m
+
+
+def expected_global_args(system):
+ cases=[(F(0),)*100]
+ for scale0 in (F(1,10**6),F(-1,2*10**6)):
+  cases.append(tuple(scale0 if x[0]=='source_internal' and x[2]=='sub' else -scale0/2 if x[0]=='source_internal' else F(0) for x in system['global_order']))
+ return [dict(coordinate_increments=payload(x),branch=b,precision=96) for x in cases for b in BRANCHES]
+
+
+def audit_query(row,args,system,systemraw,c,helper):
+ exact(set(row),{'arguments','response'},'global same-query envelope');exact(row['arguments'],args,'explicit requested global query receipt');raw=row['response'];typed(raw,'NativeCommonMaterialTransferResponse','native-common-original-material-reduced-transfer-response-1',{**FLAGS,'sparse_global_derivatives':True})
+ delta=tuple(frac(x) for x in args['coordinate_increments']);assert len(delta)==100 and not any(delta[:92]);d14=tuple(delta[i] for i in system['support']);branch=args['branch'];I=c['I']
+ for key,v in (('system_binding_sha256',system['binding']),('source_snapshot_sha256',systemraw['source_snapshot_sha256']),('force_basis',FORCE_BASIS),('branch',branch),('coordinate_order',payload(system['global_order'])),('coordinate_increments',args['coordinate_increments']),('source_coordinate_order',payload(system['order'])),('source_coordinate_increments',payload(d14)),('source_support_indices',list(system['support'])),('global_zero_coordinate_indices',list(range(6,92))),('precision',96),('energetic_owner',BEAM_OWNER),('common_body_source_coupling_exact_zero',True),('global_coordinate_map_second_derivative_exact_zero',True),('source_state_or_work_advanced',False),('physical_source_material_handover_certified',False),('old_force_archive_reproduced_in_current_objective_pose',False),('internal_material_motion_law',INTERNAL_MOTION_LAW)):exact(raw[key],v,'global reduced potential receipt '+key)
+ for key in ('complete_unaccepted_candidate_work_ledgers_json','original_source_work_lineages','source_contact_elapsed_time_s','source_geometry_elapsed_time_s','material_geometry_elapsed_time_s','beam_reference_energy_j','beam_energy_rounding_residual_j'):exact(raw[key],systemraw[key],'unchanged complete global source history '+key)
+ exact(len(raw['atom_responses']),16,'once-only source16');ms=[audit_atom(a,atom,d14,branch,system,c,helper) for a,atom in zip(raw['atom_responses'],c['atoms'])]
+ serialE=sum((m['energy'] for m in ms),I(0));beamE=system['beam0'];G=[sum((m['gradient'][i] for m in ms),I(0)) for i in range(14)];H=[[sum((m['hessian'][i][j] for m in ms),I(0)) for j in range(14)] for i in range(14)];exact(len(raw['beam_responses']),8,'once-only beam8')
+ for r,b in zip(raw['beam_responses'],system['beams']):
+  strict(r,'NativeCommonMaterialBeamResponse');j,k,w=b['j'],b['k'],b['w'];d=d14[j];increment=k*(w*d+d*d/2);gradient=k*(w+d)
+  expected=dict(trace_id=b['tid'],side=b['side'],source_coordinate_index=j,global_coordinate_index=b['global_j'],coordinate_increment_m=payload(d),potential_increment_j=payload(increment),gradient_n=payload(gradient),hessian_n_m=payload(k),reference_energy_exact_j=payload(k*w*w/2),reference_force_exact_n=payload(k*w));exact(r,expected,'independent global beam exact response');beamE+=increment;G[j]+=gradient;H[j][j]+=k
+ contains(raw['source_serial_potential_j'],serialE,c,'all16 serial potential once');exact(frac(raw['beam_potential_j']),beamE,'global literal beam calibration plus exact increments');contains(raw['potential_j'],serialE+beamE,c,'single assembled source+beam potential')
+ tree(raw['potential_gradient_bounds'],G,c,'independent complete global support14 potential gradient');tree(raw['potential_hessian_bounds'],H,c,'independent complete global support14 potential Hessian');tree(raw['source_pullback_gradient_bounds'],G,c,'T transpose global gradient');tree(raw['source_pullback_hessian_bounds'],H,c,'T transpose global Hessian T')
+ exact(raw['source_pullback_gradient_bounds'],raw['potential_gradient_bounds'],'linear T gradient pullback exact DTO');exact(raw['source_pullback_hessian_bounds'],raw['potential_hessian_bounds'],'linear T Hessian pullback exact DTO')
+ # Independently expand sparse14 to full100 and pull back the one T map.
+ GG=tuple(G[system['support'].index(i)] if i in system['support'] else I(0) for i in range(100));HH=tuple(tuple(H[system['support'].index(i)][system['support'].index(j)] if i in system['support'] and j in system['support'] else I(0) for j in range(100)) for i in range(100))
+ for i in range(6,92):assert all(x.lo==x.hi==0 for x in (GG[i],*HH[i],*(row[i] for row in HH)))
+ for j,g in enumerate(G):exact(GG[system['support'][j]],g,'global100 gradient injection/pullback')
+ for i in range(14):
+  for j in range(14):exact(HH[system['support'][i]][system['support'][j]],H[i][j],'global100 Hessian injection/pullback')
+ # Along admitted finite radial paths all source+beam energies are quadratic.
+ # Exact trapezoid work follows from true archive0 B_radial and H_radial.
+ # Rational intervals of archive identity are points and retain this equality.
+ def point(v):assert v.lo==v.hi;return v.lo
+ E=point(serialE)+beamE
+ zero_ms=[helper.mechanical_oracle(c,atom,FORCE_BASIS,branch,(F(0),)*14) for atom in c['atoms']]
+ G0=[sum((point(m['gradient'][i]) for m in zero_ms),F(0)) for i in range(14)]
+ for b in system['beams']:G0[b['j']]+=b['k']*b['w']
+ path=sum(((G0[i]+point(G[i]))*d14[i]/2 for i in range(14)),F(0));exact(E-system['serial']-system['beam0'],path,'independent all-eight radial path work')
+ for axis in 'xyz':
+  ii=[i for i,x in enumerate(system['order']) if x[0]=='owner' and x[2]==axis];exact(sum((point(G[i]) for i in ii),F(0)) ,F(0),'common owner rigid rotation angular virtual work')
+  for axis2 in 'xyz':
+   jj=[j for j,x in enumerate(system['order']) if x[0]=='owner' and x[2]==axis2];exact(sum((point(H[i][j]) for i in ii for j in jj),F(0)),F(0),'common owner rigid rotation Hessian invariance')
+ return dict(energy=E,path=path,branch=branch,source_delta=d14)
+
+
+def run(release,baseline,out):
+ started=time.perf_counter();release=Path(release).resolve();baseline=Path(baseline).resolve();out=Path(out).resolve()
+ old=read(PRIOR/'frozen_source_map_867.json');exact(len(old),867,'immutable old867 count');exact(vd(old),OLD_MAP,'old867 canonical map');exact(digest(PRIOR/'frozen_source_map_867.json'),OLD_MAP_RAW,'old867 map raw')
+ frozen=read(PARENT/'frozen_source_map_871.json');exact(len(frozen),871,'source871 count');exact(vd(frozen),NEW_MAP,'new871 canonical map');exact(digest(PARENT/'frozen_source_map_871.json'),NEW_MAP_RAW,'new871 raw map')
+ before=source_map();exact(before,frozen,'all871 source bytes before audit');exact(set(frozen)-set(old),set(ADDED),'exact four new source paths')
+ for name,pin in old.items():exact(before[name],pin,'allold867 source immutable '+name)
+ wrapper=sealed(release/'report.json','report_sha256');exact(wrapper['status'],'PASS','sealed gate PASS required before heavy independent audit');exact(wrapper['format'],'native-common-original-material-reduced-source-same-process-validation-1','same-process gate format')
+ for key,v in (('source_count',871),('verified_prior_python_sources',867),('verified_prior_artifacts',1633),('source_map_before_sha256',NEW_MAP),('source_map_after_sha256',NEW_MAP),('prior_source_map_sha256',OLD_MAP),('pytest_counts',{'passed':FRESH_TESTS}),('pytest_exit_code',0),('changed_python_paths',[]),('execution_mode','same_python_process'),('pytest_import_mode','importlib'),('historical_tests_reexecuted',False),('prior_artifacts_and_python_sources_preserved_after',True),('test_paths',['tests/test_geometric_native_common_material_transfer.py']),('control','analysis.geometric_native_common_material_transfer_validation.native_control:run')):exact(wrapper[key],v,'sealed fresh gate '+key)
+ exact(wrapper['added_python_sources'],{k:frozen[k] for k in sorted(ADDED)},'four exact new producer paths');exact(wrapper['verified_current_baseline_evidence'],BASELINE_EVIDENCE,'complete frozen867 baseline evidence')
+ for name,pin in BASELINE_EVIDENCE.items():exact(digest(PARENT/name),pin,'baseline evidence pinned '+name)
+ closure(release,wrapper);summary(wrapper)
+ # The ancestry verifier only streams hashes/schema/seals/closures; it never
+ # executes a historical solver, contact/Hessian quadrature, test or control.
+ bm=load(baseline,'material871_stdlib_867_hash_readback',BASELINE_RAW)
+ baseline_after_path=out.with_name(out.stem+'_baseline867_readback.json')
+ with redirect_stdout(io.StringIO()):prior_readback=bm.run(ADDED,output_path=baseline_after_path,bootstrap_source_path=PARENT/'baseline_867_bootstrap_source.txt',bootstrap_report_path=PARENT/'baseline_867_bootstrap.json')
+ exact(prior_readback['status'],'PASS_IMMUTABLE867_WITH_DECLARED871_SOURCE_ADDITIONS_ONLY','full immutable867/863/1633 baseline readback');exact(prior_readback['all867_python_sources_unchanged'],True,'all867 immutable ancestry')
+ native=sealed(release/'native_control/report.json','report_sha256');packet=sealed(release/'native_control/source_packet.json','packet_sha256');exact(native['status'],'PASS','native component PASS');exact(native['format'],'native-common-original-material-reduced-source-control-1','native format');exact(packet['format'],'native-common-original-material-reduced-source-packet-1','packet format')
+ summaries=[summary(r) for r in (native,packet)];strict_packet=set(summaries[1])|{'format','prior_867_packet_raw_sha256','prior_867_wrapper_raw_sha256','material_transfer','global_queries','material_point_queries','packet_sha256'};exact(set(packet),strict_packet,'strict complete packet schema');strict_native=set(summaries[0])|{'format','status','source_packet_sha256','global_queries_sha256','material_point_queries_sha256','material_transfer_sha256','seconds','report_sha256'};exact(set(native),strict_native,'strict complete native report schema')
+ exact(native['source_packet_sha256'],packet['packet_sha256'],'native complete packet selfseal');exact(native['global_queries_sha256'],vd(packet['global_queries']),'six global query seals');exact(native['material_point_queries_sha256'],vd(packet['material_point_queries']),'all64 material point query seals');exact(native['material_transfer_sha256'],packet['material_transfer']['binding_sha256'],'system binding')
+ exact(packet['prior_867_packet_raw_sha256'],PRIOR_PACKET_RAW,'authentic direct prior carrier packet');exact(packet['prior_867_wrapper_raw_sha256'],PRIOR_WRAPPER_RAW,'authentic direct prior gate')
+ priorpath=PRIOR/'release_validation_02/native_control/source_packet.json';exact(digest(priorpath),PRIOR_PACKET_RAW,'genuine867 packet raw');exact(digest(PRIOR/'release_validation_02/report.json'),PRIOR_WRAPPER_RAW,'genuine867 wrapper raw');priorpacket=sealed(priorpath,'packet_sha256')
+ helper=load(HELPER,'material871_independent_source_algebra',HELPER_RAW);prior_wrapper=sealed(PRIOR/'release_validation_02/report.json','report_sha256');helper.closure(PRIOR/'release_validation_02',prior_wrapper);exact(digest(PRIOR/'artifact_manifest.json'),PRIOR_MANIFEST_RAW,'closed prior867 artifact manifest raw');prior_manifest=sealed(PRIOR/'artifact_manifest.json','manifest_sha256');exact(prior_manifest['manifest_sha256'],PRIOR_MANIFEST_SEAL,'closed prior867 manifest seal');exact(len(prior_manifest['files']),24,'closed prior867 evidence24');prior_artifacts={};
+ for name,row in prior_manifest['files'].items():
+  p=(ROOT/name).resolve();assert p.is_relative_to(ROOT) and str(p.relative_to(ROOT))==name;exact(digest(p),row['sha256'],'prior867 closed evidence raw before '+name);exact(p.stat().st_size,row['bytes'],'prior867 closed evidence bytes before '+name);prior_artifacts[str(p)]=row['sha256']
+ c=helper.source_context()
+ systemraw=packet['material_transfer'];system=audit_system(systemraw,priorpacket,c);system['binding']=systemraw['binding_sha256']
+ expected=expected_global_args(system);exact(len(packet['global_queries']),6,'complete global query6');receipts=[]
+ for i,(row,args) in enumerate(zip(packet['global_queries'],expected),1):receipts.append(audit_query(row,args,system,systemraw,c,helper));print('INDEPENDENT complete global source potential',i,'PASS',flush=True)
+ mq=packet['material_point_queries'];exact(len(mq),64,'all32 material attachment labels each top/middepth')
+ expected_material=[((a['point_id'],a['side']),z) for a in systemraw['attachments'] for z in (F(0),frac(a['areal_material_thickness_m'])/2)]
+ for i,(row,(a,z)) in enumerate(zip(mq,expected_material),1):
+  exact(row['arguments'],dict(point_id=a[0],side=a[1],material_depth_bounds_m=payload(c['I'](z)),precision=96),'same material point query receipt');audit_material_point(row,a,system,c)
+  if i%4==0:print('INDEPENDENT full-depth material point',i,'PASS',flush=True)
+ after=source_map();exact(after,before,'all871 source bytes unchanged after mathematical audit');closure(release,wrapper)
+ helper.closure(PRIOR/'release_validation_02',prior_wrapper)
+ dependencies={**prior_readback['dependency_raw_sha256'],**prior_artifacts,str(PRIOR/'artifact_manifest.json'):PRIOR_MANIFEST_RAW,str(HELPER):HELPER_RAW,str(helper.GEOMETRY_HELPER):helper.GEOMETRY_HELPER_RAW,str(helper.SOURCE):helper.SOURCE_RAW,str(PRIOR/'frozen_source_map_867.json'):OLD_MAP_RAW,str(PARENT/'frozen_source_map_871.json'):NEW_MAP_RAW,str(priorpath):PRIOR_PACKET_RAW,str(PRIOR/'release_validation_02/report.json'):PRIOR_WRAPPER_RAW,**{str(PARENT/name):pin for name,pin in BASELINE_EVIDENCE.items()},**{str(ROOT/path):pin for path,pin in AUDIT_INPUTS}}
+ for path,pin in dependencies.items():exact(digest(path),pin,'all exact dependencies unchanged after audit')
+ for name in sys.modules:assert not (name=='tectonics' or name.startswith('tectonics.') or name=='tests' or name.startswith('tests.')),'no project Python imports'
+ report=dict(status='PASS',audit_scope=SCOPE,final_python_sources=871,unchanged_prior_python_sources=867,fresh_tests=FRESH_TESTS,source_map_canonical_sha256=NEW_MAP,frozen_source_map_raw_sha256=NEW_MAP_RAW,source_map_before_after_identical=True,added_python_source_count=4,added_python_sources={k:frozen[k] for k in sorted(ADDED)},preserved_old1633_artifact_chain=True,preserved_old867_and_863_output_closures=True,output_closure_count=4,output_manifest=wrapper['outputs'],wrapper_raw_sha256=digest(release/'report.json'),wrapper_selfseal=wrapper['report_sha256'],native_raw_sha256=digest(release/'native_control/report.json'),native_selfseal=native['report_sha256'],source_packet_raw_sha256=digest(release/'native_control/source_packet.json'),source_packet_selfseal=packet['packet_sha256'],original_material_attachment_count=32,independently_archived_original_donor_count=8,independently_live_original_donor_count=8,independently_live_original_receiver_count=16,independent_complete_original_source_label_predicate_count=32,independent_common_material_phi_top_attachment_count=32,independent_full_depth_common_material_point_count=64,independent_full_depth_chart_gradient_count=64,complete_global_query_count=6,finite_all_eight_internal_query_count=4,independent_source_mechanism_response_count=96,independent_full14_scalar_first_variation_count=192,independent_full14_scalar_second_variation_count=192,independent_complete14_global_gradient_count=6,independent_complete14_global_hessian_count=6,independent_T14_to_100_injection_and_pullback_count=6,independent_attachment_force_lever_and_receiver_couple_count=96,independent_signed_all14_virtual_work_count=96,independent_quadratic_all_eight_internal_path_work_count=6,independent_global_beam_reference_count=8,independent_global_beam_query_response_count=48,original_literal_serial16_reference_energy_j=payload(system['serial']),original_literal_global_beam_reference_energy_j=payload(system['beam0']),mathematical_global_beam_reference_energy_j=payload(system['beam_math']),signed_global_beam_energy_calibration_residual_j=payload(system['beam0']-system['beam_math']),combined_literal_reference_energy_j=payload(system['serial']+system['beam0']),unchanged_source_current_contact_epoch_s=2000000,unchanged_source_continuous_memory_epoch_s=1000000,virtual_source_geometry_epoch_s=0,genuine_material_geometry_epoch_s=1000000,unique_source_work_lineage_count=16,energetic_owner=BEAM_OWNER,internal_material_motion_law=INTERNAL_MOTION_LAW,material_point_queries_are_frozen_reference_chart_queries=True,common_body_modes_with_source_coupling=0,original_literal_q_normalized_in_source_mechanics=False,archived_old_binary_beam_force_replayed=False,reduced_binary_beam_diagnostics_distinct_from_archived_force=True,extra_continuous_C_dtheta_source_potential_activated=False,common_calibrated_beam_energized_in_parallel=False,physical_source_material_handover_certified=False,authentic_archived_three_dimensional_body_motion_certified=False,source_internal_links_reduced_into_common_body_modes=False,new_mixed_force_equilibrium_certified=False,whole_clock_all_pair_admission_authorized=False,physical_material_admission_authorized=False,source_history_advanced=False,original_point_1_completed=False,accepted_original_native_intervals=1,accepted_new_native_intervals=0,original_point_1_remaining_work_blocks=1,remaining_physical_condition_count=3,project_imports=False,pytest_reexecuted=False,old_source_force_solver_reexecuted=False,old_certified_common_contact_force_or_Hessian_quadratures_reexecuted=False,second_certified_tensor_quadrature_performed=False,second_certified_whole_boundary_quadrature_performed=False,pure_stdlib_source_geometry_helper_sha256=HELPER_RAW,pure_stdlib_quaternion_helper_sha256=helper.GEOMETRY_HELPER_RAW,baseline867_reusable_producer_sha256=BASELINE_RAW,baseline867_readback_selfseal=prior_readback['audit_sha256'],baseline867_readback_path=str(baseline_after_path),baseline867_readback_timing='BEFORE_INDEPENDENT_MATERIAL_AND_MECHANICAL_REPLAY',preserved_prior867_closed_evidence_count=24,complete_recorded_dependency_hashes_checked_after_math=True,dependency_raw_sha256=dependencies,auditor_script_sha256=digest(__file__),seconds=time.perf_counter()-started)
+ report['audit_packet_sha256']=vd(report);out.write_bytes(enc(report)+b'\n');print(enc(report).decode(),flush=True);return report
+
+
+def main():
+ p=argparse.ArgumentParser();p.add_argument('--release',required=True);p.add_argument('--baseline',required=True);p.add_argument('--out',required=True);args=p.parse_args();run(args.release,args.baseline,args.out)
+
+if __name__=='__main__':main()

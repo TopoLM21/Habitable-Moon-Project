@@ -1,8 +1,3155 @@
+# Текущая передача: полные source integral bounds Genesis
+
+11.10.2026 12:31 UTC; `fix/genesis-mantle-convection`.
+[Отчёт](GENESIS_VOLUME_INTEGRAL_BOUNDS.txt).
+[Доказательства](analysis/genesis_volume_integral_validation/evidence/).
+
+Принятый Genesis сохранён: **0.8684 Myr / 800 когорт / четыре интервала**.
+Автоматическая цель выключена; новых шагов и материала нет; public restore 0.
+Физический Γ, создание, раскрытие, prospective law и финансирование не допущены.
+
+**80 новых тестов PASS.** Для прежних четырёх выбранных линий
+независимый рациональный оракул проверил **10 144 полных source интеграла**:
+2 reference-bank volumes и 2534 компоненты full18/W15/пяти прежних проб на линию.
+В интеграл перенесены исходные сферические и когортные концы и разрез Γ внутри
+их сдвига. Каждый канонический сертификат независимо пересчитан; направленные
+runtime bounds содержат полные source enclosures на четырёх выбранных линиях.
+
+На **13498 завершённых угловых узлах** callback построил свежие
+source bounds для каждой компоненты, включая коэффициенты, determinant,
+density, Γ-примитивные и перенос концов. Это доказательство радиального
+интеграла в перечисленных literal N. Глобальная угловая точность и отображение nodes ещё не допущены. Candidate
+geometry использует прежние общие EPS-оценки аудитора; новый направленный
+сертификат этой угловой геометрии не выдан.
+
+**Четыре angular controls OPEN.** Собственные source uncertainties оплачиваются
+из прежнего допуска 2e−6; они не увеличивают allowance. Исходные радиусы,
+порядки (3,5), max 3400 calls, 2000 cells, depth24 сохранены. Остаточные
+angular/geometry ошибки показаны по компонентам в отчёте; large-block agreement
+не допускает слабые компоненты. Старые angular отказы не переоценены.
+Global source-uncertainty failed counts: 22/26/20/24.
+На четырёх выбранных radial lines bounds превышают own2e−6 native scale
+в129/327/123/156 компонентах; точные lower error bounds — в6/30/8/41.
+Это отдельная pointwise диагностика, а не angular acceptance. Полные source
+radial enclosures построены; own-relative precision требует
+собственного допуска и при global budget failure остаётся частью этого блока.
+
+Отдельная пассивная подготовка на тех же четырёх выбранных линиях: точные source коэффициенты и W/probe projections перед переводом в LD плюс bounded fallback для26 слабых mass pairs (8/4/6/8) дали10144/10144 source containment и own-original2e−6 checks PASS,0fail. Старые native failures сохранены; метод ещё не принят в текущий producer, не проверен для глобального N/angular допуска и не меняет Genesis history. Report raw SHA256 cac483b19413eb6dea650c57bb5bc91e238e32c323b4bfa7f241ce830c860452, self 0bfbada183f3bdbb1d489983ccbe91726aa8e92c0a0a617c20245f32d9424894; receipt raw SHA256 1ace3e12ca5d268fc14635c64c971077956a9fa880be120d56f3e90927880ffb, self 2f3168dbb908f57bbfa722a8449c38a1d8fc3ba6033d47d692e30e982ada5a8e.
+
+Предыдущие 458 исходников и 18 пакетов закреплены; текущий capture union
+469. Control01 остановлен (child −15) для добавления начальной
+проверки whole-parent K/M; его версия и предварительные tests01 сохранены
+пассивно. Итоговые preservation/build/readback выполняются после этой записи;
+их будущий PASS здесь не заявлен. Внешний readback:
+`/workspace/genesis_volume_integral_final_readback_20261011.json`.
+
+Те же три условия закрытия пункта 1:
+1. Физическое рождение, вставка и раскрытие: рассчитанный источник работы,
+   полная замена реакции, prospective law и точность интегралов физически
+   выбранной области. Jump-null остаётся tied либо получает собственный допуск
+   работы. Подвижные материальные и тепловые границы переносят массу, тепло
+   и работу.
+2. Контакт и поддвиг всех пар на всём интервале, включая обратный C5→C1.
+3. Действительное продолжение Genesis с действующими разломами, контактом
+   и поддвигом, независимыми балансами и работой, проверкой restart.
+Пункт 1 открыт; работы ещё существенно. Пункты 2–6 общего плана открыты.
+
+Финальные angular суммы также имеют превышения собственного бюджета
+source uncertainty. В этом же численном блоке нужны уточнение бюджетов слабых
+компонент и, где точная ошибка уже превышает допуск, повышение точности
+вычисления. Корректное enclosure само по себе не допускает own-relative
+precision. Эту причину отказа нужно устранить вместе с угловой ошибкой.
+
+Конкретный следующий ход в том же численном блоке — перенести и повторно
+проверить подготовленные tighter centers: точные source coefficients/W/probe
+projections до LD и ограниченный fallback слабых mass pairs. Получить fresh
+source errors на прежних Genesis inputs/N и повторно проверить исходный
+own2e−6 budget, сохраняя0history reset; пассивный selected PASS не является
+current producer/global angular PASS. Затем — геометрия угловых событий
+и интегрирование
+по границам sphere/когорта/Γ на тех же четырёх областях. Практический путь —
+классификация событий по их полиномам, локальное сгущение около границ
+и проверка сходимости при увеличении конечных угловых порядков и разрешения.
+Нужны собственные оценки отображения узлов и покрытия candidate cells;
+исходный допуск 2e−6 сохранить. Завершённые source line bounds использовать без нового расчёта рождения
+или подмены памяти. После допуска объёмных интегралов — prospective activation
+и источник работы с полной заменой реакции; физическое раскрытие не разрешать
+до выполнения его отдельного закона. Новая инициализация не нужна.
+
+
+---
+
+# Текущая передача: независимые operand bounds Genesis
+
+11.10.2026 11:08 UTC; `fix/genesis-mantle-convection`.
+[Отчёт](GENESIS_VOLUME_OPERAND_BOUNDS.txt).
+[Доказательства](analysis/genesis_volume_operand_validation/evidence/).
+
+Принятый Genesis сохранён: **0.8684 Myr /800 когорт /четыре интервала**.
+Автоматическая цель выключена; новых шагов, материала, physical Γ,
+раскрытия и creation debit нет; public restore0.
+
+**104 новых теста PASS.** На тех же четырёх исходных линиях точные дроби
+проверили6648 коэффициентов и10136 компонентов полного18/W15 оператора,
+prestress/Maxwell работы и пяти прежних проб. Каждый contraction certificate
+повторно вычислен из источника, не из доверенного кэша. Собственные сохранённые
+бюджеты на этих линиях достаточны; численных превышений0. Канонические точные
+ошибки не допускают согласованно пересохранённого завышения.
+
+Добавлены независимые направленные интервалы построения коэффициентов
+при произвольном исходном N; покрываются rounding смещений, edge/delta/divisor,
+масштабы и source chart inverse. Для четырёх линий все новые коэффициентные
+интервалы проверены точным оракулом. Старый рецепт бюджета не объявлен
+универсально доказанным для будущих узлов; использовать новые интервалы.
+
+Sphere/когорта/Γ geometry воспроизведена независимой целочисленной IEEE
+арифметикой; истинные сферические концы заключены в рациональные sqrt bounds.
+У R4 λmid error≈8.33367e−20, halfwidth error≈3.49769e−26: они сохранены,
+но ещё не перенесены в компоненты интеграла. У трёх R100 выбранных линий
+source и represented λmid/h совпадают. Общий geometry/operator PASS не выдан.
+
+**Numerical OPEN остаётся.** Новый angular run не выполнялся; прежние четыре
+отказа angular(3,5),2e−6,3400 calls не переоценены. Selected-line proofs не
+являются uniform bounds всех angular nodes, angular convergence или physical
+admission/funding. Whole-parent work остаётся отдельным от clipped work.
+
+Прежние447 исходников и17 пакетов сохранены; текущий capture union458.
+Первый control exit1 из-за неверного чтения N-ratio string в новом driver
+сохранён пассивно: exact oracle отказал до вычисления сертификатов. Формат
+прочитан корректно без изменения исходного N. Preliminary receipts и исходные
+capture/source версии сохранены. Итоговые preservation/build/readback идут
+после этой записи; metadata PASS удостоверяет сохранность, не точность физики.
+Внешний readback: `/workspace/genesis_volume_operand_final_readback_20261011.json`.
+
+Те же три условия закрытия пункта1:
+1. Физическое рождение, вставка и раскрытие: рассчитанный источник работы,
+   полная замена реакции, source prospective law и точность объёмных интегралов
+   физически выбранной области. Jump-null остаётся tied либо получает отдельный
+   допуск работы. Для подвижных материальных/тепловых границ нужен перенос
+   массы, тепла и работы.
+2. Контакт и поддвиг всех пар на всём интервале, включая обратный C5→C1.
+3. Действительное продолжение Genesis с действующими разломами, контактом
+   и поддвигом, независимыми балансами/работой и restart.
+Пункт1 открыт; работы ещё существенно. Пункты2–6 общего плана открыты.
+
+Следующий ограниченный шаг — оставшаяся часть component operand bounds:
+перенести направленные коэффициентные интервалы через все полные18/W15
+сокращения и точные Γ-примитивные, вместе с source sphere/cohort endpoint
+смещениями. Проверить собственные бюджеты каждой компоненты на всех угловых
+узлах. Затем улучшить угловое интегрирование по событиям sphere/когорта/Γ.
+Сохранить исходные радиусы, допуск2e−6 и literal source B0/B1; source history
+не заменять. До source activation и prospective law physical birth не допускается.
+
+
+---
+
+# Текущая передача: точный центрированный λ-интеграл Genesis
+
+11.10.2026 09:03 UTC; `fix/genesis-mantle-convection`.
+[Отчёт](GENESIS_VOLUME_EXACT_LAMBDA.txt).
+[Доказательства](analysis/genesis_volume_exact_lambda_validation/evidence/).
+
+Автоматическая цель выключена. Принятый Genesis сохранён:
+**0.8684 Myr /800 когорт /четыре принятых интервала**. Новых шагов,
+материала, physical Γ, раскрытия и creation debit нет; public restore0.
+
+Реализовано точное полиномиальное интегрирование по λ при исходном N:
+центрированный ξ, обе Γ-стороны и полный A/P, M/K, prestress force,
+Maxwell cross/self work, W и пять прежних проб до произведений.
+Исправлена потеря точности при центрировании мировых координат: геометрия,
+Γ и поля используют единые представленные λmid/h и исходные binary числа.
+Новый тест тонкой настоящей когорты отвергает прежний kernel; исправленный
+проходит собственный компонентный бюджет.
+
+**218 новых тестов PASS.** Actual03 завершён, exit0, numerical OPEN на всех
+четырёх прежних областях при допуске2e−6 и лимите3400 angular line calls.
+Точная λ устранила прежнюю радиальную квадратуру. Embedded angular(3,5)
+остаётся наблюдением, не сертификатом ошибки всего интеграла.
+Выбор уточняемой ячейки использует её ошибку относительно допуска той же
+глобальной компоненты; несэмплированная положительная область сохраняется.
+Старые12→16 и новые3→5 имеют разные разбиения; напрямую их не сравнивать.
+
+Независимый80-digit direct/source аудит четырёх выбранных линий:
+numeric field mismatches0; component mismatches0 из10136;
+bounded direct-quadrature refusals0/4 (там direct NOT_EVALUATED);
+represented polynomial primitive4/4 PASS. Полный аудит OPEN:
+construction-operand scopes остаются UNRESOLVED. Проверки геометрии являются
+наблюдениями, итогOPEN;
+geometry/contraction accuracy certifiedfalse. Три математические
+пробы с согласованно пересчитанными seals: PASS.
+Никакой PASS не даёт physical admission или funding.
+
+Прежние434 исходника и16 пакетов проверяются без изменений; текущий union447.
+Сохранены failed/interrupted/preliminary версии и offline mpmath1.3.0 payload.
+Итоговая сборка/readback выполняются отдельно после этой записи;
+metadata PASS удостоверяет сохранность, а численные статусы остаются прежними.
+Окончательный внешний readback:
+`/workspace/genesis_volume_exact_lambda_final_readback_20261011.json`.
+
+Те же три условия закрытия пункта1:
+1. Физическое рождение, вставка и раскрытие: рассчитанный источник работы,
+   полная замена реакции, source prospective law и точность объёмных интегралов
+   физически выбранной области. Jump-null остаётся tied либо получает отдельный
+   допуск работы. Для подвижных материальных/тепловых границ нужен перенос
+   массы, тепла и работы.
+2. Контакт и поддвиг всех пар на всём интервале, включая обратный C5→C1.
+3. Действительное продолжение Genesis с действующими разломами, контактом
+   и поддвигом, независимыми балансами/работой и restart.
+Пункт1 открыт; работы ещё существенно. Пункты2–6 общего плана открыты.
+
+Следующий ограниченный шаг остаётся внутри условия1: получить независимые
+component construction-operand bounds, затем улучшить угловое интегрирование
+по событиям sphere/исходные границы/Γ и проверить каждую слабую компоненту.
+Сохранить исходные радиусы, допуск2e−6 и literal source B0/B1; никакого подбора
+состояния, радиуса или positive floor ради PASS. До source activation и
+prospective law физическое рождение не допускается.
+
+---
+
+# Текущая передача: объёмный переход sphere∩исходная когорта
+
+11.10.2026 03:48 UTC; `fix/genesis-mantle-convection`.
+[Отчёт](GENESIS_VOLUME_CLIPPED_BULK.txt). [Доказательства](analysis/genesis_volume_clipped_validation/evidence/).
+
+Автоматическая цель выключена. Принятый Genesis сохранён побайтно:
+**0.8684 Myr / 800 когорт / четыре принятых интервала**. Новых шагов,
+материала, physical Γ, раскрытия и creation debit нет; public restore в этой фазе 0.
+
+Реализованы две стороны Γ внутри sphere∩исходная когорта, полные A/P,
+объёмные M/K, prestress force и Maxwell work с собственными компонентными
+бюджетами. Поверхностный clipping, cohesive kernel, исходная память и native15
+release solver использованы повторно. Это проверка перехода на настоящем
+Genesis, не принятый динамический шаг планеты. Virtual surface helper/time0
+обозначает только локальную вычислительную геометрию; birth journal и память
+исходных800 когорт не заменены. R100 — вычислительный ввод, source activation
+и prospective law отсутствуют. Исходный damage≈0.0396 ниже порога0.65.
+
+**178 новых тестов PASS. Полный actual control завершён за74мин20с, exit0,
+но numerical OPEN на всех трёх R100 и прежнем contained R4.** Обязательная
+пара12→16 при фиксированном допуске2e−6 отказывает. Full18/W15/пробы:
+cohort1:411/1314,558/1005,69/220; cohort41:123/1314,475/1005,6/220;
+cohort80:855/1314,826/1005,111/220. R4:324/1314,566/1005,5/220.
+Согласование крупных блоков не допускает слабые компоненты.
+
+Independent bulk source/field/contraction/flags audit PASS подтверждает
+зарегистрированные отказы и арифметику архива. Geometry source/nodes PASS;
+geometric convergence OPEN, work integral OPEN.
+Три resealed отрицательные пробы PASS. Ни один из этих PASS не удостоверяет
+physical contraction accuracy, birth/release или funding. Погрешность записи
+float64 N/λ/offsets учитывается только при сравнении архивных point fields,
+не в допуске сходимости, физической работы или creation credit.
+
+Прежние413 исходников и15 пакетов сохранены; captured union434 неизменен.
+Остановленный redundant v1 control, preliminary diagnostics и обе monitoring
+receipts сохранены с фактическими статусами. Package/preservation/readback
+выполняются отдельно после этой записи. Окончательный readback является
+metadata-only и не превращает numerical OPEN в PASS.
+
+Пункт1 открыт по тем же трём условиям:
+1. Физическое рождение/вставка/раскрытие: источник работы, полная замена
+   реакции, source prospective law, точность интегралов физически выбранной
+   области; full jump-null tied либо отдельный допуск работы. Для движущихся
+   материальных/тепловых границ нужен перенос массы, тепла и работы.
+2. Контакт и поддвиг всех пар на всём интервале, включая reverse C5→C1.
+3. Настоящее продолжение Genesis с действующими разломами/контактом/поддвигом,
+   независимыми балансами и restart.
+
+Работы в пункте1 ещё существенно; пункты2–6 общего плана открыты.
+Следующий ограниченный шаг внутри условия1: центрированный точный λ-интеграл
+при исходном N и bounded angular/component convergence. При фиксированных
+λ/θ ray12/16 уже достаточны по степени полинома; дальнейшая проверка нужна
+для λ/θ, событий области и арифметики. Сохранять literal source B0/B1,
+обе Γ-cross contributions и собственный масштаб каждой компоненты.
+Точная λ сама по себе не сертификат точности. R, допуск и история прежние;
+при отсутствии source activation нового физического seed нет.
+
+---
+
+# Текущая передача: вычислительный допуск раскрытия по работе
+
+10.10.2026 22:51 UTC; `fix/genesis-mantle-convection`.
+[Отчёт](GENESIS_VOLUME_RELEASE_WORK.txt). [Доказательства](analysis/genesis_volume_release_validation/evidence/).
+
+Прежний Genesis сохранён побайтно: **0.8684 Myr / 800 когорт / четыре принятых
+интервала**. Один public restore. Автоматическая цель выключена; новых
+принятых шагов, материала, physical Gamma, раскрытия и creation debit нет.
+
+Готов частный fixed-material native15 work/momentum gate. Только исходный F двигает
+два совместно рассчитанных virgin шага; Maxwell cross/self бюджет по literal
+archived float64 source-point derivatives (W до Gram, longdouble),
+интерфейсная работа, наблюдаемые силы, импульс и native-history/work
+restart проверены. a_W/z_W/v_W хранятся напрямую; старые 800 parent-memory
+когорт и Genesis birth сохранены. Старый fullscalar/full18 private ledger сохранён отдельно
+как арифметическое свидетельство и не допускает слабые компоненты или
+creation credit. Прямой расчёт сертифицирует арифметику представленного
+оператора, не дополнительную физическую точность слабой геометрии или
+source-selected clipped bulk accuracy. Заданная
+несбалансированная траектория отклонена. Rank=15; полное nullity=3 ядро jump
+закреплено. Старые память, bulk операторы и reference-area cohesive kernel
+использованы повторно. Archived full-interval tie reaction и начальная
+surface traction сохраняются отдельно, замена реакции банков не допущена.
+Отображение в прежние 18 коэффициентов float64 не подтверждает строгий weak
+momentum и остаётся только свидетельством; native15 допуск не восстанавливает
+оперативную историю из такого отображения и не меняет историю планеты.
+Exact replay full18 journal не является cumulative kernel certification:
+накопленные full18 поля и проекции — только свидетельства, включая False.
+Native15 structural null3, q/Z/M/F, point actions и work admission строги.
+Прежние preflight/tensor diagnostics сохранены как PRELIMINARY NUMERICAL,
+без формального verdict и planet acceptance; pickle — пассивный debug archive.
+
+**252 тестов, actual control, producer-free independent
+audit и отрицательные пробы (3) PASS.** Source snapshots
+не менялись. Финальные preservation/package/readback выполняются отдельно
+после этой записи. Предыдущие документы сохранены полностью.
+
+Первый independent01 завершился до audit main из-за ModuleNotFoundError при
+импорте analysis. Сохранены failure capture
+`/workspace/genesis_volume_release_independent_capture_20261010_01`
+и failed workflow `/workspace/genesis_volume_release_finish_20261010_01`.
+Receipt `/workspace/genesis_volume_release_runtime_invocation_receipt_20261010.json` (raw SHA `a643a5e766805484a5bf2ff100b32e517066cb4374b74d1478482809413cab89`;
+self SHA `f184266bb28dc3b67a6aeb8f45c9d1a0199655a38094c039f3070b720721db60`) фиксирует только подготовку recovery
+через явный `PYTHONPATH=/workspace/Habitable-Moon-Project`; он не удостоверяет
+PASS повторного audit. Исходники и оригинальные Prepared05 helpers сохранены;
+221-test PASS остаётся прежним результатом, новый test capture проверен отдельно.
+Actual01 PASS использован повторно без нового actual расчёта или restore.
+Финальный independent PASS выше подтверждён отдельно сохранённым report.
+
+Independent02 затем отказал на context kernel-projector guard до trajectory
+audit; его capture `/workspace/genesis_volume_release_independent_capture_20261010_02` сохранён как FAIL.
+Новый audit v2 независимо реконструирует полный source-geometric kernel,
+проверяет rank15/null3 и N/W; raw SVD projector остаётся conditioning diagnostic,
+не поводом увеличивать физический допуск. Actual-reuse proof `/workspace/genesis_volume_release_actual_reuse_receipt_20261010.json`
+подтверждает прежние actual01/356 source bytes и 59 static closure sources;
+три NEW oracle/test пути не заменяют прежние 410/382 источника.
+Финальные 252 тестов получены новым полным capture;
+kernel-refusal/reuse receipts сами не удостоверяют новый numerical PASS.
+
+Observable W/spectrum независимо проверены по source-SVD construction и
+projectors всех resolved clusters. 105 signed pair dots сохранены;
+прежний weak-relative criterion (finite_computational_seed_cohort_1_face_0=false) — только diagnostic.
+Precision bounds SVD не входят в primary force/work/momentum или funding.
+Прежний weak-guard preflight FAIL и observed78 receipt сохранены в пассивном
+архиве `/workspace/genesis_release_oracle_v2_prepared_20261010_01`; это не официальный прогон и не финальный PASS.
+
+Баланс вычислительной траектории не допускает physical release/funding:
+источник не активировал новый разлом; law и seed — явный вычислительный
+ввод, source-selected clipped bulk accuracy не подтверждена. Solver
+отклоняет softening/damage; moving-material transfer и normal contact pending.
+Прежний Gamma kernel консервативно отказывает для очень малых pure-tangent
+prestressed paths, если округлённый endpoint Psi не подтверждает прямую
+работу силы. Floor или funding для обхода этого ограничения не введены.
+
+Пункт 1 открыт по тем же трём условиям:
+1. Физическое рождение, вставка и раскрытие разлома: рассчитанный источник
+   работы, согласованная замена полной реакции, исходный prospective law и
+   точность объёмного интегрирования для физически выбранного clipped seed.
+   Полное ядро surface-jump остаётся закреплено; отдельное изменение базиса
+   требует собственного допуска работы. При движении материальных/тепловых
+   границ нужен перенос массы, тепла и работы до принятия физического шага.
+2. Контакт и поддвиг всех пар на всём интервале, включая reverse C5->C1.
+3. Настоящее продолжение Genesis с действующими разломами, контактом и
+   поддвигом, независимыми балансами и проверкой перезапуска.
+
+Работы в пункте 1 ещё существенно. Пункты 2–6 общего плана открыты.
+Следующий ограниченный шаг внутри первого условия — точное разбиение
+sphere∩исходная когорта на обе стороны Γ и проверка объёмных M/K,
+prestress force и Maxwell work для физически выбранного clipped seed.
+Существующие clipping поверхности Γ, полный A/P, source-born память и
+release solver сохраняются. При отсутствии source activation нового seed нет;
+радиус и ориентацию не подбираем ради PASS.
+
+---
+
+# Текущая передача: память полного объёмного поля и полная реакция
+
+10.10.2026 19:47 UTC, `fix/genesis-mantle-convection`.
+[Отчёт](GENESIS_VOLUME_ENRICHED_MEMORY_AND_REACTION.txt). [Доказательства](analysis/genesis_volume_memory_validation/evidence/).
+
+Автоматическая цель выключена. Настоящий Genesis прежний: **0.8684 Myr /800 когорт**,
+4 принятых интервала. Один public restore; parent_before/after/original byte-identical.
+Новых принятых шагов, births, Gamma, physical release и creation debit нет.
+
+Готовы full-field compact Maxwell memory `e_old+G_birth*z`, новые a/z=0 при
+вставке, полный old/cross/self work-energy-loss и source-journal restart.
+Два ненулевых private constitutive шага и restart не заменяют accepted planet.
+Fixed IDs/material/mass/temperature/C/live boundaries обязательны; changes
+не принимаются этим законом. Literal birth memory/ledgers сохранены; observed
+4096 J reduction gap записан как округление, не работа или fracture funding.
+
+Полная added reaction использует accepted average stress + inertia, не
+endpoint stress/не surface traction. Basis — hypothetical frozen endpoint
+extension over saved interval; no historical seed claim. Old operator and
+parent residual сохранены точно, tied work=0. Physical reaction replacement,
+funding и release пока не допущены; Gamma-null modes остаются закреплены.
+
+**165 тестов, actual control, independent audit и3 resealed negatives PASS.**
+Финальная схема actual02 + tests03 + independent03(v2) + negative03. Independent02
+FAILED при сравнении разных hash domains; код/traceback/facts/helpers сохранены.
+Новый oracle сохраняет прежние численные функции; 45-source dependency proof
+обосновывает повторное использование actual02, все broad pins текущие буквально.
+Предварительные01 остановлены exit=-15 после review
+fixed-medium birth-T guard; их logs/facts/старые sources сохранены отдельно и
+не объявляются PASS. Final factory отклоняет re-sealed изменение температуры.
+Source pins before/after exact; final preservation/package/readback выполняются
+отдельно после этой записи. Предыдущие13 пакетов и371 sourcepins сохранены.
+
+Пункт 1 открыт по тем же трём условиям:
+1. Физическое рождение, вставка и раскрытие: рассчитанный источник работы,
+   согласованная замена полной реакции, точность объёмного интегрирования для
+   физически выбранного clipped seed и допуск Gamma-null modes. Память полного
+   поля и полная реакция теперь реализованы для проверенного фиксированного
+   материального пространства; при изменении его границ ещё нужен перенос с
+   учётом массы, тепла и работы, прежде чем принимать такой физический шаг.
+2. Контакт и поддвиг всех пар на всём интервале, включая reverse C5->C1.
+3. Настоящее продолжение Genesis с действующими разломами, контактом и поддвигом,
+   независимыми проверками работы, баланса и перезапуска.
+До полного закрытия пункта 1 остаётся существенная работа. Пункты 2–6 открыты.
+Следующий шаг внутри условия 1 — согласовать допустимые подвижные моды и полную
+реакцию с источником работы, не выдавая освобождение численных Gamma-null modes
+за оплату рождения поверхности. Точность physical clipped bulk проверять отдельно.
+
+---
+
+# Текущая передача: конечный material seed и constrained bulk insertion
+
+10.10.2026, `fix/genesis-mantle-convection`.
+[Отчёт](GENESIS_VOLUME_FINITE_SEED_INSERTION.txt).
+[Доказательства](analysis/genesis_volume_seed_validation/evidence/).
+
+Автоматическая цель выключена. Прежний настоящий Genesis **0.8684 Myr / 800 когорт**
+в окончательном control один раз восстановлен от formation; parent before/after byte-identical.
+Новых принятых шагов, births, physical Gamma/release и creation debit нет.
+
+Finite plane/sphere/original-cohort clipping и обе материальные метрики готовы.
+Compact H=+/-1/2 bubble zero на finite front/all cohort boundaries; full A/P
+сохранён. Added 18 modes tied=0; старые K/M/D/F и memory сохраняются точно.
+Volume rank не равен surface-opening rank: как минимум три Gamma-null modes
+дают zero jump/nonzero bulk field. До release они должны остаться tied или
+иметь отдельный work-admitted refinement; bulk energy reduction не считать
+cohesive funding автоматически.
+Elastic endpoint reaction и surface prestress traction рассчитаны отдельно;
+их mismatch сохранён. Full dynamic reaction/replacement, enriched physical
+memory, calibrated Gc, funding/contact/release пока отсутствуют.
+
+Actual computational contained R=.12*band thickness (несколько метров): orders4/8/12,
+AA/AP/PA/PP и force/work, observed 8->12 relative agreement <=2e-6.
+R=100 m thin-cohort clipped probes — SURFACE ONLY, bulk release не сертифицирован.
+Explicit prospective R=100 m actual law остаётся noevent под inherited gate.
+
+**149 новых тестов PASS; actual control, независимый audit и 3 resealed negatives PASS.**
+Прежние 12 пакетов /18002 members /361 Python pins — frozen preservation baseline;
+окончательная проверка сохранения и сборка выполняются отдельными helpers.
+
+Пункт 1 открыт по тем же трём условиям:
+1. Физическое рождение/insertion/release: новый закон памяти для enriched strain,
+   полная физическая реакция и её согласованная замена, рассчитанный источник
+   работы/funding и точность source-selected clipped bulk. До оплачиваемого
+   release нужны также корректная обработка surface-jump-null modes: сохранять
+   их tied либо отдельно допускать изменение объёмного пространства с правильной
+   работой. Вычислительные constrained modes и малый contained seed этих условий
+   не закрывают.
+2. All-pair full-time contact/underthrust admission, включая reverse C5->C1.
+3. Настоящее active Genesis fault/contact/underthrust continuation с independent
+   work/balances/restart.
+До полного закрытия пункта 1 остаётся существенная работа. Пункты 2–6 открыты.
+Следующая часть условия 1 — новая enriched material memory и полная реакция,
+точность bulk для физически выбранного clipped seed и корректный допуск
+Gamma-null modes, затем funded release.
+
+---
+
+# Текущая передача: перспективный зародыш и внутренний материальный trace
+
+10.10.2026, `fix/genesis-mantle-convection`.
+[Отчёт](GENESIS_VOLUME_NUCLEATION_AND_EMBEDDED_TRACE.txt).
+[Доказательства](analysis/genesis_volume_nucleation_validation/evidence/).
+
+Автоматическая цель выключена. Настоящий источник прежний: **0.8684 Myr / 800 когорт**.
+Публичное восстановление от formation выполнено один раз; parent before/after
+byte-identical. Новых принятых шагов и reinitialization нет.
+
+Готовы explicit prospective Rankine/classical MC seed selection с inherited
+damage/persistence gate и отказом при неуникальном месте/нормали. Gc/seed radius
+и cohesive inputs заданы только перспективно, не восстановлены из source.
+Seed plane/sphere/original-cohort support определён; finite clipping/area pending.
+Actual source с law=None и explicit example остаётся noevent, Gamma нет.
+
+Готовы inside-cohort area quadrature, current/reference metrics, fullA/P original
+trace и его discrete force/work dual. Frozen N/q следуют дальнейшим A/P без
+worldplane reintersection. Reference-work traction и cohesive seed используют
+исходную площадь; converted birth-area traction — отдельное представление.
+Новых физических DOFs, partitioned bulk reaction replacement, funding/release нет.
+
+**148 новых тестов, actual control, независимый audit и 3 resealed negatives PASS.**
+11 прежних пакетов /15975 members /351 Python pins сохранены.
+
+Пункт1 открыт по **тем же трём условиям**: physical birth/insertion/funded release;
+all-pair full-time contact/underthrust; actual active continuation/work/balances/restart.
+В первом условии следующий результат — конечный seed clipping и constrained/
+partitioned bulk insertion с сохранением памяти/реакции, затем funding trajectory.
+До полного закрытия существенная работа; пункты2–6 открыты.
+
+---
+
+# Текущая передача: локальное поле и внутрилицевые сечения Genesis
+
+10.10.2026, `fix/genesis-mantle-convection`.
+[Отчёт](GENESIS_VOLUME_FRACTURE_LOCATION.txt).
+[Доказательства](analysis/genesis_volume_location_validation/evidence/).
+
+Автоматическая цель выключена. Источник тот же: **0.8684 Myr / 800 когорт**.
+Окончательный control восстановил полную принятую историю; before/after
+byte-identical, новых принятых интервалов и reinitialization нет.
+
+Готовы source-bound pointwise 3D stress/memory, полное current A/P placement,
+семейство offsets source orientation без произвольного выбора и сечения
+явных world planes внутри исходных когорт, включая constant-lambda triangles.
+**153 тестов, actual control, independent audit и 3 resealed negatives PASS.**
+Прежние 341 Python pins / 10 accepted packages / 13635 members сохранены.
+Первый failure на 1-ULP horizontal-boundary root и его correction сохранены;
+окончательные tests/control выполнены после narrow source correction.
+
+Actual source: нет activation event/physical Gamma; location/dip/source Gc
+никогда не рассчитывались прежним законом. Explicit normals и centroid anchors
+в control — вычислительные входы. Заменять ими physical birth нельзя.
+Полное локальное поле доступно, но оно само не выбирает offset/extent/dip.
+Dofs/release/contact/new history/creation debit=0. Нет новых area/work claims.
+
+Пункт 1 остаётся открыт по **тем же трём условиям**: physical birth/insertion/
+release с source law/funding/force/work; all-pair full-time contact/underthrust;
+actual active continuation с balances/work/restart. До полного закрытия ещё
+существенная работа. Пункты 2–6 открыты.
+Следующая часть условия 1 — prospective source nucleation/location/dip и
+surface energy law, затем embedded/subdomain physical insertion. Историю
+формирования не заменять; edge-only banks не считать внутрилицевым cut;
+новые mesh DOFs при subdivision удерживать в parent interpolation до release.
+
+---
+
+# Текущая передача: реакция связей и prestress-aware работа поверхности Genesis
+
+10.10.2026, `fix/genesis-mantle-convection`.
+[Отчёт](GENESIS_VOLUME_PRESTRESS_INSERTION.txt).
+[Доказательства](analysis/genesis_volume_insertion_validation/evidence/).
+
+Автоматическая цель выключена. Настоящий checkpoint **0.8684 Myr / 800 когорт**
+полностью воспроизведён один раз; новых шагов времени здесь **0**.
+До/после побайтно совпадают с прежним creation direct_after_second.json.
+История формирования из расплава сохранена; новая инициализация не введена.
+
+Готовы accepted-start calculated onset prerequisite, полная динамическая реакция
+принятого интервала и её единственная замена тягой paired side-depth Gamma.
+Полные A/P modes сохранены. Новый prestress-aware cohesive kernel сохраняет тягу
+и полную стоимость Gc; straight global-bank paths и restart проверены независимо.
+**138 новых тестов, actual control, producer-free audit и negative controls PASS.**
+Все прежние 331 Python pins / 9 пакетов / 12290 members сохранены.
+
+Actual source: 0 active planes, события нет; Gc source неизвестен; physical
+cut/release/contact и Genesis creation debit=0. Реакция interval-average,
+instantaneous birth traction не восстановлена. Контур/закон/paths вычислительные.
+Пример прочности 100 MPa отвергает начальную тягу до 3.24 GPa; отказ сохранён.
+Отдельный сильный вычислительный пример проверяет работу, не калибрует материал.
+Signed reference energy не считается новой исторической энергией Genesis.
+
+Пункт 1 остаётся открыт по **тем же трём условиям**: physical birth/insertion/release
+с force/work/funding; all-pair full-time contact/underthrust admission;
+actual active continuation с balances/work/restart. До полного закрытия ещё
+существенная работа. Пункты 2–6 открыты. Следующая часть первого условия —
+расположение Gamma внутри исходного материала и физический insertion/release
+operator с источником энергии. Не подменять рассчитанную ориентацию ближайшим
+ребром; не освобождать дополнительные mesh DOFs при одном лишь subdivision.
+
+---
+
+# Текущая передача: материальная Gamma и creation-work kernel Genesis
+
+10.10.2026, `fix/genesis-mantle-convection`.
+[Отчёт](GENESIS_VOLUME_CREATION_KERNEL.txt).
+[Доказательства](analysis/genesis_volume_creation_validation/evidence/).
+
+Автоматическая цель выключена. **Реальное продолжение 100+100 лет принято:**
+0.8682 -> 0.8684000 Myr, 640 -> 720 -> 800 когорт; история формирования
+не переинициализирована. Новая точка продолжения:
+`analysis/genesis_volume_creation_validation/evidence/actual_continuation/direct_after_second.json`,
+raw SHA `62579a0bad128830a66e2f44579cf2b1f5d3835b691225b8d431102f3e4486d7`, self SHA `5d282ceeccc8d76acc38427d08a7e65575fddb509fc4b93115cbe6d318e91349`.
+Родитель sealed slip checkpoint 0.8682 Myr остаётся неизменным.
+
+Готовы вычислительные paired side-depth Gamma заданных edge supports
+с отдельными q/IDs двух сторон, полный A/P
+traction trace, явно параметризованное 3-mode cohesive creation-work kernel
+и replay всей вычислительной истории. Это новая часть, не повтор bank transfer.
+Новые материальные births и их side supports проверены на настоящих шагах.
+169 новых тестов, actual controls и оба producer-free audits PASS.
+Все 320 прежних Python pins / 8 пакетов / 10344 члена сохранены.
+
+Actual source: 0 active planes, no_eligible_cut, Gc ещё неизвестен,
+creation debit=0; пример закона вычислительный и не заменяет историю/калибровку.
+Те же 3 условия пункта 1 остаются: physical birth/prestress/release path;
+all-pair full-time admission включая reverse C5->C1; detailed active continuation
+с balances/work/restart. Depth geometry/work kernel внутри первого готовы.
+Пункты 2–6 открыты. Следующий результат — рассчитанный birth witness и
+prestress-preserving insertion/release с согласованной работой; продолжать
+с нового checkpoint, без повторения старого переноса и без выдуманных разломов.
+
+---
+
+# Текущая передача: связанный объёмный перенос берегов Genesis
+
+09.10.2026, `fix/genesis-mantle-convection`.
+[Отчёт](GENESIS_VOLUME_BANK_TRANSFER.txt).
+[Доказательства](analysis/genesis_volume_bank_validation/evidence/).
+
+Автоматическая цель выключена. Источник — последнее принятое настоящее
+Genesis состояние на 0.8682 Myr / 640 когорт, sealed slip direct_after_second.json,
+raw SHA `34cc53c215b2e9b8300a8f47b33801d49182b611a3ad985217a9c4cef25f2aed`.
+
+**Закрыт zero-jump 6-DOF перенос в связанную вычислительную опору берегов.**
+Существующий split_mesh использован без переделки. Новые volume_banks и
+volume_bank_transfer сохраняют все strain0/strain1, IDs/history/ledgers и
+актуальные K/M/D/F. Абсолютное q не добавляется повторно к strain memory.
+Настоящий источник имеет 0 active planes: no_eligible_cut, физических разрезов
+и release нет. Заданные edge cycles и jump probes явно вычислительные.
+Сохранение до/после byte-identical; время не продвинуто.
+
+94 новых теста PASS; producer-free audit полного перехода PASS. Прежние
+409 тестов не повторялись: 312 их исходников неизменны. Все 7 прежних пакетов /
+9392 члена и native 6 pins сохранены. Новая приёмка не переопределяет старые.
+
+В пункте 1 остаются прежние 3 условия: (1) calculated sharp Γ/creation work и
+физическая force/work trajectory берегов; (2) all-pair full-time admission,
+включая reverse C5->C1; (3) настоящая active fault/contact/underthrust continuation
+с work/balance/restart. Полный tied memory transfer внутри (1) теперь готов.
+Пункты 2–6 не закрыты. Неизвестную раннюю 3D историю не переинициализировать;
+connected mafic body не объявлять chemical continental plates.
+
+Следующий шаг: prospective source law рождения sharp материальной Γ и
+creation-work ledger, затем physical side-depth support/release. В текущем
+source WeakPlaneParameters такой закон отсутствует; default Gc другой ветви
+не является рассчитанным Genesis свойством. Не дублировать работу slip.
+
+---
+
+# Текущая передача: объёмное скольжение слабой плоскости Genesis
+
+09.10.2026, ветка `fix/genesis-mantle-convection`.
+[Текущий отчёт](GENESIS_VOLUME_WEAK_PLANE_SLIP.txt).
+[Сохранения и проверки](analysis/genesis_volume_slip_validation/evidence/PACKAGE_README.txt).
+
+Автоматическая цель выключена; продолжение вручную разрешено пользователем.
+Настоящее формирование из расплава и плотной водной атмосферы остаётся источником.
+Неизвестную историю не заменять новой зрелой инициализацией; native943 — механический тест.
+
+**Завершён следующий указанный этап: work-consistent finite-width 3D weak-plane
+slip с полной cohort memory, general nonsymmetric tangent и явными TOTAL/NET
+work + friction/viscous ledgers.** Это bounded interval-average constant-rate
+closure; исходные strength/activation parameters не менялись. n,m и accepted-
+start water заморожены на весь private/final interval. Только final принимается.
+Endpoint source co-normal переносится inverse-transpose TOP-face F2; exact
+through-depth finite transport и instantaneous pointwise Coulomb path не заявлены.
+
+Literal formation source `cd79ee2a5139c4b91abdb1b4714a761c9153cc9f4490f5aa63fa2facba458c89` / raw export `b959aea6af2968120e97bdbce64b8bf8ad23b12fd5960a37c996be421c9141f1`.
+Actual 100+100 лет:480->560->640когорт, t=0.8682Myr; вся физика canonical-identical
+прежнему sealed damage control. Active planes/water/age/slip work=0; damage max
+0.03498505110952482->0.03826314346740867. Direct/resumed полные файлы byte-equal.
+Новый checkpoint0.1 повторяет каждый private/final solve и строго проверяет все
+поля. Оба старых настоящих двухшаговых base/fault checkpoints воспроизведены точно.
+
+**409 tests PASS** / 2618.22с; actual + material + active coupled
+producer-free independent audits PASS. Активный coupled пример — явно synthetic
+1+1год с seeded plane/water, заданной force и меньшим basal_drag; source history
+не подменён им, checkpoint API его отвергает. Настоящая planetary activation и
+active actual-source restart пока не доказаны. Все final exits0/stderr0; pins
+291 control /295 audits and synthetic controls /312 tests сохранены. Все пять
+старых packages /4049members и native4PY/P/F неизменны. Raw preliminary failures
+от changed unused audit inventories сохранены отдельно; fresh final runs PASS.
+
+**Пункт 1 открыт по тем же трём условиям:**
+
+1. Доступная объёмная память/prestress, force/work и bounded 3D slip готовы;
+   остались calculated sharp cut/creation work, physical bank binding и приёмка
+   force/work trajectory обоих берегов, общий through-depth transport.
+2. All-pair full-time admission, включая reverse C5->C1: connected proof готов,
+   split banks/contact/underthrust path ещё не принят.
+3. Detailed fault/underthrust continuation с независимыми work/balances/restart:
+   connected restart и active synthetic operator готовы, actual detailed path открыт.
+
+**Следующий конкретный результат:** calculated cut/creation witness и material
+bank binding на этой source-bound ветви. Не выдумывать sharp banks/dip/polarity
+при отсутствии данных. Это продолжение условия1, не новый глобальный этап.
+До закрытия пункта1 ещё существенная работа. Пункты2–6 не закрыты; historical
+natural metric/3D total strain/early raft motion unknown, whole heat/work,
+chemical continents, mainloop/GUI, длинные времена и сходимость не заявлены.
+
+Предыдущая передача ниже сохранена буквально как исторический суффикс.
+
+# Текущая передача: рассчитанное повреждение Genesis в объёмной ветви
+
+09.10.2026, ветка `fix/genesis-mantle-convection`.
+[Текущий отчёт](GENESIS_VOLUME_FAULT_EVOLUTION.txt).
+[Сохранения и проверки](analysis/genesis_volume_fault_validation/evidence/PACKAGE_README.txt).
+
+Автоматическая цель выключена; пользователь разрешил продолжать вручную.
+Настройки цели не менять без нового указания. Настоящее формирование из расплава,
+плотная водная атмосфера, океан и первые плиты остаются научной целью. Неизвестную
+историю не заменять зрелой инициализацией; native943 остаётся механическим тестом.
+
+**Новая завершённая часть: runtime damage/water/persistence от настоящего Genesis
+с полным объёмным stress driver и signed damage-energy coupling.**
+Старый volume thermal adapter замораживал source damage, поэтому ожидание не
+могло активировать разлом. Новая `VolumeFaultModel` ветвь продолжает прежний закон
+от буквального source cd79ee2a5139c4b91abdb1b4714a761c9153cc9f4490f5aa63fa2facba458c89; нагрузки и activation parameters не менялись.
+Исходный export raw SHA `b959aea6af2968120e97bdbce64b8bf8ad23b12fd5960a37c996be421c9141f1`.
+Это новый bounded control от того же formation source 0.868 Myr; старое 1+1-year
+frozen-damage continuation и четыре evidence packages не переписаны.
+
+Private predictor и final momentum/Maxwell solve начинаются от ORIGINAL
+q/v/cohort memory с одним thermal/birth trial; принимается только final.
+Stress усредняется для damage driver по полному cohort volume и проецируется
+в CURRENT physical face axes. Полная память/энергия/силы когорт не усреднены.
+Новая spatial closure явна: source angular conductance + current physical chord
+area, а не равенство старому spherical-area filter. Inactive T доступно только
+с mask; max peak включает old/predictor/final stress. Mechanical damage хранится
+в `fault_history`, `thermal.damage` остаётся literal source baseline.
+Изменение stiffness energy считается signed при retained old memory; healing
+может дать положительный вклад. Он не выдан за heat/friction.
+
+**Final actual03:** 100+100 лет, 480->560->640 когорт, t=0.8682 Myr.
+Max damage 0.03498505110952482->0.03826314346740867, active planes=0,
+water access=0, candidate age=0. Direct/resumed полные файлы побайтово равны.
+Новый checkpoint0.1 воспроизводит все private/final solves от pinned source
+и проверяет каждое поле. Старый base checkpoint0.1 с реальными двумя шагами
+также воспроизведён точно текущим `VolumeModel`.
+
+**275 tests PASS**, pytest 1089.39 с / capture 1090.658 с;
+independent stdlib/NumPy audit без producer imports PASS / 58.528 с.
+Все final runs exit0/stderr0. Worst momentum 2.01891e-14, discrete work
+2.10085e-12. Control/audit/tests: 285/286/297 executing source pins совпали
+до/после, snapshots/live bytes совпали. Все 2248 old members и native4PY/P/F
+неизменны. Raw preliminary01/02 и interrupted test01 сохранены явно отдельно.
+
+**Пункт 1 открыт по тем же трём условиям:**
+
+1. Доступная рассчитанная volume memory/prestress и discrete force/work готовы; остались
+   work-consistent 3D weak-plane slip, calculated sharp cut/creation work,
+   physical bank binding и приёмка physical force/work trajectory.
+2. All-pair full-time admission, включая reverse C5->C1: connected-body proof
+   готов, split banks/contact/underthrust path ещё не приняты.
+3. Detailed fault/underthrust continuation с independent work/balances/restart:
+   новый connected-body control готов; detailed continuation ещё открыто.
+
+Настоящий FaultModel даёт continuous finite-width weak plane, не sharp banks.
+Activation: damage>=0.65 и endpoint persistence>=0.05 Myr, plane выбирается
+по текущим stress в начале следующего trial. 50 тыс. лет — persistence ПОСЛЕ
+достижения порога, не предсказанный срок возникновения разлома. Новая ветвь
+останавливается на calculated weak-plane gate до реализации 3D plastic work;
+не публикует unsupported active state. Не вводить synthetic fault/dip/polarity.
+
+**Следующий конкретный результат:** work-consistent 3D weak-plane slip с полной
+cohort memory и signed work на этой же source-bound ветви. Затем physical banks
+допускаются по calculated cut/creation witness. Это остаётся внутри условия 1
+пункта 1; до его закрытия ещё существенная работа, не один маленький шаг.
+Пункты 2–6 не закрыты. Unknown historical natural metric/3D total strain/raft
+motion остаются unknown; whole heat/work reservoir, chemical continents,
+continuous physical trajectory, mainloop/GUI и длительная сходимость не заявлены.
+
+Ниже весь предыдущий handoff сохранён побайтово как исторический suffix.
+Текущий результат и следующий шаг задаёт верхний блок.
+
+---
+
+# Текущая передача: память Genesis в объёмном продолжении
+
+09.10.2026, ветка `fix/genesis-mantle-convection`.
+[Текущий отчёт](GENESIS_VOLUME_MEMORY_CONTINUATION.txt).
+[Сохранения и проверки](analysis/genesis_volume_continuation_validation/evidence/PACKAGE_README.txt).
+
+Автоматическая цель выключена; пользователь разрешил продолжать вручную.
+Настройки цели не менять без нового указания. Научная цель прежняя: настоящая
+расплавленная новорождённая планета, плотная водная атмосфера, охлаждение,
+океан, первые плиты, подробная тектоника как продолжение Genesis.
+Не подменять неизвестную историю новой зрелой инициализацией.
+
+**Перенос доступной рассчитанной памяти Genesis в объёмный оператор выполнен.**
+
+Новые `genesis_volume_geometry/operator/loading/basal/thermal/dynamics/temporal/
+checkpoint` используют буквальный material export из предыдущего закрытого
+cohort-mechanics пакета. Source checkpoint SHA256:
+`cd79ee2a5139c4b91abdb1b4714a761c9153cc9f4490f5aa63fa2facba458c89`.
+В этой фазе полное формирование повторно не запускалось: сохранённый источник
+связан с реальными NPZ bytes, IDs, clock, birth history и strain/stress.
+
+Источник 0.868 Myr: 480 когорт / 438 intervals, одно связное мафическое тело.
+Mass-q конусная геометрия имеет точный материальный объём; шесть Cartesian
+DOFs A/P на узел описывают малые последующие 3D деформации. Все cohort tensors,
+prestress и энергия 4.276852389239655e19 J перенесены. Внутригранная вариация
+11.42% не потеряна при усреднении. Нулевые новые координаты означают текущую
+точку отсчёта, не нулевую память. Historical natural metric/3D total strain/
+placement и раннее движение рафтов остаются неизвестными.
+
+Initial nodal rate восстановлен из последнего настоящего принятого интервала
+Genesis; текущая radial velocity extension P=A объявлена отдельно. Оператор
+собирает согласованные inertia, basal tangent drag, prescribed source mantle
+traction, Maxwell time-average force и полный механический ledger без stiffness
+floors/закреплений. Cooling/global Genesis/orbit/columns/births идут в общем
+времени. Newborn получает только текущий strain increment. Future fracture law
+не продвигается этим контролем; в реальном source fault_active=0 на 80 гранях.
+
+**Final actual02:** два принятых шага по году, 480->560->640 когорт,
+0.868->0.868002 Myr. Source energy сохранена; final E=4.271785822674446e19 J.
+Полные direct/resumed JSON побайтово одинаковы. Загрузка воспроизводит все runtime
+шаги от закреплённого source и проверяет каждое поле; resealed fake states
+отвергаются. Control exit0/stderr0, 177.323 с.
+
+**204 tests PASS**, pytest 582.17 с / captured 584.373 с / exit0 / stderr0.
+Independent stdlib/NumPy audit без producer imports PASS / 26.376 с / exit0 /
+stderr0: source bindings, nodal rate, 3D tensors, M/drag/traction, thermal and
+mechanical work, viscous dissipation, kinetic phase flux, exact geometry bound,
+оба интервала и полная restart пара. Worst coordinate momentum relative residual
+2.28660e-14; discrete global work 8.53485e-13; cohort work 6.29631e-16.
+Все 288 live physics/test/controller sources совпадают до/после каждого final run.
+
+Exact Fraction spatial bound доказывает positive Jacobian и отсутствие
+взаимопроникновения всех точек/пар связного тела на всём affine work path,
+с binding actual before/after fields и exact mass-q domain guard. Это не
+сертификат split fault banks или native reverse C5->C1. Momentum velocities —
+дискретные endpoint variables, не производные affine work path: одна непрерывная
+physical dynamics trajectory ещё не принята. Endpoint elastic-minus-external
+metric при нулевой скорости исключает drag/inertia и не является ошибкой полного
+движущегося баланса. Полный discrete momentum/work balance проходит.
+
+Preliminary actual01/final01 failures сохранены отдельно: loader неверно
+трактовал closure strings как числа; 3 failed / 197 passed. Исправление schema
+проверено новыми закреплёнными final runs. Три прежних evidence packages (470
+members) и native943 P/F/4PY проверены побайтово без изменений. Новый evidence
+package содержит raw logs, source snapshots, actual checkpoints, independent
+report и исходные документы. Старые scientific evidence не переписаны.
+
+**Пункт 1 открыт по тем же трём условиям, без новых этапов:**
+
+1. Полная физическая объёмная память/prestress, перенос сил/работы, оператор
+   и новое равновесие. Доступная Genesis память и дискретный объёмный solve
+   теперь готовы. Осталась связь с физическими разломами и приёмка physical
+   force/work траектории; неизвестная старая 3D history не восстановлена.
+2. Все физические пары на всём временном интервале, включая reverse C5->C1.
+   Connected-body proof готов; split banks и underthrust admission ещё открыты.
+3. Принятое подробное продолжение с независимой временной работой, балансами
+   и restart. Connected-body 1+1-year control проходит; detailed fault/underthrust
+   continuation должно пройти приёмку с теми же требованиями.
+
+**Следующий конкретный шаг:** подключить существующую Genesis Fault эволюцию
+к объёмной ветви при реально рассчитанной активации разлома, перенести actual
+cohort IDs/память в оба физических берега и проверить один принятый интервал
+сил/работы/полного space-time contact path. Не вводить synthetic fault в
+нынешний неактивный источник. Native C5 fixture не становится историей планеты.
+Пункты 2–6 общего плана не закрыты. Combined heat/work reservoir, chemical
+continents, mainloop/GUI и длительная сходимость ещё впереди.
+
+Ниже сохранён весь предыдущий handoff как исторический suffix.
+Текущие versions/next step задаёт верхний блок.
+
+---
+
+# Текущая передача: напряжения когорт из настоящего Genesis
+
+09.10.2026, ветка `fix/genesis-mantle-convection`.
+[Текущий отчёт](GENESIS_COHORT_MECHANICS_CONTINUATION.txt).
+[Настоящие сохранения и проверки](analysis/genesis_cohort_mechanics_validation/evidence/PACKAGE_README.txt).
+
+Цель прежняя: расплавленная новорождённая планета без твёрдой поверхности или
+заданных плит; плотная водная атмосфера, охлаждение, океан, первые плиты,
+подробная тектоника как продолжение Genesis. Producer разрешено исправлять.
+Chemical continental crust не заменять mafic mechanical fragments.
+Старый native943 octant-source остаётся отдельным механическим тестом.
+
+**Выполнен следующий constitutive результат внутри условия 1 пункта 1.**
+
+`genesis_cohort_mechanics.py` рассчитывает plane-stress Maxwell memory каждой
+живой bulk birth cohort. Температура интегрируется по её живому mass-q interval
+в существующем conductive profile; viscosity/relaxation собственные. Средние
+stress/tangent интегрированы по объёмам в Mobile/Fault Newton и Coupled solve.
+Энергия и exact constant-driving Maxwell work/dissipation суммируются отдельно
+по когортам, включая damage change и действительно удалённую remelt массу.
+Общий weak-plane gamma действует с собственным beta_i; plastic flow переводится
+между current/old frames корректно. Damage пока общий на face.
+
+До whole-membrane gate elastic history=None, движение рафтов не рассчитывалось.
+Первое mechanical activation явно stress-free при endpoint local temperature
+в настоящей old geometry. Позднейшие births activate при solidus с thermal-first
+endpoint cooling, beta=1. Внутреннее birth time и неизвестная 3D past deformation
+не выдуманы. Это declared numerical closure; historical total strain/placement/
+natural metric и plate owner ещё не получены. Старая средняя strain не раздана
+когортам задним числом. Новый source рассчитан повторно от настоящего расплава.
+
+Mobile/Fault 0.3, Coupled 0.4 сохраняют полную текущую cohort mechanics; старые
+физические форматы требуют formation replay. Проверяются live IDs/source/clock,
+activation, текущая температура, средняя strain, полная энергия, work identity
+и elastic limit всех когорт. Явные обе history=None допустимы только fixtures.
+Bulk export 0.2 содержит actual source bytes; readback пересоздаёт все поля.
+Cohort plane-stress 3D tensors и энергия face mean записаны раздельно.
+`physical_force_work_admission=False`; native943 importer не использован.
+
+**Final02 actual checks:** canonical traction 20 кПа, reduced mesh 80 faces;
+2300 K / 228.385 бар, без твёрдого материала и океана. Precursor 0.866 Myr:
+80 cohorts с unavailable strain, его save/load и формирование точны.
+Load-bearing source 0.868 Myr: 480 cohorts / 438 intervals, 62.056–63.427 м.
+Source energy 4.276852389239655e19 J; energy of face mean 3.788398148994852e19 J.
+Разность 11.42% реальной энергии сохранена как внутригранная неоднородность.
+Fault 1+1 год, inherited source->Coupled и Coupled 1+1 год точно воспроизводятся
+после save/load. Итог 640 cohorts / 440 intervals / 0.868002 Myr; remelt energy=0
+при отсутствии retirement. Actual control exit0/stderr0, 74.920 с,
+25 executing physics sources до/после совпадают.
+
+353 targeted tests PASS / 86.58 с, captured execution 89.061 с / exit0 / stderr0.
+Отдельный stdlib/NumPy verifier без producer imports PASS / 10.561 с / exit0 /
+stderr0: семь snapshots, независимые profile temperatures/weighted strain/
+полная энергия/work identity/3D Hooke/source prefix; три direct/restart пары
+совпадают по metadata и 23/23/40 arrays. Worst independently recomputed relative
+work residual 1.37668e-15. Full JSON stdout semantically==pretty report.
+Это accepted-state readback, не replay всех механических интервалов.
+
+Предварительная интеграция исправила chord roundoff до mechanical gate,
+literal JSON representation и analytic fixture boundary assumptions.
+Captured run01 (353 PASS/real restart PASS) сохранён как предварительный:
+energy subtraction дала 4096 J ложного retirement. Direct removed-mass fix
+проверен новым final02 control и всеми353 tests; roundoff теперь в residual.
+Старые origin/bulk_birth evidence и native943 P/F/4PY сохранены побайтово.
+
+**Пункт 1 открыт по тем же трём условиям:**
+
+1. Полная физическая объёмная память/prestress, перенос сил/работы, оператор
+   и новое равновесие. Producer depth-cohort plane-stress memory/work готовы;
+   full 3D placement/natural state, material owner binding и native admission
+   остаются открыты.
+2. Допуск всех физических пар на всём временном интервале, включая C5->C1.
+3. Новое принятое подробное продолжение с независимой временной работой,
+   балансами и restart. Bounded Genesis/Coupled control его не закрывает.
+
+**Следующий конкретный шаг внутри условия 1:** связать реальные source IDs и
+рассчитанную memory с material ownership и объёмным механическим оператором;
+проверить перенос resultants/energy/work и новое равновесие без replacement
+initialization. Общие этапы не расширены, пункты 2–6 открыты.
+Early raft motion, chemical continents, shared heat/work closure и длительная
+сходимость ещё не выполнены. Большие cohort counts требуют этапа оптимизации.
+
+Ниже сохранён весь предыдущий handoff как исторический suffix.
+Текущие versions/next step задаёт верхний блок.
+
+---
+
+# Текущая передача: пространственное рождение материала Genesis
+
+09.10.2026, ветка `fix/genesis-mantle-convection`.
+[Текущий отчёт](GENESIS_BULK_BIRTH_CONTINUATION.txt).
+[Настоящие сохранения и проверки](analysis/genesis_bulk_birth_validation/evidence/PACKAGE_README.txt).
+
+Цель пользователя прежняя: новорождённая расплавленная планета без твёрдой
+поверхности и заданных плит, плотная горячая атмосфера, затем охлаждение,
+океан и появление первых плит. Подробная тектоника продолжает Genesis.
+Химическое образование континентальной коры не заменять механическим
+разделением. Зрелая replacement initialization не принята; изменять producer
+Genesis для недостающей физической истории разрешено.
+
+**Выполнен следующий источник внутри условия 1 пункта 1.**
+
+`genesis_bulk_birth.py` рассчитывает births в действующей проводящей колонке
+Mobile/Fault по настоящему surface-connected solidus-front. Тепловые слои
+разделяются внутри ячейки. Постоянная координата q задаётся долей массы, а не
+меняющейся толщиной. Source/face/layer/cohort IDs, принятые временные birth
+brackets, solidus temperature и известные old-geometry chord charts сохраняются.
+Внутреннее время пересечения и неизвестное движение рафтов не придумываются.
+Отступ front удаляет глубинное перекрытие; refreezing создаёт новые IDs.
+Это существующая масса колонок, без добавки глобального heat/mass reservoir.
+Starter surface birth record и Coupled contact-bond cohorts остаются отдельными.
+
+Mobile/Fault 0.2 и Coupled 0.3 записывают полную birth history. Загрузка
+повторяет события рождения/retirement, проверяет массы, coverage, clocks,
+accepted counts и точный source prefix. Старые форматы требуют formation replay.
+Явный `bulk_birth_history=None` разрешён для declared mechanical fixtures;
+новый строгий physical-source exporter такое состояние отклоняет.
+
+`genesis_bulk_export.py` даёт собственный DTO с настоящим embedded Fault
+checkpoint, SHA/configuration, полным birth record, IDs, слоями, геометрией,
+скоростью и текущей shell memory. Readback пересоздаёт все поля из источника.
+Настоящая 3D величина здесь только instantaneous plane-stress extension
+нынешнего усреднённого elastic tensor, с правильным engineering shear и energy.
+Это не историческое depth stress solution. Historical 3D strain/prestress/
+placement/natural metric и plate ownership явно None;
+`physical_force_work_admission=False`, старый native943 importer не использован.
+
+**Фактические проверки:**
+
+Canonical physics 20 кПа, reduced mesh 80 faces; старт 2300 K / 228.385 бар,
+без твёрдого материала или океана. В 0.866 млн лет настоящий solid precursor
+имеет 80 cohorts / 433 intervals; save/load и дальнейшее формирование совпадают
+полностью. В 0.868 млн лет несущая оболочка имеет 480 cohorts / 438 intervals
+и 6.614814289511227e19 кг твёрдого материала. Передача в Coupled точная;
+годовой шаг, save/load и следующий год воспроизводятся полностью. Итог:
+640 cohorts / 440 intervals, 6.618086000647071e19 кг. Source export/readback точны.
+Actual control exit0/stderr0, 42.179 с. Все executing sources до/после совпадают.
+
+314 targeted tests PASS, 39.93 с, actual exit0/stderr0. Проверены births/export,
+Mobile/Fault/Contact/Coupled, growth/restart/topology/CLI/GUI и thermal guards.
+Отдельный stdlib/NumPy verifier, без project physics imports, PASS / exit0 /
+stderr0, 4.929 с; stdout содержит полный JSON report, данные после parsing
+точно равны файлу (pretty-format bytes отличаются). Самостоятельно проверены mass-coordinate
+birth/retirement/refreeze, IDs/charts, prefix/bytes и 3D Hooke/world energy.
+С прежним реальным canonical control побитово совпадают все прежние 23 Fault
+arrays и 39 arrays каждого Coupled checkpoint, scalar heat/orbit/work histories.
+Данные и силы не перенастроены ради новой истории.
+
+Предварительный незахваченный pytest: 108 PASS/2 FAIL из-за классификации
+нового typed field как scalar в loader; исправлено до финальной серии314.
+Предварительные проверки не выдаются за successful final captures.
+Настоящие sources/snapshots/captures/checkpoints/originals в новом evidence;
+прежние origin package и native943 P/F сохранены побайтово.
+
+**Пункт 1 открыт по тем же трём условиям:**
+
+1. Полная физическая объёмная память и prestress, перенос сил и работы,
+   физический оператор и новое равновесие. Depth birth source и его IDs готовы;
+   cohort-local constitutive stress/work и owner binding в native ещё не готовы.
+2. Допуск всех физических пар на всём интервале времени, включая C5→C1.
+3. Новое принятое продолжение с независимой временной работой, балансами и restart.
+
+**Следующий конкретный результат внутри условия 1:** рассчитывать Maxwell
+memory каждой живой когорты с её temperature/viscosity и stress-free activation;
+интегрировать stress/tangent/energy/work по её объёму в существующий Newton.
+Усреднённую прошлую strain нельзя раздать глубинным когортам задним числом.
+Их тепловое/материальное происхождение теперь собрано настоящим producer.
+Затем связать новый подробный оператор с реальным source и проверить силы/работу.
+Пункты 2–6 общего плана открыты, этапы не добавлены. Chemical continents,
+раннее движение изолированных рафтов и общий closed heat/work balance открыты.
+
+Ниже сохранён весь предыдущий handoff как исторический suffix. Текущие
+Genesis versions и следующий шаг определены верхним блоком; старые
+native943 проверки относятся к своему механическому octant-source.
+
+---
+
+# Текущая передача: продолжение настоящего Genesis
+
+09.10.2026. Ветка `fix/genesis-mantle-convection`.
+[Текущий отчёт](GENESIS_ORIGIN_CONTINUATION.txt).
+[Проверки и исходные сохранения](analysis/genesis_origin_starter_validation/evidence/PACKAGE_README.txt).
+
+**Цель пользователя:** начать с новорождённой расплавленной планеты без
+твёрдой поверхности и заданных плит, с плотной горячей водной атмосферой;
+Genesis рассчитывает затвердевание, конденсацию океана и появление первых плит.
+Подробная тектоника продолжает рассчитанную историю. Континентальный состав
+требует своего физического образования; механические области не объявлять
+материками. Минимально-энергетическая зрелая replacement initialization
+не принята. Изменять Genesis producer для недостающих физических полей разрешено.
+
+Аудит происхождения показал, что native943 octant-source — отдельный
+механический тест с заданным возрастом и frozen cooling, а не выход рождения
+планеты. Его закрытые P/F и выводы сохраняются как исторические проверки
+своей механики. Следующий производственный источник должен происходить из
+реального Genesis; недостающую историю не заменять зрелыми нулями.
+
+**Выполнено в этом продолжении:**
+
+- `genesis_solidification.py` ведёт реальные birth/remelt cohorts существующего
+  поверхностного силикатного резервуара на принятых thermal samples. В t=0
+  нет твёрдых когорт. Явные приближения: линейная температура внутри интервала,
+  phase crossing при рождении и пропорциональное well-mixed переплавление.
+- Starter сохраняет полную историю и проверяет её при загрузке. Версия
+  `genesis-starter-0.2`; старый 0.1 требует повтора от тех же расплавленных
+  параметров, отсутствующая история не придумывается.
+- Young continuation импортирует рассчитанный средний возраст оставшегося
+  материала вместо нуля, сохраняет весь birth-record и продолжает единые
+  Genesis часы/тепло/пар/океан. Failed steps не публикуют новую историю.
+- Fault→Coupled сохраняет входную скорость по тем же faces/world basis
+  независимой копией. Это перенос диагностического rate, не инерционный solve.
+
+**Фактические проверки:**
+
+Реальный Fault от расплава 2300 K и 228.385 бар достигает несущей оболочки
+в 0.868 млн лет; strain/damage ненулевые, состояние и входная скорость
+447.98014368006164 км/млн лет сохранены. Два годовых шага с restart совпадают.
+Canonical Starter 20 кПа от расплава в 1.2 млн лет имеет почти весь океан,
+одну область и 28 когорт. Отдельный sensitivity control 50 кПа даёт первое
+разделение на две области в 0.89375 млн лет; canonical config не перенастроен.
+Из его настоящего checkpoint выполнен основной runner: elapsed 0.2 млн лет
+точно совпадает с 0.1 + save/load + 0.1 по всем 63 mature arrays, 10 Starter
+members и 8 fracture-memory members. Все семь joint checks проходят, часы
+согласованы, первичный возраст не сбрасывается. Континентальной массы нет;
+`physical_handoff_certified=False` сохраняется для coarse rigid-domain route.
+
+Широкая серия: 548 PASS / 8 FAIL из 556. Семь старых fixtures исправлены
+с сохранением настоящих thermal samples или с поздним diagnostic monkeypatch;
+физические guards не ослаблены. Затронутые два файла затем дали 33 PASS.
+GUI watchdog 60 с отдельно не прошёл при финальном rendering; сохранён FAIL,
+completion watchdog увеличен до 180 с, весь GUI-файл дал 15 PASS за 76.60 с.
+Настоящий Qt запуск прошёл от расплава до 1 млн лет после разделения,
+preview загружен, timer зарегистрировал 5591 ticks. Все восемь исходных
+отказов покрыты успешными повторами; новая зелёная широкая серия не заявлена.
+Actual captures, журналы, checkpoints, точные originals и dependency failures
+сохранены отдельно. Рабочие зависимости восстановлены из requirements в .venv.
+
+**Пункт 1 открыт: те же три условия исходного плана.**
+
+1. Полный физический перенос материала, деформаций/prestress, сил и работы,
+   физический оператор и новое равновесие подробной механики.
+2. Допуск всех физических пар на всём интервале времени, включая C5→C1.
+3. Новое принятое продолжение с независимой временной работой, балансами и restart.
+
+Сегодня закрыты birth/age-transfer и incoming velocity, проверен существующий
+маршрут от расплава. Ещё не рассчитываются полные объёмные 3D strain/prestress/
+natural metric от рождения; нет универсального material/owner catalogue,
+пространственных bulk cohorts и общего force/work admission. Химическая
+дифференциация континентов и движение отдельных ранних твёрдых рафтов также
+не объявлены реализованными. Пункты 2–6 общего плана открыты, этапы не добавлены.
+
+**Следующее действие внутри условия 1:** связать настоящий Genesis Fault/Coupled
+producer с универсальными material identities и depth/birth history подробной
+механики. Недостающую объёмную память рассчитывать при охлаждении в Genesis;
+переносить её с проверкой массы, геометрии, часов, сил и работы. Исследовательские
+контактные доказательства сохранять, но не применять их pins к другой физической
+истории без проверки.
+
+Ниже целиком сохранён прежний handoff943 как историческая запись. Его инструкция
+о выборе зрелой initial boundary problem и его утверждения о 2708 current
+immutable dependency pins относятся к прежним исходникам. Genesis sources
+теперь изменены в разрешённом пользователем объёме; их точные originals
+сохранены в новом evidence. Закрытые native943 P/F и четыре PY не переписаны.
+
+---
+
 # Передача работы в облачный чат
 
-Актуально на **01.10.2026**. Это точка входа для продолжения текущей работы.
-Документы предыдущих этапов описывают состояние на момент их написания;
-фраза «следующий этап» в старом отчёте может уже быть неактуальной.
+09.10.2026. Ветка `fix/genesis-mantle-convection`, компонент943.
+Связан настоящий принятый исходный интервал и проверен диагностический
+переход материала, сил и работы в объявленный отсчёт935.
+[Отчёт](GEOMETRIC_NATIVE_COMMON_INITIALIZATION_HANDOVER_IMPLEMENTATION.md).
+
+Внешний accepted `before`, snapshot, receipt, temporal admission,
+history и материальный epoch аутентифицированы целиком. Внутренний
+`candidate_mechanics_adopted=False` — запись происхождения до внешнего
+принятия, она не отменяет настоящую квитанцию acceptedold1.
+Принятая механическая геометрия имеет1e6с; контакты2e6с, память1e6с,
+материал1e6с. Source geometry0 прежнего935 — иной локальный отсчёт.
+COMMON-пробы883/891/895/907 остаются диагностикой. В каталоге92 исходных
+переменных, из них56 cold/body ненулевых в зарегистрированной пробе;
+старую формулировку939 о92 ненулевых амплитудах не переносить как факт.
+
+Результат943 сохраняет32 стороны/16 контактов, восемь настоящих beam
+родителей, силы, offsets, anchors, память и принятую накопленную работу.
+Проверены полные декартовы мосты и сопряжение вектор/ковектор с точными
+рациональными остатками. Знак физической работы противоположен градиенту
+потенциала. Разделены буквальный binary64 producer на frozen geometry0,
+его точная archival reconstruction и новый current-objective расчёт
+на принятой geometry1e6с; последний не объявлен настоящей старой силой.
+Beam rounding residual агрегирования равен−3/131072Дж, сохранён со знаком.
+
+Все32 материальных изменения reference строго ненулевые. Для donor16
+разность около0,04677–0,11206м, для receiver16 около9139,244–9139,250м.
+Все14 сопоставленных силовых строк935 отличаются от реконструированного
+принятого current-objective механического состояния. На полном допустимом
+холодном каталоге895 проверен условный радиальный разрыв receiver material
+и исходного механического tip не менее примерно9139,24179м.
+Это относится к объявленным материальным references и реконструированным
+механическим tips; историческое полное3D размещение неизвестно.
+Не объявлены невозможность всего исторического размещения, невозможность
+виртуальных attachments с внутренними рычагами или невозможность
+физического пути подготовки. Соответствующие запреты False,
+`historical_physical_material_embedding_preserved=None`.
+
+Исторические3D strain/prestress/archive placement-motion, нормальная
+история повреждения/максимального раскрытия, физический путь и оплаченная
+работа подготовки, HOT birth strain/prestress явно None.
+899/HOT903 нулевые состояния — объявленная модель, а не восстановленная
+история. Нулевая холодная энергия не означает нулевой градиент57 строк
+из-за исходной преднагрузки балок. Accepted work ledgers сохранены один
+раз; они не переименованы в оплату нового reference или объёмную плотность.
+Физическая инициализация, подготовительная оплата, новый equilibrium,
+физический temporal path work и новое принятое продолжение не объявлены.
+
+**51 тест PASS**, настоящий child exit0/stderr0; pytest161,41с,
+захваченный процесс162,129661525с. **Native03 PASS**, child exit0,
+stderr0/stdout==полный JSON,94,769423393с: четыре формальных запроса,
+полные restart контекста, системы и всех результатов. **Независимый
+actual04 PASS**, child exit0/stderr0/stdout==report,52,810789104с:
+все поля фактических контекста/системы/четырёх результатов,32 стороны,
+16 контактов,8 балок,14 силовых строк,408 cold ячеек,5 HOT-тел,
+три силовых базиса и16 условных радиальных ограничений. Отдельный
+рациональный алгоритм не импортирует физические модули проекта.
+Все executing sources и полные snapshots совпадают до/после запусков.
+Native raw SHA25663ca8bd23c859183aada28eee3dae726fa54136f1619a7989d9dc0047a7a45f6.
+Audit raw SHA2568c52a9342f74b2ea8d0faf5efd684226387bfa3e3cc1bd4ee905a3adebba62a6.
+
+Настоящие development failures сохранены со своими exits/streams/sources:
+Native01 FAIL1 — callback прогресса; Tests01 FAIL1/50passed — ошибочное
+ожидание101 записанного first derivative в разреженном935. Исправленный
+тест сравнивает все сохранённые jets с подлинным935 и проверяет индексы
+полного каталога101, физические модули не менялись. Native02/actual03
+PASS сохранены как development с прежними байтами теста. Неуспешные
+catalogue01/02 и actual01/02 независимого аудита также сохранены.
+Финальные native/tests/audit выполнены заново на окончательных четырёх PY.
+Прежние tensor/quadrature/force/test/audit mains не запускались.
+
+Ровно четыре новых PY →943;939,935 и все прежние закрытые P/F сохранены.
+BEFORE/AFTER проверяют одинаковые2708 immutable dependency rawpins
+(2577 прежних плюс131 закрытого939). BEFORE939/35,879893465с,
+подлинные restore939/35,718115493с и readback939/55,988555829с сохранены.
+P: `analysis/geometric_native_common_initialization_handover_validation`.
+Строгий F4: `analysis/geometric_native_common_initialization_handover_final_readback`.
+Документы закрепляются до закрытия. Новый restorer проверяет155 внешних
+targets:140 прежних и15 подлинных baseline associations свежего939.
+Whole historical939 handoff и отчёт сохранены без изменения.
+
+**Пункт1 открыт: один прежний существенный блок, те же три условия:**
+
+1. Физический перенос материала, сил, преднапряжения и работы;
+   полная подготовительная и нагрузочная работа, физический оператор
+   и новое равновесие. Диагностический перенос943 завершён;
+   согласованная физическая начальная постановка, оплата и новый solve
+   ещё не готовы.
+2. Допуск всех пар на всём временном интервале, включая C5→C1.
+3. Принятое продолжение с независимой временной работой, балансами и restart.
+
+**Следующий конкретный результат внутри условия1:** согласованная
+начальная краевая задача на подлинной принятой механической геометрии,
+а не новая проверка нуля935. Связать настоящий материальный reference
+с принятыми tips, владельцами и восемью roof displacements; воспроизвести
+определяемые силы/моменты/энергию и виртуальную работу исходных16 контактов
+и8 beam. Изменение материального reference требует своих сертификатов;
+доказательства887/895/899/935/939 не переносить автоматически.
+Подлинные исходные материал, areal-depth мера, родители и модульные
+данные остаются источниками. Старые P/F и их математические результаты
+сохраняются как история, а не переписываются под новый reference.
+
+Полное историческое3D поле не идентифицируется однозначно из старой
+сокращённой механики. Минимальная упругая энергия при подлинных силовых
+ограничениях — возможная НОВАЯ явная конститутивная реконструкция для
+начальной задачи, не восстановленные данные. Сначала сделать конкретную
+постановку и её force/energy/work совместимость проверяемыми; не выдавать
+минимальную реконструкцию или stress-free HOT birth за историю.
+Исторические нормальные damage/opening остаются None; их нельзя
+подменять нулём. ΔU и реальный путь/работа подготовки учитываются
+отдельно: положительная разность потенциалов не является квитанцией оплаты.
+После согласования начального состояния решать физические свободные
+координаты с настоящими базальными скоростями, без удержания owners
+и скрытой внешней реакции. Допуск нового временного интервала и принятие
+остаются отдельными обязательными условиями исходного пункта1.
+Новых крупных этапов нет; численных оценок количества будущих сессий нет.
+
+Legacy source0/contact2e6/memory1e6/material1e6с и acceptedold1/new0
+сохранены; отдельные фактические accepted source clocks указаны выше.
+Повреждение, скольжение и физические журналы не продвинуты.
+Пункты2–6 исходного плана открыты. В каждом отчёте указывать остаток пункта1.
+
+В следующей сессии сначала новый943 `baseline_restore_source.txt`, затем
+новый F `readback_source.txt`, с двумя различными свежими `--output`
+вне репозитория. Команды в отчёте. Закрытые943/939/935 и все прежние P/F,
+закреплённые источники и whole historical939 suffix не менять.
+
+---
+
+## Историческая точка передачи939
+
+
+# Передача работы в облачный чат
+
+09.10.2026. Ветка `fix/genesis-mantle-convection`, компонент939.
+Удостоверена необходимая внешняя работа подготовки Tλ после релаксации
+всех100 механических координат объявленного оператора935.
+[Отчёт](GEOMETRIC_NATIVE_COMMON_PREPARATION_FEASIBILITY_IMPLEMENTATION.md).
+
+При λ=1 глобальная нижняя граница прироста потенциала равна
+приблизительно **1,8610563847125874×10²⁵ Дж**. Верхняя граница чистой
+базальной мощности на ровно68 сохранённых отсчётных весах —
+**62443640184,40646 Вт**; безопасное целочисленное округление вверх
+62443640185 Вт. Необходимая длительность — **298037779222444,1 с**,
+или **9444247,319898982 юлианских лет** (31557600 с/год), около9,44млнлет.
+Использованы точные рациональные границы, а не округлённые десятичные
+числа. Сопротивление уже включено в чистую мощность.
+
+Это условная необходимость для подготовленного нулевого отсчёта935,
+сохранённого материального закона и квазистатического энергетического
+баланса, без дополнительного приводаλ и без высвобождения начального
+кинетического запаса. Нулевой запас — предпосылка, а не восстановленный
+исторический факт. API принимает также явно предполагаемую верхнюю
+границу B≥0, тогда необходимая длительность max(L(λ)−B,0)/Pmax.
+Граница не доказывает достижимость, найденный путь, физическую оплату,
+пригодность закона на большом пути, полную подошву или новое равновесие.
+Физическая длительностьT задаётся отдельно; прежнийΔt и старые часы
+её не определяют. Ни физический отказ, ни принятое продолжение не объявлены.
+
+Глобальная оценка сохраняет ортогональный остаток899, все192 настоящие
+ячейки немодального дополнения, донорский воротник, восемь полных
+beam/internal квадратов с подлинными родителями,16 контактных offsets
+и неотрицательность пяти HOT-тел903. Истинные899 Gram/inverse и
+сертификаты интегралов/поддержки аутентифицированы, не перевычислены.
+При λ=0 отрицательная глобальная граница релаксации сохранена.
+Мощность проверена по q=X/|X| и всем101 скоростям, включаяλ:
+qdotᵀQbasal=Σw(τ·u−β|u|²)≤Σw|τ|²/(4β).
+Полнота непрерывной физической подошвы из68 весов не следует.
+
+**46 тестов PASS**, настоящий child exit0/stderr0; pytest161,80с,
+захваченный процесс162,408491682с. **Native01 PASS**, child exit0,
+stderr0/stdout==JSON,55,339577086с: восемь запросов, полные restart
+контекста, систем и16 результатов двух API. **Независимый аудит PASS**,
+child exit0/stderr0/stdout==report,18,100701377с: пять исходных пакетов,
+192 ячейки,8 Gram-разложений/beam,16 контактов/32 стороны,5 HOT,68 весов,
+все публичные поля фактических запросов. Аудитор не импортирует физические
+модули проекта. Все закреплённые источники совпали до/после запусков.
+Development-контроль каталога01 с настоящим exit1 и исправленный02 PASS
+сохранены отдельно; они не заменяют полный аудит фактического native939.
+Прежние tensor/quadrature/force/test/audit mains не запускались.
+
+Ровно четыре новыхPY →939;935 и все прежние закрытыеP/F сохранены.
+BEFORE/AFTER проверяют одинаковые2577 immutable dependency rawpins.
+НовыйP: `analysis/geometric_native_common_preparation_feasibility_validation`.
+СтрогийF4: `analysis/geometric_native_common_preparation_feasibility_final_readback`.
+Документы закрепляются до закрытия. Восстановление проверяет140 внешних
+targets:126 прежних и14 подлинных baseline associations свежего935.
+
+**Пункт1 открыт: один прежний существенный блок, те же три условия:**
+
+1. Физический перенос материала, сил, преднапряжения и работы;
+   полная подготовительная и нагрузочная работа, физический оператор
+   и новое равновесие. Объявленный оператор935 и необходимая
+   энергетическая оценка939 готовы; физическая инициализация,
+   оплата, полноценная материальная подошва и новый solve ещё не готовы.
+2. Допуск всех пар на всём временном интервале, включая C5→C1.
+3. Принятое продолжение с независимой временной работой, балансами и restart.
+
+**Следующий конкретный результат внутри условия1:** удостоверенный
+переход от исходного принятого material/reference879/883 к полному
+reference935. Сначала связать настоящий принятый source DTO, clocks,
+состояние, материал, память и работу в ancestry879/883. Зарегистрированные
+ненулевые COMMON-пробы891/895/907 — диагностические; их не повышать
+до принятых физических данных. Одного счётчика acceptedold1 недостаточно.
+Проверить сохранение физического размещения/состояния
+либо выявить настоящее движение материала. Перенести определяемые8beam
+и16контактных силовых ковекторов и работу через полный исходный
+декартов мост и whole-source map935; сохранить offsets и память.
+Рассчитать геометрические, силовые и рабочие остатки и остатки
+инициализации нового continuum899/HOT903. Результат — исполняемая
+проверка перехода с точными перенесёнными величинами и явным каталогом
+недостающих физических входов, запрещающая неподтверждённую инициализацию.
+891 связывал32локальных ярлыка при92 ненулевых зарегистрированных
+амплитудах;895 добавил C_roof, гомотетии и whole-seam mixing и изменил
+физическое размещение. Его мост не разрешает автоматически переносить
+силовые receipts891. Сохранение16скалярных prestress в935 не доказывает
+перенос мировых сил, полного3D-поля и работы старого принятого состояния.
+Не заменять отсутствующее историческое3D-преднапряжение/деформации,
+нормальную историю повреждения или физический путь/работу подготовки
+нулями, выдуманнымT или приводомλ. Новый физический solve — после
+согласованного перехода, по R101(q,qdot) с физическими скоростями,
+без произвольного удержания владельцев и скрытой внешней реакции.
+Энергетическую оценку939 повторять не нужно.
+Новых крупных этапов нет.
+
+Source0/contact2e6/memory1e6/material1e6с, acceptedold1/new0.
+Повреждение, скольжение и физические журналы работы не продвинуты.
+Пункты2–6 исходного плана открыты. В каждом отчёте указывать остаток пункта1.
+
+В следующей сессии сначала новый939 `baseline_restore_source.txt`, затем
+новыйF `readback_source.txt`, с двумя различными свежими `--output`
+вне репозитория. Команды в отчёте. Закрытые939/935 и все прежниеP/F,
+закреплённые источники и whole historical935 suffix не менять.
+
+---
+
+## Историческая точка передачи935
+
+# Передача работы в облачный чат
+
+08.10.2026. Ветка `fix/genesis-mantle-convection`, компонент935.
+Собран и независимо проверен объявленный единый оператор общего
+состояния `R101(q,q̇)=∇U(q)−Qbasal(q,q̇)`.
+[Отчёт](GEOMETRIC_NATIVE_COMMON_GENERAL_FORCE_IMPLEMENTATION.md).
+
+Холодная энергия зависит совместно от56 координат тела иλ с полными
+смешанными объёмными моментами. Исходная мера и весь материал сохранены:
+408 ячеек, включая немодальное дополнение и настоящий донорский воротник.
+Замороженные899 Gram/inverse и удостоверенные887 границы обратного
+градиента остаются исходными данными; прежние интегралы не перевычисляются.
+В одном конечном состоянии объединены HOT30 с неявным средним,
+16 исходных холодных контактов с32 подлинными сторонами,6 конечных поворотов
+владельцев,8 внутренних смещений и68 базальных отсчётных весов931.
+Контакты используют полный исходный декартов градиент и кровельный мост.
+Преднагрузка, нелокальная проекция и все смешанные производные сохранены.
+Скорости всех101 координаты, включаяλ, заданы явно.
+Матрицы оператора равны `H_U−Kbasal` и `D`; замороженный потенциал
+нагрузки только по владельцам заменён пространственным законом931.
+
+**39 тестов PASS**, действительный child exit0/stderr0;
+pytest1593,33с, захваченный процесс1656,079892с.
+**Native03 PASS**, действительный child exit0/stderr0/stdout==JSON,
+1506,363031с. Три запроса: нулевое состояние, совместное конечное
+состояние и то же состояние с противоположными скоростями; четыре
+дополнительных подлинных материальных ярлыка. Полные restart равны.
+**Независимый аудит PASS**, child exit0/stderr0/stdout==report,
+1509.935663с,220 знаков: все408 объёмных ячеек в обоих разных
+состояниях, полные HOT/контакты/базальные силы, все101 строки и
+10201 элемент каждой матрицы для каждого запроса. Аудитор не импортировал
+расчётные модули проекта. Прежние tensor/quadrature/force/test/audit mains
+не запускались ни при одной проверке.
+Все закреплённые источники совпали до/после настоящих запусков.
+Неуспешные и остановленные development captures сохранены как таковые.
+Краткий сбой transport не остановил успешные физические процессы;
+их завершение подтверждено настоящими wrapper facts.
+HOT16/32 сравнения — независимая численная диагностика с сохранением
+подлинных full-mask/positive-curve bounds; отдельное новое доказательство
+сходимости этих правил не заявляется. Закон рождения HOT-контактов
+остаётся открытым физическим входом.
+
+Строго положительная нижняя граница диагоналиD доказана для87/101:
+6 владельцев,56 холодных,24 HOT иλ. Внутренние8 имеют точный ноль;
+у HOT13/14/17/31/32/35 положительность не разрешена. Это не доказательство
+положительной определённости, полного ранга или полноты подошвы.
+Общий физический оператор, архивное3D-преднапряжение, физическая оплата
+подготовки и новое равновесие остаются неподтверждёнными.
+
+Ровно четыре новыхPY →935; прежние931 источники и закрытыеP/F сохранены.
+Before/after проверяют одинаковые2322 dependency rawpins.
+Новый пакет: `analysis/geometric_native_common_general_force_validation`.
+СтрогийF4: `analysis/geometric_native_common_general_force_final_readback`.
+Документы закрепляются перед закрытием. Восстановление проверяет126
+внешних targets:113 прежних и13 новых подлинных baseline associations.
+
+**Пункт1 открыт: один прежний существенный блок, те же три условия:**
+
+1. Физический перенос материала, сил, преднапряжения и работы;
+   полная подготовительная и нагрузочная работа, согласованный
+   физический оператор и новое равновесие. Общий объявленный оператор101
+   теперь рассчитан. Полнота материальной подошвы и меры, архивное
+   преднапряжение, допустимость большого пути899 и оплата подготовки
+   сохраняют открытый статус.
+2. Допуск всех пар на всём временном интервале, включая обратную C5→C1.
+3. Принятое продолжение с независимой временной работой, балансами и restart.
+
+**Следующий конкретный результат внутри условия1:** сертифицированная
+оценка обеспеченности подготовки Tλ внешней работой сохранённой мантии.
+Удостоверить нижнюю границу прироста общего потенциала приλ=1 после
+релаксации всех100 механических координат и сравнить с верхней границей
+чистой базальной работы за параметрическую длительностьT, без
+дополнительного приводаλ. Результат — необходимая
+минимальная длительность либо дефицит работы; новый solve и физический
+отказ заранее не объявлять. Использовать немодальное дополнение923,
+ортогональное разложение899/935, полную квадратичную форму8 элементов,
+релаксацию16 контактов `ΣArea·Φ(anchor)` с исходными энергетическими
+смещениями и неотрицательность HOT903.
+Оценку923 при нулевых56 автоматически на общий101 не переносить.
+Для внешней мощности использовать `τ·u−β|u|²≤|τ|²/(4β)`, допустимые
+материальные положения и ровно68 исходных положительных весов931/935;
+проверить пространственную и обобщённую мощность. Bound включает
+сопротивление, повторно его не вычитать. Это сохранённая
+отсчётная мера, полнота непрерывной подошвы из неё не следует.
+T остаётся параметром: физического расписания и приводаλ в источниках
+нет, прежнийΔt=1e6с их не задаёт. Новых крупных этапов нет.
+
+Source0/contact2e6/memory1e6/material1e6с, acceptedold1/new0.
+Повреждение, скольжение и физические журналы работы не продвинуты.
+Пункты2–6 исходного плана открыты. В каждом отчёте указывать остаток пункта1.
+
+В следующей сессии сначала новый935 `baseline_restore_source.txt`,
+затем `final_readback/readback_source.txt`, с разными свежими `--output`
+вне репозитория. Команды в отчёте. Закрытые935/931 и все прежниеP/F
+и закреплённые исходники не менять. Полный handoff931 неизменным
+суффиксом сохранён ниже.
+
+---
+
+## Историческая точка передачи931
+
+# Передача работы в облачный чат
+
+08.10.2026. Ветка `fix/genesis-mantle-convection`, компонент 931.
+Связаны базальные силы и полное векторное сопротивление с материальными
+полями владельцев, холодного тела, HOT и подготовкой Tλ.
+[Отчёт](GEOMETRIC_NATIVE_COMMON_BASAL_LOADING_IMPLEMENTATION.md).
+
+**Главный результат:** рассчитаны все 101 силы и матрицы 101×101
+сопротивления, производной по состоянию и производной по скоростям
+для объявленного дискретного правила на сохранённой отсчётной мере.
+Это базальная часть оператора; полная энергия, контакты и новое
+равновесие ещё не объединены в общем состоянии.
+
+68 положительных весов исходных ячеек используются один раз: 59 холодных
+живых точек и девять HOT-точек подлинной прокси-области. Парная поправка
+уже включена в веса и не добавлена повторно. Для каждой точки доказана
+принадлежность пересечению исходной прокси-области и физической ячейки.
+Для всех 59 холодных точек доказано LIVE на всём прежнем интервале;
+та же геометрия вычислена без прежнего archive point API. HOT-прокси
+не доказывает положительную криволинейную материальную площадку вокруг
+точки. Полнота подошвы и непрерывное интегрирование остаются неподтверждёнными.
+
+Сохранены β=1,2×10¹⁴ Па·с/м, исходные Ωm и a(q)=1+0.17qx,
+неподвижная глобальная система и Rsource=100000 м. Новое угловое
+пространственное расширение использует q=y/|y|. Амплитуда множит только
+движущую нагрузку; сопротивление остаётся −βu. Скорости всех координат,
+включая λ, заданы явно в физических единицах; Δt их не определяет.
+Производная по состоянию учитывает нелинейную геометрию и пространственное
+поле, поэтому может быть несимметричной. Нагрузка проверяется через
+пространственную и обобщённую мощность; она не объявлена консервативной.
+
+По нижней границе Dii положительная опора доказана для **80 из 86**
+координат тела: все 56 холодных и 24 HOT. У шести HOT нижняя граница
+не разрешает строгую положительность при текущей точности; верхняя
+положительна для всех 86. Эти интервалы не заменены нулями. Положительные
+диагонали не доказывают положительную определённость всей матрицы.
+Восемь внутренних базальных колонок равны нулю по подлинному закону
+контактных плеч. Повороты владельцев имеют значение ноль, но их первые,
+вторые и смешанные производные включены. Конечный общий owner chart
+и полный декартов материальный градиент этим компонентом не восстановлены.
+
+**48 тестов PASS**, действительный exit0/stderr0; pytest 827,10 с,
+захваченный процесс 907,623 с. Native PASS: четыре состояния, полные
+restart, явные противоположные скорости, exit0/stderr0/stdout==JSON,
+1816,032 с. Native связывание источника/геометрии 535,604 с; проверки
+состояний 1215,508 с. Измерения внутренних затрат выбора кандидатов нет.
+Независимый аудит PASS: 220 знаков, 140697 точных интервальных повторений,
+192838 скалярных включений, 66 независимых проверок производных,
+177 холодных и 27 HOT-строк в трёх разных состояниях, 87 собственных
+доказательств LIVE на старом интервале; exit0/stderr0/stdout==report,
+221,541 с. Прежние tensor/quadrature/force/test/audit mains не запускались.
+Первый остановленный native и ранние диагностические ограничения сохранены;
+окончательные native02 и tests01 завершились естественно. Все закреплённые
+исходники совпадают до и после настоящих запусков.
+
+Ровно четыре новых PY →931; прежние 927 исходников и закрытые P/F
+сохранены. Before/after проверяют одинаковые 2160 dependency rawpins.
+Документы закрепляются перед закрытием. Пакет результатов:
+`analysis/geometric_native_common_basal_loading_validation`;
+строгий архив читателя:
+`analysis/geometric_native_common_basal_loading_final_readback`.
+
+**Пункт 1 открыт: один прежний существенный блок, те же три условия:**
+
+1. Физический перенос материала, сил, преднапряжения и работы; полная
+   подготовительная работа, нагрузки и сопротивление, смешанный оператор
+   общего состояния и новое равновесие. Базальная дискретная часть 101
+   теперь рассчитана. Целый физический оператор, полнота материальной
+   подошвы и мера, историческое 3D-преднапряжение архивов, допустимость
+   большого пути по 899 и физическая оплата подготовки остаются открыты.
+2. Допуск всех пар на всём временном интервале, включая обратную C5→C1.
+3. Принятое продолжение с независимой временной работой, балансами и restart.
+
+**Следующий конкретный результат внутри условия 1:** единый R101(q,q̇)
+и его производные по состоянию и скорости. Холодная энергия должна
+зависеть совместно от 56 координат и λ со смешанными объёмными моментами;
+простая сумма отдельных 899(q) и 923(λ) недостаточна. HOT-энергия,
+16 исходных контактов с 32 сторонами, нормали, преднагрузка, внутренние
+плечи и базальные силы должны использовать одно конечное состояние
+владельцев и тела. Прежний замороженный owner6 load/drag potential
+заменяется законом 931 в этой сборке. При сохранённой мере 68 это
+сначала объявленный дискретный оператор; полнота подошвы, интегральная
+погрешность и согласованная мера нужны до физической сертификации
+равновесия. HOT birth law, архивное преднапряжение, физическое время
+и привод λ не выводятся из прежних данных. Новых крупных этапов нет.
+
+Source0/contact2e6/memory1e6/material1e6 с, acceptedold1/new0.
+Повреждение, скольжение и физические журналы работы не продвинуты.
+Пункты 2–6 исходного плана открыты. В каждом отчёте указывать остаток пункта 1.
+
+В следующей сессии сначала новый931 `baseline_restore_source.txt`, затем
+`final_readback/readback_source.txt`, с разными свежими --output вне
+репозитория. Команды в отчёте. Восстановление проверяет 113 внешних файлов.
+Закрытые 931/927 и прежние P/F и закреплённые исходники не менять.
+Полный handoff927 неизменным суффиксом сохранён ниже.
+
+---
+
+## Историческая точка передачи927
+
+# Передача работы в облачный чат
+
+08.10.2026. Ветка `fix/genesis-mantle-convection`, компонент 927.
+Объединён объявленный баланс холодной подготовки Tλ, исходных контактов,
+внутренних элементов и сохранённых нагрузок владельцев.
+[Отчёт](GEOMETRIC_NATIVE_COMMON_PREPARATION_BALANCE_IMPLEMENTATION.md).
+
+**Главный результат:** рассчитаны энергия, все 15 компонент градиента и
+225 компонент матрицы вторых производных активного сечения: шесть новых
+поворотов владельцев, восемь исходных внутренних смещений и λ.
+Повороты имеют значения ноль; их производные и смешанные блоки учтены.
+Полный исходный каталог 100 координат сохранён; с λ было бы 101.
+Недостающие нагрузки по 86 координатам тела не заменяются нулями.
+
+Целая холодная энергия 923 входит один раз; восемь прежних элементов
+и 16 исходных контактов с 32 материальными сторонами восстановлены из
+подлинных источников. Сохранены 24 живые и восемь архивных привязок.
+Нормали перенесены по Нансону, площадь источника входит один раз,
+преднагрузка и смешанная кривизна сохранены. Контактная карта использует
+полный мост прежней кровли и подлинный Tλ, а не движение прежней точки
+без согласования отсчётов. HOT здесь неподвижен; закон новых HOT-контактов
+не установлен. Положительная ширина интервала λ отклоняется: это сечение
+точных состояний, не сертифицированная история контактов по всему пути.
+
+При λ=1 нижняя граница прироста объявленного потенциала после вычитания
+консервативных пределов релаксации контактов и квадратичного потенциала
+владельцев остаётся **около 1,86×10²⁵ Дж**. Эти пределы не означают найденное
+равновесие. Общий момент по z около 1,10584×10²³ Н·м: неподвижным владельцам
+нужна удерживающая реакция. Свободное равновесие при движении владельцев
+не исключено. Разности потенциала и обратные знаковые сравнения не являются
+доказанной физической временной работой или разгрузкой контактов.
+
+**35 тестов PASS**, действительный exit0/stderr0, pytest 445,03 с;
+захваченный процесс 482,238 с. Native PASS: девять подлинных состояний,
+полные restart систем и ответов, прямые/обратные знаковые сравнения,
+действительный exit0/stderr0/stdout==JSON, 503,959 с.
+Независимый аудит PASS: 220 знаков, 569832 включения, 3573 тождества,
+90 независимых проверок производных, 288 точных проверок сертификатов
+вращения, действительный exit0/stderr0/stdout==JSON, 127,223 с.
+Старые интегралы и force solve не перезапускались. Новое вращение имеет
+направленную оценку остатка; ускорение одной исходной точки подтверждено
+отдельным сравнением с неизменным 919. Неудачные и остановленные ранние
+запуски сохранены и не выдаются за успешные.
+
+Ровно четыре новых PY →927; все прежние 923 исходника и закрытые P/F
+сохранены. Before/after проверяют одинаковые 1986 dependency rawpins.
+Документы закрепляются перед закрытием. Пакет проверки:
+`analysis/geometric_native_common_preparation_balance_validation`;
+строгий архив читателя:
+`analysis/geometric_native_common_preparation_balance_final_readback`.
+
+**Пункт 1 открыт: один прежний существенный блок, те же три условия:**
+
+1. Физический перенос материала, сил, преднапряжения и работы; полная
+   подготовительная работа, нагрузки и сопротивление, смешанный оператор
+   общего состояния и новое равновесие. Теперь рассчитан общий объявленный
+   активный блок 15. Полный оператор 101, историческое 3D преднапряжение
+   архивов, допустимость большого пути по закону 899 и физическая оплата
+   подготовки остаются неподтверждёнными.
+2. Допуск всех пар на всём временном интервале, включая обратную C5→C1.
+3. Принятое продолжение с независимой временной работой, балансами и restart.
+
+**Следующий конкретный шаг внутри условия 1:** связать подлинные базальные
+нагрузки и сопротивление с холодными 56 и HOT 30 координатами тела и
+подготовительным Tλ; расширить оператор до общего состояния. Исходное поле
+мантии и меры ячеек сохранены в 903, закон полного вектора сопротивления
+есть в `tectonics/basal_coupling.py`. Прежняя центроидная схема определяла
+только шесть поворотов владельцев. Центроид физической ячейки может лежать
+вне её материального пересечения; требуется подлинная материальная связь
+нижней границы и правило интегрирования. Не восстанавливать 86 нагрузок
+из шести моментов и не считать прежний HOT Winkler-вклад нагрузкой мантии.
+Одновременно нужны согласованные с состоянием и путём силы владельцев/λ,
+физическая скорость λ и расписание времени; масштаб Δt=10⁶ с их не задаёт.
+Пространственная сила мантии рассчитывается как внешняя работа по пути,
+а не предполагается консервативной. Затем новое равновесие, полный допуск
+и принятое продолжение; новых крупных этапов к исходному плану не добавлено.
+
+Source0/contact2e6/memory1e6/material1e6 с, acceptedold1/new0.
+Повреждение, скольжение и физические журналы работы не продвинуты.
+Пункты 2–6 исходного плана открыты. В каждом отчёте указывать остаток пункта 1.
+
+В следующей сессии сначала новый927 `baseline_restore_source.txt`, затем
+`final_readback/readback_source.txt`, с разными свежими --output вне
+репозитория. Команды в отчёте. Восстановление проверяет 101 внешний файл.
+Закрытые 927/923/919/915/913/909/907 P/F и закреплённые исходники не менять.
+Полный handoff923 неизменным суффиксом сохранён ниже.
+
+---
+
+## Историческая точка передачи923
+
+# Передача работы в облачный чат
+
+08.10.2026. Ветка `fix/genesis-mantle-convection`, компонент923.
+Рассчитана объёмная холодная работа нового физического пути Tλ из919.
+[Отчёт](GEOMETRIC_NATIVE_COMMON_COLD_PREPARATION_ENERGY_IMPLEMENTATION.md).
+
+**Главный результат:** при полной подготовке λ=1 холодный вклад требует
+**не менее1,86×10²⁵ Дж** по сохранённому объявленному закону899.
+Это ненулевая стоимость физического движения, которую необходимо включить
+в общий баланс; принятого продолжения или оплаты этой работы пока нет.
+
+Полные r1/r2/S2/S3/S4 вычислены по408 исходным ячейкам восьми родителей,
+с обоими слоями, швами, всей областью активации887 и полярным дополнением
+за пределами старых56мод. Три архивные когорты входят один раз через своих
+исходных родителей. Мера R²dΩdz, восемь literal энергий/преднагрузок,
+полный Gram/inverse899 сохранены; S3 точно0. Старый Gram и старые force solves
+не пересчитывались. Путь начинается от zero895 при нулевых56приращениях.
+
+Прямая интервальная работа λ=1 широка и сама по себе не определяет знак.
+Отдельное доказательство по всему неактивному модальному материалу даёт
+положительную нижнюю границу1,8610563847e25 Дж с учётом максимальной
+релаксации восьми преднагрузок. Исходные границы работы сохранены без обрезания.
+Рассчитаны энергия, две производные по λ, работа реакции и прямые/обратные
+переходы. Физическое время, допуск и работа полного комплекса не сертифицированы.
+Историческое3D преднапряжение архивов и допустимость большого пути по закону
+899 не восстановлены: new_preparation_path_constitutive_admissibility_certified=False.
+
+**33 теста PASS**, actual exit0/stderr0. Native PASS541,754427481с;
+новый интеграл18,292522508с. Независимый аудит PASS265,807727096с:
+220digits,34602 интервальных сравнений,14286 тождеств,408 ячеек,
+все три положительно активированные архивные области, независимые
+декартовы производные и замкнутые сферические моменты дополнения.
+Gaussian3/5/7 — только диагностика; whole-domain доказательство интервальное.
+Before/after919+1905 dependency rawpins PASS; четыре additive PY →923.
+Снимки исходников и настоящие захваты запусков сохранены, старые P/F неизменны.
+
+**Пункт1 открыт: один прежний существенный блок, те же три условия:**
+1. Physical material/force/prestress/work handover, полная подготовительная
+   работа, loads/drag, точный general-state mixed operator и NEW equilibrium.
+   Холодный вклад рассмотренного Tλ теперь рассчитан; полный баланс остаётся.
+2. Whole-clock all-pair admission, включая reverse C5→C1.
+3. Accepted continuation с independent temporal path work/balances/restart.
+
+Следующий конкретный шаг внутри условия1: общая энергетика и смешанные
+силы cold56/HOT/mean/891/contact/loads с рассчитанной стоимостью Tλ.
+Затем нужны точное равновесие и полный геометрический допуск. Историческая
+одна точка919 не является доказательством совпадения всех COMMON faces.
+Source0/contact2e6/memory1e6/material1e6с; acceptedold1/new0.
+Damage/slip/work ledgers не продвинуты; пункты2–6 исходного плана открыты.
+
+В следующей сессии сначала923 baseline_restore_source.txt, затем fresh923
+final_readback/readback_source.txt с разными свежими --output вне репозитория.
+В отчёте есть команды. Восстановление проверяет90 внешних baseline файлов.
+Закрытые923/919/915/913/909/907 P/F не менять. В каждом пользовательском
+отчёте указывать остаток пункта1. Прежний handoff919 целиком сохранён ниже.
+
+---
+
+## Историческая точка передачи919
+
+# Передача работы в облачный чат
+
+08.10.2026. Ветка `fix/genesis-mantle-convection`. Компонент919:
+полный холодный закон/работа модального пути и гладкий кандидат движения
+подготовительной карты. [Отчёт](GEOMETRIC_NATIVE_COMMON_COLD_PREPARATION_WORK_IMPLEMENTATION.md).
+
+Нелокальная проекция899 и8 literal beam ledgers сохранены один раз.
+Работа подлинного56-mode пути zero→registered получена полиномом четвёртой
+степени из whole-source моментов, без повторного старого quadrature.
+17tests PASS; authentic56×56 states2 +declared100 fixture +λstates5;
+independent32987 exact comparisons/95 interval checks PASS.
+
+Для отдельного физического движения cold-карты реализовано
+Tλ(x)=exp(λ[Ω]τ(x))*x, τ=(R³−(|x|/s)³)/(3R²).
+Один smooth map для всех холодных банков owner; detDT=1, точный inverse,
+пространственный Hessian, λ derivatives,56 modal fields/gradients и
+квадратичные Green increments.18tests PASS; independent220digits:
+2578 enclosures/69 identities/108 composed controls PASS.
+
+**В одной authentic913 точке normal gap уменьшен** с−889.603992527m
+до−7.761031059e−8m. Он не обнулён. 3D distance между сопоставленными
+точками0.1000929324m: full совпадение face/points не доказано.
+Новый путь — physically moving candidate; его работа ещё не оплачена.
+Работа малых56мод не заменяет эту работу (895 box позволяет лишь~2mm).
+
+Frozen919:35 final tests, nativework/map actualexit0/stderr0, обоим
+independent audits stdout==report. DevelopmentFAIL и corrected captures
+сохранены. Fresh915 recovery/readback, before/after ancestry PASS;
+все915old PY неизменны,4 additive→919. Old physics mains не запускались.
+
+**Пункт1 открыт: один существенный блок, те же3 условия:**
+1. Physical material/force/prestress/work handover, полная reference
+   preparation work, loads/drag и точный general-state NEW equilibrium.
+2. Whole-clock all-pair admission, включая reverse C5→C1.
+3. Accepted continuation с independent temporal path work/balances/restart.
+
+Следующий конкретный шаг: whole-source интегрирование r1/r2/S2/S3/S4
+**нового Tλ**, согласование с891local источниками/HOT/contact/loads.
+Нужны full curved association/admission и force precision. Пункты2–6
+открыты. Source0/contact2e6/memory1e6/material1e6s, acceptedold1/new0,
+damage/slip/work ledgers не продвинуты.
+
+Сначала919 baseline_restore_source.txt, затем fresh919 reader (разные
+новые --output); команды в отчёте. Closed919/915/913/909/907 P/F не менять.
+Исторический915 handoff целиком сохранён ниже.
+
+---
+
+## Историческая точка передачи915
+
+# Передача работы в облачный чат
+
+08.10.2026. Ветка `fix/genesis-mantle-convection`. Компонент915:
+проверенный адаптер энергии/prestress/Hessian при фиксированной смене
+материального отсчёта. [Отчёт](GEOMETRIC_NATIVE_REFERENCE_DENSITY_TRANSPORT_IMPLEMENTATION.md).
+
+Два additive PY, все913 прежних сохранены. Fraction/interval transport,
+полные9 F channels + internal mixed blocks; модальная жёсткость включает
+prestress curvature.9tests PASS;3 native cases с полным100-mode operator;
+independent exact-rational audit20857 comparisons PASS. Fresh913 baseline
+и ancestry preservation BEFORE/AFTER PASS. Старые physics mains не запускались.
+
+**Физический зазор −889.604m не устранён.** Адаптер сохраняет y и работу,
+не выбирает physical constitutive law/preparation path. Тестовая плотность
+диагностическая; physical source DTO/handover ещё не подключены. Ни gap,
+ни rest state, ни часы/память не сброшены; accepted old1/new0.
+
+**Пункт1 открыт: один существенный блок, те же3 условия:**
+1. Physical handover/reference preparation work, modal loads/drag,
+   general-state точный mixed operator и NEW equilibrium.
+2. Whole-clock all-pair admission, включая reverse C5→C1.
+3. Accepted continuation с independent path work, balances/joint restart.
+
+Следующий конкретный шаг — физически согласовать подготовленные carrier
+maps с исходным законом/работой. Ковариантный перенос энергии теперь готов,
+но сам по себе это условие не закрывает. План не расширен; пункты2–6 открыты.
+
+Сначала915 baseline_restore_source.txt и fresh915 reader (новые --output);
+точные команды в отчёте.915/913/909/907 closed P/F не менять. Исторический
+913 handoff сохранён ниже побайтно.
+
+---
+
+## Историческая точка передачи913
+
+# Передача работы в облачный чат
+
+08.10.2026. Ветка `fix/genesis-mantle-convection`.
+Текущий компонент **913**: полное объявленное сопряжение кривой C6–HOT C1.
+[Отчёт](GEOMETRIC_NATIVE_COMMON_RECEIVING_FACE_IMPLEMENTATION.md).
+
+Согласованы authentic cold895 interval trace (все56 modes/quintic seams/
+original roof) и HOT903/909 field jets на всей true curved boundary.
+`u=u_m+(1-u_m)*lambda` сохраняет неявный rootband и named endpoints;
+доступны полный depth range, roof-aware original-parent/world frame bridge,
+Nanson normal, first/second contact work, полный100-coordinate range operator.
+
+NEW virgin permanently-unbonded frictionless contact-only: barekn1e7Pa/m,
+fixed restgap0 at coincident common source reference; actual prepared gap
+retained. Old minus.01/history/16atoms/condensed columns не присвоены кривой.
+Unilateral closure возвращает semismooth tangent hull, не unique Hessian.
+Положительная correction boundary/source measure учитывается ровно один раз.
+Source/root intervals не становятся wholly-material rectangles.
+
+**Выявлено реальное reference mismatch:** genuine_zero_hot_source,
+start lambda0, HOT-depth1000m: gap≈−889.604m. Это отличие подготовленных
+материальных maps, не принятое физическое движение. Оно не обнулено;
+physical preparation/activation work остаётся неоплаченной/неудостоверенной.
+
+Fresh909 reader и corrected restoration PASS до математики. Frozen913:
+**10/10tests PASS484.95s**,12 paired queries,8 wholeface operators;
+gatePASS1075.680076721s actualexit0/stderr0/stdout==report.
+Independent audit **PASS122.791921621s,220digits,146908comparisons**,
+полный restart; исходники/907/909 ancestry BEFORE/AFTER сохранены.
+Development failures/captures сохранены, не подменены finalPASS.
+Actual final closure/readback статусы находятся в linkedjson.
+Документы завершены до их исполнения.
+
+
+Scope **NEW_VIRGIN_COMPLETE_CURVED_FACE_ENDPOINT_CONTACT_OPERATOR_ONLY**.
+Complete C6–HOT C1 face/operator defined; force precision/general states/
+physical handover/reference work/new equilibrium/admission не удостоверены.
+Другие HOT fronts и whole-clock admission из этого не следуют.
+Закрытые909P39F4/907P135F4/ancestry неизменны. Ровно4 additivePY →913.
+
+**Пункт1 открыт. Один существенный оставшийся блок, те же3 условия:**
+
+1. Physical material/old-force/prestress/work handover, HOT law/mean chart,
+   loads/drag и NEW mixed equilibrium. Готовы899/903/declared907/909 и
+   full declared C6–HOT C1 contact operator913. Остались physical handover,
+   согласование prepared reference и её work/activation, modal loads/drag,
+   точность/general states и настоящий mixed solve.
+2. Whole-clock all-pair admission, включая reverse C5→C1.
+3. Accepted continuation, independent temporal path work, balances/joint restart.
+
+**Следующий конкретный шаг прежнего условия1:** устранить/физически согласовать
+выявленное prepared-reference mismatch с handover/work; обеспечить точный
+general-state mixed operator для равновесия. Curved contact operator готов,
+не нужно снова возвращаться к polygon labels. Остаток существенный.
+План из шести пунктов сохранён; пункты2–6 открыты.
+
+Принят1 old/0 new intervals; clocks source0/contact2e6/memory1e6/material1e6s,
+предложенные damage/slip/work не продвинуты/не приняты.
+
+[Gate](analysis/geometric_native_common_receiving_face_validation/report.json),
+[audit](analysis/geometric_native_common_receiving_face_validation/audit_report.json),
+[reference gap](analysis/geometric_native_common_receiving_face_validation/prepared_gap_observation.json),
+[manifest](analysis/geometric_native_common_receiving_face_validation/artifact_manifest.json),
+[final readback](analysis/geometric_native_common_receiving_face_final_readback/readback.json),
+[archive4](analysis/geometric_native_common_receiving_face_final_readback/archive.json).
+
+В новой среде сначала stdlib913 restorer с новым --output, затем fresh913
+reader. Команды в отчёте. В913 исправлен обязательный inherited907 --output;
+старый909 sealed restorer сохранён с известной ошибкой, его не выполнять.
+После закрытия913/909/907P/F не дополнять и не переписывать; новые sources
+additive. Исторический909 handoff целиком сохранён ниже.
+
+---
+
+## Историческая точка передачи909
+
+# Передача работы в облачный чат
+
+Работа начата07.10.2026. Ветка `fix/genesis-mantle-convection`.
+Текущий компонент **909**: HOT receiving field jets и перенос заданной работы.
+[Отчёт](GEOMETRIC_NATIVE_COMMON_HOT_RECEIVING_IMPLEMENTATION.md).
+
+Продолжена физическая связь COLD–HOT внутри первого условия пункта1:
+получены y/A HOT receiving ports с полными first/second derivatives по
+owner3+HOT6, включая implicit mean curvature, owner/body cross terms и
+orientation hyperstress work pullback. Twelve spatial channels не являются
+12 новыми DOF; сохранён исходный100-coordinate catalogue.
+
+Подлинные4 saved HOT charts903 ×15 original polygon labels (roof/interior/
+true base всех5 тел), полныйsource/memory/material/birth DTO сохранён.
+Original-world input frame HOT отличается от original-parent COLD895:
+нормали/градиенты при сопряжении требуют явного frame bridge.
+
+Scope **AUTHENTIC_HOT_MATERIAL_POINT_TWOJETS_AND_LOCAL_WORK_PULLBACK_ONLY**.
+Полный curved receiving cut и его positive correction ещё не покрыты этими
+polygon labels. Physical receiving law не выводится из supplied diagnostic
+work; physical source handover/reference work/new equilibrium/admission False.
+
+Fresh907 reader и pre-math907 guard PASS до2 новыхPY. Frozen909:
+**10/10tests PASS50.45s**,60 полных field запросов, full point restart;
+gatePASS215.339746564s actualexit0/stderr0. Independent audit
+**PASS68.215278536s,220digits,71640comparisons**,
+actualstdout==report/stderr0. Full909 source map и907P135F4/вся ancestry
+сохранены BEFORE/AFTER. Development assertion/import failures сохранены.
+Последние actual closure statuses/file counts находятся в linkedjson.
+Документы завершены до final reader/archive closure.
+
+**Пункт1 открыт. Один существенный оставшийся блок, те же3 условия:**
+
+1. Whole-source physical material/old-force/prestress/work handover,
+   HOT law/mean chart, loads/drag и NEW mixed equilibrium. Готовы cold899,
+   HOT903, declared mixed907 и HOT receiving fields/work adapter909.
+   Остались полные согласованные COLD–HOT traces/receiving traction law,
+   physical handover/reference work, modal loads, force precision/general
+   states и NEW mixed solve.
+2. Whole-clock all-pair admission, включая reverse C5→C1.
+3. Accepted continuation, independent temporal path work, balances/joint restart.
+
+**Следующий конкретный шаг того же условия1:** сопрячь материальные поля
+обеих сторон полного подлинного COLD–HOT cut и подключить physical traction
+law. Для HOT стороны first/second variations и work pullback готовы.
+Остаток существенный. План не расширен; пункты2–6 открыты.
+
+Принят1 old и0 new intervals. Source0/contact2e6/memory1e6/material1e6s
+не продвинуты; proposed damage/slip/work не приняты.
+
+[Gate](analysis/geometric_native_common_hot_receiving_validation/report.json),
+[audit](analysis/geometric_native_common_hot_receiving_validation/audit_report.json),
+[manifest](analysis/geometric_native_common_hot_receiving_validation/artifact_manifest.json),
+[final readback](analysis/geometric_native_common_hot_receiving_final_readback/readback.json),
+[archive4](analysis/geometric_native_common_hot_receiving_final_readback/archive.json).
+
+В новой среде сначала выполнять909 stdlib restorer и fresh909 reader;
+точные команды в отчёте. Restorer восстанавливает54 разрешённыхoutside
+paths, включая50 inherited907 и4 fresh907 baseline files. Закрытые909/
+907P/F не дополнять и не переписывать. Новые источники — additive.
+
+---
+
+## Историческая точка передачи907
+
+# Передача работы в облачный чат
+
+Актуально на **07.10.2026, московское время**. Ветка
+`fix/genesis-mantle-convection`. Текущий компонент **907**:
+общая сборка сил на100 координат с исходными материальными контактами.
+[Отчёт](GEOMETRIC_NATIVE_COMMON_MIXED_FORCE_IMPLEMENTATION.md).
+
+Выполнен указанный903 следующий шаг: full cold56/HOT30 operators,
+owner6 loads/drag и internal8 согласованы с16 исходными source atoms
+на32 настоящих full895 material labels (24live/8archived). Вычислены
+энергия,100 force и полный Hessian100×100, включая material/owner/
+internal cross terms, unit Nanson normal curvature, orientation
+hyperstress/director couple и prestress curvature. Whole8 existing
+beams входят ровно один раз; original literal energies/forces,
+area measures, owners/cohorts, history/material/work DTO сохранены.
+Roof input bridge `Aold_original=BQ*C_roof` учитывает подлинную кровлю
+и использует тот же original-Cartesian input, что новое895 поле.
+
+Это **DECLARED_ORIGINAL_SOURCE_ATOM_HUNDRED_COORDINATE_ENDPOINT_ASSEMBLY_ONLY**.
+Допустимы2 saved cold состояния ×4 saved HOT состояния; owner endpoints0
+при сохранении полного6 first/second jet, новые internal residuals.
+Исходные16 contacts целиком COLD: новая physical born COLD–HOT receiving
+law из них не выводится. NEW prepared-zero traction calibration не
+удостоверяет physical old-force/prestress/work handover или reference work.
+Whole modal basal loads и general-state mixed solve остаются открытыми.
+
+Fresh903 evidence-only baselinePASS32.099436190s и отдельный903 guard
+PASS22.705194908s до новой математики. Frozenrelease01:
+**22/22tests PASS590.93s**, **12 full100 native queries PASS201.350077007s**;
+gatePASS862.517590951s actualexit0. Independent audit
+**PASS137.051489175s,220digits,735644comparisons** по всем12
+ответам/6contactcases;1523rawpins/full907map BEFORE/AFTER.
+Actual stdout==report, stderr0. Один pre-math failed auditor import
+изvirtualenv сохранён; успешный запуск использовал system Python/mpmath.
+Ровно4 новыхPY; прежние903P77F4/899P36F4/895P50F4/891P44F4/
+887P41F4,341raw/15TMP/11ancestry не изменены. Старые force solves,
+tests и tensor quad controls не выполнялись. Завершающие actual
+readback/archive статусы и file counts — в linked JSON; документы
+завершены ДО их выполнения.
+
+**Пункт1 открыт. Два прежних блока выполнены; остаётся ОДИН существенный
+блок с ТЕМИ ЖЕ тремя условиями. План не расширен:**
+
+1. Whole-source physical material/old-force/prestress/work handover,
+   HOT law/finite mean, loads/drag и NEW mixed equilibrium. Cold899,
+   HOT/mean903 и declared source-atom mixed assembly907 готовы.
+   Остаются physical handover/reference work, настоящая receiving law
+   born COLD–HOT/new continuous faces, полные modal physical loads,
+   достаточная force precision/general evaluators и NEW mixed solve.
+2. Whole-clock all-pair admission, включая reverse C5→C1.
+3. Accepted continuation, независимая temporal path work, балансы и joint restart.
+
+**Следующий конкретный шаг внутри того же условия1:** определить и
+подключить physical cold/HOT coupling через новые receiving faces и
+полные material/modal нагрузки; получить точность и поддержку состояний
+для настоящего mixed solve. Остаток существенный, не последние проверки.
+Finite mean chart и declared endpoint operator не означают equilibrium.
+
+Принят1 прежний и0 новых физических интервалов. Часы source0/contact2e6/
+memory1e6/material1e6s не продвинуты; proposed damage/slip/work не приняты.
+Physical admission, full handover/reference work, whole-clock/all-pair/
+full-system temporal path work и новое равновесие False. Пункты2–6 открыты.
+
+[Gate](analysis/geometric_native_common_mixed_force_validation/release_validation_01/report.json),
+[audit](analysis/geometric_native_common_mixed_force_validation/independent_audit/report.json),
+[manifest](analysis/geometric_native_common_mixed_force_validation/artifact_manifest.json),
+[final readback](analysis/geometric_native_common_mixed_force_final_readback/readback.json),
+[закрытый архив4](analysis/geometric_native_common_mixed_force_final_readback/archive.json).
+
+В следующей облачной среде сначала выполнить stdlib restorer
+`analysis/geometric_native_common_mixed_force_validation/baseline_restore_source.txt`
+с `--restore --output /workspace/mixed_force_restore_next_cloud_20261007.json`,
+затем sealed907reader со свежим внешнимoutput. Команды в отчёте.
+Restorer восстанавливает50 outside paths/TMP associations изclosedcopies
+без исполнения oldcode.907P/F после закрытия не дополнять и не переписывать.
+
+---
+
+## Историческая точка передачи903
+
+# Передача работы в облачный чат
+
+Актуально на **07.10.2026, московское время**. Ветка
+`fix/genesis-mantle-convection`. Текущий компонент **903**:
+полный HOT-закон иfinite mean настоящего основания.
+[Отчёт](GEOMETRIC_NATIVE_COMMON_HOT_MEAN_IMPLEMENTATION.md).
+
+Выполнен следующий шаг899: полный материальный закон всех5 подлинных HOT
+тел изамена trace coordinate наfinite actual-base mean. Сохранены всеbirth/
+foundation/material/memory/work DTO,100-coordinate catalogue иистории.
+Подлинные исходные HOT30 amplitudes ровно0; ненулевые saved Cartesian/old19
+пробы остаются непринятыми диагностическими данными. Малые площади около
+1e-47sr не удалены; положительная curved delta учтена ровно один раз своей
+площадью. Containing chart ограничивает integrand, не подменяет материал.
+
+Подготовленный HOT reference `s_owner*Qshared(z)*r_original*u_source_world`
+использует fixed895 scales иCOMMON879 depth map. Native polygon.pose уже
+применён один раз; source_owner_history не даёт второго поворота. Whole-body
+mass/J/density иindividual injectivity проверены; joint all-pair clearance
+не следует из этого. Source-world HOT shape истарый оригинальный body
+сохранены отдельно; полная работа reference ещё не удостоверена.
+
+StVK bulk использует подлинные E1e9/G4e8 иисходную материальную меру.
+NEW objective finite-radial basal law сохраняет полнуюvariance иWinkler
+коэффициент наisotropic branch. Наtrue base `M(h,b)=q` имеет единственный
+SPD root, полныйimplicit first/second jet;30 сил иHessian30×30 сохраняют
+`g_h*Hess(h)` force-curvature term. Седьмой HOT DOF не добавлен.
+Whole-mask cone range integrals сexact Fraction/outward arithmetic покрывают
+каждый polygon иcurved delta. Ненулевые границы широки (root width до≈.490m,
+force width≈3.63e7N/H≈2.19e8N/m); высокоточный solve не заявляется.
+Cold continuum899 связан по готовым полным saved operators, без пересчёта.
+Scope **DECLARED_COMPLETE_HOT_FINITE_BASE_MEAN_ENDPOINT_ONLY**.
+
+Fresh899 evidence-only baselinePASS27.155103914s до новых источников.
+Frozenrelease02: **16/16tests PASS64.98s**,4 полных операторных запроса и15
+material label queries nativePASS19.523803725s; gatePASS124.837578361s exit0.
+Независимый auditPASS424.318071865s exit0:220digits,6324comparisons всего
+(6144operator+180point);1441rawpins/full903map BEFORE/AFTER. Actualstdout
+равен полномуreport,stderr пуст. Failedgate01 и2failed auditor attempts
+сохранены сactualsources/captures/exitfacts; причины иисправления в отчёте.
+Прежние899PY/P36F4,895P50F4,891P44F4,887P41F4,341raw/15TMP/11ancestry
+не изменены. Ровно4новыхPY. Старые force solves/tests/tensor quad controls
+не перезапускались. Авторитетный final readback/archive — linkedjson;
+документы завершены ДО его выполнения.
+
+**Пункт1 открыт.** Два прежних блока выполнены; остаётся ОДИН существенный
+блок с ТЕМИ ЖЕ тремя условиями, план не расширен:
+
+1. Whole-source material/old-force/prestress/work handover, HOT law/finite
+   mean, loads/drag и NEW mixed equilibrium. Cold899 иHOT/mean903 constitutive
+   компоненты готовы. Остаются physical handover сил/prestress/work иработа
+   reference, normal damage/follower law, нагрузки/drag иновое равновесие.
+   Дляsolve необходимо получить достаточную точность cold/HOT сил внутри
+   того же условия. Finite mean chart не означает finite mean equilibrium.
+2. Whole-clock all-pair admission, включая reverse C5→C1.
+3. Принятое продолжение, независимая работа всей системы, балансы иjoint restart.
+
+**Следующий конкретный шаг внутри условия1:** согласованная сборка cold56,
+HOT30, owner/internal/contact координат инагрузок/drag дляNEW mixed solve.
+Остаток существенный, ане последние одна-две проверки.
+
+Принят1прежний и0новых физических интервалов. Часы source0/contact2e6/
+memory1e6/material1e6сек не продвинуты; proposed damage/slip/work не приняты.
+Физический перенос сил/работы, whole-clock/full-system time work/physical
+admission/new mixed equilibrium не удостоверены. Пункты2–6 открыты.
+
+[Gate](analysis/geometric_native_common_hot_mean_validation/release_validation_02/report.json),
+[audit](analysis/geometric_native_common_hot_mean_validation/independent_audit/report.json),
+[manifest](analysis/geometric_native_common_hot_mean_validation/artifact_manifest.json),
+[final readback](analysis/geometric_native_common_hot_mean_final_readback/readback.json),
+[закрытый архив4](analysis/geometric_native_common_hot_mean_final_readback/archive.json).
+
+В следующей облачной среде сначала выполнить stdlib-only restorer
+`analysis/geometric_native_common_hot_mean_validation/baseline_restore_source.txt`
+с `--restore --output /workspace/hot_mean_restore_next_cloud_20261007.json`,
+затем sealed903reader со свежим внешнимoutput. Команды в отчёте. Restorer
+восстановит42outside paths/TMP associations изclosedcopies,не исполняяoldcode.
+903P/F после закрытия не дополнять ине переписывать; новые источники additive.
+
+---
+
+## Историческая точка передачи899
+
+# Передача работы в облачный чат
+
+Актуально на **07.10.2026, московское время**. Ветка
+`fix/genesis-mantle-convection`. Текущий компонентный выпуск **899**:
+полная холодная энергия и56-coordinate оператор на prepared carrier895.
+[Отчёт](GEOMETRIC_NATIVE_COMMON_COLD_CONTINUUM_ENERGY_IMPLEMENTATION.md).
+
+Выполнен указанный в895 следующий шаг: layered cold constitutive model
+собран по всему исходному материальному объёму8 родителей, включая все3
+непустые архивные когорты. Получены энергия,56 сил и полный Hessian56×56,
+с производными общих швов, roof bridge и подлинными границами слоёв.
+Полные879/891/895/833 authorities и8 beam DTO сохранены. Восемь beams
+входят ровно один раз; литералы прежних энергий/сил с их binary residuals
+не заменены повторным вычислением. Старые remaining-mask bulk remainders
+не используются вместо полного объёмного интеграла.
+
+Reference `X0=s*chi887` фиксирован. Мера `R^2*dOmega*dz` подлинная исходная,
+без нового Jacobian множителя. Полная coupled8×8 tip Gram matrix,
+коррелированный orthogonal remainder и nonlinear prestress curvature
+включены. Это **DECLARED_GLOBAL_COLD_CONTINUUM_ENERGY_ENDPOINT_ONLY**;
+историческая archive prestress, физический перенос старых сил/работы,
+полная работа нового reference, HOT/mean и mixed equilibriumFalse.
+
+Выпускной интегратор ограничивает весь объём:3072 основных interval boxes
+плюс24 полных donor activation collar receipts на каждый запрос. Каждая
+IEEE операция округлена наружу; transcendental endpoints удостоверены
+рациональной арифметикой. Сохранены все глобальные raw channels, полный
+оператор и полные cell proof parameters/hashes; локальные raw vectors
+не дублируются тысячи раз. Настоящая GramSPD доказана через строгие
+interior norm integrals; независимая entry hull сама может содержать
+indefinite matrices. Inverse построена по genuine coercivity/right residual;
+midpoint служит только preconditioner. Границы могут быть широкими,
+высокая точность сил этим выпуском не заявляется.
+
+Fresh895 evidence-only baselinePASS16.090911721s до новых источников.
+Frozen899release01: **18/18tests PASS581.78s**, native2 полных операторных
+запроса и28 literal label queries **PASS276.893182480s**; same-process
+**gatePASS912.645987146s**, exit0. Независимый audit **PASS105.056217583s**:
+64028 scalar containments,7056 independent shape/14112 native gradient
+checks,112 material fields;559872 fine nodes/query, discrepancy≤3.26e-9.
+Все899 sources и64 direct authority pins неизменны BEFORE/AFTER.
+Actual stdout совпадает с полным audit report; stderr пуст.
+Gate и audit прошли с первой попытки. Авторитетный итог evidence-only чтения и закрытия —
+linked readback/archive; документы завершены до его выполнения.
+Прежние895PY,895P50/F4,891P44/F4,887P41/F4,341raw dependencies/15TMP/
+11ancestry closures сохранены. Ровно четыре новыхPY. Старые force solves,
+tests и tensor quadrature controls не запускались.
+
+**Пункт1 открыт.** Два прежних блока выполнены; остаётся ОДИН существенный
+блок с ТЕМИ ЖЕ тремя условиями, план не расширен:
+
+1. Whole-source material/old-force/prestress/work handover, HOT law/finite
+   mean, нагрузки/drag и NEW mixed equilibrium. Полная cold constitutive
+   endpoint сборка теперь удостоверена; остаются HOT/mean, normal damage
+   history/follower law, работа reference и физический перенос сил/работы,
+   нагрузки и новое равновесие. Для solve потребуется достаточная точность
+   объёмных сил внутри этого же условия.
+2. Whole-clock all-pair admission, включая reverse C5→C1.
+3. Принятое продолжение, работа всей системы, балансы и joint restart.
+
+**Следующий конкретный шаг внутри условия1:** HOT law и finite mean
+на совместном chart с сохранёнными целыми материальными состояниями;
+затем согласованная силовая сборка с нагрузками/drag и NEW mixed solve.
+Cold full-source energy/operator899 используется как готовый компонент.
+Это существенный остаток, а не последние одна-две проверки.
+
+Принят1 прежний и0 новых физических интервалов. Часы source geometry0/
+contact2e6/memory1e6/material1e6 секунд не продвинуты; предложенные
+новые damage/slip/work не приняты. Whole-clock/full-system time work/
+physical admission/HOT/mean/new mixed equilibrium не удостоверены.
+Пункты2–6 исходного шестипунктного плана открыты.
+
+[Gate](analysis/geometric_native_common_cold_continuum_energy_validation/release_validation_01/report.json),
+[audit](analysis/geometric_native_common_cold_continuum_energy_validation/independent_audit/report.json),
+[manifest](analysis/geometric_native_common_cold_continuum_energy_validation/artifact_manifest.json),
+[final readback](analysis/geometric_native_common_cold_continuum_energy_final_readback/readback.json),
+[закрытый архив4](analysis/geometric_native_common_cold_continuum_energy_final_readback/archive.json).
+Команды evidence reader и восстановления staging/TMP — в отчёте.
+Документы завершены ДО final readback. Закрытые895 и прежние
+P/F не дополнять и не переписывать. Следующий компонент — additive источники.
+
+---
+
+## Историческая точка передачи895
+
+Актуально на **07.10.2026, московское время**. Ветка
+`fix/genesis-mantle-convection`. Текущий компонентный выпуск **895**:
+полные ненулевые холодные материальные поля на совместном carrier.
+[Отчёт](GEOMETRIC_NATIVE_COMMON_COLD_MATERIAL_CARRIER_IMPLEMENTATION.md).
+
+Выполнен следующий шаг из891: полное холодное поле построено на всех
+восьми исходных родителях и трёх непустых архивных когортах. Все56
+подлинных COMMON cold amplitudes сохранены. Полные исходные state DTO
+из879/891 согласованы с carrier887; material IDs, owners, parents,
+cohorts, memory/work histories и debits не заменены новыми источниками.
+
+У прежних независимых quarter banks найден настоящий отрицательный
+скачок на общем шве около3.41356e-6m. Объявлена quintic partition
+`delta=.01rad`; на всех32 source labels она сохраняет прежние значения
+мод, а на швах даёт единое C1 поле с полными межбанковыми производными.
+Исходные полюса регулярны, поскольку cold поля точно нулевые в их
+открытой окрестности. Сами selector weights в полюсах не непрерывны.
+
+Для исходного Cartesian material chart исправлена отсутствовавшая
+roof bridge: `D_original Xold = B Q C_roof`, где `det C_roof=1`,
+но `C_roof!=I` при ненулевых roofs. Старый891 сохранён побайтно;
+его локальные force receipts не выдаются за силовую сборку нового895.
+
+Равномерный whole-support theorem действует по полной глубине обоих
+owners и во всей фиксированной коробке `|a_i|<=2|a_i_registered|`.
+Полусферические shells имеют квазиевклидовость<2; положительные
+глобальные margins donor≈.615089085/receiver≈.576738491 доказывают
+инъективность целых тел, родителей и архивных subsets. Новые фиксированные
+reference homotheties дают строгий межтелесный зазор≥.0040362293m.
+Новый buffered endpoint намеренно отличается от891; reference change
+не объявлен решённым finite mean и его полная системная работа ещё не
+сертифицирована. Плотность переносится через `rho_new=rho_old/J`.
+
+Frozenrelease02: **17/17tests PASS128.64s**, native80/80queries
+PASS492.354027330s; same-process gate **PASS646.960706186s**, exit0.
+Независимый audit **PASS64.477085502s**:96 literal-depth evaluations,
+93120 scalar comparisons,56modal gradients,64old879fields/32old891
+unbuffered positions и равномерные full8parents/3archives proof checks.
+Native samples встречают2 архивные когорты; theorem охватывает все3.
+Geometry support/complete declared joint restart удостоверены только
+в endpoint; physical admission/HOT/mean/new mixed solve/time workFalse.
+
+Fresh891 baselinePASS16.632888618s до новых источников. Прежние891PY,
+891P44/F4,887P41/F4,341raw dependencies/15TMP/11ancestry closures
+не изменены. Ровно четыре новыхPY. Failedgate01 и два неуспешных
+запуска auditor сохранены; причины и executing sources — в отчёте.
+Прежние force solves/tests/tensor quad не запускались. Public saved
+geometry/material restoration и свежие point chronologies выполнялись.
+
+**Пункт1 открыт.** Два прежних блока выполнены; остаётся ОДИН существенный
+блок с ТЕМИ ЖЕ тремя условиями, план не расширен:
+
+1. Whole-source material/old-force/prestress/work handover, HOT law/finite
+   mean, нагрузки/drag и NEW mixed equilibrium. Теперь геометрия полных
+   холодных поддержек удостоверена для объявленного endpoint и56box.
+   Остаются полные объёмные законы/силы и работа нового reference,
+   normal damage history, follower law, HOT/mean, нагрузки и равновесие.
+2. Whole-clock all-pair admission, включая reverse C5→C1.
+3. Принятое продолжение, работа всей системы, балансы и joint restart.
+
+**Следующий конкретный шаг внутри условия1:** перенести ранее явно
+объявленную layered cold constitutive model на полное гладкое поле895;
+собрать интегральные энергию,56 сил и Hessian с межбанковыми членами,
+сохранив8 beams ровно один раз. Подлинные upper E/nu, lower E/G и
+границы слоёв уже доступны. Прежние isotropic/rank-one closures —
+объявленные модели, не восстановленная archive prestress history;
+8 registered bulk remainders не заменяют continuum integral.
+Затем HOT/finite mean, нагрузки и mixed solve остаются в том же условии.
+Остаток существенный; это не последние одна-две проверки.
+
+Принят1 прежний и0 новых физических интервалов. Часы source geometry0/
+contact2e6/memory1e6/material1e6 секунд не продвинуты; предложенные
+damage/slip/work не приняты. Whole-clock/full-system work/physical
+admission/HOT895/mean/new mixed equilibrium не удостоверены.
+Пункты2–6 исходного шестипунктного плана открыты.
+
+[Gate](analysis/geometric_native_common_cold_material_carrier_validation/release_validation_02/report.json),
+[audit](analysis/geometric_native_common_cold_material_carrier_validation/independent_audit/report.json),
+[manifest](analysis/geometric_native_common_cold_material_carrier_validation/artifact_manifest.json),
+[final readback](analysis/geometric_native_common_cold_material_carrier_final_readback/readback.json),
+[закрытый архив4](analysis/geometric_native_common_cold_material_carrier_final_readback/archive.json).
+Команда evidence reader и восстановление staging/TMP — в отчёте.
+Документы завершены ДО final readback. Закрытые текущие и прежние P/F
+не дополнять и не переписывать. Следующий компонент — additive источники.
+
+---
+
+## Историческая точка передачи891
+
+Актуально на **07.10.2026, московское время**. Ветка
+`fix/genesis-mantle-convection`. Текущий компонентный выпуск **891**:
+локальные источники COMMON на объявленном paired material carrier.
+[Отчёт](GEOMETRIC_NATIVE_COMMON_CARRIER_SOURCE_WORK_IMPLEMENTATION.md).
+
+32 подлинные source labels (24live/8archive) прикреплены к carrier887
+с полным Cartesian pullback `T=A(BQ)^−1`, включая прежние roofs/depth shear
+и ordered owner pose. Получены100-coordinate twojets, prestress curvature,
+силы/hyperstress/моменты и physical virtual work. Положительный combined F/J
+проверен у32 локальных меток. Ровно16 atoms +8 beams +8 registered bulk
+remainders, каждый один раз. Старый883 operator при λ=0 сохранён.
+
+Новое размещение раскрывает прежние контакты. Подлинный bilinear Mode-I
+series law имеет free-gap onset6m/failure20m; work разделена на recoverable
+energy и fracture work. В объявленном endpoint-кандидате все16 источников
+нормально раскрыты/разрушены; их normal force/tangent0, предложенные
+damage1/Gc учтены. Старый prestress не обнулялся искусственно.
+
+**Старая normal fracture history в source DTO не записана.** Virgin Mode-I
+seed объявлен НОВЫМ; восстановление прежнего damage/max-opening не
+заявлено. Предложенные damage/slip/work не приняты. Current follower law,
+HOT law, finite mean, whole-support nonzero cold admission и новое mixed
+equilibrium не получены. Registered92body values фиксированы; unknown
+body=0 Hessian не подставлен. Запросы source подготовки удостоверены
+только в journal endpoint t=1, не во всём физическом времени.
+
+Frozenrelease02: **15/15 tests PASS585,83s**, native4/4 queries/64 atoms
+PASS81,902999375s; same-process gate **PASS688,864870870s**, exit0.
+Independent audit **PASS17,074628386s**:32χ/F,32chart alias counterexamples,
+1408 first/30976 second variations,1408work coordinates,112λ-integral pieces.
+Новые физические интервалы0; старые force solve/tests/tensor quad не
+запускались. Public saved geometry/material restoration и32 свежих
+first-entry contexts выполняют геометрические проверки.
+
+Попыткаgate01:8PASS/7FAIL из-за ошибочного сравнения parent cohort
+с point-specific archive membership; исправлена семантика guard,
+physicalallocation24/8 и debits0/1 проверены отдельно. Всеfailedlogs,
+frozen891 и executing snapshots сохранены. Первый auditor остановлен
+до математики из-за .venv в общем source rglob; исправлен source-set
+filter, TXT/stdout/observation сохранены. Прежние887 Python не менялись.
+
+Baseline887 PASS5,902696601s;15 отсутствовавших TMP восстановлены из
+аутентичных постоянных копий. Сохранены старые P41/F4,341 dependencies
+и11 ancestry closures, прежние883P56/F6 и879P83/F6. Новый gate pins все
+ЧЕТЫРЕ payloads, включая native_control/report.json.
+
+[Gate](analysis/geometric_native_common_carrier_source_work_validation/release_validation_02/report.json),
+[audit](analysis/geometric_native_common_carrier_source_work_validation/independent_audit/report.json),
+[manifest](analysis/geometric_native_common_carrier_source_work_validation/artifact_manifest.json),
+[final readback](analysis/geometric_native_common_carrier_source_work_final_readback/readback.json),
+[отдельный архив4](analysis/geometric_native_common_carrier_source_work_final_readback/archive.json).
+Команда evidence reader и восстановление staging/TMP — в отчёте. Документы
+завершаются до final чтения. Закрытые текущие и прежние P/F не дополнять.
+
+**Пункт1 открыт.** Два прежних блока выполнены; остаётся ОДИН существенный
+блок с ТЕМИ ЖЕ тремя условиями, план не расширен:
+
+1. Физическая сборка всего исходного live/archive материала, перенос
+   сил/prestress/work, HOT law/finite mean, нагрузки/drag и новое mixed
+   equilibrium. Локальные32 source attachments и их работа подготовки
+   теперь получены в явно ограниченном кандидате. Остаются полные
+   материальные поддержки/история повреждения, follower law, HOT/mean,
+   нагрузки и новое равновесие.
+2. Whole-clock all-pair admission, включая reverse C5→C1.
+3. Принятое продолжение, работа всей системы, балансы и joint restart.
+
+**Следующий шаг внутри условия1:** полные ненулевые cold material fields
+на новом размещении и whole-support проверка.32 локальных J её не
+заменяют. Далее HOT/mean, нагрузки/drag и новый mixed solve остаются в
+том же условии. Остаток существенный; это не последние одна-две проверки.
+Принят1 прежний и0 новых интервалов. Часы source geometry0/contact2e6/
+memory1e6/material1e6 секунд не продвинуты. Пункты2–6 исходного плана
+открыты.891 и закрытые P/F не переписывать; продолжать additive-компонентом.
+
+---
+
+## Историческая точка передачи887
+
+Актуально на **07.10.2026 (UTC)**. Это точка входа для продолжения работы.
+Старые отчёты описывают состояние на момент соответствующего выпуска.
+
+**Текущий завершённый компонентный выпуск887: трёхмерные carriers исходного
+живого материала и трёх непустых архивных когорт.**
+Документ: [геометрия и движение архивного материала](GEOMETRIC_NATIVE_ARCHIVE_MATERIAL_CARRIER_IMPLEMENTATION.md).
+
+Восемь исходных родителей и целые когорты octant:5,6,7 получили явно
+объявленное совместное размещение по всей подлинной areal-volume глубине.
+Принимающий reference слой находится выше R с основанием R; донор ниже R.
+Гладкий положительно-кубический интеграл всей истории входа задаёт
+необратимое дополнительное движение down-dip. Он сохраняет swept-only
+архив после выхода и first receiver ancestry; midpoint времени входа и
+его сингулярная производная не используются.
+
+Получены положение, скорость, Cartesian F/J и density pullback. Глобальные
+bounds доказывают injectivity всего donor volume и разделение с верхним
+receiving reference. Сохранены32 source reservoirs, IDs/ages/implicit domains
+и все три когорты. Это НОВОЕ reference размещение: старые roof/полная
+fault face/prestress/подготовительная работа не восстановлены. Прежние56
+cold coordinates и32 virtual source sides ещё не прикреплены к новой
+полной геометрии. HOT point query закрыт до аутентификации birth chronology;
+HOT law, current follower law и новое равновесие не получены.
+
+Frozen попытка02: **18/18 тестов PASS354,90с**, **native80/80 PASS
+147.526633346с**, same-process gate **PASS519.633902382с**, exit0.
+Независимый аудит **PASS10.833255191с**:81 запрос/1935 interval inclusions,
+420decimaldigits,8parents/3cohorts/4literal dips/32reservoirs/7root brackets.
+Новых принятых интервалов нет. Старые force solve/tests/tensor quad не запускались;
+saved DTO restoration повторно проверяет старую геометрию и хроники.
+
+Первый frozen запуск остановился до pytest: системный Python не имел pytest.
+FAIL/stdout/887 snapshots сохранены; guard883 до/после PASS. Попытка02 выполнена
+в существующей `.venv`, без установки; между frozen попытками изменён только
+новый wrapper runtime metadata. Прерванный developmental запуск9PASS не
+считается итоговым gate. Последующие физические источники887 не менялись.
+
+Initial883 stdlib reader PASS15,117036754с; TMP уже присутствовали.
+Все883 прежних Python/341 raw dependencies/manifest56/старый архив6/
+15TMP associations/11ancestry closures сохранены. Новый actual source count887,
+только4 разрешённых additive Python. Прежние879 manifest83 и archive6 сохранены.
+Новый manifest **41 actual files** raw
+`a1c8f99b579db19e8d8fea03d5b7a5a6ffa389bcb0cecca19e8c597fdcde56c3`,
+selfseal `227814a215161ff2f615338e8eb273f10f40c46bbd61d31424a6398d5b8cfb57`.
+Frozen887 canonical `f5220449a37364621723b4f97adb5c01efdaeb62afff11bd774c12caf9c289ad`;
+raw `c8d66ce04fac77c486bf6ee3971205508435063e40032d5310e0a419f6d534a9`.
+
+[Current gate](analysis/geometric_native_archive_material_carrier_validation/release_validation_02/report.json),
+[audit](analysis/geometric_native_archive_material_carrier_validation/independent_audit/report.json),
+[final readback](analysis/geometric_native_archive_material_carrier_final_readback/readback.json),
+[отдельный архив4](analysis/geometric_native_archive_material_carrier_final_readback/archive.json).
+Команда evidence reader и восстановление TMP — в текущем отчёте. Он не
+исполняет tests/solver/quad; документы завершаются перед final reading.
+Закрытые currentP/архив4 и прежниеP/F не дополнять и не переписывать.
+
+**Пункт1 открыт.** Два прежних блока завершены; остаётся ОДИН существенный
+блок с ТЕМИ ЖЕ тремя условиями:
+
+1. Физическая сборка всего исходного материала и архива, перенос исходных
+   сил/prestress/работы, HOT law и finite mean chart, нагрузки/drag и новое
+   смешанное равновесие. Теперь явная геометрия целых исходных live/archive
+   объёмов готова; физическая стыковка сил с ней ещё не завершена.
+2. Допуск всех пар на всём временном интервале, включая обратную C5→C1.
+3. Принятое продолжение, работа всей системы, балансы и совместный restart.
+
+Следующий конкретный шаг ВНУТРИ первого условия: прикрепить32 исходные
+материальные метки и единый16+8+8 source/beam/remainder потенциал к новому
+reference placement, перенести prestress и работу с проверкой полных
+поддержек. Затем в этом же условии остаются HOT/mean, нагрузки/drag и новое
+смешанное равновесие. Остаток существенный, не последние одна-две проверки.
+Принят1 прежний и0 новых интервалов; пункты2–6 исходного плана открыты.
+План не расширен. Часы source geometry0/contact2e6/memory1e6/material1e6
+сохранены раздельно; normalized journal clock их не продвигает.
+
+
+**Предыдущий завершённый компонентный выпуск 883 (историческая сводка): локальные силы, моменты и работа исходных источников COMMON.**
+Документ: [локальные силы и работа источников](GEOMETRIC_NATIVE_COMMON_LOCAL_SOURCE_WORK_IMPLEMENTATION.md).
+
+Все 32 исходные материальные метки, включая восемь архивных attachments,
+связаны с 16 исходными силовыми механизмами через локальные поля COMMON.
+Объявленный внутренний вектор `l=p0-Xref` задаёт виртуальную точку
+`y=R_owner[p0+r*v+u+(F-I)(l+r*v)]`. Получены силы, сопряжённые тензоры,
+моменты и полные первые/вторые вариации, включая prestress-кривизну и
+смешанные body/internal производные. Мощность физических реакций равна
+`-dU`; работа положительного градиента потенциала равна `+Delta U`.
+
+Единый потенциал содержит 16 local atoms, восемь beam terms и восемь
+зарегистрированных bulk remainders, каждый один раз. Прежние projected source
+terms заменены локальными; энергия непрерывной поверхности не добавлена.
+Пять genuine cold surface receipts сохраняют своё геометрическое назначение.
+HOT law, физическое размещение всего архива и текущий follower contact law
+этим компонентом не назначены. Каталог содержит 100 координат; первые
+92 значения зарегистрированного запроса фиксированы, восемь внутренних
+source variables сохраняют подлинный прежний источник на `body=0`.
+Универсальная невозможность иных 92-coordinate reductions не доказана.
+
+Свежая frozen попытка02: **14/14 тестов PASS за2992,95 с**;
+native **PASS4 full100 +4 old14 за1868,084488517 с**;
+same-process gate **PASS6336,4699928889995 с**, root strict5 outputs/exit0 проверены.
+Независимый stdlib-аудит **PASS111,6174010980003 с**:119 полей,293 raw pins,
+64 atom queries,32 beams,8 remainders и64 joint atom paths.
+Источник883/frozen4 и прежние277 raw dependencies/83 files/six-file archive
+сохранены; новых принятых интервалов нет.
+
+Первая попытка прервана перезапуском вычислительной среды после 14 прошедших
+тестов; общего отчёта и native packet нет. Её два сохранившихся файла и
+отдельное наблюдение прерывания включены в архив как фактическая история.
+Восстановлены только восемь прежних `/tmp` aliases из подлинных закрытых копий.
+Утраченные stdout и baseline receipts первой попытки не воссоздавались.
+Повторная попытка использует те же четыре замороженных Python-источника.
+
+Manifest содержит **56 фактически обнаруженных файлов**:
+raw `37d61376834819cb37d7ecfde9369d0e956fc455037aab720715fc2aa77cba8b`, selfseal `90d2709f53073a343ec908e8a41cb315c1cef46ecb19a4a5f48c4a3b57264325`.
+Итоговый reader source raw `6030a76cc20800b112766fa56c90c55f65f1378d3e81d5e4c372a967c1f5c607`.
+Frozen883 canonical `5ec421080c7450b362ae5a5b3d02e1b3f82ecf67ee514034a56e60b4a86d4c51`,
+raw `1638c727bea07487d9f9c734e0aa5469bde0e79032221b3d1f4134379905a360`.
+Wrapper selfseal `05e307cae1c5b2711b3c4965e7d1f651b87a7c62e69c8a6d0a4b81fc61906ed3`;
+audit selfseal `fb0d39c190803008871a2081235199a9339a461a213a52d7c571781388dbd4ae`.
+Финальные result/time и raw copy origins определяются сохранёнными
+[readback](analysis/geometric_native_common_local_source_work_final_readback/readback.json)
+и [отдельным архивом](analysis/geometric_native_common_local_source_work_final_readback/archive.json).
+Документы завершены перед этим чтением и после него не переписываются.
+
+Восстановление текущих TMP copies и команда evidence reader — в
+[отчёте](GEOMETRIC_NATIVE_COMMON_LOCAL_SOURCE_WORK_IMPLEMENTATION.md).
+Финальный reader не запускает физические расчёты или старые tests/solver/quad.
+
+Прежние 879 Python-файлов, manifest из 83 файлов и отдельный шестифайловый
+архив финального readback сохранены. Прежние тесты, силовые расчёты и
+квадратуры не повторялись. Новые результаты ограничены scope
+`LOCAL_SOURCE_FORCE_WORK_WITH_DECLARED_INTERNAL_RESIDUAL_COMPONENT_ONLY`.
+Часы source geometry `0`, contact `2e6`, memory `1e6` и material geometry
+`1e6` сохранены раздельно и не продвигались.
+
+**Пункт 1 открыт.** Завершены два прежних блока; остаётся один существенный
+блок с теми же тремя условиями:
+
+1. Физическая сборка всего исходного материала и архива, перенос исходных
+   сил/prestress/работы, HOT law и finite mean chart, нагрузки/drag и новое
+   смешанное равновесие.
+2. Допуск всех пар на всём временном интервале, включая обратную C5→C1.
+3. Принятое продолжение, работа всей системы, балансы и совместный restart.
+
+Следующий на момент выпуска883 конкретный шаг внутри первого условия — физическая сборка живого
+материала и трёх непустых архивных когорт с явно объявленным трёхмерным
+размещением и законом движения. Двумерные domains, массы и ancestry сохранены;
+buried depth/roof/trajectory из них не восстанавливаются. Затем в том же
+условии остаются HOT/mean, нагрузки и новое равновесие, после него — допуск
+и принятие. Остаток существенный, не последние одна-две формальные проверки.
+Принят один прежний и ноль новых интервалов. Пункты 2–6 исходного плана открыты;
+план не расширен.
+
+
+**Предыдущий завершённый компонентный выпуск 879 (историческая сводка): конечный локальный перенос
+материальной поверхности, меры и памяти COMMON.**
+Документ: [конечный перенос поверхности и памяти](GEOMETRIC_NATIVE_COMMON_MATERIAL_SURFACE_TRANSPORT_IMPLEMENTATION.md).
+
+Конечные семь холодных мод теперь задают обе деформированные стороны пяти
+настоящих холодных контактов: `F=I+Du`, cofactor, Nanson-нормаль, площадь и
+их полные первые/вторые производные. Плотность `mu_ref/J_receiver_now`
+сохраняет выделенную материальную меру. Текущие `p,c` остаются скалярами
+того же receiving label; сохранены все куски памяти и отдельные часы.
+Новая нормаль описывает геометрию поверхности; силовой закон с этой
+следящей нормалью не назначен.
+
+Все 32 исходные метки, включая 8 архивных donor attachments, получили
+конечное трёхмерное поле и `F` в глубинах `0` и `H/2`. Для архивных меток
+явно объявлено продолжение семи мод своего исходного quarter. Сохранены
+parent/material IDs, owner и cohort. Это локальное продолжение поля;
+полная история архива, принадлежность нынешней контактной грани и перенос
+исходных сил/prestress/работы этим результатом не сертифицированы.
+
+Потенциал 875 `U92=U871(Pi)+sum(Rperp)` сохранён. Новая поверхностная
+энергия не добавлена, whole-face интеграл не вычислялся. Отдельного
+равновесия, допуска или принятого интервала нет. HOT law не выведен из
+холодного источника.
+
+Вторая frozen попытка: **14/14 новых тестов PASS за 1378,12 с**
+(22 мин 58 с, фактическая напечатанная pytest duration).
+Native **PASS10/10 surface и64/64 original queries за350,96334030799335 с**;
+gate **PASS за2246,0146472550114 с**, root strict проверка закрытых outputs
+завершена;
+независимый аудит **PASS за1073,233603071014 с** с одного разрешённого запуска.
+Проверены10 surface queries/20 sides/5 genuine cuts,64 original queries/32 labels,
+8 archived donor labels и8 full body contexts,7 first/49 second derivatives
+на сторону и64 prior passive-point associations. Scope —
+`PASS_LOCAL_TRANSPORT_COMPONENT_ONLY`.
+Закрыт manifest83. Перед независимой математикой baseline PASS20,669048584997654 с
+(nested875 projection11,045058068993967 с). После аудита непосредственно
+проверены879 sources/193 raw dependencies/10 strict closures — PASS;
+reusable baseline main отдельно не повторялся. Wrapper-measured pytest1380,5565931419842 с;
+native callback351,019289251999 с. Before/after-gate baseline PASS
+38,49952138203662 с /30,391725720954128 с.
+Первая попытка сохранена: завершились 12 PASS и 1 FAIL в тесте гармонического
+оракула памяти; тест 14 был прерван и не считается завершённым.
+Исправлены только тест 7 и фиксированный packet replay. Core/wrapper
+не менялись; старые 875 Python sources и manifest73 остаются неизменными.
+
+Выпуск: `analysis/geometric_native_common_material_surface_transport_validation/release_validation_02/`.
+Frozen879 canonical `4a75d4bc7d404fc11d5d252302fe6b6d961797b4a637f921c38acb679485b79c`;
+raw `1b948eace979f3125756f6f0dea803fb55d0d2e87650890a2236c07502b0c336`.
+Audit raw39b58a92972e8b570f59ca3d7550edb794b6ae01f052d15678048dc729ab988f;
+self-sealc857af3af356f873c863f20334bb562f5a1074b57586f7e480ce89686d67e38b.
+Exact executed producer rawc38dd9f2e9d0efeac42b64d50c15601d40fb1f56232edafcf34de19f47c11502;
+earlier75285 draft preserved asUNEXECUTED_GATE01_DRAFT.
+Manifest83 raw1347310d09095ce8e3dff7db970262524c323a5542861fa2402bb1431c7f7e4b;
+self-seal651f204118935dadff0a6326b5534772e30a7e2af9374c41ba5ac099641cde66.
+Native report raw25796983f80d0647613bfc31fafb2f7f1ca423f736c04a6baa6310fd3a94ff39,
+self-seal8727b6924e77f790b7a85b7caa6407a6bd1729a712f481fdfa2b11dd7bc140e7;
+packet rawf2884284f663564d304537f91614efbb01e5b7df5ebdab86ac7eb6e77287ee64,
+self-seal368a524a954ac5f2ba3a6b92c182d34d1c3567ba7df1314c0afd02b2cff2c23e.
+Gate raw82f3b165a6a4da350ae83a587ea77ce114aef97f7794d7e6e7a871dfd900715c;
+self-seal03bd4048e8d4515c61433b7605fcff775f9058aa767c5c076a1f83a251fb767d.
+Фактический результат финального readback определяется отдельными
+[readback.json](analysis/geometric_native_common_material_surface_transport_final_readback/readback.json)
+и [archive.json](analysis/geometric_native_common_material_surface_transport_final_readback/archive.json);
+его result pins и время не дублируются после проверки окончательных документов.
+При продолжении проверять сохранённые seals и readback; старые tests,
+force solve и квадратуры не повторять.
+
+Scope `FINITE_LOCAL_MATERIAL_SURFACE_MEASURE_AND_MEMORY_TRANSPORT_COMPONENT_ONLY`.
+Пункт 1 открыт: **два прежних блока завершены; один блок с теми же тремя
+условиями остаётся**. В первом условии теперь выполнен конечный локальный
+перенос геометрии, меры и текущей памяти. Следующий конкретный шаг — связать
+его с исходными силами/prestress/работой и единственным владельцем
+column/bulk energy; закончить физический перенос архива, HOT law/finite mean
+chart, loads/drag и NEW mixed equilibrium. Затем остаются whole-clock
+all-pair admission, включая reverse C5→C1, и принятое продолжение с
+независимой работой пути, балансами и joint restart.
+Принят **один прежний / ноль новых** интервалов. Исходный план из шести
+пунктов не расширен; пункты 2–6 открыты. В отчёте указывать остаток пункта 1.
+
+**Предыдущий завершённый компонентный выпуск 875 (историческая сводка): нелинейная связь исходного механического источника с cold fields COMMON.**
+Документ: [проекция исходного источника на поля деформаций](GEOMETRIC_NATIVE_COMMON_STRAIN_PROJECTION_IMPLEMENTATION.md).
+Восемь независимых internal source channels сведены одной картой Pi к
+подлинным whole-bank strain integrals восьми cold bodies. Теперь92 координаты:
+6 owner +56 cold +30 HOT; отдельных internal coordinates нет. Cold coupling
+ненулевая, HOT30 source coupling точно нулевая. Это нелокальная калибровка
+целого cold bank; локальная механика COMMON faces и движение архивных3D
+тел ею ещё не подтверждены. Допускается только точный сохранённый NONZERO
+vector92; для другой конфигурации нужен другой подлинный integral receipt.
+
+Один U92=U871(Pi)+sum(Rperp) сохраняет16 исходных contact/serial mechanisms
+и8 global beams once-only, полную вторую вариацию с prestress curvature,
+32 исходные material labels/16 work lineages и раздельные clocks.
+Rperp=N/2-p²/(2*kappa), где N — исходный raw channel37 <E_rem,E_rem>,
+E_rem=Green_increment-a0*H0, `remainder_strain_inner_product_j` целиком;
+raw gradient/Hessian дифференцируют N/2. Строгое Cauchy enclosure p/kappa сокращает интервал без
+изменения constitutive law/raw73 channels и без дифференцирования cap.
+Все16 source points доказанно compressed; все8 Ds_tip.lo положительны.
+Inverse2jet проверен в origin и настоящем NONZERO anchor: восстановлены первые
+и вторые вариации source-only потенциала; finite inverse-path work не доказана.
+Добавочная orthogonal bulk work сохраняется отдельно. HOT law/finite mean chart,
+loads/drag, NEW mixed equilibrium и physical handover ещё не закрыты.
+
+Авторитетная frozen попытка03: **14/14 новых тестов PASS за555,94 с**,
+native **2/2 whole92 queries PASS за23,832927 с**, полный typed replay PASS;
+единый gate **PASS за767,635476 с**. Независимый stdlib-аудит
+**PASS за160,207513 с**, с одного запуска:8 genuine projections/raw584
+channels, полные gradients/Hessians, оба inverse anchors, все13 reference
+banks/35 разрешённых identity paths и once-only energy. Предварительный
+baseline до независимой математики PASS102,245727 с; after-gate PASS51,071514 с.
+Все875 источников неизменны до/после, старые871/manifest23/51 dependencies,
+цепочка1633 и9 закрытых ancestry releases сохранены. Старые tests/force solve
+и квадратуры не повторялись. Typed factories и старый diagnostic algebra
+восстановлены для аутентификации; новой quadrature нет.
+
+Попытки01/02 FAIL сохранены вместе с точными sources/logs/maps: первая
+выявила слишком широкий quotient enclosure и потребовала строгого Cauchy
+сертификата; вторая выявила ошибочное требование definite-sign curvature
+в test6. Исправлен только этот тестовый оракул; core/control/wrapper между
+попытками02/03 неизменны. Pure math guard PASS5,382548 с относится к source
+test перед последним исправлением; его AST reconciliation сохранён отдельно.
+Окончательные sources покрыты новым полным gate03 и независимым аудитом.
+
+Выпуск: `analysis/geometric_native_common_strain_projection_validation/release_validation_03/`.
+[Манифест73 файлов](analysis/geometric_native_common_strain_projection_validation/artifact_manifest.json)
+закрыт; independent audit и failed attempts находятся вне strict4 outputs.
+Final stdlib readback **PASS за28,043987 с**:180 raw dependency pins,
+все73 manifest files/875 sources/9 strict closures; физика не выполнялась.
+[Exact reader и архив](analysis/geometric_native_common_strain_projection_final_readback/readback_archive.json)
+сохранены отдельно от манифеста73; инструкция повторного readback в документе.
+После перезапуска сначала восстановить единственный pinned `/tmp` baseline
+из закрытого `baseline_before_independent_audit.json` с проверкой raw SHA256;
+его прежний путь сохранён в audit dependencies. Код восстановления в документе.
+
+Frozen875 canonical `13c19fe10056af9ab621e2c8a23e63ad36b301c95e121a6835cead019378e385`;
+raw `8f7608219c398a05913d96e80baf685b997dccff466ee9cf9eb1aa89b8124675`.
+Wrapper raw `a7e74fc5d8774eaaabdcf3919357d27dbd6c35f0c79ea741cb0a89057e51e10e`;
+selfseal `a20d3dcfa9e158e5e57829f4b81e7bf3206e604e3070eed0514b097666507cbb`.
+Audit raw `f7280d7b1edee1bdf1467daa9d97271d378b3b8a43b197cf606729eeef499532`;
+selfseal `8b325f6dca075438445085d77ba6255cfb0bdf762c653c39e71d308ec6d13be1`.
+Exact audit producer raw `74090c447f56ff25f8bf3fc94b28dce3b468c3a19954ef16c4bf85550566e22e`.
+Manifest raw `035c7eeae472676924792d07e1d05b8e3660a4a9d0fa9d8cfe8f55df71862412`;
+selfseal `519d42468d7291b2af3db6894943a2ec91e2c12f490643e2d18f4b16d63777a2`.
+Четыре новых Python-файла и карту875 считать завершённым baseline;
+при неизменных sources проверять seals/readback, не повторять старую физику.
+
+Scope `COMMON_BANKWISE_COLD_STRAIN_PROJECTION_REDUCTION_COMPONENT_ONLY`.
+Пункт1 открыт: **два прежних блока завершены; один блок с теми же тремя условиями**.
+В первом условии выполнена bankwise cold coupling/once-only orthogonal energy.
+Следующий конкретный шаг — локальные настоящие COMMON faces, material measure
+и memory, архивный3D handover и HOT law/finite mean chart, согласование
+column/bulk energy/prestress; затем loads/drag и NEW mixed equilibrium.
+После этого остаются whole-clock all-pair admission/reverse C5→C1 и принятое
+продолжение с independent path work/балансами/joint restart.
+Принят **один прежний / ноль новых** интервалов. План из шести пунктов
+не расширен. В каждом отчёте указывать остаток пункта1.
+
+**Предыдущий завершённый компонентный выпуск 871: исходный материал и единый сокращённый механический источник.**
+Документ: [материальная привязка и механический потенциал](GEOMETRIC_NATIVE_COMMON_MATERIAL_TRANSFER_IMPLEMENTATION.md).
+Все16 исходных contact/serial-column mechanisms связаны с32 собственными
+материальными метками:8 живых donor,8 архивных donor и16 живых receiver.
+Архивы сохраняют исходные material IDs/owner/cohorts/reservoirs; пять
+HOT-birth материалов не подставляются вместо них. Пассивная архивная карта
+через тот же COMMON flow объявлена новым reference extension.
+Движение трёхмерных архивных тел и дальние концы старых колонн не восстановлены.
+
+Один T14→100 и один потенциал учитывают16 contact/serial-column mechanisms
+и8 отдельных global beams, owner derivatives, силы и lever/receiver couples.
+100 координат =6 owner +86 нынешних body +8 независимых internal source;
+связь последних с body fields ещё не выполнена: coupling86 равна нулю.
+Finite owner/body increments отвергаются. Используется архивная geometry0
+force basis; contact2e6, memory1e6 и material geometry1e6 сохраняются отдельно.
+Глобальная beam reference energy сохраняется once-only с явным signed
+rounding residue; API запрещает повторное включение calibrated beam.
+Общая сборка cold bulk/COMMON face mechanics ещё не выполнена.
+
+Авторитетная попытка01: **14/14 новых тестов PASS за398,92 с**,
+native **6/6 global +64/64 material queries PASS за49,410405 с**,
+полный typed replay PASS, единый gate **PASS за593,974112 с**.
+Независимый stdlib-аудит **PASS за816,774 с**, с первого запуска.
+Все871 источники неизменны до/после; прежние867/manifest24/цепочка1633
+и закрытые выходы сохранены. Старые tests/force solve/сертифицированные
+квадратуры не повторялись; typed867 DTO и literal carrier operators
+восстановлены только для аутентификации новой подсистемы.
+Bootstrap867 PASS за69,868208 с; after-gate baseline PASS за29,818632 с;
+baseline до независимой математики PASS за41,959 с.
+Выпуск: `analysis/geometric_native_common_material_transfer_validation/release_validation_01/`.
+[Манифест23 файлов](analysis/geometric_native_common_material_transfer_validation/artifact_manifest.json)
+и independent audit находятся вне strict4 outputs.
+
+Frozen871 canonical `5ba59a6e8231e7cf2408b2614b19601cc631bd204eb4f436b4241cf4fa535915`;
+raw `340716e8267d63974e3d8c27a94ac53af60d90e6f9f2382b86874a00c0c3fe9b`.
+Wrapper raw `44d12b3fb10edfef90a83c50385278b45135d1b051a5733d2b2f7d98f2755b56`;
+selfseal `8c3accb44756caea0cecd5a5573d57c007bccc1ce33f77d82fd38bcaf72ce75e`.
+Audit raw `caa8033c5a5c84f18bf29f9d1f91ddf7e46b0efd4dcef529a949dbcb14d13466`;
+selfseal `c7c66901dfde16fc2e693dfff9d260e94b28b9d9bb4ad45a74fd13071c3b4bcc`.
+Exact producer raw `06d07d554a7265f96e132327e0526e2a7baf83d18b29d0d620413e3acf7eaaf7`.
+Четыре новых Python-файла и карту871 считать завершённым baseline.
+Pins и дешёвый stdlib readback приведены в документе; не повторять старую физику.
+
+Scope `COMMON_ORIGINAL_MATERIAL_EXTENDED_REDUCED_SOURCE_COMPONENT_ONLY`.
+Пункт1 открыт: **два прежних блока завершены; один блок с теми же тремя условиями**.
+Внутри первого условия закрыты исходная material identity/пассивная карта
+и единый сокращённый механический потенциал с отдельным изгибом.
+Следующий конкретный шаг — физическая связь internal source с body/HOT/mean
+координатами, настоящими COMMON faces, согласование меры/памяти и once-only
+column/bulk energy/prestress; затем loads/drag и новое mixed equilibrium.
+Прежние два условия после этого: whole-clock all-pair admission/reverse C5→C1
+и принятое продолжение с independent path work/балансами/joint restart.
+Принят **один прежний / ноль новых** интервалов. План из шести пунктов
+не расширен. В каждом отчёте указывать остаток пункта1.
+
+**Предыдущий завершённый компонентный выпуск 867: все 16 исходных контактно-колонных носителей сил и работы.**
+Документ: [механические носители источника](GEOMETRIC_NATIVE_COMMON_SOURCE_CARRIER_IMPLEMENTATION.md).
+Архивная geometry clock0 и текущая objective geometry clock1e6 различаются;
+contact clock2e6/step2 и memory clock1e6/stage1 сохранены отдельно.
+Все 16 буквальных архивных сил воспроизведены в своей исходной базе;
+полные owner/radial B/H в 14 координатах включают receiver couple.
+Один потенциал сохраняет исходные E/t0/free anchors/work lineages.
+Inactive носители сохраняют преднагрузку. Relaxed shear и frozen predictor
+различаются. Continuous `C dtheta` не энергизируется вторым источником.
+Глобальный изгиб исходных балок — отдельный механизм; его согласование
+с контактно-колонными энергиями/работой входит в оставшийся handover.
+
+Авторитетная попытка02: **18/18 новых тестов PASS за 752,69 с**,
+native **68/68 запросов PASS за 481,670 с**, full typed replay завершён,
+единый gate **PASS за 2195,901 с**. Независимый stdlib-аудит
+**PASS за 148,938 с**, с первого запуска. Все source867 неизменны до/после;
+старые 863 источника, цепочка 1633 артефактов и закрытые выпуски сохранены.
+Прежние тесты, физические решения и сертифицированные квадратуры не повторялись.
+Выпуск: `analysis/geometric_native_common_source_carrier_validation/release_validation_02/`.
+[Манифест 24 файлов](analysis/geometric_native_common_source_carrier_validation/artifact_manifest.json)
+и независимый аудит лежат в родительском каталоге, вне strict4 outputs.
+
+Первая попытка01 FAIL сохранена полностью: два сбоя тестовых сравнений
+binary64 archive и точной механики. Исправлены только эти два оракула;
+core/control/wrapper между попытками неизменны. Свободного увеличения
+физического допуска нет; rounding/director residues проверяются явно.
+Bootstrap863 PASS за 63,281 с. After-gate readback PASS за 32,795 с;
+в начале независимого аудита отдельный readback PASS за 95,289 с,
+а после формул ещё раз сверены все867/зависимости/strict4 outputs.
+Краткий transport disconnect был только у инструмента чтения;
+существующий audit worker завершился успешно, повторного запуска не было.
+
+Frozen867 canonical:
+`bfabfa58dbe49ce1102ef9ab72680a301f8cea6fb30093442150d8d4bda45ef8`, raw
+`4b2b98b406cf1f955260dcc24770b9a860cf330e49adc72b4d47e018a140ffc6`.
+Текущую карту и четыре новых Python-файла считать завершённым baseline.
+Wrapper raw `47b5c882c041f5a2c6d460c71eae11091a6217ff78a0df14af9b57f214ba633e`,
+selfseal `d3bf099047fe0b995ba06360789fb29a998a0ba71e7d4042941963aeca7ce9e0`.
+Audit raw `a73bc310e25e368d0dc99ebe968602002609885b413224a4e4675888eb02b3d5`,
+selfseal `9313431f64093ccda637e48a0e51da1adbb930dd036724be9799f02d1876062e`;
+exact producer raw `3e3226705f7a1931e01d9147046686492e73d728d5a7b33a01d1e4555eaa43f4`.
+Все pins/receipts и команда stdlib readback приведены в документе выпуска.
+
+Scope — `COMMON_WHOLE_SOURCE_MECHANICAL_CARRIER_COMPONENT_ONLY`.
+Physical COMMON attachment, old-force pullback, 3D column far endpoints,
+HOT law, mixed equilibrium и whole-clock admission ещё не подтверждены.
+Пункт 1 открыт: **два прежних блока завершены; один остаётся с тремя условиями**.
+Следующий конкретный шаг в первом условии — подлинная карта исходного
+материала/внутренней подсистемы и глобальное сохранение сил/работы,
+включая отдельный изгиб, `B_new*T=B_old` и полную вторую вариацию.
+Архивированный материал сохраняется в трёх original cohorts; пять
+HOT-birth bodies имеют другие IDs. Нынешние 13 bodies/92 coordinates
+сами по себе не задают движения этих архивов. Для сохранения actual
+saved world forces нужна явно выбранная archival geometry0 basis;
+current basis требует отдельного force/work transport proof.
+Read-only контракт: `physical_common_attachment_design_source.txt`
+текущего validation-каталога, SHA
+`a34d597bbafb6664848d6ab663bfcf043ab6820552de395e843f1a1ed2ae866f`.
+
+В том же первом условии остаются HOT law/mean chart, loads/drag и fresh
+mixed equilibrium. Далее прежние два условия: whole-clock all-pair
+admission/reverse C5→C1 и принятое продолжение с независимой работой,
+балансами/joint restart. Принят **один прежний / ноль новых** интервалов.
+План из шести пунктов не расширен. В каждом отчёте указывать остаток пункта 1.
+
+**Предыдущий завершённый компонентный выпуск 863: единое распределение всей исходной опорной меры и памяти.**
+Документ: [полный учёт источника](GEOMETRIC_NATIVE_COMMON_SOURCE_ALLOCATION_IMPLEMENTATION.md).
+Реализованы четыре исходных семейства, 12 общих границ и восемь частей:
+пять активных и три неактивных. Все 16 буквальных историй сохранены один раз;
+четыре full-family запроса читают настоящую CURRENT память, включая Oct0.
+Один явный depth profile относится ко всему исходному семейству. Десять
+проб используют настоящие холодные разрезы, без повторного множителя доли площади.
+
+Bootstrap859 readback **PASS за 50,679 с**. Авторитетная попытка02:
+свежие **17/17 тестов PASS за 318,55 с**, единый gate **PASS за 587,293 с**,
+native control **PASS за 55,441 с**, callback 55,462 с. Полный source
+replay десяти плотностей и четырёх CURRENT memory queries завершён.
+Выходы:
+`analysis/geometric_native_common_source_allocation_validation/release_validation_02/`;
+независимый stdlib-аудит **PASS за 72,091 с**, с первого запуска.
+Проверены source863 до/после, прежние 859 источников/1633 артефактов,
+4 семейства/8 частей/12 границ, 16 историй/48 epochs/288 work-store scalars,
+10 independent density/coarea/RN и 4 CURRENT memory queries/8 harmonic fields.
+Попытка01 сохранена как FAIL:
+после её успешных tests/native исправлены только две ошибки wrapper
+и точный test-count guard. Исходный модуль/тесты/control неизменны.
+Frozen863 canonical:
+`83ebcc92428688af96c4f104b5ce9bbd96f29625e8a46d2b08e77b2fbad99406`, raw
+`e9e1dc52ae057b29f06e1e345e8ac055fd67aa8314f147d2dd5105d75a9bd2bf`.
+Прежние 859 Python-файлов неизменны; добавлены ровно четыре пути из карты.
+Текущую карту и четыре добавленных Python-файла считать завершённым baseline.
+
+Wrapper raw:
+`7df81606a168656cd51208a71d7ad425714751f736d9ed4ca50218263e106f95`,
+selfseal `f81c0ab0dbd2aebf59124274a6b8a5211934fdd36363e7b6aebe4fc1ea9ef9a4`.
+В родительском каталоге, вне четырёх выходов, `independent_audit.json` raw
+`2d9af7d2a38dcf55afa1269b0fe983fa5f51a6dcec5db93b6c4026dcda29a009`,
+selfseal `64dabc8a7a9d23e1ced792db03ba413f17cbbb7c43a5a0f0be7e727de5b2bf9a`;
+точный producer `independent_audit_source.txt` raw
+`eafbd34a81e9a6ee1f6d06c368797e4cec6291f445c8efc5e024ac16ffda4572`.
+Bootstrap/reusable baseline, оба текущих ancestry readbacks, обязательные
+θ/atom/stdlib helpers и closed output manifest описаны в документе выпуска.
+При неизменных источниках проверять raw/selfseal/stdlib readback;
+не повторять прежние tests, force/Hessian и квадратуры.
+
+Scope — `COMMON_WHOLE_SOURCE_ACCOUNTING_COMPONENT_ONLY`. Это полный
+source accounting; физический перенос материала, старых преднапряжений,
+мировых сил и работы ещё не подтверждён. HOT-закон, смешанное равновесие,
+whole-clock admission и новый принятый интервал также остаются открытыми.
+Пункт 1: **два из трёх прежних блоков завершены; один блок с тремя условиями
+остаётся**. Ближайшее после accounting — физический source/face/material
+handover с сохранением сил и работы, затем HOT law/mean chart, loads/drag
+и новое равновесие. Далее прежние условия all-pair admission/reverse C5→C1
+и принятое продолжение с независимой работой/балансами/joint restart.
+Принято **1 старый интервал / 0 новых**. План из шести пунктов не расширен.
+Конкретный ближайший контракт: source-complete work-conjugate carrier
+для 16 original nodes, старые traction/owner couple/Jacobian и проверка
+`B_new*T=B_old` с полным конфигурационным rebasing. Не энергизировать
+одновременно literal16 и continuous `C dtheta`; неактивная живая
+преднагрузка требует механического carrier, не constant energy receipt.
+Read-only дизайн сохранён как `physical_handover_design_source.txt` в
+родительском validation-каталоге; это часть первого прежнего условия.
+
+**Предыдущий завершённый компонентный выпуск 859: реализованы явно объявляемые опорная мера по
+настоящей глубине грани и последовательная contact/sub-column/over-column цепочка.**
+Документ: [мера и последовательные упругие носители](GEOMETRIC_NATIVE_COMMON_CONTACT_TRANSFER_IMPLEMENTATION.md).
+Пять pure measure checks PASS за 5,03 с, две независимые Schur checks PASS
+за 4,27 с. Свежие **21/21 тестов PASS за 438,92 с**. Единый gate **PASS за
+2038,478 с**; native control **827,348 с**, callback **827,535 с**.
+Полный source replay 20 area/state cases / 40 series responses / 16 000
+Hessian entries завершён. Авторитетный выпуск:
+`analysis/geometric_native_common_contact_transfer_validation/release_validation_01/`.
+Независимый stdlib-аудит **PASS за 101,498 с**: 20 current states, 80 exact
+source rectangle budgets, 40 series responses, 800 residual entries и
+все 16 000 Hessian entries. Источники совпадают до/после; прежние 853
+Python-файла, цепочка 1633 артефактов и закрытые выпуски сохранены.
+Frozen859 canonical:
+`88f0d2e78a81712458beb61f21bbdfe0b7222467a0e3241e23757e3fac6bda7d`, raw
+`7351d27e3fe0bb198978badec9f173766f8522940073b057c0b9584c75392ce5`.
+Прежние 853 Python-файла сохранены, ровно шесть добавленных paths в карте.
+
+Raw wrapper:
+`1b5e1695f2ddfa8ea879619e91cde6b4cfb2c7c7c89e34db04148d8765f7f9ae`;
+selfseal `91bb5b263179df4e64ec24048bc56bd24f82ac63926024a47e012a28c4086ff3`.
+Raw native report:
+`aa5e2482cac4108c984b679a076fff0121125b962070cc91cc4530e105fe9169`;
+raw source packet:
+`351482ce78e9d28634f1115a849f9d9b2a962f84b725075b898ad89824d42086`.
+В родительском validation-каталоге, вне четырёх выходов, сохранены
+`independent_audit.json`, raw
+`74195affc025d268eb2190ba496c01cfc411b8f49ab7eecc20bdc05f0ad790bc`,
+selfseal `6ed5ec34be105d8b383581060573fc96ee32636510c016498ef7ab7e607093d3`;
+точный producer `independent_audit_source.txt`, raw
+`f7eb5f730d6fca0b1fdbab075df71d91ebed7f1225278ec9a1bbf63d319f51d3`;
+обязательный helper `independent_formula_helper_source.txt`, raw
+`0ecbb318a302b5ae3acd387aca079ec42602a9a747d8232d4067c0d96b07ab6f`.
+Первый аудит остановился на его лишнем `depth_span==10000`; настоящие
+cube-derived spans около 9999,9 м. Исправлен только scratch stdlib helper.
+Первый producer/helper и журнал ошибки сохранены отдельно; код859/gate не менялись.
+Все manifest/selfseal, зависимости и команда readback приведены в документе выпуска.
+
+Scope — `COMMON_REFERENCE_AREA_SERIAL_CARRIER_COMPONENT_ONLY`.
+Новая опорная плотность `C*abs(theta_comp')*f(zeta)/depth_span` сохраняется
+отдельно от настоящей геометрической coarea. f — явный нормированный
+неотрицательный профиль; источник не содержит унаследованного 3D профиля.
+Новая цепочка использует exact harmonic K и variable contact/sub/over energy,
+заменяя bare contact853; её нельзя прибавлять параллельно к нему.
+Это local reference-weighted integrands, не полная force/material handover.
+Старые 16 literal atom measures/states/work/clocks сохраняются отдельно
+от continuous source measure. 3D endpoints, старые мировые силы и вся
+исходная мера не объявлены перенесёнными.
+
+Для следующего переноса выполнен отдельный исходный angular accounting
+16 узлов **PASS за 2,872 с**: 8 попаданий на две длинные границы / 8 вне
+supports, неопределённых endpoint-узлов нет. Его JSON/producer/note
+сохранены вне четырёх выходов; это учёт источника, не target material map.
+Tiny cuts и C8 tail сохраняют положительную непрерывную площадь даже
+при отсутствии старых узлов. Эти 8 попаданий совпадают со старой donor
+«archived» группой; старые donor labels нельзя использовать как новую
+receiver allocation. Полные площади/энергии/work/clocks остаются буквальными.
+
+Остаток пункта 1 не меняет прежний план: **2 из 3 блоков закрыты; 1 блок,
+3 условия остаются**. Ближайшее — whole-source once-only allocation и
+prestress/force/work handover, HOT law/mean chart, loads/drag и новое общее
+равновесие; затем whole-clock all-pair admission/reverse C5→C1 и принятое
+продолжение с независимой работой/балансами/joint restart. Принято **1 старый
+интервал / 0 новых**.
+
+**Предыдущий завершённый выпуск 853: реализованы настоящее текущее контактное
+состояние и объективный локальный контактный закон на пяти холодных разрезах.**
+Документ: [текущее состояние и контактные силы](GEOMETRIC_NATIVE_COMMON_CONTACT_FORCE_IMPLEMENTATION.md).
+Свежие **19/19 тестов PASS за 343,11 с**. Единый gate **853 PASS за
+1269,308 с**; native control **526,124 с**, callback **526,291 с**.
+Полный source replay 20 current-state cases / 40 force responses /
+16 000 Hessian entries завершён. Авторитетный выпуск в
+`analysis/geometric_native_common_contact_force_validation/release_validation_02/`
+содержит ровно четыре выхода плюс обёртку. Независимый stdlib-аудит **PASS
+за 54,757 с**: actual current memory, 80 harmonic enclosures, 800 residual
+entries и все 16 000 Hessian entries проверены без project imports и новой
+квадратуры. Исходные файлы и вся прежняя цепочка совпадают до/после gate.
+Замороженная карта 853:
+`9d4a7a71f81b8093b09d26c74f742909839496fe18dd1429875e3a6d54c05c21`;
+raw SHA файла:
+`f9fafa4aedce0265147d44f9338cfcbc8b49518f66dfa5a4ce0a4a0ee968420e`.
+Прежние 847 Python-файлов сохранены; добавлены только шесть файлов из карты.
+
+Raw SHA обёртки:
+`1d7a6ac8113a408aab6764f1c4a9fccb09f8d48184f5118434fc685574504313`;
+selfseal `fda985396e2e81e043019ead3cf6a7de4865c63f30a8ae1bacad8eb19b81befc`.
+Native report raw:
+`2b4842d523e66b40d11406bb7458e33ecc44dc669d36e8bc1c5e6eaccbda5846`;
+source packet raw:
+`fe06614b05591969e99364ffc81299ac4115e3a9e6586ced18647bbe85baa0c9`.
+Все selfseal и manifest приведены в документе текущего выпуска.
+В родительском validation-каталоге, вне четырёх выходов, сохранены:
+`independent_audit.json`, raw
+`e4c2cb68ed6a9f102b5ec2628f7c38966e90a067df8c80d2fd055dccec87fc92`,
+selfseal `20ece06aa865a0c4fcfe2bc7cabb9ee62808777ba5876081bd8171066b601f63`;
+точный producer `independent_audit_source.txt`, raw
+`8d755b719156876a87cb6f51b60221159d8d96e3dd92688e0b696f4bc12ea9e8`;
+обязательный `independent_force_formula_helper_source.txt`, raw
+`061505c158ae8026549788c242fbda541c0718526d61c452f07e9f32d24d50cd`.
+Диагностическая prefreeze race-карта не является картой выпуска; первый
+bootstrap остановлен до тестов, выпуск 853 относится к `release_validation_02`.
+
+Scope — `COMMON_CONTACT_REST_LAW_COMPONENT_ONLY`: локальные энергия,
+силы и полные производные 20 координат на единицу исходной опорной площади.
+Используется actual `step.memory`, а не повторно вычисленная dense endpoint
+память. Все 16 исходных состояний/площадей/work ledgers/часов сохраняются.
+HOT-кривая имеет полную кинематику, но не получила закон холодного контакта.
+Полная память/мера новой грани, rod prestress/энергия, отдельный HOT-закон,
+HOT mean chart, нагрузки/drag и новое смешанное равновесие остаются первым
+условием последнего блока. Затем остаются whole-clock all-pair admission
+с reverse C5→C1 и принятое продолжение с независимой работой/балансами/restart.
+Пункт 1: **2 из 3 прежних блоков закрыты; 1 блок с 3 условиями остаётся**.
+Принятых интервалов: **1 прежний / 0 новых**. План из шести пунктов не расширен.
+
+**Предыдущий завершённый выпуск 847: реализованы настоящие пять холодных контактных
+участков, отдельная кривая C6/HOT C1 и кинематические поля обеих сторон.**
+Документ: [контактные участки и поля](GEOMETRIC_NATIVE_COMMON_CONTACT_IMPLEMENTATION.md).
+Единый gate **847 PASS за 1173,976 с**: свежие **25/25 тестов PASS
+за 460,45 с**, полный native контроль шести границ и source replay
+24 zero/nonzero ответов завершены. Независимый stdlib-аудит
+**PASS за 77,989 с**: 332 модовых столбца, 2988 элементов мировых градиентов,
+12 Decimal геометрических проб и 1494 независимые finite-difference проверки.
+Development geometry **15 PASS за 314,96 с**, ports **10 PASS за 479,84 с**;
+предварительный полный native контроль и source replay прошли проверку.
+Карта 847 заморожена: `a14c79ddf7e0146ba6b5c335c800e03e442651b8a08fccc855a6ac920ca34a1c`.
+Прежние 841 источника и полная цепочка артефактов неизменны до/после;
+шесть новых файлов перечислены в карте и обёртке.
+Scope текущей проверки —
+`COMMON_CONTACT_GEOMETRY_FIELD_COMPONENT_ONLY`. Порты предоставляют
+перемещения и производные, не задают контактный rest law/меру и не
+назначают прежние atom states новым точкам. Прежние 16 состояний/часов
+сохранены, mixed force/admission ещё не приняты. Остаток пункта 1 —
+один прежний блок с тремя условиями. Следующий физический шаг —
+контактное состояние/rest law, мера и перенос энергии, затем HOT chart,
+нагрузки/drag и новое смешанное равновесие. Исторические данные 841 ниже
+остаются неизменны.
+
+Авторитетный компонентный выпуск 847:
+`analysis/geometric_native_common_contact_validation/release_validation_01/`.
+Raw SHA-256 обёртки:
+`e8ffabb1a29c1fb021e94fe53e815b6ad8d16ea14e9103a30b9f7428ac9ab847`;
+native report:
+`66968aeb22a287eac8bdfd795cc916dded5bc3db55bed47da52f4f35d86a5dd8`;
+source packet:
+`8fa086a0d42b1cb2b81c30d01c61369d13e294d4edf6c10f7d3b8a9a3dc99308`.
+Обёртка selfseal `19bd6b63478c6da22d48b5606311c0473ae8d3df732753f6150051d8345f51cd`;
+остальные selfseal и полный состав четырёх выходов плюс обёртка — в текущем документе.
+Аудит и его точный producer TXT сохранены вне этих четырёх выходов:
+`independent_audit.json`, raw
+`65969e55b900d695af52025bc48718cad83bdec189fb9aab2fb5301d29be3658`,
+selfseal `1336d6e45f6172bd7dd2c759ba79ba834ec992b38aca21241f3b63485e9c65e2`;
+`independent_audit_source.txt`, raw
+`31b7a3535b564482f163dbc73321477d15379e7e6961b56e139d952e91df8586`.
+
+Дополнительный source accounting-аудит (`contact_energy_decomposition_audit.json`)
+побитно воспроизвёл все 16 контактных/стержневых энергий и глобальный stored
+increment. Контакт **14,286 млрд Дж**, стержни **28,572 млрд Дж**, beam-калибровка
+**251,841 млрд Дж** — разные носители. Старые стержни не входят в beam-calibrated
+энергию новых тел. Нельзя считать перенос их преднапряжения/энергии завершённым
+через постоянную запись ledger. Квитанция raw
+`b164936ac0217e4c8c4feaebc8d7495731edd218e4da93db36e1d2660a3815b0`,
+selfseal `e04e97ba0345977f6e5f97c0fee167fa4dabf6cba69c51ebac81faed95a69685`,
+producer TXT raw `150892ef900d14bb36160af5b492d755700e071d3c2e845f18adc4b9ac7037a2`.
+
+Силовая постановка на момент выпуска 847 описана в `contact_force_contract.txt`/`.json`
+того же validation-каталога. Тогда это был design-only контракт; локальный
+contact-only force law теперь реализован и проверен в продолжении 853:
+объективный receiver-attached frame, полные owner/body вторые производные,
+контактный предиктор и отдельная source friction-free релаксированная ветвь.
+Она не назначает source память/площади новой грани и не переносит rod prestress.
+TXT raw `51f20ac273143c1184ae2ad3256ba0b938d793ea8b539a739dadedb7f54f04da`;
+JSON raw `b288a411e53ec56b2511d4c3e51a79f676c6fd6473dc6273f8c9b3466f4901fb`;
+selfseal `8d8347b2ac200832ee51c1159428e224fd9ecfd8f7fd8593e44f49d76fd3227a`.
+
+**Предыдущий завершённый выпуск 841 от 05.10: общая карта подключена к 13 настоящим телам,
+двум born-граням, восьми живым закреплениям, новым холодным градиентам и
+горячим основаниям. Свежий единый gate 841 завершён PASS.**
+Документ выпуска 841:
+[общая геометрия и поля](GEOMETRIC_NATIVE_COMMON_REFERENCE_IMPLEMENTATION.md).
+Авторитетный компонентный выпуск:
+`analysis/geometric_native_common_reference_validation/release_validation_01/`.
+Область проверки — `COMMON_REFERENCE_COMPONENT_ONLY`, не принятый новый интервал.
+Development: geometry **12 PASS за 91,13 с**, HOT **16 PASS за 42,69 с**,
+COLD **7 PASS за 435,27 с** и отдельный независимый all7/49H **1 PASS за 11,62 с**.
+Fresh gate: три новых тестовых модуля, **36/36 PASS за 435,97 с**;
+все восемь холодных и пять горячих компонент рассчитаны и проверены.
+Pytest-обёртка **436,389 с**, нативная сборка **3447,658 с**, callback
+**3450,857 с**, gate **3986,795 с**. Процесс завершён; второй gate не нужен.
+Отдельный stdlib-аудит итогового выпуска **PASS за 79,741 с** без импортов
+проекта и без второй квадратуры: all8 cold 73 интеграла/7 сил/49 Hessian,
+all5 HOT 6 сил/36 Hessian, basal и объёмная работа, три неизменных
+source HOT-оператора, исходное разбиение, грани, закрепления и 16 историй.
+Прежние 833 Python-файла неизменны; canonical карта 841:
+`dc109894fb7fb219b38a617cb1212f31dd7f758316658b5bdaba9335afaa6c35`.
+Одна общая Φ хранится отдельно от saved128; шесть cold и один HOT меняют A=0.
+Физические грани совпадают при общем радиусе, разные roof требуют разных z.
+Все 16 механических историй сохранены; carried-original поверхности перенесены
+раздельно и не объявлены совпавшими или полностью живыми контактами.
+Source preload и исходный dip сохранены отдельно; постоянный dip на всей новой
+грани не сертифицирован. Остаток пункта 1 по-прежнему **один блок, три условия**.
+
+Raw SHA-256 выпуска 841:
+
+- обёртка `report.json`: `9898f31f796006a7791140bf1c290c0e1605555a12e476e1585ce3f5992a743f`;
+- `native_control/report.json`: `0a8880d58a849cfeabf3f80aa6694c282eff6c24ce646740fb89b70a30320c40`;
+- `native_control/source_packet.json`: `dc8f820dbd926c53223a5c141a10296d1c7135efc6bf1077763785866dda9275`;
+- файл карты 841: `89beb81ef3d1e9bc10ad37e08d23f1134b5b8af8f6c0922f364649db31e32345`.
+
+Canonical selfseal обёртки `5b86eb947fd07789ea4db0b13419bad4f22b38a4cc8ef2ddb1b60ef2f5ae6997`,
+нативного отчёта `a2d2eb23324f207e63480bf59c9a814b2546626cf18abf57bdd5a3e802f9b483`,
+source packet `60259e6e56bb7335fa994988adfbbac5ac933b524ca164b0298c2e0a16a40446`.
+Полный состав четырёх выходов плюс обёртка приведён в текущем документе.
+Вне этих выходов сохранены `independent_audit.json`, raw
+`e28bcca1a1031b72b0561ff46e2006147886921926cc1972c294a723c5351eed`,
+selfseal `b7616d141334b25aac97d4bb7f4eb0996a026c163a8ba170841afccf1dadd1e5`,
+и `independent_audit_source.txt`, raw
+`17420e0c5d81fcd6ee5cc56355f1a1486793a5247d2b6acd6b71e35b40c47c99`.
+Текущие восемь новых Python-файлов перечислены в frozen source map и
+запечатанной обёртке; никакая часть прежней цепочки не заменена новым выпуском.
+Контроль Taylor 0/объёмные тесты Taylor 1 с наружными остатками не
+устанавливают точность будущего совместного решателя.
+
+**Ближайший шаг на момент выпуска 841** — связать пять подтверждённых живых
+холодных контактных участков и отдельную границу C6/HOT C1 с настоящими
+полями. Затем явно перенести 16 источников контактной памяти, состояния,
+нагрузок и энергии старых стержней; задать физический rest reference;
+включить HOT chart, нагрузки и drag в новое общее равновесие.
+Аудиты участков, исходных историй и зависимостей HOT/нагрузок сохранены
+как JSON/TXT вне четырёх запечатанных выходов.
+
+Ниже сохранены сведения о предшествующем завершённом выпуске 833.
+
+**Последнее завершённое продолжение 05.10: реализованы и проверены семь
+поддержанных полей всех восьми холодных банков с согласованием принятой
+опорной энергии и tip-силы. Найдено начальное перекрытие предложенного
+3D-reference; для нового общего кандидата отдельно доказана начальная
+раздельность всех 13 настоящих материальных областей. Пункт 1 не закрыт.**
+Реализация: [холодные поля, энергия и начальная раздельность](GEOMETRIC_NATIVE_COLD_BODY_IMPLEMENTATION.md).
+Авторитетный итог:
+`analysis/geometric_native_cold_body_validation/release_validation_01/`.
+Физическая область энергетического выпуска — `COLD_TENSOR_COMPONENT_ONLY`.
+Свежие **20/20 PASS за 1493,33 с**, pytest-обёртка **1493,735 с**,
+нативная сборка **2666,982 с**, callback **2668,708 с**, gate **4195,840 с**.
+Отдельный stdlib-аудит **PASS за 46,479 с** без импортов проекта и без
+повторной сертифицированной квадратуры: все восемь масок/опорных энергий,
+73 первичных интеграла каждого тела, семь сил, 49 элементов Hessian,
+поддержка/локальный J, нижняя оценка k и однократные удаления.
+Контроль использует Taylor 0, объёмные тесты Taylor 1, с наружными остатками;
+точность общего силового решателя этим контролем ещё не установлена.
+
+Прежние **826** Python-источников и полная цепочка артефактов сохранены.
+Семь новых файлов дают одинаковую до/после карту **833**:
+`2b322df2d2c426976ee886374517c2e0130acb5a5acfcaf4bb07a6e4c3331e05`.
+Полные четыре DTO, snapshot, поле saved128, группы, оси, история и маски
+неизменны. Source packet байтово совпал с development-прогоном.
+Ровно четыре выхода плюс обёртка; raw SHA-256:
+
+- `report.json`: `a0843a4f9d886e61125eae0bda9c4964b60d54736b539776b1d32d46d8e56a67`;
+- `native_control/report.json`: `a65ce1232f73417c9afc8f790ccdbe810f4452137e6192fecb6c34b29d195db3`;
+- `native_control/source_packet.json`: `86806099d9d07467a0a022d57ed8dcad0834487f222a048223486438d2f30472`.
+
+Все selfseal и остальные выходы перечислены в новом отчёте.
+Вне четырёх выходов сохранены `independent_audit.json`, raw
+`cf8d62c57c3991aa9a4d9329713112dc4979033aaf02128028d22b02176eb376`,
+и `independent_audit_source.txt`, raw
+`ee031938177a3497aa7821c883650a89397a9942f6b177e48b9a655153297f6e`.
+
+Новое предложенное размещение с разными saved128 A у C8/C11 отклонено:
+`REJECTED_PROPOSED_REFERENCE_INITIAL_OVERLAP`. Строго внутри обоих тел
+лежит весь куб (−57050,−56950)×(75950,76050)×(1850,1950) м, объём
+**≥1 млн м³**. На нём все семь полей и градиенты точно равны нулю;
+подбор амплитуд и общее жёсткое движение owner0 его не устранят.
+Прежний принятый reduced-интервал этим выводом не опровергнут.
+Отрицательные доказательства и воспроизводимый stdlib replay сохранены
+как `initial_reference_overlap*.json` и соответствующие исходники TXT.
+
+Подготовлена **новая общая** radius/volume-preserving карта Φ с одним
+буквальным A. Последующее отдельное доказательство подтвердило начальную
+раздельность всех 13 её областей: девять настоящих плоскостей, 84 строгих
+определителя, 74 исчерпывающие целые области, точный curved-only участок
+C6→C1 и настоящие разные H/roof. Общая инъективная карта сохраняет
+**78 начальных попарных исключений объёмного перекрытия**.
+Stdlib replay корневого агента получил ту же квитанцию. Независимая
+quaternion-проверка **PASS за 7,867 с**. Доказательство
+`common_reference_source_partition.json`, raw
+`038b774e15eba4d8dcdb26ef0d65778218cdea0090a71bc956f331637330a840`,
+peer `common_reference_partition_independent_audit.json`, raw
+`3e32618b38c2a06f6ce8c6db74b66551d518406531e7a6cb004bc1f61e4b28f7`.
+Их исходники, curved-peer и полный replay сохранены рядом **вне** четырёх выходов.
+Это `INITIAL_COMMON_MAP_NONINTERPENETRATION`, не whole-clock admission.
+Исходный candidate50af и ранний peer4a1c остаются неизменными; их прежний
+флаг раздельности False не переписан, новый вывод оформлен отдельным proof.
+Угловое покрытие не означает uniform-shell coverage или равенство масс
+удалённого cold и newborn HOT. Сохранение массы/объёма относится к переносу
+каждой объявленной области общей Φ. Полный новый баланс ещё не принят.
+
+Ближайший конкретный шаг **на момент выпуска 833** — подключить доказанную общую начальную карту
+к физическим закреплениям/контактным граням и заново связать зависимые
+поля, support и интегралы. Историческую глубинную геометрию шести cold A=0
+и одного HOT A=0 нельзя одновременно сохранить и заменить их A общей картой;
+новое объёмное продолжение объявляется явно, источник не переписывается.
+
+Остаток — **один прежний существенный блок пункта 1, три прежних условия**:
+
+1. Согласованное reference, физические грани/закрепления, связь HOT со средней
+   радиальной координатой, нагрузки/drag того же поля, физический контактный
+   reference и заново решённое общее равновесие. Холодные поля/опорная энергия
+   проверены; исходная раздельность общего кандидата доказана. Текущее продолжение
+   уже подключило общую карту/грани/закрепления и проверило зависимые поля;
+   контактная силовая сборка и новое смешанное равновесие остаются впереди.
+2. Whole-clock пространственный допуск всех пар на полученном движении,
+   включая обратное C5→C1. Начальное доказательство не заменяет временное.
+3. Принятое смешанное продолжение, независимая работа пути, балансы и joint restart.
+
+Исходных принятых интервалов **1**, новых **0**. Пункты 2–6 открыты;
+прежние шесть пунктов плана не расширены. Ниже — история предыдущих выпусков.
 
 ## Репозиторий и ветка
 
@@ -44,10 +3191,1131 @@
    механика, тяга слэбов и разрушение к нему ещё не подключены.
 3. **Новая сохраняемая геометрия и строгий допуск поддвига.** Полигональные
    фрагменты на сфере, действительные контактные дуги внутри смешанных
-   ячеек, локальная направленная память и пассивный слэбовый архив. Силы
-   и тепловая обратная связь здесь ещё не включены; движение задано.
+   ячеек, локальная направленная память и пассивный слэбовый архив. Перенос
+   с силовым движением согласован с текущим пассивным архивом.
+   Сегментированный решатель сохраняет меняющуюся нагрузку и работу;
+   новый путь допускает дифференциальный результат для сохраняемых исходных
+   материальных пар после непрерывной пространственной проверки.
+   Тепловая обратная связь ещё не подключена.
 
-Последнее реализованное изменение — **механический допуск вынужденного
+**Предыдущее завершённое продолжение 05.10: собраны объёмные и базальные компоненты всех
+пяти настоящих HOT-банков и контактные операторы общего банка.
+39 новых тестов и контроль PASS. Пункт 1 остаётся открытым.**
+Реализация: [объёмные поля настоящих HOT-банков](GEOMETRIC_NATIVE_AFFINE_BODY_IMPLEMENTATION.md).
+Авторитетный итог: `analysis/geometric_native_affine_body_validation/release_validation_01/`.
+Физический статус `COMPONENT_AFFINE_BODY_ONLY`: нового связанного равновесия,
+пространственного допуска или принятия этим выпуском нет.
+Принятых исходных интервалов **1**, новых **0**.
+
+Все пять полных HOT-масок связаны с прежним аутентифицированным snapshot
+`8fea47313ba8c5db3f26648b34a3bbb222201d432671a0d720324c0af9bf8710`.
+Сохранены четыре DTO, материальный epoch, поле с декларацией **128**,
+полный глубинный A, groups/provenance и канонический исходный pose.
+Объёмы определены настоящими площадями: `V₀=R² H area(Ω)`, `H=2000 м`.
+Три очень малых положительных банка имеют объёмы около
+**3,909·10⁻³⁴**, **7,202·10⁻³³**, **4,093·10⁻³⁴ м³**;
+два больших — около **4,199·10⁶ м³**. Минимума площади нет;
+proxy не выделен как материал, положительная кривая поправка HOT5 сохранена.
+
+Новое поле `u=ΣaαEαX₀/R`, `F=I+ΣaαEα/R` имеет шесть симметричных
+декартовых мод с координатами в метрах. Интегрированы полная Green/StVK
+энергия, шесть сил и 36 касательных элементов на всём настоящем объёме.
+Это явное новое свободное от напряжений HOT-замыкание E=10⁹/G=4·10⁸ Па,
+а не восстановленный старый тензор или prestress. Исходные 1000-метровые
+колонны сохранены как источник, новой геометрией тела не используются.
+
+Базальная опора использует **то же шестимодовое поле**, настоящую маску,
+исходные ρg=4200 Па/м и явно объявленную лагранжеву меру `R²dΩ`.
+Старая отдельная скалярная пружина повторно не оплачивается. Независимой
+седьмой радиальной моды без её объёмной энергии нет. Для двух больших
+масок базальные моментные интервалы пока широки; их нулевая нижняя граница
+энергии не означает нулевую физическую жёсткость.
+
+Три HOT-оператора давления охватывают весь исходный угол с неопределённым
+концом и общую глубину. Глубинное сопряжение `SᵀEαS` интегрируется
+коммутаторным рядом, точными коррелированными моментами и наружным остатком.
+Один общий HOT2 `native-first-entry-actual-vacancy:5dd0c8a…` принимает оба
+`born-shared-0` и `born-shared-3`; HOT6 `1750b4ed…` — донор второго.
+Донор первого `live-domain:844543dd…` является холодным.
+Податливость `B K_bulk⁻¹ Bᵀ` включает межконтактные члены настоящего общего
+банка; **базальная K в её обращение ещё не включена**.
+
+Свежие **39/39 PASS за 91,75 с**, pytest-обёртка **93,618 с**,
+callback **78,674 с**, gate **192,104 с**. Новый genuine case и общий
+force solve не пересчитывались; фиксированный полный пакет проверен.
+Прежние **820** Python-источников, 1633 исходных артефакта и все последующие
+выпуски, включая четыре normal-выхода и три standalone-доказательства,
+неизменны. Ровно шесть новых Python-файлов дают карту **826**, одинаковую
+до и после, canonical SHA-256
+`a0343749b87411fff19fb966a8ab5771d8115ec2a4e4477b774649a05b3d2d95`.
+Запечатаны ровно четыре выхода. Обёртка raw SHA-256
+`a5ed86778a9388a56df2c89d758d17795c861c118bd4de66c6be0b5400b084db`;
+нативный отчёт raw SHA-256
+`a0af761764d8c9283982fecffeeb3e12726538b647d76df08bbef704e72b72de`;
+пакет источника raw SHA-256
+`ccd511b2b82e66ba103d0d900b993a18d02953288f447c71ac9e589dc70c7d1e`.
+
+Отдельный stdlib-аудит **PASS за 31,403 с**: без импорта проекта
+пересчитаны пять настоящих объёмов, 180 элементов K, 30 сил, 180
+касательных элементов, направленные производные полной энергии,
+базальные и совместные операторы. Из буквальных исходных лучей и
+вращений независимо восстановлены контактные frames и численно
+проверены все 18 компонент трёх B через Rodrigues/Gauss–Legendre.
+Эта проверка не является вторым сертификатом интервальной квадратуры
+или физического допуска. Доказательством границ остаётся наружный
+производственный ряд. Аудит находится **вне** четырёх запечатанных выходов:
+`analysis/geometric_native_affine_body_validation/independent_audit.json`,
+raw `89ce99a0f12e4f2933465754eeca12bffdebb3d0e1d8c6fcfa5c7b5ded550c4a`.
+Текст отдельного stdlib-аудитора сохранён как `independent_audit_source.txt`,
+raw `7f481c533996070db320b03bb1bcca71487e06361209c74859b3f29f0a2a556c`;
+он не входит в шесть новых загружаемых Python-модулей.
+
+На момент HOT-выпуска оставался **один прежний существенный блок пункта 1
+и три прежних условия**; актуальное холодное продолжение указано в начале файла:
+
+1. Поддержанные холодные поля с согласованием старой энергии и опорных сил;
+   связь HOT с прежними радиальными координатами и нагрузками; физический
+   контактный reference; заново решённое общее равновесие. HOT-компонента
+   проверена, холодных объёмных компонентов пока **0 из 8**.
+2. Whole-clock допуск всех пар на полученном движении, включая C5→C1.
+3. Принятое смешанное продолжение, независимая работа пути, балансы и joint restart.
+
+**Тогда следующим продолжением были поддержанные холодные поля и перенос прежней
+изгибной энергии в согласованное объёмное замыкание.** Не обнулять холодный
+prestress и не прибавлять перекрывающуюся старую beam-энергию повторно.
+При дальнейшем общем solve базальный drag должен учитывать скорость того
+же нового поля, вместе с движением владельца. Прежние силовой сертификат,
+surface-42 и acceptor первого интервала нового допуска не дают.
+Пункты 2–6 исходного плана открыты; план не расширен.
+
+**Предыдущее продолжение 05.10: доказана неподдержанность прежних нормальных
+колонн в настоящих банках; добавлено явное полное локальное 3D-замыкание.
+57 новых тестов и два независимых аудита PASS. Физический кандидат
+`REJECTED_INVALID_NORMAL_SUPPORT`; пункт 1 не закрыт.**
+Реализация: [настоящая поддержка и объёмная энергия](GEOMETRIC_NATIVE_NORMAL_SUPPORT_IMPLEMENTATION.md).
+Авторитетный итог: `analysis/geometric_native_normal_support_validation/release_validation_01/`.
+Из трёх прежних блоков пункта 1 готовы два; последний существенный блок
+остаётся открытым. Принятых исходных интервалов **1**, новых **0**.
+
+Аутентифицированный пакет предыдущего криволинейного решения, raw SHA-256
+`0e3554a55a8c93eb8ecbdae8351f3280a2ae4bd8596254950afef7f77b98d2cb`,
+и его joint-предшественник сохранены. Все четыре полных DTO, материальный
+epoch, поддержка и исходное поле при декларации **128**, groups/provenance
+сверены. Snapshot `8fea47313ba8c5db3f26648b34a3bbb222201d432671a0d720324c0af9bf8710`
+содержит настоящие источники 13 банков и двух новых контактных семейств.
+
+До нового движения на **всей дуге**, включая неопределённый конец, и
+внутренней полосе **100–500 м** доказан выход принимающих колонн длиной
+1000 м выше **всех крыш того же владельца**: минимум **356,233879190 м**
+для born-shared-0 и **356,292192434 м** для born-shared-3. Это полоса
+положительной меры. Исходное упругое укорочение **4,761904762 мм** не
+устраняет отказ: остаются **356,229783149 / 356,288096391 м**.
+Независимый stdlib-аудит пересчитал нормали из аутентичных A и касательных
+joint-пакета без опубликованных r/n_r и получил более тесные нижние
+оценки укороченных колонн **361,364013806 / 361,422324987 м**.
+Отказ относится к буквальным прежним колоннам, не ко всем возможным
+трёхмерным полям настоящего тела. Материал не расширялся, колонны не
+обрезались, preload **−0,01 м** сохранён.
+
+Новый `geometric_native_bulk_elasticity.py` явно трактует прежние E_eff/G
+как E/G изотропного материала со свободными поперечными границами:
+E=10⁹ Па, G=4·10⁸ Па дают ν=0,25, λ=4·10⁸ Па. Это **новое объявленное
+замыкание**, а не восстановленный прежний 3D-тензор. Реализованы все
+компоненты энергии/напряжений и их вариации, объективное Green/StVK
+размещение с сохранением массы при J>0 и совместная податливость
+`B K⁻¹ Bᵀ` с межконтактными членами общего банка. Прежняя изохорная
+Robin-деформация имеет на **60%** больше энергии, чем прежний 1D-закон.
+**K настоящих банков и их полное векторное поле ещё не собраны.**
+Локальные формулы и произвольная SPD-матрица физического допуска не дают.
+
+Итоговые **57/57 PASS за 21,05 с**, callback **3,582 с**, gate **43,944 с**.
+Полный genuine case и новое связанное равновесие в этом выпуске не
+пересчитывались; источником служит проверенный фиксированный полный пакет.
+Прежние 19 силовых строк независимо повторены как исторический
+сертификат сокращённого потенциала; для объёмного размещения он не наследуется.
+Прежние **814** Python-источников, 1633 исходных артефакта и все последующие
+solid/finite/failed/spherical/joint/curved-выходы неизменны. Шесть новых
+Python-файлов дают карту **820**, одинаковую до и после:
+`20ab172bee8cc7b865834817a20f7415e971bd1d60964c853519f9d43d250fc6`.
+Запечатаны ровно четыре выхода. Обёртка raw SHA-256
+`3c028106720bd00b8d31bf8ef4e050d7aaaeb5cd34b47ada8f2f252fef51560a`;
+нативный отчёт raw SHA-256
+`8cff7debbd4b6a274860ca8042ad8b9d8462d59fe8f2ed5e5aefcd7369078bd5`;
+пакет источника raw SHA-256
+`f4f3703cbc463d4130096dba827a7425fc865851fe5c86f337f98dfbefd8f7ca`.
+
+Отдельные последующие доказательства находятся **вне** запечатанного каталога:
+
+- `analysis/geometric_native_normal_support_validation/independent_audit.json`,
+  raw `45eabeb97f8dca5abac94c26f044f8e0babd47077c6dab6bb976637af2989678`;
+- `analysis/geometric_native_normal_support_validation/source_shortened_columns_refusal.json`,
+  raw `10964b5609415a60b8f3e0eda0822ed37378c787393d48f4a9e83117cbf287f0`;
+- `analysis/geometric_native_normal_support_validation/source_normal_independent_audit.json`,
+  raw `cdb8964417ff1c781850c900717b9a541fff918c7c33cbbee1ca06a3a3202097`.
+
+До закрытия последнего блока остаются **три прежних физических условия**:
+
+1. Полное поддержанное поле каждого настоящего банка, объёмная и
+   интерфейсная энергия и её силы в заново решённом связанном равновесии.
+2. Временной пространственный допуск всех пар на полученном движении,
+   включая обратное скольжение C5→C1 при разгрузке изгиба.
+3. Принятое смешанное продолжение, независимая работа пути, балансы и joint restart.
+
+**Следующий конкретный шаг — собрать действительную объёмную податливость
+банков по их маскам и граничным условиям вместо 1000-метровых колонн.**
+Общие банки должны иметь единое поле и межконтактную связь; прежние холодные
+моды и HOT-базальная опора учитываются без двойной оплаты. Физическая
+исходная толщина контактной зоны и объёмный prestress источником отдельно
+не заданы: отрицательный g₀ не является отрицательной физической пустотой,
+k_n/g₀ не создают материал зоны. Не выдумывать этот reference и не
+удалять preload. Старые surface-42, силовой допуск и классификация не
+наследуются после изменения поля. Полная 3D-энергия, пространственный допуск
+и принятие не сертифицированы; `original_point_1_completed=False`. Пункты 2–6 открыты.
+
+**Предыдущее продолжение 04.10: реакции настоящего криволинейного контакта
+уточнены до собственных бюджетов и подключены к связанному решению всех
+19 координат. 69 новых тестов, настоящий контроль и независимый аудит PASS.**
+Реализация: [связанное криволинейное равновесие](GEOMETRIC_NATIVE_CURVED_EQUILIBRIUM_IMPLEMENTATION.md).
+Авторитетный итог: `analysis/geometric_native_curved_equilibrium_validation/release_validation_01/`.
+Исходные шесть пунктов неизменны; в пункте 1 готовы два из трёх прежних
+блоков, последний существенный блок физического допуска и принятого
+смешанного продолжения остаётся открытым.
+
+Новый решатель пересчитал прежние 14 координат и пять физических
+HOT-оснований с текущими нагрузкой, drag, старыми упругими портами,
+реакциями 16 принятых контактов и градиентами двух новых кривых граней.
+Прежнее решение использовано только для инициализации; его силовой
+сертификат не наследуется. На настоящем случае выполнено **49 итераций**.
+Максимальный собственный относительный остаток **6,72879511855·10⁻¹¹**
+при допуске **5·10⁻¹⁰**; строка 16 имеет **1,56872997187·10⁻¹²**,
+строки 15/17/18 — точные нули. Собственные масштабы строк 14/16 —
+**5,77417220752·10⁻³¹** и **2,47673123004·10⁻²⁹**; большая нагрузка
+другой координаты не заменяет их допуски. Итоговые строки охватывают
+буквальное Ω·dt и сохранённые float-реакции прежних контактов и оснований.
+Геометрия определяется каноническим `Decimal q·R`; foundation float
+представляет реакцию. Будущее принятие должно сохранить этот pose либо
+независимо доказать допустимость замены сохранённым float.
+
+Исходное общее поле сохранено при прежней точности декларации **128**,
+с прежними groups/provenance и физическими банковскими источниками.
+Его группы и все четыре полных входных DTO сверены с фиксированным
+предыдущим joint-пакетом, raw SHA-256
+`8580d79ec47263c9f581a646595ab19d87ae927770d082b3016803d4c405ac45`.
+Точность интегрирования **160** не переопределяет поле. Интегратор использует
+коррелированную геометрию, интервальные Taylor bounds и точные моменты
+отсечённого аффинного контакта; бюджеты уточняются по нижним оценкам
+собственных силовых масштабов. В каждом окончательном контакте восемь
+ячеек: одна закрытая, пять открытых, одна неопределённая полоса корня и
+один неопределённый конец дуги; все восемь локальных ширин проходят
+свои бюджеты. Вся дуга, полная общая глубина и неопределённый край сохранены.
+Действительные минимальные зазоры **−8,22999578879·10⁻¹⁷ м** и
+**−3,79181727381·10⁻¹⁷ м** не отсекаются. Итоговые потенциалы около
+**3,83133332845·10⁻⁵¹ Дж** и **4,21361529626·10⁻⁵³ Дж**.
+Это конечное равновесие объявленного сокращённого потенциала, а не полная
+трёхмерная энергия тела или пространственный допуск материала.
+
+В непринятом кандидате 16 прежних историй и пять состояний оснований
+продвигаются ровно один раз на исходный `dt_s=10⁶ с`; принятые входные
+состояние, нагрузка и исходная поддержка неизменны. Две новые кривые
+истории сохраняют preload **−0,01 м**, одну активационную оплату и один
+шаг; прежний плоский credit не перенесён, новая принятая память не
+обнуляется и не продлевается. Независимый аудит без импорта проекта
+пересобрал все 19 силовых строк, проверил их собственные масштабы,
+буквальный Ω·dt, часы, исходные DTO, raw-хеши и selfseal.
+
+Итоговые **69/69 PASS за 42,12 с**, pytest-обёртка **43,560 с**;
+нативный контроль **3316,194 с**, решение **3135,245 с**, gate **3372,161 с**.
+Подлинный case для финального прогона восстановлен за **712,186 с**
+под прежней картой 806; свежие тесты и нативный контроль выполнены в том
+же процессе после очистки только новых импортов и bytecode. Прежние
+806 Python-источников, 1633 артефакта, solid/finite/spherical/joint-выходы
+и диагноз сохранены. Восемь новых Python-файлов дают карту **814**,
+совпадающую до/после, canonical SHA-256
+`aebd927438930fe8069818e88a02388054aa12691ccd2828f722c6a4d59c7418`.
+Прежние тестовые серии к этим 69 не прибавляются. Запечатаны ровно
+четыре выхода. Обёртка raw SHA-256
+`42da56ee7a9be0d254aba11dee50d078db0b99014197af09d732cebd97b57fe2`;
+нативный отчёт raw SHA-256
+`192bdc9394ece287510cd56a29b7b59984f12ebb5ad67288f43736344cd59024`;
+пакет raw SHA-256
+`0e3554a55a8c93eb8ecbdae8351f3280a2ae4bd8596254950afef7f77b98d2cb`.
+
+**Принятых исходных интервалов один; новых ноль.** В последнем блоке
+пункта 1 остаются три прежних физических условия:
+
+1. Разместить и согласовать нормальные деформации в настоящих масках,
+   рассчитать полную трёхмерную энергию и вернуть её силы в связанное решение.
+2. Выполнить временной допуск всех пар на полученном движении, сохраняя
+   реальное обратное скольжение C5→C1 при разгрузке изгиба.
+3. Принять смешанное продолжение, проверить балансы и совместный restart.
+
+Следующий конкретный шаг внутри первого условия — проверить настоящую
+пространственную поддержку нормальных колонн и граничные условия всей
+грани при активации, включая крышу, толщину и границы HOT. Проверить только
+тонкую конечную полосу сжатия недостаточно. Материальный банк не расширять
+через разлом в противоположный банк или proxy; связь с соседним материалом
+того же владельца требует подлинной непрерывности и учёта его старых мод.
+Сохранение объёма не доказывает полную энергию деформации. Все 42 пары,
+whole-clock admission, глобальное непересечение и полная 3D-энергия этим
+выпуском не сертифицированы; inherited42=False. Пункты 2–6 открыты.
+
+**Предыдущее продолжение 04.10: устранён конфликт исходных полей связанных
+масок и добавлен вариационный закон настоящей криволинейной грани.
+72 новых теста, настоящий общий контроль и независимый аудит PASS.**
+Реализация: [общее поле и энергия кривого контакта](GEOMETRIC_NATIVE_JOINT_SPHERICAL_IMPLEMENTATION.md).
+Авторитетный итог: `analysis/geometric_native_joint_spherical_validation/release_validation_01/`.
+Исходные шесть пунктов неизменны; в пункте 1 готовы два прежних блока,
+остаётся последний существенный блок допуска и принятого продолжения.
+
+Новый общий исходный поворот зависит от физического радиуса:
+`τ=(R³−r³)/(3R²)`, `X=r exp(A_group τ)u`. Граф содержит прежние
+материальные связи, объявленные дуги и нерешённые фронты без выдуманных
+сил/наклонов. На настоящем источнике пять групп размеров **6, 1, 2, 2, 2**,
+восемь связей. Внутри каждой группы поле одно; общей HOT-маске больше
+не назначаются конфликтующие оси. Это ещё не одно глобальное поле всех масок.
+Начальные грани банков совпадают при общем физическом радиусе, объём
+всех 13 масок сохраняется точно; общая глубина двух граней
+**1999,9426508842512 м** и **2000 м**. Материал вне граней сохранён,
+его traction-free состояние и разделение не объявлены доказанными.
+
+Исходная угловая деформация закрепляется в памяти; радиальное движение
+действует после неё. Пересчёт глубинного поворота из текущего радиуса
+ошибочно направлял бы радиальное движение вдоль грани и обнулял нормальную
+реакцию. Новая проверенная композиция сохраняет нормальные радиальные порты.
+Закон `Π=∫ J·½k_eff min(g,0)²` использует текущие настоящие площадь и
+нормаль; все восемь локальных производных включают их изменение.
+Preload сохранён, доли нормальной энергии колонн и разлома согласованы.
+Полная трёхмерная энергия материала и размещение сжатых колонн ещё открыты.
+
+Движение для настоящего контроля взято из прежнего подлинного пакета:
+фиксированный внешний raw SHA, selfseal и побайтовое совпадение полного
+before, нагрузки и обеих поддержек с заново восстановленным источником.
+Точные банки и буквальная Ω·dt сохранены. Это **проба нового закона на
+прежнем движении**, а не пересчитанное новое равновесие.
+Прежний reference-force сертификат не наследуется. По шести полным
+интервальным прямоугольникам каждого контакта потенциалы ограничены
+`[0; 4.116682806594209e-13] Дж` и `[0; 4.629663783547976e-14] Дж`.
+Собственные силовые бюджеты нового закона и сходимость ещё не доказаны;
+для связанного решения нужно уточнять замыкающиеся участки интеграции.
+Новая активационная энергия вычислена, но новая история не принята.
+
+Итоговые **72/72 PASS за 32,94 с**, pytest-обёртка 35,908 с;
+нативный контроль **560,335 с**, gate **609,616 с**. Подлинный case
+построен однократно за 892,378 с под неизменными прежними 800 источниками;
+финальный прогон выполнен в том же процессе. Старые 83/49/70/135/69/137
+не перезапускались. Проверены 13 масок, две общие грани, одна настоящая
+материальная точка и отказ при трёх подменах поля. Все **800 прежних
+Python-файлов и 1633 артефакта**, solid-выходы, диагноз, оба finite-выпуска
+и четыре spherical-выхода сохранены. Добавлены шесть Python-файлов;
+карта **806** совпала до/после, canonical SHA-256
+`e410e94096e01269f9ffd88694a6c6fbb01bd244bb0e6fd64280d92501fc166c`.
+Обёртка raw SHA-256
+`bef87287f951d66a04699a2b6a2ffaa627c1f495363c39982bded8f590b4c076`;
+нативный отчёт raw SHA-256
+`8d242f1083aa046a0c2ba3ac958201d9e207deb61531043dfa72bf3c33bf99e0`;
+пакет raw SHA-256
+`8580d79ec47263c9f581a646595ab19d87ae927770d082b3016803d4c405ac45`.
+
+**Принятых исходных интервалов один; новых ноль.** В том же последнем
+блоке остаются: пространственное размещение нормальных деформаций колонн
+и трёхмерная энергия со связанным новым силовым решением; временной допуск
+всех пар; принятое смешанное продолжение, балансы и совместный restart.
+Следующий конкретный шаг: уточнить интервальные реакции новой кривой
+грани до собственных бюджетов координат и подключить их к связанному
+силовому решению, сохраняя исходное поле/память. Нормальную деформацию
+колонн затем нужно разместить в настоящих масках для физического допуска.
+Все 42 пары не пересчитаны, inherited42=False; C5→C1 сохраняет реальное
+обратное скольжение от разгрузки изгиба. Пункты 2–6 открыты.
+
+**Предыдущее продолжение 04.10: добавлено объявленное сферическое размещение
+настоящих масок и отдельный силовой кандидат по полной материальной глубине.
+83 новых теста и настоящий общий контроль PASS; новый интервал не принят.**
+Реализация: [сферические слои и полная глубина](GEOMETRIC_NATIVE_SPHERICAL_SOLID_IMPLEMENTATION.md).
+Авторитетный итог: `analysis/geometric_native_spherical_solid_validation/release_validation_01/`.
+Исходные шесть пунктов неизменны. В пункте 1 готовы два из трёх прежних
+блоков; остаётся последний существенный блок физического допуска и
+принятого смешанного продолжения. Эта подзадача связала отдельные слои
+с подлинными масками, объёмами и криволинейными поправками.
+
+Проверены все **13** действительных масок и две кривые контактные грани
+по полной глубине и времени шага с буквальной Ω. Карта
+`r³=(R+w)³−3R²λz` сохраняет источник объёма точно при `λ=1` и инъективна
+для отдельного объявленного тела. Одна исходная точка получателя проверена
+независимой материальной хронологией и размещена на половине глубины.
+Proxy-карты не назначаются материалом; положительные поправки HOT сохранены.
+
+Прежние 1 км принадлежат **непринятому** кандидату. Построена отдельная
+ветвь **первого рождения** с общей материальной полосой 2 км, собственной
+единственной активацией и неизменными прежними 16 принятыми историями.
+Принятая новая история не сбрасывается: её ещё нет. Старый кандидат сохранён.
+Настоящее конечное равновесие этой ветви: три итерации, 19 собственных
+балансов проходят `5e-10`, максимальный остаток
+**`3.483471989331916e-16`**. Сертификат относится к прежним аффинным портам
+и конечным силам новых дуг с полной **reference**-мерой.
+
+Существенное ограничение: материальным 2 км соответствует радиальная
+высота около **2041,389 м**, поэтому фактическая площадь/нормаль кривой грани
+ещё не замкнуты с силовым законом. Две модели контактов задают разные
+оси глубинной деформации одной HOT-маски; конфликт записан явно.
+Равномерное размещение маски объявлено из одного настоящего банка,
+пространственное поле изгиба не восстановлено. Локальная Robin-карта
+существующих колонн имеет якобиан 1 и не добавляет материал, но её
+трёхмерная энергия и совместная склейка со сферическими банками не доказаны.
+Глобальное непересечение и все 42 пары не проверены; inherited42=False.
+
+Итоговые **83/83 PASS за 5,33 с**, pytest-обёртка 6,293 с;
+нативный контроль **433,125 с**, gate **447,440 с**. Подлинный case
+построен однократно за 660,156 с под неизменными прежними 792 источниками;
+финальные тесты и новое решение выполнены в том же процессе после заморозки
+новых модулей. Прежние 49/70/135/69/137 тестов не перезапускались.
+Все **792 прежних Python-файла и 1633 артефакта**, пять solid-выходов,
+диагноз и оба finite-выпуска (включая исторический FAIL) сохранены.
+Добавлены восемь Python-файлов; карта **800** совпала до/после,
+canonical SHA-256
+`2efdca18421932b30abb04728228e095b4e11d17fed1b1b380d750e4374da7a8`.
+Обёртка raw SHA-256
+`4a49e7fa73ca1f795c15e3244b083c528c1128b00ad7f6b4d92cd640dd27ac7b`;
+нативный отчёт raw SHA-256
+`d74bd19a31312ee5dab2265be2d5ae3893c32f8fed9f08741af5aafaa56889ab`;
+пакет raw SHA-256
+`1518f46d53a18d78d9afc9f93b0297f8cf446026b424b0e5cd54a134bae038e2`.
+
+**Принятых исходных интервалов один; новых ноль.** Следующий конкретный
+шаг того же последнего блока: единое совместимое поле сферических банков
+и нормальных колонн/контактов с согласованными криволинейными силами и
+энергией. Затем — временной допуск всех пар на итоговой Ω, принятое
+смешанное продолжение, балансы и совместный restart. C5→C1 сохраняет
+реальное обратное скольжение при разгрузке изгиба; прежний down-dip отказ
+не ослаблять по одному радиальному порядку. Пункты 2–6 открыты.
+
+**Предыдущее продолжение 04.10: исправлены исходная радиальная нормировка
+и конечные силы двух новых контактных дуг. 49 новых тестов и настоящий
+силовой контроль PASS; новый материальный интервал не принят.**
+Реализация: [точная нормировка и конечное равновесие](GEOMETRIC_NATIVE_FINITE_EQUILIBRIUM_IMPLEMENTATION.md).
+Авторитетный итог: `analysis/geometric_native_finite_equilibrium_validation/release_validation_02/`.
+Прежние шесть пунктов плана сохраняются. В пункте 1 готовы два из трёх
+установленных блоков; остаётся последний существенный блок физического
+допуска и принятого смешанного продолжения. Подзадача нормировки/конечных
+сил внутри него проверена настоящим расчётом.
+
+Канонические Decimal-координаты до шага строятся из точных физических
+банков. Для действительного холодного банка 6 ошибка восстановления теперь
+**ровно ноль**, вместо `1.4873898553785514e-18 м`. Прежняя каноническая
+память не заменяется округлённым банком; preload и нагрузка не переназначены.
+Конечный SO(3)-решатель сохраняет все пять коэффициентов новых дуг,
+не отсекает малые замыкающиеся участки и решает независимые HOT-опоры.
+Исходные 14 координат точной аффинной инициализации при этой коррекции
+не меняются. Проверяются собственные физические масштабы всех **19**
+координат, включая ошибки буквального движения и сохранённой силы опоры.
+Три итерации; максимальный относительный остаток **8.705597752228827e-17**,
+координата 16: **3.7133273716440576e-17**, при допуске **5e-10**.
+Это остатки исправленных сил, а не прежние верхние оценки ошибки.
+
+Итоговые **49/49 новых тестов PASS за 52,16 с**; обёртка pytest 55,541 с.
+Силовой контроль в том же процессе **PASS за 244,152 с**; итоговый
+ограниченный прогон **305,477 с**. Подлинный исходный case восстановлен
+однократно за 610,903 с до финальной заморозки новых модулей; неизменность
+786 источников проверена до/после его построения. Старые 70/135/69/137
+тестов не перезапускались и в эти 49 не включаются. Все прежние **786
+Python-файлов и 1633 артефакта**, пять выходов последнего solid-контроля
+и диагноз сохранены. Добавлены шесть Python-файлов; текущая карта **792**
+совпала до/после, canonical SHA-256
+`1c831bea0d5fe8f30d00c46c0c92d40fa668c579155a2827bcaceb67cceac154`.
+Итоговая обёртка raw SHA-256
+`af6f34a7aeb5add401fcfd3effdd7842bb63407b2efc6ad759d119aa11d2ee56`;
+нативный отчёт raw SHA-256
+`57ca666bd7e4c8e0dda0ee1930cf4059a3c2943b063338db77111c9458ff8122`.
+Пакет raw SHA-256
+`d5ed6f50fe09561db79d2b8398ad682d676aae60fd789289fd42a4fbe9830a25`.
+Первая попытка `release_validation_01` сохранена с честным FAIL: тесты и
+физика прошли, запись служебного отчёта отказала из-за Python-типов в JSON.
+После исправления записи полный итоговый прогон выполнен заново в `_02`.
+
+Сертификат покрывает прежние аффинные порты и конечные силы новых дуг;
+полная конечная механика прежних портов и глобальное энергетическое
+замыкание не утверждаются. Старые 16 историй, часы контактов/опор и однажды
+оплаченная активация сохранены. Конечная история с пятью коэффициентами
+отделена от аффинной инициализации; кандидат не является accepted checkpoint.
+Нормировка немного изменила буквальные x/y-компоненты Ω относительно
+прежнего контроля 42 пар: **старая геометрическая классификация не
+наследуется**, все 42 пары в этом силовом контроле заново не считались.
+
+**Принятых нативных интервалов один; новых ноль.** Следующий конкретный
+шаг внутри того же последнего блока: разместить настоящие сферические
+маски и грани с толщиной, сжатиями колонн/контактной деформацией и полной
+высотой силового контакта (сейчас 1 км против 2 км общей грани в предложенной
+модели HOT-слоя). Пространственный контроль должен использовать новую Ω,
+включая C5→C1 с реальным обратным скольжением при разгрузке изгиба.
+Затем — временной допуск всех пар, принятое смешанное продолжение,
+балансы и совместный restart. Пункты 2–6 открыты; среда доступна.
+
+**Предыдущее продолжение 04.10: добавлены объёмные локальные слои, связь
+контактных граней с упругими колоннами и строгие оценки конечных сил.
+70 новых тестов и свежий нативный контроль PASS; новый интервал не принят.**
+Прежние шесть пунктов плана сохраняются. В пункте 1 готовы два из трёх
+установленных рабочих блоков; остаётся тот же существенный последний блок
+физического допуска и принятого смешанного продолжения.
+Текущая реализация: [конечная толщина и силовые оценки](GEOMETRIC_NATIVE_SOLID_LAYER_IMPLEMENTATION.md).
+Контроль: `analysis/geometric_native_solid_placement_validation/`.
+
+Три новых физических механизма:
+- локальное размещение полного слоя общим наклонным сдвигом по глубине,
+  с точным сохранением объёма и проверкой всего тела, а не только поверхности;
+- точное разложение свободного зазора на пустой зазор, два сжатия колонн
+  и контактную деформацию, с проверкой давления и энергии без потери preload;
+- полные SO(3)-якобианы и оценки ошибок реакции/энергии новых контактов,
+  включая раскрытие, замыкание, меру, малые хвосты и арифметику Decimal.
+Локальная призма пока не является вложением настоящих сферических масок.
+Независимая пространственная геометрия контактной зоны не выдумывается.
+
+**Итоговый свежий прогон: 70/70 тестов PASS за 138,86 с**, три новых модуля,
+`--import-mode=importlib`. Свежий контроль того же процесса **PASS за
+523,350 с**; полный прогон **667,378 с**. Прежние 135/69/137 тестов
+не перезапускались и в эти 70 не включаются. Все **778 прежних Python-файлов
+и 1633 прежних артефакта** сохранены; добавлены восемь Python-файлов,
+текущая карта содержит **786**. Карта до/после прогона совпадает.
+Обёртка: `release_validation_01/report.json`, raw SHA-256
+`7970483acb78f86757267ea35f29b205c63fdf8b1171f872d5d1d4f5a5384dd9`.
+Нативный отчёт: `release_validation_01/native_control/report.json`, raw SHA-256
+`b4503f1ab02a4090d334c0d10307ef4459716e9baabf25f081604e6943c9bdd3`.
+Оба selfseal, пять новых выходных файлов, восемь новых исходников, все
+прежние файлы и карта 786 независимо проверены после прогона.
+Полный физический payload кандидата совпадает с прежним контролем
+42 пар; исключены только верхние provenance/selfseal. Это сохранённая
+геометрическая классификация, а не новый прогон всех пар или допуск тела.
+
+Фактические ограничения теперь измерены на собственных масштабах:
+силовые носители имеют высоту 1 км против 2 км общей грани в новой
+модели полного HOT-слоя. Приращение C5→C1 остаётся вверх более 3,1056 мм
+при разгрузке изгиба; его история и прежний отказ поддвига не изменены.
+Оценка ошибки новых конечных сил мала относительно общей мантийной тяги,
+но превышает бюджеты координат 14 и 16: относительные верхние оценки
+`0,377919` и `2,32179e10`. Это оценки, а не измеренные остатки силы.
+Полное конечное силовое равновесие не сертифицировано.
+
+Найдена конкретная причина значительного расхождения зазора холодной
+новой дуги: нормировка сохранённого радиального смещения через binary64
+даёт ошибку `1,4873898553785514e-18 м`, с нормальным вкладом
+`-1,288117400089088e-18 м`. Для микроскопического HOT-баланса это существенно.
+Точный диагноз: `radial_normalization_diagnosis.json` в новой папке,
+raw SHA-256 `977d0b4697915596e4c585f79ac952070d38e686d4c47e450704b66c88eeac8b`.
+Это не глубина слоя и не разрешение сменить preload.
+
+**Принятых нативных интервалов остаётся один; новых — ноль.**
+Следующий конкретный шаг внутри прежней проверки HOT-слоёв/конечных сил:
+получать канонические Decimal-координаты до шага из настоящих сохранённых
+радиальных банков с явной ошибкой деления, затем решать конечные силы
+новых контактов/опор по собственному масштабу каждой координаты.
+Старую нагрузку, память, однажды оплаченное рождение и часы не сбрасывать.
+Сертификаты прежней скорости не переносить на изменённое движение без
+проверки; нормировка сама ещё не закрывает нелинейный силовой баланс.
+Далее в том же последнем блоке: связать объёмные грани с действительными
+сферическими масками и полной высотой контакта, доказать пространственный
+допуск, принять смешанное продолжение и проверить совместный restart.
+Пункты 2–6 открыты. Среда доступна; вычислительные проверки не заблокированы.
+
+**Предыдущий выпуск 04.10: две полные новые контактные дуги подключены
+к настоящему смешанному решателю; все 42 материальные пары классифицированы
+на новом движении. Пункт 1 остаётся частичным, прежние шесть пунктов плана
+не изменились.**
+Два из трёх установленных блоков пункта 1 завершены; остаётся последний
+физический допуск и принятое продолжение. Новая реализация:
+[полные дуги и временные фронты](GEOMETRIC_NATIVE_BIRTH_FRONT_IMPLEMENTATION.md),
+контроль `analysis/geometric_native_birth_front_validation/`.
+Все 751 исходный Python-файл, 1271 прежний артефакт и девять облачных
+исходных сохранений сохранены; новые изменения добавлены отдельными файлами.
+Новая замороженная карта содержит **778 Python-исходников: 751 прежний
+и 27 новых**. Её raw SHA-256:
+`ce4f84e4953e394c513a1fce819871dd92fa19b52d20dcece1e9674fdbb91fcb`.
+Итоговый ограниченный прогон: **135 новых тестов семи модулей PASS**,
+pytest **476,49 с**, `--import-mode=importlib`. Прежние 69/137 тестов
+не перезапускались и в эти 135 не включаются.
+Контроль подлинного источника в том же процессе **PASS за 458,112 с**:
+полные силы, все42 пары, причинный HOT-фронт и SO(3)-поля на конечном
+состоянии и всём интервале. **Четыре независимых стандартных аудита PASS**
+в отдельном процессе за **6,583 с**, без импорта `tectonics`.
+Итоговые summary/manifest: `release_validation_01/`; нативный отчёт:
+`control_release_01/report.json`, независимые аудиты: `independent_release_01/`.
+Успешное выполнение контролей сохраняет **REFUSED** физического принятия,
+а не превращает его в допуск; все входные принятые состояния совпадают побайтно.
+Итоговый манифест содержит **1633 артефакта: 1271 прежний и 362 новых**.
+Сводка и манифест, их selfseal, все1633 raw-хеша/размера и778 Python-файлов
+повторно проверены основным агентом. Авторитетная сводка:
+`analysis/geometric_native_birth_front_validation/release_validation_01/validation_summary.json`,
+raw SHA-256 `33a88d35b9f945a7652aa2ad347b789ef9479ff0bbe6cde21c655da1443ee70e`.
+Авторитетный манифест: `artifact_manifest.json` в той же папке,
+raw SHA-256 `abf3f7a354ba709f48c967359a7cd56c7f0e9de881f9f8de31b1819cce2834dd`.
+После запечатывания исходники, артефакты и новый implementation-документ
+не изменялись; данный handoff исключён из манифеста как изменяемая точка входа.
+
+Настоящее новое силовое решение использует ту же текущую мантийную нагрузку,
+19 координат, 16 исходных контактов, пять HOT-опор и две полные дуги вместо
+двух атомов. Аналитические интегралы сохраняют раскрытие и узкие замкнутые
+хвосты. Максимальный фактический покоординатный остаток `5,2895e-17`;
+независимый аудит использует собственные 240-разрядные ряды произведений.
+Оплаченная подготовка рождения и численное рассеяние сохраняются отдельно.
+Decimal-координаты, ошибки перехода к буквальной Omega/dt и исходные
+радиальные смещения банков не заменяются округлёнными нулями.
+
+Свежая геометрическая классификация всех 42 пар: **33 исключены на всём
+интервале, семь имеют положительный конечный поднабор, две — настоящий
+кратковременный контакт внутри интервала**. У HOT-пар: 24 исключены,
+две положительны. Криволинейная поправка HOT5 сохранена. C5→C3 и C7→C2
+нельзя исключать по отсутствию контакта в конце шага или малости площади.
+Для HOT6→HOT2 доказаны движущийся разделитель потока, входящая дуга
+и первый вход на всём времени; старые свидетельства Omega не переиспользуются.
+
+До принятия следующего интервала остаются конкретные физические условия:
+входящий участок C5→C1 связан с прежней историей trace066, но рассчитанное
+пластическое движение там направлено вверх (нижняя оценка более 3 мм).
+Старый допуск сжатого поддвига его не принимает. Для горячих слоёв
+требуется исходная пространственная геометрия слоя/кромки, связь размещения
+с контактными якорями и проверка столкновения на всём материальном
+носителе. Свободный зазор рождения −0,01 м не является глубиной 2 км.
+Полные SO(3)-поля зазора/сдвига/радиального порядка вычисляются отдельно;
+силовой PASS приближённого поля не доказывает их физический допуск.
+
+**Принятых нативных силовых интервалов по-прежнему один; новых — ноль.**
+Следующий шаг в том же последнем блоке пункта 1: согласовать фактическую
+трёхмерную геометрию изгиба/слоя и текущую историю принимающего контакта
+с физическим допуском, затем реализовать принятое смешанное продолжение
+с балансами и совместным восстановлением. Старый first-interval acceptor
+нельзя продлевать добавлением receipt: новый адаптер обязан переносить
+прежние и HOT-истории, однажды оплаченный preload и новые материальные
+когорты без повторной активации пяти старых опор. Пункты 2–6 открыты.
+
+**Предыдущий выпуск 04.10: введены собственный закон новых контактов,
+пять независимых HOT-опор и настоящий смешанный силовой расчёт.
+Пройдены 69 новых тестов и четыре независимых аудита; пункт 1 ещё частичный.**
+Исходные три блока сохраняются: два реализованы для исходного источника,
+последний требует полного временного допуска и принятого продолжения.
+Замороженная карта содержит 751 Python-файл: все 732 прежних сохранены,
+добавлены 19. Источник и 1100 прежних артефактов проверены побайтно.
+
+Новое продолжение:
+`analysis/geometric_native_birth_contact_validation/` и
+[постановка новых контактов](GEOMETRIC_NATIVE_BIRTH_CONTACT_IMPLEMENTATION.md).
+Итоговая сводка и манифест находятся в `release_validation_01/`;
+настоящий сокращённый нативный опыт — в `control_release_01/native/`.
+Локальные параметры и оплачиваемый зазор рождения фиксируются до силового
+решения. HOT-опоры используют самостоятельную базальную меру, новые
+интерфейсы — наклонную меру `R h_vertical / sin(dip) dtheta_native`.
+Общий HOT-участок учитывается одной опорой. В общей системе 19 координат
+сохраняются прежние 16 историй, 14 координат и матрица изгиба.
+Влияние новых сил на прежние координаты подтверждено одним решателем при
+той же нагрузке с новыми контактами и без них. Авторитетные координаты
+сохраняются как строки Decimal; фактические реакции и журналы проверяются
+отдельно с индивидуальными оценками ошибки представления.
+
+Физическая постановка нового слоя самостоятельная и сокращённая: два
+объявленных атома квадратуры на двух начальных нативных дугах. Начальный
+свободный зазор −0,01 м задаёт явно оплачиваемую подготовку; его
+автоматическое получение из материальной геометрии не реализовано.
+Полная квадратура по дугам, контактные фронты и временной допуск ещё
+не доказаны. Узкий численный отказ прежнего Brent-решателя при нулевом
+трении устранён в новом адаптере точным пределом того же закона;
+исходные якоря, сигнатуры, история и прежние проверки сохраняются.
+
+Полная свежая инвентаризация новой Ω охватывает все 42 пары:
+19 исключены на всём интервале, 7 имеют положительный поднабор,
+16 остаются только с внешней оценкой. Из 26 HOT-пар: 15 исключены,
+2 имеют положительный поднабор, 9 неопределены; у всех девяти нижняя
+мера равна нулю. Две затрагивают кривую поправку HOT5. При новой Ω
+дуга HOT6→HOT2 имеет входящий и выходящий участки: нужен собственный
+разделитель и временная проверка входящей части. Четыре старых свидетеля
+и два прежних вершинных фронта относятся к прежней скорости;
+их положительный сертификат нельзя переносить на новое движение.
+
+Принятое состояние сохранено побайтно. Принятых нативных силовых
+интервалов по-прежнему один; новых полностью принятых интервалов — ноль.
+Остаётся **один существенный блок пункта 1**, с двумя практическими
+задачами: полный пространственно-временной допуск всех неисключённых
+пар и затем принятое продолжение с балансами и совместным restart.
+Пункты 2–6 исходного плана открыты. Прежние 137 тестов не перезапускались
+и не добавляются к новым 69.
+
+**Предыдущий выпуск 04.10: два из трёх прежних блоков пункта 1
+реализованы и проверены для исходного физического источника. Пройдены
+137 тестов, совместный силовой restart и оба независимых аудита;
+результаты приведены в разделе ниже. Весь пункт 1 остаётся частичным.**
+Выбор привязки охватывает всю принимающую линию, численные бюджеты всех
+16 пар сохраняют исходную интерфейсную меру. Неявный материал подключён
+к восьми исходным банкам, восьми живым заделкам и пространственному
+допуску. Первый настоящий нативный силовой интервал принят.
+
+Настоящий следующий кандидат рассчитан из обновлённого материала;
+его силовой и энергетический балансы сходятся. Его геометрия доказывает
+четыре контакта с новорождённым горячим материалом, два из них возникают
+немедленно. Для этих контактов текущая постановка не задаёт собственные
+механические параметры и состояние при рождении. Второй силовой интервал
+остаётся непринятым. Уменьшение времени при тех же Ω не устраняет вход.
+
+Материальное продолжение реализовано отдельно: 26 компонентов, семь новых
+архивных записей, сохранение всех исходных и новорождённых родителей.
+Оно хранится как кандидат и не заменяет принятое силовое состояние.
+Остаётся **один существенный блок пункта 1**: физическое замыкание новых
+контактов и положительный контроль следующего принятого интервала.
+Пункты 2–6 исходного плана остаются открытыми.
+
+### История предыдущих подэтапов до 04.10
+
+Следующие описания сохраняют состояние каждого прежнего подэтапа на момент
+его проверки. Их «0 принятых интервалов» и прежние следующие шаги относятся
+к тем выпускам; актуальный статус — один принятый нативный интервал и один
+оставшийся блок — указан выше и в разделе проверки от 04.10.
+
+Предыдущее физическое продолжение от `224a07a`: реализовано
+**пространственное принятие силового дифференциального движения исходных
+материальных берегов** в контракте округлённых polygons.
+Непрерывный кусочный return map проверяет сжатие, скольжение вниз по падению,
+кинематику и полную поддержку действительной дуги. Объём погружения берётся
+из настоящего пересечения polygons. Материальные карты, пружины, память,
+полосы и работа сохраняются; поддержка доказывается по живому материалу и
+реальным архивным потерям с картами донора при принятии. Заделки остаются
+живыми. История не переназначается автоматически новому соседу или
+новорождённому материалу.
+
+Это инкрементная модель первого порядка с явным ограничением ошибки точных
+конечных anchors. Source, force и geometry используют одно dt. Новый joint
+checkpoint повторяет полный расчёт и материальные транзакции с сеткой.
+Отчёт и границы контракта:
+[пространственный поддвиг](GEOMETRIC_UNDERTHRUST_IMPLEMENTATION.md).
+Воспроизводимый контроль:
+`analysis/geometric_underthrust_validation/underthrust_case.py`.
+Принят один настоящий силовой интервал с новыми потерями, рождениями и памятью.
+Исходный checkpoint воспроизводит принятый результат побайтно. Попытки следующего
+интервала с прежним и изменённым источником воспроизводимо отклоняются до изменения
+состояния: есть новый материал без физической пары и дуги без требуемой
+контактной поддержки или допустимого скольжения. Это не положительный
+контроль многократного дифференциального продолжения.
+Первый крупный пункт остаётся частично выполненным: произвольные новые
+материальные пары ещё требуют физического закона переноса/создания контакта.
+Для принятого дифференциального продолжения очень тонких полос также нужна
+собственная геометрическая опора с наследованием плоскостей отсечения.
+В продолжении 02.10 после общего intrinsic-пути реализован отдельный нативный
+перенос: `geometric_native_pose.py`, `geometric_native_polygons.py` и
+`geometric_native_surface.py`. Пересечения, отсечения, площади детей и настоящие
+контактные дуги сохраняют исходные плоскости и полные истории Omega/dt.
+Округлённая мировая проекция не участвует в принятии геометрии. Проверены
+повторные дифференциальные геометрические транзакции, все четыре резервуара
+по каждой материальной истории и побайтный restart. Новых силовых интервалов
+этот отдельный путь не добавляет. Прежнюю физическую эпоху нельзя импортировать
+как точное разбиение только по её округлённым вершинам: надо восстановить
+происхождение плоскостей из replay.
+
+В предыдущем силовом продолжении 02.10 подключены нативные опоры к исходному силовому
+решателю: `geometric_native_mantle_loading.py`,
+`geometric_native_buried_support.py`, `geometric_native_spatial_underthrust.py`,
+`geometric_native_underthrust_motion.py` и его joint IO. Заданный мантийный
+источник, подготовка, реальные физические пары, балки и полные компоненты
+Omega сохранены. Нативная геометрия проверяет настоящие footprint/cell
+пересечения, четыре материальных бюджета, живые заделки и привязку потерь к
+принимающей дуге. Реестр поддерживает принятые геометрические потери без
+перевода обратно в округлённые polygons.
+
+**Силовой интеграционный контроль пока не принят: 0 новых нативных силовых
+интервалов.** Настоящий кандидат с прежним заданным источником решён;
+геометрический допуск атомарно отказал для `octant:2/6` с причиной
+`mixed_convergence`. Конечная точка настоящей дуги имеет положительную
+начальную нормальную скорость `+8.682890018650322e-30 км/млн лет` при полном
+конечном SO(3)-повороте. Это доказанный знак, а не численная неопределённость.
+Отказ затрагивает весь исходный overlap площадью `0.0020992689690123205 км²`;
+его нельзя отбросить как маленькую потерю. `UnresolvedNativeUnderthrustMotion`
+сохраняет только отдельный непринятый силовой кандидат и проверяемый аудит.
+Поверхность, архив, часы, память и накопленная работа не изменяются.
+Совместный checkpoint пока доказан для исходного подготовленного состояния
+и повторения того же отказа после restart; принятый нативный силовой checkpoint
+пока не подтверждён. Прежний положительный физический контроль не объявляется
+положительным контролем нового точного контракта.
+
+В предыдущем событийном продолжении доказано непрерывное расписание пересечений **всей
+выбранной действительной принимающей дуги `octant:2/6`** с движущейся
+донорской плоскостью. Сохранены полный исходный SO(3)-журнал и все компоненты
+Omega. Точные интервальные оценки с ограниченным остатком ряда доказывают
+единственный максимум отношения координат дуги и два монотонных участка.
+Обнаружена положительная полоса с выходом и повторным входом; ширина
+`1.2740635787e-54` — безразмерное отношение однородных координат, не площадь.
+Для выбранной точки её выход происходит примерно через `2,89 мкс`, возврат —
+через `16,83 мкс`. Полоса не удаляется порогом и компоненты Omega не проецируются.
+Это доказательство событий на дуге, а не полного двумерного переноса объёма.
+
+Для того же настоящего силового кандидата проверены **все четыре исходные
+материальные трассы × всё время интервала**. В явно объявленной невязкой
+траектории свободных anchors давление не ниже `2717,11 Па`, скорость
+пластического скольжения строго направлена вниз по падению. Исходные preload,
+память и работа сохраняются; вычисленная память кандидата не принимается.
+Этот временной контракт использует явное соответствие собственной четверти
+дуги и сохранённой вычислительной координаты. Для вязкого закона такая
+диагностика не объявляется непрерывным физическим решением.
+Силовой wrapper пока сохраняет прежний строгий отказ `mixed_convergence`:
+новых принятых нативных силовых интервалов по-прежнему **0**.
+
+В текущем продолжении реализована **локальная материальная история настоящей
+двумерной области донора `octant:6 → octant:2`**. Прежние события принимающей
+дуги нельзя автоматически считать событиями того же донорского материала.
+Новый сертификат использует исходные донорские координаты, все три границы
+приёмника и полные Omega; для каждой точки области доказаны ровно три
+пересечения: вход, выход, повторный вход. Площадь около `9.39956e-130 ср`
+(`9.39956e-126 км²` при контрольном радиусе 100 км) строго положительна.
+
+Локальный компонент явно задаёт временное продолжение пассивного
+одноразового архива: первое погружение переводит материал в один cohort;
+последующие выход и возврат меняют контактную историю, сохраняя архивную
+область. Четыре бюджета хранятся как отношения действительных нативных площадей
+с рациональными оценками и общим символическим дополнением родителя.
+У каждой точки есть исполняемая функция собственного времени первого входа.
+Возраст и времена сохраняются точно; исходные поля и механические ссылки
+не сбрасываются. Квадратурная работа не распределяется по двумерному объёму.
+Этот компонент пока не обновляет глобальный `NativeBuriedRegistry` и
+не разрешает силовой интервал; весь swept domain им не покрыт.
+
+Теперь реализован журнал **всех восьми исходных доменов**, пяти конечных
+перекрытий с обоими донорскими pullback и семи геометрических вакансий.
+Общий сертификат исходной точки проверяет каждую настоящую границу приёмника
+во всём времени: точный ряд, остаток, полное покрытие временными ячейками и
+строгий replay. Начальные нули и тождества обрабатываются отдельно;
+касание, неразрешённый порядок событий и исчерпание бюджета дают отказ.
+Это исходный unposed epoch и один интервал постоянных полных Omega, а не
+универсальная история произвольного уже изменённого partition.
+
+Для блокирующей пары `octant:6 → octant:2` доказано **точное равенство всей
+положительной двумерной области погружения за `0 < u <= 1` конечному домену**;
+площадь около `2.099268969e-7 ср`. Начальная одномерная граница сохранена отдельно.
+Внутренний переход приёмника `octant:3 → octant:2` не означает выход из owner 0
+и не создаёт новый разлом; объединение всех его исходных областей проверяется
+общими знаками противоположных плоскостей.
+
+Однако это равенство нельзя переносить на все пары: для `octant:5 → octant:1`
+доказана положительная двумерная область, вошедшая в owner 0 и вышедшая до
+конца, вне конечного loss. При одноразовом архивировании её конечное место
+становится дополнительной **материальной** вакансией, хотя исходный движущийся
+домен продолжает геометрически покрывать его. Закон горячего рождения остаётся
+явным заполнением настоящих принятых вакансий **в конце** интервала.
+Глобальные материал, архив, память кандидата и силовое состояние не приняты.
+
+В текущем материальном продолжении сертифицирована **вся область первого
+входа исходного owner 1 к owner 0**, для направления, явно заданного четырьмя
+исходными физическими разломами. Все компоненты Omega сохранены. Донор 4 не
+входит; полные области доноров 6 и 7 совпадают с конечными; донор 5 содержит
+конечную область и всю кривую дополнительную область, около
+**`3.9160991001215845e-72 ср`**. Её площадь интегрируется с рациональными
+границами, а весь конечный образ строго находится в фиксированном `octant:5`.
+Она не заменяется полигональным приближением или прежним выбранным patch.
+
+Отдельное сохраняемое материальное состояние применяет объявленный
+одноразовый пассивный архив к **всем восьми родителям**: три непустые когорты,
+четыре исходных бюджета с общим символическим отношением площадей и точным
+дополнением. Выход и повторный вход не возвращают материал и не списывают
+его второй раз. Настоящие вакансии — семь прежних геометрических частей
+плюс конечный образ полной дополнительной области донора 5. Их восемь
+локальных определений содержат пять непустых областей горячего материала,
+рождаемого только в конце интервала, с нулевыми возрастом, холодным объёмом
+и избыточной массой. История первого принимающего материала сохраняется.
+
+Это законченное **материальное замыкание отдельного исходного интервала**,
+а не принятие силового кандидата. Оно имеет собственный формат неявных
+областей; старые `NativeSurfaceState`/`NativeBuriedRegistry` не используются
+как полигональная подмена кривых границ. Исходные seed, поверхность и SHA
+силового checkpoint привязаны к неизменной ссылке before. Candidate memory
+и работа не принимаются. Принятых нативных силовых интервалов всё ещё 0.
+
+Текущий механический подэтап сохраняет **16 исходных узлов четырёх трасс**.
+Для каждого узла реализованы сертифицированные карты обоих материальных
+концов, перенос нормали и направления падения, точные рациональные часы
+запроса и непрерывные поля старой пластической памяти. Источник, исходный
+checkpoint, силовой кандидат и все поля памяти проверяются повторным
+физическим решением. Подготовка и работа исходных узлов сохраняются;
+работа не распределяется по входящему объёму. Конечные повороты и объявленный
+линейный путь радиальных смещений служат диагностикой и не заменяют
+интегрированные свободные ссылки механики.
+
+Предыдущая привязка первого входа связана с обеими исходными трассами и точной материальной меткой.
+При `6 → 3` это разные пары `6/2` и `7/3`. Даже при `6 → 2` входящая точка
+лежит вне исходной линии пружины `X=0`. Поэтому исходная история пары
+аутентифицирована, а перенос этой истории на новый материал остаётся
+`unresolved_material_handover`.
+
+Теперь реализован отдельный **оператор переноса нагруженной конфигурации**.
+Закон задан явно: принимающая материальная система координат сохраняется,
+контакт и сосредоточенная податливость колонок переходят на доказанную новую
+донорскую метку с прежними деформациями, напряжениями, пластической памятью,
+энергией и единственной историей работы. Он сохраняет исходную интерфейсную
+меру и параметры; изменение меры, модулей, воды или принимающего берега
+этот закон не допускает. Это новое допущение сокращённой модели.
+
+На конце настоящего отклонённого кандидата `u=1` новая метка имеет вид
+`Q_sub^-1 Q_over q`. Она вычисляется один раз и затем остаётся материальной
+меткой, а не следящей геометрической проекцией. У восьми узлов метка лежит
+в исходном донорском фрагменте и полосе балки; только они получают новую
+привязку. Восемь отступающих узлов сохраняют прежние привязки. Новое радиальное
+значение — `phi(x/L) w_sub` собственной балки. Все 16 исходных состояний и
+их работа учитываются по одному разу; глобальное состояние балки сохраняется.
+Это перенос непринятого кандидата внутри отдельного компонента, не принятие
+его работы или силового равновесия. Конечный узловой оператор остаётся
+сохранённым предыдущим результатом.
+
+Теперь добавлен **перенос непрерывной конфигурации на истинном первом входе**.
+Для `6 → 3` история берётся с принимающего контакта `7/3`, а радиальное
+смещение — из собственной материальной координаты балки `6/2`. Первый
+корень и угол остаются неявными выражениями с рациональными ограждениями;
+средняя точка окна не выбирается. Привязка принимающего поля меняется на
+донорский материал `6` с сохранением памяти, деформаций и энергии на единицу
+исходной интерфейсной площади. При последующих геометрических вариациях
+исходное поле фиксировано на первом событии, а не повторно вычисляется по
+часам прежней пары. Такие вариации пока не являются силовым шагом.
+
+Полный SO(3)-якобиан связывает координаты принимающей линии с исходным
+донорским материалом. Двумерная мера swept-материала и одномерная
+интерфейсная мера различаются; интеграл прямоугольника без маски первого
+входа не объявляется площадью архива. Исходные 16 квадратурных состояний,
+их буквальные площади и рабочие записи сохраняются отдельно по одному
+разу. Изолированная входящая метка не получает конечную площадь или
+узловую работу. Доказаны четыре настоящих первых входа, включая `6 → 3`.
+
+Добавлен **единый функциональный реестр всей области первого входа**:
+четыре принимающих поля истории принадлежат ему по одному разу, а 16
+причинных ветвей ссылаются на эти поля и исходный донорский материал.
+Маска требует самого раннего положительного входа владельца, поэтому
+повторный вход не создаёт второй истории или расхода работы. Сохранены
+все восемь родительских мер, в том числе малая кривая область донора 5.
+Coarea-формула связывает маскированный полный SO(3)-якобиан с исходной
+мерой архива; численные площади отдельных принимающих пар пока не вычислены.
+Для всей входящей области доказано попадание в собственную полосу исходной
+балки. Это ещё не доказательство живой силовой опоры или заделки.
+
+По четырём исходным контактным линиям аналитически интегрированы работа,
+начальная/конечная энергия и диссипация непрерывного поля. Мера берётся
+из радиуса, высоты контакта и сохранённого sin(dip), а не из узловой площади.
+Баланс `W = ΔE + D + R` сохраняет подписанный остаток исходной binary64
+податливости. Эти интегралы не складываются со старыми Gauss-записями
+и не заменяют глобальную работу силового кандидата. Нулевые приращения
+работы, энергии и диссипации при самой смене привязки следуют из сохранения
+полей на общем первом событии при одной и той же сохранённой мере исходного
+семейства. Это поточечное тождество смены ссылок, не энергетический баланс
+нового двумерного контакта. Численные взвешенные контактные интегралы
+по отдельным принимающим областям ещё не получены; энергия на двумерную
+площадь архивного материала не назначена.
+
+В предыдущем локальном продолжении 03.10 добавлен **путь единственной действующей привязки заданной принимающей
+метки**. Все четыре обратные хронологии исходных донорских четвертей
+определяют смену банка; единственный входящий правый зародыш и положительная
+производная глубины подтверждают свежий материал. Для проверенной метки
+приёмника 3 получен путь `7/3 → 6/3 → 7/3`; последнее событие относится
+к другой исходной метке донора 7, а не к повторному нагружению прежней.
+Между событиями донорская метка заморожена. Начальный сегмент и последующие
+сегменты используют полные SO(3)-повороты, собственную функцию формы балки
+и текущие деформации; память и энергия передаются из предыдущего сегмента.
+При самой передаче приращения работы, энергии и диссипации равны нулю.
+Работа каждого сегмента учитывается ровно один раз. Это локальное развитие
+при заданном движении фактического источника с `mu=C=eta=0`, с плотностями
+на исходную интерфейсную площадь. Выбор для всей линии, численные бюджеты
+принимающих пар и новое силовое равновесие этим не подтверждены.
+
+### Актуальное состояние трёх прежних блоков пункта 1
+
+1. **Выполнен для исходного физического источника.** Доказан выбор на всей
+   принимающей линии, включая малые поперечные полосы. Численно ограждены
+   работа, энергия, диссипация и подписанный остаток податливости всех
+   16 принимающих пар с мерой исходного интерфейса. Замороженные метки
+   меняются только при доказанном положительном свежем входе; доказанно
+   отрицательная смена четверти сохраняет прежнюю привязку. Неопределённая
+   проверка не объявляется отрицательной. Изолированным меткам не приписана
+   конечная площадь или работа.
+2. **Выполнен для первого исходного интервала.** Неявная транзакция
+   связана с полными исходными банками, живыми заделками, всеми 16
+   исходными Gauss-носителями и временным пространственным допуском.
+   Контактный континуальный бюджет отделён от силового Gauss-реестра.
+3. **Частично выполнен; единственный оставшийся блок.** Реализованы
+   принятие первого настоящего нативного интервала, совместный restart
+   и следующий настоящий силовой расчёт. Продолжение отклоняется по
+   доказанным новым контактам, которым ещё не задан физический закон
+   рождения. Нужны этот закон и положительная проверка принятого
+   продолжения с совместным restart и балансами.
+
+**Следующий конкретный шаг:** определить и реализовать механический закон
+рождения контактной пары для фактического горячего материала. Геометрия
+его родителя и время рождения сохранены. Нужно явно задать физическую
+связь с заданной слабой плоскостью, собственные опоры и параметры
+столбцов/изгиба, деформационную ссылку и состояние при рождении.
+Толщина горячей коры сама по себе не определяет упругую толщину или
+расстояние до заделки. Это оставшаяся часть третьего прежнего блока
+пункта 1, а не дополнительный пункт плана.
+
+Затем заново собрать контактные силы на полном материальном состоянии,
+решить следующий интервал и подтвердить его свежий временной допуск,
+материальные и энергетические балансы, совместный restart. Текущий
+кандидат нельзя принять по первому сертификату или по балансу сил
+без закона новых контактов. Его две up-dip ветви проверять отдельно.
+
+Исходные work, память и подготовку сохранять. Прежние ненапряжённые
+ссылки не переназначать при переносе. Для первой исходной линии
+мера остаётся `C dtheta_comp du = C Gamma/(pi/2) dtheta_native du`.
+Не добавлять старую affine-работу или континуальный бюджет к 16
+Gauss-записям; отдельной метке не назначать конечную площадь.
+Создание новых разломов из напряжений остаётся пунктом 4.
+Первый пункт остаётся частичным; пункты 2–6 исходного плана не закрыты.
+Текущая реализация и проверка:
+`analysis/geometric_native_active_line_validation/`.
+Предыдущая проверка одной действующей метки:
+`analysis/geometric_native_active_binding_validation/`.
+Предыдущий контроль всей области:
+`analysis/geometric_native_domain_contact_handover_validation/`.
+Предыдущий корневой контроль: `analysis/geometric_native_first_entry_handover_validation/`.
+Предыдущий узловой контроль: `analysis/geometric_native_physical_handover_validation/`.
+Предыдущий физический контроль: `analysis/geometric_native_physical_binding_validation/`.
+Предыдущий материальный контроль: `analysis/geometric_native_first_entry_validation/`.
+
+Предыдущее облачное продолжение от `224a07a`: реализованы **сегменты работы
+меняющегося источника и принятое общее силовое движение материала**.
+Каждый интервал решает приращения на геометрии и нагрузке начала шага;
+исходная подготовка, точечная упругая/пластическая память и прогибы
+сохраняются. Работа равна исходной работе плюс сумме `T_k·Delta q_k`.
+Материальные веса, площади, полосы и жёсткость остаются исходными.
+
+Физический wrapper принимает только точно одинаковые полные рассчитанные
+приращения всех владельцев, без усреднения или навязанного общего движения.
+Настоящий геометрический перенос и архивная транзакция используют тот же dt:
+движутся footprints, дуги, закрепления и поддержка прежних когорт; возраста
+поверхностного материала и часы поверхности/архива продвигаются. Четыре материальных резервуара
+и исходные loss/payload сохраняются. Дифференциальный результат отклоняется
+атомарно до пространственного сопоставления и закона допуска.
+
+Положительный контроль использует отдельный явно заданный физический
+источник жёсткого мантийного движения; Ω и drag объявляются до решения,
+момент собирается из traction samples на настоящей текущей поверхности.
+Это синтетический опыт, не замена квадратичной модели и не настройка saved50.
+Физический checkpoint хранит настоящую текущую пару поверхности/архива;
+loader с сеткой повторяет источники, механику и материальные транзакции.
+Отдельный core-checkpoint сохраняет исходную пару и журнал источников.
+
+Текущий отчёт: [сегменты источника и принятое движение](GEOMETRIC_SEGMENTED_BENDING_IMPLEMENTATION.md).
+Код: `geometric_segmented_bending_dynamics.py`, `geometric_bending_reference.py`,
+`geometric_rigid_mantle_loading.py`, `geometric_basal_sources.py`,
+`geometric_bending_motion.py`, `geometric_bending_motion_io.py`,
+`geometric_segmented_bending_io.py`, `geometric_rotation_vectors.py` в `tectonics/`.
+Контроль: `analysis/geometric_segmented_bending_validation/segment_case.py`.
+Первый крупный пункт остаётся частично выполненным; дальнейшие пункты
+исходного шестипунктного плана этим подэтапом не закрыты.
+
+Предыдущее облачное продолжение от `224a07a`: реализован **точный конечный
+перенос физических разломов в материальных координатах**. Компактный
+SO(3)-атлас переносит footprints, исходные материальные точки и закрепления
+каждого берега; плоскость и её направленная история имеют явный overriding
+carrier. Непрерывная поддержка исходных консольных берегов обязательна.
+Проверяется рассогласование материальных пар по всей дуге, включая внутренние
+экстремумы. Совпадение границ как множеств не принимается за прежнее спаривание.
+
+Один шаг прежнего общего bending/contact engine даёт механический predictor
+на исходной опоре; его приращения вращений переносят материал за тот же dt.
+Геометрия имеет статус `unaccepted_transport_candidate`. Повторные predictor
+сохраняют исходный источник и сертификат его работы; механическая история
+на новую геометрию не назначается. Исходный пассивный архив остаётся с
+исходной поверхностью и часами. Совместный checkpoint хранит эту настоящую
+пару и отдельные явные metadata кандидата; restart повторяет механические
+и материальные receipts. Нового принятия массы или сброса истории нет.
+
+Предыдущий отчёт: [конечный материальный перенос](GEOMETRIC_FAULT_TRANSPORT_IMPLEMENTATION.md).
+Код: `tectonics/geometric_fault_motion_support.py`,
+`tectonics/geometric_fault_transport.py`,
+`tectonics/geometric_bending_fault_transport.py`,
+`tectonics/geometric_bending_fault_transport_io.py`.
+Контроль: `analysis/geometric_fault_transport_validation/transport_case.py`.
+При фиксированном мантийном поле новая нагрузка возвращается отдельно;
+накопленную работу `T_ref·q` новым моментом не переписывать.
+
+Предыдущее облачное продолжение от `224a07a`: реализованы **поперечные
+прогибы и упругое сопротивление изгибу** в совместном контактном балансе.
+Каждый берег физической дуги имеет собственную явно заданную консольную
+полосу: расстояние до закрепления, упругую толщину, E, nu и provenance.
+Жёсткость следует из прежнего закона D=E*Te^3/[12*(1-nu^2)] и точного
+интеграла кривизны консоли. Прогибы и вращения решаются общим engine с
+независимыми нормальными/касательными контактными операторами; радиального
+drag, основания или второй вязкой тяги слэба не добавлено.
+
+Энергия изгиба и её остаток backward Euler учитываются отдельно.
+Начальные прогибы удерживаются нулевыми при подготовке, затем освобождаются;
+работа подготовки и исходные ссылки сохраняются. Проверяются отдельно
+момент плит, радиальные реакции, работа, пределы уклона/деформации/|w|/R
+и непрерывное закрытие между узлами. Материальный разрез сохраняет
+прогибы, параметры, точечные истории и непустой архив; restart строгий.
+
+Предыдущий отчёт: [изгиб и поперечный контакт](GEOMETRIC_BENDING_CONTACT_IMPLEMENTATION.md).
+Код: `tectonics/geometric_bending.py`,
+`tectonics/geometric_bending_contact_dynamics.py`,
+`tectonics/geometric_bending_contact_subdivision.py`.
+Контроль: `analysis/geometric_bending_contact_validation/bending_case.py`.
+Это независимые локально плоские полосы с постоянным прогибом вдоль
+каждой физической дуги; полного оболочечного поля, торсии или конечного
+движения поверхности здесь ещё нет. Упругая толщина и закрепления
+не выводятся автоматически из тепловой толщины или материального архива.
+
+Предыдущее облачное продолжение от `224a07a`: реализована **распределённая
+контактная история на сохраняемых физических дугах**. Плоскость и её
+квадратура независимы от материальных contact/fragment IDs; каждый узел
+хранит своё упругое сокращение и пластическое скольжение. На одной дуге
+могут одновременно быть запертые и скользящие участки. Базальные и
+контактные моменты решаются общим engine, также используемым прежним
+средним контактом. Свободное раскрытие проверяется по всей дуге, включая
+концы и внутренние экстремумы между Gauss-узлами.
+
+Явное консервативное разделение footprints сохраняет те же механические
+точки, их ссылки, работу и направленную историю. Проверяются каждый
+старый донор, неизменные свойства материала и тепловая толщина, отсутствие
+чужого материала и изменение SI нагрузок только в бюджете округления.
+Непустой архив сохраняет каждый принятый loss единожды и получает отдельный
+реестр нулевых смен представления; часы и события принятия не переписываются.
+Raw loader на другую поверхность или другую квадратуру по-прежнему запрещён.
+
+Предыдущий отчёт: [распределённый контакт](GEOMETRIC_DISTRIBUTED_CONTACT_IMPLEMENTATION.md).
+Код: `tectonics/geometric_fault_traces.py`,
+`tectonics/geometric_distributed_contact_dynamics.py`,
+`tectonics/geometric_contact_subdivision.py`,
+`tectonics/geometric_material_subdivision.py`,
+`tectonics/geometric_boundary_subdivision.py`.
+Контроль: `analysis/geometric_distributed_contact_validation/trace_case.py`.
+
+Геометрия физической дуги и её квадратура пока фиксированы. Решённая
+координата — малое накопленное перемещение на опорной сфере. Материал
+движется только в отдельном прежнем геометрическом эксперименте;
+распределённая механика к его событиям ещё не подключена. Стресс в узлах
+не заменяется одним тензором целой дуги для прежнего uniform-load допуска.
+
+Предыдущее облачное продолжение: реализован **глобальный SI баланс
+Euler-скоростей с базальными нагрузками и податливыми контактами** на
+замороженной поверхности. Движущие моменты и сопротивление собираются
+через существующую дробную квадратуру из явного мантийного источника и
+полной тепловой толщины каждого фрагмента. Опоры контактов теперь следуют
+из решённых малых вращательных перемещений. Явная предварительная нагрузка
+сохраняет работу подготовки. Проверяются единственность сокращённого решения,
+моменты, энергия, история и restart; неподдержанное раскрытие отклоняется.
+
+Предыдущий отчёт: [глобальное контактное равновесие](GEOMETRIC_CONTACT_DYNAMICS_IMPLEMENTATION.md).
+Код: `tectonics/geometric_basal_loading.py`,
+`tectonics/geometric_contact_dynamics.py`.
+Контроль: `analysis/geometric_contact_dynamics_validation/dynamics_case.py`.
+
+Предел предыдущего среднего представления: один контакт хранит среднюю деформацию дуги; её дробление
+меняет пространственную аппроксимацию. Решённая координата — накопленное
+малое перемещение на фиксированной опорной сфере, а не конечное вращение.
+Материал, слэбовый архив, тепловые толщины и геометрия в опыте неподвижны.
+
+Предыдущее облачное продолжение: реализован **локальный контактный расчёт
+двух упругих колонок по заданной наклонной слабой плоскости**. Нагрузка
+получается из равновесия с явно заданными перемещениями внешних опор;
+используется существующий `genesis_contact_law.contact_return_map`.
+Заблокированный контакт сохраняет упругое сокращение и энергию. Решены
+парные реакции, точные интегралы сил и моментов вдоль дуги и баланс работы;
+механическая история перезапускается в metadata существующего совместного
+checkpoint. Геометрия поверхности и материальный архив остаются фиксированы.
+Это отдельный локальный механический шаг, а не глобальный расчёт скоростей
+или автоматически возникший разлом.
+
+Предыдущий отчёт: [локальное контактное нагружение](GEOMETRIC_CONTACT_LOADING_IMPLEMENTATION.md).
+Код: `tectonics/geometric_contact_mechanics.py`,
+`tectonics/geometric_contact_mechanics_adapter.py`.
+Контроль: `analysis/geometric_contact_loading_validation/contact_case.py`.
+
+Предыдущий этап — **механический допуск вынужденного
 поддвига по явно заданному наклонному слабому разлому**. Он проверяет:
 
 - сближение по всей дуге, включая внутренние экстремумы скорости;
@@ -68,10 +4336,85 @@
 
 ## Ближайшая задача
 
-Продолжить механическую часть первого оставшегося этапа: связать новый
-допуск с физически согласованным **контактным нагружением и ориентированной
-геометрией разломов**, а затем с сопротивлением изгибу. Не считать этот
-пункт завершённым только потому, что создан проверяющий интерфейс.
+Актуальное продолжение **05.10** —
+`analysis/geometric_native_cold_body_validation/release_validation_01/`;
+текущий статус итогового gate см. в начале файла. Реализованы поддержанные
+семь полей всех восьми холодных банков и согласование принятой опорной
+энергии/силы. Пять HOT-компонентов проверены предыдущим выпуском.
+
+Ближайшая коррекция — совместимое начальное 3D-reference. Предложенное
+saved128-размещение отклонено: C8 и C11 перекрываются на целом кубе
+не менее 1 млн м³, где все семь поддержанных полей точно нулевые.
+Подбор амплитуд или сокращение шага этот исходный дефект не исправят.
+Для общей обратимой карты отдельно доказана раздельность настоящих
+13 исходных implicit live/vacancy-масок, включая C6 и мировые преобразования
+владельцев, а затем её 78 начальных объёмных исключений. Теперь требуется
+внедрить это reference с совместимыми физическими гранями/закреплениями
+и перепроверить зависимые поля/support/интегралы. Кандидат ещё не принят.
+Буквальные оси, четыре DTO, saved128 groups и физическая история
+сохраняются как исходные свидетельства; новое размещение объявляется явно.
+
+После исправления reference связать HOT-моды с прежними средними
+радиальными координатами, пересчитать работу нагрузки/drag для того же
+полного поля и заново решить общий силовой баланс с физически объявленным
+contact reference. Историческую beam-энергию не обнулять и не оплачивать
+повторно; старый силовой сертификат не наследуется.
+
+Два остальных прежних условия — all-pair whole-clock admission и принятое
+смешанное продолжение с независимой работой пути, балансами и joint restart.
+Это прежний последний существенный блок пункта 1, не дополнительные пункты.
+
+Подробности и ограничения физического contact reference приведены в
+[отчёте нормальной поддержки](GEOMETRIC_NATIVE_NORMAL_SUPPORT_IMPLEMENTATION.md) и первом
+разделе «Где остановились». Прежний acceptor первого интервала не является
+готовым acceptor смешанного состояния; новые receipts сами по себе
+не дают принятия. C5→C1 сохраняет обратное скольжение при разгрузке.
+
+### Историческая постановка активной линии
+
+Ниже сохранена постановка предыдущего этапа; её каталоги и следующие
+действия не заменяют актуальную точку продолжения 05.10.
+
+Завершить **последний из трёх исходных блоков пункта 1**: задать физическую
+механику контакта с новорождённым материалом и подтвердить принятое
+последующее дифференциальное движение с совместным restart. Выбор на всей
+принимающей линии, взвешенные бюджеты всех 16 пар, опоры неявного материала
+и первый пространственно допустимый силовой интервал уже реализованы.
+Текущий контроль — `analysis/geometric_native_active_line_validation/`.
+Финальные результаты и состояние проверки приведены ниже.
+
+После первого принятого интервала заново построена текущая нагрузка и
+решён второй силовой кандидат. Для него доказаны четыре положительных
+контакта с горячим материалом, два начинаются сразу после `t=0`.
+Уменьшение длительности при той же угловой скорости их не устраняет.
+Второй кандидат поэтому отклоняется атомарно: его материал, работа и
+память не принимаются. Старые исходные поля во втором кандидате имеют
+две ветви `up_dip_plastic` и две `down_dip_plastic`; сертификат первого
+интервала нельзя просто переиспользовать.
+
+Для новых пар нужны явные физические источники слабой плоскости и её
+привязки, упругой толщины, ширины закрепления, модулей, начального состояния
+и собственного reference. `HotBirthParameters` задаёт материальное
+заполнение, но этих механических входов не содержит. Толщина коры не
+равна автоматически упругой толщине, а новый сосед не наследует пружину
+или пластическую память старой пары. Это оставшаяся часть прежнего
+блока принятого продолжения, а не новый пункт плана.
+
+Сохранять исходную подготовку и сумму `T_k·Delta q_k` за каждый сегмент.
+Не оплачивать смену опоры сбросом напряжения и не добавлять диагностическую
+работу континуума к отдельному физическому журналу 16 Gauss-записей.
+Геометрическая дуга сама по себе не создаёт механическую пару.
+Не переводить точечное скольжение напрямую в удалённый объём.
+При изменении квадратурной сетки нужен отдельный сохраняющий перенос
+упругих/пластических историй; сейчас такая миграция отклоняется.
+
+Не заменять рассчитанную нагрузку Starter proxy или свободной мембранной
+диагностикой. Не преобразовывать локальное `Delta plastic_slip / dt` в
+Euler-скорость без общего баланса. Решённый тензор определяет traction
+только на той же плоскости; его недостающие компоненты явно равны нулю.
+Заданные противоположные плоскости — альтернативные граничные задачи,
+их реакции не складываются. Модель закрытого контакта сейчас требует
+явно заданное нулевое поровое давление и не развивает Mode-I раскрытие.
 
 До изменения кода сопоставить существующие механизмы, чтобы не создавать
 вторую копию того же закона:
@@ -97,18 +4440,49 @@
 обоснованное поведение при заблокированном сближении, воспроизводимый restart.
 Не обещать рост скоростей до включения и проверки полного баланса сил.
 
-## Остальные крупные блоки
+## Состояние исходных шести пунктов
+
+Ни один крупный пункт ещё не закрыт полностью. Нумерация плана сохраняется:
+
+1. **Изгиб, поперечные деформации, движение разломов и пространственный
+   допуск поддвига — частично выполнен.** Готовы изгиб, материальный перенос,
+   меняющийся источник, принятое общее движение и пространственный допуск
+   дифференциального движения сохраняемых исходных материальных пар.
+   Из трёх прежних блоков реализованы два: выбор и взвешенные бюджеты всей
+   линии; силовые опоры неявного материала и первый временной пространственный
+   допуск. Первый нативный силовой интервал принят с сохранением всех 16
+   историй. Второй кандидат расширен двумя полными новыми дугами и отдельными
+   HOT-опорами; их конечные силы проверены по собственным масштабам всех
+   19 координат для сокращённого потенциала. Проверка 05.10 доказала,
+   что прежние нормальные 1000-метровые колонны не помещаются в материал.
+   Физический допуск и принятие пока не выполнены: требуются полное
+   поле настоящих банков и его энергия, пересчёт связанных сил,
+   пространственная проверка новой скорости и принятие с балансами/restart.
+   Его отдельный материальный кандидат сохраняет все
+   резервуары, архивы и возраст когорт; он не принят за силовое продолжение.
+   **Остаётся один существенный блок:** физический пространственный допуск
+   и принятое последующее движение с совместным restart и балансами.
+   Прежняя память не назначается новым соседям автоматически.
+2. **Геометрические события и охлаждение — не завершён.** Часы движения
+   согласованы; тепловой обратной связи в новом пути ещё нет.
+3. **Полная динамика слэбов, тяга и силы хребтов — не завершён.**
+4. **Разрушение, новые разломы, память и топология — не завершён.**
+5. **Основной цикл, GUI и согласование сохранений — не завершён.**
+   Строгие экспериментальные checkpoint существуют отдельно.
+6. **Длительные расчёты, сходимость и оптимизация — не завершён.**
+
+### Содержание последующих пунктов
 
 После решения ближайшей задачи остаются:
 
-1. Объединить время геометрических событий с уже реализованным охлаждением.
-2. Распределить слэбовый материал вдоль дуг; рассчитывать отдельное движение
+2. Объединить время геометрических событий с уже реализованным охлаждением.
+3. Распределить слэбовый материал вдоль дуг; рассчитывать отдельное движение
    погружённого тела, растяжение и утонение шейки с сохранением объёма,
    физический отрыв. Подключить тягу, хребты и контактные реакции.
-3. Связать живые напряжения и переносимую тензорную память с разрушением,
+4. Связать живые напряжения и переносимую тензорную память с разрушением,
    новыми разломами и сменой топологии.
-4. Включить новую механику в штатный цикл, версии сохранений и GUI.
-5. Проверить длительную эволюцию и сходимость по времени/сетке, затем
+5. Включить новую механику в штатный цикл, версии сохранений и GUI.
+6. Проверить длительную эволюцию и сходимость по времени/сетке, затем
    производительность без удаления материальных историй ради ускорения.
 
 Совместное сохранение геометрии и слэбов уже готово. Его не надо писать
@@ -116,6 +4490,16 @@
 опорной колонки пока не поддержаны в новом экспериментальном пути.
 
 ## Порядок чтения
+
+Сначала прочитать актуальное облачное продолжение:
+[собственная геометрия и пространственный поддвиг](GEOMETRIC_UNDERTHRUST_IMPLEMENTATION.md), затем
+[сегменты источника и принятое движение](GEOMETRIC_SEGMENTED_BENDING_IMPLEMENTATION.md), затем
+[конечный материальный перенос](GEOMETRIC_FAULT_TRANSPORT_IMPLEMENTATION.md), затем
+[изгиб и поперечный контакт](GEOMETRIC_BENDING_CONTACT_IMPLEMENTATION.md), затем
+[распределённый контакт](GEOMETRIC_DISTRIBUTED_CONTACT_IMPLEMENTATION.md),
+затем [глобальное контактное равновесие](GEOMETRIC_CONTACT_DYNAMICS_IMPLEMENTATION.md),
+затем [контактное нагружение](GEOMETRIC_CONTACT_LOADING_IMPLEMENTATION.md).
+Далее прежняя последовательность описывает нижележащие подсистемы:
 
 1. [Последний этап: допуск поддвига](GEOMETRIC_INITIATION_IMPLEMENTATION.md).
 2. [Направленная память и слэбовый архив](GEOMETRIC_SLAB_CONNECTION_IMPLEMENTATION.md).
@@ -191,14 +4575,68 @@ python scripts/run_cloud_tests.py
 
 Локальная проверенная среда: Python 3.12.14, NumPy 2.5.2, SciPy 1.18.1,
 PyYAML 6.0.3, pytest 9.1.1. Файл `requirements-cloud.txt` задаёт минимальные
-требования; установленные версии записывать в новых результатах. Облачный
-Linux-runtime этой передачей ещё не проверен: локальная проверка экспортированной
-копии не заменяет запуск тестов в облаке.
+требования; установленные версии записывать в новых результатах. В облачном
+Linux-продолжении используется Python 3.12.14, NumPy 2.5.3, SciPy 1.18.1,
+PyYAML 6.0.3 и pytest 9.1.1. Текущий контроль исходных физических пар
+находится в `analysis/geometric_native_physical_binding_validation/`;
+предыдущий контроль первого входа и материального замыкания —
+`analysis/geometric_native_first_entry_validation/`;
+прежняя проверка полных исходных доменов, сегментов и Windows-проверка
+сохранена ниже отдельно.
+
+### Восстановление после потери связи
+
+Во время этого продолжения exec-server потерял соединение, а облачный
+сервис сообщил `connectivity: offline` при `observed_phase: running`.
+Это статус доступа к машине, а не свидетельство потери файлов или
+остановки всех её процессов. Окончательная причина разрыва не установлена.
+После восстановления соединения код, исходные файлы и checkpoint
+сохранились. Самостоятельный сегментированный контроль успел закончиться
+и записать `results/cloud_segmented_bending_control_final/report.json`;
+все его 154 хеша кода и 10 хешей checkpoint проверены.
+
+При новом разрыве сначала восстановить доступ, проверить ветку, файлы,
+процессы и готовые отчёты. Не объявлять неизвестный результат успешным и
+не запускать повторный расчёт поверх существующего выходного каталога.
+Процесс нельзя перенести целиком между машинами, но исходники, входы и
+checkpoint позволяют продолжить или воспроизвести вычисление в другом
+совместимом окружении. Этот опыт продолжен в той же облачной среде.
+
+Прежний контроль пространственного поддвига исходных материальных пар:
+
+```bash
+python analysis/geometric_underthrust_validation/underthrust_case.py --out results/cloud_underthrust_control
+```
+
+Предыдущий контроль источников и настоящего общего движения:
+
+```bash
+python analysis/geometric_segmented_bending_validation/segment_case.py --out results/cloud_segmented_bending_control
+```
 
 Положительный синтетический опыт:
 
 ```bash
 python analysis/geometric_initiation_validation/admission_case.py --out results/cloud_admission_control
+```
+
+Новый контроль локального нагружения (геометрия и материальный архив фиксированы):
+
+```bash
+python analysis/geometric_contact_loading_validation/contact_case.py --out results/cloud_contact_loading_control
+```
+
+Связанный контроль с решёнными глобальными скоростями:
+
+```bash
+python analysis/geometric_contact_dynamics_validation/dynamics_case.py --out results/cloud_global_contact_control
+```
+
+Последний распределённый контроль (включает консервативный разрез и restart
+непустого архива, отдельный точный упругий oracle и чувствительность квадратуры):
+
+```bash
+python analysis/geometric_distributed_contact_validation/trace_case.py --out results/cloud_distributed_contact_control
 ```
 
 Проба реального источника (длится несколько минут; ожидаемый код возврата **2**):
@@ -211,7 +4649,1250 @@ python run_geometric_initiation_probe.py --source analysis/slab_sinking_followup
 Без новых механических входов именно этот результат ожидается. Нельзя
 «исправлять» его отключением проверки. Все выходные каталоги должны быть новыми.
 
-## Последняя проверенная база
+## Текущая проверка всей линии, опор и силового допуска — 04.10.2026 (UTC)
+
+Текущий выпуск: `analysis/geometric_native_active_line_validation/`.
+Итоговая сводка и манифест — в `release_validation_01`, физические
+контроли — в `control_release_01`. Статус **PASS** относится к исходной
+линии, её опорам, одному принятому силовому интервалу, restart и доказанному
+отказу настоящего второго кандидата. Полное закрытие пункта 1 не заявлено.
+Общий набор семи новых модулей прошёл: **137/137 тестов**, время pytest
+**966,12 с**, время полного проверочного wrapper **967,84 с**.
+Контроль всей линии прошёл за **54,26 с**: 16 взвешенных пар,
+12 семантических отказов. Его диагностический счётчик принятых силовых
+интервалов равен нулю; физическое принятие подтверждено отдельным контролем.
+Общий контроль прошёл за **478,31 с**, его силовая часть — за **423,91 с**.
+Принят **один** настоящий нативный интервал. Совместный restart повторяет
+исходное силовое решение; все **шесть пар** силовых сохранений и **семь пар**
+сохранений линии совпали побайтно. Сохранены работа, память и подготовка;
+континуальный бюджет не добавлялся к отдельному журналу Gauss-записей.
+Второй кандидат действительно заново решён по текущей нагрузке,
+его балансы сходятся, но новые контакты требуют собственной механической
+семьи. Он атомарно отклонён вместе с отдельным материальным кандидатом
+из 26 компонентов и семи новых архивных записей. Проверены **пять**
+семантических отказов силового DTO с пересчитанной только корневой
+контрольной суммой; вложенные суммы доказательств не пересчитывались.
+Старые 136 и 341 проверки заново не выполнялись.
+
+Оба независимых stdlib-аудита прошли отдельными процессами без импорта
+производственных модулей. Аудит линии за **1,88 с** проверил 102 наблюдения
+коэффициентов совместного SO(3), 96 скалярных тождеств общего потенциала,
+исходную угловую меру, ветви выбора и сохранение при отказе.
+Силовой аудит за **2,42 с** проверил принятые поля, отдельный механический
+журнал и квадратичную энергию 14×14, связи настоящего второго источника,
+точный положительный поток на обоих начальных общих рёбрах и байты
+сохранений. Силовые уравнения повторял совместный контроллер;
+сертификаты конечных площадей предоставлены геометрическим контролем.
+
+Заморожено **732 Python-файла**: все **704 прежних** сохранены, добавлено
+28 новых. Текущая карта: SHA-256
+`d5e7f6c1a5560c570b694a35e40c72a5e45f034f0598d8056fbc5cb021ec82c6`.
+Первый финальный запуск сохранён отдельно в
+`failed_release_validation_01`: 89 PASS, 1 FAIL из-за неканонического
+публичного JSON DTO. Исправлены экспорт, сохранение процесса при отказе
+и служебный счётчик оставшихся блоков; расчёт физических величин не менялся.
+Все 28 тел прежних новых файлов, старая заморозка и журнал отказа сохранены.
+Второй финальный запуск также сохранён в `failed_release_validation_02`:
+103 PASS, 1 FAIL из-за требования Python-идентичности восстановленного
+предыдущего epoch. Полное типизированное содержимое, DTO и SHA совпадали.
+Исправлен только новый тест; второй изменённый файл — служебный сборщик,
+учитывающий обе сохранённые попытки. Производственная механика не менялась.
+Третий запуск сохранён в `failed_release_validation_03`: 117 PASS, 1 FAIL
+из-за второго такого сравнения предыдущего epoch в тесте материального
+продолжения. Все семь модулей проверены на аналогичные сравнения;
+исправлен новый тест. В служебном runner убрана остановка на первом отказе,
+сборщик учитывает все три попытки и перезагрузку изменённых проверок.
+Поправки `source_amendment_02.json`, `source_amendment_03.json` и
+`source_amendment_04.json` связывают прежние карты и сохранённые тела
+с текущей заморозкой. Последняя поправка меняет только тест и два
+служебных файла; производственные исходники не менялись.
+Полный набор 137 утверждений повторён в сохранённом интерпретаторе:
+подлинный второй расчёт и материальное продолжение сохраняются из второй
+попытки при неизменных производственных исходниках. Перезагрузка нового
+тестов и runner, проверка типизированных кэшированных контекстов зафиксированы
+в `test_reload_cache_scope_03.json` и `test_reload_cache_scope_04.json`.
+Совместный контроль повторил исходное силовое решение при restart.
+Объявленные неудачные предварительные пробы и восстановленный кандидат
+также остаются отдельными свидетельствами, без статуса принятого второго шага.
+
+Физический остаток: четыре контакта с новорождённым материалом, включая
+`original_live octant:6 → hot_birth octant:2`. Его положительная конечная
+площадь около **1,81099e-46 ср** и положительный поток на начальном общем
+ребре доказывают вход при сколь угодно малом положительном времени для
+тех же полных Ω. В следующих холодных полях также есть две up-dip и две
+down-dip ветви; прежний первый сертификат не разрешает весь новый интервал.
+
+`HotBirthParameters` задаёт толщину коры, воду и повреждение. Этих данных
+недостаточно для упругой толщины, расстояния до заделки, модулей столбцов
+и балки, физической плоскости, преднагрузки и конститутивного состояния
+нового контакта. Память и поля холодных берегов новорождённым не назначены.
+Исходные наклон, контактный закон, E/ν, Te и ширины банков уже явно заданы
+в `analysis/geometric_underthrust_validation/underthrust_case.py`.
+Не задано их физическое применение к новой горячей контактной семье:
+связь её footprint с плоскостью, собственные колонки и опоры, состояние
+и энергия рождения. Прежний нативный resolver явно отказывает любому
+неисходному материальному берегу с `new_material_requires_new_physical_pair`.
+Проверены существующие механизмы: `genesis_contact_growth.py` умеет
+создавать собственную историю затвердевшего интерфейса, но требует заданные
+опору, закон, деформации и учёт энергии рождения в сжатии.
+`genesis_path_activation.py` прямо не поддерживает рождение в сжатии.
+`geometric_bending.py` требует отдельные Te и расстояние до заделки;
+`PhysicalFaultTrace` — собственные физические параметры плоскости и колонок.
+В `flexure.py` Te ограничена снизу 4 км и используется гравитационное
+основание, поэтому эта величина не определяет заделку исходной балки.
+Нулевой холодный объём горячего материала не задаёт автоматически нулевую
+жёсткость коры или свободное геометрическое проникновение. Готового
+автоматического закона рождения именно этих новых пар в репозитории нет.
+Первый пункт остаётся частичным: два прежних блока закрыты в контракте
+исходного источника, третий требует нового физического замыкания.
+
+Итоговый манифест содержит **1100 артефактов**, включая все неудачные
+попытки и объявленные поправки. Сохранены **374 записи** прежних манифестов
+и **325 разных** исторических артефактов. Все размеры, SHA-256, self-seal
+основных отчётов и ссылки выпуска независимо сверены после сборки.
+Карта всех 732 Python-файлов совпала с заморозкой; все 704 прежних
+исходника остались неизменными. Девять облачных исходных файлов,
+**2 110 696 байт**, проверены на месте; восстановление не понадобилось.
+
+Raw SHA-256 сводки:
+`bd3a5f49823df99ea83e4bb57dd8597f41814c9b060c1a4d12ae22202ffd1f8c`.
+Raw SHA-256 манифеста:
+`0ab2c70496da7e67b02b6a9befa89ef6a9e7ecd2a68632a71472d5fd75854923`.
+
+- [Итоговая сводка и неизменный шестипунктный план](analysis/geometric_native_active_line_validation/release_validation_01/validation_summary.json).
+- [Манифест артефактов](analysis/geometric_native_active_line_validation/release_validation_01/artifact_manifest.json).
+- [Первое принятое состояние, совместный restart и отказ продолжения](analysis/geometric_native_active_line_validation/control_release_01/motion/motion_control_report.json).
+- [Независимый аудит линии](analysis/geometric_native_active_line_validation/control_release_01/line/independent_active_line_receipt.json).
+- [Независимый силовой аудит](analysis/geometric_native_active_line_validation/control_release_01/motion/independent_motion_receipt.json).
+
+## Предыдущая проверка действующей привязки и локальной работы — 03.10.2026 (UTC)
+
+Текущий выпуск: `analysis/geometric_native_active_binding_validation/`,
+каталоги `release_gates_02`, `control_release_02`, `release_validation_01`.
+Итоговый статус **PASS**. **136 тестов прошли за 2701,89 с**: 40 новых
+проверок и 96 прямых регрессий переноса первого входа, общего реестра и
+геометрических ссылок. Пять полных модулей выполнены одним процессом с
+каноническим `--import-mode=importlib`; время pytest — 2699,28 с.
+Прежние 341 проверка сохранены как проверенная история, без нового запуска
+всего прежнего профиля.
+
+Свежий физический контроль прошёл за **1664,42 с**. Настоящий силовой
+источник повторно решён, typed checkpoint загружен, все **14 полей**
+кандидата совпали. Проверены две принимающие метки, две последовательные
+передачи, девять запросов состояния и четыре замороженные ссылки.
+Для приёмника 3 с точными координатами `(0,1,10^-55)` получен путь
+`7/3 → 6/3 → 7/3`; последнее событие получает другую исходную метку
+донора 7. Для приёмника 2 с `(0,1,-1)` исходная привязка сохраняется,
+но её состояние развивается по полной геометрии от `u=0`.
+Каждая передача наследует уже изменённые деформации, память и энергию;
+её дополнительные работа, энергия и диссипация равны нулю.
+Проверены **40 отказов** при семантических подменах. **Шесть пар** —
+исходная история, checkpoint, кандидат, пути привязок, запросы состояния
+и замороженные ссылки — совпали побайтно после сохранения/replay.
+
+Независимый stdlib-аудит прошёл за **34,34 с** с Decimal360, без импорта
+производственных модулей. Проверены восемь полных обратных хронологий,
+172 листа, восемь корневых записей и две настоящие смены донорского банка;
+513 наблюдений состояния, скоростей и работы, 17 ограждений контактной
+ветви на всём сегменте и 34 наблюдения геометрических концов.
+Аудит проверил записанные 40 отказов, шесть пар байтов и все **302 записи**
+пяти прежних манифестов, содержащие 253 разных артефакта.
+
+Первая физическая попытка остановилась на слишком широкой интервальной
+оценке последнего сегмента. Новая оценка сначала объединяет коэффициенты
+обоих SO(3)-поворотов с общими часами, сохраняя сокращение `ad-ar`,
+а затем вычисляет интервальные границы. Это дало доказательство сжатия
+и нужного направления скольжения на всём сегменте. Первая попытка
+тестов/контроля, её карты исходников и трассы отказа сохранены.
+
+Первый независимый аудит остановился до научного расчёта: нормали исходных
+четвертей сохранены целыми `-1/0/1`, а два места чтения ожидали рациональные
+пары. После успешных тестов исправлены только два новых служебных файла:
+аудит с точным чтением этих нормалей и сборщик отчёта с явным учётом поправки.
+Их исходные тела и полная карта исполнения сохранены в
+`source_freeze_attempt_02`; отказ аудита также сохранён. Все **704 проверяемых
+Python-исходника**
+не изменялись во время тестов и физического контроля; после них изменились
+ровно эти два файла. Остальные **702**, включая все **694 прежних**,
+не изменены. Четыре карты исполнения имеют SHA256
+`d26df2306ad569a60fead14edbdd4d3730758a50d29fe1ba1379c2efb8097a98`;
+итоговая карта после служебной поправки —
+`1128d25c4c2cdb975e41ff6f7e4449c84b335aa4e0f0c602fbb01e96e57d4780`.
+Оба проверяющих оператора допускают только эти две объявленные разницы.
+
+Итоговый манифест содержит **72 артефакта**, включая неудачные попытки,
+исходные тела двух служебных файлов и явную поправку источников.
+Все размеры, SHA256, self-seal и ссылки итогового выпуска и прежних
+манифестов независимо сверены. Девять облачных исходных файлов,
+**2 110 696 байт**, проверены; восстановление не потребовалось.
+
+Реализация: `tectonics/geometric_native_active_contact_binding.py`,
+`tectonics/geometric_native_active_contact_work.py`,
+`tectonics/geometric_native_active_contact_path_work.py`.
+Основной запрос — `query_native_active_contact_path_work`; restart требует
+внешнюю исходную историю, точную принимающую метку, закон и время.
+Выбор поддерживает доказанные однозначные события открытой четверти;
+касательные, неоднозначные или неподтверждённые случаи остаются `unresolved`.
+Работа реализована для фактического `mu=C=eta=0` при доказанном сжатии
+и монотонном down-dip движении. Это плотности по исходной интерфейсной
+площади, а не конечная работа отдельной точки. Прежняя affine-работа и
+16 буквальных Gauss-записей к ним не добавляются. Подписанный остаток
+binary64-податливости сохранён в `W = ΔE + D + R`.
+
+**В пункте 1 остаются три прежних блока.** В первом ещё нужны доказательство
+выбора привязки по всей принимающей линии и численные взвешенные бюджеты
+действующих пар с полным балансом. Затем остаются силовые опоры/заделки
+со пространственным допуском и принятое движение с последующими интервалами,
+совместным restart и балансами. Принятых native-силовых интервалов **0**;
+память и работа исходного кандидата не приняты. Пункты 2–6 не закрыты.
+
+Артефакты: [136 проверок](analysis/geometric_native_active_binding_validation/release_gates_02/receipt.json),
+[свежий физический контроль](analysis/geometric_native_active_binding_validation/control_release_02/report.json),
+[независимый аудит](analysis/geometric_native_active_binding_validation/control_release_02/independent_active_binding_receipt.json),
+[служебная поправка источников](analysis/geometric_native_active_binding_validation/audit_only_source_amendment.json),
+[сводка и остаток плана](analysis/geometric_native_active_binding_validation/release_validation_01/validation_summary.json),
+[манифест 72 артефактов](analysis/geometric_native_active_binding_validation/release_validation_01/artifact_manifest.json).
+
+## Сохранённая проверка переноса по всей области первого входа — 03.10.2026
+
+Текущий выпуск: `analysis/geometric_native_domain_contact_handover_validation/`,
+каталоги `release_gates_02`, `control_release_01`, `release_validation_01`.
+**341 тест прошёл за 1867,82 с**: 76 новых проверок (28 работы, 23 меры,
+25 общего реестра) и все 265 проверок предыдущего корневого выпуска.
+Один процесс pytest выполнил 11 полных модулей с единым режимом импорта
+и общей настоящей исходной историей. Время самого pytest — 1865,71 с.
+Свежий физический контроль и независимый аудит также прошли. Окончательный
+статус выпуска `PASS` сохранён в `validation_summary.json`.
+
+Первая общая попытка `release_gates_01` дала 334 PASS и семь ошибок
+сравнения экземпляров привязки. Каталог `tests` не содержит `__init__.py`;
+обычный pytest и импорт фикстуры из нового теста загрузили прежний модуль
+под двумя именами и создали два набора равных объектов. Трассы подтвердили
+падение только `value.binding is old`. Повторный запуск использует
+`PYTEST_ADDOPTS=--import-mode=importlib`; сборка всех 11 файлов подтвердила
+341 тест и единственную идентичность модулей. Все 694 Python-файла сохранены,
+силовой контроль и аудит повторять из-за режима импорта не требуется.
+Точный вызов, проверка идентичности и первая попытка сохраняются в артефактах
+окончательного общего прогона.
+
+Свежий физический контроль прошёл за **1788,46 с**. Typed checkpoint загружен,
+настоящий исходный силовой кандидат повторно решён; строитель полной истории
+отдельно повторил решение и материальную транзакцию. Все **14 полей** кандидата
+совпали. Повторно доказаны семь исходных хронологий: четыре первых входа,
+включая `6 → 3`, и три случая без входа. Все **44 научные подмены** с заново
+пересчитанными checksum отклонены. **Семь пар** — история, checkpoint,
+кандидат, общий реестр, coarea, непрерывная работа и точечные наблюдения —
+побайтно совпали после replay.
+
+Независимый stdlib-аудит прошёл за **47,55 с**. Проверены 16 масок, восемь
+родителей, четыре семейства и 16 исходных атомов; 112 точечных проверок масок,
+32 наблюдения работы, 48 угловых интегралов работы/энергии с 360 знаками,
+16 наблюдений неявных первообразных. Повторно проверены 450 листьев и 43 корня
+семи исходных хронологий; четыре истинных первых корня проверены независимо.
+Проверены все 44 отказа, семь пар байтов и **233 записи** прежних манифестов.
+
+Все **694 Python-файла** совпали до/после окончательного прогона и контроля:
+684 прежних не изменены, десять добавлены. Четыре полные source maps побайтно
+равны; их SHA256 — `4f1ffc562593458b028a1620d2d61dd6172c8a798228e05d78da7a2d3b7608c1`.
+Девять исходных облачных файлов, **2 110 696 байт**, проверены; восстановление
+не потребовалось. Итоговый манифест содержит **69 артефактов**, включая
+неудачную первую попытку и доказательства исправленного режима импорта.
+Все размеры, SHA256 и self-seal сводки/манифеста сверены.
+
+Новая реализация:
+`tectonics/geometric_native_contact_field_work.py`,
+`tectonics/geometric_native_first_entry_interface_integral.py`,
+`tectonics/geometric_native_first_entry_contact_domain_handover.py`.
+Это действующий функциональный перенос: произвольная исходная материальная
+метка проходит причинную маску, получает неявный первый корень, собственную
+балочную карту, новую геометрическую ссылку и замороженные исходные поля.
+Два новых случая `6 → 2` и `7 → 3`, отсутствовавших в сохранённых семи
+хронологиях, прошли свежую проверку. Точечные сертификаты наблюдают единый
+реестр и не создают дополнительных нагруженных историй.
+
+Четыре принимающих поля принадлежат реестру по одному разу. Его 16 ветвей
+используют все исходные донорские и принимающие материалы. Маска содержит
+первый вход владельца, исходные опоры обоих материалов и положительную
+правую окрестность события; выход и повторный вход не выделяют вторую
+меру. Полная SO(3)-карта первого события однозначна почти всюду, критическая
+область якобиана имеет нулевую двумерную меру. Coarea-равенство сохраняет
+восемь родительских мер, включая малую кривую область донора 5. Площади
+отдельных принимающих пар остаются символическими.
+
+Независимое доказательство полосы использует все компоненты обеих исходных
+угловых скоростей. Для любой входящей единичной метки `|qx| ≤ B`,
+`asin(qx) ≤ B/(1-B²)` и `R asin(qx) < L` собственной донорской балки.
+Это доказывает пригодность исходной функции формы для всей области,
+включая `6 → 3`; силовая опора и заделка этим ещё не подтверждены.
+
+Для четырёх исходных интерфейсов получены аналитические угловые и временные
+интегралы работы, начальной/конечной энергии и диссипации. Истинное время
+первого события можно использовать как интервал неявной первообразной,
+без выбора midpoint. Подписанный остаток исходной binary64-податливости
+сохранён в `W = ΔE + D + R`. Исходная мера `C dtheta`, буквальные Gauss-атомы
+и двумерная coarea-мера архива различаются. Их рабочие записи не складываются;
+непрерывный бюджет контактов не заменяет глобальную работу силового кандидата.
+
+Нулевые приращения при самой смене ссылок — поточечное сохраняющее тождество
+при одинаковой исходной мере. Оно не является численным бюджетом нового
+двумерного контакта. Реестр не задаёт выбор единственной действующей привязки
+линии во времени: разные события одного угла соответствуют разным исходным
+донорским меткам, а уже перенесённая метка должна оставаться замороженной.
+В текущем первом блоке остаётся замкнуть этот выбор и получить численные
+бюджеты действующих принимающих пар. Затем остаются два прежних блока:
+силовые опоры/пространственный допуск и принятое движение/restart/балансы.
+Первый пункт частичен; принятых native-силовых интервалов **0**.
+Пункты 2–6 исходного плана не закрыты.
+
+Артефакты: [341 проверка](analysis/geometric_native_domain_contact_handover_validation/release_gates_02/receipt.json),
+[точный режим запуска](analysis/geometric_native_domain_contact_handover_validation/release_gates_02/import_mode_invocation.json),
+[свежий физический контроль](analysis/geometric_native_domain_contact_handover_validation/control_release_01/report.json),
+[общий реестр](analysis/geometric_native_domain_contact_handover_validation/control_release_01/domain_contact_handover.json),
+[непрерывная работа](analysis/geometric_native_domain_contact_handover_validation/control_release_01/original_continuum_work.json),
+[независимый аудит](analysis/geometric_native_domain_contact_handover_validation/control_release_01/independent_domain_contact_receipt.json),
+[сводка и остаток плана](analysis/geometric_native_domain_contact_handover_validation/release_validation_01/validation_summary.json),
+[манифест 69 артефактов](analysis/geometric_native_domain_contact_handover_validation/release_validation_01/artifact_manifest.json).
+
+## Сохранённая проверка переноса на истинном первом входе — 03.10.2026
+
+Актуальный выпуск: `analysis/geometric_native_first_entry_handover_validation/`,
+каталоги `release_gates_01`, `control_release_01`, `release_validation_01`.
+**265 тестов прошли за 817,20 с**: 87 новых проверок (26 непрерывной истории,
+28 геометрической меры, 33 переноса первого входа) и все 178 проверок
+предыдущего узлового выпуска. Восемь полных модулей выполнены в одном
+процессе с общим настоящим источником. Время pytest — 815,95 с;
+полный профиль не запускался. Более ранние 253 и 770 тестов сохранены
+как проверенная архивная валидация и повторно не выполнялись.
+
+Новая реализация:
+`tectonics/geometric_native_contact_field_history.py`,
+`tectonics/geometric_native_first_entry_contact_measure.py`,
+`tectonics/geometric_native_first_entry_contact_handover.py`.
+Оператор меняет привязку на доказанном первом корне, а не на конце
+кандидатного интервала. Для `6 → 3` источником контактной памяти является
+`7/3`, источником входящего изгиба — собственная балка `6/2`. Сохраняются
+все пересекающиеся части старой и кандидатной памяти, исходные поля,
+три времени, деформации, давления и энергии J/m². Замороженную ссылку
+первого события нужно вычислять через
+`evaluate_native_first_entry_contact_free_anchors`; прежний общий
+символьный оператор одинаковых θ/u не является последующим силовым шагом.
+
+Свежий физический контроль прошёл за **553,66 с**: typed checkpoint
+загружен, настоящий силовой кандидат повторно рассчитан, строитель
+истории отдельно повторил решение. Все **14 полей** исходного кандидата
+совпали. Четыре истинных входа получили новую привязку; три случая без
+входа сохранили пустую привязку. В четырёх наблюдениях геометрическая
+ссылка сокращается тождественно на неявном корне; ни время, ни угол
+не заменяются midpoint. Исходное поле фиксировано на первом событии
+при последующих геометрических вариациях. Все **30 подмен** с пересчитанными
+checksum отклонены. Четыре пары — полная история, checkpoint, кандидат
+и replay всех семи новых состояний — побайтно совпали.
+
+Независимый stdlib-аудит прошёл за **69,29 с**. Заново проверены полные
+owner/receiver-хронологии семи случаев: 450 листьев, 43 корня; четыре
+истинных owner-root дополнительно проверены численно. Проверены 16 угловых
+наблюдений полей памяти, деформаций и энергии, 16 наблюдений полного
+SO(3)-якобиана и принимающей геометрии, четыре собственные донорские
+карты балки. Все 16 исходных конечных контактных состояний, их площади
+и шесть энергетических/рабочих сумм сохранены с единственным учётом.
+Численные наблюдения не заменяют доказательство всей новой силовой опоры.
+
+Все **684 Python-файла** совпали до/после прогона и контроля: 674 прежних
+не изменены, десять добавлены. Четыре полные source maps побайтно равны,
+их SHA256 — `c4e786975877198f06fa0949021abdda15b85584d6db360cb6079e4cf1a43816`.
+Проверены 185 записей манифестов предыдущих выпусков. Девять исходных
+облачных файлов, 2 110 696 байт, проверены; восстановление не потребовалось.
+Новый манифест содержит **48 артефактов**, все размеры и SHA256 сверены.
+
+**В пункте 1 остаются три прежних блока; первый частично выполнен.**
+Перенос непрерывной истории на истинном первом входе `6 → 3` реализован.
+В текущем блоке ещё нужны единый перенос и интеграция по всей неявной
+области входа с маской принимающих материалов и замкнутым учётом меры
+и работы. Затем остаются силовые опоры/заделки и пространственный допуск,
+после них — принятое движение, последующие интервалы, restart и балансы.
+Двумерный swept-якобиан без хронологической маски не принят как площадь
+архива; интерфейсный континуум и 16 буквальных квадратурных мер сохраняются
+раздельно, их суммы не объявляются точно равными. Принятых native-силовых
+интервалов и принятой работы источника **0**. Пункты 2–6 исходного плана
+не закрыты.
+
+Артефакты: [265 проверок](analysis/geometric_native_first_entry_handover_validation/release_gates_01/receipt.json),
+[свежий физический контроль](analysis/geometric_native_first_entry_handover_validation/control_release_01/report.json),
+[семь привязок первого входа](analysis/geometric_native_first_entry_handover_validation/control_release_01/first_entry_handovers.json),
+[исходные 16 состояний и работа](analysis/geometric_native_first_entry_handover_validation/control_release_01/original_quadrature_ledger.json),
+[независимый аудит](analysis/geometric_native_first_entry_handover_validation/control_release_01/independent_first_entry_handover_receipt.json),
+[сводка и остаток плана](analysis/geometric_native_first_entry_handover_validation/release_validation_01/validation_summary.json),
+[манифест 48 артефактов](analysis/geometric_native_first_entry_handover_validation/release_validation_01/artifact_manifest.json).
+
+## Сохранённая проверка узлового переноса нагруженной конфигурации — 03.10.2026
+
+Актуальный выпуск: `analysis/geometric_native_physical_handover_validation/`,
+каталоги `release_gates_02`, `control_release_02`, `release_validation_02`.
+**178 тестов прошли за 343,35 с**: 93 новые проверки (44 карты/среза балки,
+38 контактного переноса, 11 физических привязок) и 85 прежних проверок
+локального контакта и изгиба. Пять полных модулей выполнены в одном процессе;
+полный профиль не запускался. Время самого pytest — 342,15 с.
+
+Свежий контроль прошёл за **271,12 с**: typed checkpoint загружен,
+настоящие силы повторно решены, строитель физической истории отдельно
+повторил решение. Все **14 полей** исходного кандидата совпали. Перенесены
+8 доказанных входящих привязок, 8 отступающих сохранены; все 16 нагруженных
+состояний, исходные меры, полные рабочие записи и глобальное состояние балки
+сохранены. Восемь наблюдений подтвердили точное сокращение геометрических
+выражений при передаче; 14 подмен с пересчитанными checksum отклонены.
+Четыре пары — исходная история, checkpoint, кандидат и replay нового
+компонента — побайтно равны. Replay компонента использует полный внешний
+аутентифицированный источник и явный закон; уже проверенные математические
+результаты переиспользуются только после проверки полного типизированного
+источника и параметров, не по checksum из входящего DTO.
+
+Независимый stdlib-аудит прошёл за **1,84 с**: 16 относительных координат,
+64 угловых проверки ограждений карты балки, 24 проверки виртуальной работы,
+все 16 состояний и шесть энергетических/рабочих сумм с единственным учётом,
+восемь ссылок, 14 отказов и четыре пары байтов. Численная геометрия с 360
+знаками является независимой проверкой точек; доказательства всей опоры
+балки или силового равновесия она не заменяет.
+
+Все **674 Python-файла** совпали до/после окончательного прогона и контроля:
+664 прежних сохранены, десять добавлены. Проверены все 139 артефактов двух
+предыдущих выпусков; прежние 253 и 770 тестов повторно не запускались.
+Девять источников, 2 110 696 байт, проверены. Манифест нового выпуска содержит
+**46 артефактов**. Каталоги `*_01` сохраняют предыдущую попытку: девять новых
+тестов остановились из-за сравнения строковых fragment ID с числами;
+исправлен только новый тестовый файл. Актуальный выпуск `*_02` прошёл полностью.
+
+Закон переноса — явное допущение сосредоточенной модели. Пространственный
+первый вход `6 → 3` вне квадратуры, вся область переноса, поддержка балок
+и заделок, новое силовое равновесие и принятый native-шаг ещё не закрыты.
+Принятых native-силовых интервалов и принятой работы источника **0**.
+Остаются три прежних блока пункта 1; первый частично выполнен.
+
+Артефакты: [178 проверок](analysis/geometric_native_physical_handover_validation/release_gates_02/receipt.json),
+[свежий физический контроль](analysis/geometric_native_physical_handover_validation/control_release_02/report.json),
+[единственная история работы](analysis/geometric_native_physical_handover_validation/control_release_02/quadrature_transport_ledger.json),
+[независимый аудит](analysis/geometric_native_physical_handover_validation/control_release_02/independent_handover_receipt.json),
+[сводка и остаток плана](analysis/geometric_native_physical_handover_validation/release_validation_02/validation_summary.json),
+[манифест 46 артефактов](analysis/geometric_native_physical_handover_validation/release_validation_02/artifact_manifest.json).
+
+## Сохранённая проверка исходных физических пар — 03.10.2026
+
+Реализация: `tectonics/geometric_native_physical_pair_time.py`,
+`tectonics/geometric_native_physical_history.py` и
+`tectonics/geometric_native_first_entry_physical_binding.py`.
+Сохраняются четыре исходные пары и все 16 узлов, буквальные векторы
+квадратуры и рамок, площади, параметры колонок и контакта, подготовка,
+полная старая и непринятая память, все пять коэффициентов свободных ссылок
+и исходный учёт работы. Контекст строится из настоящего силового replay;
+загрузка повторяет его по внешним исходным объектам и нагрузке.
+
+Оба исходных конца движутся своими полными вращениями. Расчёт ведётся на
+рациональном интервале времени, включая единственное время; произведение
+`u*dt_myr` не округляется в float. Координаты исходного узла не нормируются
+заново. Радиальные координаты между before и непринятым candidate имеют
+объявленный линейный диагностический путь. Конечные геометрические gap/jump
+не заменяют интегрированные свободные ссылки и подготовку пружины.
+
+Запросы истории используют прежние кусочные пластические поля, а не
+интерполяцию узлов. Локальное время включает сохранённую подготовку;
+глобальные native-часы сохраняются отдельно. Оба используют одно точное
+`u`; исходные бинарные длительности в секундах и Myr не перенастраиваются.
+Поля на точных dyadic-коэффициентах могут отличаться от сохранённых
+округлённых endpoint-значений; исходный конститутивный endpoint проверяется
+своим полным replay. Вязкая дробная BE-семья остаётся диагностической.
+
+Семь прежних материальных траекторий сохраняют весь первый root window и
+первый принимающий материал. Новая привязка сравнивает исходные пары и
+материальные метки, вычисляет полный `Q_r^-1 Q_d q` и условную координату
+принимающей четверти. `6 → 3` относится к разным парам `6/2`, `7/3`.
+`6 → 2` сохраняет IDs пары, но входящая метка вне исходного `X=0`.
+В обоих случаях handover не принят. Старая память, радиальное смещение и
+работа квадратуры не присваиваются входящему двумерному материалу.
+Промежуточная работа не вычисляется. Принятых native-интервалов и принятой
+работы источника остаётся **0**.
+
+Контроль и результаты этого подэтапа сохраняются в
+`analysis/geometric_native_physical_binding_validation/`.
+
+Финальный прогон: **253 теста прошли за 961,91 с** — 44 новых проверки
+карт, 36 истории, 44 привязки первого входа, а также 35 прежних проверок
+конститутивной поддержки и 94 материального замыкания. Все пять полных
+модулей выполнены в трёх процессах с сохранёнными командами и журналами.
+Полный профиль проекта не запускался. Прежний результат **770 PASS**
+повторно не запускался: проверены его хеши, исходники и все 83 артефакта.
+Все **664 Python-файла** совпали до/после нового прогона и контроля:
+прежние **654 неизменны**, добавлены десять новых.
+
+Свежий силовой контроль прошёл за **713,19 с**. Исходный typed checkpoint
+загружен, силы заново решены, все **14 полей** полного кандидата совпали.
+Построение и загрузка новой физической истории отдельно повторяют силовое
+решение и конститутивную память. Проверены 48 запросов всех 16 узлов при
+`u=0, 3/8, 1` и семь прежних траекторий. Все четыре пары совпали побайтно:
+исходный checkpoint до/после отказа, полная физическая история, запросы
+узлов, привязки первого входа.
+
+Независимый stdlib-аудит прошёл за **1,22 с**: исходные поля, параметры,
+меры, подготовка, память и работа проверены по сохранённым источникам.
+Численные проверки с 360 знаками подтверждают 48 карт концов и 12
+относительных координат на границах/серединах четырёх first-root windows.
+Это независимые проверки численного включения; самостоятельное строгое
+доказательство всего временного окна ими не объявляется. Совпали все
+654 прежних исходника и полное перечисление нового профиля; повторно
+проверены девять восстановленных источников, **2 110 696 байт**.
+
+Артефакты: [история исходных пар](analysis/geometric_native_physical_binding_validation/control_release_01/original_history.json),
+[48 запросов узлов](analysis/geometric_native_physical_binding_validation/control_release_01/original_nodal_queries.json),
+[семь привязок первого входа](analysis/geometric_native_physical_binding_validation/control_release_01/incoming_first_entry_bindings.json),
+[253 теста](analysis/geometric_native_physical_binding_validation/release_gates_01/receipt.json),
+[свежий контроль](analysis/geometric_native_physical_binding_validation/control_release_01/report.json),
+[независимый аудит](analysis/geometric_native_physical_binding_validation/control_release_01/independent_binding_receipt.json),
+[сводка](analysis/geometric_native_physical_binding_validation/release_validation_01/validation_summary.json),
+[манифест 56 артефактов](analysis/geometric_native_physical_binding_validation/release_validation_01/artifact_manifest.json).
+SHA сводки: `bcdafbe59297aa904e1ce9d24f6f96176f239f342b2154b03475480b1257507f`.
+
+Для повторения использовать новые выходные каталоги:
+
+```bash
+.venv/bin/python analysis/geometric_native_physical_binding_validation/run_release_gates.py --workers 3 --out /tmp/moon_physical_binding_gates
+
+.venv/bin/python analysis/geometric_native_physical_binding_validation/run_binding_control.py --out /tmp/moon_physical_binding_control
+
+.venv/bin/python analysis/geometric_native_physical_binding_validation/independent_binding_audit.py --control /tmp/moon_physical_binding_control --out /tmp/moon_physical_binding_control/independent_binding_receipt.json
+
+.venv/bin/python analysis/geometric_native_physical_binding_validation/consolidate_validation.py --gate /tmp/moon_physical_binding_gates --control /tmp/moon_physical_binding_control --audit /tmp/moon_physical_binding_control/independent_binding_receipt.json --out /tmp/moon_physical_binding_validation
+```
+
+Следующий шаг внутри прежнего пункта 1 — сохраняющее сопоставление новых
+материальных концов, пластической памяти, упругой энергии, работы и заделок;
+затем силовой registry/support, принятый native-интервал и joint restart.
+Пункт 1 частичный, пункты 2–6 не закрыты.
+
+## Сохранённая проверка первого входа и материального замыкания — 02.10.2026
+
+**770 целевых тестов прошли за 1147,29 с**: прежние 536 и 234 новые
+проверки полных областей первого входа, материального замыкания и двух
+независимых оракулов. Запущены все **20 полных тестовых модулей** в трёх
+независимых процессах; для каждого сохранены команда, вывод, результат и
+хеш журнала. Полный профиль проекта здесь не запускался.
+Все **654 Python-исходника** совпадают до/после тестов и свежего контроля.
+Все прежние **643 файла не изменены**; добавлены 11 Python-файлов.
+Повторно проверены девять восстановленных источников: **2 110 696 байт**.
+
+Свежий контроль с заново решённым исходным силовым кандидатом прошёл за
+**1019,42 с**. Все 12 исходных полей кандидата и допуск совпали с сохранённой
+пробой. Полные Omega, четыре исходных физических seed, preload, память и
+работа сохранены. Полная область первого входа owner 1 к owner 0 применена
+в отдельном материальном состоянии ко всем **8 исходным родителям**:
+**3 непустые архивные когорты**, 32 точных исходных бюджета с общими
+геометрическими долями и символическими дополнениями. Настоящие вакансии
+имеют **8 локальных определений**, содержащих **5 непустых областей нового
+горячего материала**, рождаемого только в конце интервала.
+
+Независимый аудит прошёл за **205,54 с**. Он заново доказывает полный
+кривой избыток донора 5 на всех **256 ячейках интегрирования**, конечные
+области 6/7 и отсутствие входа у 4, все 32 исходных материальных бюджета,
+направление четырёх физических seed и конечное горячее заполнение.
+Для всех **7 геометрических пробелов** отдельно получены строгие границы
+нативных сферических площадей. Общее конечное Boolean-разбиение дополнительно
+воспроизведено численно с 500 десятичными знаками; независимым точным
+доказательством произвольного Boolean-разбиения оно не объявляется.
+Силовой решатель независимо не реализован.
+
+Сохранены и независимо проверены **7 контекстов исходных точек,
+42 временных запроса и 7 конечных запросов**: 450 доказательных ячеек и
+43 ненулевых корня. Среди запросов 13 живых, 12 с неизвестным моментом
+первого входа и 17 архивных. Первый приёмник 3 сохраняется при `6 → 3 → 2`;
+выход и повторный вход не возвращают материал и не создают второго списания.
+Для `5 → 1` доказаны настоящая конечная вакансия при сохраняющемся исходном
+геометрическом покрытии и её горячее заполнение. Это точные истории
+сохранённых исходных траекторий; отдельный сертификат каждой точки сферы,
+объёмы произвольных промежуточных временных подмножеств и интегрированная
+разбивка когорт по приёмнику здесь не объявляются.
+
+Все **6 побайтных пар** совпадают: полный журнал, сертификат первого входа,
+полное материальное состояние, временные и конечные запросы, исходное
+силовое состояние после отказа. Принятых нативных силовых интервалов **0**,
+принятой работы источника **0 Дж**. Материальное замыкание применено только
+в своём неявном формате; глобальные NativeSurfaceState/NativeBuriedRegistry,
+силовые часы, память и работа не обновлены. Геометрические площади архива
+и вакансий совпадают; перенесённый исходный binary64 бюджет площади не
+приравнивается точно к новому `native_area * R²`.
+
+Сводка: [validation_summary.json](analysis/geometric_native_first_entry_validation/release_validation_02/validation_summary.json).
+Проверки: [receipt.json](analysis/geometric_native_first_entry_validation/release_gates_02/receipt.json).
+Свежий контроль: [report.json](analysis/geometric_native_first_entry_validation/control_release_02/report.json).
+Независимый аудит: [independent_first_entry_receipt.json](analysis/geometric_native_first_entry_validation/control_release_02/independent_first_entry_receipt.json).
+Полный первый вход: [first_entry_sweep.json](analysis/geometric_native_first_entry_validation/control_release_02/first_entry_sweep.json).
+Материальное состояние: [material_state.json](analysis/geometric_native_first_entry_validation/control_release_02/material_state.json).
+Настоящие конечные вакансии: [endpoint_material_queries.json](analysis/geometric_native_first_entry_validation/control_release_02/endpoint_material_queries.json).
+Хеши всех **83 артефактов**: [artifact_manifest.json](analysis/geometric_native_first_entry_validation/release_validation_02/artifact_manifest.json).
+SHA сводки: `be3ca204bde5d44d8c69bee4ef3def46f4600517fca33600c0c70fca0e63c98a`.
+
+Повторить из корня репозитория; все выходные пути должны быть новыми:
+
+```bash
+.venv/bin/python analysis/geometric_native_first_entry_validation/run_release_gates.py --workers 3 --out /tmp/moon_first_entry_gates
+
+.venv/bin/python analysis/geometric_native_first_entry_validation/run_first_entry_control.py --out /tmp/moon_first_entry_control
+
+.venv/bin/python analysis/geometric_native_first_entry_validation/independent_first_entry_audit.py --control /tmp/moon_first_entry_control --out /tmp/moon_first_entry_control/independent_first_entry_receipt.json
+
+.venv/bin/python analysis/geometric_native_first_entry_validation/consolidate_validation.py --gate /tmp/moon_first_entry_gates --control /tmp/moon_first_entry_control --audit /tmp/moon_first_entry_control/independent_first_entry_receipt.json --out /tmp/moon_first_entry_validation
+```
+
+**Следующий шаг на момент этой проверки:** физические трассы и оба tips входящего
+материала, сохранение пластической памяти и работы при смене берегов; затем
+подключение неявных областей к силовому registry/support, принятый нативный
+силовой интервал и joint restart. Пункт 1 частичный; пункты 2–6 не закрыты.
+
+## Сохранённая проверка полных исходных доменов — 02.10.2026
+
+**536 целевых тестов прошли за 901,94 с**: прежние 312 и 224 новые проверки
+общей временной истории точки, полного журнала, всей области погружения и
+независимого оракула. Все **643 Python-исходника** совпадают до/после тестов
+и настоящего контроля. Все прежние **632 файла не изменены**; добавлены
+11 Python-файлов. Полный профиль проекта здесь не запускался.
+Повторно проверены девять восстановленных источников: **2 110 696 байт**.
+
+Свежий контроль с заново решённым исходным силовым кандидатом прошёл за
+**766,24 с**. Кандидат и допуск совпадают с прежними сохранёнными полями;
+полные Omega и исходная механическая память сохранены. Журнал охватывает
+**8 исходных фрагментов, 5 конечных пар перекрытий и 7 геометрических
+вакансий**, с обоими исходными материальными pullback каждой пары.
+Каждая вакансия имеет строго внутреннюю точку, проверенную против всех
+восьми движущихся областей. Положительные тонкие части не удаляются порогом
+площади. Сохранены **66 полных временных сертификатов точек и 157 запросов**.
+Это исполняемые истории выбранных точек, не сертификация каждой точки сферы.
+
+Для пары `6 → 2` доказана вся положительная двумерная область погружения
+за интервал, около **2,099268969e-7 ср**, или **0,002099269 км²** при радиусе
+100 км. Начальная одномерная контактная дуга сохраняется отдельно.
+Положительные промежуточные области `6 → 3 → 2` и `5 → 1` доказывают
+необходимость истории принимающего материала и первого входа. Первая —
+внутренний переход внутри owner 0, вторая действительно входит и выходит
+из owner 0 и отсутствует в конечном loss. Равенство полного swept domain
+конечному overlap для `6/2` не распространяется на общий перенос.
+
+Независимый аудит прошёл за **89,41 с**: точные рациональные ряды и
+Bernstein-оценки воспроизводят **436 доказательных ячеек и 57 ненулевых
+корней** всех 66 сохранённых сертификатов и все 157 запросов. Отдельно
+проверены полный конус `6/2`, его площадь и четыре условных материальных
+дополнения, обе положительные промежуточные области. Исходные восемь
+фрагментов, пять endpoint-пар и семь вакансий проверены независимым
+Rodrigues/BSP-расчётом с **500 десятичными знаками**. Последняя проверка
+численная: она не объявляется независимым точным доказательством общего
+нативного разбиения. Силовой решатель независимо не реализован.
+
+Четыре побайтные пары совпадают: полный журнал, сертификат всей области
+`6/2`, временные запросы точек и исходное силовое состояние после отказа.
+Это диагностические replay, не принятый нативный силовой checkpoint.
+Принятых нативных силовых интервалов **0**, принятой работы источника
+**0 Дж**; глобальные материал, архив и механическая память не обновлены.
+Семь геометрических вакансий не подменяют настоящие материальные вакансии
+после одноразового списания. Горячее заполнение в конце интервала остаётся
+объявленным следующим действием; новых parcel этот журнал не создаёт.
+
+Сводка: [validation_summary.json](analysis/geometric_native_full_domain_validation/release_validation_01/validation_summary.json).
+Проверки: [receipt.json](analysis/geometric_native_full_domain_validation/release_gates_01/receipt.json).
+Свежий контроль: [report.json](analysis/geometric_native_full_domain_validation/control_release_01/report.json).
+Независимый аудит: [independent_domain_receipt.json](analysis/geometric_native_full_domain_validation/control_release_01/independent_domain_receipt.json).
+Журнал: [full_domain_journal.json](analysis/geometric_native_full_domain_validation/control_release_01/full_domain_journal.json).
+Вся область `6/2`: [full_swept_domain.json](analysis/geometric_native_full_domain_validation/control_release_01/full_swept_domain.json).
+Контрпример конечному loss: [swept_only_material_patch.json](analysis/geometric_native_full_domain_validation/control_release_01/swept_only_material_patch.json).
+Хеши исходников и артефактов: [artifact_manifest.json](analysis/geometric_native_full_domain_validation/release_validation_01/artifact_manifest.json).
+
+Повторить из корня репозитория; все выходные пути должны быть новыми:
+
+```bash
+.venv/bin/python analysis/geometric_native_full_domain_validation/run_release_gates.py --out /tmp/moon_full_domain_gates
+
+.venv/bin/python analysis/geometric_native_full_domain_validation/run_full_domain_control.py --out /tmp/moon_full_domain_control
+
+.venv/bin/python analysis/geometric_native_full_domain_validation/independent_domain_audit.py --control /tmp/moon_full_domain_control --out /tmp/moon_full_domain_control/independent_domain_receipt.json
+
+.venv/bin/python analysis/geometric_native_full_domain_validation/consolidate_validation.py --gate /tmp/moon_full_domain_gates --control /tmp/moon_full_domain_control --audit /tmp/moon_full_domain_control/independent_domain_receipt.json --out /tmp/moon_full_domain_validation
+```
+
+**Следующий шаг на момент этой проверки:** полные области первого входа к
+владельцу с принимающим происхождением, одноразовое списание, настоящие
+материальные вакансии и конечное горячее заполнение, связанные с физическими
+парами и их памятью/работой; затем принятый нативный силовой интервал и joint
+restart. Пункт 1 частичный, пункты 2–6 не закрыты.
+
+## Сохранённая проверка локальной донорской истории — 02.10.2026
+
+**312 целевых тестов прошли за 366,25 с**, включая 108 новых проверок
+донорской области, локальной материальной истории и независимого оракула.
+Все **632 Python-исходника** совпадают до/после и с текущими файлами.
+Прежние 624 и 615 исходников, а также 417+278 и 421 исходник не изменились.
+В прежнем наборе 427 остаётся только ранее сделанное изменение
+`geometric_native_polygons.py`. В этом продолжении добавлены восемь новых
+Python-файлов; существующий Python-код не изменён. Прежние наборы 175/317
+целиком и полный профиль 1284 здесь не запускались заново. Повторно проверены
+девять упакованных источников: **2 110 696 байт**.
+
+Контроль с заново решённым исходным силовым кандидатом прошёл за **72,65 с**.
+Кандидат совпал с прежним по всем его сохранённым полям; полные Omega,
+подготовка, четыре исходные трассы и заданный источник сохранены.
+Доказаны ровно три события для каждой точки настоящей двумерной области
+`octant:6 → octant:2`; все остальные границы приёмника допустимы во всём времени.
+Первый вход имеет строго положительную нижнюю границу времени. Локальный
+архив хранит одну область и один cohort через все три события. Четыре бюджета
+сохраняются общей символической нативной площадью и дополнением родителя;
+это не численное интегрирование частичного объёма внутри временного окна.
+Исполняемые запросы двух точек подтверждают разные времена первого входа
+при одном общем времени расчёта. Малые приращения возраста не теряются.
+
+Пять побайтных пар совпадают: две пары локальных checkpoint, временные
+запросы области, запросы отдельных точек и исходное силовое состояние после
+отказа. Локальный checkpoint: **SHA `7b9bd37a…9564f`**.
+Глобальный `NativeBuriedRegistry` по-прежнему содержит **0 записей и
+0 транзакций**. Принятых нативных силовых интервалов **0**, принятой работы
+источника **0 Дж**; одно локальное архивное распределение не объявляется
+принятой глобальной потерей. Давление и скольжение вновь проверены на всех
+четырёх исходных трассах во всём интервале в явно объявленной невязкой модели.
+
+Независимый аудит использует точные рациональные матричные ряды и отдельный
+Rodrigues-расчёт с **500 десятичными знаками**. Он проверяет полные исходные
+домены, положительную двумерную площадь, полный счёт корней для всей области,
+пять материальных точек, четыре символических бюджета, одну архивную когорту
+и сохранение внешних механических данных. Он не решает силовую/конститутивную
+задачу заново. Сводная проверка связывает по SHA **29 артефактов**.
+
+Артефакты текущего результата:
+
+- [Сводная проверка и неизменный шестипунктный план](analysis/geometric_native_material_history_validation/validation_summary.json).
+- [312 тестов и исходники до/после](analysis/geometric_native_material_history_validation/release_gates_01/receipt.json).
+- [Настоящий силовой кандидат и локальная история материала](analysis/geometric_native_material_history_validation/material_control_release_01/report.json).
+- [Сертификат всей выбранной двумерной донорской области](analysis/geometric_native_material_history_validation/material_control_release_01/donor_patch_sweep.json).
+- [Локальный checkpoint с материальным и механическим происхождением](analysis/geometric_native_material_history_validation/material_control_release_01/material_history_checkpoint.json).
+- [Исполняемая история отдельных материальных точек](analysis/geometric_native_material_history_validation/material_control_release_01/material_point_queries.json).
+- [Независимый геометрический и материальный аудит](analysis/geometric_native_material_history_validation/material_control_release_01/independent_donor_receipt.json).
+- [Хеши 29 итоговых артефактов](analysis/geometric_native_material_history_validation/artifact_manifest.json).
+
+Воспроизводимый запуск требует новых выходных каталогов:
+
+```bash
+.venv/bin/python analysis/geometric_native_material_history_validation/run_release_gates.py --out /tmp/native-material-history-tests
+.venv/bin/python analysis/geometric_native_material_history_validation/run_material_history_control.py --out /tmp/native-material-history
+.venv/bin/python analysis/geometric_native_material_history_validation/independent_donor_sweep_audit.py --probe analysis/geometric_native_underthrust_validation/force_control_release_02/force_candidate_refusal_probe.json --certificate /tmp/native-material-history/donor_patch_sweep.json --history /tmp/native-material-history/material_history_checkpoint.json --initial /tmp/native-material-history/original_force/initial.json --candidate /tmp/native-material-history/original_force/force_candidate.json --support /tmp/native-material-history/original_force/constitutive_time_support.json --out /tmp/native-material-history/independent_donor_receipt.json
+```
+
+Оставшаяся работа пункта 1 — полные донорские области и поперечные полосы,
+хронология вакансий/горячего рождения, сохранённые и новые физические пары,
+после полного допуска — принятый нативный силовой интервал и joint restart.
+Модель образования новых разломов из напряжений остаётся пунктом 4;
+пункты 2–6 не закрыты.
+
+## Сохранённая проверка событий контакта во времени — 02.10.2026
+
+**175 целевых тестов прошли за 284,05 с**, включая 89 новых проверок событий,
+временной конститутивной поддержки и независимого оракула. Все **624
+Python-исходника** gate совпадают до/после и с текущими файлами. Прежние
+615 исходников силового этапа, 417+278 и 421 исходник не изменились.
+В прежнем наборе 427 остаётся только ранее сделанное изменение
+`geometric_native_polygons.py`; новых изменений существующего Python-кода нет.
+Прежние 317 тестов и полный профиль 1284 теста в этом продолжении не
+запускались заново; их сохранённые свидетельства не заменяют текущий gate.
+Повторно проверены девять упакованных источников: **2 110 696 байт**.
+
+Самостоятельный контроль событий прошёл за **68,02 с**; 441 исходник и
+исходный probe не изменились. Доказано полное расписание на выбранной
+настоящей принимающей дуге, включая положительную полосу выхода/возврата.
+Проверены четыре класса материальных координат; три пары сериализованных
+сертификатов/событий совпадают побайтно. Это replay диагностики событий,
+не restart принятого силового состояния. Независимый оракул с 500 десятичными
+знаками подтвердил интервалы времени максимума и отношения координат,
+сохранив все компоненты исходных вращений. Дополнительный независимый аудит
+именно сохранённой материальной координаты подтвердил строгие знаки по обе
+стороны обоих вычисленных интервалов времени выхода и возврата.
+
+Живой силовой контроль и временные сертификаты прошли за **89,66 с**.
+Настоящий кандидат заново решён с исходным источником и совпал с прежним
+кандидатом по всем его сохранённым полям. Четыре исходные трассы проверены
+целиком на всём интервале: нижняя граница давления `2717,114758465158 Па`,
+верхняя граница пластической скорости `-2,8205578684951356e-8 м/с`.
+Это сертификат явно объявленной невязкой траектории свободных anchors.
+Он не разрешает геометрическую транзакцию и не переносит историю временного
+погружения. Начальный и сохранённый после отказа checkpoint совпадают:
+**93 919 байт**, SHA `e3e17ca7…432d0`. Новых принятых нативных силовых
+интервалов **0**, принятой работы источника **0 Дж**; память кандидата не принята.
+
+Артефакты текущего результата:
+
+- [Сводная проверка и неизменный шестипунктный план](analysis/geometric_native_contact_event_validation/validation_summary.json).
+- [175 тестов и исходники до/после](analysis/geometric_native_contact_event_validation/release_gates_01/receipt.json).
+- [Расписание событий и побайтный replay](analysis/geometric_native_contact_event_validation/event_control_release_01/report.json).
+- [Независимое подтверждение интервальных оценок](analysis/geometric_native_contact_event_validation/event_control_release_01/independent_event_receipt.json).
+- [Строгие независимые интервалы событий той же координаты](analysis/geometric_native_contact_event_validation/event_control_release_01/same_query_event_receipt.json).
+- [Живой силовой кандидат и четыре временных сертификата](analysis/geometric_native_contact_event_validation/time_support_release_01/report.json).
+- [Сохранённые временные сертификаты](analysis/geometric_native_contact_event_validation/time_support_release_01/constitutive_time_support.json).
+- [Хеши итоговых артефактов](analysis/geometric_native_contact_event_validation/artifact_manifest.json).
+
+Воспроизводимый запуск требует новых выходных каталогов:
+
+```bash
+.venv/bin/python analysis/geometric_native_contact_event_validation/run_release_gates.py --out /tmp/native-contact-event-tests
+.venv/bin/python analysis/geometric_native_contact_event_validation/run_event_control.py --out /tmp/native-contact-events
+.venv/bin/python analysis/geometric_native_contact_event_validation/independent_event_oracle.py --control /tmp/native-contact-events --out /tmp/native-contact-events/independent_event_receipt.json
+.venv/bin/python analysis/geometric_native_contact_event_validation/run_time_support_control.py --out /tmp/native-contact-time-support
+```
+
+На момент этого событийного этапа следующим шагом был перенос материала и
+архивной истории через доказанные события. Этот переход закрыт локальной
+донорской историей; теперь добавлены полные исходные домены и доказательство
+всей области `6/2`. На момент этого этапа оставались полные области
+первого входа, принимающее происхождение, материальные вакансии, конечное
+горячее заполнение и физические пары перед принятым силовым checkpoint.
+
+## Сохранённая проверка нативного силового кандидата — 02.10.2026
+
+**317 целевых тестов прошли за 324,97 с**, включая 109 новых проверок нагрузки,
+архива/заделок, пространственного допуска, силового кандидата и joint IO.
+Все **615 Python-исходников** целевого gate совпали до/после. Из прежних
+427 исходников изменён только `geometric_native_polygons.py`: точное
+сокращение обратной истории и инцидентность при общем повороте. Прежние
+**417+278** и **421** исходников повторно проверены и не изменились.
+Полный прежний профиль 1284 теста здесь не запускался повторно; 317 — целевой
+целевой прогон, а не весь проектный профиль. Девять упакованных источников
+по-прежнему проверены: **2 110 696 байт**.
+
+Самостоятельный силовой контроль прошёл за **64,49 с**, 434 исходника совпали
+до/после. Две попытки — прямой кандидат и тот же кандидат после restart —
+воспроизводят один настоящий отказ. Принятых нативных силовых интервалов **0**,
+принятая работа источника **0 Дж**, новая принятая память отсутствует.
+Три пары начальных checkpoint совпадают побайтно: **93 891 байт**, SHA
+`593907dd…b06a19`. Полные силовой кандидат и аудит прямого/restart отказа одинаковы.
+Работа тяги кандидата `8.469879637103078e16 Дж`, сопротивление
+`8.469878939936646e16 Дж`; независимые суммы по samples совпадают с engine.
+Угловой остаток `7.44e-17`, поперечный `6.48e-16`; конечная ошибка anchors
+`1.03e-8 м` ниже заданного предела `1e-4 м`. Эти числа не добавлены к принятой
+истории.
+
+Независимый Decimal500/Rodrigues-аудит того же сохранённого кандидата подтвердил
+положительную скорость `+8.682890018650322e-30 км/млн лет` и первоначальный выход
+конца дуги из донорской области. Четвертные значения зазора отрицательны;
+конец возвращается к границе к окончанию интервала. Это независимое численное
+свидетельство, а не сертификат непрерывного расписания событий и не разрешение
+на поддвиг. Проверка этого предыдущего этапа связывает по SHA **17 артефактов** его gate,
+силового контроля и независимого аудита.
+
+Артефакты предыдущего силового результата:
+
+- [Сводная проверка и прежний шестипунктный план](analysis/geometric_native_underthrust_validation/validation_summary.json).
+- [317 целевых тестов и исходники до/после](analysis/geometric_native_underthrust_validation/release_gates_02/receipt.json).
+- [Настоящий кандидат, атомарный отказ и начальный restart](analysis/geometric_native_underthrust_validation/force_control_release_02/report.json).
+- [Полный силовой кандидат и нативный аудит](analysis/geometric_native_underthrust_validation/force_control_release_02/force_candidate_refusal_probe.json).
+- [Независимый Decimal500-аудит открытия](analysis/geometric_native_underthrust_validation/force_control_release_02/independent_refusal_receipt.json).
+- [Хеши 17 итоговых артефактов](analysis/geometric_native_underthrust_validation/artifact_manifest.json).
+
+Воспроизводимый запуск требует новых выходных каталогов:
+
+```bash
+.venv/bin/python analysis/geometric_native_underthrust_validation/run_release_gates.py --out /tmp/native-underthrust-tests
+.venv/bin/python analysis/geometric_native_underthrust_validation/run_native_underthrust_control.py --out /tmp/native-underthrust-control
+.venv/bin/python analysis/geometric_native_underthrust_validation/independent_refusal_audit.py --probe /tmp/native-underthrust-control/force_candidate_refusal_probe.json --out /tmp/native-underthrust-control/independent_refusal_receipt.json
+```
+
+Первый запуск gate прерван для окончательной фиксации текста независимого
+оракула; первый control дошёл до физических/байтовых проверок, но не завершил
+отчёт из-за относительного пути. Они сохранены в каталогах `_01` как
+неокончательные попытки. Итоговыми являются только приведённые выше `_02`.
+Физический закон и компоненты Omega ради прохождения не менялись.
+
+## Сохранённая проверка нативных отсечений — 02.10.2026
+
+**208 целевых проверок прошли за 75,73 с**, включая **66 новых проверок**
+нативных поворотов, отсечений, контактов, материального переноса и restart.
+Проверены положительные дочерние области при толщине `1e-150`, хотя мировые
+binary64-вершины совпадают. Полный вектор с компонентом Omega `1e-300`
+создаёт настоящее положительное отсечение; этот компонент не отбрасывается.
+Четыре последовательные дифференциальные транзакции с действительными
+потерями, рождениями и сохранёнными детьми повторяются из checkpoint побайтно.
+
+Самостоятельный контроль прошёл за **765,74 с**: **9 геометрических шагов**
+в трёх опытах (`1 + 4 + 4`) и **9 побайтно совпавших пар checkpoint**.
+Четыре повторных шага с полными исходными Omega и `dt = 1e-3 с` дали
+**23 потери, 27 рождений, 46 конечных фрагментов и 39 контактных дуг**.
+Максимальный остаток бюджета отдельной материальной истории — `1.58e-16`;
+минимальная положительная потеря — `2.264538e-115 км²`. Исходный холодный
+ребёнок сохраняется. Без явно объявленной геометрической полярности новых
+равных горячих соседей второй шаг отклоняется до birth callback.
+Новых силовых интервалов поддвига — **0**.
+
+Нативный формат хранит целочисленные исходные лучи/нормали, рецепты пересечений
+двух наследуемых плоскостей и полный порядок поворотов. Рациональный SO(3)
+служит вычислительной оценкой; знак каждого нетривиального предиката доказывается
+интервалом для заданного аналитического вращения. Домен каждого приращения —
+`theta <= 1/4 рад`, бюджет точности — 64–1024 десятичных разрядов.
+Недоказанная геометрия или непредставимый положительный резервуар дают отказ.
+Положительные фрагменты не удаляются по порогу площади.
+
+Покрытие сферы проверяется геометрическим вычитанием всех footprints из восьми
+точных октантов. Удаление полосы площадью `5e-36 км²` отклоняется, даже если
+сумма binary64-площадей не меняется. Четыре бюджета проверяются по каждой
+материальной истории с нулевым абсолютным допуском. Независимо проверены
+100 отсечений, 576 сочетаний дуг и 29 отказов/границ форматов.
+Независимый Decimal500-аудит проверил 18 checkpoint, 325 сохранённых геометрий,
+28 потерь и 129 контактных дуг. Ошибка материальной площади относительно
+независимого расчёта не превышает `2.46e-16`. Его отдельный wrapper подтвердил
+430 неизменившихся исходных файлов, 33 артефакта и все девять пар байтов.
+
+Все **427 файлов** текущего кода/тестов/скриптов совпали до/после целевой
+проверки. **421 файл** прошлого intrinsic-этапа и прежние **417+278 файлов**
+также не изменились. Девять упакованных источников проверены. Полный текущий
+профиль только собран: **1386 случаев из 65 файлов**; целиком он здесь не запускался.
+
+Артефакты:
+
+- [Сводная проверка и неизменный шестипунктный план](analysis/geometric_native_validation/validation_summary.json).
+- [208 целевых проверок с хешами до/после](analysis/geometric_native_validation/release_gates/focused_receipt.json).
+- [Девять принятых геометрических шагов и точный restart](analysis/geometric_native_validation/native_control_release_01/report.json).
+- [Независимый аудит всех checkpoint, потерь и дуг](analysis/geometric_native_validation/release_independent_geometry_receipt.json).
+- [Хеши исходников, артефактов и девять пар байтов](analysis/geometric_native_validation/release_independent_gate_receipt.json).
+- [Независимые отсечения и дуги](analysis/geometric_native_validation/independent_boundary_and_math/math_receipt.json).
+- [Проверки покрытия, неизменяемости и публичных входов](analysis/geometric_native_validation/independent_boundary_and_math/boundary_receipt.json).
+- [Аудит исходных лучей прежнего checkpoint](analysis/geometric_native_validation/literal_saved_epoch_audit/receipt.json).
+
+После этого геометрического подэтапа выполнено подключение нативных опор
+к силовому wrapper; первый кандидат дал строгий отказ `mixed_convergence`.
+Расписание пересечений выбранной действительной дуги и невязкая временная
+поддержка доказаны, а локальная двумерная донорская история теперь реализована.
+Полные области первого входа, одноразовый архив, настоящие вакансии и
+конечное горячее заполнение теперь реализованы в отдельном неявном
+материальном состоянии. Актуальный остаток — связь обоих физических берегов
+с входящим материалом, памятью и работой, силовая интеграция неявной
+транзакции, принятый силовой интервал и joint restart.
+Принятие нового нативного силового интервала пока не доказано.
+Образование разломов из напряжений — пункт 4.
+
+## Сохранённая проверка общей собственной геометрии — 02.10.2026
+
+**142 целевые проверки прошли за 39,02 с**, включая **36 новых проверок**
+собственной геометрии, полных поворотов, строгой схемы и restart.
+Самостоятельный контроль за **23,90 с** принял **8 общих геометрических шагов**
+на поверхности из последнего физического checkpoint: **16 фрагментов,
+14 материальных историй**. Минимальная сохранённая площадь —
+**`2.877094441045106e-44 км²`**. Все четыре резервуара сохранены точно;
+три пары checkpoint совпадают побайтно. Новых силовых шагов поддвига — **0**.
+
+Независимый Decimal220-аудит проверил 64 формы/позы, восемь крайних углов и
+три внешних режима Decimal. Ошибка собственной площади относительно независимого
+расчёта не превышает `1.11e-16`. Проверены ненулевой Omega `5e-324` и произведение
+Omega/dt порядка `1e616`, не представимое в binary64. Мировая проекция служит
+для отображения; сертификата её пространственного допуска пока нет.
+Ещё 19 независимых проверок подтверждают неизменяемость состояния, отказ старого
+writer до создания файла и отклонение подменённых выведенных часов/материала.
+
+До/после совпали **421 файл** текущего кода/тестов/скриптов и оба источника
+контрольных программ. Все **417 прежних файлов** и **278 прежних дополнительных
+файлов** также совпадают с полным профилем 01.10. Все девять упакованных
+источников проверены. На момент этого этапа полный профиль собирал
+**1320 случаев из 62 файлов**, но целиком тогда не перезапускался. Число 1284 ниже относится
+к прежнему полному прогону, а не к новому.
+
+Артефакты:
+
+- [Сводная проверка и неизменный шестипунктный план](analysis/geometric_intrinsic_validation/release_validation_summary.json).
+- [142 целевые проверки с хешами до/после](analysis/geometric_intrinsic_validation/release_gates/focused_receipt.json).
+- [Восемь общих геометрических шагов и точный restart](analysis/geometric_intrinsic_validation/released_common_motion_control/report.json).
+- [Независимый численный аудит](analysis/geometric_intrinsic_validation/release_independent_audit_receipt.json).
+- [Неизменяемость и границы форматов](analysis/geometric_intrinsic_validation/opaque_format_boundary_audit_receipt.json).
+- [Сборка полного профиля без выполнения](analysis/geometric_intrinsic_validation/release_collection_summary.json).
+
+На момент этого предыдущего этапа следующим шагом были нативные отсечения и
+наследование опор; они реализованы в продолжении выше. Закон новых материальных
+пар и подключение нативного переноса к силовому checkpoint остаются в пункте 1.
+Пункты 2–6 не закрыты.
+
+## Сохранённая проверка пространственного поддвига — 01.10.2026
+
+Предыдущий полный переносимый профиль: **1284 проверки прошли за 1643,71 с**.
+Четыре независимых процесса выполнили по 321 случаю из прежних 60 файлов;
+точное покрытие подтверждено без пропусков и повторов. До/после совпали все
+**417 файлов кода/тестов/скриптов** и **278 дополнительных файлов**.
+Receipt: `analysis/geometric_underthrust_validation/cloud_test_receipt.json`.
+Сводная проверка текущих хешей, сохранений и исходного шестипунктного плана:
+`analysis/geometric_underthrust_validation/validation_summary.json`.
+
+Исправлены построение геометрических опор и приоритет точного конца короткой
+контактной дуги перед приблизительной инцидентностью. Обе прежние регрессии
+прошли в окончательном профиле; **38 целевых проверок прошли за 204,55 с**.
+Неуспешные полные прогоны сохранены отдельно. Исходные доказательства находятся в
+`analysis/geometric_underthrust_validation/slab_probe_geometry_audit/`.
+
+- Самостоятельный контроль 01.10: **passed**, **686,36 с**,
+  `final_eligible=true`. Принят **один** дифференциальный силовой
+  интервал `1e6 с` (около **11,6 суток**): **5 новых архивных когорт,
+  6 горячих рождений**, поддвиг
+  **0,004198537938 км²**. Все новые архивные опоры разрешены.
+- Угловой/поперечный остатки: **7,44e-17 / 4,93e-16**; остаток работы интервала
+  **5,01e-17**. Независимый материальный остаток не превышает **1,28e-16**.
+  Ошибка точных конечных anchors **1,02e-8 м** при явном пределе **1e-4 м**.
+- Загрузка INITIAL воспроизводит весь принятый FIRST результат. Все три пары
+  checkpoint совпадают побайтно. Повторный и изменённый источники после FIRST
+  дают одинаковые физические отказы напрямую и после загрузки, без изменения
+  состояния, файлов, часов или принятой работы. Положительного многократного
+  дифференциального продолжения этот опыт не доказывает.
+- Строгая проверка текущей пары сравнивает JSON-типы с физическим replay;
+  переподписанная подмена числовых часов на boolean отклоняется.
+- Проверены **164 хеша отчёта**, все **417 файлов** кода/тестов/скриптов до/после,
+  **5 хешей checkpoint**, **9 исходных файлов, 2 110 696 байт**. Окончательный
+  отчёт: `analysis/geometric_underthrust_validation/cloud_control/report.json`;
+  SHA-256 **`bbab7913e7c495755a59c128f635e5ee83fa73c54991b4a380607859070d4dc7`**.
+  Независимый аудит: `analysis/geometric_underthrust_validation/final_control_audit_receipt.json`.
+- Временный геометрический кандидат имеет доказанное полное вращение и
+  погрешность от фактических операций. Его сохранение запрещено; обычный loader
+  и конечный partition сохраняют строгий допуск площади. Аудит:
+  `analysis/geometric_underthrust_validation/rigid_candidate_independent_audit_receipt.json`.
+  Исходные Decimal-контрпримеры сохранены в
+  `analysis/geometric_underthrust_validation/numerical_precision_audit/`.
+
+## Историческая проверка сегментов источника и принятого движения
+
+Эта проверка относится к предыдущей версии. Её хэши и 1039 тестов не заменяют
+проверку текущего пространственного поддвига и исправленного геометрического ядра.
+
+- Самостоятельный контроль завершился за **486,89 с**, в том числе во время
+  отсутствия соединения с exec-server. Готовый отчёт проверен после восстановления
+  доступа; повторный контроль не запускался.
+- Четыре интервала с независимо меняющимися T, drag и thermal lid продолжают
+  исходную эпоху с ненулевой пластической памятью. 16 точек, 64 скользящих
+  состояния. Остатки момента, обобщённых сил и работы: **5,22e-15**,
+  **1,38e-15**, **6,94e-15**. Независимый точный упругий oracle: **2,89e-15**.
+- Прежняя работа не переписывается новым источником: правильная сумма
+  **8,0301e14 Дж**, ошибочное `T_latest·q_total` — **−1,0359e14 Дж**.
+  Повороты системы координат проверяются отдельно от физического движения.
+- Настоящее общее силовое движение: **3 принятых шага**, **2 прежние когорты**,
+  **3 настоящие архивные транзакции**. Источник жёсткого мантийного движения
+  явно задан до каждого решения и собран на настоящей текущей поверхности.
+  Положительный интерфейс ненагружен; остатки момента и работы не превышают
+  **1,34e-16** и **1,94e-16**. Все четыре материальных остатка нулевые.
+  Нового поддвига и новых когорт нет; дифференциальный результат отклонён атомарно.
+- Три restart-пары дают одинаковые байты: core с меняющейся нагрузкой,
+  непустой исходный архив, настоящая текущая поверхность с движущимся архивом.
+  Все **154 хеша кода**, **10 хешей checkpoint**, исходные **9 файлов,
+  2 110 696 байт** совпадают. Независимая проверка восстановленного отчёта:
+  `analysis/geometric_segmented_bending_validation/cloud_control/recovered_control_audit_receipt.json`.
+- **1039 профильных тестов прошли за 1419,90 с** после восстановления связи,
+  включая **186 новых проверок** этого подэтапа. Receipt удостоверяет, что код
+  и тесты не менялись во время прогона. Итог:
+  `analysis/geometric_segmented_bending_validation/final_cloud_tests.log`
+  и `cloud_test_receipt.json`; частичный прогон до разрыва не является итоговым.
+- Расширенные прежние механизмы: **223 passed, 1 failed за 37,82 с**.
+  Прежний отказ noisy slab constraint имеет точно то же значение **2,5054e-11**
+  при пороге **2e-11**, что и на исходном HEAD. Solver, test и fixture по-прежнему
+  совпадают по хешам с исходным HEAD; код и допуски не менялись.
+  Базовое свидетельство: `analysis/geometric_fault_transport_validation/legacy_slab_constraint_baseline_receipt.json`.
+
+Итог: `analysis/geometric_segmented_bending_validation/validation_summary.json`.
+Отчёт: `analysis/geometric_segmented_bending_validation/cloud_control/report.json`.
+Полные checkpoint: `results/cloud_segmented_bending_control_final/`.
+На момент этого предыдущего этапа пункт 1 оставался частично выполненным;
+следующим физическим подэтапом был пространственный допуск дифференциального поддвига.
+
+## Проверка предыдущего конечного материального переноса
+
+- **853 профильных теста прошли за 859,45 с**, включая **132 новые проверки**
+  материального атласа, непрерывных берегов, predictor receipts и полного IO.
+- Самостоятельный контроль: четыре исходных механических шага по `1e10` с,
+  16 точек, 60 скользящих состояний, два смешанных случая вдоль дуги.
+  Остатки момента, обобщённых сил и работы — **3,05e-15**, **3,83e-16**,
+  **4,40e-15**. Все четыре материальных остатка равны нулю.
+- Четыре независимых больших некоммутирующих SO(3)-поворота сохраняют frames,
+  clamps и footprints в бюджете **3,5e-16**. Ошибка замены композиции суммой
+  vectors — **0,0793**. Работа совместно повёрнутого представления меняется
+  на **1,46e-16**; это не продолжение с неподвижным мантийным источником.
+- При прежнем неподвижном мантийном поле пересобранный момент отличается
+  от совместно повёрнутого старого на **73,89%**. Прежняя работа сохраняется.
+  Дифференциальное движение полушарий сохраняет границу как множество,
+  но разносит материальные пары на **39,73 км** по всей дуге.
+- Основной restart и отдельный опыт с двумя настоящими слэбовыми когортами
+  дали побитово одинаковые checkpoint. Исходные когорты, события и часы
+  архива не изменяются. Принято **0** конечных геометрических шагов.
+- Исправлены непосредственно выявленные численные ошибки: сокращение
+  координат концов очень коротких дуг и несогласованный SO(3)-допуск после
+  многих поворотов. Проверяются реальные полосы `1e-10`/`1e-12` радиан
+  и 60 последовательных общих поворотов с точным restart. История и
+  сохранённые матрицы не нормализуются или подгоняются.
+- Расширенный legacy-набор: **223 passed, 1 failed**. Старый тест
+  `young_slab_constraint_noisy_support.json` идентично падает на исходном
+  HEAD: primal violation **2,5054e-11** при тестовом пороге **2e-11**.
+  Solver, test и fixture совпадают по SHA-256; independent primal oracle
+  и штатная KKT-проверка проходят. Эта подсистема и её допуски не менялись.
+  Свидетельство: `analysis/geometric_fault_transport_validation/legacy_slab_constraint_baseline_receipt.json`.
+- После всех опытов проверены **9 исходных файлов, 2 110 696 байт**;
+  все **146 SHA-256** окончательного контроля совпадают с текущим кодом.
+
+Результаты:
+`analysis/geometric_fault_transport_validation/validation_summary.json`,
+`analysis/geometric_fault_transport_validation/cloud_control/report.json`,
+`analysis/geometric_fault_transport_validation/final_cloud_tests.log`.
+Полные checkpoint: `results/cloud_fault_transport_control_final_v2/`.
+Предыдущие отчёты остаются историческими; промежуточные smoke и остановленный
+`cloud_fault_transport_control_final/` не являются итоговыми свидетельствами.
+
+## Проверка предыдущего изгиба и поперечного контакта
+
+- **721 профильный тест прошёл за 545,41 с**, **177 проверок прежних
+  механизмов — за 18,89 с**. В профиль входят 98 новых проверок изгиба,
+  общего engine, независимого равновесия, рестарта и разделения материала.
+- Связанный контроль: 16 точек, восемь поперечных координат, восемь шагов
+  по 1e10 с, 113 случаев скольжения и восемь смешанных состояний дуг.
+  Максимальный прогиб **15,26 м**, уклон **9,16×10⁻⁴**, поверхностная
+  деформация **1,47×10⁻⁴**. Полосы 20/25 км, Te=4 км, E=70/65 ГПа,
+  nu=0.25/0.23 — явные условия синтетического опыта.
+- Относительные остатки момента **3,36×10⁻¹⁵**, радиальной силы
+  **4,37×10⁻¹⁵**, работы **4,00×10⁻¹⁵**. Независимый точный упругий
+  контроль при Gauss8: ошибка вращения **3,45×10⁻¹⁶**, прогиба **2,89×10⁻¹⁵**.
+- Архив с двумя когортами: 10 → 11 фрагментов, 4 → 5 материальных
+  контактов и те же 16 механических точек. Все четыре материальных
+  остатка — ноль; параметры изгиба, прогибы и история сохранены.
+  Отличие продолжения от неразрезанного опыта **5,89×10⁻¹⁷**.
+  Основной и архивный restart совпали побитово.
+- Прежние средний и распределённый контроли переиграны и сохранили
+  результаты. Расширенный старый тест линейного масштабирования использует
+  норму вектора с прежним допуском 1e-14: переносимая нормализация сетки
+  давала ошибку всего вектора 2,82×10⁻¹⁶ при пограничной компоненте.
+  Закон слэбовых сил не изменён; воспроизведение сохранено отдельно.
+- Все исходные **9 файлов, 2 110 696 байт** проверены по SHA-256 после
+  экспериментов. Сохранённые хеши исполнявшегося кода совпадают с файлами.
+
+Связанный контроль и независимые проверки сохранены в
+`analysis/geometric_bending_contact_validation/cloud_control/report.json`,
+`analysis/geometric_bending_contact_validation/validation_summary.json`,
+`analysis/geometric_bending_contact_validation/final_cloud_tests.log`.
+Новый контроль запускается отдельно:
+
+```bash
+python analysis/geometric_bending_contact_validation/bending_case.py --out results/cloud_bending_contact_control
+```
+
+Параметры закреплений и упругих толщин явно синтетические; недостающие
+поля реального saved50 не назначаются. Предыдущие отчёты сохранены ниже.
+
+## Проверка предыдущего распределённого контактного этапа
+
+- **623 профильных теста прошли за 507,19 с**, **124 проверки прежних
+  механизмов — за 16,18 с**.
+- Связанный контроль: 16 механических точек, восемь шагов, 50 случаев
+  скольжения точки и 26 случаев одновременных запертых/скользящих участков
+  одной физической дуги. Максимальные относительные остатки результирующего
+  момента **7,60×10⁻¹⁶** и работы шага **3,03×10⁻¹⁴**.
+- Независимый упругий контроль полного второго момента дуги: ошибка скорости
+  **2,90×10⁻⁴ → 7,14×10⁻⁸ → 6,88×10⁻¹⁶** при повышении Gauss-порядка
+  2 → 4 → 8. В нелинейном опыте изменение итогового вращения между сетками
+  16/32 и 32/64 точек составило **0,1308%** и **0,01197%**; это наблюдаемая
+  пространственная чувствительность отдельных подготовленных историй,
+  не сертификат сходимости или перенос истории между сетками.
+- Контроль с двумя принятыми слэбовыми когортами: 10 → 11 фрагментов,
+  4 → 5 материальных контактов, те же 16 механических точек и неизменные
+  локальные histories. Четыре материальных баланса имеют нулевой остаток;
+  отличие дальнейшего вращения от неразрезанного расчёта **4,30×10⁻¹⁶**.
+  Обе истории restart дали побитово одинаковые совместные checkpoints.
+- Новый профиль включает физические traces/coverage, точечный solver,
+  независимый полный тензор дуги, Gauss/panel сходимость, изменённые
+  material cuts с ненулевой пластической историей, повороты и sparse IDs.
+- Проверено открытие между узлами при сжатии всех Gauss-точек: атомарный отказ.
+- Проверены механический rebinding и joint restart с непустым архивом,
+  два последовательных разреза, сохранение acceptance registry и продолжение
+  последующей физической транзакции. Старый v1 snapshot без нового реестра читается.
+- Изменение возраста, тепловой толщины, геометрического донора, параметров,
+  history, часов и реестра не превращается в допустимый pure cut.
+- Прежний средний решатель переигран после выделения общего engine:
+  19 случаев скольжения, прежние остатки момента/работы и побитовый restart.
+- После всех экспериментов исходные **9 файлов, 2 110 696 байт** проверены
+  по SHA-256; сохранённые хеши кода совпадают с текущими файлами.
+
+Воспроизводимые итоги:
+`analysis/geometric_distributed_contact_validation/cloud_control/report.json`,
+`analysis/geometric_distributed_contact_validation/validation_summary.json`,
+`analysis/geometric_distributed_contact_validation/final_cloud_tests.log`.
+Все параметры остаются явно синтетическими; недостающие inputs реального
+saved50 не назначаются автоматически. Ниже сохранены результаты прежних этапов.
+
+## Проверка предыдущего глобального контактного этапа
+
+- **535 профильных тестов прошли за 373,94 с** на окончательном коде.
+- **124 проверки прежних базальных, дробных и контактных механизмов**
+  прошли за 12,58 с.
+- Целевые проверки входят в профиль: 26 базальных, 13 глобальных,
+  5 независимых инвариантов. Отдельный прогон инвариантов вместе с
+  24 прежними проверками контактов: **29 passed**, 9,95 с.
+- Связанный синтетический контроль: 8 шагов, 19 случаев скольжения,
+  максимальные остатки результирующего момента **7,88×10⁻¹⁶** и работы
+  шага **4,46×10⁻¹⁴**. Независимое упругое решение: **4,76×10⁻¹⁶**.
+- Прямой расчёт и restart дали побитово одинаковый совместный checkpoint;
+  поверхность и пассивный архив сохранены. Непустой слэбовый архив отдельно
+  проверен на отсутствие изменений. Шаг вдвое меньше изменяет итоговую
+  малую вращательную координату на **1,33%**; сходимость ещё не заявлена.
+- Проверены поворот геометрии вместе с физическим источником и перенумерация
+  владельцев. Исправлена прежняя allocation по `max(owner)` при извлечении
+  контактов без скоростей: владельцы 7 и `10^12` используют матрицу 6×6.
+- Restart независимо сверяет работу `T·q`, первоначальную нагрузку,
+  часы и сохранённую направленную историю; взаимокомпенсирующая подмена
+  энергетических записей отклоняется.
+- После всех проверок подтверждены исходные байты **9 файлов,
+  2 110 696 байт**. Кодовые хеши итогового контроля совпадают с текущими файлами.
+
+Результаты:
+`analysis/geometric_contact_dynamics_validation/validation_summary.json`,
+`analysis/geometric_contact_dynamics_validation/cloud_control/report.json`,
+`analysis/geometric_contact_dynamics_validation/final_cloud_tests.log`.
+Полные checkpoint текущей копии:
+`results/cloud_global_contact_control_final_sparse/`.
+В этой итерации реальному saved50 недостающие плоскости, контактные
+начальные данные и тепловые толщины не назначались. Его прежняя проба ниже
+относится к предыдущему локальному этапу.
+
+## Проверка предыдущего локального этапа
+
+Linux-продолжение прошло: **490 профильных тестов**, **54 актуальных проверки
+локального контакта** (53 уже входят в профильный прогон, один добавлен позднее)
+и **64 прежние проверки Starter/fracture/remesh**. Все завершились успешно.
+Сохранены оригинальные байты всех 9 исходных файлов. Исправлены BLAS-зависимое
+округление нормализации сетки и раннее округление координат до сферической
+нормализации; допуски геометрии и материальные проверки не ослаблены.
+
+Оба контрольных restart совпали побитово. Реальная проба saved50 снова дала
+ожидаемый `unresolved_initiation`: 245 контактов, 237 без наклонной плоскости
+и 8 с конфликтной историей; 559 перекрытий с причинами 512/39/8. Принято 0 шагов,
+нового checkpoint нет. Источники и существующая слэбовая масса сохранены.
+Локальное контактное нагружение проверено на явно заданном синтетическом
+разломе; эти условия не назначались реальному сохранению.
+
+Точные результаты:
+`analysis/geometric_contact_loading_validation/validation_summary.json`,
+`analysis/geometric_contact_loading_validation/cloud_control/report.json`.
+Большие выводы и логи текущей копии лежат в `results/cloud_baseline_validation/`,
+`results/cloud_saved50_admission_final_bound/` и `results/cloud_contact_loading_control_final/`.
+
+## Проверенное локальное облачное продолжение
+
+- Python 3.12.14, NumPy 2.5.3, SciPy 1.18.1, PyYAML 6.0.3, pytest 9.1.1.
+- Общий профиль: **490 passed**, 455,68 с. Актуальная локальная механика:
+  **54 passed**, 5,75 с; последний тест привязки нагрузки добавлен после
+  сбора общего набора. Числа пересекаются, их нельзя складывать.
+- Starter/fracture/remesh: **64 passed**, 26,10 с.
+- Исходный контроль допуска: все четыре материальных баланса равны нулю,
+  прямой расчёт и restart совпали по байтам checkpoint.
+- Новый контактный контроль: остатки сил 4,56×10⁻¹⁶, работы 9,38×10⁻¹⁶;
+  упругое сокращение, направленное скольжение, конфликт истории и точный restart.
+  Поверхность и слэбовый архив фиксированы; новая масса не принимается.
+- Реальный saved50: ожидаемый `unresolved_initiation`, exit 2, прежние
+  245 контактов и 559 перекрытий, 0 принятых шагов, нового checkpoint нет.
+- Все 9 исходных файлов проверены после всех опытов; контрольные суммы сохранены.
+
+Исправлены BLAS-зависимое восстановление сетки и двойное округление координат
+перед нормализацией сферических многоугольников. Исходные файлы, геометрические
+допуски и строгие проверки материала не заменены и не ослаблены.
+
+Новые воспроизводимые результаты:
+`analysis/geometric_contact_loading_validation/validation_summary.json`,
+`analysis/geometric_contact_loading_validation/cloud_control/report.json`.
+Полная текущая постановка и ограничения описаны в
+`GEOMETRIC_CONTACT_LOADING_IMPLEMENTATION.md`.
+
+## Проверенная база до облачного продолжения
 
 Перед передачей создана отдельная копия содержимого Git index с LF-концами
 строк. В ней восстановлены все 9 исходных файлов, проверены их хеши и
@@ -243,12 +5924,370 @@ python run_geometric_initiation_probe.py --source analysis/slab_sinking_followup
 
 ## Короткое сообщение для нового чата
 
-> Продолжай работу над Habitable-Moon-Project в ветке
-> fix/genesis-mantle-convection. Сначала прочитай CLOUD_HANDOFF.md и последний
-> GEOMETRIC_INITIATION_IMPLEMENTATION.md. Восстанови исходные сохранения через
-> scripts/cloud_handoff.py и выполни профильные проверки. Продолжай связывать
-> механический допуск поддвига с обоснованным контактным нагружением и
-> ориентированной геометрией разломов. Текущий допуск — отдельный эксперимент,
-> полная инициация субдукции ещё не решена. Не подгоняй скорости, не разрешай
-> симметрию по ID и не удаляй конфликтующую старую массу. После этапа дай
-> конкретный отчёт о реализации, проверках и оставшихся ограничениях.
+> ТЕКУЩЕЕ ПРОДОЛЖЕНИЕ 883: Habitable-Moon-Project, ветка fix/genesis-mantle-convection.
+> Прочитай актуальное начало CLOUD_HANDOFF.md и GEOMETRIC_NATIVE_COMMON_LOCAL_SOURCE_WORK_IMPLEMENTATION.md.
+> Local source force/work scope only:32 original sides,16 atoms,100 coordinates,
+>8 authentic internal residuals; prestress H, mixed body/r jets, force/moments и atom-path work.
+> HOT/follower law/whole archive3D/full material handover/NEW equilibrium не сертифицированы.
+> Fresh02:14/14 PASS2992.95s; native4+4 PASS1868.084488517s;
+> gate PASS6336.4699928889995s; audit119/293 pins/64 paths PASS111.6174010980003s.
+> Manifest56 raw 37d61376834819cb37d7ecfde9369d0e956fc455037aab720715fc2aa77cba8b; selfseal 90d2709f53073a343ec908e8a41cb315c1cef46ecb19a4a5f48c4a3b57264325.
+> Reader source raw 6030a76cc20800b112766fa56c90c55f65f1378d3e81d5e4c372a967c1f5c607; actual final result/time в final_readback/readback.json,
+> raw copies/origins в final_readback/archive.json; обе docs после reader не переписывать.
+> Release analysis/geometric_native_common_local_source_work_validation/release_validation_02/.
+> Old879/277raw/83manifest/old6 archive unchanged; old physics/tests/solver/quad не повторять.
+> First01 interrupted by environment restart; lost stdout/baselines не воссозданы.
+> Current8 TMP restored from pinned copies; future UNEXECUTED recovery template/3pins/reader command в отчёте.
+> Пункт1: два прежних блока закрыты; один существенный блок/прежние3условия открыт.
+> Next: physical live+archive assembly, explicit3D placement/motion трёх nonempty archive cohorts;
+> затем HOT/mean, loads/drag/NEW equilibrium, whole-clock all-pair admission incl reverseC5→C1,
+> accepted continuation/full-system path work/balances/joint restart.
+> Accepted original1/new0. Пункты2–6 открыты; план не расширен.
+>
+> ИСТОРИЧЕСКИЙ ВЫПУСК 879: Habitable-Moon-Project, ветка fix/genesis-mantle-convection.
+> Прочитай актуальное начало CLOUD_HANDOFF.md и
+> GEOMETRIC_NATIVE_COMMON_MATERIAL_SURFACE_TRANSPORT_IMPLEMENTATION.md.
+> Во второй frozen попытке 14/14 новых тестов PASS за 1378,12 с;
+> Native PASS10/10 surface и64/64 original queries за350,96334030799335 с;
+> Gate PASS2246,0146472550114 с, root strict outputs проверены;
+> Independent audit PASS1073,233603071014 с с одного запуска;
+> manifest83 закрыт. Scope PASS_LOCAL_TRANSPORT_COMPONENT_ONLY.
+> Final readback status/time/result pins — в
+> analysis/geometric_native_common_material_surface_transport_final_readback/readback.json;
+> raw copies/origins — в archive.json этого каталога. Документы после
+> единственного reader --document не переписывать; recovery8/команда в отчёте.
+> Выпуск: analysis/geometric_native_common_material_surface_transport_validation/release_validation_02/.
+> Пять настоящих cold cuts: обе конечные стороны, F/cofactor/area/normal 2-jets,
+> current RN density=mu_ref/J_receiver_now и неизменные материальные p,c/clocks.
+> Все 32 original labels, включая archive8, проверены в depth0/H2:
+> конечное поле своего исходного quarter, F D_Phi и F D_Phi O.
+> Archive field extension объявлено явно; полного archive history/force/work
+> handover, нынешней face membership или gluing сторон это не доказывает.
+> Потенциал875 unchanged; новая continuous-face energy не включена,
+> whole-face quadrature не выполнялась; follower contact law и HOT law не назначены.
+> Frozen879 canonical4a75d4bc7d404fc11d5d252302fe6b6d961797b4a637f921c38acb679485b79c;
+> raw1b948eace979f3125756f6f0dea803fb55d0d2e87650890a2236c07502b0c336.
+> Audit raw39b58a92972e8b570f59ca3d7550edb794b6ae01f052d15678048dc729ab988f;
+> sealc857af3af356f873c863f20334bb562f5a1074b57586f7e480ce89686d67e38b.
+> Manifest83 raw1347310d09095ce8e3dff7db970262524c323a5542861fa2402bb1431c7f7e4b;
+> seal651f204118935dadff0a6326b5534772e30a7e2af9374c41ba5ac099641cde66.
+> Первая прерванная попытка сохранена; test7 harmonic oracle/replay correction
+> раскрыты. Старые875/manifest73 неизменны; старую физику не повторять.
+> Пункт1: два прежних блока закрыты; один блок с прежними тремя условиями открыт.
+> Далее внутри первого условия: силы/prestress/work, once-only column/bulk energy,
+> полный archive handover, HOT law/finite mean chart, loads/drag и NEW mixed equilibrium;
+> затем whole-clock all-pair admission/reverse C5→C1 и принятие/work/balances/restart.
+> Принят один прежний / ноль новых интервалов. План из шести пунктов не расширен.
+> В каждом отчёте сообщай конкретный остаток пункта1.
+
+Предыдущий завершённый выпуск875 (историческая сводка):
+
+> ИСТОРИЧЕСКИЙ ВЫПУСК875: Habitable-Moon-Project, ветка fix/genesis-mantle-convection.
+> Прочитай актуальное начало CLOUD_HANDOFF.md и
+> GEOMETRIC_NATIVE_COMMON_STRAIN_PROJECTION_IMPLEMENTATION.md.
+> Выпуск875:14/14fresh tests PASS555,94с;2whole92queries PASS23,832927с;
+> full typed replay PASS; gate PASS767,635476с; audit PASS160,207513с.
+> Internal8 сведены к настоящим cold56 одной нелинейной Pi; owner6/HOT30,
+> всего92. HOT coupling0; whole-bank calibration ещё не actual COMMON faces.
+> U871(Pi)+8Rperp once-only;16contact/columns+8beams и prestress curvature.
+> Raw73 unchanged; Cauchy quotient enclosure без derivative clipping;
+> N=originalrawchannel37 <E_rem,E_rem>, E_rem=Green_increment-a0H0;
+> rawdN/rawhN differentiateN/2.16compressed/8positive Ds_tip.
+> 32original labels/16lineages/clocks сохранены; archive8 не HOT-birth.
+> Source-only первые/вторые вариации восстановлены local inverse2jet;
+> finite inverse-path work не доказана; TOTAL bulk work сохраняется отдельно.
+> Finite new states требуют других genuine integral receipts. Handover ещёFalse.
+> Latest: analysis/geometric_native_common_strain_projection_validation/release_validation_03/.
+> Frozen875 canonical13c19fe10056af9ab621e2c8a23e63ad36b301c95e121a6835cead019378e385;
+> raw8f7608219c398a05913d96e80baf685b997dccff466ee9cf9eb1aa89b8124675.
+> Manifest73/independent JSON/TXT/log/baselines и failed01/02 сохранены.
+> Отдельный finalreadback PASS28,043987с;180rawpins/9strictancestry.
+> Все871 oldPy/manifest23/51deps/цепочка1633 неизменны; ровно4newPy.
+> Считать source875 baseline; при неизменных sources проверять seals/stdlibreadback.
+> Для нового cloud/tmp сначала restorepinnedbaseline по коду документа;
+> audit сохраняет исходный/tmp dependency path, его rawbytes не менять.
+> Не повторять прежние tests, физические solve и сертифицированные квадратуры.
+> Пункт1: два прежних блока завершены; один остаётся с теми же3условиями.
+> Следующий шаг condition1: реальные локальные COMMON faces/мера/память,
+> archive3D handover/HOTlaw/finite mean и once-only column/bulkenergy/prestress;
+> затем loads/drag и NEW mixed equilibrium. Потом whole-clock all-pair
+> admission/reverse C5→C1 и принятое продолжение с independent path work,
+> балансами/joint restart.1old/0new accepted intervals. План из6не расширять;
+> в каждом отчёте сообщать конкретный остаток пункта1.
+
+Предыдущий завершённый выпуск871 (историческая сводка):
+
+> ИСТОРИЧЕСКИЙ ВЫПУСК871: Habitable-Moon-Project, ветка fix/genesis-mantle-convection.
+> Прочитай актуальное начало CLOUD_HANDOFF.md и
+> GEOMETRIC_NATIVE_COMMON_MATERIAL_TRANSFER_IMPLEMENTATION.md.
+> Выпуск871:14/14fresh tests PASS398,92с;6global+64materialqueries PASS49,410405с;
+> full typed replay PASS; gate PASS593,974112с; stdlib audit PASS816,774с.
+> Все32 исходные метки сохранены; archive8 не заменён HOT-birth.
+> Passive archive COMMON Phi — новый reference extension, не архивная3Dдинамика.
+> Потенциал16contact/columns+8beams once-only, полный T14→100/B/H/moments/work.
+> Новые100=6owner+86body+8internal; body86 coupling0, internal8 ещё не
+> сведены к body/HOT/mean полям. Finite owner/body increments запрещены.
+> Archival geometry0 basis, contact2e6/memory1e6/materialgeometry1e6 сохранены.
+> Latest: analysis/geometric_native_common_material_transfer_validation/release_validation_01/.
+> Frozen871 canonical 5ba59a6e8231e7cf2408b2614b19601cc631bd204eb4f436b4241cf4fa535915;
+> raw 340716e8267d63974e3d8c27a94ac53af60d90e6f9f2382b86874a00c0c3fe9b.
+> Manifest23/independent JSON/TXT/console/baselines сохранены вне strict4.
+> Все867 старыхPy/manifest24/цепочка1633 неизменны; ровно4newPy.
+> Считать source871 baseline; при неизменных sources проверять seals/stdlibreadback.
+> Не повторять прежние tests, физические solve и сертифицированные квадратуры.
+> Пункт1: два прежних блока завершены; один остаётся с теми же3условиями.
+> Следующий шаг condition1: связать internal subsystem с body/HOT/mean,
+> настоящими COMMON faces/мерой/памятью и once-only column/bulkenergy/prestress;
+> затем loads/drag и NEW mixed equilibrium. Full physical handover ещёFalse.
+> Потом whole-clock all-pair admission/reverse C5→C1 и принятое продолжение
+> с independent path work/балансами/joint restart. 1old/0new accepted intervals.
+> План из6пунктов не расширять; в каждом отчёте конкретный остаток пункта1.
+
+Предыдущий завершённый выпуск867 (историческая сводка):
+
+> ИСТОРИЧЕСКИЙ ВЫПУСК867: продолжай Habitable-Moon-Project в ветке
+> fix/genesis-mantle-convection. Прочитай актуальное начало CLOUD_HANDOFF.md
+> и GEOMETRIC_NATIVE_COMMON_SOURCE_CARRIER_IMPLEMENTATION.md.
+> Выпуск867 завершён: 18/18 новых тестов PASS за 752,69 с,
+> 68/68 native queries PASS за 481,670 с, полный typed replay,
+> gate PASS за 2195,901 с; независимый stdlib-аудит PASS за 148,938 с.
+> Все16 source carriers имеют две настоящие базы и полные14-coordinate B/H,
+> receiver couple, один serial potential, immutable states/work lineages.
+> Архивная geometry0, текущая geometry1e6, contact2e6 и memory1e6 раздельны.
+> Finite owner increments отвергаются; radial-only queries разрешены.
+> Глобальная изгибная энергия балок отдельна от local serial columns.
+> Попытка01 FAIL сохранена; исправлены только два новых тестовых оракула,
+> без произвольного физического допуска. Core/control/wrapper неизменны.
+> Latest: analysis/geometric_native_common_source_carrier_validation/release_validation_02/.
+> Frozen867 canonical bfabfa58dbe49ce1102ef9ab72680a301f8cea6fb30093442150d8d4bda45ef8;
+> raw 4b2b98b406cf1f955260dcc24770b9a860cf330e49adc72b4d47e018a140ffc6.
+> Все прежние863 источника/цепочка1633/closures неизменны; ровно4 новыхPy.
+> Считать source867 baseline; при неизменных sources проверять seals/readback,
+> не повторять прежние tests/physical solutions/сертифицированные квадратуры.
+> Source scope не подтверждает authentic material attachment, global T,
+> HOT law, mixed equilibrium, whole-clock admission или новый интервал.
+> Пункт1: два из трёх прежних блоков завершены; один остаётся с тремя условиями.
+> Следующий шаг в condition1: authentic same-material/archive chart или
+> явная reduced subsystem/material transition с бюджетом и работой,
+> global B_new*T=B_old/H, once-only old beam и serial forces/work.
+> Контракт physical_common_attachment_design_source.txt SHA
+> a34d597bbafb6664848d6ab663bfcf043ab6820552de395e843f1a1ed2ae866f.
+> Archive material сохранён; пять HOT-birth bodies — другие IDs.
+> Actual archived force preservation требует chosen archival basis0;
+> current basis не заменяет её без отдельного force/work transport proof.
+> Далее в том же condition1 HOT/mean chart, loads/drag и mixed equilibrium;
+> потом whole-clock all-pair/reverse C5→C1 и принятое продолжение/work/balances/restart.
+> Один прежний / ноль новых интервалов; план из шести пунктов неизменен.
+> В каждом отчёте сообщай конкретный остаток текущего пункта.
+
+Предыдущий завершённый выпуск 863 (историческая сводка):
+
+> ИСТОРИЧЕСКИЙ ВЫПУСК 863: его source accounting продолжен в компоненте 867.
+> Продолжай Habitable-Moon-Project в ветке
+> fix/genesis-mantle-convection. Прочитай актуальное начало CLOUD_HANDOFF.md
+> и GEOMETRIC_NATIVE_COMMON_SOURCE_ALLOCATION_IMPLEMENTATION.md.
+> Реализован whole-source accounting: 4 семейства, 12 общих границ,
+> 8 положительных cells (5 активных / 3 неактивных), 16 literal histories
+> и 4 CURRENT full-family memory queries. Включены Oct0 и положительный C8 tail.
+> Exact symbolic C*Gamma замыкается общими endpoint identities;
+> atomic areas не приравниваются continuous reference measure.
+> Один explicit normalized depth profile на семейство, true cut depths/J;
+> никакого повторного support-fraction множителя.
+> Bootstrap859 PASS; свежий gate02 PASS за 587,293 с, 17/17 tests PASS за 318,55 с.
+> Native control PASS за 55,441 с; полный authentic replay завершён.
+> Независимый stdlib-аудит PASS за 72,091 с, с первого запуска.
+> Audit raw 2d9af7d2a38dcf55afa1269b0fe983fa5f51a6dcec5db93b6c4026dcda29a009;
+> producer eafbd34a81e9a6ee1f6d06c368797e4cec6291f445c8efc5e024ac16ffda4572.
+> Попытка01 сохранена как FAIL
+> после ошибок только wrapper; source/test/control не менялись.
+> Latest: analysis/geometric_native_common_source_allocation_validation/release_validation_02/.
+> Frozen863 canonical: 83ebcc92428688af96c4f104b5ce9bbd96f29625e8a46d2b08e77b2fbad99406;
+> raw e9e1dc52ae057b29f06e1e345e8ac055fd67aa8314f147d2dd5105d75a9bd2bf.
+> Прежние 859 Python-файлов неизменны; добавлены ровно 4 пути из карты.
+> Scope: COMMON_WHOLE_SOURCE_ACCOUNTING_COMPONENT_ONLY.
+> Source/face/material handover со старыми prestress/world force/work,
+> HOT law, fresh mixed equilibrium и admission остаются открытыми.
+> Остаток пункта 1: 2 из 3 прежних блоков завершены; 1 блок с 3 условиями.
+> Ближайшее — физический перенос источника с сохранением сил и работы,
+> HOT law/mean chart, loads/drag и fresh mixed equilibrium; затем
+> whole-clock all-pair admission/reverse C5→C1 и принятое продолжение
+> с независимой работой, балансами и joint restart.
+> Принято 1 прежний / 0 новых интервалов; план из шести пунктов не расширен.
+> В каждом отчёте сообщай конкретный остаток текущего пункта.
+
+Предыдущий завершённый выпуск 859 (историческая сводка):
+
+> ИСТОРИЧЕСКИЙ ВЫПУСК 859: его source accounting продолжен в компоненте 863.
+> Продолжай Habitable-Moon-Project в ветке
+> fix/genesis-mantle-convection. Прочитай актуальное начало CLOUD_HANDOFF.md
+> и GEOMETRIC_NATIVE_COMMON_CONTACT_TRANSFER_IMPLEMENTATION.md.
+> Объявлены normalized reference-depth area model и complete serial
+> contact/sub-column/over-column potential с genuine COMMON fields.
+> Source C использует literal old frame sine; true physical J хранится отдельно.
+> Exact harmonic K заменяет bare contact853; не прибавлять old rods параллельно.
+> Pressure preload при xi=0 сохраняется; variable split energy/residual/Hessian.
+> Свежие 21/21 тестов PASS за 438,92 с; gate PASS за 2038,478 с.
+> Native control PASS за 827,348 с; полный source replay завершён.
+> Независимый stdlib-аудит PASS за 101,498 с; 20 состояний, 80 CDF budgets,
+> 40 serial responses и все 16 000 Hessian entries проверены.
+> Аудит JSON raw 74195affc025d268eb2190ba496c01cfc411b8f49ab7eecc20bdc05f0ad790bc;
+> producer f7eb5f730d6fca0b1fdbab075df71d91ebed7f1225278ec9a1bbf63d319f51d3;
+> обязательный helper 0ecbb318a302b5ae3acd387aca079ec42602a9a747d8232d4067c0d96b07ab6f.
+> Первый ошибочный exact10km check исправлен только в аудиторе; модель859 неизменна.
+> Latest: analysis/geometric_native_common_contact_transfer_validation/release_validation_01/.
+> Frozen859 canonical: 88f0d2e78a81712458beb61f21bbdfe0b7222467a0e3241e23757e3fac6bda7d;
+> raw 7351d27e3fe0bb198978badec9f173766f8522940073b057c0b9584c75392ce5.
+> Прежние 853 Python-файла неизменны; ровно шесть добавленных paths.
+> Scope: COMMON_REFERENCE_AREA_SERIAL_CARRIER_COMPONENT_ONLY.
+> Old16 atomic area/state/work/clocks не приравнены continuous C dtheta.
+> Source world forces, physical3Drod endpoints, whole-source allocation,
+> mixed equilibrium/admission не сертифицированы. HOT law не назначен.
+> Исходный angular accounting 16 узлов PASS: 8 попаданий / 8 вне supports,
+> без target material transfer; tiny cuts имеют площадь даже при 0 старых узлов.
+> Остаток: 2 из 3 прежних блоков закрыты; 1 блок с 3 условиями остаётся.
+> Принято 1 прежний / 0 новых интервалов.
+> Следующее: whole-source once-only material/measure и prestress/force/work handover;
+> HOT law/mean chart, source loads/drag, fresh mixed equilibrium; затем
+> whole-clock all-pair admission / reverse C5→C1 и принятое продолжение
+> с независимой работой, балансами и joint restart.
+> План из шести пунктов не расширен; в отчёте сообщай остаток пункта 1.
+
+Предыдущий завершённый выпуск 853 (историческая сводка):
+
+> ИСТОРИЧЕСКИЙ ВЫПУСК 853: его contact-only часть продолжена в явной модели 859.
+> Продолжай Habitable-Moon-Project в ветке
+> fix/genesis-mantle-convection. Прочитай актуальное начало CLOUD_HANDOFF.md
+> и GEOMETRIC_NATIVE_COMMON_CONTACT_FORCE_IMPLEMENTATION.md.
+> Реализованы authentic actual step.memory observation и объективный
+> contact-only local force/rest law для пяти настоящих холодных cuts.
+> Полные 20-coordinate first/second derivatives, residual/Hessian/preload;
+> relaxed source shear точно 0, frozen-memory predictor отделён.
+> Свежие 19 тестов PASS за 343,11 с; native control PASS за 526,124 с.
+> Единый gate 853/source replay PASS за 1269,308 с; независимый аудит
+> PASS за 54,757 с: 800 residual entries и все 16 000 Hessian entries.
+> Latest: analysis/geometric_native_common_contact_force_validation/release_validation_02/.
+> Карта 853 canonical: 9d4a7a71f81b8093b09d26c74f742909839496fe18dd1429875e3a6d54c05c21;
+> raw f9fafa4aedce0265147d44f9338cfcbc8b49518f66dfa5a4ce0a4a0ee968420e.
+> Прежние 847 Python-файлов неизменны; ровно 6 новых paths перечислены в карте.
+> Wrapper raw: 1d7a6ac8113a408aab6764f1c4a9fccb09f8d48184f5118434fc685574504313.
+> Audit raw: e4c2cb68ed6a9f102b5ec2628f7c38966e90a067df8c80d2fd055dccec87fc92.
+> JSON, producer TXT и обязательный helper TXT сохранены вне четырёх выходов.
+> Scope: COMMON_CONTACT_REST_LAW_COMPONENT_ONLY. 20 state cases / 40 forces / 16000 H.
+> Все 16 source states/areas/work/clocks сохранены: memory/native 1e6 с,
+> contact 2e6 с, current nodes unaccepted_candidate. Принято 0 новых / 1 старый интервал.
+> HOT C6/C1 имеет настоящую кинематику 19 координат, но не receiving law;
+> source born −0.01 м относится к другим arcs, не наследовать его.
+> Следующий шаг: физический перенос face memory/measure и rod prestress/energy,
+> отдельный HOT law/mean chart, source нагрузки/drag и fresh mixed equilibrium.
+> Далее whole-clock all-pair admission с reverse C5→C1 и adopted work/balances/restart.
+> Пункт 1: 2 из 3 прежних блоков закрыты; 1 блок / 3 условия остаются.
+> Исходный план из шести пунктов не расширен; пункты 2–6 остаются открыты.
+> В каждом отчёте сообщай конкретный остаток текущего пункта.
+
+Предыдущий завершённый выпуск 847 (историческая сводка):
+
+> ИСТОРИЧЕСКИЙ ВЫПУСК 847: его локальный силовой контракт реализован в 853.
+> Продолжай Habitable-Moon-Project в ветке
+> fix/genesis-mantle-convection. Прочитай актуальное начало CLOUD_HANDOFF.md
+> и GEOMETRIC_NATIVE_COMMON_CONTACT_IMPLEMENTATION.md.
+> Пять настоящих холодных cuts и отдельная аналитическая C6/HOT C1 связаны
+> с реальными COMMON cold7/HOT6 полями; экспортированы мировой градиент,
+> нормаль/down, модовые/owner-left столбцы и смешанные производные.
+> Физические радиусы обеих сторон совпадают; нулевой скачок точный.
+> Frozen847 canonical: a14c79ddf7e0146ba6b5c335c800e03e442651b8a08fccc855a6ac920ca34a1c;
+> Raw map: 22bb02607b88935e8c93764813c2721dad0c9c72a241ffb67c2e602b8fee9779.
+> Прежние 841 Python-файла и все старые артефакты неизменны.
+> Latest: analysis/geometric_native_common_contact_validation/release_validation_01/.
+> Fresh: 25 PASS за 460,45 с; native 163,760 с; callback 170,329 с; gate PASS 1173,976 с.
+> Wrapper raw e8ffabb1a29c1fb021e94fe53e815b6ad8d16ea14e9103a30b9f7428ac9ab847;
+> Scope: COMMON_CONTACT_GEOMETRY_FIELD_COMPONENT_ONLY. Ровно 4 выхода плюс обёртка.
+> Независимый stdlib-аудит PASS за 77,989 с: 332 модовых столбца,
+> 2988 элементов градиентов, 12 Decimal геометрических проб и 1494 FD проверки.
+> Аудит raw: 65969e55b900d695af52025bc48718cad83bdec189fb9aab2fb5301d29be3658,
+> JSON/producer TXT сохранены вне четырёх выходов; проверяй SHA/selfseal.
+> Все 16 source states/work/clocks сохранены; новые cut points не получили их
+> состояние. HOT-кривая не имеет старого cold receiving family.
+> Следующий шаг внутри прежнего первого условия: contact-only objective
+> rest/state law, явная мера/память и перенос старой rod energy/prestress;
+> затем HOT mean chart, source нагрузки/drag и новое mixed равновесие 92 координат.
+> Energy source audit bit-exact: контакт 14,286 млрд Дж, rods 28,572 млрд Дж,
+> beam 251,841 млрд Дж. Контракт следующей силы сохранён отдельно как design-only.
+> Rods не включены в beam-калибровку; постоянный ledger не переносит stress.
+> Далее whole-clock all-pair admission, reverse C5→C1, принятие/work/balances/restart.
+> Пункт 1: закрыты 2 из 3 прежних блоков; остаётся 1 существенный блок с 3 условиями.
+> Принятых интервалов: 1 старый / 0 новых; пункты 2–6 открыты, план не расширен.
+> В каждом отчёте сообщай конкретный остаток текущего пункта.
+
+Предыдущий завершённый выпуск 841 (историческая сводка):
+
+> ИСТОРИЧЕСКИЙ ВЫПУСК 841: его ближайший шаг уже реализован в продолжении 847.
+> Сначала прочитай актуальное начало CLOUD_HANDOFF.md, затем при необходимости
+> GEOMETRIC_NATIVE_COMMON_REFERENCE_IMPLEMENTATION.md.
+> Общая Φ подключена ко всем 13 телам, двум born-граням и восьми живым
+> закреплениям, семи холодным и шести горячим модам на тело.
+> Frozen 841 canonical: dc109894fb7fb219b38a617cb1212f31dd7f758316658b5bdaba9335afaa6c35;
+> все прежние 833 Python-файла неизменны. Fresh: 36 PASS за 435,97 с;
+> все восемь холодных и пять горячих компонент проверены, gate PASS за 3986,795 с.
+> Каталог analysis/geometric_native_common_reference_validation/release_validation_01/
+> имеет запечатанный report.json PASS, scope COMMON_REFERENCE_COMPONENT_ONLY.
+> Независимый stdlib-аудит PASS за 79,741 с; JSON и точный исходник TXT
+> сохранены вне четырёх выходов. Проверяй их SHA/selfseal, не повторяй квадратуру.
+> Wrapper raw 9898f31f796006a7791140bf1c290c0e1605555a12e476e1585ce3f5992a743f;
+> audit raw e28bcca1a1031b72b0561ff46e2006147886921926cc1972c294a723c5351eed.
+> Следующий контракт внутри прежнего первого условия: пять настоящих холодных
+> контактных участков и отдельная кривая C6/HOT C1, явный перенос 16 историй,
+> контактного состояния и энергии старых стержней, затем HOT chart для
+> совместной системы из 92 координат, нагрузки и drag.
+> Аудиты участков, исходных историй, среднего смещения и нагрузок (JSON/TXT)
+> уже сохранены вне четырёх выходов.
+> Новых принятых интервалов 0; в пункте 1 остаётся один прежний блок с тремя условиями.
+
+Предыдущий завершённый выпуск 833 (историческая сводка):
+
+> Продолжай Habitable-Moon-Project в ветке fix/genesis-mantle-convection.
+> Прочитай CLOUD_HANDOFF.md и GEOMETRIC_NATIVE_COLD_BODY_IMPLEMENTATION.md.
+> Latest: analysis/geometric_native_cold_body_validation/release_validation_01/.
+> Свежие 20/20 PASS за 1493,33 с, callback 2668,708 с, gate 4195,840 с.
+> Stdlib-аудит PASS за 46,479 с; physical scope COLD_TENSOR_COMPONENT_ONLY.
+> Проверь raw/selfseal всех отчётов и ровно четыре выхода плюс обёртку.
+> Карта 833: прежние 826 + семь новых Python-модулей, неизменна до/после;
+> canonical SHA 2b322df2d2c426976ee886374517c2e0130acb5a5acfcaf4bb07a6e4c3331e05.
+> Предыдущий HOT-выпуск с 39 PASS сохранён, включая четыре выхода и отдельный аудит.
+> Все четыре DTO, saved128 field, groups/provenance, canonical pose, оси и история сохранены.
+> У всех восьми холодных банков семь закреплённых полей, Green-энергия,
+> семь сил и 49 элементов Hessian. Начальная strain и нелокальное положительное
+> tensor-замыкание объявлены новыми; исторический полный prestress не восстановлен.
+> U0 и прежняя tip-сила согласованы; старая beam-энергия не добавляется повторно.
+> Опорная энергия восьми банков ≈251841262157,02756 Дж; dissipation не stored energy.
+> H=10000 — ареальная глубина; физические he=3000/2000 переводятся в настоящие ze.
+> Ненулевой буквальный A у C8/C9 и реальные endpoint/curved removals сохранены.
+> Taylor 0 у контроля и Taylor 1 у объёмных тестов имеют наружные остатки;
+> силовая точность и выпуклость Hessian не подтверждены; второй certified integral не запускался.
+> Компонентный PASS не даёт совместного равновесия, допуска или принятия.
+> Старое предложенное saved128-размещение: REJECTED_PROPOSED_REFERENCE_INITIAL_OVERLAP.
+> C8/octant:2/live4653… и C11/octant:3/live89c9…, оба owner0, перекрываются ≥1 млн м³.
+> В кубе (−57050,−56950)×(75950,76050)×(1850,1950) м все семь полей/градиентов равны нулю.
+> Амплитуды и общее жёсткое движение owner0 не устранят этот исходный дефект.
+> Прежний принятый reduced-интервал этим выводом не опровергнут.
+> initial_reference_overlap*.json и исходники TXT находятся вне четырёх выходов.
+> Для НОВОГО общего Φ-кандидата доказана INITIAL_COMMON_MAP_NONINTERPENETRATION.
+> Все 13 настоящих масок: 84 строгих determinant signs, 74 исчерпывающие области,
+> exact curved-only C6→C1, разные H/roof, 78 начальных объёмных исключений.
+> Независимая quaternion-проверка PASS за 7,867 с; основной proof raw 038b774e…,
+> peer raw 3e32618b…, исходники и replay сохранены в каталоге холодного выпуска вне четырёх выходов.
+> Candidate50af/ранний peer4a1c неизменны; их старый partition False не переписывай.
+> Новый proof не даёт uniform-shell coverage, cold→HOT mass identity, future-time admission.
+> Ближайший шаг: внедрить общую карту с физическими face/clamp и заново связать
+> поля/support/интегралы; шесть cold и один HOT меняют прежний A=0, source не переписывать.
+> Далее HOT/finite-mean chart без седьмой неоплаченной моды, работа нагрузки/drag
+> для скорости того же поля, физический contact reference и новое смешанное равновесие.
+> Прежний mantle-builder имеет 13 нулевых радиальных строк; модальные силы нужно интегрировать.
+> Старый shear-drag не задаёт normal damping; отсутствующие параметры не выдумывать.
+> Сохраняй source g0=−0,01, 16 историй, foundation и activation-once;
+> отвергнутые 1000-метровые колонны не возвращай в geometry/compliance.
+> Затем whole-clock все пары, включая обратное C5→C1; принятие, работа пути, балансы, joint restart.
+> Принятых исходных интервалов 1, новых 0; all42/inheritedforce/nonoverlap/admission=False
+> для выпущенного mixed-state, кроме отдельно доказанной начальной NEW common-map раздельности.
+> Пункт 1: готовы два из трёх прежних блоков, последний существенный открыт;
+> в нём три прежних физических условия. Пункты 2–6 открыты; план не расширен.
+> В отчёте указывай проверенный результат и конкретный остаток пункта 1.

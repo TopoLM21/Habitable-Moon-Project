@@ -1,0 +1,96 @@
+"""Read-only strict-box diagnostic; no force or all-pair admission claim."""
+from fractions import Fraction as F
+import hashlib
+import json
+from pathlib import Path
+from tectonics.geometric_native_normal_support import load_native_normal_support_source, _payload
+from tectonics.geometric_native_cold_body import bind_native_cold_body
+from tectonics.geometric_native_pose import FractionInterval as I, interval_sqrt
+from tectonics.geometric_native_joint_spherical_field import rotate_joint_physical_depth
+
+
+def dot(a,b):
+    return sum((x*y for x,y in zip(a,b)),I(0))
+
+
+s=load_native_normal_support_source()
+bodies=[]
+for parent in ('octant:2','octant:3'):
+    bank=next(x for x in s.banks if x.material_kind=='original_live' and x.original_parent_id==parent)
+    bodies.append(bind_native_cold_body(bank.component_id,source=s))
+
+box=(I(-57050,-56950),I(75950,76050),I(1850,1950))
+radius=interval_sqrt(dot(box,box),192)
+unit=tuple(x/radius for x in box)
+tau=(I(s.radius_m**3)-radius*radius*radius)/(3*s.radius_m**2)
+rows=[]
+for body in bodies:
+    parent=json.loads(body.complete_parent_source_json)
+    allocation=json.loads(body.complete_parent_allocation_json)
+    mask=json.loads(body.complete_mask_source_json)
+    assert not parent['geometry']['pose']
+    assert all(not p['rotations'] for p in parent['geometry']['supports'])
+    assert body.archive_area_bounds_sr==I(0)
+    assert not body.paired_curved_removed_area_bounds_sr
+    assert not body.complete_donor_domain_json
+    pulled_current=rotate_joint_physical_depth(unit,tuple(-x for x in body.angular_rate_per_physical_volume_depth_m),tau,precision=192,order=28)
+    O=body.owner_rotation_matrix_bounds
+    pulled_original=tuple(dot(tuple(O[j][i] for j in range(3)),pulled_current) for i in range(3))
+    supports=tuple((tuple(F(x) for x in p['normal']),dot(tuple(F(x) for x in p['normal']),pulled_original))
+        for p in parent['geometry']['supports'])
+    depth=(I((body.radius_m+body.roof_radial_displacement_m)**3)-radius*radius*radius)/(3*body.radius_m**2)
+    assert all(value.lo>0 for _,value in supports)
+    assert 0<depth.lo<depth.hi<body.areal_material_thickness_m
+    # n·u = sin(beta): both material points are beyond the new modal support.
+    beta_sine=dot(body.original_quarter_inward,pulled_original)
+    assert beta_sine.lo>body.beta_cut_radians
+    rows.append(dict(component_id=body.component_id,alias=body.bank_alias,owner=body.owner,
+        parent_id=body.original_parent_id,body_snapshot_sha256=body.body_snapshot_sha256,
+        original_material_direction_bounds=_payload(pulled_original),
+        parent_support_bounds=[dict(normal=_payload(normal),bounds=_payload(bounds)) for normal,bounds in supports],
+        material_depth_bounds_m=_payload(depth),material_beta_sine_bounds=_payload(beta_sine),
+        source_clamp_beta_radians=_payload(body.beta_cut_radians),
+        radius_m=_payload(body.radius_m),source_roof_radial_displacement_m=_payload(body.roof_radial_displacement_m),
+        entire_areal_material_depth_m=_payload(body.areal_material_thickness_m),
+        geometry_enclosure_precision=body.geometry_enclosure_precision,
+        literal_depth_rate_per_m=_payload(body.angular_rate_per_physical_volume_depth_m),
+        source_owner_rotation_matrix_bounds=_payload(body.owner_rotation_matrix_bounds),
+        source_owner_history=json.loads(body.source_owner_history_json),
+        complete_source_parent=parent,complete_actual_mask_source=mask,
+        archived_area_bounds_sr=_payload(body.archive_area_bounds_sr),
+        paired_curved_removed_area_bounds_sr=_payload(body.paired_curved_removed_area_bounds_sr),
+        complete_mask_domain_expression=mask['domain_expression'],
+        source_parent_allocation=allocation,
+        source_clamp_support_row=json.loads(body.source_clamp_row_json),
+        complete_parent_membership_strict=True,actual_unarchived_whole_parent_retained=True,
+        material_labels_strictly_beyond_clamp=True,
+        all_seven_modal_displacements_and_gradients_exactly_zero_on_common_box=True))
+report=dict(kind='strict_initial_reference_overlap_box_only',source_snapshot_sha256=s.source_snapshot_sha256,
+    source_epoch_sha256=s.source_epoch_sha256,source_support_sha256=s.source_support_sha256,
+    source_curved_packet_raw_sha256=s.curved_packet_raw_sha256,
+    source_joint_packet_raw_sha256=s.joint_packet_raw_sha256,
+    saved_reference_field=json.loads(s.saved_field_json),
+    saved_reference_field_precision=s.saved_field_declaration_precision,
+    diagnostic_interval_precision=192,diagnostic_rotation_order=28,
+    diagnostic_source_script_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+    frozen_cold_geometry_python_sha256=hashlib.sha256(Path('/workspace/Habitable-Moon-Project/tectonics/geometric_native_cold_body.py').read_bytes()).hexdigest(),
+    world_box_bounds_m=_payload(box),
+    radius_bounds_m=_payload(radius),physical_volume_depth_bounds_m=_payload(tau),
+    proven_common_open_box_volume_m3=100**3,banks=rows,
+    overlapping_initial_saved_reference_images=True,
+    status='REJECTED_PROPOSED_REFERENCE_INITIAL_OVERLAP',
+    saved_reference_role='Historical saved128 NEW3D component declaration, not the geometry of the original accepted native interval',
+    original_accepted_native_interval_invalidated=False,
+    continuous_box_proof='For every world point in the open Cartesian box, inverse source Q(A*tau) and source owner O place its material ray strictly inside both complete unarchived original parents; radial depth is strictly interior for both.',
+    same_owner_common_rigid_motion_cannot_remove_overlap=True,
+    seven_supported_modal_fields_cannot_remove_this_overlap=True,
+    incremental_modal_coordinates_zero=True,
+    global_all_pair_or_whole_clock_admission_certified=False,
+    force_solve_or_tensor_integral_performed=False)
+path=Path('/tmp/native_cold_initial_overlap_readonly_diagnostic_20261005.json')
+path.write_text(json.dumps(report,sort_keys=True,indent=2))
+print('radius_m',float(radius.lo),float(radius.hi),'tau_m',float(tau.lo),float(tau.hi),flush=True)
+for row in rows:
+    print(row['alias'],row['parent_id'],'supports',[(v['normal'],float(F(*v['bounds']['lo'])),float(F(*v['bounds']['hi']))) for v in row['parent_support_bounds']],
+        'depth_m',tuple(float(F(*row['material_depth_bounds_m'][k])) for k in ('lo','hi')),flush=True)
+print('positive_overlap_box_m3',report['proven_common_open_box_volume_m3'],'report',path,flush=True)

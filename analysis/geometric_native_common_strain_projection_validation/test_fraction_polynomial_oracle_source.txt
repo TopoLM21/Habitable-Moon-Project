@@ -1,0 +1,216 @@
+"""Pure Fraction polynomial oracle for the new strain-projection tests.
+
+No project imports, strain kernels, interval centres or integration. A genuine
+three-component strain polynomial is expanded first. Exact differentiation
+of its complete potential supplies the independent seven-coordinate oracle.
+"""
+from fractions import Fraction as F
+
+DIM = 7
+ZERO = (0,) * DIM
+
+
+def poly_constant(value):
+    value = F(value)
+    return {ZERO: value} if value else {}
+
+
+def poly_variable(index):
+    exponents = [0] * DIM
+    exponents[index] = 1
+    return {tuple(exponents): F(1)}
+
+
+def poly_add(*polynomials):
+    result = {}
+    for polynomial in polynomials:
+        for powers, coefficient in polynomial.items():
+            result[powers] = result.get(powers, F(0)) + coefficient
+    return {powers: coefficient for powers, coefficient in result.items()
+            if coefficient}
+
+
+def poly_scale(polynomial, coefficient):
+    coefficient = F(coefficient)
+    return {powers: value * coefficient for powers, value in polynomial.items()
+            if value * coefficient}
+
+
+def poly_multiply(first, second):
+    result = {}
+    for p, x in first.items():
+        for q, y in second.items():
+            powers = tuple(a + b for a, b in zip(p, q))
+            result[powers] = result.get(powers, F(0)) + x * y
+    return {powers: coefficient for powers, coefficient in result.items()
+            if coefficient}
+
+
+def poly_derivative(polynomial, index):
+    result = {}
+    for powers, coefficient in polynomial.items():
+        if powers[index]:
+            reduced = list(powers)
+            reduced[index] -= 1
+            result[tuple(reduced)] = coefficient * powers[index]
+    return result
+
+
+def poly_value(polynomial, coordinates):
+    if (type(coordinates) is not tuple or len(coordinates) != DIM
+            or any(type(value) is not F for value in coordinates)):
+        raise ValueError("The oracle needs seven exact Fraction coordinates")
+    result = F(0)
+    for powers, coefficient in polynomial.items():
+        term = coefficient
+        for value, degree in zip(coordinates, powers):
+            term *= value ** degree
+        result += term
+    return result
+
+
+def poly_jet(polynomial, coordinates):
+    first = tuple(poly_derivative(polynomial, i) for i in range(DIM))
+    return (poly_value(polynomial, coordinates),
+            tuple(poly_value(p, coordinates) for p in first),
+            tuple(tuple(poly_value(poly_derivative(p, j), coordinates)
+                        for j in range(DIM)) for p in first))
+
+
+def strain_polynomial_model():
+    """E(a)=sum a_i L_i + 1/2 sum a_i a_j Q_ij, with L_0=0.
+
+    H0=(2,-1,1), Q00=(1,2,3). Hence kappa=6, gamma=1/2,
+    and the pure-tip orthogonal remainder is 25*a0**4/16.
+    All six enrichments and all 28 mixed quadratic coefficients are present.
+    """
+    h0 = (F(2), F(-1), F(1))
+    linear = ((F(0),) * 3, (F(1), F(2), F(-1)),
+              (F(-2), F(1), F(3)), (F(2), F(0), F(1)),
+              (F(-1), F(-3), F(2)), (F(3), F(1), F(0)),
+              (F(1), F(-2), F(-2)))
+    variables = tuple(poly_variable(i) for i in range(DIM))
+    strain = [poly_add(*(poly_scale(variables[i], linear[i][k])
+                         for i in range(DIM))) for k in range(3)]
+    quadratic = {}
+    for i in range(DIM):
+        for j in range(i, DIM):
+            value = ((F(1), F(2), F(3)) if i == j == 0 else
+                     (F((i + 1) * (j + 1), 11),
+                      F((-1) ** (i + j) * (i + j + 2), 7),
+                      F((i - j) ** 2 + 1, 13)))
+            quadratic[i, j] = value
+            monomial = poly_multiply(variables[i], variables[j])
+            for k in range(3):
+                strain[k] = poly_add(strain[k], poly_scale(
+                    monomial, value[k] * (F(1, 2) if i == j else F(1))))
+    return h0, tuple(strain), quadratic
+
+
+def projection_polynomials(*, reference_energy=F(5), source_force=F(11),
+                           source_stiffness=F(7)):
+    h0, strain, quadratic = strain_polynomial_model()
+    kappa = sum((value * value for value in h0), F(0))
+    projection = poly_add(*(poly_scale(value, direction)
+                            for value, direction in zip(strain, h0)))
+    norm = poly_add(*(poly_multiply(value, value) for value in strain))
+    scalar = poly_add(poly_variable(0), poly_scale(projection, 1 / kappa))
+    residual = poly_add(poly_scale(norm, F(1, 2)), poly_scale(
+        poly_multiply(projection, projection), -1 / (2 * kappa)))
+    source = poly_add(poly_constant(reference_energy),
+                      poly_scale(scalar, source_force),
+                      poly_scale(poly_multiply(scalar, scalar),
+                                 source_stiffness / 2))
+    potential = poly_add(source, residual)
+    return dict(h0=h0, strain=strain, quadratic=quadratic, kappa=kappa,
+                projection=projection, norm=norm, scalar=scalar,
+                residual=residual, source=source, potential=potential,
+                source_force=F(source_force), source_stiffness=F(source_stiffness))
+
+
+def exact_projection_receipt(coordinates, **source_parameters):
+    """Direct coefficient-dictionary differentiation, including all raw73.
+
+    `rem_gradient` and `rem_hessian` differentiate N/2, not N. Their half
+    convention is obtained by differentiating that polynomial independently.
+    """
+    model = projection_polynomials(**source_parameters)
+    p, dp, d2p = poly_jet(model['projection'], coordinates)
+    norm = poly_value(model['norm'], coordinates)
+    _, rem_gradient, rem_hessian = poly_jet(
+        poly_scale(model['norm'], F(1, 2)), coordinates)
+    scalar, ds, d2s = poly_jet(model['scalar'], coordinates)
+    residual, gr, hr = poly_jet(model['residual'], coordinates)
+    potential, gradient, hessian = poly_jet(model['potential'], coordinates)
+    upper = tuple((i, j) for i in range(DIM) for j in range(i, DIM))
+    raw73 = (model['kappa'], p, *dp,
+             *(d2p[i][j] for i, j in upper), norm, *rem_gradient,
+             *(rem_hessian[i][j] for i, j in upper))
+    assert len(raw73) == 73
+    return dict(kappa=model['kappa'], p=p, dp=dp, d2p=d2p, N=norm,
+                rem_gradient=rem_gradient, rem_hessian=rem_hessian,
+                s=scalar, ds=ds, d2s=d2s, Rperp=residual,
+                Gperp=gr, Hperp=hr, potential=potential,
+                gradient=gradient, hessian=hessian, raw73=raw73,
+                source_force=model['source_force'],
+                source_stiffness=model['source_stiffness'])
+
+
+def inverse_tip_twojet(**source_parameters):
+    model = projection_polynomials(**source_parameters)
+    h0, q00 = model['h0'], model['quadratic'][0, 0]
+    gamma = sum((x * y for x, y in zip(h0, q00)), F(0)) / model['kappa']
+    direct = exact_projection_receipt((F(0),) * DIM, **source_parameters)
+    # For s(t)=t+gamma*t*t/2, the exact inverse has J=1, K=-gamma at0.
+    # These are independently obtained by equating coefficients of s(t(w)).
+    inverse_first, inverse_second = F(1), -gamma
+    linear_pullback = direct['hessian'][0][0] * inverse_first ** 2
+    full_pullback = linear_pullback + direct['gradient'][0] * inverse_second
+    return dict(gamma=gamma, inverse_first=inverse_first,
+                inverse_second=inverse_second,
+                linear_pullback_hessian=linear_pullback,
+                full_pullback_hessian=full_pullback,
+                omitted_prestress_curvature=linear_pullback - full_pullback,
+                expected_source_hessian=model['source_stiffness'])
+
+
+def run_self_check():
+    probes = ((F(0),) * DIM,
+              tuple(F((-1) ** i, i + 8) for i in range(DIM)),
+              (F(1, 3),) + (F(0),) * (DIM - 1))
+    for coordinates in probes:
+        r = exact_projection_receipt(coordinates)
+        k, p, dp, d2p = r['kappa'], r['p'], r['dp'], r['d2p']
+        s = coordinates[0] + p / k
+        ds = tuple(F(i == 0) + dp[i] / k for i in range(DIM))
+        d2s = tuple(tuple(d2p[i][j] / k for j in range(DIM))
+                    for i in range(DIM))
+        gr = tuple(r['rem_gradient'][i] - p * dp[i] / k
+                   for i in range(DIM))
+        hr = tuple(tuple(r['rem_hessian'][i][j]
+                         - (dp[i] * dp[j] + p * d2p[i][j]) / k
+                         for j in range(DIM)) for i in range(DIM))
+        f = r['source_force'] + r['source_stiffness'] * s
+        gradient = tuple(f * ds[i] + gr[i] for i in range(DIM))
+        hessian = tuple(tuple(r['source_stiffness'] * ds[i] * ds[j]
+                              + f * d2s[i][j] + hr[i][j]
+                              for j in range(DIM)) for i in range(DIM))
+        assert (s, ds, d2s) == (r['s'], r['ds'], r['d2s'])
+        assert (gr, hr) == (r['Gperp'], r['Hperp'])
+        assert (gradient, hessian) == (r['gradient'], r['hessian'])
+        assert r['Rperp'] >= 0
+    inverse = inverse_tip_twojet()
+    assert inverse['gamma'] == F(1, 2)
+    assert inverse['inverse_second'] == F(-1, 2)
+    assert inverse['linear_pullback_hessian'] == F(25, 2)
+    assert inverse['full_pullback_hessian'] == F(7)
+    assert inverse['omitted_prestress_curvature'] == F(11, 2)
+    tip = exact_projection_receipt(probes[2])
+    assert tip['Rperp'] == F(25, 16) * probes[2][0] ** 4
+    return dict(status='PASS', exact_strain_components=3, coordinates=7,
+                raw_channels=73, full_jet_probe_count=len(probes),
+                inverse_tip_prestress_curvature=F(11, 2))
+
+
+if __name__ == '__main__':
+    print(run_self_check())

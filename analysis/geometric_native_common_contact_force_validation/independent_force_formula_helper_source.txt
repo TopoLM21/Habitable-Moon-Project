@@ -1,0 +1,483 @@
+"""Independent exact local-contact formula replay; standard library only.
+
+Call audit_packet(parsed_packet).  Source ancestry, source-field quadratures,
+and genuine geometry authentication belong to the enclosing producer.  This
+helper independently reconstructs the compact port algebra and checks that
+exported outward intervals contain its unrounded rational expressions.
+It assigns no face measure, source atom history, physical force certificate,
+or accepted interval.  No project module is imported or evaluated.
+"""
+from fractions import Fraction
+import hashlib
+import json
+
+
+class FormulaAuditError(ValueError):
+    pass
+
+
+class Interval:
+    """Closed rational interval with independent elementary arithmetic."""
+    __slots__ = ("lo", "hi")
+
+    def __init__(self, lo=0, hi=None):
+        if isinstance(lo, Interval) and hi is None:
+            self.lo, self.hi = lo.lo, lo.hi
+            return
+        if type(lo) not in (int, Fraction) or type(hi) not in (int, Fraction, type(None)):
+            raise FormulaAuditError("Interval arithmetic accepts exact rational scalars only")
+        self.lo = Fraction(lo)
+        self.hi = self.lo if hi is None else Fraction(hi)
+        if self.lo > self.hi:
+            raise FormulaAuditError("Reversed interval")
+
+    def __add__(self, other):
+        other = Interval(other)
+        return Interval(self.lo + other.lo, self.hi + other.hi)
+
+    __radd__ = __add__
+
+    def __neg__(self):
+        return Interval(-self.hi, -self.lo)
+
+    def __sub__(self, other):
+        return self + -Interval(other)
+
+    def __rsub__(self, other):
+        return Interval(other) + -self
+
+    def __mul__(self, other):
+        other = Interval(other)
+        products = (self.lo * other.lo, self.lo * other.hi,
+                    self.hi * other.lo, self.hi * other.hi)
+        return Interval(min(products), max(products))
+
+    __rmul__ = __mul__
+
+    def __truediv__(self, other):
+        other = Interval(other)
+        if other.lo <= 0 <= other.hi:
+            raise FormulaAuditError("Division by an interval containing zero")
+        return self * Interval(min(1 / other.lo, 1 / other.hi),
+                               max(1 / other.lo, 1 / other.hi))
+
+    def __rtruediv__(self, other):
+        return Interval(other) / self
+
+    def __eq__(self, other):
+        return isinstance(other, Interval) and (self.lo, self.hi) == (other.lo, other.hi)
+
+    def contains(self, other):
+        return self.lo <= other.lo <= other.hi <= self.hi
+
+
+ZERO = Interval(0)
+VECTOR_ZERO = (ZERO, ZERO, ZERO)
+
+
+def _fail(message):
+    raise FormulaAuditError(message)
+
+
+def _require(condition, message):
+    if not condition:
+        _fail(message)
+
+
+def _fraction(raw):
+    _require(type(raw) is list and len(raw) == 2
+             and all(type(x) is int for x in raw) and raw[1] > 0,
+             "A scalar is not a canonical rational pair")
+    value = Fraction(raw[0], raw[1])
+    _require([value.numerator, value.denominator] == raw,
+             "A scalar rational pair is not reduced")
+    return value
+
+
+def _interval(raw):
+    _require(type(raw) is dict and set(raw) == {"lo", "hi"},
+             "An exported interval changed its exact schema")
+    return Interval(_fraction(raw["lo"]), _fraction(raw["hi"]))
+
+
+# Public rational helpers for the enclosing source-state auditor.
+I = Interval
+frac = _fraction
+invparse = _interval
+
+
+def contains(expected, actual, label="external source expression"):
+    """Require actual to enclose expected; accept I or an interval DTO."""
+    expected = expected if isinstance(expected, Interval) else _interval(expected)
+    actual = actual if isinstance(actual, Interval) else _interval(actual)
+    _enclose(actual, expected, label)
+    return True
+
+
+def _tree(raw, shape):
+    if not shape:
+        return _interval(raw)
+    _require(type(raw) is list and len(raw) == shape[0],
+             "An exact interval array has a missing or extra coordinate")
+    return tuple(_tree(x, shape[1:]) for x in raw)
+
+
+def _exact(actual, expected, label):
+    _require(actual == expected, "Exact identity failed: " + label)
+
+
+def _enclose(actual, expected, label):
+    _require(actual.contains(expected), "Raw rational expression escaped: " + label)
+
+
+def _dot(a, b):
+    _require(len(a) == len(b), "Dot product dimensions differ")
+    return sum((x * y for x, y in zip(a, b)), ZERO)
+
+
+def _cross(a, b):
+    return (a[1] * b[2] - a[2] * b[1],
+            a[2] * b[0] - a[0] * b[2],
+            a[0] * b[1] - a[1] * b[0])
+
+
+def _basis(axis):
+    _require(axis in ("x", "y", "z"), "Unknown owner rotation axis")
+    return tuple(Interval(int(i == "xyz".index(axis))) for i in range(3))
+
+
+def _owner_second(a, b, vector):
+    # Derivative of exp(sum(theta_i A_i)) at zero, not ordered rotations.
+    forward = _cross(a, _cross(b, vector))
+    reverse = _cross(b, _cross(a, vector))
+    return tuple((x + y) / 2 for x, y in zip(forward, reverse))
+
+
+def _square(value):
+    ends = (value.lo * value.lo, value.hi * value.hi)
+    return Interval(0 if value.lo <= 0 <= value.hi else min(ends), max(ends))
+
+
+def _absolute(value):
+    return Interval(0 if value.lo <= 0 <= value.hi else min(abs(value.lo), abs(value.hi)),
+                    max(abs(value.lo), abs(value.hi)))
+
+
+def _canonical(raw):
+    return json.dumps(raw, sort_keys=True, separators=(",", ":"),
+                      ensure_ascii=False, allow_nan=False).encode()
+
+
+def _nested_kinematics_seal(kin):
+    _require(type(kin.get("binding_sha256")) is str,
+             "Nested kinematics lacks a binding seal")
+    digest = hashlib.sha256(_canonical({k: v for k, v in kin.items()
+                                       if k != "binding_sha256"})).hexdigest()
+    _exact(kin["binding_sha256"], digest, "nested scalar-kinematics selfseal")
+
+
+_LOCAL_FALSE = (
+    "material_memory_or_interface_measure_transferred",
+    "old_sixteen_atoms_or_rod_energy_assigned",
+    "current_deformed_follower_normal_law_certified",
+    "force_equilibrium_certified", "physical_material_admission_authorized",
+    "finite_owner_motion_or_whole_clock_certified", "source_state_or_thermal_state_advanced",
+)
+_PACKET_FALSE = (
+    "new_mixed_force_equilibrium_certified", "whole_clock_material_admission_authorized",
+    "physical_material_admission_authorized", "original_point_1_completed",
+    "face_depth_memory_or_measure_transfer_certified", "old_rod_prestrain_or_energy_transferred",
+    "old_node_states_assigned_to_new_cuts", "source_history_advanced",
+    "hot_curve_contact_law_inferred", "finite_owner_whole_clock_motion_certified",
+    "full_genuine_source_reconstructed", "inherited_force_certificate_for_placement",
+    "contact_energy_adopted_on_new_face", "complete_three_dimensional_strain_energy_certified",
+)
+
+
+def _audit_kinematics(ingredients, kin, *, nested, counts):
+    if nested:
+        _nested_kinematics_seal(kin)
+    else:
+        _require(kin.get("format") == "native-common-contact-objective-local-constitutive-1"
+                 and kin.get("scope") == "SOURCE_CALIBRATED_CONTACT_ONLY_PER_REFERENCE_AREA",
+                 "HOT scalar export changed its scope")
+        for key in _LOCAL_FALSE:
+            _require(kin.get(key) is False, "HOT scalar scope changed: " + key)
+    donor, receiver = ingredients["donor_owner"], ingredients["receiver_owner"]
+    _require(type(donor) is int and type(receiver) is int, "Owner IDs are not literal integers")
+    owners = ingredients["owner_rotation_coordinate_order"]
+    modes = ingredients["mode_coordinate_order"]
+    _require(type(owners) is list and len(owners) == 6 and len({tuple(x) for x in owners}) == 6,
+             "The six owner coordinates are incomplete or duplicated")
+    _require(all(type(x) is list and len(x) == 2 and type(x[0]) is int
+                 and x[1] in ("x", "y", "z") for x in owners), "Owner coordinate schema changed")
+    _require(type(modes) is list and len(modes) in (13, 14), "Unexpected local body coordinate count")
+    body_count, count = len(modes), len(modes) + 6
+    for key in ("reference_snapshot_sha256", "cut_snapshot_sha256", "geometry_bounds_sha256",
+                "port_response_binding_sha256"):
+        _exact(kin[key], ingredients[key], "kinematics compact-input lineage " + key)
+    _exact(kin["donor_owner"], donor, "donor owner")
+    _exact(kin["receiver_owner"], receiver, "receiver owner")
+    _exact(kin["body_coordinate_count"], body_count, "body coordinate count")
+    _exact(kin["coordinate_order"], [["body", *x] for x in modes] + [["owner", *x] for x in owners],
+           "complete body/owner coordinate order")
+    _exact(kin["scalar_component_order"], ["normal", "down", "angular"], "scalar order")
+    _exact(kin["owner_chart"], "FRESH_LEFT_EXPONENTIAL_CHART_AT_ZERO", "owner chart")
+    _exact(kin["receiver_frame"], "common_cut_material", "receiver frame")
+    for key in ("symmetric_coordinate_owner_second_derivatives", "full_receiver_frame_derivatives_included",
+                "shared_owner_scalar_partials_cancel_symbolically"):
+        _require(kin.get(key) is True, "Missing objective derivative flag: " + key)
+    _require(kin.get("old_world_traction_direction_preserved") is False,
+             "The new frame claimed to preserve old world traction")
+    X = _tree(ingredients["world_position_bounds_m"], (3,))
+    ud = _tree(ingredients["donor_displacement_increment_bounds_m"], (3,))
+    ur = _tree(ingredients["receiver_displacement_increment_bounds_m"], (3,))
+    jump = _tree(ingredients["displacement_jump_bounds_m"], (3,))
+    columns = _tree(ingredients["mode_jump_columns"], (body_count, 3))
+    owner_columns = _tree(ingredients["owner_rotation_jump_columns_m"], (6, 3))
+    cross_columns = _tree(ingredients["owner_body_mode_cross_derivative_columns"], (6, body_count, 3))
+    directions = _tree(ingredients["reference_director_bounds"], (3, 3))
+    _exact(_tree(kin["reference_director_bounds"], (3, 3)), directions, "reference directors")
+    donor_q = tuple(_fraction(x) for x in ingredients["donor_coordinates_m"])
+    receiver_q = tuple(_fraction(x) for x in ingredients["receiver_coordinates_m"])
+    _require(len(donor_q) + len(receiver_q) == body_count, "Body coordinates do not cover modes")
+    _require(modes == [["donor", x[1]] for x in modes[:len(donor_q)]]
+             + [["receiver", x[1]] for x in modes[len(donor_q):]], "Mode side lineage changed")
+    for k in range(3):
+        _enclose(ud[k], -sum((q * c[k] for q, c in zip(donor_q, columns[:len(donor_q)])), ZERO),
+                 "donor linear displacement")
+        _enclose(ur[k], sum((q * c[k] for q, c in zip(receiver_q, columns[len(donor_q):])), ZERO),
+                 "receiver linear displacement")
+        _enclose(jump[k], ur[k] - ud[k], "correlated reference-X jump cancellation")
+    for key, increment in (("donor_displaced_world_position_bounds_m", ud),
+                           ("receiver_displaced_world_position_bounds_m", ur)):
+        actual = _tree(ingredients[key], (3,))
+        for k in range(3):
+            _enclose(actual[k], X[k] + increment[k], key)
+    axes = tuple(_basis(label) for _, label in owners)
+    mode_owners = (donor,) * len(donor_q) + (receiver,) * len(receiver_q)
+    first = columns + owner_columns
+    second = [[VECTOR_ZERO for _ in range(count)] for _ in range(count)]
+    for a, (owner, _) in enumerate(owners):
+        donor_flag, receiver_flag = int(owner == donor), int(owner == receiver)
+        point = tuple((receiver_flag - donor_flag) * x + receiver_flag * r - donor_flag * d
+                      for x, r, d in zip(X, ur, ud))
+        expected_first = _cross(axes[a], point)
+        for k in range(3):
+            _enclose(owner_columns[a][k], expected_first[k], "owner derivative at actual displaced sides")
+        for b, (column, body_owner) in enumerate(zip(columns, mode_owners)):
+            expected_cross = _cross(axes[a], column) if owner == body_owner else VECTOR_ZERO
+            for k in range(3):
+                _enclose(cross_columns[a][b][k], expected_cross[k], "owner/body mixed derivative")
+            second[body_count + a][b] = second[b][body_count + a] = cross_columns[a][b]
+        for b, (other_owner, _) in enumerate(owners):
+            if owner == other_owner:
+                second[body_count + a][body_count + b] = _owner_second(axes[a], axes[b], point)
+    exported_first = _tree(kin["jump_first_derivative_bounds"], (count, 3))
+    exported_second = _tree(kin["jump_second_derivative_bounds"], (count, count, 3))
+    _exact(exported_first, first, "jump first derivatives retained from compact port")
+    for i in range(count):
+        for j in range(count):
+            _exact(exported_second[i][j], exported_second[j][i], "symmetric jump second derivatives")
+            for k in range(3):
+                _enclose(exported_second[i][j][k], second[i][j][k], "raw full jump second derivative")
+    scalar_increment = _tree(kin["scalar_increment_bounds_m"], (3,))
+    frame_first = _tree(kin["frame_first_derivative_bounds"], (3, count, 3))
+    frame_second = _tree(kin["frame_second_derivative_bounds"], (3, count, count, 3))
+    scalar_first = _tree(kin["scalar_first_derivative_bounds"], (3, count))
+    scalar_second = _tree(kin["scalar_second_derivative_bounds"], (3, count, count))
+    shared = donor == receiver
+    for a, direction in enumerate(directions):
+        _enclose(scalar_increment[a], _dot(direction, jump), "scalar jump projection")
+        ei = (VECTOR_ZERO,) * body_count + tuple(_cross(axis, direction) if owner == receiver else VECTOR_ZERO
+            for (owner, _), axis in zip(owners, axes))
+        for i in range(count):
+            for k in range(3):
+                _enclose(frame_first[a][i][k], ei[i][k], "receiver-frame first derivative")
+            expected = ZERO if shared and i >= body_count else _dot(direction, first[i]) + _dot(ei[i], jump)
+            _enclose(scalar_first[a][i], expected, "full objective scalar first derivative")
+            if shared and i >= body_count:
+                _exact(scalar_first[a][i], ZERO, "exact shared-owner scalar first cancellation")
+            for j in range(count):
+                eij = VECTOR_ZERO
+                if i >= body_count and j >= body_count and owners[i-body_count][0] == owners[j-body_count][0] == receiver:
+                    eij = _owner_second(axes[i-body_count], axes[j-body_count], direction)
+                for k in range(3):
+                    _enclose(frame_second[a][i][j][k], eij[k], "receiver-frame symmetric second derivative")
+                expected = ZERO if shared and (i >= body_count or j >= body_count) else (
+                    _dot(direction, second[i][j]) + _dot(ei[i], first[j])
+                    + _dot(ei[j], first[i]) + _dot(eij, jump))
+                _enclose(scalar_second[a][i][j], expected, "complete objective scalar second chain rule")
+                _exact(scalar_second[a][i][j], scalar_second[a][j][i], "symmetric scalar Hessian")
+                if shared and (i >= body_count or j >= body_count):
+                    _exact(scalar_second[a][i][j], ZERO, "exact shared-owner scalar second cancellation")
+    counts["kinematic_query_count"] += 1
+    counts["scalar_first_derivative_entry_count"] += 3 * count
+    counts["scalar_second_derivative_entry_count"] += 3 * count * count
+    counts["jump_second_vector_entry_count"] += count * count
+    counts["shared_owner_query_count"] += int(shared)
+    return scalar_increment, scalar_first, scalar_second
+
+
+def _audit_force(force, state, kin_values, label, branch, counts):
+    _require(force.get("format") == "native-common-contact-objective-local-constitutive-1"
+             and force.get("scope") == "SOURCE_CALIBRATED_CONTACT_ONLY_PER_REFERENCE_AREA",
+             "Local force export changed its per-reference-area scope")
+    for key in _LOCAL_FALSE + ("source_memory_proposal_applied", "frozen_predictor_is_physical_relaxed_shear_law",
+                              "angular_contact_stiffness_assigned", "hot_receiving_law_inferred"):
+        _require(force.get(key) is False, "Local force physical scope changed: " + key)
+    for key in ("source_preload_geometric_hessian_included", "source_relaxed_friction_free_branch"):
+        _require(force.get(key) is True, "Local force source/derivative claim missing: " + key)
+    _exact(force["branch"], branch, "declared response branch")
+    _exact(force["source_observation_binding_sha256"], state["binding_sha256"], "current state binding")
+    _exact(force["receiving_trace_id"], state["receiving_trace_id"], "receiving source family")
+    for key in ("source_snapshot_sha256", "reference_snapshot_sha256", "cut_snapshot_sha256", "geometry_bounds_sha256"):
+        _exact(force["kinematics"][key], state[key], "kinematics/current-state lineage " + key)
+    for key in ("normal_stiffness_pa_m", "tangential_stiffness_pa_m"):
+        _exact(force[key], state[key], "literal CONTACT stiffness " + key)
+    kn, kt = _fraction(state["normal_stiffness_pa_m"]), _fraction(state["tangential_stiffness_pa_m"])
+    _require(min(kn, kt) > 0, "Nonpositive source CONTACT stiffness")
+    P, T = _interval(state["normal_pressure_bounds_pa"]), _interval(state["shear_traction_bounds_pa"])
+    _require(P.lo > 0, "Source pressure is not strictly positive")
+    _exact(T, ZERO, "source friction-free shear")
+    xi, first, second = kin_values
+    _require(len(first[0]) == 20 and len(second[0]) == 20, "Cold response is not complete20 coordinates")
+    raw_normal = -P + kn * xi[0]
+    raw_trial = T + kt * xi[1]
+    traction = _tree(force["traction_bounds_pa"], (2,))
+    _enclose(traction[0], raw_normal, "normal contact preload plus increment")
+    relaxed = branch == "relaxed_source"
+    if relaxed:
+        _exact(traction[1], ZERO, "relaxed zero-strength returned shear")
+    else:
+        _enclose(traction[1], raw_trial, "frozen-memory trial shear")
+    trial_extension = _interval(force["trial_elastic_shear_extension_bounds_m"])
+    _enclose(trial_extension, raw_trial / kt, "trial shear extension")
+    elastic = _interval(force["elastic_shear_extension_bounds_m"])
+    if relaxed:
+        _exact(elastic, ZERO, "relaxed actual shear extension")
+    else:
+        _exact(elastic, trial_extension, "frozen actual extension is its trial extension")
+    gap = _interval(force["contact_gap_bounds_m"])
+    _enclose(gap, traction[0] / kn, "normal spring gap")
+    _require(gap.hi < 0, "Local contact query touches the unsupported opening branch")
+    jump = _interval(force["contact_jump_bounds_m"])
+    _enclose(jump, _interval(state["contact_reference_jump_bounds_m"]) + xi[1], "contact spring jump")
+    tangent = _tree(force["local_tangent_bounds_pa_m"], (2, 2))
+    stiffness = (Interval(kn), ZERO if relaxed else Interval(kt))
+    _exact(tangent, ((stiffness[0], ZERO), (ZERO, stiffness[1])), "complete local algorithmic tangent")
+    source_energy = _square(P) / (2 * kn) + _square(T) / (2 * kt)
+    _enclose(_interval(force["reference_recoverable_energy_bounds_j_m2"]), source_energy,
+             "source contact-only recoverable energy")
+    energy = _square(traction[0]) / (2 * kn) + (ZERO if relaxed else _square(traction[1]) / (2 * kt))
+    _enclose(_interval(force["recoverable_energy_bounds_j_m2"]), energy, "local recoverable energy")
+    residual = _tree(force["residual_bounds_per_reference_m2"], (20,))
+    hessian = _tree(force["hessian_bounds_per_reference_m2"], (20, 20))
+    for i in range(20):
+        expected = sum((traction[a] * first[a][i] for a in range(2)), ZERO)
+        _enclose(residual[i], expected, "energy gradient coordinate " + str(i))
+        for j in range(20):
+            expected = sum((stiffness[a] * first[a][i] * first[a][j]
+                            + traction[a] * second[a][i][j] for a in range(2)), ZERO)
+            _enclose(hessian[i][j], expected, "full stiffness plus prestress Hessian")
+            _exact(hessian[i][j], hessian[j][i], "symmetric energy Hessian")
+    increment = _interval(force["proposed_plastic_increment_bounds_m"])
+    _exact(increment, trial_extension if relaxed else ZERO, "signed plastic increment proposal")
+    _enclose(_interval(force["proposed_plastic_slip_bounds_m"]),
+             _interval(state["plastic_slip_bounds_m"]) + increment, "signed plastic-memory proposal")
+    _enclose(_interval(force["proposed_cumulative_slip_bounds_m"]),
+             _interval(state["cumulative_slip_bounds_m"]) + _absolute(increment), "absolute cumulative-slip proposal")
+    proposed_first = _tree(force["proposed_plastic_first_derivative_bounds"], (20,))
+    proposed_second = _tree(force["proposed_plastic_second_derivative_bounds"], (20, 20))
+    _exact(proposed_first, first[1] if relaxed else (ZERO,) * 20, "plastic first derivatives")
+    _exact(proposed_second, second[1] if relaxed else ((ZERO,) * 20,) * 20, "plastic second derivatives")
+    if label == "zero":
+        _exact(xi, (ZERO,) * 3, "zero reference increments")
+        _exact(traction[0], -P, "zero increment exact source preload identity")
+        _exact(gap, _interval(state["contact_reference_gap_bounds_m"]),
+               "zero increment exact source contact-gap identity")
+        _exact(traction[1], ZERO, "zero increment source shear")
+        _exact(increment, ZERO, "zero increment source plastic memory")
+        # Zero increments retain the exact source preload and contact gap.
+        # Independently require both energy receipts to contain the same raw
+        # rational source energy, without an arithmetic tolerance.
+        current_energy = _interval(force["recoverable_energy_bounds_j_m2"])
+        reference_energy = _interval(force["reference_recoverable_energy_bounds_j_m2"])
+        _enclose(current_energy, source_energy, "zero increment preserved raw source contact energy")
+        _require(max(current_energy.lo, reference_energy.lo)
+                 <= min(current_energy.hi, reference_energy.hi),
+                 "Zero-increment source/current energy enclosures are disjoint")
+    counts["force_response_count"] += 1
+    counts["residual_entry_count"] += 20
+    counts["hessian_entry_count"] += 400
+    counts["plastic_first_derivative_entry_count"] += 20
+    counts["plastic_second_derivative_entry_count"] += 400
+    counts["zero_reference_response_count"] += int(label == "zero")
+
+
+def audit_packet(packet):
+    """Return exact formula replay counts, raising on the first discrepancy."""
+    _require(type(packet) is dict and packet.get("format") == "native-common-objective-contact-rest-force-source-packet-1",
+             "Expected the complete objective contact rest-force source packet")
+    for key in _PACKET_FALSE:
+        _require(packet.get(key) is False, "Packet physical scope changed: " + key)
+    _exact(packet["accepted_original_native_intervals"], 1, "old accepted interval count")
+    _exact(packet["accepted_new_native_intervals"], 0, "new accepted interval count")
+    rows = packet["contact_query_rows"]
+    _require(type(rows) is list and len(rows) == 10, "The five cold cuts need both source probes")
+    counts = {key: 0 for key in (
+        "kinematic_query_count", "scalar_first_derivative_entry_count", "scalar_second_derivative_entry_count",
+        "jump_second_vector_entry_count", "shared_owner_query_count", "current_state_case_count",
+        "force_response_count", "residual_entry_count", "hessian_entry_count",
+        "plastic_first_derivative_entry_count", "plastic_second_derivative_entry_count", "zero_reference_response_count")}
+    identities = set()
+    for row in rows:
+        key = (row["cut_id"], row["sample"])
+        _require(key not in identities and row["sample"] in (1, 2), "Duplicate or unknown cut/probe")
+        identities.add(key)
+        _require(row.get("point_force_density_is_a_new_mixed_solution") is False,
+                 "Point force was advertised as a mixed solution")
+        cases = row["cases"]
+        _require(set(cases) == {"zero", "nonzero"}, "Missing a zero/nonzero comparison")
+        _exact(_canonical(cases["zero"]["source_observation"]), _canonical(cases["nonzero"]["source_observation"]),
+               "modal variation did not advance frozen current source state")
+        for label in ("zero", "nonzero"):
+            case = cases[label]
+            state, forces = case["source_observation"], case["responses"]
+            _require(set(forces) == {"relaxed_source", "frozen_memory_predictor"}, "Missing a response branch")
+            _exact(state["source_current_node_epoch"], "unaccepted_candidate", "literal current node epoch")
+            _exact(_interval(state["source_time_fraction_bounds"]), Interval(1), "frozen source clock fraction")
+            _require(state.get("literal_current_memory_used") is True
+                     and state.get("current_memory_replaced_with_previous_or_dense_query") is False,
+                     "Current source memory was replaced")
+            for flag in ("source_node_states_assigned_to_new_cut", "face_depth_memory_or_measure_transfer_certified",
+                         "old_rod_prestrain_or_energy_transferred", "source_history_advanced",
+                         "contact_energy_adopted_on_new_face", "force_equilibrium_certified",
+                         "physical_material_admission_authorized"):
+                _require(state.get(flag) is False, "Source observation physical scope changed: " + flag)
+            kin = forces["relaxed_source"]["kinematics"]
+            _exact(kin, forces["frozen_memory_predictor"]["kinematics"], "both laws use identical authentic kinematics")
+            kin_values = _audit_kinematics(case["port_ingredients"], kin, nested=True, counts=counts)
+            for branch in ("relaxed_source", "frozen_memory_predictor"):
+                _audit_force(forces[branch], state, kin_values, label, branch, counts)
+            counts["current_state_case_count"] += 1
+    _require(len({x[0] for x in identities}) == 5
+             and all({s for c, s in identities if c == cut} == {1, 2} for cut, _ in identities),
+             "The five cold cut identities/probes are incomplete")
+    hot = packet["hot_geometry_only_probe"]
+    _require(hot.get("hot_contact_force_or_memory_assigned") is False
+             and type(hot.get("source_law_rejection")) is str and bool(hot["source_law_rejection"]),
+             "The true HOT curve inherited a contact force or memory")
+    _audit_kinematics(hot["port_ingredients"], hot["scalar_kinematics"], nested=False, counts=counts)
+    _exact(counts["current_state_case_count"], 20, "current source observations count")
+    _exact(counts["force_response_count"], 40, "response count")
+    _exact(counts["residual_entry_count"], 800, "residual replay count")
+    _exact(counts["hessian_entry_count"], 16000, "Hessian replay count")
+    _exact(counts["zero_reference_response_count"], 20, "zero-reference response count")
+    for key, expected in (("current_state_query_case_count", 20), ("local_force_density_case_count", 40),
+                          ("local_coordinate_count", 20), ("exact_symmetric_hessian_entry_replay_count", 16000)):
+        _exact(packet[key], expected, "packet formula-count declaration " + key)
+    counts.update(status="PASS_EXACT_RATIONAL_LOCAL_FORMULA_REPLAY_ONLY",
+                  project_modules_imported=False, quadrature_repeated=False,
+                  physical_force_or_face_measure_certified=False)
+    return counts

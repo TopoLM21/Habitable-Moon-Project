@@ -1,0 +1,276 @@
+{
+  "format": "geometric-fault-transport-cloud-validation-1",
+  "status": "complete_with_known_original_head_legacy_failure",
+  "date": "2026-10-01",
+  "branch": "fix/genesis-mantle-convection",
+  "base_commit": "224a07ac1b981b95163cdf6633f424af1599b2f2",
+  "runtime": {
+    "python": "3.12.14",
+    "platform": "Linux-6.18.44-x86_64-with-glibc2.41",
+    "packages": {
+      "numpy": "2.5.3",
+      "scipy": "1.18.1",
+      "PyYAML": "6.0.3",
+      "pytest": "9.1.1"
+    }
+  },
+  "cloud_sources": {
+    "files": 9,
+    "source_bytes": 2110696,
+    "verified": true
+  },
+  "checks": {
+    "focused_cloud_profile": {
+      "passed": 853,
+      "seconds": 859.45,
+      "runner_seconds": 860.0662263389968,
+      "log": "analysis/geometric_fault_transport_validation/final_cloud_tests.log",
+      "receipt": "analysis/geometric_fault_transport_validation/cloud_test_receipt.json"
+    },
+    "expanded_legacy_dependencies": {
+      "passed": 223,
+      "failed": 1,
+      "seconds": 13.76,
+      "log": "analysis/geometric_fault_transport_validation/dependency_tests.log",
+      "receipt": "analysis/geometric_fault_transport_validation/dependency_test_receipt.json",
+      "baseline_reproduction_receipt": "analysis/geometric_fault_transport_validation/legacy_slab_constraint_baseline_receipt.json"
+    },
+    "new_targeted_tests_included_in_profile": {
+      "total": 132,
+      "reference_bank_support": 59,
+      "material_atlas": 33,
+      "source_bound_predictor": 18,
+      "full_checkpoint_io": 22
+    },
+    "git_diff_check": "passed",
+    "all_current_control_code_hashes_match": true,
+    "current_control_code_hash_count": 146
+  },
+  "control": {
+    "report": "analysis/geometric_fault_transport_validation/cloud_control/report.json",
+    "full_output_directory": "results/cloud_fault_transport_control_final_v2",
+    "elapsed_seconds": 109.32519964599487,
+    "reference_predictor_steps": 4,
+    "step_duration_s": 10000000000.0,
+    "point_count": 16,
+    "sliding_point_steps": 60,
+    "mixed_branch_trace_steps": 2,
+    "maximum_resultant_torque_relative_residual": 3.0508377801623433e-15,
+    "maximum_generalized_force_relative_residual": 3.831890444949179e-16,
+    "maximum_incremental_work_relative_residual": 4.398075263955462e-15,
+    "maximum_candidate_gap_anchor_defect_m": 3.094919768820148e-05,
+    "maximum_candidate_jump_anchor_defect_m": 4.3601255701020136e-05,
+    "candidate_mechanical_binding_refused": "Basal loading requires a resolved geometric partition",
+    "all_four_material_total_residuals_zero": true,
+    "nonempty_passive_archive": {
+      "cohort_count": 2,
+      "historical_transaction_count": 1,
+      "retained_physical_polarity_interval_count": 2,
+      "original_archive_unchanged": true,
+      "original_surface_unchanged": true,
+      "original_acceptance_events_and_cohort_payloads_unchanged": true,
+      "no_candidate_archive_created": true,
+      "restart_exact": true,
+      "checkpoint_bytes_identical": true,
+      "candidate_material_audit": {
+        "surface_clock_myr": 0.0010063376175628057,
+        "elapsed_time_myr": 6.33761756280579e-06,
+        "material_age_advance_myr": 6.33761756280579e-06,
+        "extensive_residual": {
+          "area_km2": 0.0,
+          "oceanic_volume_km3": 0.0,
+          "cold_mantle_volume_km3": 0.0,
+          "density_excess_mass_kg": 0.0
+        },
+        "all_other_parcel_properties_preserved": true,
+        "maximum_vertex_chord_displacement": 1.2698572948037016e-07,
+        "phase": "advected_candidates"
+      },
+      "unresolved_material_pairing": true,
+      "trace_material_pair_separation_m": [
+        [
+          "archive-physical:0",
+          0.00674609710788559,
+          0.0183281931651324
+        ],
+        [
+          "archive-physical:1",
+          0.0010270615584571212,
+          0.01707242495822567
+        ],
+        [
+          "archive-physical:2",
+          0.00674609710788559,
+          0.018328193165132477
+        ],
+        [
+          "archive-physical:3",
+          0.0010271282329666917,
+          0.017072428969433173
+        ]
+      ]
+    },
+    "restart_exact": true,
+    "checkpoint_bytes_identical": true,
+    "accepted_finite_geometry_steps": 0,
+    "new_slab_cohorts": 0,
+    "transferred_material_km2": 0.0,
+    "source_surface_preserved": true,
+    "source_archive_preserved": true
+  },
+  "independent_kinematics": {
+    "common_noncommuting": {
+      "rotation_vectors": [
+        [
+          0.42,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          -0.37,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.31
+        ],
+        [
+          0.18,
+          0.14,
+          -0.09
+        ]
+      ],
+      "total_prescribed_duration_myr": 0.1,
+      "chronological_composition_matrix": [
+        [
+          0.9517643833936001,
+          -0.27975887061099347,
+          -0.12601401833868053
+        ],
+        [
+          0.1439960553300652,
+          0.7699176960915493,
+          -0.6216847089115685
+        ],
+        [
+          0.27094223471577983,
+          0.5735518420853882,
+          0.7730644150959719
+        ]
+      ],
+      "incorrect_rotation_vector_sum_matrix_difference": 0.07930396347663687,
+      "maximum_point_frame_error": 3.4219371797089426e-16,
+      "maximum_bank_clamp_error": 3.477763656540197e-16,
+      "maximum_footprint_vertex_error": 1.2719202621569003e-16,
+      "analytic_geodesic_reference_bank_clamps_verified": true,
+      "material_audit": {
+        "surface_clock_myr": 0.1,
+        "elapsed_time_myr": 0.1,
+        "material_age_advance_myr": 0.1,
+        "extensive_residual": {
+          "area_km2": 0.0,
+          "oceanic_volume_km3": 0.0,
+          "cold_mantle_volume_km3": 0.0,
+          "density_excess_mass_kg": 0.0
+        },
+        "all_other_parcel_properties_preserved": true,
+        "maximum_vertex_chord_displacement": 0.678354337950972,
+        "phase": "partition"
+      },
+      "point_ids_preserved": true,
+      "physical_plane_parameters_and_pressure_preserved": true,
+      "polarity_interval_provenance_preserved": true,
+      "full_continuous_arc_support_preserved": true,
+      "atlas_restart_exact": true,
+      "status": "unaccepted_transport_candidate",
+      "virtual_work": {
+        "reference_contact_reaction_work_j": 106989611307028.39,
+        "rotated_representation_contact_reaction_work_j": 106989611307028.38,
+        "relative_error": 1.4604221670794647e-16,
+        "interpretation": "Common rotation of an already solved reference step; invariant virtual work, not continuation with a fixed external mantle source"
+      }
+    },
+    "fixed_mantle_source_input_audit": {
+      "reference_load_sha256": "e2d19bf5be117a7d9be2ac8451e9f9c0c587347012339d16f88ae8b6f82832a8",
+      "candidate_load_sha256": "5d744ffeebebfc7e08bb6a88a0a756be683ec2d31b9906e564a35be1c8866133",
+      "reassembled_torque_difference_from_co_rotated_old_source_relative": 0.7389254679488353,
+      "reference_source_work_j": 958022818384140.9,
+      "archived_source_work_unchanged": true,
+      "interpretation": "Fresh projection on the same fixed mesh and prescribed mantle source. This source differs from a co-moving load and is not attached to the archived reference mechanics"
+    },
+    "differential_boundary_set": {
+      "continuous_material_pair_separation": [
+        {
+          "trace_id": "declared:contact:066878a5e618237f68b3f5465e5cf9ed",
+          "minimum_separation_m": 39733.86615901225,
+          "maximum_separation_m": 39733.86615901225
+        },
+        {
+          "trace_id": "declared:contact:976387e77331a64ed1404a86708546d6",
+          "minimum_separation_m": 39733.86615901225,
+          "maximum_separation_m": 39733.86615901225
+        },
+        {
+          "trace_id": "declared:contact:a3f4ac047f77dd5fb4265bf3e07d5c14",
+          "minimum_separation_m": 39733.86615901225,
+          "maximum_separation_m": 39733.86615901225
+        },
+        {
+          "trace_id": "declared:contact:dd8c1ceb0034ff9325d10c7a719dfd71",
+          "minimum_separation_m": 39733.86615901225,
+          "maximum_separation_m": 39733.86615901225
+        }
+      ],
+      "traced_point_pairs_remain_unresolved": true,
+      "actual_owner_partition_as_set_preserved": true,
+      "physical_history_rematching_performed": false,
+      "status": "unaccepted_transport_candidate",
+      "material_audit": {
+        "surface_clock_myr": 0.1,
+        "elapsed_time_myr": 0.1,
+        "material_age_advance_myr": 0.1,
+        "extensive_residual": {
+          "area_km2": 0.0,
+          "oceanic_volume_km3": 0.0,
+          "cold_mantle_volume_km3": 0.0,
+          "density_excess_mass_kg": 0.0
+        },
+        "all_other_parcel_properties_preserved": true,
+        "maximum_vertex_chord_displacement": 0.19966683329365634,
+        "phase": "advected_candidates"
+      }
+    }
+  },
+  "resolved_precision_issues": {
+    "short_fault_trace_endpoint_coordinates": "Exact saved endpoints and long-double point-minus-start coordinates; strict relative coverage budgets, no eps-squared floor",
+    "cumulative_so3_gate": "Explicit checked receipt count synchronizes atlas and geometry arithmetic budgets; saved matrices not normalized",
+    "pre_fix_counterexample": "analysis/geometric_fault_transport_validation/so3_cumulative_roundoff_audit.json",
+    "regression": "60 chronological common rotations preserve exact matrix bits and restart"
+  },
+  "known_original_head_failure": {
+    "test": "tests/test_young_slab_constraints.py::test_actual_rank_deficient_trench_problem_matches_independent_primal_qp[young_slab_constraint_noisy_support.json]",
+    "source_identity_matches": true,
+    "primal_relative_violation": 2.5054326766449742e-11,
+    "test_primal_tolerance": 2e-11,
+    "baseline_receipt": "analysis/geometric_fault_transport_validation/legacy_slab_constraint_baseline_receipt.json",
+    "interpretation": "The unchanged rank-deficient legacy solve passes its production KKT gate and independent primal oracle comparison, but exceeds its tighter regression primal tolerance on this runtime; the identical result occurs before finite fault transport changes."
+  },
+  "scope": "Exact chronological SO(3) material maps, two bank labels, overriding material-frame physical planes and clamp references, strict origin-linked checkpoints, continuous material-pair defect evidence. Force and work are accepted only on the frozen reference geometry. Endpoint proposals remain unaccepted; no spatial contact-history rematching, coupled changing-source work continuation, material admission, topology resolution or cooling feedback",
+  "limitations": [
+    "Finite geometry is a candidate; changed material point pairs have no automatic historical rematching.",
+    "Mechanical predictor and certified source work stay on the original surface and source, including an explicit evolved initial epoch.",
+    "A reassembled current fixed-mantle source is returned separately; moving-source segments and moving-reference mechanical continuation remain to implement.",
+    "Origin slab cohorts and archive clock remain bound to the origin; no candidate acceptance events or slab transfer occur.",
+    "Bending retains the declared locally planar uniform-trace cantilever model; no spherical shell or along-strike bending field.",
+    "Missing real saved50 inputs are not fabricated; the new physics controls are explicitly synthetic."
+  ],
+  "next_step": "Spatial material-pair matching and underthrust admission, with consistent moving-reference anchors and segmented source work, before conservative geometric acceptance.",
+  "notes": [
+    "New targeted checks are included in the focused profile; counts overlap.",
+    "Historic mean/distributed/bending reports remain unchanged.",
+    "Smoke and interrupted final output directories are not accepted validation receipts; definitive current report is final_v2.",
+    "Changes remain local in the requested branch; no commit or push performed."
+  ]
+}

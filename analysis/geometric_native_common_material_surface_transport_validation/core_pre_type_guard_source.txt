@@ -1,0 +1,579 @@
+"""Finite local material-surface measure and memory transport.
+
+Nanson transport acts on the complete finite cold deformation F=I+Du.
+The allocated continuous material measure and the literal current receiver
+memory are advected without introducing an energy, follower force, or clock.
+Original atom labels use an explicitly declared same-parent field extension;
+archived material remains distinct from the present contact-cut masks.
+"""
+from __future__ import annotations
+
+from dataclasses import dataclass, fields, replace
+from fractions import Fraction as F
+import hashlib
+
+from .geometric_native_pose import FractionInterval as I, interval_sqrt, interval_atan
+from .geometric_native_joint_spherical_field import rotate_joint_physical_depth
+from .geometric_native_affine_body import AFFINE_SYMMETRIC_GENERATORS
+from .geometric_native_common_contact_ports import (
+    _encoded, _payload, _read_fraction, _read_interval,
+    validate_native_common_contact_port_response)
+from .geometric_native_common_source_carrier import _round, _dot, _cross, _map
+from .geometric_native_common_reference import validate_native_common_reference
+from .geometric_native_common_cold import bind_native_common_cold_body, validate_native_common_cold_body
+from .geometric_native_common_source_allocation import (
+    validate_native_common_source_allocation, evaluate_allocated_source_reference_density)
+from .geometric_native_common_contact_state import observe_native_common_contact_state
+from .geometric_native_common_material_transfer import (
+    validate_native_common_material_transfer_system, evaluate_native_common_material_point,
+    _DEPENDENCIES as _MATERIAL_DEPENDENCIES)
+from .geometric_native_common_strain_projection import _content_types
+
+FORMAT = "native-common-finite-material-surface-transport-1"
+ORIGINAL_FORMAT = "native-common-original-material-finite-field-transport-1"
+SCOPE = "FINITE_LOCAL_MATERIAL_SURFACE_MEASURE_AND_MEMORY_TRANSPORT_COMPONENT_ONLY"
+EXTENSION = "SAME_ORIGINAL_PARENT_SEVEN_MODE_COMMON_FIELD_EXTENSION_ON_AUTHENTIC_ORIGINAL_QUARTER"
+OWNER_COVARIANCE = "FRESH_LEFT_RIGID_OWNER_ROTATION_AFTER_FROZEN_COMMON_REFERENCE_AND_BODY_DEFORMATION"
+_FLAGS = dict(
+    finite_local_nanson_measure_transport_defined=True,
+    literal_material_memory_advected_without_change=True,
+    owner_rigid_geometry_covariance_defined=True,
+    source_state_or_work_advanced=False,
+    new_energy_or_force_law_added=False,
+    old_atom_area_smeared_into_continuous_density=False,
+    historical_cumulative_slip_reinterpreted_as_current_stretch_work=False,
+    deformed_sides_glued_or_injective_certified=False,
+    whole_face_measure_integral_certified=False,
+    local_archive_force_or_work_handover_certified=False,
+    hot_material_receiving_law_certified=False,
+    force_equilibrium_certified=False,
+    physical_material_admission_authorized=False,
+    original_point_1_completed=False,
+)
+_REGISTRY, _DEPENDENCIES, _CONTEXT_GUARDS = {}, {}, {}
+_SURFACE_CACHE, _ORIGINAL_CACHE, _BODY_CACHE = {}, {}, {}
+
+
+def _precision(value):
+    if type(value) is not int or not 96 <= value <= 512:
+        raise ValueError("Material surface precision must be an integer from 96 to 512")
+    return value
+
+
+def _digest(value):
+    return hashlib.sha256(_encoded(value)).hexdigest()
+
+
+def _guard(value):
+    return _digest(value), _content_types(value)
+
+
+def _seal(value):
+    return _digest({f.name: getattr(value, f.name) for f in fields(value)
+                    if f.name != "binding_sha256"})
+
+
+def _remember(value, dependencies):
+    value = replace(value, binding_sha256=_seal(value))
+    key = type(value), value.binding_sha256
+    _REGISTRY[key] = (_encoded(value), _content_types(value))
+    _DEPENDENCIES[key] = dependencies
+    _CONTEXT_GUARDS[key] = _guard(dependencies)
+    return value
+
+
+def _registered(value, kind):
+    if (type(value) is not kind or value.binding_sha256 != _seal(value)
+            or _REGISTRY.get((kind, value.binding_sha256)) != (_encoded(value), _content_types(value))):
+        raise ValueError("Altered or resealed surface transport lacks authentic typed replay")
+    key = kind, value.binding_sha256
+    dependencies = _DEPENDENCIES[key]
+    if _guard(dependencies) != _CONTEXT_GUARDS[key]:
+        raise ValueError("A retained surface transport dependency changed after binding")
+    return dependencies
+
+
+def _same(actual, supplied):
+    if supplied is not None and _guard(supplied) != _guard(actual):
+        raise ValueError("Surface transport belongs to another complete typed query context")
+
+
+def _square(x):
+    return I(F(0) if x.lo <= 0 <= x.hi else min(x.lo*x.lo, x.hi*x.hi),
+             max(x.lo*x.lo, x.hi*x.hi))
+
+
+def _matrix(value):
+    if type(value) is not tuple or len(value) != 3 or any(type(row) is not tuple or len(row) != 3 for row in value):
+        raise ValueError("A material gradient requires its complete three by three matrix")
+    return tuple(tuple(x if type(x) is I else I(x) if type(x) is F else
+        (_ for _ in ()).throw(ValueError("Gradient entries must be exact Fractions or intervals"))
+        for x in row) for row in value)
+
+
+def _transpose(A):
+    return tuple(tuple(A[j][i] for j in range(3)) for i in range(3))
+
+
+def _multiply(A, B):
+    return tuple(tuple(_dot(row, column) for column in _transpose(B)) for row in A)
+
+
+def _cofactor_twojet(gradient, mode_gradients):
+    """Cofactor polynomial and both derivatives for F=I+sum(a_i G_i)."""
+    A = _matrix(gradient)
+    if type(mode_gradients) is not tuple:
+        raise ValueError("A cofactor twojet requires its complete mode-gradient tuple")
+    G = tuple(_matrix(g) for g in mode_gradients)
+    columns, gc = _transpose(A), tuple(_transpose(g) for g in G)
+    cyclic = ((1, 2), (2, 0), (0, 1))
+    C = _transpose(tuple(_cross(columns[j], columns[k]) for j, k in cyclic))
+    DC = tuple(_transpose(tuple(tuple(x+y for x, y in zip(
+        _cross(g[j], columns[k]), _cross(columns[j], g[k]))) for j, k in cyclic)) for g in gc)
+    DDC = tuple(tuple(_transpose(tuple(tuple(x+y for x, y in zip(
+        _cross(ga[j], gb[k]), _cross(gb[j], ga[k]))) for j, k in cyclic)) for gb in gc) for ga in gc)
+    det = _dot(columns[0], _transpose(C)[0])
+    dg = tuple(sum((C[i][j]*g[i][j] for i in range(3) for j in range(3)), I(0)) for g in G)
+    dh = tuple(tuple(sum((DC[b][i][j]*ga[i][j] for i in range(3) for j in range(3)), I(0))
+                     for b in range(len(G))) for ga in G)
+    return dict(cofactor_bounds=C, cofactor_first_derivative_bounds=DC,
+        cofactor_second_derivative_bounds=DDC, determinant_bounds=det,
+        determinant_gradient_bounds=dg, determinant_hessian_bounds=dh)
+
+
+def _surface_transport_algebra(gradient, mode_gradients, normal, reference_area,
+                               reference_measure, precision=96):
+    """Analytic Nanson twojet; normal is the correlated unit reference normal.
+
+    The exact identity-F branch preserves the known normalization correlation
+    of authentic source normals. It is not a normalization of a trial vector.
+    """
+    precision = _precision(precision)
+    A = _matrix(gradient)
+    if (type(normal) is not tuple or len(normal) != 3
+            or any(type(x) not in (I, F) for x in normal)):
+        raise ValueError("Nanson transport needs its authenticated reference unit normal")
+    n = tuple(x if type(x) is I else I(x) for x in normal)
+    J, mu = (x if type(x) is I else I(x) for x in (reference_area, reference_measure))
+    norm = sum((_square(x) for x in n), I(0))
+    if not norm.lo <= 1 <= norm.hi or J.lo <= 0 or mu.lo < 0:
+        raise ValueError("Nanson reference normal, positive area and nonnegative measure must be proved")
+    result = _cofactor_twojet(A, mode_gradients)
+    if result["determinant_bounds"].lo <= 0:
+        raise ValueError("Finite material transport needs a strictly positive determinant")
+    C, DC, DDC = (result[name] for name in ("cofactor_bounds", "cofactor_first_derivative_bounds",
+                                               "cofactor_second_derivative_bounds"))
+    w = _map(C, n)
+    dw = tuple(_map(dc, n) for dc in DC)
+    ddw = tuple(tuple(_map(ddc, n) for ddc in row) for row in DDC)
+    h = sum((_square(x) for x in w), I(0))
+    identity = all(A[i][j] == I(int(i == j)) for i in range(3) for j in range(3))
+    if not identity and h.lo <= 0:
+        raise ValueError("A finite material surface has unresolved or zero area stretch")
+    stretch = I(1) if identity else interval_sqrt(h, precision+16)
+    if stretch.lo <= 0:
+        raise ValueError("A material surface stretch must remain strictly positive")
+    wd = tuple(_dot(w, x) for x in dw)
+    ds = tuple(x/stretch for x in wd)
+    dds = tuple(tuple((_dot(dw[a], dw[b])+_dot(w, ddw[a][b]))/stretch
+        -wd[a]*wd[b]/(stretch*stretch*stretch) for b in range(len(dw))) for a in range(len(dw)))
+    current_n = tuple(x/stretch for x in w)
+    dn = tuple(tuple(dw[a][i]/stretch-w[i]*ds[a]/(stretch*stretch) for i in range(3))
+               for a in range(len(dw)))
+    ddn = tuple(tuple(tuple(ddw[a][b][i]/stretch
+        -(dw[a][i]*ds[b]+dw[b][i]*ds[a]+w[i]*dds[a][b])/(stretch*stretch)
+        +2*w[i]*ds[a]*ds[b]/(stretch*stretch*stretch) for i in range(3))
+        for b in range(len(dw))) for a in range(len(dw)))
+    area = J*stretch
+    rho = mu/area
+    drho = tuple(-rho*x/stretch for x in ds)
+    ddrho = tuple(tuple(rho*(2*ds[a]*ds[b]/(stretch*stretch)-dds[a][b]/stretch)
+                       for b in range(len(dw))) for a in range(len(dw)))
+    result.update(reference_normal_bounds=n, cofactor_normal_bounds=w,
+        cofactor_normal_first_derivative_bounds=dw, cofactor_normal_second_derivative_bounds=ddw,
+        surface_stretch_bounds=stretch, surface_stretch_gradient_bounds=ds,
+        surface_stretch_hessian_bounds=dds, current_unit_normal_bounds=current_n,
+        current_normal_first_derivative_bounds=dn, current_normal_second_derivative_bounds=ddn,
+        reference_area_density_bounds=J, current_area_density_bounds=area,
+        current_area_density_gradient_bounds=tuple(J*x for x in ds),
+        current_area_density_hessian_bounds=tuple(tuple(J*x for x in row) for row in dds),
+        current_measure_density_bounds=rho, current_measure_density_gradient_bounds=drho,
+        current_measure_density_hessian_bounds=ddrho)
+    return result
+
+
+@dataclass(frozen=True, slots=True)
+class NativeCommonFiniteSurfaceSide:
+    component_id: str
+    material_kind: str
+    body_snapshot_sha256: str
+    owner: int
+    coordinate_order: tuple
+    coordinates_m: tuple
+    reference_position_bounds_m: tuple
+    displacement_increment_bounds_m: tuple
+    current_position_bounds_m: tuple
+    mode_displacement_columns: tuple
+    incremental_gradient_bounds: tuple
+    mode_spatial_gradient_columns_per_m: tuple
+    determinant_bounds: I
+    determinant_gradient_bounds: tuple
+    determinant_hessian_bounds: tuple
+    cofactor_bounds: tuple
+    cofactor_first_derivative_bounds: tuple
+    cofactor_second_derivative_bounds: tuple
+    reference_normal_bounds: tuple
+    cofactor_normal_bounds: tuple
+    cofactor_normal_first_derivative_bounds: tuple
+    cofactor_normal_second_derivative_bounds: tuple
+    surface_stretch_bounds: I
+    surface_stretch_gradient_bounds: tuple
+    surface_stretch_hessian_bounds: tuple
+    current_unit_normal_bounds: tuple
+    current_normal_first_derivative_bounds: tuple
+    current_normal_second_derivative_bounds: tuple
+    reference_area_density_bounds: I
+    current_area_density_bounds: I
+    current_area_density_gradient_bounds: tuple
+    current_area_density_hessian_bounds: tuple
+
+
+@dataclass(frozen=True, slots=True)
+class NativeCommonSurfaceTransportResponse:
+    source_snapshot_sha256: str
+    reference_snapshot_sha256: str
+    cut_snapshot_sha256: str
+    geometry_bounds_sha256: str
+    port_response_binding_sha256: str
+    allocation_binding_sha256: str
+    density_binding_sha256: str
+    state_binding_sha256: str
+    receiving_trace_id: str
+    receiving_cell_id: str
+    parameter_bounds: I
+    physical_radius_cubed_bounds_m3: I
+    receiving_computational_angle_bounds_radians: I
+    donor: NativeCommonFiniteSurfaceSide
+    receiver: NativeCommonFiniteSurfaceSide
+    reference_measure_density_bounds: I
+    receiver_current_measure_density_bounds: I
+    receiver_current_measure_density_gradient_bounds: tuple
+    receiver_current_measure_density_hessian_bounds: tuple
+    receiver_measure_conservation_residual_bounds: I
+    source_current_memory_sha256: str
+    source_current_atom_states_sha256: str
+    source_current_memory_trace_json: str
+    memory_piece_intersections: tuple
+    plastic_slip_bounds_m: I
+    cumulative_slip_bounds_m: I
+    source_native_elapsed_time_s: F
+    source_memory_elapsed_time_s: F
+    source_memory_stage_count: int
+    source_contact_elapsed_time_s: F
+    source_contact_step_count: int
+    precision: int
+    binding_sha256: str
+    material_measure_pullback_identity_exact: bool = True
+    material_memory_scalars_unchanged: bool = True
+    owner_covariance_law: str = OWNER_COVARIANCE
+    owner_scalar_measure_first_and_second_derivatives_exact_zero: bool = True
+    current_normals_used_as_constitutive_directors: bool = False
+    finite_local_nanson_measure_transport_defined: bool = True
+    source_state_or_work_advanced: bool = False
+    new_energy_or_force_law_added: bool = False
+
+
+@dataclass(frozen=True, slots=True)
+class NativeCommonOriginalMaterialTransportResponse:
+    material_system_binding_sha256: str
+    reference_snapshot_sha256: str
+    source_snapshot_sha256: str
+    source_material_point_binding_sha256: str
+    body_snapshot_sha256: str
+    point_id: str
+    trace_id: str
+    side: str
+    original_parent_id: str
+    original_material_id: str
+    owner: int
+    original_label_membership: str
+    archive_cohort_id: str | None
+    geometry_field_component_id: str
+    original_direction_literal: tuple
+    normalized_material_ray_bounds: tuple
+    current_world_material_ray_bounds: tuple
+    material_owner_pose_bounds: tuple
+    material_depth_bounds_m: I
+    areal_material_thickness_m: F
+    roof_radial_displacement_m: F
+    radius_bounds_m: I
+    physical_volume_depth_bounds_m: I
+    input_position_bounds_m: tuple
+    reference_position_bounds_m: tuple
+    reference_gradient_bounds: tuple
+    coordinate_order: tuple
+    coordinates_m: tuple
+    original_quarter_labels_bounds: tuple
+    material_beta_bounds_radians: I
+    material_beta_gradient_bounds_per_m: tuple
+    source_shape_bounds: I
+    source_shape_beta_derivative_bounds: I
+    field_active_inside_material_clamp: bool
+    mode_displacement_columns: tuple
+    mode_spatial_gradient_columns_per_m: tuple
+    displacement_increment_bounds_m: tuple
+    current_position_bounds_m: tuple
+    incremental_gradient_bounds: tuple
+    determinant_bounds: I
+    cofactor_bounds: tuple
+    incremental_green_strain_bounds: tuple
+    total_material_gradient_bounds: tuple
+    total_original_cartesian_gradient_bounds: tuple
+    complete_original_parent_json: str
+    complete_parent_allocation_json: str
+    complete_archive_cohort_json: str | None
+    source_contact_elapsed_time_s: F
+    source_memory_elapsed_time_s: F
+    source_geometry_elapsed_time_s: F
+    precision: int
+    binding_sha256: str
+    original_material_membership_authenticated: bool = True
+    same_parent_original_quarter_field_extension_declared: bool = True
+    extension_law: str = EXTENSION
+    reference_gradient_input_frame: str = "OWNER_CURRENT_CARTESIAN_INPUT_TO_COMMON_PHI"
+    total_original_gradient_input_frame: str = "ORIGINAL_MATERIAL_CARTESIAN_BEFORE_OWNER_POSE"
+    current_live_mask_membership_authenticated: bool = False
+    current_contact_cut_membership_claimed: bool = False
+    deformed_source_rod_endpoint_equivalence_certified: bool = False
+    local_archive_force_or_work_handover_certified: bool = False
+    source_state_or_work_advanced: bool = False
+    new_energy_or_force_law_added: bool = False
+
+    @property
+    def archived(self):
+        return self.original_label_membership == "ARCHIVED_ORIGINAL_MATERIAL"
+
+
+def _surface_side(fields_value, body, geometry, normal, mu, precision):
+    if fields_value.material_kind != "original_live" or len(fields_value.coordinates_m) != 7:
+        raise ValueError("Finite surface transport requires genuine seven-mode cold sides; HOT is unresolved")
+    algebra = _surface_transport_algebra(fields_value.incremental_gradient_bounds,
+        fields_value.mode_spatial_gradient_columns_per_m, normal,
+        geometry.area_density_bounds_m2_per_parameter_per_material_m, mu, precision)
+    names = tuple(f.name for f in fields(NativeCommonFiniteSurfaceSide))[12:]
+    value = NativeCommonFiniteSurfaceSide(fields_value.component_id, fields_value.material_kind,
+        fields_value.body_snapshot_sha256, body.original_body.owner, fields_value.coordinate_order,
+        fields_value.coordinates_m, geometry.world_position_bounds_m,
+        fields_value.displacement_increment_bounds_m, fields_value.displaced_point_bounds_m,
+        fields_value.mode_displacement_columns, fields_value.incremental_gradient_bounds,
+        fields_value.mode_spatial_gradient_columns_per_m, **{name: algebra[name] for name in names})
+    return value, algebra
+
+
+def evaluate_native_common_surface_transport(reference, port_response, allocation, *, precision=96):
+    precision = _precision(precision)
+    # Revalidate the complete authentic input before using a cached query.
+    reference = validate_native_common_reference(reference)
+    port_response = validate_native_common_contact_port_response(port_response, reference=reference)
+    allocation = validate_native_common_source_allocation(allocation, reference=reference)
+    key = (reference.reference_snapshot_sha256, port_response.binding_sha256,
+           allocation.binding_sha256, precision)
+    if key in _SURFACE_CACHE:
+        result = _SURFACE_CACHE[key]
+        validate_native_common_surface_transport_response(result, reference=reference,
+            port_response=port_response, allocation=allocation)
+        return result
+    geometry, port = port_response.geometry, port_response.port
+    if (not geometry.genuine_query_support_certified or port.cut.receiving_trace_id is None
+            or port.cut.receiver_material_kind != "original_live"):
+        raise ValueError("Only genuine cold receiving cuts have allocated local material measure and memory")
+    density = evaluate_allocated_source_reference_density(allocation, reference, geometry, precision=precision)
+    state = observe_native_common_contact_state(reference, port_response, precision=precision)
+    if (density.source_current_memory_sha256 != state.source_current_memory_sha256
+            or density.receiving_trace_id != state.receiving_trace_id
+            or allocation.source_current_atom_states_sha256 != state.source_current_atom_states_sha256
+            or state.computational_angle_bounds != geometry.receiving_computational_angle_bounds_radians):
+        raise ValueError("Allocated measure and literal material memory must share the same authentic receiver label")
+    mu = density.reference_area_density_bounds_m2_per_parameter_per_physical_volume_depth_m
+    N = geometry.receiver_inward_unit_normal_bounds
+    donor, _ = _surface_side(port_response.donor_fields, port.donor_body, geometry,
+                            tuple(-x for x in N), I(0), precision)
+    receiver, algebra = _surface_side(port_response.receiver_fields, port.receiver_body, geometry,
+                                    N, mu, precision)
+    rho = algebra["current_measure_density_bounds"]
+    result = NativeCommonSurfaceTransportResponse(reference.source_snapshot_sha256,
+        reference.reference_snapshot_sha256, port.cut.cut_snapshot_sha256,
+        geometry.bounds_snapshot_sha256, port_response.binding_sha256, allocation.binding_sha256,
+        density.binding_sha256, state.binding_sha256, state.receiving_trace_id, density.receiving_cell_id,
+        geometry.parameter_bounds, geometry.common_physical_radius_cubed_bounds_m3,
+        geometry.receiving_computational_angle_bounds_radians, donor, receiver, mu, rho,
+        algebra["current_measure_density_gradient_bounds"], algebra["current_measure_density_hessian_bounds"],
+        rho*receiver.current_area_density_bounds-mu, state.source_current_memory_sha256,
+        state.source_current_atom_states_sha256, state.source_current_memory_trace_json,
+        state.memory_piece_intersections, state.plastic_slip_bounds_m, state.cumulative_slip_bounds_m,
+        state.source_native_elapsed_time_s, state.source_memory_elapsed_time_s,
+        state.source_memory_stage_count, state.source_contact_elapsed_time_s,
+        state.source_contact_step_count, precision, "")
+    result = _remember(result, (reference, port_response, allocation, density, state))
+    _SURFACE_CACHE[key] = result
+    return result
+
+
+def validate_native_common_surface_transport_response(value, *, reference=None,
+                                                     port_response=None, allocation=None):
+    actual_ref, actual_port, actual_allocation, _, _ = _registered(value, NativeCommonSurfaceTransportResponse)
+    for actual, supplied in ((actual_ref, reference), (actual_port, port_response), (actual_allocation, allocation)):
+        _same(actual, supplied)
+    return value
+
+
+def _original_body_context(material_system, component_id, precision=96):
+    material_system = validate_native_common_material_transfer_system(material_system)
+    _, reference = _MATERIAL_DEPENDENCIES[type(material_system), material_system.binding_sha256]
+    key = reference.reference_snapshot_sha256, component_id, _precision(precision)
+    if key not in _BODY_CACHE:
+        _BODY_CACHE[key] = bind_native_common_cold_body(component_id, reference=reference, precision=precision)
+    body = validate_native_common_cold_body(_BODY_CACHE[key])
+    if body.reference_snapshot_sha256 != reference.reference_snapshot_sha256:
+        raise ValueError("An original-material field needs the exact COMMON parent geometry")
+    return body
+
+
+def _original_field_algebra(body, attachment, point, coordinates, precision):
+    # First contract exact rational quarter axes with the LITERAL source ray.
+    # Dividing each Cartesian coordinate before this dot would lose exact zero
+    # labels on original quarter edges and invent a negative support interval.
+    q = attachment.original_direction_literal
+    norm = interval_sqrt(I(sum((x*x for x in q), F(0))), precision+16)
+    if norm.lo <= 0:
+        raise ValueError("An original material ray must have a positive homogeneous norm")
+    axes = body.original_quarter_start, body.original_quarter_end, body.original_quarter_inward
+    labels = tuple(I(sum((a*x for a, x in zip(axis, q)), F(0)))/norm for axis in axes)
+    if any(x.lo < 0 for x in labels):
+        raise ValueError("The same-parent extension needs authenticated original quarter support")
+    horizontal = interval_sqrt(_square(labels[0])+_square(labels[1]), precision+16)
+    if horizontal.lo <= 0:
+        raise ValueError("The original cold field needs a regular material beta chart")
+    beta = interval_atan(labels[2]/horizontal, precision+16)
+    b = body.beta_cut_radians
+    if beta.lo < b < beta.hi:
+        raise ValueError("Split an original field query at its authentic material clamp")
+    X, r = point.world_position_bounds_m, point.radius_bounds_m
+    active = beta.lo < b
+    if active:
+        e = tuple(_round(x/r, precision) for x in X)
+        n = body.current_quarter_inward_bounds
+        rotated = rotate_joint_physical_depth(n, body.angular_rate_per_physical_volume_depth_m,
+            point.physical_volume_depth_bounds_m, precision=precision, order=28)
+        rate = _dot(n, _cross(tuple(I(x) for x in body.angular_rate_per_physical_volume_depth_m),
+                             attachment.current_world_material_ray_bounds))/horizontal
+        gb = tuple(_round((rotated[i]-e[i]*labels[2])/(r*horizontal)
+            +(r*r/body.radius_m**2)*rate*e[i], precision) for i in range(3))
+        t = beta/b
+        chi = _round((I(1)-t)*(I(1)-t)*(t+2)/2, precision)
+        slope = _round(-F(3, 2)*(I(1)-t)*(I(1)+t)/b, precision)
+        modes = [tuple(_round(chi*x, precision) for x in e)]
+        gradients = [tuple(tuple(_round(chi/r*(I(int(i == j))-e[i]*e[j])
+            +slope*e[i]*gb[j], precision) for j in range(3)) for i in range(3))]
+        for E in AFFINE_SYMMETRIC_GENERATORS:
+            direction = tuple(_round(x/body.radius_m, precision) for x in _map(E, X))
+            modes.append(tuple(_round(chi*x, precision) for x in direction))
+            gradients.append(tuple(tuple(_round(chi*E[i][j]/body.radius_m
+                +slope*direction[i]*gb[j], precision) for j in range(3)) for i in range(3)))
+    else:
+        chi, slope, gb = I(0), I(0), (I(0),)*3
+        modes, gradients = [(I(0),)*3]*7, [((I(0),)*3,)*3]*7
+    u = tuple(_round(sum((a*v[i] for a, v in zip(coordinates, modes)), I(0)), precision) for i in range(3))
+    Fbody = tuple(tuple(_round(I(int(i == j))+sum((a*g[i][j]
+        for a, g in zip(coordinates, gradients)), I(0)), precision) for j in range(3)) for i in range(3))
+    return labels, beta, gb, chi, slope, active, tuple(modes), tuple(gradients), u, Fbody
+
+
+def evaluate_native_common_original_material_transport(material_system, point_id, side, *,
+        material_depth_bounds_m, coordinates_m, precision=96):
+    precision = _precision(precision)
+    material_system = validate_native_common_material_transfer_system(material_system)
+    if (type(point_id) is not str or type(side) is not str or side not in ("sub", "over")
+            or type(material_depth_bounds_m) is not I or type(coordinates_m) is not tuple
+            or len(coordinates_m) != 7 or any(type(x) is not F for x in coordinates_m)):
+        raise ValueError("Original material transport needs its exact atom, bank, depth and seven literal metre coordinates")
+    key = material_system.binding_sha256, point_id, side, material_depth_bounds_m, coordinates_m, precision
+    if key in _ORIGINAL_CACHE:
+        result = _ORIGINAL_CACHE[key]
+        validate_native_common_original_material_transport_response(result, material_system=material_system)
+        return result
+    matches = tuple(a for a in material_system.attachments if a.point_id == point_id and a.side == side)
+    if len(matches) != 1:
+        raise ValueError("An original field query needs one authenticated original atom attachment")
+    a = matches[0]
+    point = evaluate_native_common_material_point(material_system, point_id, side,
+        material_depth_bounds_m=material_depth_bounds_m, precision=precision)
+    body = _original_body_context(material_system, a.geometry_field_component_id, precision)
+    labels, beta, gb, chi, slope, active, modes, gradients, u, Fbody = _original_field_algebra(
+        body, a, point, coordinates_m, precision)
+    cofactor = _cofactor_twojet(Fbody, gradients)
+    if cofactor["determinant_bounds"].lo <= 0:
+        raise ValueError("The original material field extension needs a strictly positive local determinant")
+    green = _multiply(_transpose(Fbody), Fbody)
+    green = tuple(tuple((green[i][j]-int(i == j))/2 for j in range(3)) for i in range(3))
+    total = _multiply(Fbody, point.reference_gradient_bounds)
+    original_total = _multiply(total, a.material_owner_pose_bounds)
+    result = NativeCommonOriginalMaterialTransportResponse(material_system.binding_sha256,
+        material_system.reference_snapshot_sha256, material_system.source_snapshot_sha256,
+        point.binding_sha256, body.body_snapshot_sha256, point_id, a.trace_id, side,
+        a.original_parent_id, a.original_material_id, a.owner, a.original_label_membership,
+        a.archive_cohort_id, a.geometry_field_component_id, a.original_direction_literal,
+        a.normalized_material_ray_bounds, a.current_world_material_ray_bounds, a.material_owner_pose_bounds,
+        material_depth_bounds_m, a.areal_material_thickness_m, a.roof_radial_displacement_m,
+        point.radius_bounds_m, point.physical_volume_depth_bounds_m, point.input_position_bounds_m,
+        point.world_position_bounds_m, point.reference_gradient_bounds, body.coordinate_order,
+        coordinates_m, labels, beta, gb, chi, slope, active, modes, gradients, u,
+        tuple(_round(x+v, precision) for x, v in zip(point.world_position_bounds_m, u)), Fbody,
+        cofactor["determinant_bounds"], cofactor["cofactor_bounds"], green, total, original_total,
+        a.complete_original_parent_json, a.complete_parent_allocation_json, a.complete_archive_cohort_json,
+        material_system.source_contact_elapsed_time_s, material_system.source_memory_elapsed_time_s,
+        material_system.source_geometry_elapsed_time_s, precision, "")
+    result = _remember(result, (material_system, point, body))
+    _ORIGINAL_CACHE[key] = result
+    return result
+
+
+def validate_native_common_original_material_transport_response(value, *, material_system=None):
+    actual, _, _ = _registered(value, NativeCommonOriginalMaterialTransportResponse)
+    validate_native_common_material_transfer_system(actual)
+    _same(actual, material_system)
+    return value
+
+
+def _export(value, format_name):
+    raw = _payload(value)
+    raw.update(format=format_name, scope=SCOPE, **_FLAGS)
+    return raw
+
+
+def native_common_surface_transport_to_dict(value):
+    return _export(validate_native_common_surface_transport_response(value), FORMAT)
+
+
+def native_common_surface_transport_from_dict(raw, *, reference, port_response, allocation):
+    if type(raw) is not dict or raw.get("format") != FORMAT:
+        raise ValueError("Expected an entire finite local surface transport DTO")
+    result = evaluate_native_common_surface_transport(reference, port_response, allocation, precision=raw.get("precision"))
+    if _encoded(raw) != _encoded(native_common_surface_transport_to_dict(result)):
+        raise ValueError("Surface transport differs from authentic measure, memory or finite query replay")
+    return result
+
+
+def native_common_original_material_transport_to_dict(value):
+    return _export(validate_native_common_original_material_transport_response(value), ORIGINAL_FORMAT)
+
+
+def native_common_original_material_transport_from_dict(raw, *, material_system):
+    if type(raw) is not dict or raw.get("format") != ORIGINAL_FORMAT:
+        raise ValueError("Expected an entire original-material finite field DTO")
+    result = evaluate_native_common_original_material_transport(material_system, raw.get("point_id"), raw.get("side"),
+        material_depth_bounds_m=_read_interval(raw["material_depth_bounds_m"]),
+        coordinates_m=tuple(_read_fraction(x) for x in raw["coordinates_m"]), precision=raw.get("precision"))
+    if _encoded(raw) != _encoded(native_common_original_material_transport_to_dict(result)):
+        raise ValueError("Original material transport differs from its parent, cohort, depth or full finite field replay")
+    return result

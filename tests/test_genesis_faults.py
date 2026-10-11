@@ -27,14 +27,16 @@ def _model(*, enabled=True, persistence=0., shell_overrides=None, fault_override
 
 
 def _cold(model, damage=.75):
-    """Controlled solid initial state with conserved heat and no invented work."""
+    """Mechanical fixture with conserved heat and unavailable birth history."""
     state, thermal, orbit = model.initial()
     energy = [mantle_enthalpy(1000., model.thermal)/ENERGY_SCALE,
               surface_enthalpy(1000., model.thermal)/ENERGY_SCALE, 0., 0.]
     energy[3] = thermal.initial_total_energy-sum(energy[:2])
     thermal = replace(thermal, energy=energy)
     h = np.full_like(state.column_enthalpy, rock_enthalpy(1000., model.thermal))
+    # Prescribed cooling supplies no actual material birth path.
     state = replace(state, membrane_established=True, column_enthalpy=h,
+        bulk_birth_history=None, cohort_mechanics=None,
         boundary_energy_j=float(np.sum(state.layer_mass_kg*h))-state.initial_column_energy_j,
         damage=np.full_like(state.damage, damage))
     return state, thermal, orbit

@@ -1,0 +1,295 @@
+"""Stdlib preservation of sealed899 plus exactly four authorized903 sources.
+
+Only authenticated old definitions/preserved_inputs are reused. Old run/main,
+readers/auditors, project math, tests, solver and quadrature are not executed.
+Fresh899 was read before the four new903 repository Python sources existed.
+Mutable handoff document bytes are not inherited dependency pins.
+"""
+from pathlib import Path
+import hashlib
+import json
+import sys
+import time
+import types
+
+ROOT = Path('/workspace/Habitable-Moon-Project')
+PARENT = ROOT / 'analysis/geometric_native_common_cold_continuum_energy_validation'
+FINAL = ROOT / 'analysis/geometric_native_common_cold_continuum_energy_final_readback'
+STAGE = Path('/workspace/hot_mean_baseline_20261007')
+ADDED_NAMES = frozenset((
+    'tectonics/geometric_native_common_hot_mean.py',
+    'tests/test_geometric_native_common_hot_mean.py',
+    'analysis/geometric_native_common_hot_mean_validation/native_control.py',
+    'analysis/geometric_native_common_hot_mean_validation/validate.py',
+))
+PRESERVATION895_RAW = '3455c08972730f8eda3e5bfb96f8f708eee3542f7f71ca39d045310127f340e6'
+MANIFEST_RAW = '4baa3eaab5de3310481051d157c8d8ae5e5a2a86f33b910176074076882ba0e8'
+MANIFEST_SEAL = 'f8d8ab8ef8b660f1d74ca94c5db08aa1ea84ead4f564aa0816b30f632bbe8fdc'
+FINAL_ARCHIVE_RAW = '8e7a78f48e6d78a78734602f2b43296a1ba7b67a14333185cfcd92a6e581a23f'
+FINAL_ARCHIVE_SEAL = '5ef88a211403aebc2367f84088912d4dbf69596a442667a99f1014c07db938eb'
+READER_RAW = '14578ad5f025ed45a30f8d97c3b0c76042b2f81c98d502e34d868b17453d25db'
+FRESH_REPORT_RAW = '8c0f9d59c1563a6161d5f20c69c16c8d764e5c6f0b061e9d49e789bef01914fb'
+FRESH_REPORT_SEAL = '9ccd43de13d8b15d2748fbf95b677e946d78d59223594ea6b01e0f497c8c199d'
+FRESH_PRIOR_RAW = '2fb470444705a2541e1db18f81cadf304b5a02be248bf6183197cdb1f877111b'
+FRESH_FACTS_RAW = '1db1a9fa0cfcfed31648e999b02d10b8d111b020372e095159e4cc9dc4537471'
+SCOPE = 'DECLARED_GLOBAL_COLD_CONTINUUM_ENERGY_ENDPOINT_ONLY'
+RELEASE_FILES = frozenset(('report.json', 'pytest.log', 'control_console.log',
+                          'native_control/report.json', 'native_control/source_packet.json'))
+REMAINING_CONDITIONS = [
+    'Whole-source physical material and old-force/prestress/work handover, HOT law/mean chart, loads/drag and NEW mixed equilibrium',
+    'Whole-clock all-pair admission including reverse C5 to C1',
+    'Accepted continuation with independent path work, balances and joint restart',
+]
+SAVED_ENDPOINT_FIELDS = dict(
+    complete_cold_continuum_operator_certified=True,
+    whole_cold_material_support_geometry_certified=True,
+    physical_source_force_prestress_work_handover_certified=False,
+    historical_archived_three_dimensional_prestress_recovered=False,
+    prepared_reference_full_system_work_certified=False,
+    reference_change_full_system_work_certified=False,
+    new_mixed_force_equilibrium_certified=False,
+    physical_material_admission_authorized=False,
+    whole_clock_all_pair_admission_authorized=False,
+    full_system_temporal_path_work_certified=False,
+    hot_constitutive_law_defined=False, finite_mean_chart_defined=False,
+    clocks_advanced=False, proposed_source_damage_adopted=False,
+    historical_force_solve_reexecuted=False, previous_tensor_quadrature_reexecuted=False,
+    source_geometry_elapsed_time_s=0, contact_geometry_elapsed_time_s=2000000,
+    memory_elapsed_time_s=1000000, material_geometry_elapsed_time_s=1000000,
+    accepted_original_native_intervals=1, accepted_new_native_intervals=0,
+    original_point_1_remaining_work_blocks=1, original_point_1_completed=False,
+)
+
+
+def primitives():
+    """Authenticate old stdlib definitions without calling any run/main."""
+    helper = PARENT / 'baseline_895_preservation_source.txt'
+    if hashlib.sha256(helper.read_bytes()).hexdigest() != PRESERVATION895_RAW:
+        raise ValueError('Immutable895 stdlib primitive source changed')
+    module = types.ModuleType('_private_903_preservation_primitives')
+    module.__file__ = str(helper)
+    exec(compile(helper.read_bytes(), str(helper), 'exec'), module.__dict__)
+    prior, byte_checks = module.primitives()
+    module._prior_definitions = prior
+    return module, byte_checks
+
+
+def project_modules():
+    return {name: module for name, module in sys.modules.items()
+            if name in ('tectonics', 'tests', 'analysis', 'scripts') or
+            name.startswith(('tectonics.', 'tests.', 'analysis.', 'scripts.'))}
+
+
+def preserved_inputs(old, b):
+    """Preserve899P36/F4,895P50/F4,891P44/F4,887P41/F4,341/15/11."""
+    frozen895, saved895, pins = old.preserved_inputs(old._prior_definitions, b)
+    b.pin(pins, PARENT / 'baseline_895_preservation_source.txt', PRESERVATION895_RAW)
+    b.pin(pins, PARENT / 'artifact_manifest.json', MANIFEST_RAW)
+    manifest = b.sealed(PARENT / 'artifact_manifest.json', 'manifest_sha256')
+    for key, expected in (('manifest_sha256', MANIFEST_SEAL),
+                          ('format', 'native-common-cold-continuum-energy-component-manifest-1'),
+                          ('status', 'PASS_COMPONENT_ARTIFACTS_CLOSED'),
+                          ('source_count', 899), ('closed_component_file_count', 36),
+                          ('physical_scope', SCOPE), ('current_release', 'release_validation_01')):
+        b.exact(manifest[key], expected, 'Saved current899 manifest ' + key)
+    b.exact(len(manifest['files']), 36, 'Complete saved899 thirty-six-file map')
+    expected_parent = set()
+    for name, row in manifest['files'].items():
+        path = ROOT / name
+        b.require(path.resolve() == path and path.is_relative_to(ROOT), 'Canonical899 manifest path')
+        b.exact(set(row), {'bytes', 'sha256'}, 'Complete899 raw pin row')
+        b.exact(b.regular(path).stat().st_size, row['bytes'], 'Current899 manifest file size')
+        b.pin(pins, path, row['sha256'])
+        if path.is_relative_to(PARENT):
+            expected_parent.add(str(path.relative_to(PARENT)))
+    b.exact(b.files_under(PARENT), expected_parent | {'artifact_manifest.json'},
+            'Strict whole current899 thirty-six-file parent closure')
+    release = PARENT / manifest['current_release']
+    b.exact({str(p.relative_to(release)) for p in release.rglob('*') if p.is_file()},
+            set(RELEASE_FILES), 'Strict current899 complete five-file release')
+    gate = b.sealed(release / 'report.json', 'report_sha256')
+    for key, expected in (('status', 'PASS'), ('source_count', 899), ('previous_source_count', 895),
+                          ('tests_collected', 18), ('tests_passed', 18), ('tests_failed', 0),
+                          ('tests_skipped', 0), ('tests_exit_code', 0), ('native_control_succeeded', True),
+                          ('current_physical_scope', SCOPE)):
+        b.exact(gate[key], expected, 'Saved899 current release ' + key)
+    b.exact(manifest['gate_report_selfseal'], gate['report_sha256'], 'Saved899 actual gate link')
+    b.exact(set(gate['output_raw_sha256']), set(RELEASE_FILES) - {'report.json'},
+            'Saved899 all four output pins including native report')
+    for name, expected in gate['output_raw_sha256'].items():
+        b.pin(pins, release / name, expected)
+    b.exact(set(gate['additional_source_sha256']), set(old.ADDED_NAMES), 'Saved899 prior exact four')
+    frozen_path = ROOT / gate['frozen_source_map_path']
+    b.require(frozen_path.resolve() == frozen_path and frozen_path.is_relative_to(PARENT),
+              'Canonical saved899 frozen source authority')
+    b.pin(pins, frozen_path, gate['frozen_source_map_raw_sha256'])
+    frozen899 = json.loads(frozen_path.read_bytes())
+    b.exact(len(frozen899), 899, 'Complete saved899 source map')
+    b.exact(b.value_digest(frozen899), gate['frozen_source_map_sha256'], 'Saved899 canonical map')
+    b.exact(frozen899, dict(frozen895, **gate['additional_source_sha256']),
+            'Saved899 exactly preserved895 plus authenticated prior four')
+    for name, expected in frozen899.items():
+        b.pin(pins, ROOT / name, expected)
+    snapshots = {str(PARENT.relative_to(ROOT) / 'source_snapshots' / manifest['current_release'] /
+                     (name.replace('/', '__') + '.txt')): pin
+                 for name, pin in gate['additional_source_sha256'].items()}
+    b.exact(gate['executing_source_snapshots'], snapshots, 'Complete four executing899 snapshots')
+    for name, expected in snapshots.items():
+        b.pin(pins, ROOT / name, expected)
+    control = b.sealed(release / 'native_control/report.json', 'report_sha256')
+    packet = b.sealed(release / 'native_control/source_packet.json', 'packet_sha256')
+    b.exact(control['status'], 'PASS', 'Saved899 actual native PASS')
+    b.exact(control['physical_candidate_status'], SCOPE, 'Saved899 native explicit scope')
+    b.exact(packet['physical_candidate_status'], SCOPE, 'Saved899 packet explicit scope')
+    for key, expected in SAVED_ENDPOINT_FIELDS.items():
+        b.exact(control[key], expected, 'Saved899 native endpoint boundary ' + key)
+        b.exact(packet[key], expected, 'Saved899 packet endpoint boundary ' + key)
+    b.exact(control['remaining_physical_conditions'], REMAINING_CONDITIONS, 'Saved899 same original conditions')
+    b.exact(packet['remaining_physical_conditions'], REMAINING_CONDITIONS, 'Saved899 packet same original conditions')
+    b.exact(gate['native_control_report_sha256'], control['report_sha256'], 'Saved899 native link')
+    b.exact(control['source_packet_sha256'], packet['packet_sha256'], 'Saved899 complete packet link')
+    b.exact(control['source_packet_raw_sha256'], b.digest(release / 'native_control/source_packet.json'),
+            'Saved899 packet actual raw link')
+    audit = b.sealed(PARENT / 'independent_audit/report.json', 'audit_sha256')
+    b.exact(audit['status'], 'PASS', 'Saved899 actual independent audit PASS')
+    b.exact(manifest['independent_audit_selfseal'], audit['audit_sha256'], 'Saved899 audit link')
+    b.exact(audit['source_packet_raw_sha256'], b.digest(release / 'native_control/source_packet.json'),
+            'Saved899 audit actual packet raw link')
+    b.exact(audit['executing_source_raw_sha256'], b.digest(PARENT / 'independent_audit/audit_source.txt'),
+            'Saved899 audit actual executing TXT raw link')
+    b.pin(pins, FINAL / 'archive.json', FINAL_ARCHIVE_RAW)
+    archive = b.sealed(FINAL / 'archive.json', 'archive_sha256')
+    for key, expected in (('archive_sha256', FINAL_ARCHIVE_SEAL),
+                          ('format', 'native-common-cold-continuum-energy-final-archive-1'),
+                          ('status', 'PASS_FINAL899_READBACK_ARCHIVE_CLOSED'),
+                          ('total_closed_file_count', 4)):
+        b.exact(archive[key], expected, 'Saved final899 archive ' + key)
+    b.exact(set(archive['files']), {'readback_source.txt', 'readback.json', 'console.log'},
+            'Exactly three saved899 final payloads')
+    b.exact({str(p.relative_to(FINAL)) for p in FINAL.rglob('*') if p.is_file()},
+            set(archive['files']) | {'archive.json'}, 'Strict saved899 final four-file closure')
+    for name, row in archive['files'].items():
+        b.exact(set(row), {'bytes', 'sha256'}, 'Complete final899 payload row')
+        b.exact(b.regular(FINAL / name).stat().st_size, row['bytes'], 'Final899 payload size')
+        b.pin(pins, FINAL / name, row['sha256'])
+    b.pin(pins, FINAL / 'readback_source.txt', READER_RAW)
+    saved899 = b.sealed(FINAL / 'readback.json', 'audit_sha256')
+    b.exact(archive['readback_selfseal'], saved899['audit_sha256'], 'Final899 archive readback link')
+    b.pin(pins, STAGE / 'fresh899_executed_source.txt', READER_RAW)
+    b.pin(pins, STAGE / 'fresh899_readback.json', FRESH_REPORT_RAW)
+    b.pin(pins, STAGE / 'fresh899_actual_console.log', FRESH_REPORT_RAW)
+    b.pin(pins, STAGE / 'fresh899_stderr.log', hashlib.sha256(b'').hexdigest())
+    b.pin(pins, STAGE / 'fresh899_facts.json', FRESH_FACTS_RAW)
+    fresh899 = b.sealed(STAGE / 'fresh899_readback.json', 'audit_sha256')
+    b.exact(fresh899['audit_sha256'], FRESH_REPORT_SEAL, 'Authentic fresh pre-new-source899 seal')
+    for receipt in (saved899, fresh899):
+        for key, expected in (('status', 'PASS_FINAL899_EVIDENCE_READBACK_ONLY'), ('source_count', 899),
+                              ('physical_scope', SCOPE), ('executing_readback_source_raw_sha256', READER_RAW),
+                              ('current_manifest_file_count', 36), ('current_manifest_raw_sha256', MANIFEST_RAW),
+                              ('current_manifest_selfseal', MANIFEST_SEAL), ('prior_895_manifest_file_count', 50),
+                              ('prior_895_final_archive_file_count', 4), ('prior_891_manifest_file_count', 44),
+                              ('prior_891_final_archive_file_count', 4), ('prior_887_manifest_file_count', 41),
+                              ('prior_887_final_archive_file_count', 4), ('prior_883_dependency_pin_count', 341),
+                              ('temporary_alias_count', 15), ('strict_ancestry_closure_count', 11),
+                              ('project_imports', False), ('math_or_tests_or_solver_or_quadrature_reexecuted', False)):
+            b.exact(receipt[key], expected, 'Authenticated saved899 metadata ' + key)
+        for key, expected in SAVED_ENDPOINT_FIELDS.items():
+            b.exact(receipt[key], expected, 'Authenticated saved899 endpoint boundary ' + key)
+        for name, expected in receipt['current_dependency_raw_sha256'].items():
+            b.require(name in pins, 'Saved899 dependency independently retained')
+            b.exact(pins[name], expected, 'Saved899 complete current dependency raw map')
+    b.exact(fresh899['current_final_archive_raw_sha256'], FINAL_ARCHIVE_RAW, 'Fresh closed899 archive raw link')
+    b.exact(fresh899['current_final_archive_selfseal'], FINAL_ARCHIVE_SEAL, 'Fresh closed899 archive selfseal link')
+    b.exact(fresh899['current_final_archive_file_count'], 4, 'Fresh actual closed899 archive count')
+    b.pin(pins, Path(fresh899['prior_895_preservation_path']), FRESH_PRIOR_RAW)
+    b.exact(fresh899['prior_895_preservation_raw_sha256'], FRESH_PRIOR_RAW,
+            'Fresh899 actually executed895 preservation raw link')
+    b.pin(pins, STAGE / 'fresh899_prior895_preservation.json', FRESH_PRIOR_RAW)
+    prior = b.sealed(Path(fresh899['prior_895_preservation_path']), 'preservation_sha256')
+    b.exact(prior['preservation_sha256'], fresh899['prior_895_preservation_selfseal'],
+            'Fresh899 actual895 preservation selfseal link')
+    b.exact(prior['current_python_source_count'], 899, 'Fresh899 actual preserved source metadata')
+    b.exact(prior['additional_python_source_sha256'], gate['additional_source_sha256'],
+            'Fresh899 actual prior four match frozen899')
+    return frozen899, fresh899, pins
+
+
+def run(additional_source_sha256, *, output_path):
+    """Write a fresh external receipt for immutable899 plus authorized four903."""
+    started = time.perf_counter()
+    modules_before = project_modules()
+    old, b = primitives()
+    b.require(not any(name.startswith('__ROOT_PENDING_') for name in ADDED_NAMES),
+              'Authorized exact four903 paths supplied by root')
+    b.require(type(additional_source_sha256) is dict, 'Literal additional four source map')
+    b.exact(set(additional_source_sha256), set(ADDED_NAMES), 'Exactly four authorized903 source paths')
+    requested = Path(output_path)
+    b.require(requested.is_absolute() and requested.resolve() == requested and not requested.exists()
+              and not requested.is_symlink() and requested.parent.is_dir()
+              and requested.parent.resolve() == requested.parent and requested.suffix == '.json'
+              and not requested.is_relative_to(ROOT) and
+              (requested.is_relative_to(Path('/workspace')) or requested.is_relative_to(Path('/tmp'))),
+              'Fresh canonical exclusive JSON output outside repository')
+    producer = b.regular(Path(__file__).resolve())
+    producer_raw = b.digest(producer)
+    frozen899, baseline, pins = preserved_inputs(old, b)
+    declared = dict(frozen899)
+    for name, expected in additional_source_sha256.items():
+        b.require(name not in frozen899, 'Authorized903 source genuinely new')
+        b.pin(pins, ROOT / name, expected)
+        declared[name] = expected
+    b.exact(b.source_map(), declared, 'Actual903 equals immutable899 plus exactly declared four')
+    b.pin(pins, producer, producer_raw)
+    b.require(str(requested) not in pins, 'Fresh output disjoint from preserved dependencies')
+    after_frozen, after_baseline, after_pins = preserved_inputs(old, b)
+    b.exact(after_frozen, frozen899, 'Saved899 authority unchanged AFTER')
+    b.exact(after_baseline, baseline, 'Fresh pre-new-source899 baseline unchanged AFTER')
+    for name, expected in pins.items():
+        if name in after_pins:
+            b.exact(after_pins[name], expected, 'Preserved dependency unchanged AFTER ' + name)
+        else:
+            b.exact(b.digest(name), expected, 'Added source/producer unchanged AFTER ' + name)
+    b.exact(b.source_map(), declared, 'Complete actual903 source map unchanged AFTER')
+    modules_after = project_modules()
+    b.exact(set(modules_after), set(modules_before), 'Caller project module names preserved')
+    b.require(all(modules_after[name] is module for name, module in modules_before.items()),
+              'Caller project module identities preserved')
+    result = dict(
+        format='native-common-hot-mean-prior899-preservation-1',
+        status='PASS_IMMUTABLE899_WITH_EXACT_FOUR_DECLARED_SOURCE_ADDITIONS',
+        prior_python_source_count=899, current_python_source_count=903,
+        prior_python_source_map_canonical_sha256=b.value_digest(frozen899),
+        current_python_source_map_canonical_sha256=b.value_digest(declared),
+        additional_python_source_count=4, additional_python_source_sha256=additional_source_sha256,
+        all899_python_sources_unchanged=True, complete_actual_source_map_checked_before_after=True,
+        prior_899_metadata_is_authenticated_saved_readback_only=True,
+        fresh_pre_new_source_899_readback_path=str(STAGE / 'fresh899_readback.json'),
+        fresh_pre_new_source_899_readback_raw_sha256=FRESH_REPORT_RAW,
+        fresh_pre_new_source_899_readback_selfseal=FRESH_REPORT_SEAL,
+        fresh_pre_new_source_899_readback_seconds=baseline['seconds'],
+        preserved_prior883_raw_dependency_pin_count=341,
+        recorded_raw_dependency_pin_count=len(pins), dependency_raw_sha256=pins,
+        preserved_current899_manifest_file_count=36,
+        preserved_current899_manifest_raw_sha256=MANIFEST_RAW,
+        preserved_current899_manifest_selfseal=MANIFEST_SEAL,
+        preserved_current899_final_readback_archive_file_count=4,
+        preserved_current899_final_readback_archive_raw_sha256=FINAL_ARCHIVE_RAW,
+        preserved_prior895_manifest_file_count=50, preserved_prior895_final_readback_archive_file_count=4,
+        preserved_prior891_manifest_file_count=44, preserved_prior891_final_readback_archive_file_count=4,
+        preserved_prior887_manifest_file_count=41, preserved_prior887_final_readback_archive_file_count=4,
+        authoritative_ancestry_release_closure_count=11,
+        preserved_current899_release_closed_file_count=5,
+        temporary_dependency_copy_association_count=15,
+        current_tmp_inputs_restored_by_this_guard=False,
+        pre_baseline_authenticated_tmp_alias_restoration_count=0,
+        project_modules_imported_reloaded_or_replaced=False,
+        caller_existing_project_module_count=len(modules_before),
+        prior_reader_or_auditor_or_preservation_main_reexecuted=False,
+        math_or_solver_or_test_or_quadrature_reexecuted=False,
+        executing_preservation_source_raw_sha256=producer_raw,
+        seconds=time.perf_counter() - started,
+    )
+    result['preservation_sha256'] = b.value_digest(result)
+    with requested.open('xb') as stream:
+        stream.write(b.encoded(result) + b'\n')
+    return result

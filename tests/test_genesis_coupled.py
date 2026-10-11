@@ -7,6 +7,7 @@ import numpy as np
 import pytest
 
 from tectonics.genesis_contact import save_contact_checkpoint, ContactModel
+from tectonics.genesis_faults import save_fault_checkpoint
 from tectonics.genesis_coupled import (CoupledModel, CoupledParameters, _RetryStep,
     load_coupled_checkpoint, save_coupled_checkpoint)
 from test_genesis_contact import _source_bytes
@@ -40,15 +41,25 @@ def _same(a, b, omit=()):
             assert x == y, field.name
 
 
-def test_initial_state_keeps_physical_source_time_and_material(source):
-    model = CoupledModel(source[0])
-    state = model.initial()
-    original = source[2][0]
+def test_initial_state_keeps_physical_source_time_and_material(source, tmp_path):
+    # A nonzero, face-dependent rate exercises serialized transfer; an all-zero
+    # fixture cannot distinguish copying the source from silently resetting it.
+    original = deepcopy(source[2][0])
+    mesh = source[1].mesh_for(original)
+    original.velocity_km_myr = np.cross(mesh.centroids, [.1, -.3, .4])
+    assert np.any(original.velocity_km_myr != 0.)
+    path = tmp_path/"moving_fault_source.npz"
+    save_fault_checkpoint(path, source[1], original, *source[2][1:], {},
+                          {"test": "nonzero material-face rate transfer"})
+    model, state, _, _ = CoupledModel.from_fault_checkpoint(path)
     assert state.time_myr == model.source.thermal_state.time_myr == model.source.orbit.time_myr
     assert state.contact.elapsed_years == 0
     np.testing.assert_array_equal(model.layer_mass_kg, original.layer_mass_kg)
     np.testing.assert_array_equal(state.column_enthalpy, original.column_enthalpy)
     np.testing.assert_array_equal(state.elastic_strain, original.elastic_strain)
+    np.testing.assert_array_equal(state.velocity_km_myr, original.velocity_km_myr)
+    assert not np.shares_memory(state.velocity_km_myr, model.source.source_state.velocity_km_myr)
+    assert not np.shares_memory(state.velocity_km_myr, original.velocity_km_myr)
 
 
 def test_actual_heat_and_mechanics_advance_together_without_input_mutation(source):

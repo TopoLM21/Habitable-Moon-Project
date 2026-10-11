@@ -1,0 +1,213 @@
+"""Independent file, archive, checkpoint and ledger audit; no project imports."""
+from pathlib import Path
+from datetime import datetime, timezone
+from collections import defaultdict
+import hashlib
+import json
+import math
+import subprocess
+import sys
+import zipfile
+
+ROOT = Path('/workspace/Habitable-Moon-Project')
+BASE = ROOT / 'analysis/geometric_underthrust_validation'
+OUT = BASE / 'cloud_control'
+
+
+def sha(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def load(path):
+    return json.loads(path.read_text(), parse_constant=lambda value: (_ for _ in ()).throw(ValueError(value)))
+
+
+def canonical(value, *, ascii=True):
+    return json.dumps(value, sort_keys=True, separators=(',', ':'), ensure_ascii=ascii,
+                      allow_nan=False).encode()
+
+
+def full_manifest():
+    paths = []
+    for directory in ('tectonics', 'tests', 'scripts'):
+        for path in (ROOT / directory).rglob('*'):
+            if path.is_file() and path.suffix not in ('.pyc', '.pyo') and not any(
+                    part in ('__pycache__', '.pytest_cache') for part in path.relative_to(ROOT).parts):
+                paths.append(path)
+    paths.extend((BASE / 'run_portable_checks.py', BASE / 'underthrust_case.py'))
+    return {str(path.relative_to(ROOT)): sha(path) for path in sorted(set(paths))}
+
+
+report_path = OUT / 'report.json'
+report = load(report_path)
+execution = load(BASE / 'final_control_execution_receipt.json')
+assert report['status'] == execution['status'] == 'passed'
+assert report['final_eligible'] is execution['final_eligible'] is True
+assert execution['exit_code'] == 0
+assert report['code_unchanged'] and execution['code_and_tests_unchanged']
+assert sha(report_path) == execution['report_sha256']
+assert sha(ROOT / execution['log']) == execution['log_sha256']
+before_path = ROOT / execution['before_sha256_manifest']
+after_path = ROOT / execution['after_sha256_manifest']
+assert sha(before_path) == execution['before_manifest_sha256']
+assert sha(after_path) == execution['after_manifest_sha256']
+before, after, current = load(before_path), load(after_path), full_manifest()
+assert before == after == current
+assert len(current) == execution['code_tests_and_scripts_file_count']
+assert all(current[name] == wanted for name, wanted in report['code_sha256'].items())
+branch = subprocess.check_output(['git', 'branch', '--show-current'], cwd=ROOT, text=True).strip()
+head = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
+assert branch == report['repository']['branch'] == execution['git_branch']
+assert head == report['repository']['head'] == execution['git_head']
+
+manifest_path = ROOT / 'handoff/cloud_sources_manifest.json'
+manifest = load(manifest_path)
+archive = ROOT / 'handoff' / manifest['archive']
+assert sha(archive) == manifest['archive_sha256']
+source_rows = []
+with zipfile.ZipFile(archive) as packed:
+    assert set(packed.namelist()) == {row['path'] for row in manifest['files']}
+    for row in manifest['files']:
+        restored = (ROOT / row['path']).read_bytes()
+        assert restored == packed.read(row['path'])
+        assert len(restored) == row['size']
+        assert hashlib.sha256(restored).hexdigest() == row['sha256']
+        source_rows.append(dict(path=row['path'], bytes=len(restored), sha256=row['sha256']))
+assert len(source_rows) == 9
+assert sum(row['bytes'] for row in source_rows) == 2110696
+assert report['cloud_sources'] == dict(files=9, source_bytes=2110696, verified=True)
+assert all(sha(ROOT / 'handoff' / name) == wanted
+           for name, wanted in report['cloud_source_bundle_sha256'].items())
+
+checkpoint_names = ('initial.json', 'initial_resaved.json', 'direct_final.json',
+                    'resumed_final.json', 'final_resaved.json')
+assert set(report['checkpoint_sha256']) == set(checkpoint_names)
+checkpoints = {}
+for name in checkpoint_names:
+    path = OUT / name
+    assert sha(path) == report['checkpoint_sha256'][name]
+    document = load(path)
+    payload = dict(document)
+    wanted = payload.pop('payload_sha256')
+    assert hashlib.sha256(canonical(payload, ascii=False)).hexdigest() == wanted
+    checkpoints[name] = document
+byte_pairs = {name: (OUT / name.split('|')[0]).read_bytes() ==
+                    (OUT / name.split('|')[1]).read_bytes()
+              for name in report['checkpoint_bytes_identical']}
+assert len(byte_pairs) == 3 and all(byte_pairs.values())
+assert byte_pairs == report['checkpoint_bytes_identical']
+assert report['restart_exact'] and report['accepted_first_outputs_exact']
+assert report['rejected_next_step_outputs_exact']
+assert report['accepted_checkpoint_bytes_unchanged_after_rejections']
+
+initial = checkpoints['initial.json']['provenance']['underthrust_motion']['snapshot']
+final_document = checkpoints['direct_final.json']
+motion = final_document['provenance']['underthrust_motion']
+final = motion['snapshot']
+assert final['current_surface'] == final_document['surface']
+assert final['current_inventory'] == final_document['boundary']
+assert len(final['receipts']) == len(motion['trajectory']) == report['accepted_step_count'] == 1
+assert final['elapsed_time_s'] == report['physical_inputs']['dt_s'] == 1e6
+assert final['spatial_memory']['elapsed_time_s'] == final['elapsed_time_s']
+assert final['spatial_memory']['stage_count'] == 1
+seconds_per_myr = 1e6 * 365.25 * 86400.
+assert final['current_surface']['time_myr'] - initial['current_surface']['time_myr'] == 1e6 / seconds_per_myr
+initial_states = dict(initial['states'])
+assert set(initial_states) == {name for name, state in final['states']}
+for name, state in final['states']:
+    assert state['elapsed_time_s'] - initial_states[name]['elapsed_time_s'] == 1e6
+    assert state['step_count'] - initial_states[name]['step_count'] == 1
+
+receipt = final['receipts'][0]
+unsigned = dict(receipt)
+unsigned.pop('receipt_sha256')
+assert hashlib.sha256(canonical(unsigned)).hexdigest() == receipt['receipt_sha256']
+source_work = math.fsum(torque * delta for torque, delta in zip(
+    receipt['current_load']['torque_nm'],
+    [value for vector in receipt['rotation_increment_radians'] for value in vector]))
+work_error = abs(source_work - receipt['source_work_j']) / max(abs(source_work), abs(receipt['source_work_j']))
+assert work_error < 5e-15
+assert final['cumulative_source_work_j'] == receipt['source_work_j']
+assert report['source_work']['saved_cumulative_work_j'] == final['cumulative_source_work_j']
+assert report['source_work']['sum_of_accepted_segment_work_j'] == receipt['source_work_j']
+assert report['source_work']['changing_source_continuation_not_demonstrated']
+
+cohorts = final['current_inventory']['cohorts']
+assert len(cohorts) == len(final['buried_registry']['records']) == report['total_admitted_loss_count'] > 0
+assert all(row['supports'] and not row['unresolved_support'] for row in cohorts)
+assert all(row['loss']['attachment_status'] == 'geometric_contact' and row['loss']['contact_ids'] for row in cohorts)
+for row in cohorts:
+    loss = dict(row['loss'])
+    loss['contact_ids'] = sorted(loss['contact_ids'])
+    assert hashlib.sha256(canonical(loss, ascii=False)).hexdigest() == row['payload_sha256']
+    identity = (float(loss['time_myr']).hex(), loss['source_fragment_id'],
+                loss['fragment']['fragment_id'], loss['receiver_fragment_id'])
+    assert 'geometric-loss:' + hashlib.sha256(canonical(identity, ascii=False)).hexdigest() == row['event_id']
+losses = [row['loss']['fragment']['parcel'] for row in cohorts]
+assert all(parcel['area_km2'] > 0. for parcel in losses)
+origin_parcels = [fragment['parcel'] for fragment in initial['current_surface']['fragments']]
+old_ids = {parcel['material_id'] for parcel in origin_parcels}
+live = [fragment['parcel'] for fragment in final['current_surface']['fragments']]
+births = [parcel for parcel in live if parcel['material_id'] not in old_ids]
+assert len(births) == report['total_hot_birth_count'] > 0
+assert all(parcel['area_km2'] > 0. and parcel['age_myr'] == 0. for parcel in births)
+assert all(parcel['cold_mantle_volume_km3'] == parcel['density_excess_mass_kg'] == 0. for parcel in births)
+assert math.fsum(parcel['area_km2'] for parcel in losses) == report['total_admitted_area_km2']
+assert min(parcel['area_km2'] for parcel in losses) == report['minimum_admitted_area_km2']
+assert min(parcel['area_km2'] for parcel in births) == report['minimum_hot_birth_area_km2']
+fields = ('area_km2', 'oceanic_volume_km3', 'cold_mantle_volume_km3', 'density_excess_mass_kg')
+expected, observed = defaultdict(list), defaultdict(list)
+for parcel in origin_parcels + births:
+    expected[parcel['material_id']].append(parcel)
+for parcel in live + losses:
+    observed[parcel['material_id']].append(parcel)
+assert expected.keys() == observed.keys()
+budget_errors = {}
+for field in fields:
+    errors = []
+    for material in expected:
+        left = math.fsum(parcel[field] for parcel in expected[material])
+        right = math.fsum(parcel[field] for parcel in observed[material])
+        errors.append(abs(left - right) / max(abs(left), abs(right), sys.float_info.min))
+    budget_errors[field] = max(errors)
+assert max(budget_errors.values()) < 1e-12
+assert len(report['unsupported_next_intervals']) == 2
+assert all(row['rejected'] and row['input_unchanged'] and
+           row['direct_and_resumed_rejection_outputs_exact'] and
+           row['overlap_reason_counts'].get('new_material_requires_new_physical_pair', 0) > 0
+           for row in report['unsupported_next_intervals'])
+assert len(report['atomic_rejections']) == 4
+assert all(row['rejected'] and row['input_unchanged'] for row in report['atomic_rejections'])
+
+audit = dict(status='passed', final_eligible=True,
+    audited_utc=datetime.now(timezone.utc).isoformat(),
+    method='Independent stdlib-only audit of existing output bytes, JSON digests, actual checkpoint state, full source/test/script manifests, ZIP members and per-material/source-work ledgers; no project modules imported and no additional accepted physical intervals claimed.',
+    report=str(report_path.relative_to(ROOT)), report_sha256=sha(report_path),
+    execution_receipt='analysis/geometric_underthrust_validation/final_control_execution_receipt.json',
+    execution_receipt_sha256=sha(BASE / 'final_control_execution_receipt.json'),
+    git_branch=branch, git_head=head, full_manifest_file_count=len(current),
+    code_tests_scripts_current_equal_before_and_after=True,
+    report_code_hash_count=len(report['code_sha256']), report_code_hashes_match_current=True,
+    source_files=source_rows, source_file_count=9, source_bytes=2110696,
+    source_zip_members_equal_restored_files=True,
+    source_archive_sha256=sha(archive), source_manifest_sha256=sha(manifest_path),
+    checkpoint_sha256={name:sha(OUT/name) for name in checkpoint_names},
+    checkpoint_payload_digests_valid=True, checkpoint_bytes_identical=byte_pairs,
+    accepted_step_count=1, total_admitted_loss_count=len(cohorts), total_hot_birth_count=len(births),
+    minimum_admitted_area_km2=min(parcel['area_km2'] for parcel in losses),
+    minimum_hot_birth_area_km2=min(parcel['area_km2'] for parcel in births),
+    all_positive_events_retained=True, every_loss_has_resolved_support=True,
+    immutable_loss_payload_and_event_digests_valid=True,
+    material_budget_max_relative_residual=budget_errors,
+    independent_torque_dot_increment_work_j=source_work,
+    independent_torque_dot_increment_relative_error=work_error,
+    cumulative_work_equals_single_accepted_receipt=True,
+    all_mechanical_and_contact_increments_same_dt=True,
+    prepared_contact_clock_offset_retained=True,
+    rejected_continuation_count=2, rejected_continuation_structured_outputs_exact=True,
+    audit_script_sha256=sha(Path(__file__).resolve()))
+path=BASE/'final_control_audit_receipt.json'
+with path.open('x',encoding='utf-8') as handle:
+    json.dump(audit,handle,indent=2,sort_keys=True,allow_nan=False)
+    handle.write('\n')
+print(json.dumps(audit,indent=2))

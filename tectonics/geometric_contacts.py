@@ -14,6 +14,7 @@ attachment through that event requires an explicit transaction lineage.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from collections.abc import Mapping
 import hashlib
 import json
 import math
@@ -23,7 +24,7 @@ import numpy as np
 from scipy.spatial import cKDTree
 
 from .fractional_surface import SurfaceParcel
-from .spherical_polygons import (arc_length, normalize_polygon,
+from .spherical_polygons import (_edge_normal, arc_length, normalize_polygon,
                                  shared_boundary_arcs)
 
 
@@ -77,7 +78,13 @@ def _radius(value):
 
 def _omega(values, owners):
     if values is None:
-        return np.zeros((max(owners, default=-1)+1, 3), dtype=float)
+        # Geometry-only extraction needs no array indexed by owner identity.
+        # Sparse persisted IDs may be arbitrarily large; their default relative
+        # velocity is zero independently of the number or magnitude of IDs.
+        return None
+    if isinstance(values, Mapping):
+        from .geometric_rotation_vectors import compact_rotation_vectors
+        return compact_rotation_vectors(values, owners)
     array = np.asarray(values, dtype=float)
     if (array.ndim != 2 or array.shape[1] != 3 or not np.isfinite(array).all()
             or any(owner < 0 or owner >= len(array) for owner in owners)):
@@ -93,8 +100,7 @@ def _edge_index(polygon, midpoint):
     """
     best = None
     for i, (start, end) in enumerate(zip(polygon, np.roll(polygon, -1, axis=0))):
-        normal = np.cross(start, end-start)
-        normal /= np.linalg.norm(normal)
+        normal = _edge_normal(start, end)
         # Half-open endpoints are irrelevant because an arc midpoint lies in
         # an edge interior.  The angular excess rejects other coplanar edges.
         excess = abs(arc_length(start, midpoint)+arc_length(midpoint, end)
@@ -120,16 +126,17 @@ def _contact(a, b, polygon_a, polygon_b, start, end, radius, omega):
     a0, a1 = polygon_a[edge_a], polygon_a[(edge_a+1) % len(polygon_a)]
     b0, b1 = polygon_b[edge_b], polygon_b[(edge_b+1) % len(polygon_b)]
     if arc_length(a0, a1) >= arc_length(b0, b1):
-        inward_a = np.cross(a0, a1-a0)
+        inward_a = _edge_normal(a0, a1)
     else:
-        inward_a = -np.cross(b0, b1-b0)
+        inward_a = -_edge_normal(b0, b1)
     inward_a /= np.linalg.norm(inward_a)
     normal = -inward_a
     tangent = np.cross(inward_a, midpoint)
     identity = (a.fragment_id, b.fragment_id, edge_a, edge_b)
     encoded = json.dumps(identity, separators=(",", ":"), ensure_ascii=False)
     contact_id = "contact:"+hashlib.sha256(encoded.encode("utf-8")).hexdigest()[:32]
-    delta = omega[b.parcel.plate]-omega[a.parcel.plate]
+    delta = (np.zeros(3) if omega is None
+             else omega[b.parcel.plate]-omega[a.parcel.plate])
     velocity = radius*np.cross(delta, midpoint)
     integral_position = radius*2.*math.sin(.5*theta)*midpoint
     moment = radius*np.cross(integral_position, normal)

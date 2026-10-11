@@ -1,0 +1,52 @@
+"""AST-selected pure new-production algebra and independent new-test oracle.
+
+No source packets, registry binding, pytest, old force math or quadratures.
+"""
+import ast
+from decimal import Decimal as D, localcontext
+from fractions import Fraction as F
+from pathlib import Path
+from types import SimpleNamespace
+import hashlib
+import json
+import time
+
+from tectonics.geometric_native_pose import FractionInterval as I, _rounded_interval
+
+root = Path.cwd()
+test = root / "tests/test_geometric_native_common_strain_projection.py"
+core = root / "tectonics/geometric_native_common_strain_projection.py"
+selected_tests = {
+    "_encloses", "poly_constant", "poly_variable", "poly_add", "poly_scale",
+    "poly_multiply", "poly_derivative", "poly_value", "poly_jet",
+    "strain_polynomial_model", "projection_polynomials", "exact_projection_receipt",
+    "inverse_tip_twojet", "_decimal_polynomial", "_directional_polynomial",
+    "test_independent_strain_polynomial_expansion_checks_projection_and_complete_chain",
+}
+selected_core = {"_square", "_contains_zero", "_projection_algebra", "_global_chain"}
+namespace = dict(F=F, D=D, I=I, localcontext=localcontext, SimpleNamespace=SimpleNamespace,
+                 DIM=7, ZERO=(0,)*7,
+                 _round=lambda x, precision: _rounded_interval(x if type(x) is I else I(x), precision+16))
+
+def load_selected(path, names):
+    original = ast.parse(path.read_text())
+    nodes = [x for x in original.body if isinstance(x, ast.FunctionDef) and x.name in names]
+    assert {x.name for x in nodes} == names
+    module = ast.Module(body=nodes, type_ignores=[])
+    compile(module, str(path), "exec")
+    exec(compile(module, str(path), "exec"), namespace)
+
+started = time.monotonic()
+load_selected(test, selected_tests)
+load_selected(core, selected_core)
+namespace["_api"] = lambda: SimpleNamespace(_projection_algebra=namespace["_projection_algebra"],
+                                           _global_chain=namespace["_global_chain"])
+namespace["test_independent_strain_polynomial_expansion_checks_projection_and_complete_chain"]()
+print(json.dumps(dict(status="PASS", seconds=time.monotonic()-started,
+    test_raw_sha256=hashlib.sha256(test.read_bytes()).hexdigest(),
+    core_raw_sha256=hashlib.sha256(core.read_bytes()).hexdigest(),
+    polynomial_strain_components=3, full_exact_coordinates=7, raw_channels=73,
+    direct_potential_jet_probe_count=3, production_global_chain_dimension=92,
+    decimal_directional_fd_first_count=3, decimal_directional_fd_second_count=3,
+    inverse_missing_prestress_curvature="11/2", source_or_registry_bindings_executed=0,
+    source_packet_reads=0, old_tests_executed=0, old_force_solver_or_quadrature_calls=0), sort_keys=True))

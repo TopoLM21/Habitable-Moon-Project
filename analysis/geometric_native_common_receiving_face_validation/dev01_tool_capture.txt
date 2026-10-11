@@ -1,0 +1,49 @@
+context 245.14506529999198
+Traceback (most recent call last):
+  File "<stdin>", line 9, in <module>
+  File "/workspace/Habitable-Moon-Project/tectonics/geometric_native_common_receiving_face.py", line 303, in evaluate_native_receiving_face
+    if norm.lo<=0:raise ValueError('The original receiving material normal lost regularity')
+        ^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/Habitable-Moon-Project/tectonics/geometric_native_common_hot_receiving.py", line 53, in _mv
+    return tuple(sum((a*v for a,v in zip(row,x)),I(0)) for row in A)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/Habitable-Moon-Project/tectonics/geometric_native_common_hot_receiving.py", line 53, in <genexpr>
+    return tuple(sum((a*v for a,v in zip(row,x)),I(0)) for row in A)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/Habitable-Moon-Project/tectonics/geometric_native_pose.py", line 54, in __add__
+    other = singleton(other)
+            ^^^^^^^^^^^^^^^^
+  File "/workspace/Habitable-Moon-Project/tectonics/geometric_native_pose.py", line 89, in singleton
+    return value if type(value) is FractionInterval else FractionInterval(value)
+                                                         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 5, in __init__
+  File "/workspace/Habitable-Moon-Project/tectonics/geometric_native_pose.py", line 38, in __post_init__
+    low = _fraction(self.lo)
+          ^^^^^^^^^^^^^^^^^^
+  File "/workspace/Habitable-Moon-Project/tectonics/geometric_native_pose.py", line 27, in _fraction
+    raise TypeError("Native intervals require exact Fraction or integer scalars")
+TypeError: Native intervals require exact Fraction or integer scalars
+Traceback (most recent call last):
+  File "<stdin>", line 9, in <module>
+  File "/workspace/Habitable-Moon-Project/tectonics/geometric_native_common_receiving_face.py", line 303, in evaluate_native_receiving_face
+    if norm.lo<=0:raise ValueError('The original receiving material normal lost regularity')
+        ^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/Habitable-Moon-Project/tectonics/geometric_native_common_hot_receiving.py", line 53, in _mv
+    return tuple(sum((a*v for a,v in zip(row,x)),I(0)) for row in A)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/Habitable-Moon-Project/tectonics/geometric_native_common_hot_receiving.py", line 53, in <genexpr>
+    return tuple(sum((a*v for a,v in zip(row,x)),I(0)) for row in A)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/Habitable-Moon-Project/tectonics/geometric_native_pose.py", line 54, in __add__
+    other = singleton(other)
+            ^^^^^^^^^^^^^^^^
+  File "/workspace/Habitable-Moon-Project/tectonics/geometric_native_pose.py", line 89, in singleton
+    return value if type(value) is FractionInterval else FractionInterval(value)
+                                                         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 5, in __init__
+  File "/workspace/Habitable-Moon-Project/tectonics/geometric_native_pose.py", line 38, in __post_init__
+    low = _fraction(self.lo)
+          ^^^^^^^^^^^^^^^^^^
+  File "/workspace/Habitable-Moon-Project/tectonics/geometric_native_pose.py", line 27, in _fraction
+    raise TypeError("Native intervals require exact Fraction or integer scalars")
+TypeError: Native intervals require exact Fraction or integer scalars

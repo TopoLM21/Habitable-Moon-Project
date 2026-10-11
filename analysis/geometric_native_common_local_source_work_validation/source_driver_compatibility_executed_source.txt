@@ -1,0 +1,85 @@
+from pathlib import Path
+from fractions import Fraction as Q
+from dataclasses import dataclass
+import json,hashlib,time
+ROOT=Path('/workspace/Habitable-Moon-Project');OUT=Path('/tmp/native_common_local_source_driver_compatibility_probe_20261006.json')
+SCALE=10**128
+@dataclass(frozen=True)
+class I:
+ lo:Q
+ hi:Q
+ def __init__(self,lo=0,hi=None):
+  lo=Q(lo);hi=lo if hi is None else Q(hi);assert lo<=hi;object.__setattr__(self,'lo',lo);object.__setattr__(self,'hi',hi)
+ def __add__(self,b):
+  b=iv(b);return rnd(self.lo+b.lo,self.hi+b.hi)
+ __radd__=__add__
+ def __neg__(self):return I(-self.hi,-self.lo)
+ def __sub__(self,b):return self+-iv(b)
+ def __rsub__(self,b):return iv(b)+-self
+ def __mul__(self,b):
+  b=iv(b);v=[x*y for x in (self.lo,self.hi) for y in (b.lo,b.hi)];return rnd(min(v),max(v))
+ __rmul__=__mul__
+ def __truediv__(self,b):
+  b=iv(b);assert not(b.lo<=0<=b.hi);return self*rnd(min(1/b.lo,1/b.hi),max(1/b.lo,1/b.hi))
+def iv(x):return x if isinstance(x,I) else I(x)
+def rnd(lo,hi):return I(Q((lo*SCALE).__floor__(),SCALE),Q((hi*SCALE).__ceil__(),SCALE))
+def frac(x):assert type(x) is list and len(x)==2;return Q(*x)
+def readI(x):return I(frac(x['lo']),frac(x['hi']))
+def dot(a,b):return sum((x*y for x,y in zip(a,b)),I())
+def enc(v):return json.dumps(v,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+def payload(x):
+ if isinstance(x,I):return {'lo':payload(x.lo),'hi':payload(x.hi)}
+ if isinstance(x,Q):return [x.numerator,x.denominator]
+ if isinstance(x,(tuple,list)):return [payload(y) for y in x]
+ if isinstance(x,dict):return {k:payload(v) for k,v in x.items()}
+ return x
+def load(rel,pin):
+ p=ROOT/rel;b=p.read_bytes();assert hashlib.sha256(b).hexdigest()==pin;return json.loads(b)
+def solve_bound(rows,targets):
+ # Every admitted pivot excludes zero; no midpoint or tolerance is used.
+ a=[list(r)+[t] for r,t in zip(rows,targets)];labels=list(range(len(a)));pivots=[]
+ for col in range(7):
+  choices=[k for k in range(col,len(a)) if not(a[k][col].lo<=0<=a[k][col].hi)]
+  if not choices:return dict(status='UNRESOLVED_INTERVAL_COLUMN',pivot_columns=col,pivot_row_indices=pivots)
+  k=max(choices,key=lambda k:min(abs(a[k][col].lo),abs(a[k][col].hi)))
+  a[col],a[k]=a[k],a[col];labels[col],labels[k]=labels[k],labels[col];pivots.append(labels[col]);pivot=a[col][col]
+  a[col]=[x/pivot for x in a[col]]
+  a[col][col]=I(1) # correlated division identity
+  for j in range(col+1,len(a)):
+   fac=a[j][col];a[j]=[x-fac*y for x,y in zip(a[j],a[col])];a[j][col]=I() # correlated elimination identity
+ x=[I() for _ in range(7)]
+ for i in range(6,-1,-1):x[i]=a[i][7]-sum((a[i][j]*x[j] for j in range(i+1,7)),I())
+ residual=[dot(row,x)-target for row,target in zip(rows,targets)]
+ bad=[i for i,v in enumerate(residual) if not(v.lo<=0<=v.hi)]
+ return dict(status='CERTIFIED_INCOMPATIBLE_FULL_DONOR_VECTOR_DRIVER' if bad else 'NO_INCOMPATIBILITY_CERTIFIED',pivot_row_indices=pivots,unique_solution_enclosure=x,residuals=residual,excluded_zero_row_indices=bad)
+def main():
+ started=time.perf_counter()
+ sourcepin='265206430b4c864db32bce1be0a9a75b71fa180158f3d81e4f52131bebdf320c';surfacepin='f2884284f663564d304537f91614efbb01e5b7df5ebdab86ac7eb6e77287ee64'
+ source=load('analysis/geometric_native_common_source_carrier_validation/release_validation_02/native_control/source_packet.json',sourcepin)
+ surface=load('analysis/geometric_native_common_material_surface_transport_validation/release_validation_02/native_control/source_packet.json',surfacepin)
+ carriers={c['point_id']:c for c in source['carrier_system']['carriers']};R=frac(source['carrier_system']['source_radius_m']);records=[];groups={};states=[]
+ for row in surface['original_material_queries']:
+  if row['arguments']['material_depth_bounds_m']['lo']!=[0,1]:continue
+  p=row['response'];c=carriers[p['point_id']];base=c['archival_old_reference'];side=p['side'];dirs=base['sub_direction_bounds'] if side=='sub' else base['over_direction_bounds'];positions=base['sub_position_bounds_m'] if side=='sub' else base['over_position_bounds_m']
+  v=[frac(x) for x in p['original_direction_literal']];oldp=[R*x for x in v]
+  assert all(readI(d).lo<=x<=readI(d).hi for d,x in zip(dirs,v));assert all(readI(d).lo<=x<=readI(d).hi for d,x in zip(positions,oldp))
+  X=[readI(x) for x in p['reference_position_bounds_m']];lever=[I(x)-y for x,y in zip(oldp,X)]
+  modes=[[readI(x) for x in v] for v in p['mode_displacement_columns']];G=[[[readI(x) for x in r] for r in g] for g in p['mode_spatial_gradient_columns_per_m']]
+  C=[[psi[i]+dot(g[i],lever) for i in range(3)] for psi,g in zip(modes,G)]
+  coordinates=[frac(x) for x in p['coordinates_m']];delta=[sum((x*mode[i] for x,mode in zip(coordinates,C)),I()) for i in range(3)]
+  rec=dict(point_id=p['point_id'],side=side,component_id=p['geometry_field_component_id'],active=p['field_active_inside_material_clamp'],source_direction=v,convected_modal_vector_columns=C,convected_virtual_displacement_bounds_m=delta)
+  records.append(rec);states.append((p['point_id'],side,delta))
+  if side=='sub':groups.setdefault(p['geometry_field_component_id'],[]).append(rec)
+ bank=[]
+ for cid,rs in sorted(groups.items()):
+  rows=[[r['convected_modal_vector_columns'][j][axis] for j in range(7)] for r in rs for axis in range(3)];targets=[I(x) for r in rs for x in r['source_direction']]
+  bank.append(dict(component_id=cid,point_count=len(rs),constraint_rows=len(rows),coordinate_count=7,certificate=solve_bound(rows,targets)))
+ deformed={(pid,side):delta for pid,side,delta in states};anchors=[]
+ for cid,c in carriers.items():
+  delta=[o-s for o,s in zip(deformed[cid,'over'],deformed[cid,'sub'])];frames=[[readI(x) for x in e] for e in c['archival_old_reference']['receiver_director_bounds']];eta=[dot(e,delta) for e in frames]
+  K=frac(c['series_stiffness_exact_pa_m'][0]);t=frac(c['literal_source_tractions_pa'][0])+K*eta[0]
+  anchors.append(dict(point_id=cid,eta_bounds_m=eta,normal_traction_bounds_pa=t,strictly_compressed=t.hi<0,strictly_open=t.lo>=0,unresolved_branch=t.lo<0<=t.hi))
+ report=payload(dict(status='COMPLETED_STDLIB_DIAGNOSTIC_NOT_PRODUCT_ACCEPTANCE',scope='CONDITIONAL_FIXED_OWNER_LOCAL_DRIVER_COMPATIBILITY_AND_TRIAL_ANCHOR_BRANCH_ONLY',source_packet_raw_sha256=sourcepin,surface_packet_raw_sha256=surfacepin,original_point_count=32,active_count=sum(r['active'] for r in records),inactive_count=sum(not r['active'] for r in records),basis='archival_old_reference',assumed_owner_tangent_identity=True,assumed_zero_owner_body_cross_inverse_jets=True,independent_donor_vector_compatibility=bank,original_convected_modal_coefficients=records,nonzero_trial_r_zero_atom_anchor_branches=anchors,strictly_compressed_atom_count=sum(r['strictly_compressed'] for r in anchors),strictly_open_atom_count=sum(r['strictly_open'] for r in anchors),unresolved_atom_branch_count=sum(r['unresolved_branch'] for r in anchors),old_source14_92_reduction_certified=False,old_source14_100_reference_embedding_exact_by_declared_correlated_law=True,old_nonzero875_anchor_assumed_equal=False,beam_and_Rperp_math_not_recomputed=True,project_imports=False,old_helpers_mains_tests_force_quadratures_executed=False,midpoint_or_tolerance_used=False,seconds=time.perf_counter()-started))
+ report['diagnostic_sha256']=hashlib.sha256(enc(report)).hexdigest();assert not OUT.exists();OUT.write_bytes(enc(report)+b'\n')
+ print(json.dumps({'output':str(OUT),'raw_sha256':hashlib.sha256(OUT.read_bytes()).hexdigest(),'seal':report['diagnostic_sha256'],'seconds':report['seconds'],'active':report['active_count'],'inactive':report['inactive_count'],'compressed':report['strictly_compressed_atom_count'],'open':report['strictly_open_atom_count'],'unresolved':report['unresolved_atom_branch_count'],'bank_status':[(x['component_id'],x['certificate']['status'],x['certificate'].get('excluded_zero_row_indices')) for x in report['independent_donor_vector_compatibility']]},sort_keys=True))
+if __name__=='__main__':main()

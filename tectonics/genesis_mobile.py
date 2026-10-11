@@ -13,6 +13,11 @@ import json
 import math
 from numbers import Integral, Real
 from pathlib import Path
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .genesis_bulk_birth import BulkBirthHistory
+    from .genesis_cohort_mechanics import CohortMechanicsState
 
 import numpy as np
 
@@ -28,7 +33,7 @@ from .genesis_material import (rebuild_material_mesh, face_deformation, polar_in
     rotate_tensor, move_mesh, material_layer_mass, material_column_depth, geometry_diagnostics)
 from .mesh import build_icosphere
 
-MOBILE_VERSION = "genesis-mobile-0.1"
+MOBILE_VERSION = "genesis-mobile-0.3"
 
 
 @dataclass(frozen=True)
@@ -100,6 +105,10 @@ class MobileState:
     rejected_steps: int = 0
     newton_iterations: int = 0
     stopped_reason: str | None = None
+    # None is explicit unavailable history for mechanical diagnostics. Actual
+    # molten formation always starts a complete, empty material catalogue.
+    bulk_birth_history: BulkBirthHistory | None = None
+    cohort_mechanics: CohortMechanicsState | None = None
 
 
 class _RetryStep(RuntimeError):
@@ -157,7 +166,40 @@ class MobileModel:
             shell.column_enthalpy.copy(), np.zeros((n, 3)), np.zeros(n), np.zeros(n),
             np.zeros(n), np.zeros(n), np.zeros(n), np.zeros((n, 3)), np.zeros(n),
             float(np.sum(mass*shell.column_enthalpy)), float(np.sum(mass)))
+        from .genesis_bulk_birth import initial_bulk_birth
+        state.bulk_birth_history = initial_bulk_birth(self.mesh, mass,
+            self.thermal.radius_km, self._bulk_birth_configuration(), self.thermal.solidus_k)
+        from .genesis_cohort_mechanics import initial_cohort_mechanics
+        state.cohort_mechanics = initial_cohort_mechanics(state.bulk_birth_history)
         return state, initial_state(self.thermal), initial_tidal_orbit(self.tides_p)
+
+    def _bulk_birth_configuration(self):
+        configuration = {"shell": asdict(self.p), "thermal": asdict(self.thermal),
+            "onset": asdict(self.onset_p), "tides": asdict(self.tides_p),
+            "mobile": asdict(self.mobile_p)}
+        if hasattr(self, "fault_p"):
+            configuration["faults"] = asdict(self.fault_p)
+        return configuration
+
+    def _validate_bulk_birth(self, state, fraction):
+        if state.bulk_birth_history is None:
+            if state.cohort_mechanics is not None:
+                raise ValueError("Cohort mechanics requires its material birth history")
+            return
+        from .genesis_bulk_birth import initial_bulk_birth, validate_bulk_birth
+        original = initial_bulk_birth(self.mesh, state.layer_mass_kg,
+            self.thermal.radius_km, self._bulk_birth_configuration(), self.thermal.solidus_k)
+        validate_bulk_birth(state.bulk_birth_history, layer_mass_kg=state.layer_mass_kg,
+            time_myr=state.time_myr, front_fraction=fraction,
+            source_identity=original.source_identity)
+        if state.bulk_birth_history.accepted_intervals != state.accepted_steps:
+            raise ValueError("Mobile bulk birth and accepted-step counts disagree")
+        from .genesis_cohort_mechanics import validate_cohort_mechanics, cohort_mechanics_mean
+        validate_cohort_mechanics(state.cohort_mechanics, state.bulk_birth_history,
+                                  state.membrane_established, parameters=self.p, damage=state.damage)
+        mean = cohort_mechanics_mean(state.cohort_mechanics, state.bulk_birth_history)
+        if not np.allclose(mean, state.elastic_strain, rtol=1e-10, atol=1e-13):
+            raise ValueError("Shell mean strain disagrees with its cohort constitutive source")
 
     def mesh_for(self, state):
         return rebuild_material_mesh(self.mesh, state.vertices)
@@ -177,6 +219,10 @@ class MobileModel:
 
     def _finish_trial_state(self, before, after, old_mesh, memory, effective_b, fraction, dt_myr):
         return after
+
+    def _cohort_plastic_increment(self, state):
+        """Common engineering plastic increment, if a weak-plane law is active."""
+        return None
 
     def checkpoint_array_shapes(self):
         return {}
@@ -281,6 +327,7 @@ class MobileModel:
         tm1, ts1 = temperatures(np.asarray(next_global.energy), self.thermal)
         h, boundary = self._conduct(state, mesh, dt, ts0, ts1, tm0, tm1)
         old_fraction, _, old_temp = self._phase(state.column_enthalpy, ts0, tm0)
+        self._validate_bulk_birth(state, old_fraction)
         fraction, mean, temp = self._phase(h, ts1, tm1)
         column_depth = self._column_geometry(state, mesh)
         active = fraction*column_depth >= p.min_load_bearing_thickness_km
@@ -310,6 +357,26 @@ class MobileModel:
         memory = (retained*r)[:, None]*state.elastic_strain
         memory[:, :2] -= (retained*b*p.linear_expansion_per_k*delta_t)[:, None]
         damage0 = state.damage*retained
+        history, cohort_loading = state.bulk_birth_history, None
+        if history is not None:
+            from .genesis_bulk_birth import advance_bulk_birth
+            from .genesis_cohort_mechanics import prepare_cohort_loading
+            # This prospective catalogue and constitutive trial are private to
+            # the interval; rejected Newton/thermal trials publish neither.
+            history = advance_bulk_birth(history,
+                before_front_fraction=old_fraction, after_front_fraction=fraction,
+                before_time_myr=state.time_myr, after_time_myr=next_global.time_myr,
+                mesh=mesh, radius_km=state.radius_km, solidus_k=self.thermal.solidus_k)
+            cohort_loading = prepare_cohort_loading(state.cohort_mechanics,
+                state.bulk_birth_history, history,
+                before_column_temperature=old_temp, after_column_temperature=temp,
+                before_surface_temperature_k=ts0, after_surface_temperature_k=ts1,
+                before_mantle_temperature_k=tm0, after_mantle_temperature_k=tm1,
+                before_established=state.membrane_established, after_established=established,
+                activation_mesh=mesh, activation_radius_km=state.radius_km,
+                before_damage=state.damage, parameters=p)
+            memory = cohort_loading.mean_memory
+            effective_b = cohort_loading.effective_b
         if np.any(active):
             solved = self._equilibrium(state, mesh, fraction, memory, effective_b, damage0, dt_myr=dt)
         else:
@@ -370,6 +437,29 @@ class MobileModel:
             first_fracture_time_myr=first, equilibrium_residual=residual, last_incremental_strain=inc_max,
             last_step_myr=dt, accepted_steps=state.accepted_steps+1, newton_iterations=iterations)
         next_state = self._finish_trial_state(state, next_state, mesh, memory, effective_b, fraction, dt)
+        if cohort_loading is not None:
+            from .genesis_cohort_mechanics import evaluate_cohort_loading, accept_cohort_loading
+            if established:
+                rotation, cohort_inc = polar_increment(face_deformation(
+                    mesh, moved, state.radius_km, radius))
+            else:
+                # Thermal-only formation has no mechanical increment. Even
+                # F(mesh, mesh) contains chord roundoff, not raft strain.
+                rotation = np.broadcast_to(np.eye(2), (mesh.cell_count, 2, 2))
+                cohort_inc = np.zeros((mesh.cell_count, 3))
+            plastic = self._cohort_plastic_increment(next_state)
+            if plastic is not None:
+                # Fault normals/flow are transported to the current face; the
+                # Maxwell driver and Hencky increment use the old face axes.
+                plastic = rotate_tensor(plastic, rotation.transpose(0, 2, 1), engineering=True)
+            response = evaluate_cohort_loading(cohort_loading, cohort_inc, rotation, damage,
+                plastic_increment=plastic)
+            if response.max_elastic_strain > mp.max_elastic_strain:
+                raise _RetryStep("mobile_cohort_elastic_limit")
+            if not np.allclose(response.mean_elastic, elastic, rtol=1e-10, atol=1e-13):
+                raise ValueError("Cohort stresses and shell equilibrium disagree")
+            next_state = replace(next_state, bulk_birth_history=history,
+                cohort_mechanics=accept_cohort_loading(cohort_loading, response))
         return next_state, next_global, next_orbit, rows
 
     def step(self, state, global_state, orbit, target_myr, max_step_myr=.01):
@@ -458,12 +548,24 @@ class MobileModel:
             "orbit_heat_transfer_relative_residual": (state.tidal_heat_received_j-orbit.dissipated_energy_j)/max(orbit.dissipated_energy_j, 1.),
             "eccentricity": orbit.eccentricity, "semimajor_axis_km": orbit.semimajor_axis_km,
             "tidal_heat_flux_w_m2": tidal_heat_flux_w_m2(pnow), **motion}
+        if state.cohort_mechanics is not None:
+            mechanics = state.cohort_mechanics
+            live_strain = np.asarray([record.elastic_strain for record in mechanics.cohorts
+                                     if record.elastic_strain is not None])
+            s["max_cohort_elastic_strain"] = maximum_total_strain(live_strain) if live_strain.size else 0.
+            o.update({"cohort_"+name: getattr(mechanics, name) for name in (
+                "elastic_energy_j", "mechanical_work_j", "plastic_work_j", "thermal_work_j",
+                "viscous_dissipation_j", "damage_energy_change_j", "remelt_energy_removed_j",
+                "balance_residual_j")})
         return g, s, o, tidal_diagnostics(pnow)
 
 
 def save_mobile_checkpoint(path, model, state, thermal, orbit, controls, provenance):
     arrays = {f.name: getattr(state, f.name) for f in fields(state) if isinstance(getattr(state, f.name), np.ndarray)}
-    scalars = {f.name: getattr(state, f.name) for f in fields(state) if f.name not in arrays}
+    scalars = {f.name: getattr(state, f.name) for f in fields(state)
+               if f.name not in arrays and f.name not in {"bulk_birth_history", "cohort_mechanics"}}
+    scalars["bulk_birth_history"] = _encoded_bulk_birth(model, state, thermal)
+    scalars["cohort_mechanics"] = _encoded_cohort_mechanics(state)
     parameters = {"shell": asdict(model.p), "thermal": asdict(model.thermal), "onset": asdict(model.onset_p),
                   "tides": asdict(model.tides_p), "mobile": asdict(model.mobile_p)}
     meta = {"format": MOBILE_VERSION, "thermal_model_version": MODEL_VERSION, "parameters": parameters,
@@ -481,13 +583,20 @@ def load_mobile_checkpoint(path):
     try:
         with np.load(path, allow_pickle=False) as archive:
             meta = json.loads(str(archive["metadata"]))
+            if meta.get("format") == "genesis-mobile-0.1":
+                raise ValueError("Mobile 0.1 has no bulk birth history; replay from molten formation")
+            if meta.get("format") == "genesis-mobile-0.2":
+                raise ValueError("Mobile 0.2 has no cohort constitutive memory; replay from molten formation")
             p = meta["parameters"]
             if meta["format"] != MOBILE_VERSION or hashlib.sha256(json.dumps(p, sort_keys=True).encode()).hexdigest() != meta["parameter_hash"]:
                 raise ValueError("Mobile checkpoint version/parameter hash mismatch")
             require_thermal_model_version(meta)
             model = MobileModel(ShellParameters(**p["shell"]), GenesisParameters(**p["thermal"]),
                 OnsetParameters(**p["onset"]), TidalParameters(**p["tides"]), MobileParameters(**p["mobile"]))
-            state = MobileState(**meta["state"], **{k: archive[k].copy() for k in archive.files if k != "metadata"})
+            scalars = dict(meta["state"])
+            scalars["bulk_birth_history"] = _decoded_bulk_birth(scalars)
+            scalars["cohort_mechanics"] = _decoded_cohort_mechanics(scalars)
+            state = MobileState(**scalars, **{k: archive[k].copy() for k in archive.files if k != "metadata"})
         thermal, orbit = GenesisState(**meta["thermal_state"]), TidalOrbitState(**meta["orbit"])
         _validate_loaded(model, state, thermal, orbit)
         return model, state, thermal, orbit, meta
@@ -534,6 +643,8 @@ def _validate_loaded(model, state, thermal, orbit):
         raise ValueError("Invalid mobile thermal history")
     tm, ts = temperatures(np.asarray(thermal.energy), model.thermal)
     fraction, _, _ = model._phase(state.column_enthalpy, ts, tm)
+    model._validate_bulk_birth(state, fraction)
+    _validate_cohort_temperature(model, state, ts, tm)
     if state.membrane_established and np.any(fraction <= 0):
         raise ValueError("Established mobile membrane must have a connected solid layer")
     g, s, o, _ = model.diagnostics(state, thermal, orbit)
@@ -547,3 +658,54 @@ def _validate_loaded(model, state, thermal, orbit):
             or state.last_step_myr < 0 or state.last_step_myr > state.time_myr+1e-12
             or abs(state.radius_km/model.thermal.radius_km-1) > mp.max_radius_change_fraction):
         raise ValueError("Mobile checkpoint violates geometry/elastic validity guards")
+    if s.get("max_cohort_elastic_strain", 0.) > mp.max_elastic_strain:
+        raise ValueError("Mobile cohort memory violates elastic validity guards")
+
+
+def _encoded_bulk_birth(model, state, thermal):
+    """Serialize known formation; explicit None never invents a past source."""
+    from .genesis_bulk_birth import bulk_birth_to_dict
+    tm, ts = temperatures(np.asarray(thermal.energy), model.thermal)
+    fraction, _, _ = model._phase(state.column_enthalpy, ts, tm)
+    model._validate_bulk_birth(state, fraction)
+    _validate_cohort_temperature(model, state, ts, tm)
+    return None if state.bulk_birth_history is None else bulk_birth_to_dict(state.bulk_birth_history)
+
+
+def _decoded_bulk_birth(scalars):
+    from .genesis_bulk_birth import bulk_birth_from_dict
+    if "bulk_birth_history" not in scalars:
+        raise ValueError("Bulk birth history is missing; replay from molten formation")
+    raw = scalars["bulk_birth_history"]
+    return None if raw is None else bulk_birth_from_dict(raw)
+
+
+def _encoded_cohort_mechanics(state):
+    from .genesis_cohort_mechanics import cohort_mechanics_to_dict, validate_cohort_mechanics
+    if state.bulk_birth_history is None:
+        if state.cohort_mechanics is not None:
+            raise ValueError("Cohort mechanics requires its material birth history")
+        return None
+    validate_cohort_mechanics(state.cohort_mechanics, state.bulk_birth_history,
+                              state.membrane_established)
+    return cohort_mechanics_to_dict(state.cohort_mechanics)
+
+
+def _decoded_cohort_mechanics(scalars):
+    from .genesis_cohort_mechanics import cohort_mechanics_from_dict
+    if "cohort_mechanics" not in scalars:
+        raise ValueError("Cohort constitutive history is missing; replay from molten formation")
+    raw = scalars["cohort_mechanics"]
+    return None if raw is None else cohort_mechanics_from_dict(raw)
+
+
+def _validate_cohort_temperature(model, state, surface_temperature_k, mantle_temperature_k):
+    if state.cohort_mechanics is None:
+        return
+    from .genesis_cohort_mechanics import cohort_temperature
+    current = cohort_temperature(state.bulk_birth_history,
+        rock_temperature(state.column_enthalpy, model.thermal),
+        surface_temperature_k, mantle_temperature_k)
+    stored = np.asarray([record.temperature_k for record in state.cohort_mechanics.cohorts])
+    if not np.allclose(current, stored, rtol=2e-12, atol=1e-8):
+        raise ValueError("Cohort temperature disagrees with the conductive material source")

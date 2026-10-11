@@ -1,0 +1,19 @@
+import hashlib,json,sys,time,types
+from pathlib import Path
+started=time.perf_counter()
+a=Path('/workspace/hot_mean_independent_audit_source.txt');expected='59e8d32e2307b2574701729aa2edb6b241bc8887af4f2a984062759082003462';assert hashlib.sha256(a.read_bytes()).hexdigest()==expected;m=types.ModuleType('closed_packet_isotropic_diagnostic');m.__file__=str(a);exec(compile(a.read_bytes(),str(a),'exec'),m.__dict__);m.mp.mp.dps=220
+p=Path('/workspace/Habitable-Moon-Project/analysis/geometric_native_common_hot_mean_validation/release_validation_02/native_control/source_packet.json');x=m.sealed(p,'packet_sha256');checks=0;body_rows=[]
+for i,b in enumerate(x['hot_mean_system']['bodies']):
+ bk=json.loads(b['complete_common_bank_json']);A=m.mp.mpf(0)
+ for poly in json.loads(bk['complete_mask_source_json'])['proxy_geometries']:
+  vv=m.vertices(poly);A+=m.mp.fsum(m.triangle_area(vv[0],vv[j],vv[j+1]) for j in range(1,len(vv)-1))
+ cb=tuple(m.mp.fsum(m.bounds(json.loads(c)['area_bounds_sr'])[k] for c in bk['paired_corrections_source_json']) for k in (0,1));fullarea=(A+cb[0],A+cb[1]);m.interval_check(b['actual_area_bounds_sr'],fullarea,'Independent full area');m.interval_check(b['original_reference_volume_bounds_m3'],tuple(v*m.number(b['radius_m'])**2*m.number(b['areal_material_thickness_m']) for v in fullarea),'Independent whole original volume');checks+=2
+ queryrows=[]
+ for query in (x['evaluation_queries'][0],x['evaluation_queries'][3]):
+  q=m.number(query['arguments']['coordinate_increments'][6*i]);analytic=m.constant_isotropic_channels(b,q,A,cb);row=json.loads(query['response']['body_responses_json'][i]);channels=[]
+  for raw,key in ((row['energy_bounds_j'],'U'),(row['bulk_energy_bounds_j'],'Ub'),(row['basal_energy_bounds_j'],'Ug'),(row['gradient_bounds_n'][0],'gq'),(row['physical_scalar_force_bounds_n'],'scalar_force'),(row['hessian_bounds_n_m'][0][0],'Hqq')):
+   m.interval_check(raw,analytic[key],b['component_id']+' '+key);checks+=1;channels.append(key)
+  queryrows.append(dict(label=query['label'],analytic_channels_checked=channels,full_actual_area_with_positive_curve_interval=True))
+ body_rows.append(dict(component_id=b['component_id'],actual_polygon_area_sr=m.mp.nstr(A,50),literal_positive_curve_area_bounds_sr=[m.mp.nstr(v,50) for v in cb],queries=queryrows))
+report=dict(status='PASS_CLOSED_NEW903_PACKET_ISOTROPIC_CHANNEL_DIAGNOSTIC_ONLY',executing_source_raw_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),independent_auditor_raw_sha256=hashlib.sha256(a.read_bytes()).hexdigest(),source_packet_raw_sha256=hashlib.sha256(p.read_bytes()).hexdigest(),source_packet_selfseal=x['packet_sha256'],decimal_precision=220,independent_scalar_contains_count=checks,full_audit_executed=False,old_math_or_tests_or_solver_or_quadrature_reexecuted=False,project_imports=False,positive_curve_material_point_substitution=False,bodies=body_rows,seconds=time.perf_counter()-started)
+report['diagnostic_sha256']=hashlib.sha256(m.encoded(report)).hexdigest();data=m.encoded(report)+b'\n';Path('/workspace/hot_mean_isotropic_oracle_diagnostic02.json').write_bytes(data);sys.stdout.buffer.write(data)

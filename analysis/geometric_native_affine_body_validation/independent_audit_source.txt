@@ -1,0 +1,494 @@
+"""Pure stdlib audit of the actual-mask affine HOT component release.
+
+Bulk derivatives are reconstructed through Green-strain first/second
+variations, independently of the controller's Piola differential route.
+Whole-face probes use source-native Decimal geometry and Rodrigues quadrature,
+independently of the production commutator depth-moment integrator.
+"""
+from __future__ import annotations
+import argparse
+from decimal import Decimal as D, localcontext
+from fractions import Fraction as F
+import hashlib
+import json
+import math
+from pathlib import Path
+import re
+import time
+
+ROOT = Path('/workspace/Habitable-Moon-Project')
+NORMAL = ROOT/'analysis/geometric_native_normal_support_validation/release_validation_01'
+NORMAL_RAW = '3c028106720bd00b8d31bf8ef4e050d7aaaeb5cd34b47ada8f2f252fef51560a'
+NORMAL_PACKET_RAW = 'f4f3703cbc463d4130096dba827a7425fc865851fe5c86f337f98dfbefd8f7ca'
+CURVED_PACKET_RAW = '0e3554a55a8c93eb8ecbdae8351f3280a2ae4bd8596254950afef7f77b98d2cb'
+OLD_MAP_SHA = '20ab172bee8cc7b865834817a20f7415e971bd1d60964c853519f9d43d250fc6'
+ADDITIONS = {
+ 'tectonics/geometric_native_affine_body.py',
+ 'tectonics/geometric_native_affine_bulk_assembly.py',
+ 'tests/test_geometric_native_affine_body.py',
+ 'tests/test_geometric_native_affine_bulk_assembly.py',
+ 'analysis/geometric_native_affine_body_validation/validate.py',
+ 'analysis/geometric_native_affine_body_validation/native_control.py',
+}
+STANDALONE = {
+ 'independent_audit.json':'45eabeb97f8dca5abac94c26f044f8e0babd47077c6dab6bb976637af2989678',
+ 'source_shortened_columns_refusal.json':'10964b5609415a60b8f3e0eda0822ed37378c787393d48f4a9e83117cbf287f0',
+ 'source_normal_independent_audit.json':'cdb8964417ff1c781850c900717b9a541fff918c7c33cbbee1ca06a3a3202097',
+}
+SOURCE_FIELDS=('before','current_load','original_unaccepted_trial_birth_support',
+ 'full_reference_face_birth_support','saved_joint_reference_field')
+FALSE_SCOPE=('original_point_1_completed','whole_clock_material_admission_authorized',
+ 'complete_three_dimensional_strain_energy_certified','global_physical_solid_noninterpenetration_certified',
+ 'all_42_surface_pairs_reexecuted','new_native_curved_force_equilibrium_certified',
+ 'full_genuine_source_reconstructed','inherited_force_certificate_for_placement','material_admission_authorized')
+
+
+def encoded(v):
+ return json.dumps(v,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+def vd(v):return hashlib.sha256(encoded(v)).hexdigest()
+def digest(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def read(p):return json.loads(Path(p).read_bytes())
+def sealed(p,key):
+ v=read(p);body=dict(v);assert body.pop(key)==vd(body),('selfseal',str(p));return v
+
+def frac(v):
+ assert type(v) is list and len(v)==2 and all(type(x) is int for x in v) and v[1]>0
+ return F(*v)
+def bounds(v):
+ assert type(v) is dict and set(v)=={'lo','hi'}
+ lo,hi=frac(v['lo']),frac(v['hi']);assert lo<=hi;return lo,hi
+
+def scale(a,k):return min(a[0]*k,a[1]*k),max(a[0]*k,a[1]*k)
+def add(a,b):return a[0]+b[0],a[1]+b[1]
+def mul(a,b):
+ p=tuple(x*y for x in a for y in b);return min(p),max(p)
+def isum(v):
+ t=(F(0),F(0))
+ for a in v:t=add(t,a)
+ return t
+
+def square(a):
+ l,h=a;return (F(0) if l<=0<=h else min(l*l,h*h),max(l*l,h*h))
+def same_bounds(v,w):assert bounds(v)==w,('exact bounds differ',tuple(map(float,bounds(v))),tuple(map(float,w)))
+def same_imatrix(v,w):
+ assert len(v)==len(w) and all(len(a)==len(b) for a,b in zip(v,w))
+ for a,b in zip(v,w):
+  for x,y in zip(a,b):same_bounds(x,y)
+def matrix(v):return tuple(tuple(frac(x) for x in r) for r in v)
+def eye(n=3):return tuple(tuple(F(i==j) for j in range(n)) for i in range(n))
+def tr(m):return sum((m[i][i] for i in range(3)),F(0))
+def inner(a,b):return sum((x*y for r,s in zip(a,b) for x,y in zip(r,s)),F(0))
+def trans(a):return tuple(zip(*a))
+def mm(a,b):return tuple(tuple(sum((x*y for x,y in zip(r,c)),F(0)) for c in zip(*b)) for r in a)
+def madd(a,b):return tuple(tuple(x+y for x,y in zip(r,s)) for r,s in zip(a,b))
+def ms(a,k):return tuple(tuple(x*k for x in r) for r in a)
+def det(a):
+ return a[0][0]*(a[1][1]*a[2][2]-a[1][2]*a[2][1])-a[0][1]*(a[1][0]*a[2][2]-a[1][2]*a[2][0])+a[0][2]*(a[1][0]*a[2][1]-a[1][1]*a[2][0])
+BASIS=tuple(tuple(tuple(F((i,j)==p or (j,i)==p) for j in range(3)) for i in range(3))
+ for p in ((0,0),(1,1),(2,2),(0,1),(0,2),(1,2)))
+
+
+def outputs(directory,report,count):
+ assert len(report['outputs'])==count
+ for name,row in report['outputs'].items():
+  p=directory/name;assert p.stat().st_size==row['bytes'] and digest(p)==row['sha256'],str(p)
+  if p.suffix=='.json':
+   v=read(p)
+   for k in ('report_sha256','packet_sha256','diagnosis_sha256'):
+    if k in v:
+     sealed(p,k);break
+
+
+def historical_sources():
+ old=ROOT/'analysis/geometric_native_birth_front_validation'
+ initial=(
+  (old/'release_validation_01/validation_summary.json','33a88d35b9f945a7652aa2ad347b789ef9479ff0bbe6cde21c655da1443ee70e'),
+  (old/'release_validation_01/artifact_manifest.json','abf3f7a354ba709f48c967359a7cd56c7f0e9de881f9f8de31b1819cce2834dd'),
+  (old/'frozen_release_sources.json','ce4f84e4953e394c513a1fce819871dd92fa19b52d20dcece1e9674fdbb91fcb'))
+ for p,h in initial:assert digest(p)==h,str(p)
+ summary=sealed(initial[0][0],'summary_sha256');manifest=sealed(initial[1][0],'manifest_sha256')
+ assert summary['status']=='PASS' and summary['source_count']==778 and len(manifest['artifacts'])==1633
+ for name,row in manifest['artifacts'].items():
+  p=ROOT/name;assert p.stat().st_size==row['bytes'] and digest(p)==row['sha256'],name
+ sources=read(initial[2][0]);assert len(sources)==778
+ generations=(
+  ('geometric_native_solid_placement_validation/release_validation_01','7970483acb78f86757267ea35f29b205c63fdf8b1171f872d5d1d4f5a5384dd9',8,786,5),
+  ('geometric_native_finite_equilibrium_validation/release_validation_02','af6f34a7aeb5add401fcfd3effdd7842bb63407b2efc6ad759d119aa11d2ee56',6,792,4),
+  ('geometric_native_spherical_solid_validation/release_validation_01','4a49e7fa73ca1f795c15e3244b083c528c1128b00ad7f6b4d92cd640dd27ac7b',8,800,4),
+  ('geometric_native_joint_spherical_validation/release_validation_01','bef87287f951d66a04699a2b6a2ffaa627c1f495363c39982bded8f590b4c076',6,806,4),
+  ('geometric_native_curved_equilibrium_validation/release_validation_01','42da56ee7a9be0d254aba11dee50d078db0b99014197af09d732cebd97b57fe2',8,814,4),
+  ('geometric_native_normal_support_validation/release_validation_01',NORMAL_RAW,6,820,4))
+ for name,h,n,total,count in generations:
+  directory=ROOT/'analysis'/name;p=directory/'report.json';assert digest(p)==h,name
+  r=sealed(p,'report_sha256');assert r['status']=='PASS' and r['source_count']==total and r['changed_python_paths']==[]
+  assert len(r['added_python_sources'])==n and not set(sources)&set(r['added_python_sources'])
+  sources.update(r['added_python_sources']);assert len(sources)==total
+  assert vd(sources)==r['source_map_before_sha256']==r['source_map_after_sha256']
+  outputs(directory,r,count)
+ assert vd(sources)==OLD_MAP_SHA
+ failed=ROOT/'analysis/geometric_native_finite_equilibrium_validation/release_validation_01'
+ assert digest(failed/'report.json')=='40f15f8afb09a33d26ac10253f24ff23cf354fccb2d704d7aa96fbf6841b8bfd'
+ f=sealed(failed/'report.json','report_sha256');assert f['status']=='FAIL' and f['failure_type']=='TypeError';outputs(failed,f,3)
+ diag=ROOT/'analysis/geometric_native_solid_placement_validation/radial_normalization_diagnosis.json'
+ assert digest(diag)=='977d0b4697915596e4c585f79ac952070d38e686d4c47e450704b66c88eeac8b';sealed(diag,'diagnosis_sha256')
+ for name,h in sources.items():assert digest(ROOT/name)==h,name
+ for name,h in STANDALONE.items():
+  p=NORMAL.parent/name;assert digest(p)==h,name
+  v=read(p)
+  if 'report_sha256' in v:sealed(p,'report_sha256')
+  assert v['original_point_1_completed'] is False
+ return sources
+
+
+def material_thickness(component,epoch):
+ material=epoch['source_material_state']
+ if component['material_kind']=='hot_birth':
+  vals=[v for v in material['endpoint_vacancies'] if v['newborn'] is not None
+   and v['newborn']['vacancy_domain_id']==component['component_id']]
+  assert len(vals)==1
+  return 1000*sum((frac(x) for x in vals[0]['newborn']['specific_properties'][:2]),F(0)),vals[0]
+ vals=[v for v in material['journal']['source_surface']['fragments'] if v['fragment_id']==component['original_parent_id']]
+ assert len(vals)==1
+ parcel=vals[0]['parcel'];assert parcel['material_id']==component['material_id'] and parcel['plate']==component['owner']
+ return 1000*sum((F.from_float(float(x)) for x in parcel['specific_properties'][:2]),F(0)),None
+
+
+def green_replay(R,E,G,q,Q):
+ nu=E/(2*G)-1;lam=2*G*nu/(1-2*nu);assert -1<nu<F(1,2) and E>0 and G>0
+ bases=tuple(ms(b,1/R) for b in BASIS)
+ Fbody=eye()
+ for x,b in zip(q,bases):Fbody=madd(Fbody,ms(b,x))
+ deform=mm(Q,Fbody);assert mm(trans(Q),Q)==eye() and det(Q)==1
+ green=ms(madd(mm(trans(deform),deform),ms(eye(),-1)),F(1,2))
+ stress=madd(ms(green,2*G),ms(eye(),lam*tr(green)))
+ energy=G*inner(green,green)+lam*tr(green)**2/2
+ variations=tuple(mm(Q,b) for b in bases)
+ dgreen=tuple(ms(madd(mm(trans(v),deform),mm(trans(deform),v)),F(1,2)) for v in variations)
+ gradients=tuple(inner(stress,d) for d in dgreen)
+ hessian=[]
+ for i in range(6):
+  row=[]
+  for j in range(6):
+   second=ms(madd(mm(trans(variations[i]),variations[j]),mm(trans(variations[j]),variations[i])),F(1,2))
+   row.append(2*G*inner(dgreen[i],dgreen[j])+lam*tr(dgreen[i])*tr(dgreen[j])+inner(stress,second))
+  hessian.append(tuple(row))
+ hessian=tuple(hessian);assert hessian==trans(hessian)
+ stiffness=tuple(tuple((2*G*inner(a,b)+lam*tr(a)*tr(b))/R**2 for b in BASIS) for a in BASIS)
+ return dict(Fbody=Fbody,F=deform,green=green,S=stress,P=mm(deform,stress),energy=energy,J=det(deform),
+  grad=gradients,hess=hessian,K=stiffness,nu=nu,lam=lam,variation=variations,dgreen=dgreen)
+
+
+def check_bulk(row,V,R,E,G):
+ q=tuple(frac(x) for x in row['probe_coordinates_m']);direction=tuple(frac(x) for x in row['probe_direction_m'])
+ for key,coords,d in (('probe_bulk_response',q,direction),('zero_bulk_response',(F(0),)*6,None)):
+  r=row[key];assert tuple(frac(x) for x in r['coordinates_m'])==coords
+  result=green_replay(R,E,G,coords,matrix(r['spatial_rotation']));assert result['J']>0
+  for name,value in (('body_deformation_gradient',result['Fbody']),('deformation_gradient',result['F']),
+   ('green_strain',result['green']),('second_piola_stress_pa',result['S']),('first_piola_stress_pa',result['P'])):
+   assert matrix(r[name])==value,('full tensor',name,row['component_id'])
+  assert frac(r['energy_density_reference_j_m3'])==result['energy'] and frac(r['volume_jacobian'])==result['J']
+  same_bounds(r['physical_volume_bounds_m3'],scale(V,result['J']));same_bounds(r['energy_bounds_j'],scale(V,result['energy']))
+  assert len(r['generalized_gradient_bounds_n'])==6
+  for x,value in zip(r['generalized_gradient_bounds_n'],result['grad']):same_bounds(x,scale(V,value))
+  same_imatrix(r['generalized_hessian_bounds_n_m'],tuple(tuple(scale(V,x) for x in a) for a in result['hess']))
+  if d is None:
+   assert r['first_directional_derivative_bounds_j'] is None and r['second_directional_derivative_bounds_j'] is None
+  else:
+   first=sum((x*y for x,y in zip(result['grad'],d)),F(0));second=sum((d[i]*result['hess'][i][j]*d[j] for i in range(6) for j in range(6)),F(0))
+   same_bounds(r['first_directional_derivative_bounds_j'],scale(V,first));same_bounds(r['second_directional_derivative_bounds_j'],scale(V,second))
+   # A separate exact quartic energy polynomial in t checks directional work.
+   variation=tuple(tuple(sum((d[k]*result['variation'][k][i][j] for k in range(6)),F(0)) for j in range(3)) for i in range(3))
+   e0=result['green'];e1=ms(madd(mm(trans(variation),result['F']),mm(trans(result['F']),variation)),F(1,2));e2=ms(mm(trans(variation),variation),F(1,2))
+   coefficient1=2*G*inner(e0,e1)+result['lam']*tr(e0)*tr(e1)
+   coefficient2=G*(inner(e1,e1)+2*inner(e0,e2))+result['lam']*(tr(e1)**2/2+tr(e0)*tr(e2))
+   assert coefficient1==first and 2*coefficient2==second
+ assert matrix(row['bulk_stiffness_per_reference_volume_n_m4'])==result['K']
+ same_imatrix(row['bulk_stiffness_bounds_n_m'],tuple(tuple(scale(V,x) for x in a) for a in result['K']))
+ return result['nu'],result['lam']
+
+
+def check_basal(row,original,R,A,H,roof):
+ s=row['basal_source'];model=row['domain'];foundation=row['basal_assembly'];r=row['basal_probe_response']
+ source=[x for x in original['full_reference_face_birth_support']['foundations'] if x['declaration']['component_id']==row['component_id']]
+ assert len(source)==1 and json.loads(s['source_foundation_json'])==source[0]
+ params=source[0]['declaration']['parameters'];rho=F.from_float(params['density_kg_m3']);gravity=F.from_float(params['gravity_m_s2'])
+ assert frac(s['density_kg_m3'])==rho and frac(s['gravity_m_s2'])==gravity
+ assert s['body_id']==row['component_id'] and s['body_geometry_source_sha256']==model['geometry_source_sha256']
+ assert bounds(s['actual_area_bounds_sr'])==A
+ area=scale(A,R**2);same_bounds(s['reference_measure_area_bounds_m2'],area)
+ cube=(R+roof)**3-3*R**2*H;rb=bounds(s['base_radius_bounds_m']);assert 0<rb[0] and rb[0]**3<=cube<=rb[1]**3
+ raw=dict(s);seal=raw.pop('geometry_source_sha256');assert seal==vd(raw)
+ corrected=sum(json.loads(x)['positive_component_id']==row['component_id'] for x in model['paired_corrections_source_json'])
+ assert s['positive_correction_containing_chart_count']==corrected
+ direction=tuple(bounds(x) for x in s['whole_mask_unit_direction_bounds'])
+ assert len(direction)==3 and all(-1<=x<=y<=1 for x,y in direction)
+ phi=[]
+ for b in BASIS:
+  value=isum(scale(square(direction[i]),b[i][i]) for i in range(3))
+  value=add(value,isum(scale(mul(direction[i],direction[j]),2*b[i][j]) for i in range(3) for j in range(i)))
+  phi.append(mul(scale(rb,1/R),value))
+ phi=tuple(phi);assert foundation['dof_names']==['xx','yy','zz','xy','xz','yz']
+ assert tuple(bounds(x) for x in foundation['normal_displacement_covector_bounds'])==phi
+ assert frac(foundation['foundation_stiffness_density_pa_m'])==rho*gravity
+ weighted=scale(area,rho*gravity);same_bounds(foundation['reference_measure_area_bounds_m2'],area)
+ K=tuple(tuple(mul(weighted,square(x) if i==j else mul(x,y)) for j,y in enumerate(phi)) for i,x in enumerate(phi))
+ same_imatrix(foundation['stiffness_bounds_n_m'],K)
+ q=tuple(frac(x) for x in row['probe_coordinates_m']);d=tuple(frac(x) for x in row['probe_direction_m'])
+ assert tuple(frac(x) for x in r['coordinates_m'])==q and frac(r['external_offset_m'])==0
+ displacement=isum(scale(x,y) for x,y in zip(phi,q));variation=isum(scale(x,y) for x,y in zip(phi,d))
+ same_bounds(r['whole_mask_normal_displacement_bounds_m'],displacement)
+ same_bounds(r['energy_bounds_j'],scale(mul(weighted,square(displacement)),F(1,2)))
+ for x,p in zip(r['generalized_gradient_bounds_n'],phi):same_bounds(x,mul(mul(weighted,displacement),p))
+ same_imatrix(r['generalized_hessian_bounds_n_m'],K)
+ same_bounds(r['first_directional_derivative_bounds_j'],mul(mul(weighted,displacement),variation))
+ same_bounds(r['second_directional_derivative_bounds_j'],mul(weighted,square(variation)))
+ combined=row['combined_hot_probe_response'];bulk=row['probe_bulk_response']
+ for key in ('energy_bounds_j','first_directional_derivative_bounds_j','second_directional_derivative_bounds_j'):
+  same_bounds(combined[key],add(bounds(bulk[key]),bounds(r[key])))
+ for x,a,b in zip(combined['generalized_gradient_bounds_n'],bulk['generalized_gradient_bounds_n'],r['generalized_gradient_bounds_n']):same_bounds(x,add(bounds(a),bounds(b)))
+ same_imatrix(combined['generalized_hessian_bounds_n_m'],tuple(tuple(add(bounds(a),bounds(b)) for a,b in zip(x,y)) for x,y in zip(bulk['generalized_hessian_bounds_n_m'],r['generalized_hessian_bounds_n_m'])))
+ same_imatrix(row['combined_hot_reference_stiffness_bounds_n_m'],tuple(tuple(add(bounds(a),b) for a,b in zip(x,y)) for x,y in zip(row['bulk_stiffness_bounds_n_m'],K)))
+ return rho,gravity
+
+
+def dec(x):
+ if type(x) is F:return D(x.numerator)/D(x.denominator)
+ if type(x) is float:return D.from_float(x)
+ return D(x)
+def ddot(a,b):return sum((x*y for x,y in zip(a,b)),D(0))
+def cross(a,b):return (a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0])
+def unit(v):
+ n=ddot(v,v).sqrt();assert n>0;return tuple(x/n for x in v)
+def sincos(x):
+ s=st=x;c=ct=D(1)
+ for n in range(1,600):
+  st *= -x*x/D((2*n)*(2*n+1));ct *= -x*x/D((2*n-1)*(2*n));s+=st;c+=ct
+  if max(abs(st),abs(ct))<D('1e-170'):return s,c
+ raise AssertionError('Decimal trig did not converge')
+def rotate(v,a,tau=D(1)):
+ n=ddot(a,a).sqrt()
+ if not n:return v
+ axis=tuple(x/n for x in a);s,c=sincos(n*tau);av=cross(axis,v);p=ddot(axis,v)
+ return tuple(v[i]*c+av[i]*s+axis[i]*p*(1-c) for i in range(3))
+def rotations(v,rows):
+ for row in rows:
+  a=tuple(dec(F.from_float(row['dt_myr'])*F.from_float(w)) for w in row['omega_rad_per_myr']);v=rotate(v,a)
+ return v
+
+def plane(p):return rotations(tuple(dec(x) for x in p['normal']),p['rotations'])
+def ray(p):
+ if p['kind']=='cross':v=tuple(D(p['sign'])*x for x in cross(plane(p['planes'][0]),plane(p['planes'][1])))
+ else:
+  assert len(p['reference'])==3;v=tuple(dec(x) for x in p['reference'])
+ return rotations(v,p['rotations'])
+def source_frame(carrier):
+ arc=carrier['exact_initial_shared_arc'];u=unit(ray(arc['start']));endpoint=unit(ray(arc['end']));pn=unit(plane(arc['plane']));t=unit(cross(pn,u))
+ if ddot(t,endpoint)<0:t=tuple(-x for x in t)
+ n=cross(u,t);receiving=unit(plane(carrier['receiver_inward_plane']));sign=1 if ddot(n,receiving)>0 else -1
+ return u,t,n,sign
+
+def gauss(n):
+ nodes=[]
+ for index in range(1,n//2+1):
+  x=D.from_float(math.cos(math.pi*(index-.25)/(n+.5)))
+  for _ in range(30):
+   p0,p1=D(1),x
+   for k in range(2,n+1):p0,p1=p1,((2*k-1)*x*p1-(k-1)*p0)/k
+   deriv=n*(x*p1-p0)/(x*x-1);change=p1/deriv;x-=change
+   if abs(change)<D('1e-160'):break
+  else:raise AssertionError('Legendre node did not converge')
+  weight=2/((1-x*x)*deriv*deriv);nodes.extend(((x,weight),(-x,weight)))
+ return tuple(nodes)
+
+
+def face_decimal_audit(raw,carrier,A,R,top,depth):
+ with localcontext() as context:
+  context.prec=180
+  u,t,n,orientation=source_frame(carrier);angle=bounds(carrier['native_angle_bounds_radians'])
+  theta=dec((angle[0]+angle[1])/2);theta_hi=dec(angle[1]);end_error=dec((angle[1]-angle[0])/2)
+  sr,cr=sincos(theta/2);U=tuple(x*cr+y*sr for x,y in zip(u,t));T=tuple(-x*sr+y*cr for x,y in zip(u,t))
+  rate=tuple(dec(x) for x in A);rate_norm=ddot(rate,rate).sqrt();projection=ddot(rate,T)
+  radius=dec(R);top_cube=dec(top**3);L=dec(depth);results=[D(0)]*6;count=32
+  for node,weight in gauss(count):
+   z=L*(node+1)/2;cube=top_cube-3*radius**2*z;tau=(radius**3-cube)/(3*radius**2)
+   SU=rotate(U,rate,tau);SN=rotate(n,rate,tau)
+   for k,(i,j) in enumerate(((0,0),(1,1),(2,2),(0,1),(0,2),(1,2))):
+    mixed=SN[i]*SU[i] if i==j else SN[i]*SU[j]+SN[j]*SU[i]
+    quadratic=SU[i]**2 if i==j else 2*SU[i]*SU[j]
+    results[k]+=weight*(radius*mixed-cube/radius*projection*quadratic)/2
+  role=raw['gap_sign'];centres=tuple(D(role*orientation)*theta*L*x for x in results)
+  frequency=2*rate_norm*L;norder=2*count
+  derivative_bound=radius*frequency**norder+rate_norm/radius*(top_cube*frequency**norder+norder*3*radius**2*L*frequency**(norder-1))
+  gauss_factor=D(math.factorial(count))**4/(D(2*count+1)*D(math.factorial(2*count))**3)
+  depth_error=theta_hi*L*gauss_factor*derivative_bound
+  magnitude=L*(radius+top_cube*rate_norm/radius)
+  angular_error=theta_hi**2*L*(radius+3*top_cube*rate_norm/radius)/4+end_error*magnitude
+  # Native128 frame enclosures and Decimal180 reconstruction errors are tiny
+  # against the full-angle bound. This allowance is deliberately conservative.
+  arithmetic_error=theta_hi*magnitude*D('1e-105')
+  total_error=depth_error+angular_error+arithmetic_error
+  for k,(v,x) in enumerate(zip(raw['generalized_normal_force_bounds_n_per_pa'],centres)):
+   lo,hi=map(dec,bounds(v));assert max(lo,x-total_error)<=min(hi,x+total_error),(raw['family_id'],raw['bank'],k,'independent Rodrigues face integral')
+  ss,cc=sincos(theta);delta=tuple(x*(cc-1)+y*ss for x,y in zip(u,t))
+  analytic=-D(role*orientation)*ddot(rate,delta)*dec((top**3*depth-F(3,2)*R**2*depth**2)/R)
+  actual=isum(bounds(x) for x in raw['generalized_normal_force_bounds_n_per_pa'][:3]);assert dec(actual[0])-total_error<=analytic<=dec(actual[1])+total_error
+  strongest=max(range(3,6),key=lambda k:abs(centres[k]));assert abs(centres[strongest])>total_error
+  return dict(family_id=raw['family_id'],bank=raw['bank'],source_receiving_orientation=orientation,
+   strongest_shear_index=strongest,strongest_shear_integral_m2=float(centres[strongest]),
+   independent_error_bound_m2=float(total_error),full_six_mode_rodrigues_quadrature_overlap=True,
+   analytic_dilatation_trace_checked=True,commutator_coefficients_reused=False)
+
+
+def check_faces(native,packet,original,body_rows,epoch,R):
+ carriers={x['declaration']['family_id']:x for x in original['full_reference_face_birth_support']['interface_carriers']}
+ components={x['component_id']:x for x in epoch['components']};tops={k:bounds(v)[0] for k,v in original['saved_joint_reference_field']['top_radial_displacements_m']}
+ body_by_id={x['component_id']:x for x in body_rows};faces=native['native_face_traces'];assert faces==packet['native_face_traces'] and len(faces)==3
+ expected={(family,bank) for family,c in carriers.items() for bank in ('donor','receiver') if c['declaration'][bank+'_component_id'] in body_by_id}
+ assert {(x['family_id'],x['bank']) for x in faces}==expected
+ by_body={};results=[]
+ for f in faces:
+  c=carriers[f['family_id']];d=c['declaration'];identity=d[f['bank']+'_component_id'];assert f['component_id']==identity
+  assert f['gap_sign']==(1 if f['bank']=='receiver' else -1)
+  assert f['source_snapshot_sha256']==original['source_snapshot_sha256'] and f['source_support_sha256']==original['full_reference_face_birth_support']['support_sha256']
+  assert f['source_epoch_sha256']==epoch['epoch_sha256'] and f['source_packet_raw_sha256']==CURVED_PACKET_RAW and f['saved_field_declaration_precision']==128
+  assert frac(f['source_preload_gap_m'])==F.from_float(d['birth_gap_free_m'])
+  end=bounds(c['native_angle_bounds_radians']);assert bounds(f['native_angle_end_bounds_radians'])==end
+  assert bounds(f['full_angle_bounds_radians'])==(F(0),end[1]) and bounds(f['known_angle_core_bounds_radians'])==(F(0),end[0]) and bounds(f['uncertain_angle_end_bounds_radians'])==end
+  ids=(d['donor_component_id'],d['receiver_component_id']);top=min(R+tops[x] for x in ids)
+  bottom=max((R+tops[x])**3-3*R**2*material_thickness(components[x],epoch)[0] for x in ids)
+  depth=(top**3-bottom)/(3*R**2);assert depth>0 and frac(f['common_reference_top_radius_m'])==top
+  assert bounds(f['common_depth_below_shared_top_bounds_m'])==(F(0),depth) and bounds(f['common_physical_radius_cubed_bounds_m3'])==(bottom,top**3)
+  seal=dict(f);expected_hash=seal.pop('geometry_source_sha256');assert vd(seal)==expected_hash
+  A=tuple(frac(x) for x in body_by_id[identity]['domain']['angular_rate_per_physical_volume_depth_m'])
+  results.append(face_decimal_audit(f,c,A,R,top,depth));by_body.setdefault(identity,[]).append(f)
+ shared=native['shared_hot_bank_compliance'];assert shared==packet['shared_hot_bank_compliance'] and len(shared)==1
+ for s in shared:
+  row=body_by_id[s['component_id']];fs=by_body[s['component_id']];assert len(fs)==2
+  B=tuple(tuple(bounds(v) for v in f['generalized_normal_force_bounds_n_per_pa']) for f in fs)
+  assert s['face_ids']==[f['family_id'] for f in fs] and tuple(tuple(bounds(v) for v in a) for a in s['face_operators_bounds_m2'])==B
+  closure=row['bulk_closure'];bank=closure['source_bank'];cols=closure['source_columns'];E=F.from_float(cols[bank+'_normal_modulus_pa']);G=F.from_float(cols[bank+'_shear_modulus_pa'])
+  nu=E/(2*G)-1;lam=2*G*nu/(1-2*nu)
+  inv=tuple(tuple((R**2/(2*G) if i==j else 0)-R**2*lam/(2*G*(2*G+3*lam)) if i<3 and j<3 else R**2/(4*G) if i==j else F(0) for j in range(6)) for i in range(6))
+  assert matrix(s['stiffness_inverse_per_reference_volume_m4_n'])==inv
+  K=matrix(row['bulk_stiffness_per_reference_volume_n_m4']);assert mm(K,inv)==eye(6)
+  V=bounds(row['domain']['reference_volume_bounds_m3']);recip=1/V[1],1/V[0]
+  response=tuple(tuple(mul(isum(scale(b[j],inv[i][j]) for j in range(6)),recip) for i in range(6)) for b in B)
+  same_imatrix(s['unit_pressure_body_response_bounds_m_pa'],response)
+  C=[]
+  for i in range(2):
+   vals=[]
+   for j in range(2):
+    u,v=min(i,j),max(i,j);value=mul(isum(scale(mul(B[u][a],B[v][b]),inv[a][b]) for a in range(6) for b in range(6)),recip)
+    if i==j:value=max(F(0),value[0]),value[1]
+    vals.append(value)
+   C.append(tuple(vals))
+  same_imatrix(s['pressure_compliance_bounds_m3_pa'],tuple(C))
+ return results
+
+
+def check_components(native,packet,original):
+ rows=native['body_components'];assert rows==packet['affine_body_components'] and len(rows)==5
+ epoch=original['before']['snapshot']['current_material_epoch'];components={x['component_id']:x for x in epoch['components'] if x['material_kind']=='hot_birth'}
+ assert len(components)==5 and {x['component_id'] for x in rows}==set(components)
+ material=epoch['source_material_state'];R=F.from_float(float(material['journal']['source_surface']['radius_km']))*1000
+ ref=original['saved_joint_reference_field'];tops=dict(ref['top_radial_displacements_m']);volumes=[];correction_counts=[]
+ first=original['full_reference_face_birth_support']['interface_carriers'][0]['declaration'];params=first['parameters'];cols=params['columns'];law=params['law']
+ pressure=-F.from_float(first['birth_gap_free_m'])/(sum((F.from_float(cols[k+'_length_m'])/F.from_float(cols[k+'_normal_modulus_pa']) for k in ('sub','over')),F(0))+1/F.from_float(law['normal_stiffness_pa_m']))
+ for row in rows:
+  identity=row['component_id'];c=components[identity];d=row['domain'];assert json.loads(d['complete_mask_source_json'])==c
+  H,birth=material_thickness(c,epoch);assert json.loads(d['complete_birth_source_json'])==birth
+  corrs=[x for x in epoch['paired_corrections'] if identity in (x['negative_component_id'],x['positive_component_id'])]
+  assert [json.loads(x) for x in d['paired_corrections_source_json']]==corrs;correction_counts.append(len(corrs))
+  assert json.loads(d['saved_field_json'])==ref and d['saved_field_declaration_precision']==128
+  assert d['material_kind']=='hot_birth' and d['material_id']==c['material_id'] and d['original_parent_id']==c['original_parent_id'] and d['owner']==c['owner']
+  assert d['source_snapshot_sha256']==original['source_snapshot_sha256'] and d['source_support_sha256']==original['full_reference_face_birth_support']['support_sha256'] and d['source_epoch_sha256']==epoch['epoch_sha256'] and d['source_packet_raw_sha256']==CURVED_PACKET_RAW
+  assert frac(d['radius_m'])==R and frac(d['areal_material_thickness_m'])==H and frac(d['roof_radial_displacement_m'])==bounds(tops[identity])[0]
+  area=bounds(c['area_bounds_sr']);V=scale(area,R**2*H);assert area[0]>0 and V[0]>0
+  same_bounds(d['actual_area_bounds_sr'],area);same_bounds(d['reference_volume_bounds_m3'],V);volumes.append(float(V[0]))
+  assert tuple(matrix(x) for x in d['symmetric_generators'])==BASIS and d['coordinate_order']==['xx','yy','zz','xy','xz','yz'] and tuple(frac(x) for x in d['reference_origin_m'])==(F(0),)*3
+  seal=dict(d);h=seal.pop('geometry_source_sha256');assert h==vd(seal)
+  groups=[g for g in ref['groups'] if identity in g['component_ids']];assert len(groups)==1
+  A=tuple(frac(x) for x in d['angular_rate_per_physical_volume_depth_m'])
+  assert all(bounds(x)[0]<=a<=bounds(x)[1] for a,x in zip(A,groups[0]['angular_rate_per_physical_volume_depth_m']))
+  if not groups[0]['family_ids']:assert A==(F(0),)*3
+  closure=row['bulk_closure'];assert closure['source_support_sha256']==d['source_support_sha256'] and closure['bank_source_id']==identity and closure['lateral_closure']=='laterally_free_standard_isotropic' and closure['lateral_closure_provenance'].strip()
+  assert closure['source_columns'] in [x['declaration']['parameters']['columns'] for x in original['full_reference_face_birth_support']['interface_carriers']]
+  bank=closure['source_bank'];assert bank in ('sub','over');E=F.from_float(closure['source_columns'][bank+'_normal_modulus_pa']);G=F.from_float(closure['source_columns'][bank+'_shear_modulus_pa']);nu=E/(2*G)-1
+  amp=R*pressure/E;expected=tuple(amp*x for x in (F(-1),nu,nu,F(1,7),F(-1,11),F(1,13)))
+  assert tuple(frac(x) for x in row['probe_coordinates_m'])==tuple(frac(x) for x in row['probe_direction_m'])==expected and frac(row['source_pressure_probe_pa'])==pressure
+  assert row['probe_is_new_mixed_force_solution'] is False and row['complete_mixed_boundary_conditions_satisfied'] is False and row['old_scalar_foundation_energy_added_again'] is False
+  assert row['affine_volume_and_basal_probe_use_same_six_mode_field'] is True and row['independent_radial_boundary_offset_fixed_zero'] is True and row['radial_mean_volume_extension_implemented'] is False
+  check_bulk(row,V,R,E,G);check_basal(row,original,R,area,H,frac(d['roof_radial_displacement_m']))
+ face_results=check_faces(native,packet,original,rows,epoch,R)
+ return volumes,correction_counts,face_results
+
+
+def run(options):
+ started=time.perf_counter();sources=historical_sources()
+ assert digest(NORMAL/'native_control/source_packet.json')==NORMAL_PACKET_RAW
+ original=sealed(NORMAL/'native_control/source_packet.json','packet_sha256')
+ curved_path=ROOT/'analysis/geometric_native_curved_equilibrium_validation/release_validation_01/native_control/candidate_packet.json';assert digest(curved_path)==CURVED_PACKET_RAW
+ curved=sealed(curved_path,'packet_sha256')
+ for name in SOURCE_FIELDS:assert original[name]==curved[name]
+ directory=Path(options.out).resolve();np=directory/'native_control/report.json';sp=directory/'native_control/source_packet.json'
+ native=sealed(np,'report_sha256');packet=sealed(sp,'packet_sha256')
+ assert native['status']==native['regression_validation_status']=='PASS' and native['physical_candidate_status']=='COMPONENT_AFFINE_BODY_ONLY'
+ assert native['source_packet_sha256']==packet['packet_sha256']
+ assert native['accepted_original_native_intervals']==1 and native['accepted_new_native_intervals']==0 and native['accepted_input_complete_typed_state_unchanged'] is True
+ for k in FALSE_SCOPE:assert native[k] is False,k
+ assert native['actual_source_supported_component_affine_body_assembled'] is True and native['actual_hot_whole_mask_bulk_component_count']==5 and native['actual_hot_basal_boundary_component_count']==5 and native['actual_hot_native_pressure_trace_count']==3 and native['actual_hot_shared_contact_body_count']==1 and native['actual_cold_clamped_body_component_count']==0
+ for key in ('source_material_floor_used','source_area_midpoints_substituted','source_normal_column_lengths_used_as_geometry','old_scalar_foundation_energy_added_again','radial_mean_volume_extension_implemented','cold_beam_energy_replaced'):assert native[key] is False,key
+ assert native['reference_stressfree_bulk_explicitly_new'] is True and native['independent_radial_boundary_offset_fixed_zero'] is True
+ assert packet['authenticated_normal_source_packet_raw_sha256']==NORMAL_PACKET_RAW and packet['authenticated_normal_source_packet_seal']==original['packet_sha256']
+ assert packet['accepted_input_unchanged'] is True and packet['material_admission_authorized'] is False and packet['full_genuine_source_reconstructed'] is False and packet['inherited_force_certificate_for_placement'] is False
+ for name in SOURCE_FIELDS:assert packet[name]==original[name],name
+ for name in ('coordinates_decimal','literal_owner_axes'):assert packet[name]==original[name],name
+ volumes,corrections,face_results=check_components(native,packet,original)
+ current={str(p.relative_to(ROOT)):digest(p) for d in ('tectonics','tests','scripts','analysis') for p in sorted((ROOT/d).rglob('*.py'))}
+ assert all(current.get(k)==v for k,v in sources.items())
+ fresh_tests=None;wrapper_hash=None;source_sha=None
+ if not options.native_only:
+  wrapper=sealed(directory/'report.json','report_sha256');assert wrapper['status']==wrapper['regression_validation_status']=='PASS' and wrapper['source_count']==826
+  assert wrapper['physical_candidate_status']=='COMPONENT_AFFINE_BODY_ONLY' and wrapper['prior_source_map_sha256']==OLD_MAP_SHA and wrapper['changed_python_paths']==[] and wrapper['prior_artifacts_and_python_sources_preserved_after'] is True
+  assert set(wrapper['added_python_sources'])==ADDITIONS and not set(sources)&ADDITIONS
+  sources.update(wrapper['added_python_sources']);assert len(sources)==826 and sources==current
+  assert vd(sources)==wrapper['source_map_before_sha256']==wrapper['source_map_after_sha256'];source_sha=vd(sources)
+  if options.expected_source_map:assert source_sha==options.expected_source_map
+  assert set(wrapper['pytest_counts'])=={'passed'} and wrapper['pytest_counts']['passed']>0
+  log=(directory/'pytest.log').read_text();counts=None
+  for line in reversed(log.splitlines()):
+   values={k:int(n) for n,k in re.findall(r'\b(\d+) (passed|failed|skipped|xfailed|xpassed|errors?)\b',line)}
+   if values:counts=values;break
+  assert counts==wrapper['pytest_counts'];fresh_tests=counts['passed']
+  assert wrapper['native_control_report_raw_sha256']==digest(np) and wrapper['native_control_source_packet_raw_sha256']==digest(sp)
+  outputs(directory,wrapper,4)
+  assert {str(p.relative_to(directory)) for p in directory.rglob('*') if p.is_file()}==set(wrapper['outputs'])|{'report.json'}
+  wrapper_hash=digest(directory/'report.json')
+ else:
+  assert set(current)-set(sources)==ADDITIONS and len(current)==826
+ result=dict(status='PASS',independent_stdlib_only=True,native_only_development_check=options.native_only,
+  preserved_original_python_sources=820,preserved_original_artifacts=1633,final_python_sources=len(current),
+  source_map_canonical_sha256=source_sha,fresh_tests=fresh_tests,body_count=5,
+  complete_actual_masks_births_curved_corrections_and_saved128_reference_authenticated=True,
+  whole_mask_reference_volume_lower_bounds_m3=volumes,paired_correction_counts=corrections,
+  bulk_reference_stiffness_coefficients_recomputed=180,full_bulk_probe_gradients_recomputed=30,
+  full_bulk_probe_hessian_coefficients_recomputed=180,independent_green_strain_variation_and_quartic_directional_work=True,
+  same_six_mode_source_basal_and_combined_energy_force_hessian_recomputed=True,
+  actual_hot_pressure_face_traces_independently_checked=face_results,
+  shared_actual_hot_body_cross_contact_compliance_recomputed=True,
+  source_columns_used_as_geometry=False,material_or_stiffness_floor_used=False,
+  old_scalar_foundation_energy_added_again=False,independent_radial_mean_body_mode=False,
+  physical_candidate_status='COMPONENT_AFFINE_BODY_ONLY',accepted_original_native_intervals=1,accepted_new_native_intervals=0,
+  full_genuine_source_reconstructed=False,new_native_curved_force_equilibrium_certified=False,
+  inherited_force_certificate_for_placement=False,material_admission_authorized=False,
+  whole_clock_material_admission_authorized=False,complete_three_dimensional_strain_energy_certified=False,
+  original_point_1_completed=False,wrapper_raw_sha256=wrapper_hash,native_raw_sha256=digest(np),source_packet_raw_sha256=digest(sp),
+  seconds=time.perf_counter()-started)
+ if options.result:Path(options.result).write_bytes(encoded(result)+b'\n')
+ print(encoded(result).decode())
+
+
+if __name__=='__main__':
+ parser=argparse.ArgumentParser();parser.add_argument('--out',default=str(ROOT/'analysis/geometric_native_affine_body_validation/release_validation_01'))
+ parser.add_argument('--result');parser.add_argument('--native-only',action='store_true');parser.add_argument('--expected-source-map')
+ run(parser.parse_args())

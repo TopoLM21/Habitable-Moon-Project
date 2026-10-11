@@ -1,0 +1,129 @@
+"""Independent220-digit receiving-field jets; no project imports or old maths."""
+from pathlib import Path
+import hashlib,json,sys,time,types
+import mpmath as mp
+ROOT=Path('/workspace/Habitable-Moon-Project');P=ROOT/'analysis/geometric_native_common_hot_receiving_validation'
+STAGE=Path('/workspace/hot_receiving_baseline_20261007')
+N=9;mp.mp.dps=220
+
+def enc(x):return json.dumps(x,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+def digest(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def fraction(x):return mp.mpf(x[0])/x[1]
+def mid(x):
+ if isinstance(x,dict):return (fraction(x['lo'])+fraction(x['hi']))/2
+ if isinstance(x,list) and len(x)==2 and isinstance(x[0],list):return (fraction(x[0])+fraction(x[1]))/2
+ return fraction(x)
+def endpoints(x):return (fraction(x['lo']),fraction(x['hi'])) if isinstance(x,dict) else (fraction(x[0]),fraction(x[1]))
+count=0
+def contains(box,v,label):
+ global count
+ lo,hi=endpoints(box);tolerance=mp.mpf('1e-190')*max(mp.mpf(1),abs(v),abs(lo),abs(hi))
+ if not lo-tolerance<=v<=hi+tolerance:raise ValueError(label+' outside native enclosure')
+ count+=1
+
+class Dual:
+ def __init__(self,v,g=None,H=None):
+  self.v=mp.mpf(v);self.g=g if g is not None else [mp.mpf(0)]*N
+  self.H=H if H is not None else [[mp.mpf(0)]*N for _ in range(N)]
+ @classmethod
+ def variable(cls,v,i):
+  g=[mp.mpf(0)]*N;g[i]=1;return cls(v,g)
+ def __add__(self,o):
+  o=o if isinstance(o,Dual) else Dual(o)
+  return Dual(self.v+o.v,[a+b for a,b in zip(self.g,o.g)],[[self.H[i][j]+o.H[i][j] for j in range(N)] for i in range(N)])
+ __radd__=__add__
+ def __neg__(self):return Dual(-self.v,[-x for x in self.g],[[-x for x in row] for row in self.H])
+ def __sub__(self,o):return self+-o if isinstance(o,Dual) else self+(-mp.mpf(o))
+ def __mul__(self,o):
+  o=o if isinstance(o,Dual) else Dual(o)
+  return Dual(self.v*o.v,[self.g[i]*o.v+self.v*o.g[i] for i in range(N)],
+   [[self.H[i][j]*o.v+self.v*o.H[i][j]+self.g[i]*o.g[j]+self.g[j]*o.g[i] for j in range(N)] for i in range(N)])
+ __rmul__=__mul__
+
+def cross(a,b):return [a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]]
+def mv(A,x):return [sum((A[i][j]*x[j] for j in range(3)),Dual(0) if any(isinstance(v,Dual) for v in x) else mp.mpf(0)) for i in range(3)]
+def mm(A,B):return [[sum((A[i][k]*B[k][j] for k in range(3)),mp.mpf(0)) for j in range(3)] for i in range(3)]
+def rotated(theta,v):
+ first=cross(theta,v);second=cross(theta,first)
+ return [v[i]+first[i]+second[i]*mp.mpf('0.5') for i in range(3)]
+def rotation(omega,depth):
+ norm=mp.sqrt(sum(x*x for x in omega));angle=norm*depth
+ if not norm:return [[mp.mpf(i==j) for j in range(3)] for i in range(3)]
+ u=[x/norm for x in omega];C=[[0,-u[2],u[1]],[u[2],0,-u[0]],[-u[1],u[0],0]]
+ return [[mp.cos(angle)*int(i==j)+(1-mp.cos(angle))*u[i]*u[j]+mp.sin(angle)*C[i][j] for j in range(3)] for i in range(3)]
+
+GENERATORS=(
+ ((1,0,0),(0,1,0),(0,0,1)),((1,0,0),(0,-1,0),(0,0,0)),
+ ((1,0,0),(0,1,0),(0,0,-2)),((0,1,0),(1,0,0),(0,0,0)),
+ ((0,0,1),(0,0,0),(1,0,0)),((0,0,0),(0,0,1),(0,1,0)))
+
+def reconstruct(row):
+ raw=row['point'];body=json.loads(raw['source_body_json']);chart=json.loads(raw['source_chart_json']);desc=json.loads(raw['source_point_descriptor_json'])
+ R=fraction(body['radius_m']);scale=fraction(body['fixed_owner_scale']);depth=fraction(desc['material_depth_m'])
+ ray=[mid(x) for x in desc['original_unit_ray_bounds']];omega=[fraction(x) for x in body['angular_rate_per_physical_volume_depth_m']]
+ Q=rotation(omega,depth);radius=mp.root(R**3-3*R**2*depth,3);X=[scale*radius*x for x in mv(Q,ray)]
+ axial=cross(omega,ray);coefficient=(R**3-3*R**2*depth)/R**2
+ C=[[int(i==j)-coefficient*axial[i]*ray[j] for j in range(3)] for i in range(3)]
+ A0=[[scale*x for x in rr] for rr in mm(Q,C)]
+ for i in range(3):
+  contains(raw['prepared_position_bounds_m'][i],X[i],'independent original-volume point/reference')
+  for j in range(3):contains(raw['prepared_original_world_gradient_bounds'][i][j],A0[i][j],'independent original-world gradient')
+ J=[[mid(x) for x in rr] for rr in chart['implicit_physical_coordinate_jacobian']]
+ hs=[[mid(x) for x in rr] for rr in chart['implicit_scalar_coordinate_hessian']]
+ h0=mid(chart['finite_mean_root_certificate']['scalar_affine_amplitude_bounds_m'])
+ xi=[Dual.variable(0,i) for i in range(N)];h=Dual(h0)
+ for i in range(6):
+  h=h+J[0][i]*xi[i+3]
+  for j in range(6):h=h+mp.mpf('0.5')*hs[i][j]*xi[i+3]*xi[j+3]
+ b=[fraction(x) for x in raw['body_coordinate_increments_m'][1:]]
+ amplitudes=[h]+[Dual(b[k])+xi[k+4] for k in range(5)]
+ deformation=[[Dual(int(i==j))+sum((GENERATORS[k][i][j]*amplitudes[k]*(1/R) for k in range(6)),Dual(0)) for j in range(3)] for i in range(3)]
+ y=rotated(xi[:3],mv(deformation,X));A=mm(deformation,A0)
+ cols=[rotated(xi[:3],[A[i][j] for i in range(3)]) for j in range(3)]
+ channels=y+[cols[j][i] for i in range(3) for j in range(3)]
+ for i,d in enumerate(channels):
+  contains(raw['spatial_values'][i],d.v,'full spatial value')
+  for a in range(N):
+   contains(raw['spatial_first'][i][a],d.g[a],'independent owner/mean/material first variation')
+   for bindex in range(N):contains(raw['spatial_second'][i][a][bindex],d.H[a][bindex],'independent full second variation')
+ covectors=[mid(x) for x in row['diagnostic_spatial_gradient']]
+ tangent=[[mid(x) for x in rr] for rr in row['diagnostic_spatial_hessian']]
+ delta=[d-Dual(d.v) for d in channels]
+ potential=sum((g*d for g,d in zip(covectors,delta)),Dual(0))
+ for i in range(12):
+  for j in range(12):potential=potential+mp.mpf('0.5')*tangent[i][j]*delta[i]*delta[j]
+ work=row['diagnostic_work_pullback']
+ for a in range(N):
+  contains(work['gradient_bounds'][a],potential.g[a],'independent supplied potential generalized force')
+  for bindex in range(N):contains(work['hessian_bounds'][a][bindex],potential.H[a][bindex],'independent supplied potential tangent and prestress curvature')
+ assert work['physical_receiving_traction_law_inferred'] is False
+ for key in ('complete_curved_receiving_face_covered','physical_receiving_traction_law_defined','physical_source_work_handover_certified','physical_material_admission_authorized','new_mixed_equilibrium_certified','clocks_advanced'):assert raw[key] is False
+ return dict(query_label=row['query_label'],point_index=row['point_index'],complete12_channel9_coordinate_twojet_compared=True)
+
+t=time.perf_counter();gate=json.loads((P/'report.json').read_bytes());assert gate['status']=='PASS'
+guardpath=P/'preservation_source.txt';assert digest(guardpath)=='33cb3857e322bb805b254f9557d80a94c2ce5409825f671b2420ac27a78b5e79'
+guard=types.ModuleType('_independent_receiving_guard');guard.__file__=str(guardpath);exec(compile(guardpath.read_bytes(),str(guardpath),'exec'),guard.__dict__)
+before=guard.run(gate['additional_source_sha256'],STAGE/'audit_before.json')
+source=P/'source_packet.json';packet=json.loads(source.read_bytes());assert digest(source)==gate['source_packet_raw_sha256']
+assert hashlib.sha256(enc({k:v for k,v in packet.items() if k!='packet_sha256'})).hexdigest()==packet['packet_sha256']
+own_source=Path(__file__).resolve();ownraw=digest(own_source)
+try:
+ notes=[reconstruct(row) for row in packet['queries']];assert len(notes)==60
+finally:
+ after=guard.run(gate['additional_source_sha256'],STAGE/'audit_after.json')
+ assert not guard.modules()
+ for prefix in ('audit_before','audit_after'):
+  with (P/(prefix+'.json')).open('xb') as f:f.write((STAGE/(prefix+'.json')).read_bytes())
+result=dict(status='PASS',format='independent-hot-receiving-twojets-audit-1',arithmetic_decimal_digits=220,
+ independent_method='DENSE_SECOND_ORDER_DUALS_AND_ORIGINAL_WORLD_RODRIGUES_GRADIENT',
+ actual_query_count=60,scalar_contains_count=count,source_packet_raw_sha256=digest(source),
+ source_packet_sha256=packet['packet_sha256'],executing_source_raw_sha256=ownraw,
+ before_preservation_sha256=before['preservation_sha256'],after_preservation_sha256=after['preservation_sha256'],
+ interval_input_representatives_are_algebra_diagnostics_only=True,geometry_or_mean_root_proof_recertified=False,
+ physical_receiving_traction_law_inferred=False,physical_material_admission_authorized=False,
+ new_mixed_equilibrium_certified=False,clocks_advanced=False,project_modules_imported=False,
+ old_math_or_control_or_solver_or_quadrature_executed=False,queries=notes,seconds=time.perf_counter()-t)
+result['audit_sha256']=hashlib.sha256(enc(result)).hexdigest()
+with (P/'audit_report.json').open('xb') as f:f.write(enc(result)+b'\n')
+assert digest(own_source)==ownraw
+sys.stdout.buffer.write(enc(result)+b'\n')

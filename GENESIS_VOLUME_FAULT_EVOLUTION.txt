@@ -1,0 +1,191 @@
+ЭВОЛЮЦИЯ ПОВРЕЖДЕНИЯ РЕАЛЬНОГО GENESIS В ОБЪЁМНОМ ПРОДОЛЖЕНИИ
+09.10.2026. Ветка fix/genesis-mantle-convection.
+
+Результат и граница
+
+Подключена дальнейшая эволюция damage, water access и fault persistence из
+реального Genesis к объёмному механическому состоянию. Напряжения получены
+из полной памяти когорт; изменение жёсткости вошло в силы и отдельный signed
+energy ledger. Приняты два шага по 100 лет с настоящим охлаждением и рождением
+материала, независимой проверкой и точным перезапуском. Разломов ещё нет:
+максимальное damage выросло с 0.03498505110952482 до 0.03826314346740867.
+Порог активации не менялся. Пункт 1 остаётся открыт.
+
+Автоматическая цель выключена; работа выполнена вручную по указанию пользователя.
+Это новый расчёт от того же настоящего источника 0.868 Myr. Старое 1+1-year
+продолжение с фиксированным damage и четыре sealed пакета не переписаны.
+
+Происхождение состояния
+
+Использован буквальный material export предыдущего cohort-mechanics пакета:
+analysis/genesis_cohort_mechanics_validation/evidence/control/material_export.json.
+Raw SHA256: b959aea6af2968120e97bdbce64b8bf8ad23b12fd5960a37c996be421c9141f1.
+Встроенный настоящий Fault 0.3 checkpoint SHA256: cd79ee2a5139c4b91abdb1b4714a761c9153cc9f4490f5aa63fa2facba458c89.
+Его источник — формирование из расплава 2300 K, без твёрдой поверхности и океана,
+при плотной водной атмосфере 228.384889 бар. Полное формирование в этой фазе
+повторно не запускалось. Связь с ним проверена по NPZ bytes, clock, IDs,
+birth-prefix и всем исходным strain/stress/fault arrays и cumulative work.
+Источник содержит 480 когорт / 438 birth intervals / 80 граней / 42 узла,
+одно связное мафическое тело толщиной 62.056–63.427 м. Химические континенты
+не получены. Native943 octant-source остаётся отдельным механическим тестом.
+
+Исходная память 4.276852389239655e19 J сохранена. Face-mean tensor дал бы только
+3.788398148994852e19 J: внутригранная вариация 11.42% не потеряна. Усреднение
+напряжения для водно-повреждающего закона не подменяет ни cohort tensors,
+ни их энергию, ни полный объёмный force operator. Исторические natural metric,
+полная 3D total strain, placement и раннее движение рафтов остаются неизвестными.
+Текущая опорная геометрия и prospective 3D closure не объявлены старой историей.
+
+Что мешало следующему шагу
+
+Прежний объёмный thermal adapter держал source damage неизменным. Не было
+продвижения water access и candidate age, поэтому ожидание само по себе не могло
+включить разлом. Теперь эти поля рассчитываются в общем принятом времени.
+
+Настоящий FaultModel активирует finite-width continuous weak plane, а не sharp
+free banks. Его прежние условия сохранены: damage >= 0.65 и принятый endpoint
+таймер >= 0.05 Myr, затем выбор plane по рассчитанным текущим in-plane stress
+в начале следующего trial. 50 тысяч лет — условие persistence ПОСЛЕ достижения
+порога, а не срок, к которому здесь предсказан разлом. Горячий текущий материал
+испытывает также healing; два 100-летних шага не доказывают будущую активацию.
+Mesh seam selector не принят за calculated crack; dip/polarity не выдуманы.
+
+Новая модель
+
+genesis_volume_fault_evolution сохраняет literal inherited fault history и
+продвигает source damage/healing/water/tidal/persistence law с прежними
+коэффициентами. Явная новая spatial closure: source angular Helmholtz
+conductance и CURRENT physical chord face area в mass matrix. Это отличается
+от source spherical-area filter; равенство старому фильтру не заявлено даже
+при q=0. Area conservation и текущая геометрия проверены независимо.
+Inactive faces используют available mask: T=0 означает отсутствующий живой
+материал, не придуманную температуру. Их damage/loading/healing/water/age
+маскированы, old peak сохранён. Отрицательные/nonfinite или active zero T
+отвергаются. Water access использует прежнюю лагированную связь с damage.
+
+VolumeFaultModel сначала делает private predictor от ORIGINAL q/v/cohort
+memory с retention old damage при текущем thermal/birth trial. Полный 3D
+cohort stress интегрируется по angular/radial volume и проектируется в
+CURRENT physical top-face axes; температура берётся из живого объёма.
+По этим полям считается damage/water/persistence. FINAL momentum/Maxwell
+solve вновь начинает от ORIGINAL state с рассчитанным damage. Predictor не
+даёт второго принятого шага, дополнительной работы или повторного рождения.
+Peak хранит максимум прежнего, predictor и final accepted tensile stress.
+
+Mechanical damage находится в fault_history; thermal.damage сохраняет
+буквальный исходный baseline и явно не выдаётся за текущий mechanical damage.
+Signed stiffness energy change рассчитывается при той же retained old memory:
+0.5 * integral old_epsilon : (C_after - C_before) : old_epsilon dV.
+Он может быть положительным при healing; это не автоматически heat или friction.
+В actual control cumulative damage energy change = -5.492297564458694e16 J.
+Полный совместный thermal/mechanical reservoir пока не замкнут.
+
+Рассчитанная weak-plane activation возвращает явную границу незавершённой
+модели. Продвижение active plastic plane прекращается до реализации физически
+согласованного 3D slip/work law; unsupported state не сохраняется как принятый.
+В source и во всех actual accepted states active planes = 0, candidate age = 0,
+water access = 0. Старые signed/cumulative slip, plane и fault work arrays
+сохранены буквально. Synthetic gate fixtures существуют только в tests.
+
+Сохранения и совместимость
+
+Новый format genesis-volume-fault-checkpoint-0.1 содержит весь pinned formation
+source, полное базовое volume state, runtime fault history и declared coupling.
+Untrusted load воспроизводит каждый predictor и final solve от истинного
+источника и сравнивает каждый canonical field. Повторный self-seal не позволяет
+принять изменённый history/driver/policy или выдуманную механику. JSON duplicate
+keys/nonfinite values отвергаются; запись atomic tempfile/fsync/replace.
+
+Старый VolumeModel/defaults и checkpoint0.1 сохраняются. Реальный старый
+sealed direct_after_second.json воспроизведён текущим кодом: все поля полного
+canonical packet совпали точно, два шага, 640 когорт, t=0.8680020000000006 Myr.
+Использована исходная numerical thread environment старого расчёта; её
+несовпадение с новым one-thread control не скрыто.
+
+Actual final03: два принятых шага по 100 лет
+
+source: t=0.8680000000000005 Myr, 480 когорт,
+M=6.614812670017126e19 kg, E=4.276852389239655e19 J,
+K=4561.093225696536 J, max damage=0.03498505110952482.
++100 yr: 560 когорт, M=6.7770587067633795e19 kg,
+E=4.033056725693343e19 J, K=4664.325741699129 J,
+max damage=0.03692826969004512.
++200 yr: t=0.8682000000000005 Myr, 640 когорт,
+M=6.938978538222743e19 kg, E=3.814191287901717e19 J,
+K=4788.307247140131 J, max damage=0.03826314346740867.
+Remelt отсутствует, его flux ровно нулевой. Direct/resumed full JSON файлы
+побайтово равны; только FINAL work/journal/state опубликованы.
+Control exit0/stderr0, captured 243.793457 s.
+
+Проверки
+
+Все 275 tests в 11 volume modules PASS; pytest 1089.39 s,
+captured 1090.657771 s, exit0/stderr0. Покрыты старый
+operator/thermal/loading/basal/geometry/temporal/checkpoint и новая history,
+damage-energy coupling, source geometry damage, retained mass, current frame,
+forgery refusal, gate refusal, unavailable inactive temperature и exact restart.
+
+Independent audit stdlib/NumPy БЕЗ producer imports PASS, два actual intervals
+и полный restart; exit0/stderr0, captured 58.527555 s.
+Он заново интегрирует cohort stress/energy/force/work, predictor, current axes,
+retention, tides, water/healing/persistence/area filter и final peak; проверяет
+literal source bindings и настоящие contact/drag parameters.
+Worst full coordinate momentum relative residual: 2.01891438e-14.
+Worst discrete global work relative residual: 2.10085395e-12.
+Worst per-cohort work relative residual: 6.65742280e-16.
+Signed interval damage energies независимо: -3.314092583328011e16 J и
+-2.1782049811306816e16 J. Predictor momentum также проверен отдельно.
+
+Final control/audit/tests закрепили соответственно 285/286/297 исходников:
+bytes source_snapshots, hashes до/после и live files совпадают. Численные
+thread controls OPENBLAS/OMP/MKL=1 записаны; нагрузки и пороги прежние.
+Четыре предыдущих sealed пакета: все 2248 members, exact lists,
+raw/self manifests и шесть native4PY/P/F pins побайтово неизменны.
+
+Exact connected-body spatial certificate охватывает все точки/пары на всём
+affine work path и проверяет actual q/mass-q/Jacobian. Он ещё не доказывает
+контакт split banks или reverse native C5->C1. Discrete midpoint endpoint
+momenta не являются производными affine work path: одна непрерывная physical
+dynamics trajectory ещё не принята. Static elastic-minus-external diagnostic
+исключает drag/inertia и не используется как moving-equilibrium residual.
+
+Preliminary evidence сохранено отдельно
+
+actual01: exit0/stderr0, 199.750772 s; до final peak
+и inactive-T исправлений, без записи thread controls. Не final result.
+actual02: child exit0/stderr0, 201.889869 s; wrapper
+exit2 из-за изменения fault_evolution.py во время capture. Не final freeze.
+tests final01: намеренно прерван task-owned pytest после последних правок
+auditor; child -15, wrapper241, 88.218272 s, два changed
+sources. Это не итоговый test verdict. Final03/final02 выше запускались после
+заморозки всех executing sources; предварительные bytes/logs не переписаны.
+
+Сколько осталось в пункте 1
+
+Три исходных условия остаются прежними; число этапов общего плана не увеличено.
+1. Доступная Genesis volume memory/prestress, damage и discrete force/work готовы.
+   Осталась физически согласованная 3D weak-plane slip/work evolution, затем
+   calculated sharp-cut/creation work и перенос cohort memory в физические
+   берега с приёмкой их force/work trajectory. Continuous weak plane само по
+   себе не даёт такого cut и не задаёт dip/polarity для поддвига.
+2. Всё множество физических пар на всём временном интервале, включая reverse
+   C5->C1: connected-body proof готов, physical split/contact/underthrust admission
+   ещё нет.
+3. Принятое detailed fault/underthrust continuation с независимой временной
+   работой, балансами и restart: новый 100+100-year connected-body control принят,
+   но detailed разломное продолжение ещё нужно принять отдельно.
+
+Следующий конкретный результат: реализовать work-consistent 3D weak-plane
+slip на той же source-bound ветви, сохраняя полную cohort memory и signed work.
+Затем принимать physical banks только по рассчитанному cut/creation witness,
+не форсируя fault в нынешнем неактивном состоянии. Это остаётся внутри условия
+1 пункта 1. До его полного закрытия ещё существенная работа; обещание «один
+маленький шаг» или срока активации этими данными не обосновано.
+Пункты 2–6 общего плана не закрыты; GUI/mainloop, длительная сходимость,
+chemical continents и combined reservoir этой фазой не решены.
+
+Полный новый evidence package:
+analysis/genesis_volume_fault_validation/evidence/PACKAGE_README.txt.
+Он содержит actual states, raw logs/facts, все captured sources, independent
+verification, preservation+real legacy replay, original docs и предварительные
+executions. Его package_manifest.json закрепляет точный список и все raw bytes.

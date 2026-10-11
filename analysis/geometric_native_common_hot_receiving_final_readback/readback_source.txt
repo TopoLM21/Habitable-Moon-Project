@@ -1,0 +1,61 @@
+"""Standalone909 evidence readback; no project imports, old mains or mathematics."""
+from pathlib import Path
+import argparse,hashlib,json,sys,time,types
+ROOT=Path('/workspace/Habitable-Moon-Project');P=ROOT/'analysis/geometric_native_common_hot_receiving_validation'
+F=ROOT/'analysis/geometric_native_common_hot_receiving_final_readback';STAGE=Path('/workspace/hot_receiving_baseline_20261007')
+MANIFEST_RAW='37044e0c29450db2903ba6bc75bc60b062e4cf8d98f3270f83a06a64c1966267'
+def enc(x):return json.dumps(x,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+def digest(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def sealed(p,key):
+ x=json.loads(Path(p).read_bytes());assert hashlib.sha256(enc({k:v for k,v in x.items() if k!=key})).hexdigest()==x[key];return x
+def files(p):return {str(x.relative_to(p)) for x in p.rglob('*') if x.is_file() and '__pycache__' not in x.parts and x.suffix!='.pyc'}
+def run(output):
+ t=time.perf_counter();output=Path(output);assert output.is_absolute() and output.resolve()==output and not output.exists() and output.parent.is_dir()
+ own=Path(__file__).resolve();ownraw=digest(own);assert own==F/'readback_source.txt'
+ if output==F/'readback.json':assert files(F)=={'readback_source.txt','console.log'}
+ else:
+  assert not output.is_relative_to(ROOT) and files(F)=={'readback_source.txt','readback.json','console.log','archive.json'}
+  a=sealed(F/'archive.json','archive_sha256')
+  for name,row in a['files'].items():assert digest(F/name)==row['sha256'] and (F/name).stat().st_size==row['bytes']
+  saved=sealed(F/'readback.json','audit_sha256');assert saved['audit_sha256']==a['readback_sha256']
+ assert digest(P/'artifact_manifest.json')==MANIFEST_RAW
+ manifest=sealed(P/'artifact_manifest.json','manifest_sha256');assert manifest['source_count']==909
+ expected=set();pins={}
+ for name,row in manifest['files'].items():
+  path=ROOT/name;assert path.resolve()==path and path.is_file() and digest(path)==row['sha256'] and path.stat().st_size==row['bytes'];pins[str(path)]=row['sha256']
+  if path.is_relative_to(P):expected.add(str(path.relative_to(P)))
+ assert files(P)==expected|{'artifact_manifest.json'}
+ frozen=json.loads((P/'frozen_source_map_909.json').read_bytes())
+ actual={str(p.relative_to(ROOT)):digest(p) for d in ('tectonics','tests','scripts','analysis') for p in (ROOT/d).rglob('*.py')};assert actual==frozen and len(actual)==909
+ gate=sealed(P/'report.json','report_sha256');audit=sealed(P/'audit_report.json','audit_sha256');packet=sealed(P/'source_packet.json','packet_sha256')
+ assert gate['status']==audit['status']==packet['status']=='PASS' and gate['tests_passed']==10 and packet['actual_saved_point_query_count']==60
+ assert gate['source_packet_raw_sha256']==audit['source_packet_raw_sha256']==digest(P/'source_packet.json')
+ assert gate['source_packet_sha256']==audit['source_packet_sha256']==packet['packet_sha256']
+ assert manifest['gate_sha256']==gate['report_sha256'] and manifest['audit_sha256']==audit['audit_sha256']
+ assert (P/'audit_actual_console.log').read_bytes()==(P/'audit_report.json').read_bytes()
+ assert json.loads((P/'gate_actual_console.log').read_bytes())==gate
+ assert (P/'audit_actual_stderr.log').stat().st_size==(P/'gate_actual_stderr.log').stat().st_size==0
+ assert digest(P/'independent_audit_source.txt')==audit['executing_source_raw_sha256']
+ docs={str(ROOT/name):digest(ROOT/name) for name in manifest['document_names']}
+ helper=P/'preservation_source.txt';assert digest(helper)=='33cb3857e322bb805b254f9557d80a94c2ce5409825f671b2420ac27a78b5e79'
+ m=types.ModuleType('_private909_evidence_guard');m.__file__=str(helper);exec(compile(helper.read_bytes(),str(helper),'exec'),m.__dict__)
+ before=m.modules();receipt=m.run(gate['additional_source_sha256'],STAGE/('final909_preservation_'+hashlib.sha256(str(output).encode()).hexdigest()[:18]+'.json'))
+ for path,pin in pins.items():assert digest(path)==pin
+ assert files(P)==expected|{'artifact_manifest.json'}
+ assert actual=={str(p.relative_to(ROOT)):digest(p) for d in ('tectonics','tests','scripts','analysis') for p in (ROOT/d).rglob('*.py')}
+ assert all(digest(Path(path))==pin for path,pin in docs.items()) and m.modules().keys()==before.keys() and all(m.modules()[k] is v for k,v in before.items())
+ for key in ('complete_curved_receiving_face_covered','physical_receiving_traction_law_defined','physical_material_admission_authorized','new_mixed_equilibrium_certified','physical_source_work_handover_certified','clocks_advanced','original_point_1_completed'):assert packet[key] is False
+ result=dict(status='PASS_FINAL909_EVIDENCE_READBACK_ONLY',source_count=909,manifest_raw_sha256=MANIFEST_RAW,
+  manifest_sha256=manifest['manifest_sha256'],manifest_file_count=len(manifest['files']),gate_sha256=gate['report_sha256'],
+  audit_report_sha256=audit['audit_sha256'],actual_point_query_count=60,tests_passed=10,scalar_contains_count=audit['scalar_contains_count'],
+  old907_sources_and_artifacts_preserved=True,preservation_sha256=receipt['preservation_sha256'],document_raw_sha256=docs,
+  executing_reader_raw_sha256=ownraw,project_modules_changed=False,old_math_or_tests_or_mains_executed=False,
+  original_point_1_remaining_work_blocks=1,original_point_1_completed=False,remaining_physical_conditions=packet['remaining_physical_conditions'],
+  complete_curved_receiving_face_covered=False,physical_receiving_traction_law_defined=False,physical_material_admission_authorized=False,
+  new_mixed_equilibrium_certified=False,clocks_advanced=False,seconds=time.perf_counter()-t)
+ result['audit_sha256']=hashlib.sha256(enc(result)).hexdigest()
+ with output.open('xb') as f:f.write(enc(result)+b'\n')
+ sys.stdout.buffer.write(enc(result)+b'\n')
+ return result
+if __name__=='__main__':
+ parser=argparse.ArgumentParser();parser.add_argument('--output',required=True);run(parser.parse_args().output)

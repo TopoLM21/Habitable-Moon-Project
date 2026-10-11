@@ -26,6 +26,10 @@ from .genesis import GenesisParameters, GenesisState, SECONDS_PER_MYR
 from .genesis_checkpoint_compat import MODEL_VERSION, require_thermal_model_version
 from .genesis_shell import (ShellParameters, mantle_traction, maxwell_factors,
                             smooth_anomaly)
+from .genesis_solidification import (FORMAT as SOLIDIFICATION_FORMAT,
+    SolidificationHistory, initial_solidification_history,
+    advance_solidification_history, validate_solidification_history,
+    solidification_history_to_dict, solidification_history_from_dict)
 from .genesis_onset_support import NonlocalLoading
 from .genesis_starter_loading import (StarterLoadingModel, StarterThermalState,
                                       smooth_mantle_tensor, tidal_stress_cycle,
@@ -37,7 +41,7 @@ from .plates import Plate, PlateSystem
 from .basal_coupling import basal_coupling_fraction
 
 
-VERSION = "genesis-starter-0.1"
+VERSION = "genesis-starter-0.2"
 
 
 @dataclass(frozen=True)
@@ -105,6 +109,7 @@ class StarterState:
     event_time_uncertainty_myr: float = 0.
     kinematic_fit_relative_residual: float | None = None
     stopped_reason: str | None = None
+    solidification_history: SolidificationHistory | None = None
 
     @property
     def time_myr(self):
@@ -143,6 +148,7 @@ class StarterModel:
         self.mantle_tensor = smooth_mantle_tensor(mesh, self.parameters.seed)
         self.smoother = NonlocalLoading(mesh, thermal.radius_km, self.parameters.regularization_km)
         self.configuration = {"thermal_model_version": MODEL_VERSION,
+                              "solidification_model_version": SOLIDIFICATION_FORMAT,
                               "thermal": asdict(thermal), "tides": asdict(tides),
                               "shell": asdict(shell), "starter": asdict(self.parameters)}
         mesh_hash = hashlib.sha256(mesh.vertices.tobytes()+mesh.faces.tobytes()).hexdigest()
@@ -155,12 +161,18 @@ class StarterModel:
             (Plate(0, 0, np.array([0., 0., 1.]), 0.),))
         return StarterState(self.loading.initial(), system, np.zeros(n), np.zeros(n),
             np.zeros(n), np.zeros(n), self.shell.tensile_strength_pa*self.strength_factor,
-            np.zeros(n, dtype=bool), np.zeros(n, dtype=bool), [])
+            np.zeros(n, dtype=bool), np.zeros(n, dtype=bool), [],
+            solidification_history=initial_solidification_history(self.thermal))
 
     def _validate(self, state):
         if not isinstance(state, StarterState):
             raise ValueError("Expected a StarterState")
-        self.loading.sample(state.thermal_context)
+        sample = self.loading.sample(state.thermal_context)
+        if state.solidification_history is None:
+            raise ValueError("Starter solidification birth history is missing; restart from the fully molten birth state")
+        validate_solidification_history(state.solidification_history, self.thermal, sample.thermal)
+        if state.solidification_history.accepted_intervals != state.thermal_samples:
+            raise ValueError("Starter solidification birth history and thermal sample counts disagree")
         n = self.mesh.cell_count
         for name in ("damage", "cooling_stress_pa", "water_access", "yield_ratio", "strength_pa"):
             array = np.asarray(getattr(state, name))
@@ -316,6 +328,8 @@ class StarterModel:
         _, samples = self.loading.advance(state.thermal_context, target_myr,
             max_sample_myr=self.parameters.max_loading_interval_myr)
         for after in samples:
+            result.solidification_history = advance_solidification_history(
+                result.solidification_history, before.thermal, after.thermal, self.thermal)
             self._material_sample(result, before, after)
             result.thermal_context = deepcopy(after.state)
             result.thermal_samples += 1
@@ -378,6 +392,9 @@ class StarterModel:
             "stopped_reason": state.stopped_reason,
             "mature_handoff_ready": False,
             "continental_volume_km3": 0.,
+            "primary_solid_mass_kg": state.solidification_history.solid_mass_kg,
+            "primary_mean_birth_time_myr": state.solidification_history.mean_birth_time_myr,
+            "primary_mean_age_myr": state.solidification_history.mean_age_myr,
             "initial_relief_m": 0.}
 
     def save_state(self, path, state):
@@ -385,6 +402,7 @@ class StarterModel:
         context = state.thermal_context
         metadata = {"version": VERSION, "thermal_model_version": MODEL_VERSION, "fingerprint": self.fingerprint,
             "configuration": self.configuration,
+            "solidification_history": solidification_history_to_dict(state.solidification_history),
             "thermal": asdict(context.thermal), "orbit": asdict(context.orbit),
             "boundary_energy_j_m2": context.boundary_energy_j_m2,
             "initial_column_energy_j_m2": context.initial_column_energy_j_m2,
@@ -414,8 +432,12 @@ class StarterModel:
         with np.load(path, allow_pickle=False) as saved:
             metadata = json.loads(str(saved["metadata"]))
             require_thermal_model_version(metadata)
+            if metadata.get("version") == "genesis-starter-0.1":
+                raise ValueError("Starter 0.1 checkpoint has no solidification birth history; restart from the fully molten birth state")
             if metadata.get("version") != VERSION or metadata.get("fingerprint") != self.fingerprint:
                 raise ValueError("Starter checkpoint belongs to another model/configuration")
+            if "solidification_history" not in metadata:
+                raise ValueError("Starter solidification birth history is missing; restart from the fully molten birth state")
             context = StarterThermalState(GenesisState(**metadata["thermal"]),
                 TidalOrbitState(**metadata["orbit"]), saved["column_enthalpy"].copy(),
                 metadata["boundary_energy_j_m2"], metadata["initial_column_energy_j_m2"],
@@ -423,6 +445,8 @@ class StarterModel:
             plates = tuple(Plate(p["plate_id"], p["seed_cell"], np.asarray(p["euler_axis"], dtype=float),
                 p["angular_speed_rad_per_myr"]) for p in metadata["plates"])
             result = StarterState(context, PlateSystem(saved["cell_plate"].copy(), plates),
+                solidification_history=solidification_history_from_dict(
+                    metadata["solidification_history"], self.thermal),
                 **{name: saved[name].copy() for name in ("damage", "cooling_stress_pa", "water_access",
                     "yield_ratio", "strength_pa", "eligible", "split_band")},
                 **{name: metadata[name] for name in ("events", "first_fracture_time_myr",

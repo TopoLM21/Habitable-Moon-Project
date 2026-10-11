@@ -1,0 +1,27 @@
+"""Prepare919 closure only after all genuine validation and final documents."""
+from pathlib import Path
+import json,hashlib
+ROOT=Path(__file__).resolve().parents[2]
+P=ROOT/'analysis/geometric_native_common_cold_variational_work_validation'
+def enc(x):return json.dumps(x,sort_keys=True,separators=(',',':'),ensure_ascii=False).encode()
+def digest(f):return hashlib.sha256(f.read_bytes()).hexdigest()
+def sealed(f):
+ x=json.loads(f.read_bytes());key='report_sha256' if 'report_sha256' in x else 'sha256'
+ assert x[key]==hashlib.sha256(enc({k:v for k,v in x.items() if k!=key})).hexdigest();return x,key
+v,vk=sealed(P/'native_control.json');d,dk=sealed(P/'depth_native_control.json');a,ak=sealed(P/'audit_report.json');b,bk=sealed(P/'depth_audit_report.json')
+for console,report in [('audit_console.log','audit_report.json'),('depth_audit_console.log','depth_audit_report.json')]:assert (P/console).read_bytes()==(P/report).read_bytes()
+for n in ('native_stderr.log','depth_native_stderr.log','audit_stderr.log','depth_audit_stderr.log','tests_stderr.log','depth_tests_attempt02_stderr.log','before_stderr.log','after_stderr.log'):assert (P/n).stat().st_size==0
+assert '17 passed' in (P/'tests_console.log').read_text() and '18 passed' in (P/'depth_tests_attempt02_console.log').read_text()
+new=['tectonics/geometric_native_common_cold_variational_work.py','tests/test_geometric_native_common_cold_variational_work.py','tectonics/geometric_native_common_cold_depth_preparation.py','tests/test_geometric_native_common_cold_depth_preparation.py']
+x=dict(status='PASS_FROZEN919_COLD_LAW_AND_PHYSICAL_PREPARATION_MAP_GATE',source_count=919,tests_passed=35,variational_tests_passed=17,depth_tests_passed=18,authentic_saved_whole_cold_operator_count=2,declared_hundred_channel_fixture_count=1,authentic_modal_path_states=5,depth_source_point_queries=3,independent_variational_comparisons=32987,independent_variational_interval_checks=95,independent_depth_enclosures=2578,independent_depth_identities=69,independent_depth_composed_mode_checks=108,source_literal_eight_beams_included_once=True,old915_sources_and_ancestry_preserved=True,full_new_preparation_work_paid=False,full_curved_face_coincidence_certified=False,reference_gap_exactly_zero=False,new_mixed_equilibrium_certified=False,clocks_advanced=False,accepted_new_intervals=0,original_point_1_completed=False,original_point_1_remaining_work_blocks=1,actual_exit_codes={'variational_final_tests':0,'depth_final_tests':0,'variational_native':0,'depth_native':0,'variational_audit':0,'depth_audit':0,'before_preservation':0,'after_preservation':0},variational_native_sha256=v[vk],depth_native_sha256=d[dk],variational_audit_sha256=a[ak],depth_audit_sha256=b[bk],new_source_sha256={n:digest(ROOT/n) for n in new})
+x['sha256']=hashlib.sha256(enc(x)).hexdigest()
+with (P/'report.json').open('xb') as f:f.write(enc(x)+b'\n')
+old=(P/'baseline915/historical915_handoff.txt').read_bytes();assert (ROOT/'CLOUD_HANDOFF.md').read_bytes().endswith(old)
+docs={str(ROOT/n):digest(ROOT/n) for n in ['CLOUD_HANDOFF.md','GEOMETRIC_NATIVE_COMMON_COLD_PREPARATION_WORK_IMPLEMENTATION.md']}
+with (P/'document_facts.json').open('xb') as f:f.write(enc(dict(document_raw_sha256=docs,historical915_handoff_raw_sha256=digest(P/'baseline915/historical915_handoff.txt'),documents_finalized_before_readback=True))+b'\n')
+rows={str(f.relative_to(ROOT)):{'sha256':digest(f),'bytes':f.stat().st_size} for f in P.rglob('*') if f.is_file()}
+for n in new:f=ROOT/n;rows[n]={'sha256':digest(f),'bytes':f.stat().st_size}
+m=dict(source_count=919,files=rows,inherited915_restorer_raw_sha256=digest(ROOT/'analysis/geometric_native_reference_density_transport_validation/baseline_restore_source.txt'))
+m['sha256']=hashlib.sha256(enc(m)).hexdigest()
+with (P/'artifact_manifest.json').open('xb') as f:f.write(enc(m)+b'\n')
+print(enc(dict(status='PASS_PREPARED919_CLOSURE',manifest_file_count=len(rows),manifest_raw_sha256=digest(P/'artifact_manifest.json'))).decode())

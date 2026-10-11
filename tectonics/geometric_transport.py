@@ -9,8 +9,10 @@ axis or subduction-initiation model. No archived loss exerts a force here.
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass, replace
+from collections.abc import Mapping
 import heapq
 import math
+from numbers import Real
 
 import numpy as np
 from scipy.spatial import cKDTree
@@ -19,8 +21,8 @@ from .fractional_surface import EXTENSIVE_FIELDS, SurfaceParcel
 from .geometric_contacts import extract_contacts
 from .geometric_surface import (GeometricFragment, GeometricSurfaceState,
     audit_partition, candidate_pairs, caps, rotate_surface, rotations, split_geometry, totals)
-from .spherical_polygons import (GeometryDiagnostics, intersect_convex, polygon_area,
-    shared_boundary_arcs, subtract_convex)
+from .spherical_polygons import (_reverse_polygon, _shared_minor_arc, GeometryDiagnostics,
+    intersect_convex, polygon_area, rotate_polygon, shared_boundary_arcs, subtract_convex)
 
 
 @dataclass(frozen=True, slots=True)
@@ -93,24 +95,7 @@ class _Index:
 
 def _arc_meets_contact(start, end, contact):
     """Positive overlap of two known boundary arcs, using contact's stable plane."""
-    origin = np.asarray(contact.start)
-    normal = np.asarray(contact.normal_a_to_b)
-    # Arithmetic bound only, not a geometric distance or minimum arc threshold.
-    for point in (start, end):
-        if abs(float(np.dot(point, normal))) > 32.*np.finfo(float).eps*float(np.sum(abs(point*normal))):
-            return False
-    # Contact tangent is defined at the midpoint; project orientation at start.
-    tangent = np.cross(normal, origin)
-    if float(np.dot(tangent, contact.end)) < 0.:
-        tangent = -tangent
-    theta = math.atan2(float(np.dot(tangent, contact.end)), float(np.dot(origin, contact.end)))
-    a, b = [math.atan2(float(np.dot(tangent, x)), float(np.dot(origin, x))) for x in (start, end)]
-    if b-a > math.pi:
-        b -= 2.*math.pi
-    elif b-a < -math.pi:
-        b += 2.*math.pi
-    return any(min(theta, max(a, b)+shift) > max(0., min(a, b)+shift)
-               for shift in (-2.*math.pi, 0., 2.*math.pi))
+    return _shared_minor_arc(contact.start, contact.end, start, end) is not None
 
 
 def _attach_losses(losses, contacts, retained, descendants, diag):
@@ -168,6 +153,9 @@ def advance_geometric_surface(mesh, state, omega_rad_per_myr, dt_myr, *, birth_f
         raise ValueError("Geometric polarity resolver must be callable")
     if any(f.parcel.cell >= mesh.cell_count for f in state.fragments):
         raise ValueError("Source material references an invalid birth-provenance cell")
+    if isinstance(omega_rad_per_myr, Mapping) and (
+            isinstance(dt_myr, (bool, np.bool_)) or not isinstance(dt_myr, Real)):
+        raise ValueError("Compact transport requires an explicit real timestep")
     dt = float(dt_myr)
     omega = rotations(state, omega_rad_per_myr, dt)
     diag = GeometryDiagnostics()
@@ -177,6 +165,26 @@ def advance_geometric_surface(mesh, state, omega_rad_per_myr, dt_myr, *, birth_f
         contacts = extract_contacts(moved.fragments, state.radius_km, omega)
         return GeometricTransportResult(moved, (), (), contacts,
             _diagnostics(state, moved, (), (), contacts, diag))
+
+    def bound_geometry(shape, fragment):
+        # Preserve the executed rotation/cut's scratch edge planes, while
+        # binding every coordinate to the actual public fragment.  Constructor
+        # orientation reversal is the only permitted representation change.
+        saved = np.asarray(fragment.polygon)
+        if np.array_equal(shape, saved):
+            return shape
+        if np.array_equal(shape[::-1], saved):
+            return _reverse_polygon(shape)
+        raise RuntimeError("Scratch geometry does not match its material footprint")
+
+    # Rodrigues supports exist before its final binary64 projection.  Keeping
+    # them through this transaction prevents rounded cut endpoints from being
+    # reused as newly invented receiver/vacancy planes.  They are recomputed
+    # from the same saved input and full actual motion after a restart, and
+    # never enter the public state or checkpoint schema.
+    geometry = {old.fragment_id: bound_geometry(
+        rotate_polygon(old.polygon, omega[old.parcel.plate], dt), new)
+        for old, new in zip(state.fragments, moved.fragments)}
 
     # Only genuinely overlapping original candidates can compete. Disjoint
     # equal materials may be iterated deterministically without choosing sides.
@@ -239,15 +247,15 @@ def advance_geometric_surface(mesh, state, omega_rad_per_myr, dt_myr, *, birth_f
     retained, losses, descendants = [], [], {}
     accepted = {}
     for source in ordered:
-        pieces, removed = [np.asarray(source.polygon)], []
+        pieces, removed = [geometry[source.fragment_id]], []
         for neighbour in sorted(neighbours[source.fragment_id]):
             for receiver in accepted.get(neighbour, ()):
                 remaining = []
                 for polygon in pieces:
-                    overlap = intersect_convex(polygon, receiver.polygon, diagnostics=diag)
+                    overlap = intersect_convex(polygon, geometry[receiver.fragment_id], diagnostics=diag)
                     if len(overlap):
                         removed.append((overlap, receiver, decisions[frozenset((source.fragment_id, neighbour))]))
-                        remaining.extend(subtract_convex(polygon, receiver.polygon, diagnostics=diag))
+                        remaining.extend(subtract_convex(polygon, geometry[receiver.fragment_id], diagnostics=diag))
                     else:
                         remaining.append(polygon)
                 pieces = remaining
@@ -256,6 +264,8 @@ def advance_geometric_surface(mesh, state, omega_rad_per_myr, dt_myr, *, birth_f
         else:
             parts = split_geometry(source, pieces+[p for p, _, _ in removed],
                                    label=f"step:{moved.time_myr.hex()}")
+            for fragment, shape in zip(parts, pieces+[p for p, _, _ in removed]):
+                geometry[fragment.fragment_id] = bound_geometry(shape, fragment)
             children = parts[:len(pieces)]
             for fragment, (_, receiver, decision) in zip(parts[len(pieces):], removed):
                 losses.append(GeometricLoss(fragment, source.fragment_id,
@@ -275,9 +285,9 @@ def advance_geometric_surface(mesh, state, omega_rad_per_myr, dt_myr, *, birth_f
         for covered in index.query(departed.polygon):
             remaining = []
             for polygon in gaps:
-                overlap = intersect_convex(polygon, covered.polygon, diagnostics=diag)
+                overlap = intersect_convex(polygon, geometry[covered.fragment_id], diagnostics=diag)
                 if len(overlap):
-                    remaining.extend(subtract_convex(polygon, covered.polygon, diagnostics=diag))
+                    remaining.extend(subtract_convex(polygon, geometry[covered.fragment_id], diagnostics=diag))
                 else:
                     remaining.append(polygon)
             gaps = remaining

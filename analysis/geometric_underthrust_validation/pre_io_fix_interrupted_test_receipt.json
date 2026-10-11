@@ -1,0 +1,47 @@
+{
+  "after_manifest_sha256": "3b16ce43a23d0b660174bab886712b8dfbed86c18aa1569c0ea004a1a9bf328e",
+  "after_sha256_manifest": "analysis/geometric_underthrust_validation/pre_io_fix_interrupted_code_and_tests_after.json",
+  "before_manifest_sha256": "3b16ce43a23d0b660174bab886712b8dfbed86c18aa1569c0ea004a1a9bf328e",
+  "before_sha256_manifest": "analysis/geometric_underthrust_validation/pre_io_fix_interrupted_code_and_tests_before.json",
+  "changed_code_or_test_paths": [],
+  "code_and_tests_unchanged": true,
+  "code_tests_and_scripts_file_count": 417,
+  "command": [
+    ".venv/bin/python",
+    "scripts/run_cloud_tests.py"
+  ],
+  "counts": {},
+  "cwd": "/workspace/Habitable-Moon-Project",
+  "exit_code": 241,
+  "failed_test_summaries": [],
+  "finished_utc": "2026-10-01T19:18:45.362807+00:00",
+  "git_branch": "fix/genesis-mantle-convection",
+  "git_head": "224a07ac1b981b95163cdf6633f424af1599b2f2",
+  "interruption_reason": "Parent stopped this provisional profile before a concrete strict-JSON checkpoint IO fix and two tamper regression cases; portable pytest received SIGTERM. This partial run is not final validation.",
+  "interruption_requested_by": "/root",
+  "log": "analysis/geometric_underthrust_validation/pre_io_fix_interrupted_cloud_tests.log",
+  "log_sha256": "12299d6aceb9a00289487598c85f059122df7e3fe98a43f960d8e8a083acd3ca",
+  "manifest_exclusions": [
+    "__pycache__",
+    ".pytest_cache",
+    "*.pyc",
+    "*.pyo"
+  ],
+  "manifest_scope": [
+    "tectonics/**/*",
+    "tests/**/*",
+    "scripts/**/*",
+    "analysis/geometric_underthrust_validation/run_portable_checks.py",
+    "analysis/geometric_underthrust_validation/underthrust_case.py"
+  ],
+  "partial_progress_markers": {
+    ".": 322,
+    "E": 0,
+    "F": 0
+  },
+  "pytest_summary": null,
+  "runner_status_before_interruption_annotation": "failed",
+  "seconds": 458.99042031599674,
+  "started_utc": "2026-10-01T19:11:06.272003+00:00",
+  "status": "interrupted"
+}

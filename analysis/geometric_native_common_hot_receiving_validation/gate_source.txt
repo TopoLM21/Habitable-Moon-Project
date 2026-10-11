@@ -1,0 +1,80 @@
+"""Frozen909 receiving-field gate; only the new tests and material-point ports."""
+from pathlib import Path
+import hashlib,json,subprocess,sys,time,types
+ROOT=Path('/workspace/Habitable-Moon-Project');P=ROOT/'analysis/geometric_native_common_hot_receiving_validation'
+STAGE=Path('/workspace/hot_receiving_baseline_20261007')
+ADDED=('tectonics/geometric_native_common_hot_receiving.py','tests/test_geometric_native_common_hot_receiving.py')
+EXPECTED=('3fa11cb87117fa8ba1c33d82237e18b2dd1248d6597d1c8414d2c509fb8d8e97','7ca4b56c9390a9ab5e6dbc23fa62c457318ba9da4851ac1f6f0f3e24429b6410')
+
+def enc(x):return json.dumps(x,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+def raw(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def write(p,x):
+ with Path(p).open('xb') as f:f.write(enc(x)+b'\n')
+def copy(src,dst):
+ with Path(dst).open('xb') as f:f.write(Path(src).read_bytes())
+
+t=time.perf_counter();P.mkdir(exist_ok=False)
+copy(Path(__file__).resolve(),P/'gate_source.txt')
+guardpath=STAGE/'preservation_source.txt'
+assert raw(guardpath)=='33cb3857e322bb805b254f9557d80a94c2ce5409825f671b2420ac27a78b5e79'
+copy(guardpath,P/'preservation_source.txt')
+guard=types.ModuleType('_receiving_guard');guard.__file__=str(guardpath)
+exec(compile(guardpath.read_bytes(),str(guardpath),'exec'),guard.__dict__)
+additions=dict(zip(ADDED,EXPECTED));assert all(raw(ROOT/p)==pin for p,pin in additions.items())
+frozen={str(p.relative_to(ROOT)):raw(p) for d in ('tectonics','tests','analysis','scripts') for p in (ROOT/d).rglob('*.py')}
+assert len(frozen)==909
+write(P/'frozen_source_map_909.json',frozen)
+snap=P/'source_snapshots';snap.mkdir()
+for name in ADDED:copy(ROOT/name,snap/(name.replace('/','__')+'.txt'))
+before=guard.run(additions,STAGE/'gate_before.json');copy(STAGE/'gate_before.json',P/'gate_before.json')
+failure=None;report=dict(status='FAIL',source_count=909,additional_source_sha256=additions)
+try:
+ with (P/'pytest.log').open('xb') as out,(P/'pytest_stderr.log').open('xb') as err:
+  teststart=time.perf_counter();r=subprocess.run([str(ROOT/'.venv/bin/python'),'-m','pytest',ADDED[1],'-q','-p','no:cacheprovider'],cwd=ROOT,stdout=out,stderr=err)
+ report.update(tests_exit_code=r.returncode,tests_seconds=time.perf_counter()-teststart)
+ assert r.returncode==0 and (P/'pytest_stderr.log').stat().st_size==0
+ assert b'10 passed' in (P/'pytest.log').read_bytes()
+ report['tests_passed']=10
+ sys.path.insert(0,str(ROOT))
+ from tectonics import geometric_native_common_hot_receiving as api
+ source=ROOT/'analysis/geometric_native_common_hot_mean_validation/release_validation_02/native_control/source_packet.json'
+ assert raw(source)=='0f8a0ee8ae082e3434b136bab7515944354eaf059db95965d0e87259f6791035'
+ packet=json.loads(source.read_bytes());rows=[];native_start=time.perf_counter()
+ gradient=tuple(api.I(i+1) for i in range(12))
+ tangent=tuple(tuple(api.I(i+1 if i==j else api.F(1,10)) for j in range(12)) for i in range(12))
+ for query in packet['evaluation_queries']:
+  for index in range(15):
+   point=api.evaluate_native_hot_receiving_point(packet,query['label'],index)
+   dto=api.native_hot_receiving_point_to_dict(point)
+   pullback=api.pullback_native_hot_receiving_work(point,gradient,tangent)
+   rows.append(dict(query_label=query['label'],point_index=index,point=dto,
+    diagnostic_spatial_gradient=api._payload(gradient),diagnostic_spatial_hessian=api._payload(tangent),
+    diagnostic_work_pullback=api._payload(pullback)))
+ last=rows[-1];restored=api.native_hot_receiving_point_from_dict(last['point'],packet,query_label=last['query_label'],point_index=last['point_index'])
+ assert api.native_hot_receiving_point_to_dict(restored)==last['point']
+ native=dict(format='native-hot-receiving-fields-packet-1',status='PASS',scope=api.SCOPE,
+  source903_raw_sha256=raw(source),source903_packet_sha256=packet['packet_sha256'],
+  actual_saved_point_query_count=len(rows),actual_hot_body_count=5,actual_material_label_count=15,
+  actual_saved_chart_count=4,full_position_and_original_world_gradient_twojets=True,
+  spatial_channel_count=12,local_coordinate_count=9,original100_catalogue_mapping_retained=True,
+  mean_chart_curvature_and_owner_body_cross_terms_retained=True,
+  supplied_work_pullback_has_complete_orientation_hyperstress=True,
+  supplied_work_is_numeric_diagnostic_not_physical_traction_law=True,
+  complete_curved_receiving_face_covered=False,physical_receiving_traction_law_defined=False,
+  physical_material_admission_authorized=False,new_mixed_equilibrium_certified=False,
+  physical_source_work_handover_certified=False,clocks_advanced=False,accepted_new_native_intervals=0,
+  original_point_1_completed=False,original_point_1_remaining_work_blocks=1,
+  remaining_physical_conditions=packet['remaining_physical_conditions'],point_restart_verified=True,queries=rows)
+ native['packet_sha256']=hashlib.sha256(enc(native)).hexdigest();write(P/'source_packet.json',native)
+ report.update(status='PASS',scope=api.SCOPE,actual_point_query_count=60,native_seconds=time.perf_counter()-native_start,
+  source_packet_sha256=native['packet_sha256'],source_packet_raw_sha256=raw(P/'source_packet.json'))
+except Exception as error:
+ report['failure']=type(error).__name__+': '+str(error);failure=error
+finally:
+ after=guard.run(additions,STAGE/'gate_after.json');copy(STAGE/'gate_after.json',P/'gate_after.json')
+ report.update(before_preservation_sha256=before['preservation_sha256'],after_preservation_sha256=after['preservation_sha256'],
+  full909_source_map_unchanged=frozen=={str(p.relative_to(ROOT)):raw(p) for d in ('tectonics','tests','analysis','scripts') for p in (ROOT/d).rglob('*.py')},seconds=time.perf_counter()-t)
+ assert report['full909_source_map_unchanged']
+ report['report_sha256']=hashlib.sha256(enc(report)).hexdigest();write(P/'report.json',report)
+ print(json.dumps(report,sort_keys=True))
+if failure:raise failure

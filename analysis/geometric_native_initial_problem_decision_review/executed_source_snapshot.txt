@@ -1,0 +1,161 @@
+"""Exact initial-problem decision review; no project physics imports or solves.
+
+This review authenticates the closed943 evidence and verifies a general
+hidden-stress example. It does not adopt any initial constitutive model.
+"""
+from pathlib import Path
+from fractions import Fraction as F
+import argparse, ast, hashlib, json, time
+
+ROOT = Path('/workspace/Habitable-Moon-Project')
+P = ROOT/'analysis/geometric_native_common_initialization_handover_validation'
+FINAL = ROOT/'analysis/geometric_native_common_initialization_handover_final_readback'
+MANIFEST_RAW = 'df3212e89cb316ad08a7a149428d2983cd45a58ecd57414725540c364d4d044e'
+ARCHIVE_RAW = '1853db7ebf4619faa3198929766a5952f5b75d56855ad5ceb1fc44774e543fd3'
+
+def enc(value):
+    return json.dumps(value,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+
+def digest(path):
+    h=hashlib.sha256()
+    with Path(path).open('rb') as stream:
+        while block:=stream.read(1<<20):h.update(block)
+    return h.hexdigest()
+
+def sealed(path):
+    value=json.loads(Path(path).read_bytes())
+    key='report_sha256' if 'report_sha256' in value else 'sha256'
+    assert value[key]==hashlib.sha256(enc({k:v for k,v in value.items() if k!=key})).hexdigest()
+    return value
+
+def add(*polynomials):
+    result={}
+    for polynomial in polynomials:
+        for exponent,coefficient in polynomial.items():
+            result[exponent]=result.get(exponent,F(0))+coefficient
+    return {e:c for e,c in result.items() if c}
+
+def mul(left,right):
+    result={}
+    for e,c in left.items():
+        for f,d in right.items():
+            exponent=tuple(a+b for a,b in zip(e,f))
+            result[exponent]=result.get(exponent,F(0))+c*d
+    return {e:c for e,c in result.items() if c}
+
+def derivative(polynomial,axis):
+    result={}
+    for exponent,coefficient in polynomial.items():
+        if exponent[axis]:
+            target=list(exponent);target[axis]-=1
+            result[tuple(target)]=coefficient*exponent[axis]
+    return result
+
+def negate(polynomial):return {e:-c for e,c in polynomial.items()}
+def at(polynomial,point):
+    return sum((c*point[0]**e[0]*point[1]**e[1]*point[2]**e[2] for e,c in polynomial.items()),F(0))
+def integral_cube(polynomial):
+    return sum((c*F(8,(e[0]+1)*(e[1]+1)*(e[2]+1))
+                for e,c in polynomial.items() if all(n%2==0 for n in e)),F(0))
+def pair(value):return [value.numerator,value.denominator]
+
+def proof():
+    # b(s)=(1-s^2)^4 inside [-1,1], zero outside. b and derivatives
+    # through order3 vanish at both boundaries; its compact extension is C3.
+    b=(F(1),F(0),F(-4),F(0),F(6),F(0),F(-4),F(0),F(1))
+    one_d=list(b);boundary=[]
+    for order in range(4):
+        values=[sum((c*F(x)**i for i,c in enumerate(one_d)),F(0)) for x in (-1,1)]
+        assert values==[F(0),F(0)]
+        boundary.append([pair(v) for v in values])
+        one_d=[F(i)*one_d[i] for i in range(1,len(one_d))]
+    phi={(i,j,k):a*c*d for i,a in enumerate(b) for j,c in enumerate(b)
+                        for k,d in enumerate(b) if a*c*d}
+    hessian=[[derivative(derivative(phi,i),j) for j in range(3)] for i in range(3)]
+    laplacian=add(*(hessian[i][i] for i in range(3)))
+    stress=[[add(laplacian if i==j else {},negate(hessian[i][j])) for j in range(3)] for i in range(3)]
+    divergence=[add(*(derivative(stress[i][j],j) for j in range(3))) for i in range(3)]
+    assert divergence==[{}, {}, {}]
+    center=[[at(stress[i][j],(F(0),)*3) for j in range(3)] for i in range(3)]
+    assert center==[[F(-16) if i==j else F(0) for j in range(3)] for i in range(3)]
+    norm_squared=sum((integral_cube(mul(row,row)) for line in stress for row in line),F(0))
+    assert norm_squared>0
+    return dict(formula='delta_sigma = I*Laplacian(phi) - Hessian(phi)',
+        potential='phi=b(x)b(y)b(z), b(s)=(1-s^2)^4 for |s|<1; b=0 otherwise',
+        polynomial_inside_support_only=True,compact_extension_is_C3=True,
+        potential_boundary_derivatives_order0_to3_exact=boundary,
+        all_three_divergence_polynomials_exact_zero=True,
+        nonzero_center_stress_matrix=[[pair(v) for v in row] for row in center],
+        positive_exact_stress_L2_norm_squared_on_unit_cube=pair(norm_squared),
+        construction_can_be_scaled_and_placed_strictly_inside_an_open_parent=True,
+        stress_and_traction_vanish_outside_support=True,
+        example_is_not_a_recovered_historical_stress_field=True,
+        example_is_not_a_nonuniqueness_claim_for_a_fully_specified_elastic_BVP=True,
+        energy_caveat='Finite force observations do not determine the field. A full elastic energy could select it only after geometry, constitutive law and boundary/history data are specified; saved reduced energies are not that missing full-volume measurement.')
+
+def run(output):
+    started=time.monotonic();output=Path(output).resolve()
+    assert output.is_relative_to('/workspace') and not output.is_relative_to(ROOT) and not output.exists()
+    assert digest(P/'artifact_manifest.json')==MANIFEST_RAW
+    manifest=sealed(P/'artifact_manifest.json')
+    for name,receipt in manifest['files'].items():
+        path=ROOT/name
+        assert digest(path)==receipt['sha256'] and path.stat().st_size==receipt['bytes']
+    assert digest(FINAL/'archive.json')==ARCHIVE_RAW
+    archive=sealed(FINAL/'archive.json')
+    assert archive['status']=='PASS_FINAL943_READBACK_ARCHIVE_CLOSED'
+    assert {x.name for x in FINAL.iterdir()}=={'archive.json','console.log','readback.json','readback_source.txt'}
+    for name,receipt in archive['files'].items():assert digest(FINAL/name)==receipt['sha256']
+    report=sealed(P/'report.json');audit=sealed(P/'independent_audit01/report.json')
+    assert report['original_point_1_completed'] is False
+    assert report['accepted_original_native_intervals']==1 and report['accepted_new_native_intervals']==0
+    assert audit['physical_initialization_ready'] is False
+    assert audit['historical_physical_material_embedding_preserved'] is None
+    docfacts=json.loads((P/'document_facts.json').read_bytes())
+    for path,pin in docfacts['document_raw_sha256'].items():assert digest(path)==pin
+    tree=ast.parse((ROOT/'tectonics/geometric_native_common_initialization_source.py').read_bytes())
+    unknown=next(ast.literal_eval(node.value) for node in tree.body if isinstance(node,ast.Assign)
+                 and any(isinstance(target,ast.Name) and target.id=='UNKNOWN_PHYSICAL_INPUTS' for target in node.targets))
+    assert len(unknown)==6
+    result=dict(format='tectonic-initial-problem-scientific-decision-review-1',
+        status='PASS_INITIAL_PROBLEM_UNDERDETERMINATION_REVIEW',
+        scientific_initialization_decision_required=True,
+        authoritative943_manifest_raw_sha256=MANIFEST_RAW,
+        authoritative943_final_archive_raw_sha256=ARCHIVE_RAW,
+        authoritative943_source_count=943,authoritative943_tests_passed=report['tests_passed'],
+        authenticated_manifest_file_count=len(manifest['files']),
+        old943_sources_and_P_F_preserved=True,old_scientific_mains_executed=False,
+        project_physics_modules_imported=False,new_initialization_adopted=False,
+        new_physical_equilibrium_computed=False,accepted_original_native_intervals=1,
+        accepted_new_native_intervals=0,original_point_1_completed=False,
+        remaining_physical_conditions=report['remaining_physical_conditions'],
+        known_original_data=dict(reduced_mechanical_coordinate_count=14,contact_state_count=16,
+            mechanical_tip_count=32,beam_parent_count=8,material_ids_and_reference_measure_preserved=True,
+            accepted_memory_and_work_ledgers_preserved=True),
+        unknown_historical_inputs={name:None for name in unknown},
+        additional_missing_initial_rate_data=dict(new_cold_body_rate_count=56,new_hot_body_rate_count=30,
+            original_source_does_not_determine_their_instantaneous_physical_rates=True,
+            minimum_elastic_energy_is_not_a_velocity_initialization=True),
+        mathematical_underidentification_witness=proof(),
+        concrete_proposed_initial_model=dict(status='PROPOSED_NOT_ADOPTED',
+            geometry='New orientation-preserving original-material chart constrained by accepted owners, 32 mechanical tips and eight roof displacements; no automatic 887 receiver lift',
+            material='Preserve eight original parents, source areal-depth measure and authenticated elastic properties; certify any new chart and its integrals',
+            prestress='Select the minimum elastic-energy extension in an explicitly specified finite-dimensional strain space subject to original contact forces/couples and beam resultants; verify all energy constraints for feasibility',
+            hot_birth='Use an explicitly NEW stress-free birth datum, never label it historical recovery',
+            rates='Use an explicitly NEW stationary initialization for newly introduced body coordinates; retain specified original owner motion and basal law, with all 101 rates mandatory',
+            normal_history='Keep damage and maximum opening unknown; restrict the first solve to the compressed branch and reject first positive opening',
+            energy='Preserve old ledgers and signed offsets once. Check new stored energy and work separately; DeltaU is not paid preparation work and no extra lambda actuator is assumed',
+            equilibrium='Solve physical free coordinates without arbitrary owner holds or hidden reactions',
+            admission='Require whole-clock all-pair proof and independent physical path work/balances/restart before accepting a new interval'),
+        alternative=dict(name='STRICT_HISTORICAL_CONTINUATION',
+            requires_missing_full_material_stress_eigenstrain_geometry_birth_and_rate_history=True,
+            existing_sources_do_not_supply_these_fields=True),
+        decision_question='May the model use the explicitly NEW constrained minimum-energy and stationary initialization, with stress-free HOT birth and a newly certified archive chart, or must it reproduce the unavailable full historical initial fields?',
+        elapsed_seconds=time.monotonic()-started)
+    result['sha256']=hashlib.sha256(enc(result)).hexdigest()
+    with output.open('xb') as stream:stream.write(enc(result)+b'\n')
+    print(enc(result).decode())
+
+if __name__=='__main__':
+    parser=argparse.ArgumentParser();parser.add_argument('--output',required=True)
+    run(parser.parse_args().output)

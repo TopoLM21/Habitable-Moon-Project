@@ -1,0 +1,17 @@
+from pathlib import Path
+import hashlib,json
+ROOT=Path('/workspace/Habitable-Moon-Project')
+P=ROOT/'analysis/geometric_native_common_carrier_source_work_validation'
+def encoded(x):return json.dumps(x,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+def raw(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+gate=json.loads((P/'release_validation_02/report.json').read_bytes())
+audit=json.loads((P/'independent_audit/report.json').read_bytes())
+assert gate['status']==audit['status']=='PASS'
+assert not (P/'artifact_manifest.json').exists()
+paths=sorted(p for p in P.rglob('*') if p.is_file() and '__pycache__' not in p.parts and p.suffix!='.pyc')
+paths+= [ROOT/'tectonics/geometric_native_common_carrier_source_work.py',ROOT/'tests/test_geometric_native_common_carrier_source_work.py']
+files={str(p.relative_to(ROOT)):{'bytes':p.stat().st_size,'sha256':raw(p)} for p in paths}
+m=dict(format='native-common-carrier-source-work-component-manifest-1',status='PASS_COMPONENT_ARTIFACTS_CLOSED',source_count=891,physical_scope=gate['current_physical_scope'],current_release='release_validation_02',files=files,closed_component_file_count=len(files),gate_report_selfseal=gate['report_sha256'],independent_audit_selfseal=audit['audit_sha256'])
+m['manifest_sha256']=hashlib.sha256(encoded(m)).hexdigest()
+with (P/'artifact_manifest.json').open('xb') as f:f.write(encoded(m)+b'\n')
+print(json.dumps(dict(files=len(files),manifest_raw_sha256=raw(P/'artifact_manifest.json'),manifest_sha256=m['manifest_sha256'])))

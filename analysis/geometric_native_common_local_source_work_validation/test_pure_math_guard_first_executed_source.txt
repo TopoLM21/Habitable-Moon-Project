@@ -1,0 +1,31 @@
+import ast, types, sys
+from pathlib import Path
+from dataclasses import dataclass
+from fractions import Fraction
+from functools import lru_cache
+n={'__name__':'standalone_new_local_source_work_math','Fraction':Fraction,'F':Fraction,'dataclass':dataclass,'lru_cache':lru_cache}
+sys.modules[n['__name__']]=types.ModuleType(n['__name__'])
+def load(path,names):
+ t=ast.parse(Path(path).read_text())
+ nodes=[x for x in t.body if isinstance(x,(ast.FunctionDef,ast.ClassDef)) and x.name in names]
+ assert {x.name for x in nodes}==set(names), (path,set(names)-{x.name for x in nodes})
+ exec(compile(ast.Module(body=nodes,type_ignores=[]),path,'exec'),n)
+load('tectonics/geometric_native_pose.py',['_fraction','FractionInterval','singleton','_precision','_precision_bits','_power_two','_floor_log_two','_rounded_interval'])
+n['I']=n['FractionInterval'];n['_ZERO']=(n['I'](0),)*3
+load('tectonics/geometric_native_common_source_carrier.py',['_round','_dot','_cross','_map'])
+pure=['_precision','_ivector','_imatrix','_vadd','_vsub','_vneg','_outer','_contract','_square','_axis','_second_spin','_side_source_jet','_local_source_jet','_atom_algebra']
+load('tectonics/geometric_native_common_local_source_work.py',pure)
+api=types.SimpleNamespace(**{name:n[name] for name in pure})
+tests=ast.parse(Path('tests/test_geometric_native_common_local_source_work.py').read_text())
+selected=[]
+for node in tests.body:
+ if isinstance(node,ast.FunctionDef) and node.lineno<287 and node.name not in ('_api','_native'):
+  selected.append(node)
+exec(compile(ast.Module(body=selected,type_ignores=[]),'standalone_new_test_math','exec'),n)
+n['_api']=lambda:api
+names=[x.name for x in selected if x.name.startswith('test_')]
+assert len(names)==3,names
+for name in names:
+ n[name]()
+ print('PASS',name)
+print('PURE_AST_GUARD_PASS: 3 mathematical tests; no package, controller, solver, quadrature or historical test import')

@@ -1,0 +1,91 @@
+{
+  "additional_integrations_or_benchmarks_performed": false,
+  "candidate_raw_sha256": "50af6b71758feaaed531651b231b50fe5e45228cfa4efa808b26c5a2070d86f4",
+  "candidate_seal_sha256": "4c5753f18ab1cbeb9212c655f388d5efce0fd2909b68d080c269cca140cc4757",
+  "cold_changes": {
+    "calibration": "U=.5*k_old*(w_ref+q0+p_rem/k)^2+.5*rem_norm-.5*p_rem^2/k preserves exact source U0 and tip force after k/projections are rebuilt",
+    "common_rate_replaces_six_previously_zero_cold_rates": true,
+    "coordinate_gradient": "All Gi are physical common-reference Cartesian gradients; do not use original-material gradients without the inverse reference differential",
+    "must_rebuild": [
+      "new reference binding authentication",
+      "H0 and all seven modal gradients",
+      "raw tensor/projection integrals and derivative tails",
+      "old-tip projection normalization k",
+      "positive prepared-metric/J support proof using A_star rather than saved historical group lookup",
+      "all affected physical face/basal normals and trace receipts"
+    ],
+    "positive_k_extension": "H0:C:H0 >= G*(4*chi^2+chi_beta^2)/r^2 holds for every A_star with lambda>=0; the extra radial H0 diagonal does not change its tangential/shear lower proof",
+    "positive_k_monotonicity_not_claimed": "Changing A can change the lambda trace-square cross term; actual k need not increase, so recompute it",
+    "radial_clock": "tau=(R^3-r^3)/(3R^2)=tau_top+z; retain each roof offset",
+    "reference_strain": "Keep D_Phi separate from F_inc; Green(D_Phi) would fabricate new reference prestress",
+    "source_mask_transport": "Use the same Q(r) for actual source domains, endpoint archive, curved subsets and material clamp beta=b; leave their preflow coefficients unchanged",
+    "support_bound": "norm(grad_beta)<=1/r_min+(r_top^2/R^2)*norm(A_star)/cos(b) is conservative; update tip/enrichment/initial-metric/J bounds accordingly",
+    "unchanged_material_inputs": [
+      "old accepted w_ref and k_old",
+      "source upper E/nu and explicit lower E/G declaration",
+      "roof radii and material depth ranges",
+      "physical elastic thickness and its exact areal-depth interface",
+      "actual preflow endpoint/curved set membership and measures",
+      "source owner histories and quarter-frame material coordinates"
+    ]
+  },
+  "compatibility": {
+    "active_born_faces": "HOT literal A for both authentic born face families matches exactly. Their cold participants must retain that same exact tuple and common physical radius clock; equality of interval aliases alone is insufficient",
+    "explicit_new_lift": "The changed six clamps can instead be explicitly lifted/transported in the new reference, followed by actual support verification; this is not recovery of historical 3D clamp geometry",
+    "other_faces": "Other historical physical face embeddings away from r=R generally change and need fresh compatibility/trace checks",
+    "partition": "The common injective map preserves disjointness only after the exact preflow all13 actual solid partition premise is independently established",
+    "physical_clamp": "Surface evidence alone does not prove actual 3D clamp compatibility. Equal fixed old/new quarter clamp images for an entire radial interval force equal rates, since the arc has nonparallel directions",
+    "surface": "Phi fixes nominal source sphere r=R pointwise, preserving its angular trace/clamp evidence"
+  },
+  "computational_frame": {
+    "beta_gradient": "s=e3^T*K*(cos(theta),sin(theta),0); g_beta_local=t_beta/r+(r^2/R^2)*s*v",
+    "degree": "C depends only on depth; modal gradients remain theta degree<=3, full tensor products<=12, with extra finite strip delta factors",
+    "derivative": "dM_i/dtau=M_i*K-K*M_i; use validated analytic conjugation/Taylor tails rather than treating M_i as constant",
+    "energy": "Similarity-transform F_inc, Green, H0 and all tensor derivatives together; isotropic contractions are identical, so the global fields remain unchanged",
+    "enrichment_gradient": "Gi_local=chi*M_i(r)/R+chi_beta*(r/R)*(M_i(r)*v) tensor g_beta_local",
+    "frame": "B=[S,E,n], C(r)=Q(r)*O*B, v=(cos(theta)*cos(beta),sin(theta)*cos(beta),sin(beta))",
+    "global_generators": "M_i(r)=C(r)^T*E_i_global*C(r)=exp(-K*tau)*M_i(0)*exp(K*tau); retain its depth dependence",
+    "reflection": "Donor B has det=-1. A local vector cross-product formula needs this sign; the matrix K formula avoids the orientation error",
+    "skew": "K=B^T*O^T*[A_star]_cross*O*B is constant; Q commutes with its generator",
+    "tip_gradient": "G0_local=chi*(I-v tensor v)/r+chi_beta*v tensor g_beta_local"
+  },
+  "fixed_global_hot_literal_rate_comparisons": [
+    {
+      "component_id": "native-first-entry-actual-vacancy:1750b4ed9053246efc546e1719b97c41de8c8371cbc90d016bf0df65d09127e4",
+      "old_literal_rate_equals_common": true,
+      "old_literal_rate_is_zero": false
+    },
+    {
+      "component_id": "native-first-entry-actual-vacancy:295fbe0419278e61a5f98008203b81e02049a15755b3d2d8d6f374e4cd4679a4",
+      "old_literal_rate_equals_common": false,
+      "old_literal_rate_is_zero": true
+    },
+    {
+      "component_id": "native-first-entry-actual-vacancy:5dd0c8a22f4a72b26329a97c53f5e14ffbd77a7c554fa54d95deb5fde806a0e3",
+      "old_literal_rate_equals_common": true,
+      "old_literal_rate_is_zero": false
+    },
+    {
+      "component_id": "native-first-entry-actual-vacancy:871ba2bc7c314a3f0af92f6251b8c6f471b4f44f046e3792bcd81dd5c33042ad",
+      "old_literal_rate_equals_common": true,
+      "old_literal_rate_is_zero": false
+    },
+    {
+      "component_id": "native-first-entry-actual-vacancy:e8d82b0b3d2c6e3869d3a002f09dd3556365ec2a781e413fb4148a5c42fb75db",
+      "old_literal_rate_equals_common": true,
+      "old_literal_rate_is_zero": false
+    }
+  ],
+  "format": "native-common-reference-cold-tensor-dependency-audit-1",
+  "no_repository_source_edits": true,
+  "not_established": [
+    "whole-clock all-pair separation",
+    "force equilibrium",
+    "physical interval acceptance",
+    "unchanged historical 3D clamp geometry",
+    "historical 3D prestress or archived energy density"
+  ],
+  "physical_partition_or_material_admission_certified": false,
+  "scope": "Necessary common-reference correction within existing point1 conditions",
+  "status": "READ_ONLY_MATHEMATICAL_DEPENDENCY_AUDIT"
+}

@@ -1,0 +1,224 @@
+"""NEW source-bound coupled cold and finite-owner general-state force controls.
+
+Restoration calls only frozen geometry/source definitions. It runs no old
+tensor, quadrature, force, test or audit main.
+"""
+from pathlib import Path
+from fractions import Fraction as F
+import argparse, hashlib, json, runpy, sys, time
+
+ROOT=Path(__file__).resolve().parents[2]
+sys.path.insert(0,str(ROOT))
+P=ROOT/'analysis/geometric_native_common_general_force_validation'
+NEW=('tectonics/geometric_native_common_coupled_cold_energy.py',
+     'tests/test_geometric_native_common_coupled_cold_energy.py',
+     'tectonics/geometric_native_common_general_force.py',
+     'tests/test_geometric_native_common_general_force.py')
+SOURCE899=ROOT/'analysis/geometric_native_common_cold_continuum_energy_validation/release_validation_01/native_control/source_packet.json'
+SOURCE923=ROOT/'analysis/geometric_native_common_cold_preparation_energy_validation/development_native01/native_control.json'
+PIN899='4a5c059176cef063bf12ff7bd98df830395504d6c12051f269a177fcbc375fec'
+PIN923='33b6a3585b6d8cd644e29d30bf2e648e2479f6e87393b7122061dda56d08a5d4'
+OPTIONS=dict(precision=96,theta_cell_count=4,beta_cell_count=1,depth_cell_count=1,max_cells=4096)
+REMAINING=[
+ 'Physical material/force/prestress/work handover, full preparation and load work, general-state mixed operator and NEW equilibrium',
+ 'Whole-clock all-pair admission, including reverse C5 to C1',
+ 'Accepted continuation with independent temporal path work, balances and restart']
+
+def encoded(value):
+    return json.dumps(value,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+
+def digest(value):
+    return hashlib.sha256(encoded(value)).hexdigest()
+
+def source(path,pin):
+    raw=path.read_bytes()
+    if hashlib.sha256(raw).hexdigest()!=pin:raise ValueError('A whole immutable source authority changed: '+str(path))
+    return json.loads(raw)
+
+def context():
+    key=tuple(hashlib.sha256((ROOT/name).read_bytes()).hexdigest() for name in NEW)
+    key+=(hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),)
+    cache=getattr(sys,'_habitable_moon_general_force_context_935',{})
+    if key in cache:return cache[key]
+    from analysis.geometric_native_common_cold_continuum_energy_validation import native_control as saved899
+    from tectonics.geometric_native_common_cold_continuum_energy import bind_native_common_cold_continuum_energy
+    from tectonics.geometric_native_common_coupled_cold_energy import bind_native_common_coupled_cold_energy
+    from tectonics.geometric_native_common_general_force import bind_native_common_general_force
+    started=time.monotonic()
+    # Only definitions/context: frozen931 geometry and exact source restoration.
+    restored=runpy.run_path(str(ROOT/'analysis/geometric_native_common_basal_loading_validation/native_control.txt'))
+    ctx=dict(restored['context']())
+    source899=source(SOURCE899,PIN899)
+    source923=source(SOURCE923,PIN923)
+    continuum=bind_native_common_cold_continuum_energy(*saved899.source_packets(),
+       cold_carrier=ctx['cold_carrier'],cold_tensor_packet=saved899.material_packet(),
+       provenance=saved899.PROVENANCE,precision=96)
+    cold=bind_native_common_coupled_cold_energy(source899,ctx['cold_carrier'],continuum,ctx['preparations'],
+       source923=source923,provenance='NEW whole-source joint895 cold modes and finite radial preparation potential on original volume')
+    general=bind_native_common_general_force(ctx['source907'],ctx['source895'],ctx['source903'],
+       cold_carrier=ctx['cold_carrier'],hot_system=ctx['hot_system'],preparations=ctx['preparations'],
+       basal_trace_system=ctx['trace_system'],cold_energy_system=cold,
+       provenance='NEW declared101 general-state coupled volume, HOT, genuine source contacts and reference-cell basal law',precision=96)
+    ctx.update(general_system=general,cold_energy_system=cold,continuum_system=continuum,
+       source899=source899,source923=source923,
+       timings=dict(ctx['timings'],complete_general_source_geometry_binding_seconds=time.monotonic()-started))
+    cache[key]=ctx;sys._habitable_moon_general_force_context_935=cache
+    return ctx
+
+def query_states(ctx):
+    hot=tuple(F(*v) for v in ctx['source903']['evaluation_queries'][1]['response']['coordinate_increments'])
+    cold=tuple(v/4 for v in ctx['cold_carrier'].bound_coordinate_increments)
+    owner=tuple(F((-1 if i%2 else 1)*(i+1),10000) for i in range(6))
+    internal=tuple(F((-1 if i%2 else 1)*(i+1),1000000) for i in range(8))
+    joint=owner+hot+cold+internal+(F(1,2),)
+    rates=tuple(F((-1 if i%2 else 1)*(i+1),10**16) for i in range(6))
+    rates+=tuple(F((-1 if i%2 else 1)*(i+1),10**15) for i in range(94))+(F(2,10**12),)
+    return [('zero_source_zero_rates',(F(0),)*101,(F(0),)*101),
+            ('finite_owner_joint_body_preparation_rates',joint,rates),
+            ('same_joint_state_opposite_rates',joint,tuple(-v for v in rates))]
+
+def joint_point_controls(ctx):
+    from tectonics import geometric_native_common_coupled_cold_energy as api
+    system=ctx['cold_energy_system'];port=api.native_common_coupled_cold_energy_context(system)
+    archive=port['archive'];materials=ctx['continuum_system'].banks
+    donor=next(b for b in materials if b.owner==archive.donor_owner)
+    receiver=next(b for b in materials if b.owner==archive.receiver_owner)
+    delta=ctx['cold_carrier'].whole_domain_certificate.seam_half_width_radians
+    c=tuple(v/4 for v in ctx['cold_carrier'].bound_coordinate_increments)
+    specs=[('donor_interior_upper_zero',donor,'interior',F(1,3),'upper',(F(0),)*56,F(0)),
+           ('receiver_start_seam_upper_joint',receiver,'start_seam',delta/2,'upper',c,F(1,2)),
+           ('donor_end_seam_lower_joint',donor,'end_seam',delta/2,'lower',c,F(1,2)),
+           ('receiver_interior_lower_full_preparation',receiver,'interior',F(1,3),'lower',c,F(1))]
+    controls=[]
+    for label,material,tag,angle,layer,coordinates,lam in specs:
+        bank=next(b for b in ctx['cold_carrier'].banks if b.original_parent_id==material.original_parent_id)
+        blo=2*archive.whole_domain_certificate.gamma if material.owner==archive.donor_owner else F(0)
+        beta=(blo+bank.beta_cut_radians)/2
+        depth=material.elastic_layer_areal_depth_m/2 if layer=='upper' else (
+            material.elastic_layer_areal_depth_m+material.areal_material_thickness_m)/2
+        point=api.evaluate_native_common_coupled_cold_point(system,material.original_parent_id,tag,angle,beta,depth,
+            coordinates,lam,precision=96,layer=layer)
+        controls.append(dict(label=label,response=api.native_common_coupled_cold_point_to_dict(point)))
+    return controls
+
+def run(output,progress=None):
+    from tectonics import geometric_native_common_general_force as api
+    from tectonics import geometric_native_common_coupled_cold_energy as cold_api
+    from tectonics.geometric_native_common_basal_trace import native_common_basal_trace_to_dict
+    from tectonics.geometric_native_pose import FractionInterval as I
+    started=time.monotonic()
+    progress_path=Path(progress) if progress else None
+    if progress_path:
+        with progress_path.open('xb') as stream:stream.write(encoded(dict(phase='source_geometry_binding',elapsed_seconds=0))+b'\n')
+    def stage(phase):
+        if progress_path:
+            with progress_path.open('ab') as stream:
+                stream.write(encoded(dict(phase=phase,elapsed_seconds=time.monotonic()-started))+b'\n')
+    ctx=context();system=ctx['general_system'];cold=ctx['cold_energy_system'];stage('source_geometry_bound')
+    gdto=api.native_common_general_force_to_dict(system)
+    cdto=cold_api.native_common_coupled_cold_energy_to_dict(cold)
+    cr=cold_api.native_common_coupled_cold_energy_from_dict(cdto,ctx['source899'],ctx['cold_carrier'],
+        ctx['continuum_system'],ctx['preparations'],source923=ctx['source923'],provenance=cold.provenance)
+    gr=api.native_common_general_force_from_dict(gdto,ctx['source907'],ctx['source895'],ctx['source903'],
+        cold_carrier=ctx['cold_carrier'],hot_system=ctx['hot_system'],preparations=ctx['preparations'],
+        basal_trace_system=ctx['trace_system'],cold_energy_system=cr)
+    assert api.native_common_general_force_to_dict(gr)==gdto
+    assert cold_api.native_common_coupled_cold_energy_to_dict(cr)==cdto
+    def bound(x):return I(F(*x['lo']),F(*x['hi']))
+    def overlap(a,b):return max(a.lo,b.lo)<=min(a.hi,b.hi)
+    queries=[];query_start=time.monotonic()
+    for label,values,rates in query_states(ctx):
+        stage('query_'+label)
+        qs=time.monotonic()
+        result=api.evaluate_native_common_general_force(system,values,coordinate_rates=rates,**OPTIONS)
+        dto=api.native_common_general_force_response_to_dict(result)
+        restored=api.native_common_general_force_response_from_dict(dto,system=gr,
+            expected_coordinates101=values,expected_coordinate_rates=rates,**OPTIONS)
+        assert api.native_common_general_force_response_to_dict(restored)==dto
+        cold_dto=json.loads(dto['cold_response_json']);basal=json.loads(dto['basal_response_json'])
+        assert len(result.residual_bounds)==101
+        assert all(len(row)==101 for row in result.state_tangent_bounds+result.velocity_tangent_bounds)
+        assert result.conservative_hessian_bounds==tuple(zip(*result.conservative_hessian_bounds))
+        assert result.velocity_tangent_bounds==tuple(zip(*result.velocity_tangent_bounds))
+        assert len(cold_dto['cell_receipts'])==408
+        assert cold_dto['whole_original_integral_certified'] is True
+        assert cold_dto['full_cold56_preparation_mixed_derivatives_computed'] is True
+        assert len(result.contact_atoms_json)==16 and len(result.contact_side_receipts_json)==32
+        assert len(result.basal_trace_records_json)==68
+        assert len(result.internal_beam_receipts_json)==8
+        assert result.frozen_owner_load_potential_used is False
+        for i in range(101):
+            assert overlap(result.residual_bounds[i],result.conservative_gradient_bounds[i]-bound(basal['residual_bounds'][i]))
+            for j in range(101):
+                assert overlap(result.state_tangent_bounds[i][j],
+                    result.conservative_hessian_bounds[i][j]-bound(basal['state_tangent_bounds'][i][j]))
+                assert result.velocity_tangent_bounds[i][j]==bound(basal['drag_bounds'][i][j])
+        assert bound(basal['drag_dissipation_bounds_w']).lo>=0
+        antisymmetric=sum(1 for i in range(101) for j in range(i)
+            if not overlap(bound(basal['state_tangent_bounds'][i][j]),bound(basal['state_tangent_bounds'][j][i])))
+        queries.append(dict(label=label,coordinate_values=[[v.numerator,v.denominator] for v in values],
+            coordinate_rates=[[v.numerator,v.denominator] for v in rates],response=dto,
+            complete_general_response_restart_equal=True,conservative_hessian_exactly_symmetric=True,
+            residual_and_state_tangent_assembly_identity_checked_entries=10302,
+            rate_tangent_equals_material_gram_drag_checked_entries=10201,
+            certified_basal_state_antisymmetric_entry_count=antisymmetric,
+            source_contact_area_rows_used_once=16,reference_basal_weights_used_once=68,
+            coupled_whole_original_volume_cells=408,seconds=time.monotonic()-qs))
+    plus,minus=queries[1]['response'],queries[2]['response']
+    for key in ('energy_bounds_j','conservative_gradient_bounds','conservative_hessian_bounds',
+                'cold_response_json','hot_response_json','contact_atoms_json','contact_side_receipts_json',
+                'velocity_tangent_bounds','owner_rotation_receipts_json','internal_beam_receipts_json'):
+        assert plus[key]==minus[key],key
+    bp,bm=json.loads(plus['basal_response_json']),json.loads(minus['basal_response_json'])
+    assert bp['prescribed_generalized_force_bounds']==bm['prescribed_generalized_force_bounds']
+    assert bp['drag_bounds']==bm['drag_bounds']
+    assert bp['drag_dissipation_bounds_w']==bm['drag_dissipation_bounds_w']
+    try:
+        api.evaluate_native_common_general_force(system,coordinate_rates=None)
+    except ValueError as exc:rate_rejection=str(exc)
+    else:raise AssertionError('General-state physical coordinate rates must be explicit')
+    stage('source_bound_joint_point_controls');points=joint_point_controls(ctx)
+    result=dict(format='native-common-general-force-control-1',status='PASS_NATIVE935_DECLARED_GENERAL_STATE_OPERATOR',
+        general_system=gdto,cold_energy_system=cdto,trace_system=native_common_basal_trace_to_dict(ctx['trace_system']),
+        queries=queries,joint_cold_point_controls=points,integration_options=OPTIONS,
+        complete_general_system_restart_equal=True,complete_cold_system_restart_equal=True,
+        implicit_rate_rejection=rate_rejection,opposite_rates_preserve_conservative_state_and_drag=True,
+        authority_reference=dict(source899=dict(path=str(SOURCE899.relative_to(ROOT)),raw_sha256=PIN899),
+            source923=dict(path=str(SOURCE923.relative_to(ROOT)),raw_sha256=PIN923),
+            source907=dict(path='analysis/geometric_native_common_mixed_force_validation/release_validation_01/native_control/source_packet.json',
+                raw_sha256='5e5555712e57fd69156ee475fe5feb161baef3cb96dd911a443228d160f53005'),
+            source895=dict(path='analysis/geometric_native_common_cold_material_carrier_validation/release_validation_02/native_control/source_packet.json',
+                raw_sha256='fbafd092a4eb98472e60f79665e1e0fe8e9e1c2c2b9d3679344a32e59593cc89'),
+            source903=dict(path='analysis/geometric_native_common_hot_mean_validation/release_validation_02/native_control/source_packet.json',
+                raw_sha256='0f8a0ee8ae082e3434b136bab7515944354eaf059db95965d0e87259f6791035')),
+        coordinate_count=101,cold_body_coordinate_count=56,hot_body_coordinate_count=30,owner_coordinate_count=6,
+        internal_coordinate_count=8,preparation_coordinate_count=1,actual_original_contact_atom_count=16,
+        actual_original_contact_side_count=32,actual_fixed_reference_basal_trace_count=68,
+        coupled_cold_whole_original_volume_integral_certified=True,
+        coupled_cold_body_preparation_mixed_derivatives_computed=True,
+        complete_declared_general_state_operator_computed=True,general_finite_owner_state_chart_defined=True,
+        full_mixed_force_and_tangent_certified=False,general_state_full_physics_operator_certified=False,
+        frozen_owner_load_potential_used=False,conservative_spatial_loading_potential_used=False,
+        original_cartesian_material_gradients_computed_for_contacts=True,
+        reference_preparation_work_paid=False,full_system_preparation_work_certified=False,
+        historical_archived_three_dimensional_prestress_recovered=False,
+        new_preparation_path_constitutive_admissibility_certified=False,
+        continuum_whole_base_quadrature_certified=False,complete_actual_bottom_support_certified=False,
+        new_mixed_force_equilibrium_certified=False,whole_clock_all_pair_admission_authorized=False,
+        physical_material_admission_authorized=False,full_system_temporal_path_work_certified=False,
+        clocks_advanced=False,source_geometry_elapsed_time_s=0,contact_geometry_elapsed_time_s=2000000,
+        memory_elapsed_time_s=1000000,material_geometry_elapsed_time_s=1000000,
+        accepted_original_native_intervals=1,accepted_new_native_intervals=0,
+        original_point_1_completed=False,original_point_1_remaining_work_blocks=1,
+        previous_tensor_quadrature_reexecuted=False,historical_force_solve_reexecuted=False,
+        remaining_physical_conditions=REMAINING,
+        timings=dict(ctx['timings'],query_seconds=time.monotonic()-query_start,total_seconds=time.monotonic()-started))
+    stage('complete_validation')
+    result['sha256']=digest(result)
+    with Path(output).open('xb') as stream:stream.write(encoded(result)+b'\n')
+    print(encoded(result).decode())
+
+if __name__=='__main__':
+    parser=argparse.ArgumentParser();parser.add_argument('--output',required=True)
+    parser.add_argument('--progress')
+    args=parser.parse_args();run(args.output,args.progress)

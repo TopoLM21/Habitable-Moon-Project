@@ -29,7 +29,8 @@ def _fixture(*, temperature=1000., surface=None, tides=False, viscosity=1e24):
     energy[3] = global_state.initial_total_energy-sum(energy[:2])
     global_state = replace(global_state, energy=energy)
     columns = np.full_like(state.column_enthalpy, rock_enthalpy(temperature, model.thermal))
-    state = replace(state, column_enthalpy=columns,
+    # This prescribed thermal control has no calculated material birth path.
+    state = replace(state, column_enthalpy=columns, bulk_birth_history=None, cohort_mechanics=None,
         boundary_energy_j=float(np.sum(state.layer_mass_kg*columns))-state.initial_column_energy_j,
         elastic_strain=np.tile([.001, -.001, .002], (model.mesh.cell_count, 1)),
         membrane_established=True)

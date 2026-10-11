@@ -12,6 +12,11 @@ from dataclasses import dataclass, fields, replace
 import math
 from numbers import Integral, Real
 from pathlib import Path
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .genesis_bulk_birth import BulkBirthHistory
+    from .genesis_cohort_mechanics import CohortMechanicsState
 from types import SimpleNamespace
 
 import numpy as np
@@ -31,7 +36,7 @@ from .genesis_onset_support import face_velocities
 from .genesis_shell import Membrane, mantle_traction, maximum_total_strain
 from .genesis_seam_diagnostics import seam_connectivity, cohort_bonded_traces
 
-COUPLED_VERSION = "genesis-coupled-0.2"
+COUPLED_VERSION = "genesis-coupled-0.4"
 
 
 @dataclass(frozen=True)
@@ -87,6 +92,8 @@ class CoupledState:
     mechanical_energy_remainder_j: float = 0.
     interface_birth_energy_j: float = 0.
     stopped_reason: str | None = None
+    bulk_birth_history: BulkBirthHistory | None = None
+    cohort_mechanics: CohortMechanicsState | None = None
 
 
 class CoupledModel:
@@ -142,12 +149,15 @@ class CoupledModel:
             np.repeat(geometry.edge_length_m, 2), gap, jump, source.time_myr, self.law_parameters,
             self.parameters.bonding_gap_tolerance_m)
         contact = replace(contact, **aggregate_cohorts(cohorts, len(depth)))
+        # Cutting duplicates vertices, while material-face order and the
+        # world-coordinate diagnostic velocity remain inherited unchanged.
         return CoupledState(source.time_myr, contact, cohorts, geometry.topology.cut_edges.copy(),
             np.repeat(geometry.edge_length_m, 2)*depth/2, depth, source.column_enthalpy.copy(), source.elastic_strain.copy(),
             source.damage.copy(), source.water_access.copy(), source.fault_active.copy(), source.plane_normal.copy(),
-            source.fault_candidate_age_myr.copy(), np.zeros_like(source.velocity_km_myr),
+            source.fault_candidate_age_myr.copy(), source.velocity_km_myr.copy(),
             source.tidal_stress_mpa.copy(), source.boundary_energy_j, source.tidal_heat_received_j,
-            source.initial_column_energy_j)
+            source.initial_column_energy_j, bulk_birth_history=source.bulk_birth_history,
+            cohort_mechanics=source.cohort_mechanics)
 
     def _reference_front(self, geometry, fraction):
         """Solid material coordinate, unaffected by displacement or column area."""
@@ -251,11 +261,22 @@ class CoupledModel:
                        interface_depth_ref_m=depth, interface_birth_energy_j=state.interface_birth_energy_j+born_energy,
                        new_seam_count=state.new_seam_count+len(cuts)-len(old.topology.cut_edges))
 
-    def _bulk_energy(self, elastic, damage, fraction):
+    def _bulk_energy(self, elastic, damage, fraction, *, cohort_mechanics=None, birth_history=None):
+        if cohort_mechanics is not None:
+            from .genesis_cohort_mechanics import cohort_mechanics_energy
+            return cohort_mechanics_energy(cohort_mechanics, birth_history, damage, self.source_model.p)
         p = self.source_model.p
         factor = p.young_modulus_pa*(p.residual_stiffness+(1-p.residual_stiffness)*(1-damage)**2)
         volume = self.layer_mass_kg.sum(axis=1)*fraction/p.density_kg_m3
         return .5*float(np.sum(np.einsum("fi,ij,fj->f", elastic, self.original_membrane.d, elastic)*factor*volume))
+
+    def _cohort_loading_energy(self, loading, elastic, damage):
+        """Sum the physical parallel-layer energies, including variance."""
+        p = self.source_model.p
+        degradation = p.residual_stiffness+(1-p.residual_stiffness)*(1-damage)**2
+        factor = p.young_modulus_pa*degradation[loading.face_index]
+        return .5*float(np.sum(np.einsum("ci,ij,cj->c", elastic, self.original_membrane.d,
+            elastic)*factor*loading.volume_m3))
 
     def _interface_energy(self, state, geometry):
         gap, jump = (geometry.jump_operator@state.contact.displacement_m).reshape(-1, 2).T
@@ -333,15 +354,30 @@ class CoupledModel:
         inc = geometry._strain(delta)
         elastic = loading.memory+loading.effective_b[:, None]*inc
         stress = np.einsum("fij,fj->fi", elasticity, elastic)
-        if maximum_total_strain(elastic) > self.source_model.mobile_p.max_elastic_strain:
+        constitutive = None
+        if getattr(loading, "cohort_loading", None) is not None:
+            from .genesis_cohort_mechanics import evaluate_cohort_loading
+            rotation = np.broadcast_to(np.eye(2), (len(inc), 2, 2))
+            constitutive = evaluate_cohort_loading(loading.cohort_loading, inc, rotation, damage)
+            elastic, stress = constitutive.mean_elastic, constitutive.stress
+            maximum_strain = constitutive.max_elastic_strain
+        else:
+            maximum_strain = maximum_total_strain(elastic)
+        if maximum_strain > self.source_model.mobile_p.max_elastic_strain:
             raise _RetryStep("coupled_elastic_limit")
         history = replace(old, elapsed_years=(loading.thermal_state.time_myr-self.source_time_myr)*1e6,
             displacement_m=q, **aggregate_cohorts(response[0], len(water)),
             drag_work_j=old.drag_work_j+float(np.dot(drag, delta**2)), external_work_j=old.external_work_j+float(external@delta),
             equilibrium_residual=norm, last_step_years=loading.dt_myr*1e6, accepted_steps=old.accepted_steps+1)
         self._check_geometry(geometry, history, old)
-        work = float(np.sum(np.einsum("fi,fi->f", .5*(initial_stress+stress), inc)*volume))
-        energy_change = self._bulk_energy(elastic, damage, loading.fraction)-self._bulk_energy(loading.memory, damage, loading.fraction)
+        if constitutive is None:
+            work = float(np.sum(np.einsum("fi,fi->f", .5*(initial_stress+stress), inc)*volume))
+            energy_change = self._bulk_energy(elastic, damage, loading.fraction)-self._bulk_energy(loading.memory, damage, loading.fraction)
+        else:
+            work = constitutive.mechanical_work_j
+            predictor_energy = self._cohort_loading_energy(loading.cohort_loading,
+                loading.cohort_loading.memory, damage)
+            energy_change = constitutive.energy_j-predictor_energy
         return history, elastic, stress, work, work-energy_change, response[0]
 
     def _geometry_utilization(self, geometry, contact, previous=None, *, geometric_gap_m=None):
@@ -410,11 +446,14 @@ class CoupledModel:
         state = self._grow_cuts(before, thermal)
         geometry = self._geometry(state.cut_edges)
         mesh, radius, old_fraction, _, _, _ = self._phase_fields(state, thermal)
+        self._validate_bulk_birth(state, old_fraction)
+        self._validate_cohort_mechanics(state, thermal)
         loading = advance_thermal_loading(self.source_model, mesh=mesh, radius_km=radius,
             layer_mass_kg=self.layer_mass_kg, column_enthalpy=state.column_enthalpy,
             elastic_strain=state.elastic_strain, damage=state.damage, water_access=state.water_access,
             boundary_energy_j=state.boundary_energy_j, thermal_state=thermal, orbit=orbit,
-            target_myr=target, max_step_myr=max_step)
+            target_myr=target, max_step_myr=max_step,
+            bulk_birth_history=state.bulk_birth_history, cohort_mechanics=state.cohort_mechanics)
         area_change = self._interface_area_change(geometry, loading.fraction, loading.column_depth_km)
         if area_change > self.parameters.max_interface_area_change_fraction:
             raise _RetryStep("coupled_interface_geometry_limit")
@@ -430,12 +469,26 @@ class CoupledModel:
         velocity = face_velocities(mesh.centroids, moved.centroids, .5*(radius+next_radius), loading.dt_myr)
         # Exact accounting of the constitutive predictor's stored-energy
         # changes; these are NOT deposited as heat into overlapping reservoirs.
-        e0 = self._bulk_energy(state.elastic_strain, state.damage, old_fraction)
-        inherited = loading.retained[:, None]*state.elastic_strain
-        e1 = self._bulk_energy(inherited, damage, loading.fraction)
-        relaxed = inherited*loading.maxwell_r[:, None]
-        e2 = self._bulk_energy(relaxed, damage, loading.fraction)
-        e3 = self._bulk_energy(loading.memory, damage, loading.fraction)
+        if loading.cohort_loading is None:
+            e0 = self._bulk_energy(state.elastic_strain, state.damage, old_fraction)
+            inherited = loading.retained[:, None]*state.elastic_strain
+            e1 = self._bulk_energy(inherited, damage, loading.fraction)
+            relaxed = inherited*loading.maxwell_r[:, None]
+            e2 = self._bulk_energy(relaxed, damage, loading.fraction)
+            e3 = self._bulk_energy(loading.memory, damage, loading.fraction)
+            next_cohort_mechanics = None
+        else:
+            from .genesis_cohort_mechanics import evaluate_cohort_loading, accept_cohort_loading
+            local = loading.cohort_loading
+            increment = geometry._strain(history.displacement_m-state.contact.displacement_m)
+            response = evaluate_cohort_loading(local, increment,
+                np.broadcast_to(np.eye(2), (len(increment), 2, 2)), damage)
+            next_cohort_mechanics = accept_cohort_loading(local, response)
+            e0 = self._bulk_energy(state.elastic_strain, state.damage, old_fraction,
+                cohort_mechanics=state.cohort_mechanics, birth_history=state.bulk_birth_history)
+            e1 = self._cohort_loading_energy(local, local.old_elastic, damage)
+            e2 = self._cohort_loading_energy(local, local.relaxed_elastic, damage)
+            e3 = self._cohort_loading_energy(local, local.memory, damage)
         provisional = replace(state, time_myr=loading.thermal_state.time_myr, contact=history, cohorts=cohorts,
             column_enthalpy=loading.column_enthalpy, elastic_strain=elastic, damage=damage,
             water_access=loading.water_access, tidal_stress_mpa=tidal_peak, velocity_km_myr=velocity,
@@ -449,7 +502,8 @@ class CoupledModel:
             bulk_parameter_energy_change_j=state.bulk_parameter_energy_change_j+e1-e0,
             thermal_eigenstrain_energy_change_j=state.thermal_eigenstrain_energy_change_j+e3-e2,
             bulk_increment_work_j=state.bulk_increment_work_j+work,
-            bulk_increment_energy_loss_j=state.bulk_increment_energy_loss_j+loss)
+            bulk_increment_energy_loss_j=state.bulk_increment_energy_loss_j+loss,
+            cohort_mechanics=next_cohort_mechanics)
         # Motion changes column depth at fixed mass, even after conduction has
         # finished. Check geometric distortion independently of solidification.
         _, _, final_fraction, _, _, final_depth = self._phase_fields(provisional, loading.thermal_state)
@@ -464,7 +518,58 @@ class CoupledModel:
         provisional.mechanical_energy_remainder_j = state.mechanical_energy_remainder_j+remainder
         if loading.thermal_state.stopped_reason:
             provisional.stopped_reason = loading.thermal_state.stopped_reason
+        if state.bulk_birth_history is not None:
+            # The thermal-first constitutive predictor and accepted catalogue
+            # describe the same material. Geometric motion changes depth but
+            # cannot change the mass-coordinate phase front.
+            if not np.array_equal(final_fraction, loading.fraction):
+                raise _RetryStep("coupled_constitutive_front_limit")
+            provisional.bulk_birth_history = loading.bulk_birth_history
+            self._validate_cohort_mechanics(provisional, loading.thermal_state)
         return provisional, loading.thermal_state, loading.orbit
+
+    def _validate_bulk_birth(self, state, fraction):
+        if state.bulk_birth_history is None:
+            if self.source.source_state.bulk_birth_history is not None:
+                raise ValueError("Coupled has lost the source bulk birth history")
+            return
+        source_history = self.source.source_state.bulk_birth_history
+        if source_history is None:
+            raise ValueError("Coupled cannot invent missing source bulk birth history")
+        from .genesis_bulk_birth import validate_bulk_birth, validate_bulk_birth_continuation
+        validate_bulk_birth(state.bulk_birth_history, layer_mass_kg=self.layer_mass_kg,
+            time_myr=state.time_myr, front_fraction=fraction,
+            source_identity=source_history.source_identity)
+        if (state.bulk_birth_history.accepted_intervals !=
+                source_history.accepted_intervals+state.accepted_steps):
+            raise ValueError("Coupled bulk birth and accepted-step counts disagree")
+        validate_bulk_birth_continuation(state.bulk_birth_history, source_history)
+
+    def _validate_cohort_mechanics(self, state, thermal=None):
+        """Require prospective depth memory for every calculated birth source."""
+        if state.bulk_birth_history is None:
+            if state.cohort_mechanics is not None:
+                raise ValueError("Coupled cohort constitutive memory has no material birth source")
+            return
+        if state.cohort_mechanics is None or self.source.source_state.cohort_mechanics is None:
+            raise ValueError("Coupled cannot invent missing source cohort constitutive memory; replay molten Genesis")
+        from .genesis_cohort_mechanics import validate_cohort_mechanics, cohort_mechanics_mean
+        validate_cohort_mechanics(state.cohort_mechanics, state.bulk_birth_history, established=True,
+            parameters=self.source_model.p, damage=state.damage)
+        from .genesis_cohort_mechanics import cohort_mechanics_max_strain
+        if cohort_mechanics_max_strain(state.cohort_mechanics) > self.source_model.mobile_p.max_elastic_strain:
+            raise ValueError("Coupled cohort elastic strain exceeds material limit")
+        if not np.allclose(cohort_mechanics_mean(state.cohort_mechanics, state.bulk_birth_history),
+                state.elastic_strain, rtol=2e-12, atol=1e-14):
+            raise ValueError("Coupled shell diagnostic differs from cohort constitutive memory")
+        if thermal is not None:
+            from .genesis_cohort_mechanics import cohort_temperature
+            tm, ts = temperatures(np.asarray(thermal.energy), self.source_model.thermal)
+            _, _, column_temperature = self.source_model._phase(state.column_enthalpy, ts, tm)
+            expected = cohort_temperature(state.bulk_birth_history, column_temperature, ts, tm)
+            stored = np.array([c.temperature_k for c in state.cohort_mechanics.cohorts])
+            if not np.allclose(stored, expected, rtol=2e-12, atol=1e-8):
+                raise ValueError("Coupled cohort temperatures differ from conductive material profile")
 
     def step(self, state, thermal, orbit, target_myr, max_step_myr=.001):
         if (state.stopped_reason or thermal.stopped_reason or not np.isfinite(target_myr)
@@ -519,13 +624,23 @@ class CoupledModel:
         maximum = lambda x: float(np.max(x)) if np.size(x) else 0.
         geometry = self._geometry(state.cut_edges)
         limits = self._geometry_utilization(geometry, c, geometric_gap_m=data["seam_gap_m"])
-        elastic = maximum_total_strain(state.elastic_strain)
+        if state.cohort_mechanics is None:
+            elastic = maximum_total_strain(state.elastic_strain)
+        else:
+            from .genesis_cohort_mechanics import cohort_mechanics_max_strain
+            elastic = cohort_mechanics_max_strain(state.cohort_mechanics)
         limits.update(max_elastic_strain=elastic,
             elastic_strain_utilization=elastic/self.source_model.mobile_p.max_elastic_strain,
             interface_area_utilization=state.interface_area_change_fraction/self.parameters.max_interface_area_change_fraction,
             cohort_count_utilization=len(state.cohorts.trace_index)/self.parameters.max_cohort_count)
         connectivity = seam_connectivity(geometry.topology,
             cohort_bonded_traces(state.cohorts, 2*len(state.cut_edges)))
+        constitutive = {}
+        if state.cohort_mechanics is not None:
+            constitutive = {"bulk_cohort_"+name: getattr(state.cohort_mechanics, name)
+                for name in ("elastic_energy_j", "mechanical_work_j", "thermal_work_j",
+                    "viscous_dissipation_j", "plastic_work_j", "damage_energy_change_j",
+                    "remelt_energy_removed_j", "balance_residual_j")}
         return {"time_myr": state.time_myr, "source_time_myr": self.source_time_myr,
             "elapsed_years": (state.time_myr-self.source_time_myr)*1e6,
             "surface_temperature_k": g["surface_temperature_k"], "mantle_temperature_k": g["mantle_temperature_k"],
@@ -552,7 +667,9 @@ class CoupledModel:
             "relative_column_energy_residual": (float(np.sum(self.layer_mass_kg*state.column_enthalpy))
                 -state.initial_column_energy_j-state.boundary_energy_j)/max(abs(state.initial_column_energy_j), 1.),
             "orbit_heat_transfer_relative_residual": (state.tidal_heat_received_j-orbit.dissipated_energy_j)/max(orbit.dissipated_energy_j, 1.),
-            "bulk_elastic_energy_j": self._bulk_energy(state.elastic_strain, state.damage, fraction),
+            "bulk_elastic_energy_j": self._bulk_energy(state.elastic_strain, state.damage, fraction,
+                cohort_mechanics=state.cohort_mechanics, birth_history=state.bulk_birth_history),
+            **constitutive,
             "interface_elastic_energy_j": self._interface_energy(state, self._geometry(state.cut_edges)),
             "friction_work_j": float(c.friction_work_cell_j.sum()), "viscous_work_j": float(c.viscous_work_cell_j.sum()),
             "fracture_work_j": float(c.fracture_work_cell_j.sum()), "drag_work_j": c.drag_work_j,

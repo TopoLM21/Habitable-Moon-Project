@@ -1,0 +1,46 @@
+"""Final913 evidence-only reader; no project imports or physical maths."""
+from pathlib import Path
+import argparse,hashlib,json,types,time,sys
+ROOT=Path('/workspace/Habitable-Moon-Project')
+P=ROOT/'analysis/geometric_native_common_receiving_face_validation'
+def enc(x):return json.dumps(x,sort_keys=True,separators=(',',':'),ensure_ascii=False).encode()
+def digest(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def seal(p,k):
+ x=json.loads(Path(p).read_bytes());assert hashlib.sha256(enc({a:b for a,b in x.items() if a!=k})).hexdigest()==x[k];return x
+def meaningful(p):return {str(x.relative_to(p)) for x in p.rglob('*') if x.is_file() and '__pycache__' not in x.parts and x.suffix!='.pyc'}
+def run(output):
+ t=time.perf_counter();source=Path(__file__)
+ manifest=seal(P/'artifact_manifest.json','manifest_sha256')
+ assert digest(source)==digest(P/'readback_template.txt') and manifest['source_count']==913
+ names=set()
+ for name,row in manifest['files'].items():
+  path=ROOT/name;assert digest(path)==row['sha256'] and path.stat().st_size==row['bytes']
+  if path.is_relative_to(P):names.add(str(path.relative_to(P)))
+ assert meaningful(P)==names|{'artifact_manifest.json'}
+ docs=json.loads((P/'document_facts.json').read_bytes())['document_raw_sha256']
+ for name,pin in docs.items():assert digest(name)==pin
+ gate=seal(P/'report.json','gate_sha256');audit=seal(P/'audit_report.json','audit_sha256')
+ assert gate['status']=='PASS_FROZEN913_COMPLETE_CURVED_FACE_GATE' and audit['status']=='PASS_INDEPENDENT_COMPLETE_CURVED_RECEIVING_FACE_AUDIT'
+ helper=P/'preservation_source.txt';m=types.ModuleType('_final913_preservation_definitions');m.__file__=str(helper)
+ exec(compile(helper.read_bytes(),str(helper),'exec'),m.__dict__)
+ preservation_output=Path('/workspace')/('receiving_face_guard_'+hashlib.sha256(str(Path(output).resolve()).encode()).hexdigest()+'.json')
+ preserved=m.run(json.loads((P/'additive_source_map.json').read_bytes()),preservation_output)
+ assert preserved['source_sha256']==json.loads((P/'frozen_source_map_913.json').read_bytes())
+ for name,row in manifest['files'].items():assert digest(ROOT/name)==row['sha256']
+ for name,pin in docs.items():assert digest(name)==pin
+ result=dict(status='PASS_FINAL913_EVIDENCE_READBACK_ONLY',source_count=913,manifest_file_count=len(manifest['files']),
+  manifest_raw_sha256=digest(P/'artifact_manifest.json'),manifest_sha256=manifest['manifest_sha256'],
+  executing_reader_raw_sha256=digest(source),document_raw_sha256=docs,
+  gate_sha256=gate['gate_sha256'],audit_report_sha256=audit['audit_sha256'],
+  tests_passed=gate['tests_passed'],point_query_count=gate['point_query_count'],whole_face_operator_count=gate['whole_face_operator_count'],
+  independent_comparisons=audit['comparisons'],old909_and_ancestry_preserved=True,
+  physical_receiving_traction_law_defined=True,complete_C6_HOT_C1_curved_face_covered=True,
+  physical_source_work_handover_certified=False,preparation_or_activation_work_paid=False,
+  physical_material_admission_authorized=False,new_mixed_equilibrium_certified=False,
+  clocks_advanced=False,accepted_new_native_intervals=0,original_point_1_completed=False,
+  original_point_1_remaining_work_blocks=1,old_physical_math_or_solver_or_mains_executed=False,seconds=time.perf_counter()-t)
+ result['audit_sha256']=hashlib.sha256(enc(result)).hexdigest()
+ with Path(output).open('xb') as f:f.write(enc(result)+b'\n')
+ print(enc(result).decode())
+if __name__=='__main__':
+ parser=argparse.ArgumentParser();parser.add_argument('--output',required=True);run(parser.parse_args().output)

@@ -1,0 +1,45 @@
+"""Fresh evidence-only preservation baseline; no project imports or old mains."""
+from pathlib import Path
+import hashlib,json,sys,time,types
+STAGE=Path('/workspace/mixed_force_baseline_20261007')
+GUARD=STAGE/'baseline_903_preservation_source.txt'
+started=time.perf_counter()
+m=types.ModuleType('_baseline903_definition_probe');m.__file__=str(GUARD)
+exec(compile(GUARD.read_bytes(),str(GUARD),'exec'),m.__dict__)
+modules_before=m.project_modules()
+old,b=m.primitives()
+frozen,fresh,pins=m.preserved_inputs(old,b)
+actual_before=b.source_map()
+b.require(set(actual_before)-set(frozen)<=set(m.ADDED_NAMES),'Only authorized907 namespace additions BEFORE')
+b.exact({k:actual_before.get(k) for k in frozen},frozen,'Full immutable903 source map BEFORE')
+b.pin(pins,GUARD,b.digest(GUARD))
+after_frozen,after_fresh,after_pins=m.preserved_inputs(old,b)
+b.exact(after_frozen,frozen,'Full frozen903 authority unchanged AFTER')
+b.exact(after_fresh,fresh,'Fresh903 baseline unchanged AFTER')
+for name,pin in pins.items():b.exact(b.digest(name),pin,'All inherited/preserved dependency bytes unchanged AFTER')
+actual_after=b.source_map()
+b.require(set(actual_after)-set(frozen)<=set(m.ADDED_NAMES),'Only authorized907 namespace additions AFTER')
+b.exact({k:actual_after.get(k) for k in frozen},frozen,'Full immutable903 source map AFTER')
+modules_after=m.project_modules()
+b.exact(set(modules_after),set(modules_before),'Caller project module namespace preserved')
+b.require(all(modules_after[name] is value for name,value in modules_before.items()),'Caller project module identities preserved')
+result=dict(status='PASS_PRE907_IMMUTABLE903_BASELINE_DEFINITIONS_ONLY',prior_python_source_count=903,
+ current_python_source_count_before=len(actual_before),current_python_source_count_after=len(actual_after),
+ current_python_source_map_before=actual_before,current_python_source_map_after=actual_after,
+ all903_python_sources_unchanged=True,complete_actual_source_map_checked_before_after=True,
+ preserved_current903_manifest_file_count=77,preserved_current903_final_archive_file_count=4,
+ preserved_prior899_manifest_file_count=36,preserved_prior899_final_archive_file_count=4,
+ preserved_prior895_manifest_file_count=50,preserved_prior895_final_archive_file_count=4,
+ preserved_prior891_manifest_file_count=44,preserved_prior891_final_archive_file_count=4,
+ preserved_prior887_manifest_file_count=41,preserved_prior887_final_archive_file_count=4,
+ preserved_prior883_raw_dependency_pin_count=341,temporary_alias_count=15,strict_ancestry_closure_count=11,
+ recorded_raw_dependency_pin_count=len(pins),dependency_raw_sha256=pins,
+ fresh903_readback_raw_sha256=m.FRESH_REPORT_RAW,fresh903_readback_selfseal=m.FRESH_REPORT_SEAL,
+ executing_guard_source_raw_sha256=b.digest(GUARD),executing_probe_source_raw_sha256=b.digest(Path(__file__).resolve()),
+ project_imports=False,project_modules_imported_reloaded_or_replaced=False,
+ caller_existing_project_module_count=len(modules_before),old_reader_or_guard_or_auditor_main_executed=False,
+ math_or_tests_or_solver_or_quadrature_reexecuted=False,seconds=time.perf_counter()-started)
+result['preservation_sha256']=b.value_digest(result)
+output=STAGE/'guard903_baseline_probe.json'
+with output.open('xb') as stream:stream.write(b.encoded(result)+b'\n')
+print(b.encoded(result).decode())

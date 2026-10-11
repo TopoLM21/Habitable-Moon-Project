@@ -1,0 +1,76 @@
+"""Byte-only restoration of authenticated931 baseline associations and927 ancestry."""
+from pathlib import Path
+import argparse,hashlib,json,subprocess,sys
+ROOT=Path('/workspace/Habitable-Moon-Project')
+P=ROOT/'analysis/geometric_native_common_basal_loading_validation'
+F=ROOT/'analysis/geometric_native_common_basal_loading_final_readback'
+def enc(x):return json.dumps(x,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+def digest(p):
+    h=hashlib.sha256()
+    with Path(p).open('rb') as f:
+        for b in iter(lambda:f.read(1024*1024),b''):h.update(b)
+    return h.hexdigest()
+def load(p):return json.loads(Path(p).read_bytes())
+def sealed(p):
+    x=load(p);assert x['sha256']==hashlib.sha256(enc({k:v for k,v in x.items() if k!='sha256'})).hexdigest(),p;return x
+
+def meaningful(p):return {str(x.relative_to(p)) for x in p.rglob('*') if x.is_file() and '__pycache__' not in x.parts and x.suffix!='.pyc'}
+def restore_authenticated_copy(target,source,pin):
+    target=Path(target).resolve();source=Path(source).resolve()
+    assert target.is_relative_to('/workspace') and not target.is_relative_to(ROOT)
+    assert source.is_relative_to(P/'baseline927') and digest(source)==pin
+    if target.exists():
+        assert digest(target)==pin,target
+        return False
+    target.parent.mkdir(parents=True,exist_ok=True)
+    assert target.parent.resolve().is_relative_to('/workspace') and not target.parent.resolve().is_relative_to(ROOT)
+    with target.open('xb') as f:f.write(source.read_bytes())
+    assert digest(target)==pin
+    return True
+
+def run(output):
+    output=Path(output).resolve()
+    assert output.is_relative_to('/workspace') and not output.is_relative_to(ROOT)
+    assert not output.exists()
+    archive=sealed(F/'archive.json')
+    assert archive['status']=='PASS_FINAL931_READBACK_ARCHIVE_CLOSED' and archive['source_count']==931
+    assert archive['actual_reader_exit_code']==0 and archive['actual_reader_stderr_bytes']==0
+    assert archive['actual_reader_stdout_equals_report'] is True
+    assert archive['reader_execution_facts']['actual_exit_code']==0
+    assert archive['reader_execution_facts']['actual_stderr_bytes']==0
+    assert meaningful(F)=={'archive.json','readback_source.txt','readback.json','console.log'}
+    assert digest(P/'artifact_manifest.json')==archive['manifest_raw_sha256']
+    manifest=sealed(P/'artifact_manifest.json');assert manifest['source_count']==931
+    names=set()
+    for name,row in manifest['files'].items():
+        p=ROOT/name;assert digest(p)==row['sha256'] and p.stat().st_size==row['bytes'],name
+        if p.is_relative_to(P):names.add(str(p.relative_to(P)))
+    assert meaningful(P)==names|{'artifact_manifest.json'}
+    for name,row in archive['files'].items():
+        p=F/name;assert digest(p)==row['sha256'] and p.stat().st_size==row['bytes']
+    assert (F/'console.log').read_bytes()==(F/'readback.json').read_bytes()
+    inherited_source=ROOT/'analysis/geometric_native_common_preparation_balance_validation/baseline_restore_source.txt'
+    assert digest(inherited_source)==manifest['inherited927_restorer_raw_sha256']
+    inherited=Path(str(output)+'.inherited927.json');assert not inherited.exists()
+    child=subprocess.run([sys.executable,str(inherited_source),'--output',str(inherited)],capture_output=True)
+    assert child.returncode==0 and child.stderr==b'',(child.returncode,child.stderr)
+    assert child.stdout==inherited.read_bytes()
+    inherited_report=sealed(inherited)
+    assert inherited_report['status']=='PASS_AUTHENTICATED927_BASELINES_RESTORED'
+    assert inherited_report['required_target_count']==101 and inherited_report['old_physical_math_executed'] is False
+    rows=load(P/'baseline_associations.json');assert len(rows)==12
+    restored=[]
+    for target,row in rows.items():
+        target=Path(target).resolve();source=(ROOT/row['copy']).resolve()
+        if restore_authenticated_copy(target,source,row['sha256']):restored.append(str(target))
+    assert manifest['required_baseline_target_count']==101+len(rows)==113
+    result=dict(status='PASS_AUTHENTICATED931_BASELINES_RESTORED',required_target_count=113,
+        inherited927_required_target_count=101,restored_new=restored,
+        inherited927_actual_exit_code=child.returncode,inherited927_stderr_bytes=len(child.stderr),
+        inherited927_stdout_equals_receipt=True,repository_files_written=False,old_physical_math_executed=False)
+    result['sha256']=hashlib.sha256(enc(result)).hexdigest()
+    with output.open('xb') as f:f.write(enc(result)+b'\n')
+    print(enc(result).decode())
+
+if __name__=='__main__':
+    p=argparse.ArgumentParser();p.add_argument('--output',required=True);run(p.parse_args().output)

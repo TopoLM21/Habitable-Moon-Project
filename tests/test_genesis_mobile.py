@@ -29,14 +29,15 @@ def _model(*, traction=0., tides=False, shell_overrides=None, thermal_overrides=
 
 
 def _cold(model, temperature=1000.):
-    """A solid restart with all removed heat explicitly recorded in the ledgers."""
+    """Mechanical fixture with conserved removed heat and unavailable birth history."""
     state, thermal, orbit = model.initial()
     energy = [mantle_enthalpy(temperature, model.thermal)/ENERGY_SCALE,
               surface_enthalpy(temperature, model.thermal)/ENERGY_SCALE, 0., 0.]
     energy[3] = thermal.initial_total_energy-sum(energy[:2])
     thermal = replace(thermal, energy=energy)
     h = np.full_like(state.column_enthalpy, rock_enthalpy(temperature, model.thermal))
-    state = replace(state, column_enthalpy=h,
+    # Prescribed cooling supplies no actual material birth path.
+    state = replace(state, column_enthalpy=h, bulk_birth_history=None, cohort_mechanics=None,
                     boundary_energy_j=float(np.sum(state.layer_mass_kg*h))-state.initial_column_energy_j)
     return state, thermal, orbit
 

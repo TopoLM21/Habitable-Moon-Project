@@ -1,0 +1,81 @@
+"""Stdlib immutable853 baseline readback, without force/field recomputation."""
+from pathlib import Path
+import hashlib,json,sys,time,types
+ROOT=Path('/workspace/Habitable-Moon-Project')
+PARENT=ROOT/'analysis/geometric_native_common_contact_force_validation'
+RELEASE=PARENT/'release_validation_02'
+OUT=Path('/tmp/native_common_contact_measure_baseline_853_audit_20261005.json')
+SOURCE_SHA='8d755b719156876a87cb6f51b60221159d8d96e3dd92688e0b696f4bc12ea9e8'
+AUDIT_SHA='e4c2cb68ed6a9f102b5ec2628f7c38966e90a067df8c80d2fd055dccec87fc92'
+AUDIT_SEAL='20ece06aa865a0c4fcfe2bc7cabb9ee62808777ba5876081bd8171066b601f63'
+MAP_SHA='9d4a7a71f81b8093b09d26c74f742909839496fe18dd1429875e3a6d54c05c21'
+MAP_RAW='f9fafa4aedce0265147d44f9338cfcbc8b49518f66dfa5a4ce0a4a0ee968420e'
+WRAPPER_RAW='1d7a6ac8113a408aab6764f1c4a9fccb09f8d48184f5118434fc685574504313'
+NATIVE_RAW='2b4842d523e66b40d11406bb7458e33ecc44dc669d36e8bc1c5e6eaccbda5846'
+PACKET_RAW='fe06614b05591969e99364ffc81299ac4115e3a9e6586ced18647bbe85baa0c9'
+def encoded(x):return json.dumps(x,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+def value_sha(x):return hashlib.sha256(encoded(x)).hexdigest()
+def digest(path):
+ h=hashlib.sha256()
+ with Path(path).open('rb') as stream:
+  for block in iter(lambda:stream.read(1<<20),b''):h.update(block)
+ return h.hexdigest()
+def read(path):return json.loads(Path(path).read_bytes())
+def sealed(path,key):
+ x=read(path);body=dict(x);assert body.pop(key)==value_sha(body);return x
+def run():
+ start=time.perf_counter()
+ producer=PARENT/'independent_audit_source.txt';assert digest(producer)==SOURCE_SHA
+ module=types.ModuleType('measure853_archived_stdlib_auditor');module.__file__=str(producer);sys.modules[module.__name__]=module
+ exec(compile(producer.read_bytes(),str(producer),'exec'),module.__dict__)
+ baseline=module.module(PARENT/'baseline_847_audit_source.txt','measure853_prior_baseline',module.BASELINE_SOURCE_SHA)
+ prior,current,prior_reports,prior_audit=baseline.verify_847()
+ assert len(prior)==847
+ assert digest(RELEASE/'report.json')==WRAPPER_RAW
+ wrapper=sealed(RELEASE/'report.json','report_sha256')
+ assert wrapper['status']==wrapper['regression_validation_status']=='PASS'
+ assert wrapper['source_count']==853 and wrapper['verified_prior_python_sources']==847
+ assert wrapper['source_map_before_sha256']==wrapper['source_map_after_sha256']==MAP_SHA
+ assert wrapper['changed_python_paths']==[] and wrapper['prior_artifacts_and_python_sources_preserved_after'] is True
+ assert set(wrapper['added_python_sources'])==module.ADDED and not set(prior)&module.ADDED
+ full=dict(prior);full.update(wrapper['added_python_sources']);assert len(full)==853 and value_sha(full)==MAP_SHA
+ assert digest(PARENT/'frozen_source_map_853.json')==MAP_RAW and read(PARENT/'frozen_source_map_853.json')==full
+ for name,sha in full.items():assert digest(ROOT/name)==sha,name
+ assert wrapper['pytest_counts']=={'passed':19} and wrapper['pytest_exit_code']==0
+ assert wrapper['execution_mode']=='same_python_process' and wrapper['physical_candidate_status']=='COMMON_CONTACT_REST_LAW_COMPONENT_ONLY'
+ assert wrapper['accepted_original_native_intervals']==1 and wrapper['accepted_new_native_intervals']==0
+ assert wrapper['original_point_1_remaining_work_blocks']==1 and all(wrapper[k] is False for k in module.FALSE)
+ baseline.output_closure(RELEASE,wrapper)
+ assert wrapper['outputs']['native_control/report.json']['sha256']==NATIVE_RAW
+ assert wrapper['outputs']['native_control/source_packet.json']['sha256']==PACKET_RAW
+ assert digest(PARENT/'independent_audit.json')==AUDIT_SHA
+ audit=sealed(PARENT/'independent_audit.json','audit_packet_sha256')
+ assert audit['status']=='PASS' and audit['audit_packet_sha256']==AUDIT_SEAL and audit['auditor_script_sha256']==SOURCE_SHA
+ assert audit['independent_formula_helper_source_sha256']==module.FORMULA_SHA
+ assert digest(PARENT/'independent_force_formula_helper_source.txt')==module.FORMULA_SHA
+ assert (audit['wrapper_raw_sha256'],audit['native_raw_sha256'],audit['source_packet_raw_sha256'])==(WRAPPER_RAW,NATIVE_RAW,PACKET_RAW)
+ assert audit['final_python_sources']==853 and audit['unchanged_prior_python_sources']==847 and audit['source_map_canonical_sha256']==MAP_SHA
+ assert audit['force_response_count']==40 and audit['hessian_entry_count']==16000
+ assert audit['fresh_tests']==19 and audit['output_closure_count']==4
+ assert audit['second_certified_tensor_quadrature_performed'] is False and audit['second_certified_whole_boundary_quadrature_performed'] is False
+ assert audit['physical_material_admission_authorized'] is False and audit['face_depth_memory_or_measure_transfer_certified'] is False
+ assert audit['old_rod_prestrain_or_energy_transferred'] is False and audit['source_current_epoch']=='unaccepted_candidate'
+ after=baseline.source_map()
+ for name,sha in full.items():assert after.get(name)==sha,name
+ Path('/tmp/point1_contact_measure_853_source_map_20261005.json').write_bytes((PARENT/'frozen_source_map_853.json').read_bytes())
+ report=dict(status='PASS_IMMUTABLE853_BASELINE_READBACK_ONLY',old853_python_sources_unchanged=True,
+  baseline_source_count=853,source_map_canonical_sha256=MAP_SHA,frozen_map_raw_sha256=MAP_RAW,
+  preserved_old1633_artifact_chain=True,preserved826_833_841_847_and853_output_closures=True,
+  release_output_closure_count=4,current_release_path=str(RELEASE.relative_to(ROOT)),
+  current_python_source_count=len(after),future_added_python_paths=sorted(set(after)-set(full)),
+  wrapper_raw_sha256=WRAPPER_RAW,wrapper_selfseal=wrapper['report_sha256'],native_raw_sha256=NATIVE_RAW,
+  packet_raw_sha256=PACKET_RAW,native_packet_selfseals_preserved_by_identity_to_prior_independent_audit=True,
+  prior_independent_audit_raw_sha256=AUDIT_SHA,prior_independent_audit_selfseal=AUDIT_SEAL,
+  current_archived_producer_sha256=SOURCE_SHA,force_or_harmonic_arithmetic_reexecuted=False,
+  project_imports=False,pytest_or_quadratures_reexecuted=False,giant847_or853_source_packet_parsed=False,
+  accepted_original_native_intervals=1,accepted_new_native_intervals=0,original_point_1_remaining_work_blocks=1,
+  remaining_physical_condition_count=3,new_face_measure_or_depth_memory_transfer_certified=False,
+  old_rod_energy_or_prestress_transfer_certified=False,new_mixed_force_equilibrium_certified=False,
+  physical_material_admission_authorized=False,auditor_source_sha256=digest(__file__),seconds=time.perf_counter()-start)
+ report['audit_sha256']=value_sha(report);OUT.write_bytes(encoded(report)+b'\n');print(encoded(report).decode())
+if __name__=='__main__':run()

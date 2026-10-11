@@ -1,0 +1,104 @@
+"""Close only completed895 evidence; no mathematics or project imports."""
+from pathlib import Path
+import hashlib
+import json
+import shutil
+import subprocess
+
+ROOT=Path('/workspace/Habitable-Moon-Project')
+P=ROOT/'analysis/geometric_native_common_cold_material_carrier_validation'
+F=ROOT/'analysis/geometric_native_common_cold_material_carrier_final_readback'
+STAGE=Path('/workspace/cold_material_carrier_baseline_20261007')
+
+
+def encoded(v):
+    return json.dumps(v,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+
+
+def raw(path):
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
+def seal(v):
+    return hashlib.sha256(encoded(v)).hexdigest()
+
+
+def load(path,key):
+    v=json.loads(Path(path).read_bytes())
+    assert v[key]==seal({k:x for k,x in v.items() if k!=key}), path
+    return v
+
+
+def pin(path):
+    return dict(bytes=path.stat().st_size,sha256=raw(path))
+
+
+def write_new(path,value):
+    with path.open('xb') as stream:
+        stream.write(encoded(value)+b'\n')
+
+
+def run():
+    assert not (P/'artifact_manifest.json').exists() and not F.exists()
+    gate=load(P/'release_validation_02/report.json','report_sha256')
+    audit=load(P/'independent_audit/report.json','audit_sha256')
+    assert gate['status']==audit['status']=='PASS'
+    assert gate['source_count']==895 and gate['tests_passed']==gate['tests_collected']==17
+    assert gate['tests_failed']==gate['tests_skipped']==gate['tests_exit_code']==0
+    assert json.loads((P/'gate02_actual_console.log').read_bytes())==gate
+    assert (P/'gate02_actual_stderr.log').stat().st_size==0
+    assert (P/'independent_audit/report.json').read_bytes()==(P/'independent_audit/actual_console.log').read_bytes()
+    for name,sha in gate['additional_source_sha256'].items():
+        assert raw(ROOT/name)==sha
+    files={str(path.relative_to(ROOT)):pin(path) for path in sorted(P.rglob('*'))
+           if path.is_file() and '__pycache__' not in path.parts and path.suffix!='.pyc'}
+    for name in ('tectonics/geometric_native_common_cold_material_carrier.py',
+                 'tests/test_geometric_native_common_cold_material_carrier.py'):
+        files[name]=pin(ROOT/name)
+    assert len({name for name in files if name.endswith('.py')})==4
+    manifest=dict(format='native-common-cold-material-carrier-component-manifest-1',
+        status='PASS_COMPONENT_ARTIFACTS_CLOSED',source_count=895,
+        physical_scope=gate['current_physical_scope'],current_release='release_validation_02',
+        closed_component_file_count=len(files),files=files,
+        gate_report_selfseal=gate['report_sha256'],independent_audit_selfseal=audit['audit_sha256'])
+    manifest['manifest_sha256']=seal(manifest)
+    write_new(P/'artifact_manifest.json',manifest)
+    template=(STAGE/'reader_895_source.txt').read_text()
+    assert template.count('__MANIFEST_RAW_SHA256__')==template.count('__MANIFEST_SELFSEAL__')==1
+    reader=template.replace('__MANIFEST_RAW_SHA256__',raw(P/'artifact_manifest.json')).replace(
+        '__MANIFEST_SELFSEAL__',manifest['manifest_sha256'])
+    F.mkdir()
+    with (F/'readback_source.txt').open('x') as stream:
+        stream.write(reader)
+    docs={name:raw(ROOT/name) for name in ('CLOUD_HANDOFF.md',
+        'GEOMETRIC_NATIVE_COMMON_COLD_MATERIAL_CARRIER_IMPLEMENTATION.md')}
+    with (F/'console.log').open('xb') as console, (STAGE/'final895_stderr.log').open('xb') as errors:
+        result=subprocess.run([str(ROOT/'.venv/bin/python'),str(F/'readback_source.txt'),
+            '--output',str(F/'readback.json')],cwd=ROOT,stdout=console,stderr=errors,check=False)
+    assert result.returncode==0, (STAGE/'final895_stderr.log').read_text()
+    readback=load(F/'readback.json','audit_sha256')
+    assert readback['status']=='PASS_FINAL895_EVIDENCE_READBACK_ONLY'
+    assert (F/'console.log').read_bytes()==(F/'readback.json').read_bytes()
+    assert docs=={name:raw(ROOT/name) for name in docs}
+    assert manifest==load(P/'artifact_manifest.json','manifest_sha256')
+    for name,row in files.items():
+        assert pin(ROOT/name)==row
+    finalfiles={name:pin(F/name) for name in ('readback_source.txt','readback.json','console.log')}
+    archive=dict(format='native-common-cold-material-carrier-final-archive-1',
+        status='PASS_FINAL895_READBACK_ARCHIVE_CLOSED',total_closed_file_count=4,
+        files=finalfiles,readback_selfseal=readback['audit_sha256'])
+    archive['archive_sha256']=seal(archive)
+    write_new(F/'archive.json',archive)
+    assert {str(p.relative_to(F)) for p in F.rglob('*') if p.is_file()}==set(finalfiles)|{'archive.json'}
+    facts=dict(status='PASS_COMPLETE895_COMPONENT_AND_FINAL_CLOSURE',
+        manifest_raw_sha256=raw(P/'artifact_manifest.json'),manifest_sha256=manifest['manifest_sha256'],
+        manifest_file_count=len(files),archive_raw_sha256=raw(F/'archive.json'),
+        archive_sha256=archive['archive_sha256'],readback_raw_sha256=raw(F/'readback.json'),
+        readback_sha256=readback['audit_sha256'],reader_raw_sha256=raw(F/'readback_source.txt'),
+        readback_seconds=readback['seconds'],documents_sha256=docs)
+    write_new(STAGE/'closure_actual_facts.json',facts)
+    print(encoded(facts).decode())
+
+
+if __name__=='__main__':
+    run()

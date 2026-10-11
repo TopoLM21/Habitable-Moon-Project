@@ -1,0 +1,40 @@
+from pathlib import Path
+import json,hashlib,time,argparse
+ROOT=Path('/workspace/Habitable-Moon-Project')
+P=ROOT/'analysis/geometric_native_common_cold_variational_work_validation'
+F=ROOT/'analysis/geometric_native_common_cold_variational_work_final_readback'
+def enc(x):return json.dumps(x,sort_keys=True,separators=(',',':'),ensure_ascii=False).encode()
+def digest(p):
+ h=hashlib.sha256()
+ with Path(p).open('rb') as f:
+  for b in iter(lambda:f.read(1024*1024),b''):h.update(b)
+ return h.hexdigest()
+def meaningful(p):return {str(x.relative_to(p)) for x in p.rglob('*') if x.is_file() and '__pycache__' not in x.parts and x.suffix!='.pyc'}
+def run(output,added=False):
+ t=time.perf_counter();pins=dict(json.loads((P/'after_preservation.json').read_bytes())['dependency_raw_sha256'])
+ assert digest(P/'artifact_manifest.json')=='fcdfb3aa96c45bf6645e66ae01bb99df731b56aeaf49b370db637bba39cbeafb'
+ manifest=json.loads((P/'artifact_manifest.json').read_bytes());assert len(manifest['files'])==79
+ names=set()
+ for name,row in manifest['files'].items():
+  path=ROOT/name;assert path.stat().st_size==row['bytes'];pins[str(path)]=row['sha256']
+  if path.is_relative_to(P):names.add(str(path.relative_to(P)))
+ assert meaningful(P)==names|{'artifact_manifest.json'}
+ archive=json.loads((F/'archive.json').read_bytes());assert archive['sha256']==hashlib.sha256(enc({k:v for k,v in archive.items() if k!='sha256'})).hexdigest()
+ assert archive['status']=='PASS_FINAL919_READBACK_ARCHIVE_CLOSED' and archive['manifest_raw_sha256']==digest(P/'artifact_manifest.json')
+ assert meaningful(F)=={'archive.json','readback_source.txt','readback.json','console.log'}
+ for name,row in archive['files'].items():pins[str(F/name)]=row['sha256']
+ for path in (P/'artifact_manifest.json',F/'archive.json'):pins[str(path)]=digest(path)
+ for path,pin in pins.items():assert digest(path)==pin,path
+ old=json.loads((P/'frozen_source_map_919.json').read_bytes());assert len(old)==919
+ actual={str(p.relative_to(ROOT)):digest(p) for d in ('tectonics','tests','scripts','analysis') for p in (ROOT/d).rglob('*.py')}
+ extras={'tectonics/geometric_native_common_cold_preparation_integrals.py','tests/test_geometric_native_common_cold_preparation_integrals.py','tectonics/geometric_native_common_cold_preparation_energy.py','tests/test_geometric_native_common_cold_preparation_energy.py'} if added else set()
+ assert set(actual)-set(old)==extras and all(actual[k]==v for k,v in old.items())
+ base=Path('/workspace/cold_preparation_integral_baseline_20261008.json')
+ assert json.loads(base.read_bytes())['status']=='PASS_FINAL919_EVIDENCE_READBACK_ONLY'
+ assert base.read_bytes()==base.with_name(base.stem+'_console.log').read_bytes() and base.with_name(base.stem+'_stderr.log').stat().st_size==0
+ result=dict(status='PASS_CLOSED919_AND_ANCESTRY_PRESERVED',prior_source_count=919,source_count=len(actual),dependency_count=len(pins),dependency_raw_sha256=pins,source_sha256=actual,old_math_executed=False,seconds=time.perf_counter()-t)
+ result['sha256']=hashlib.sha256(enc(result)).hexdigest()
+ with Path(output).open('xb') as f:f.write(enc(result)+b'\n')
+ print(enc({k:v for k,v in result.items() if k not in ('dependency_raw_sha256','source_sha256')}).decode())
+if __name__=='__main__':
+ p=argparse.ArgumentParser();p.add_argument('--output',required=True);p.add_argument('--added',action='store_true');a=p.parse_args();run(a.output,a.added)

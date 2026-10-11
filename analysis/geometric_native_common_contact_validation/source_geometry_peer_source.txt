@@ -1,0 +1,90 @@
+"""Stdlib source polynomial/tail and retained-cut geometry peer.
+
+Independent convolution/interval arithmetic replays complete source tails.
+Decimal geometry is a point diagnostic only. No project import/quadrature,
+new spring, state adoption, measure transfer or constitutive rest law.
+"""
+from pathlib import Path
+from fractions import Fraction as F
+from decimal import Decimal as D,localcontext
+from math import factorial
+import hashlib,json,sys,time,types
+ROOT=Path('/workspace/Habitable-Moon-Project')
+BASE=ROOT/'analysis/geometric_native_common_reference_validation'
+SOURCE=ROOT/'analysis/geometric_native_affine_body_validation/release_validation_01/native_control/source_packet.json'
+SOURCE_RAW='ccd511b2b82e66ba103d0d900b993a18d02953288f447c71ac9e589dc70c7d1e'
+AUDIT_RAW='7ac3cd74013a20d7a06e95eccec4e6ceb3db412fb197ec3ed559c5af43108200'
+CURVE_RAW='c5607c1128356ef315ba6597973c80f724892748399bee5c56519d809e83a2dc'
+AFFINE_RAW='7f481c533996070db320b03bb1bcca71487e06361209c74859b3f29f0a2a556c'
+COLD_RAW='ee031938177a3497aa7821c883650a89397a9942f6b177e48b9a655153297f6e'
+OUT=Path('/tmp/native_retained_contact_source_geometry_peer_20261005.json')
+def enc(v):return json.dumps(v,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+def vd(v):return hashlib.sha256(enc(v)).hexdigest()
+def raw(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def sealed(p,key):
+ v=json.loads(Path(p).read_bytes());d=dict(v);assert d.pop(key)==vd(d);return v
+
+def module(path,sha,name):
+ assert raw(path)==sha;m=types.ModuleType(name);m.__file__=str(path);sys.modules[name]=m;exec(compile(Path(path).read_bytes(),str(path),'exec'),m.__dict__);return m
+
+def atan(x):
+ assert abs(x)<=1;answer=term=x
+ for n in range(1,600):
+  term*=-x*x;increment=term/D(2*n+1);answer+=increment
+  if abs(increment)<D('1e-205'):return answer
+ raise AssertionError('atan series')
+
+def main():
+ t=time.perf_counter();assert raw(SOURCE)==SOURCE_RAW;source=sealed(SOURCE,'packet_sha256');p=BASE/'retained_original_contact_cut_audit.json';assert raw(p)==AUDIT_RAW;audit=sealed(p,'audit_sha256')
+ c=module(ROOT/'analysis/geometric_native_cold_body_validation/common_reference_curved_partition_peer_source.txt',CURVE_RAW,'retained_curve_stdlib_math')
+ h=module(ROOT/'analysis/geometric_native_cold_body_validation/independent_audit_source.txt',COLD_RAW,'retained_cold_stdlib_math')
+ a=module(ROOT/'analysis/geometric_native_affine_body_validation/independent_audit_source.txt',AFFINE_RAW,'retained_affine_stdlib_math')
+ before=source['before'];epoch=before['snapshot']['current_material_epoch'];material=epoch['source_material_state'];journal=material['journal'];sweep=material['sweep_certificate'];dt=F.from_float(journal['dt_myr']);axes={o:tuple(F.from_float(x)*dt for x in w) for o,w in journal['omega_rad_per_myr']}
+ n,precision=sweep['order'],sweep['precision'];co=c.normal_coefficients(axes[1],axes[0],n);rate=sum((abs(x) for v in axes.values() for x in v),F(0));assert rate==c.rat(sweep['normal_rate_bound'])
+ tails=tuple(rate**(n+1)/factorial(n+1-j)/(1-rate/F(n+2-j)) for j in range(7));C=c.Poly(tuple(-v[0] for v in co),tails,precision,n);Y=c.Poly(tuple(v[1] for v in co),tails,precision,n);Z=c.Poly(tuple(v[2] for v in co),tails,precision,n)
+ A1=Y.derivative()*C-Y*C.derivative();B1=Z.derivative()*C-Z*C.derivative();curvature=B1.derivative()*A1-B1*A1.derivative();height=Z*Y.derivative()-Y*Z.derivative();polys={'C':C,'Y':Y,'Z':Z,'A1':A1,'B1':B1,'curvature_numerator':curvature,'height_numerator':height,'area_integrand_numerator':-height*curvature}
+ assert len(sweep['analytic_polynomials'])==8
+ for row in sweep['analytic_polynomials']:
+  q=polys[row['name']];assert q.co==tuple(c.rat(x) for x in row['coefficients']) and q.tails==tuple(c.rat(x) for x in row['derivative_tails'])
+ whole=c.I(0,1);mu=c.readi(sweep['envelope']['maximum_ratio_time_fraction']);k1=B1.bounds(c.I(1))/A1.bounds(c.I(1));q1=Z.bounds(c.I(1))/Y.bounds(c.I(1));qmax=Z.bounds(mu)/Y.bounds(mu);h1=height.bounds(c.I(1))/A1.bounds(c.I(1))
+ assert C.bounds(whole).lo>0 and A1.bounds(whole).lo>0 and B1.bounds(whole).lo>0 and curvature.bounds(whole,1).hi<0 and curvature.bounds(c.I(mu.lo,1)).hi<0
+ assert 0<mu.lo<=mu.hi<1 and qmax.lo>q1.hi>k1.hi and k1.lo>0 and h1.lo>0
+ for key,value in (('terminal_slope_bounds',k1),('terminal_ratio_bounds',q1),('maximum_ratio_bounds',qmax),('terminal_height_bounds',h1)):assert value.dto()==sweep['envelope'][key]
+ rows=audit['true_source_endpoint_cold_boundary_arcs'];assert len(rows)==5 and {(r['donor_parent'],r['receiver_parent']) for r in rows}=={('octant:5','octant:1'),('octant:5','octant:3'),('octant:6','octant:2'),('octant:7','octant:2'),('octant:7','octant:3')}
+ bindings=material['trace_bindings'];bydonor={b['donor_fragment_id']:b['trace_id'] for b in bindings};byreceiver={b['receiver_fragment_id']:b['trace_id'] for b in bindings};histories=dict(before['snapshot']['owner_histories']);pose=h.certify_rotation_history(tuple(h.rotation_increment_from_dict(x) for x in histories[1]),256).intervals;I=h.FractionInterval;ki=I(k1.lo,k1.hi)
+ def dot(x,y):return sum((u*v for u,v in zip(x,y)),I(0))
+ confirmations=[]
+ with localcontext() as context:
+  context.prec=220;pi=16*atan(D(1)/5)-4*atan(D(1)/239)
+  for row in rows:
+   theta=h._bounds(row['native_angle_bounds_radians']);assert 0<theta[0]<=theta[1]<h.interval_pi(256).lo
+   arc=row['native_arc'];U=a.unit(a.ray(arc['start']));end=a.unit(a.ray(arc['end']));normal=a.unit(a.plane(arc['plane']));T=a.unit(a.cross(normal,U))
+   if a.ddot(T,end)<0:T=tuple(-x for x in T)
+   N=a.cross(U,T)
+   for name,computed in (('unit_start_bounds',U),('unit_tangent_bounds',T),('unit_normal_bounds',N)):
+    for value,bound in zip(computed,row[name]):
+     low,high=h._bounds(bound);assert a.dec(low)-D('1e-145')<=value<=a.dec(high)+D('1e-145')
+   sn=a.ddot(T,end);cs=a.ddot(U,end);assert sn>0
+   if abs(cs)<=sn:angle=pi/2-atan(cs/sn)
+   elif cs>0:angle=atan(sn/cs)
+   else:angle=pi-atan(sn/(-cs))
+   assert a.dec(theta[0])-D('1e-145')<=angle<=a.dec(theta[1])+D('1e-145')
+   trim=None
+   if row['donor_parent']=='octant:5':
+    local=[]
+    for rawdir in (row['raw_start_direction_bounds'],row['raw_end_direction_bounds']):
+     world=tuple(I(*h._bounds(x)) for x in rawdir);local.append(tuple(dot(tuple(pose[j][i] for j in range(3)),world) for i in range(3)))
+    for computed,stored in zip(local,row['C6_endpoint_original_label_bounds']):assert tuple((v.lo,v.hi) for v in computed)==tuple(h._bounds(x) for x in stored)
+    margins=tuple(p[1]+ki*p[2] for p in local);assert all(p[2].lo>0 for p in local)
+    assert tuple((x.lo,x.hi) for x in margins)==tuple(h._bounds(x) for x in row['C6_terminal_live_cut_endpoint_margins'])
+    if row['receiver_parent']=='octant:1':assert (margins[0].lo>0 and margins[1].hi<0) or (margins[1].lo>0 and margins[0].hi<0);trim='unique_symbolic_terminal_trim'
+    else:assert all(x.lo>0 for x in margins);trim='whole_micro_arc_terminal_live'
+   confirmations.append({'donor_parent':row['donor_parent'],'receiver_parent':row['receiver_parent'],'incoming_donor_trace_id':bydonor[row['donor_parent']],'receiving_trace_id':byreceiver[row['receiver_parent']],'same_original_trace':bydonor[row['donor_parent']]==byreceiver[row['receiver_parent']],'native_angle_bounds_radians':row['native_angle_bounds_radians'],'C6_rule':trim,'new_spring_atom_assigned':False})
+ curve=audit['actual_curved_restriction'];corr=epoch['paired_corrections'];assert len(corr)==1 and curve['negative_component_id']==corr[0]['negative_component_id'] and curve['curved_other_side_true_bank']==corr[0]['positive_component_id'] and curve['curved_other_side_is_cold_receiver'] is False
+ # Exact envelope derivative identity: a'=A1/C^2,b'=B1/C^2,
+ # k'=curvature/A1^2, hence h'=b'-a'k-ak'=-ak'. At supported
+ # post-mu core, -k'>0 and q'=-k'(a,1,0) is nonzero. No new
+ # certified area quadrature is needed for this algebraic identity.
+ report={'status':'PASS_SOURCE_TAIL_AND_GEOMETRY_PEER_ONLY','source_packet_raw_sha256':SOURCE_RAW,'source_cut_audit_raw_sha256':AUDIT_RAW,'source_epoch_sha256':epoch['epoch_sha256'],'all_eight_analytic_polynomial_coefficients_and_derivative_tails_replayed':True,'k1_is_symbolic_B1_at_one_over_A1_at_one_not_midpoint':True,'unique_C6_terminal_trim_by_opposite_strict_endpoint_signs':True,'complete_microscopic_cross_arcs_retained':True,'arc_count':5,'cut_lineage_receipts':confirmations,'curve_negative_component_id':corr[0]['negative_component_id'],'curve_positive_component_id':corr[0]['positive_component_id'],'curve_receiving_old_cold_trace_id':None,'curve_exact_q_derivative_identity_replayed':True,'Decimal_frame_angle_checks_are_point_diagnostics_only':True,'native_runtime_common_map_normals_and_modal_ports_executed':False,'new_source_spring_atoms_created':False,'old_constitutive_state_adopted_on_current_cuts':False,'normal_rest_reference_or_measure_transfer_certified':False,'physical_force_or_material_admission_authorized':False,'second_quadrature_performed':False,'source_script_sha256':raw(__file__),'seconds':time.perf_counter()-t}
+ report['audit_sha256']=vd(report);OUT.write_bytes(enc(report)+b'\n');print(enc(report).decode())
+if __name__=='__main__':main()

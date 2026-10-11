@@ -1,0 +1,52 @@
+from pathlib import Path
+import hashlib,json,subprocess,time,sys,math
+from datetime import datetime,timezone
+root=Path('/workspace/Habitable-Moon-Project');base=root/'analysis/geometric_native_validation';control=base/'native_control_release_01'
+source=base/'release_independent_gate_source.txt'
+assert source.read_bytes()==Path(__file__).read_bytes()
+def sha(path):return hashlib.sha256(path.read_bytes()).hexdigest()
+def snapshot():
+ paths=set()
+ for folder in ('tectonics','tests','scripts'):paths.update((root/folder).rglob('*.py'))
+ paths.update(base.rglob('*.py'));paths.update(base.rglob('*_source.txt'))
+ return {str(p.relative_to(root)):sha(p) for p in sorted(paths)}
+started=datetime.now(timezone.utc).isoformat();clock=time.perf_counter();before=snapshot()
+report=json.loads((control/'report.json').read_text())
+assert report['status']=='passed' and report['code_unchanged'] and report['final_eligible'] and report['loaded_underthrust_steps']==0
+manifest=json.loads((control/'artifact_manifest.json').read_text())
+assert all(sha(control/name)==digest for name,digest in manifest.items())
+bytepairs=[];checkpoint_paths=[];step_paths=[]
+for case in report['cases']:
+ folder=control/case['mode']
+ assert case['loaded_underthrust_steps']==0
+ for row in case['cumulative_material_ledger']['reservoirs']:
+  assert math.isclose(row['retained']+row['lost'],row['initial']+row['born'],rel_tol=5e-12,abs_tol=0.)
+ for pair in case['checkpoint_byte_pairs']:
+  left=folder/pair['left'];right=folder/pair['right']
+  assert left.read_bytes()==right.read_bytes() and sha(left)==pair['sha256']
+  bytepairs.append(dict(case=case['mode'],left=pair['left'],right=pair['right'],sha256=sha(left)))
+ checkpoint_paths.extend(folder/name for name in ('initial.json','partial.json','partial_resaved.json','direct_final.json','resumed_final.json','final_resaved.json'))
+ step_paths.extend(sorted(folder.glob('step_*.json')))
+assert len(checkpoint_paths)==18 and len(step_paths)==9 and len(bytepairs)==9
+receipt=base/'release_independent_geometry_receipt.json'
+assert not receipt.exists()
+cmd=[str(root/'.venv/bin/python'),str(base/'verify_native_geometry.py'),*map(str,checkpoint_paths),'--require-off-axis','--step-records',*map(str,step_paths),'--output',str(receipt)]
+with (base/'release_independent_geometry.log').open('xb') as stream:
+ completed=subprocess.run(cmd,cwd=root,stdout=stream,stderr=subprocess.STDOUT)
+assert completed.returncode==0,completed.returncode
+oracle=json.loads(receipt.read_text());assert oracle['status']=='passed'
+after=snapshot();assert before==after
+assert all(sha(control/name)==digest for name,digest in manifest.items())
+result=dict(status='passed',started_utc=started,finished_utc=datetime.now(timezone.utc).isoformat(),wall_seconds=time.perf_counter()-clock,
+ command=cmd,source_before=before,source_after=after,sources_unchanged=before==after,source_files=len(before),
+ verifier_source_sha256=sha(base/'verify_native_geometry.py'),gate_source_sha256=sha(source),
+ control_report_sha256=sha(control/'report.json'),artifact_manifest_sha256=sha(control/'artifact_manifest.json'),
+ control_artifacts_verified=len(manifest),all_manifest_hashes_match=True,checkpoint_byte_pairs=bytepairs,
+ oracle_receipt_sha256=sha(receipt),oracle_receipt=str(receipt.relative_to(root)),
+ literal_checkpoint_files=18,literal_step_records=9,fragment_geometries=oracle['fragment_geometries'],
+ loss_geometries=sum(x['losses'] for x in oracle['step_records']),native_contacts=sum(x['contacts'] for x in oracle['step_records']),
+ rotation_interval_entries_checked=oracle['rotation_interval_entries_checked'],
+ loaded_underthrust_steps=0,oracle_decimal_precision=oracle['decimal_precision'])
+target=base/'release_independent_gate_receipt.json';assert not target.exists()
+target.write_text(json.dumps(result,indent=2,sort_keys=True)+'\n')
+print(json.dumps({k:result[k] for k in ('status','wall_seconds','sources_unchanged','source_files','control_artifacts_verified','fragment_geometries','loss_geometries','native_contacts','rotation_interval_entries_checked','oracle_receipt_sha256')}))

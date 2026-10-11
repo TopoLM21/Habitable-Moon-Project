@@ -1,0 +1,320 @@
+"""Stdlib preservation of sealed883 receipts with exactly four declared sources.
+
+This verifies saved evidence and actual bytes only. It does not import project
+modules or execute any prior reader, auditor, test, solver, or quadrature main.
+The fresh883 readback was executed before the four new source files existed.
+Its frozen883 metadata remains a saved view, while the actual source map here
+is independently checked as exactly883 plus the four authorized new files.
+"""
+from pathlib import Path, PurePosixPath
+import ast
+import hashlib
+import json
+import sys
+import time
+
+ROOT = Path('/workspace/Habitable-Moon-Project')
+PARENT = ROOT / 'analysis/geometric_native_common_local_source_work_validation'
+FINAL = ROOT / 'analysis/geometric_native_common_local_source_work_final_readback'
+STAGE = Path('/workspace/native_archive_material_carrier_baseline_20261007')
+ADDED_NAMES = frozenset((
+    'tectonics/geometric_native_archive_material_carrier.py',
+    'tests/test_geometric_native_archive_material_carrier.py',
+    'analysis/geometric_native_archive_material_carrier_validation/native_control.py',
+    'analysis/geometric_native_archive_material_carrier_validation/validate.py',
+))
+FROZEN_MAP_RAW = '1638c727bea07487d9f9c734e0aa5469bde0e79032221b3d1f4134379905a360'
+FROZEN_MAP_CANONICAL = '5ec421080c7450b362ae5a5b3d02e1b3f82ecf67ee514034a56e60b4a86d4c51'
+MANIFEST_RAW = '37d61376834819cb37d7ecfde9369d0e956fc455037aab720715fc2aa77cba8b'
+MANIFEST_SEAL = '90d2709f53073a343ec908e8a41cb315c1cef46ecb19a4a5f48c4a3b57264325'
+READER_SOURCE_RAW = '6030a76cc20800b112766fa56c90c55f65f1378d3e81d5e4c372a967c1f5c607'
+FINAL_ARCHIVE_RAW = 'f987b889b802689ade83520ec150c311f992c19a8d050abf93aa2d5e6f2b402e'
+FINAL_ARCHIVE_SEAL = '4cbbb4810b29caa4db115389a3631d72ab10034f4ef5ca8490af2c397410239b'
+FRESH_REPORT_RAW = '1908e92a6af0f6e1935c6b7378b885e0cbcbcdd880266aaa87064815a8b767e1'
+FRESH_REPORT_SEAL = 'c0aaa79e7df03e3983ecb34d5040ae867e074c369bb39d6151f7b9611fbc05c8'
+OUTPUT_NAMES = frozenset(('pytest.log', 'control_console.log',
+                          'native_control/report.json', 'native_control/source_packet.json'))
+
+
+def encoded(value):
+    return json.dumps(value, sort_keys=True, separators=(',', ':'),
+                      ensure_ascii=False, allow_nan=False).encode()
+
+
+def value_digest(value):
+    return hashlib.sha256(encoded(value)).hexdigest()
+
+
+def require(condition, label):
+    if not condition:
+        raise ValueError(label)
+
+
+def exact(actual, expected, label):
+    require(type(actual) is type(expected) and actual == expected, label)
+    if type(actual) in (dict, list, tuple):
+        require(encoded(actual) == encoded(expected), label + ' complete literal encoding')
+
+
+def regular(path):
+    path = Path(path)
+    require(path.is_absolute() and path.resolve() == path and
+            not path.is_symlink() and path.is_file(), 'Canonical regular file ' + str(path))
+    return path
+
+
+def digest(path):
+    path = regular(path)
+    h = hashlib.sha256()
+    with path.open('rb') as stream:
+        for block in iter(lambda: stream.read(1 << 20), b''):
+            h.update(block)
+    return h.hexdigest()
+
+
+def sealed(path, key):
+    value = json.loads(regular(path).read_bytes())
+    require(type(value) is dict and key in value, 'Complete sealed object ' + str(path))
+    body = dict(value)
+    exact(body.pop(key), value_digest(body), 'Complete selfseal ' + str(path))
+    return value
+
+
+def source_map():
+    return {str(path.relative_to(ROOT)): digest(path)
+            for directory in ('tectonics', 'tests', 'scripts', 'analysis')
+            for path in sorted((ROOT / directory).rglob('*.py'))}
+
+
+def project_modules():
+    return {name: module for name, module in sys.modules.items()
+            if name in ('tectonics', 'tests', 'analysis') or
+            name.startswith(('tectonics.', 'tests.', 'analysis.'))}
+
+
+def files_under(parent):
+    return {str(path.relative_to(parent)) for path in parent.rglob('*')
+            if path.is_file() and '__pycache__' not in path.parts and path.suffix != '.pyc'}
+
+
+def pin(pins, path, expected):
+    path = regular(path)
+    require(path.is_relative_to(ROOT) or path.is_relative_to(Path('/tmp')) or
+            path.is_relative_to(Path('/workspace')), 'Authorized preserved dependency')
+    require(type(expected) is str and len(expected) == 64 and
+            all(c in '0123456789abcdef' for c in expected), 'Raw SHA256 shape')
+    name = str(path)
+    if name in pins:
+        exact(pins[name], expected, 'Overlapping immutable pin ' + name)
+        return
+    exact(digest(path), expected, 'Preserved raw bytes ' + name)
+    pins[name] = expected
+
+
+def lineage(reader_source):
+    tree = ast.parse(reader_source)
+    matches = [ast.literal_eval(node.value) for node in tree.body
+               if isinstance(node, ast.Assign) and
+               any(isinstance(target, ast.Name) and target.id == 'ANCESTRY'
+                   for target in node.targets)]
+    exact(len(matches), 1, 'Exactly one saved eleven-release declaration')
+    exact(len(matches[0]), 11, 'Eleven inherited authoritative releases')
+    return matches[0]
+
+
+def strict_release(relative, count, tests, wrapper_raw, pins):
+    directory = ROOT / relative
+    report_path = directory / 'report.json'
+    pin(pins, report_path, wrapper_raw)
+    report = sealed(report_path, 'report_sha256')
+    for key, expected in (('status', 'PASS'), ('source_count', count),
+                          ('pytest_counts', {'passed': tests})):
+        exact(report[key], expected, 'Saved release ' + relative + ' ' + key)
+    exact(set(report['outputs']), set(OUTPUT_NAMES), 'Four saved output rows')
+    # Release archives have exact five files, including any unexpected cache.
+    exact({str(path.relative_to(directory)) for path in directory.rglob('*') if path.is_file()},
+          set(OUTPUT_NAMES) | {'report.json'}, 'Strict five-file release ' + relative)
+    for name, row in report['outputs'].items():
+        exact(set(row), {'bytes', 'sha256'}, 'Complete saved output pin row')
+        exact(regular(directory / name).stat().st_size, row['bytes'], 'Saved output size')
+        pin(pins, directory / name, row['sha256'])
+
+
+def inherited_879_closures(pins):
+    """Keep the immediately inherited complete83 parent and old final six."""
+    parent = ROOT / 'analysis/geometric_native_common_material_surface_transport_validation'
+    final = ROOT / 'analysis/geometric_native_common_material_surface_transport_final_readback'
+    manifest_path = parent / 'artifact_manifest.json'
+    require(str(manifest_path) in pins, 'Old83 manifest present in authenticated341 map')
+    manifest = sealed(manifest_path, 'manifest_sha256')
+    exact(manifest['status'], 'PASS_COMPONENT_EVIDENCE_CLOSED', 'Saved old83 manifest PASS')
+    exact(len(manifest['files']), 83, 'Complete inherited83 manifest rows')
+    names = set()
+    for name, row in manifest['files'].items():
+        path = regular(ROOT / name)
+        require(str(path) in pins, 'Every inherited83 file retained in complete341 raw map')
+        exact(pins[str(path)], row['sha256'], 'Inherited83 manifest links complete341 map')
+        exact(path.stat().st_size, row['bytes'], 'Inherited83 file size')
+        if path.is_relative_to(parent):
+            names.add(str(path.relative_to(parent)))
+    exact(files_under(parent), names | {'artifact_manifest.json'}, 'Strict inherited83 whole parent')
+    archive_path = final / 'archive.json'
+    require(str(archive_path) in pins, 'Old879 final archive present in authenticated341 map')
+    archive = sealed(archive_path, 'archive_sha256')
+    exact(archive['total_closed_file_count'], 6, 'Inherited879 final archive six-file count')
+    exact({str(path.relative_to(final)) for path in final.rglob('*') if path.is_file()},
+          set(archive['files']) | {'archive.json'}, 'Strict inherited879 final six-file archive')
+    exact(len(archive['files']), 5, 'Inherited879 exactly five archived payloads')
+    for name, row in archive['files'].items():
+        path = regular(final / name)
+        require(str(path) in pins, 'Every inherited879 final file retained in complete341 map')
+        exact(pins[str(path)], row['sha256'], 'Inherited879 final archive links complete341 map')
+        exact(path.stat().st_size, row['bytes'], 'Inherited879 final payload size')
+
+
+def preserved_inputs():
+    """Authenticate frozen metadata; do not run any saved executable source."""
+    pins = {}
+    pin(pins, PARENT / 'frozen_source_map_883.json', FROZEN_MAP_RAW)
+    frozen = json.loads((PARENT / 'frozen_source_map_883.json').read_bytes())
+    exact(len(frozen), 883, 'Closed883 source count')
+    exact(value_digest(frozen), FROZEN_MAP_CANONICAL, 'Closed883 canonical source map')
+    pin(pins, PARENT / 'artifact_manifest.json', MANIFEST_RAW)
+    manifest = sealed(PARENT / 'artifact_manifest.json', 'manifest_sha256')
+    exact(manifest['manifest_sha256'], MANIFEST_SEAL, 'Closed56 manifest selfseal')
+    exact(manifest['closed_component_file_count'], 56, 'Closed56 count')
+    exact(len(manifest['files']), 56, 'Actual closed56 entries')
+    expected_parent = set()
+    for name, row in manifest['files'].items():
+        rel = PurePosixPath(name)
+        require(not rel.is_absolute() and '..' not in rel.parts and str(rel) == name,
+                'Canonical saved manifest path')
+        exact(set(row), {'bytes', 'sha256'}, 'Complete manifest file row')
+        path = ROOT / name
+        exact(regular(path).stat().st_size, row['bytes'], 'Closed component size')
+        pin(pins, path, row['sha256'])
+        if path.is_relative_to(PARENT):
+            expected_parent.add(str(path.relative_to(PARENT)))
+    exact(files_under(PARENT), expected_parent | {'artifact_manifest.json'}, 'Whole strict56 parent')
+    pin(pins, FINAL / 'archive.json', FINAL_ARCHIVE_RAW)
+    archive = sealed(FINAL / 'archive.json', 'archive_sha256')
+    exact(archive['archive_sha256'], FINAL_ARCHIVE_SEAL, 'Closed final883 archive selfseal')
+    exact(archive['status'], 'PASS_FINAL883_READBACK_ARCHIVE_CLOSED', 'Closed final883 archive PASS')
+    exact(archive['total_closed_file_count'], 6, 'Closed final six-file count')
+    exact(set(archive['files']), {'readback_source.txt', 'readback.json', 'console.log',
+                               'manifest_producer_source.txt', 'manifest_console.log'},
+          'Exactly five final archive payloads')
+    exact({str(path.relative_to(FINAL)) for path in FINAL.rglob('*') if path.is_file()},
+          set(archive['files']) | {'archive.json'}, 'Whole strict final six-file archive')
+    for name, row in archive['files'].items():
+        exact(regular(FINAL / name).stat().st_size, row['bytes'], 'Final archived payload size')
+        pin(pins, FINAL / name, row['sha256'])
+    pin(pins, FINAL / 'readback_source.txt', READER_SOURCE_RAW)
+    reader_source = (FINAL / 'readback_source.txt').read_text()
+    pin(pins, STAGE / 'baseline_883_executed_source.txt', READER_SOURCE_RAW)
+    pin(pins, STAGE / 'baseline_883_readback.json', FRESH_REPORT_RAW)
+    pin(pins, STAGE / 'baseline_883_actual_console.log', FRESH_REPORT_RAW)
+    baseline = sealed(STAGE / 'baseline_883_readback.json', 'audit_sha256')
+    exact(baseline['audit_sha256'], FRESH_REPORT_SEAL, 'Authentic pre-new-source baseline selfseal')
+    for key, expected in (('status', 'PASS_FINAL883_EVIDENCE_READBACK_ONLY'),
+                          ('final_python_source_count', 883), ('current_manifest_file_count', 56),
+                          ('recorded_raw_dependency_pin_count', 341),
+                          ('temporary_dependency_copy_association_count', 15),
+                          ('authoritative_ancestry_release_closure_count', 11),
+                          ('project_imports', False), ('baseline_reexecuted', False),
+                          ('math_or_solver_or_test_or_quadrature_reexecuted', False)):
+        exact(baseline[key], expected, 'Fresh saved883 baseline ' + key)
+    exact(len(baseline['dependency_raw_sha256']), 341, 'Whole saved341 raw dependency map')
+    for name, expected in baseline['dependency_raw_sha256'].items():
+        pin(pins, Path(name), expected)
+    inherited_879_closures(pins)
+    associations = baseline['temporary_dependency_exact_closed_copy_associations']
+    exact(len(associations), 15, 'Complete fifteen existing authenticated TMP aliases')
+    exact({name for name in baseline['dependency_raw_sha256'] if Path(name).is_relative_to(Path('/tmp'))},
+          set(associations), 'Every saved TMP pin has exact permanent copy association')
+    for temporary, row in associations.items():
+        pin(pins, Path(temporary), row['sha256'])
+        pin(pins, Path(row['permanent_copy']), row['sha256'])
+    for relative, count, tests, wrapper_raw in lineage(reader_source):
+        strict_release(relative, count, tests, wrapper_raw, pins)
+    relative = str((PARENT / baseline['current_release']).relative_to(ROOT))
+    strict_release(relative, 883, 14, baseline['dependency_raw_sha256'][str(ROOT / relative / 'report.json')], pins)
+    return frozen, baseline, pins
+
+
+def run(additional_source_sha256, *, output_path):
+    """Return/write one preservation receipt for actual883+exact declared four.
+
+    additional_source_sha256 must contain exactly ADDED_NAMES and the frozen
+    SHA256 of every added file. output_path is a fresh JSON outside the repo.
+    Existing caller project modules are retained by exact name and identity.
+    """
+    started = time.perf_counter()
+    require(type(additional_source_sha256) is dict, 'Exact declared new source map')
+    exact(set(additional_source_sha256), set(ADDED_NAMES), 'Exactly four authorized new Python paths')
+    output_path = Path(output_path)
+    require(output_path.is_absolute() and output_path.resolve() == output_path and
+            not output_path.is_symlink() and not output_path.exists() and
+            output_path.parent.is_dir() and output_path.parent.resolve() == output_path.parent and
+            output_path.suffix == '.json' and
+            (output_path.is_relative_to(Path('/workspace')) or output_path.is_relative_to(Path('/tmp'))) and
+            not output_path.is_relative_to(ROOT), 'Fresh exclusive preservation output outside repo')
+    producer = regular(Path(__file__).resolve())
+    producer_raw = digest(producer)
+    modules_before = project_modules()
+    frozen, baseline, pins = preserved_inputs()
+    declared = dict(frozen)
+    for name, expected in additional_source_sha256.items():
+        require(name not in frozen, 'Authorized addition is genuinely new')
+        pin(pins, ROOT / name, expected)
+        declared[name] = expected
+    exact(source_map(), declared, 'Actual887 equals all883 unchanged plus exactly frozen four')
+    pin(pins, producer, producer_raw)
+    require(str(output_path) not in pins, 'Fresh output disjoint from every preserved dependency')
+    # Recheck all actual raw bytes and strict closures; use no prior main.
+    after_frozen, after_baseline, after_pins = preserved_inputs()
+    exact(after_frozen, frozen, 'Saved883 source authority unchanged')
+    exact(after_baseline, baseline, 'Saved pre-new-source readback unchanged')
+    for name, expected in pins.items():
+        if name in after_pins:
+            exact(after_pins[name], expected, 'Preserved raw dependency AFTER ' + name)
+        else:
+            exact(digest(name), expected, 'Declared new source and executing helper AFTER ' + name)
+    exact(source_map(), declared, 'Complete actual887 source map unchanged AFTER')
+    modules_after = project_modules()
+    exact(set(modules_after), set(modules_before), 'Real caller project module names retained')
+    require(all(modules_after[name] is module for name, module in modules_before.items()),
+            'Real caller project module identities retained')
+    result = dict(
+        format='native-archive-material-carrier-prior883-preservation-1',
+        status='PASS_IMMUTABLE883_WITH_EXACT_FOUR_DECLARED_SOURCE_ADDITIONS',
+        current_python_source_count=len(declared), prior_python_source_count=883,
+        prior_python_source_map_canonical_sha256=FROZEN_MAP_CANONICAL,
+        current_python_source_map_canonical_sha256=value_digest(declared),
+        additional_python_source_count=4, additional_python_source_sha256=additional_source_sha256,
+        all883_python_sources_unchanged=True, complete_actual_source_map_checked_before_after=True,
+        prior_883_metadata_is_authenticated_saved_readback_only=True,
+        fresh_pre_new_source_883_readback_path=str(STAGE / 'baseline_883_readback.json'),
+        fresh_pre_new_source_883_readback_raw_sha256=FRESH_REPORT_RAW,
+        fresh_pre_new_source_883_readback_selfseal=FRESH_REPORT_SEAL,
+        fresh_pre_new_source_883_readback_seconds=baseline['seconds'],
+        preserved_prior_raw_dependency_pin_count=341, recorded_raw_dependency_pin_count=len(pins),
+        dependency_raw_sha256=pins, preserved_current883_manifest_file_count=56,
+        preserved_current883_manifest_raw_sha256=MANIFEST_RAW, preserved_current883_manifest_selfseal=MANIFEST_SEAL,
+        preserved_current883_final_readback_archive_file_count=6,
+        preserved_current883_final_readback_archive_raw_sha256=FINAL_ARCHIVE_RAW,
+        preserved_inherited879_manifest_file_count=83,
+        preserved_inherited879_final_readback_archive_file_count=6,
+        authoritative_ancestry_release_closure_count=11, preserved_current883_release_closed_file_count=5,
+        temporary_dependency_copy_association_count=15,
+        temporary_dependency_exact_closed_copy_associations=baseline['temporary_dependency_exact_closed_copy_associations'],
+        current_tmp_inputs_restored=False, project_modules_imported_reloaded_or_replaced=False,
+        caller_existing_project_module_count=len(modules_before),
+        prior_reader_or_auditor_main_reexecuted=False,
+        math_or_solver_or_test_or_quadrature_reexecuted=False,
+        executing_preservation_source_raw_sha256=producer_raw, seconds=time.perf_counter() - started,
+    )
+    result['preservation_sha256'] = value_digest(result)
+    with output_path.open('xb') as stream:
+        stream.write(encoded(result) + b'\n')
+    return result

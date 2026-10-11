@@ -1,0 +1,44 @@
+from pathlib import Path
+import hashlib,json,shutil
+ROOT=Path('/workspace/Habitable-Moon-Project')
+P=ROOT/'analysis/geometric_native_common_material_surface_transport_validation'
+def enc(v):return json.dumps(v,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+def digest(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def sealed(p,key):
+ r=json.loads(Path(p).read_bytes());assert r[key]==hashlib.sha256(enc({k:v for k,v in r.items() if k!=key})).hexdigest();return r
+release=P/'release_validation_01'
+w=sealed(release/'report.json','report_sha256')
+assert w['status']=='FAIL' and w['pytest_counts']=={'failed':1,'passed':12} and w['pytest_exit_code']==2
+assert not w['changed_python_paths'] and w['prior_artifacts_and_python_sources_preserved_after']
+assert w['source_map_before_sha256']==w['source_map_after_sha256']=='93193719c3f64e9912b71c08be4418918b86139f9865c9bb95715dd6985d58ef'
+assert {str(p.relative_to(release)) for p in release.rglob('*') if p.is_file()}=={'pytest.log','report.json'}
+log=(release/'pytest.log').read_text()
+name='test_literal_current_memory_pieces_and_all_clocks_advect_at_the_same_material_label'
+assert 'KeyboardInterrupt' in log and name in log and '1 failed, 12 passed' in log
+f=P/'failed_validation_01';f.mkdir(exist_ok=False)
+def copy(src,dst):
+ b=Path(src).read_bytes()
+ with Path(dst).open('xb') as s:s.write(b)
+ assert digest(src)==digest(dst)
+copy(P/'frozen_source_map_879.json',f/'frozen_source_map_879.json')
+assert digest(f/'frozen_source_map_879.json')=='a77717f3cbde54537fb37d4fc5c909e407881d09c90f2bb6cdc92882f442ee20'
+old=json.loads((f/'frozen_source_map_879.json').read_bytes())
+assert len(old)==879
+for path,pin in old.items():assert digest(ROOT/path)==pin
+for filename in ('source_freeze_receipt.json','source_freeze_producer_source.txt','source_freeze_console.log','baseline_before_gate.json','baseline_before_gate_projection.json'):
+ shutil.move(str(P/filename),str(f/filename))
+shutil.move(str(P/'frozen_sources'),str(f/'frozen_sources'))
+for side in ('after',):
+ b=Path(w['prior_baseline_after_path']);q=b.with_name(b.stem+'_frozen875_reader_projection.json')
+ assert digest(b)==w['prior_baseline_after_raw_sha256']
+ copy(b,f/'baseline_after_gate.json');copy(q,f/'baseline_after_gate_projection.json')
+copy(Path('/tmp/native_common_material_surface_transport_gate01_20261006.console.log'),f/'wrapper_console.log')
+assert digest(f/'baseline_before_gate.json')==w['prior_baseline_before_raw_sha256']
+for path,pin in w['added_python_sources'].items():
+ assert digest(f/'frozen_sources'/Path(path).name.replace('.py','.py.txt'))==pin
+files={str(p.relative_to(ROOT)):digest(p) for d in (f,release) for p in sorted(d.rglob('*')) if p.is_file()}
+assert len(files)==15
+r=dict(format='native-common-material-surface-failed-gate-preservation-1',status='PRESERVED_FAILED_FROZEN_GATE_01_BEFORE_TEST7_ONLY_CORRECTION',failed_release_relative_path=str(release.relative_to(ROOT)),wrapper_raw_sha256=digest(release/'report.json'),wrapper_selfseal=w['report_sha256'],source_map_canonical_sha256=w['source_map_before_sha256'],frozen_source_map_raw_sha256=digest(f/'frozen_source_map_879.json'),failed_source4_sha256=w['added_python_sources'],source_freeze_receipt_raw_sha256=digest(f/'source_freeze_receipt.json'),artifact_raw_sha256=files,failed_status_counts=w['pytest_counts'],historical_tmp_paths_are_metadata_not_current_inputs=True,interrupted_by_owner_for_redundant_old_geometry_rebinding=True,failing_test_names=[name],test14_completed=False,pytest_seconds=w['pytest_seconds'],gate_seconds=w['seconds'],preservation_producer_raw_sha256=digest(Path(__file__)),correction_scope='TEST7_HARMONIC_ORACLE_AND_FIXED_PACKET_REPLAY_WITHOUT_REPEATED_OLD_WHOLE_PORT_COLLECTION_BINDING',core_and_wrapper_will_remain_unchanged=True)
+r['preservation_sha256']=hashlib.sha256(enc(r)).hexdigest()
+with (f/'preservation_receipt.json').open('xb') as s:s.write(enc(r)+b'\n')
+print(enc(r).decode())

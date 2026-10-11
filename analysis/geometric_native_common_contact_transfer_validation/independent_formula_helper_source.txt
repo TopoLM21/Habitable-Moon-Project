@@ -1,0 +1,272 @@
+"""Independent stdlib exact area/serial-law replay; no project module imports.
+
+The pinned previous scalar-kinematics auditor supplies objective 20-coordinate
+geometry algebra.  This helper independently derives the new compliance,
+energy split and complete derivative law from literal material/source data.
+"""
+from fractions import Fraction as F
+from math import comb
+import hashlib,json
+
+SERIES_FORMAT='native-common-explicit-reduced-contact-column-series-1'
+SERIES_SCOPE='DECLARED_REDUCED_SERIAL_CARRIER_PER_REFERENCE_AREA'
+SERIES_FALSE=(
+ 'additive_to_853_contact_only_energy_authorized','old_rod_three_dimensional_material_map_certified',
+ 'old_world_or_generalized_force_handover_certified','physical_interface_area_or_memory_allocation_certified',
+ 'all_sixteen_source_carriers_physically_transferred','old_rod_energy_added_to_existing_common_bulk_prestrain',
+ 'force_equilibrium_certified','physical_material_admission_authorized','source_history_or_thermal_state_advanced')
+SERIES_TRUE=('source_scalar_prestress_preserved','variable_mechanical_energy_and_derivatives_defined')
+
+def encoded(x):return json.dumps(x,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+def sha(x):return hashlib.sha256(encoded(x)).hexdigest()
+def exact(a,b,label):
+ if a!=b:raise AssertionError(label)
+def seal(raw,*,false=(),true=()):
+ body=dict(raw)
+ for k in ('format','scope',*false,*true):body.pop(k,None)
+ expected=body.pop('binding_sha256')
+ exact(sha(body),expected,'new declaration/response binding seal')
+def scope(raw):
+ exact(raw['format'],SERIES_FORMAT,'series format');exact(raw['scope'],SERIES_SCOPE,'series scope')
+ for k in SERIES_FALSE:exact(raw.get(k),False,'series false scope '+k)
+ for k in SERIES_TRUE:exact(raw.get(k),True,'series true scope '+k)
+ seal(raw,false=SERIES_FALSE,true=SERIES_TRUE)
+def literal(x):
+ if type(x) is not float:raise AssertionError('source parameter is not literal binary64')
+ return F.from_float(x)
+def square(x,I):return I(0 if x.lo<=0<=x.hi else min(x.lo*x.lo,x.hi*x.hi),max(x.lo*x.lo,x.hi*x.hi))
+def absolute(x,I):return I(0 if x.lo<=0<=x.hi else min(abs(x.lo),abs(x.hi)),max(abs(x.lo),abs(x.hi)))
+
+def audit_series_declaration(raw,state,ingredients,base):
+ I,p,f,c=base.I,base.invparse,base.frac,base.contains
+ scope(raw)
+ trace=json.loads(state['source_trace_json']);col=trace['columns'];law=trace['law']
+ columns=tuple(literal(col[k]) for k in ('sub_length_m','sub_normal_modulus_pa','sub_shear_modulus_pa','over_length_m','over_normal_modulus_pa','over_shear_modulus_pa'))
+ exact(tuple(map(f,raw['individual_column_literal_parameters'])),columns,'authentic individual source columns')
+ Ls,Es,Gs,Lo,Eo,Go=columns;kn=literal(law['normal_stiffness_pa_m']);kt=literal(law['tangential_stiffness_pa_m'])
+ exact(f(raw['normal_contact_stiffness_pa_m']),kn,'bare normal contact coefficient')
+ exact(f(raw['tangential_contact_stiffness_pa_m']),kt,'bare shear contact coefficient')
+ cn=(Ls/Es,Lo/Eo);ct=(Ls/Gs,Lo/Go);Kn=1/(1/kn+sum(cn));Kt=1/(1/kt+sum(ct))
+ exact(tuple(map(f,raw['individual_normal_compliances_m_pa'])),cn,'normal sub/over compliances')
+ exact(tuple(map(f,raw['individual_shear_compliances_m_pa'])),ct,'shear sub/over compliances')
+ exact(f(raw['exact_normal_series_stiffness_pa_m']),Kn,'exact harmonic normal series coefficient')
+ exact(f(raw['exact_shear_series_stiffness_pa_m']),Kt,'exact harmonic shear series coefficient')
+ for axis,K,cs in (('normal',Kn,cn),('shear',Kt,ct)):
+  source=f(state['original_series_'+axis+'_stiffness_pa_m'])
+  exact(f(raw['source_binary64_'+axis+'_series_stiffness_pa_m']),source,'literal source rounded '+axis+' series')
+  exact(f(raw['exact_minus_source_'+axis+'_series_stiffness_pa_m']),K-source,'explicit exact minus rounded series')
+  exact(f(raw['exact_minus_source_'+axis+'_column_stiffness_pa_m']),1/sum(cs)-f(state['original_column_'+axis+'_stiffness_pa_m']),'explicit exact minus rounded columns')
+ pressure=p(state['normal_pressure_bounds_pa']);plastic=p(state['plastic_slip_bounds_m'])
+ exact(p(raw['normal_anchor_reference_bounds_m']),-pressure/Kn,'new normal far anchor calibration')
+ exact(p(raw['shear_anchor_reference_bounds_m']),plastic,'actual literal current plastic reference')
+ exact(p(raw['normal_anchor_minus_source_free_gap_bounds_m']),-pressure/Kn-p(state['free_gap_bounds_m']),'no copied free gap')
+ exact(p(raw['shear_anchor_minus_source_free_jump_bounds_m']),plastic-p(state['free_jump_bounds_m']),'literal plastic/freejump difference retained')
+ for name,expected in (
+  ('source_snapshot_sha256',state['source_snapshot_sha256']),('reference_snapshot_sha256',ingredients['reference_snapshot_sha256']),
+  ('cut_snapshot_sha256',ingredients['cut_snapshot_sha256']),('geometry_bounds_sha256',ingredients['geometry_bounds_sha256']),
+  ('port_binding_sha256',ingredients['port_binding_sha256']),('source_observation_binding_sha256',state['binding_sha256']),
+  ('receiving_trace_id',state['receiving_trace_id']),('receiver_frame','common_cut_material'),
+  ('source_trace_json_sha256',hashlib.sha256(state['source_trace_json'].encode()).hexdigest()),
+  ('anchor_interpretation','common_body_trace_increment_drives_eliminated_serial_carrier'),
+  ('anchor_coordinate_origin','ZERO_MODAL_INCREMENT_IN_NEW_COMMON_REFERENCE'),
+  ('assembly_role','REPLACEMENT_LOCAL_SERIES_COMPONENT_NOT_PARALLEL_CONTACT853')):exact(raw[name],expected,name)
+ if not raw['provenance'].strip():raise AssertionError('missing explicit new anchor provenance')
+ return kn,kt,cn,ct,Kn,Kt
+
+def audit_series_response(raw,declaration,state,ingredients,branch,label,base,counts):
+ I,p,f,c=base.I,base.invparse,base.frac,base.contains
+ scope(raw);exact(raw['branch'],branch,'serial branch');exact(raw['precision'],96,'serial arithmetic precision')
+ for key,expected in (
+  ('declaration_binding_sha256',declaration['binding_sha256']),('source_observation_binding_sha256',state['binding_sha256']),
+  ('port_response_binding_sha256',ingredients['port_response_binding_sha256'])):exact(raw[key],expected,key)
+ exact(raw['source_memory_proposal_applied'],False,'memory proposal unapplied')
+ exact(raw['symmetric_left_chart_and_receiver_frame_terms_included'],True,'objective complete Hessian')
+ exact(raw['frozen_predictor_is_actual_relaxed_shear_law'],False,'predictor distinguished from frictionfree tangent')
+ xi,first,second=base._audit_kinematics(ingredients,raw['kinematics'],nested=True,counts=counts)
+ kn,kt,cn,ct,Kn,Kt=audit_series_declaration(declaration,state,ingredients,base)
+ n=20;exact(len(first[0]),n,'cold 20 coordinates');pressure=p(state['normal_pressure_bounds_pa'])
+ tn,tt=map(p,raw['traction_bounds_pa']);trial=p(raw['frozen_shear_trial_traction_bounds_pa'])
+ c(-pressure+Kn*xi[0],raw['traction_bounds_pa'][0],'serial pressure variation')
+ if xi[0]==I(0):exact(tn,-pressure,'zero source prestress retained exactly')
+ if not tn.hi<0:raise AssertionError('serial contact opening was admitted')
+ c(Kt*xi[1],raw['frozen_shear_trial_traction_bounds_pa'],'serial frozen trial')
+ relaxed=branch=='relaxed_source';exact(tt,I(0) if relaxed else trial,'serial shear branch')
+ tangent=base._tree(raw['local_tangent_bounds_pa_m'],(2,2));exact(tangent,((I(Kn),I(0)),(I(0),I(0) if relaxed else I(Kt))),'harmonic local tangent, not bare kc')
+ exact(p(raw['far_anchor_normal_bounds_m']),p(declaration['normal_anchor_reference_bounds_m'])+xi[0],'normal far anchor increment')
+ exact(p(raw['far_anchor_shear_bounds_m']),p(declaration['shear_anchor_reference_bounds_m'])+xi[1],'shear far anchor increment')
+ exact(p(raw['normal_contact_strain_bounds_m']),tn/kn,'eliminated contact normal strain')
+ exact(p(raw['elastic_contact_shear_strain_bounds_m']),tt/kt,'eliminated contact elastic shear')
+ exact(tuple(map(p,raw['individual_rod_normal_shortening_bounds_m'])),tuple(-tn*x for x in cn),'individual rod shortening')
+ exact(tuple(map(p,raw['individual_rod_shear_extension_bounds_m'])),tuple(-tt*x for x in ct),'individual rod shear extension')
+ exact(raw['energy_component_order'],['contact','sub_column','over_column'],'energy carriers once only')
+ energies=tuple(map(p,raw['energy_component_bounds_j_m2']));refs=tuple(map(p,raw['reference_energy_component_bounds_j_m2']))
+ n2,t2=square(tn,I),square(tt,I);p2=square(pressure,I)
+ for k,expected in enumerate((n2/(2*kn)+t2/(2*kt),*(n2*x/2+t2*y/2 for x,y in zip(cn,ct)))):c(expected,raw['energy_component_bounds_j_m2'][k],'split serial energy '+str(k))
+ for k,expected in enumerate((p2/(2*kn),*(p2*x/2 for x in cn))):c(expected,raw['reference_energy_component_bounds_j_m2'][k],'reference split energy '+str(k))
+ exact(p(raw['total_energy_bounds_j_m2']),sum(energies,I(0)),'exact once-only split energy sum')
+ exact(p(raw['reference_total_energy_bounds_j_m2']),sum(refs,I(0)),'exact reference split energy sum')
+ if label=='zero':exact(energies,refs,'zero serial full reference energy retained')
+ residual=tuple(map(p,raw['residual_bounds_per_reference_m2']));hessian=base._tree(raw['hessian_bounds_per_reference_m2'],(n,n))
+ exact(len(residual),n,'complete serial residual dimension')
+ for i in range(n):
+  c(tn*first[0][i]+tt*first[1][i],raw['residual_bounds_per_reference_m2'][i],'series full residual')
+  for j in range(n):
+   expected=Kn*first[0][i]*first[0][j]+tn*second[0][i][j]
+   if not relaxed:expected+=Kt*first[1][i]*first[1][j]+tt*second[1][i][j]
+   c(expected,raw['hessian_bounds_per_reference_m2'][i][j],'full serial stiffness plus prestress Hessian')
+   exact(hessian[i][j],hessian[j][i],'exact symmetric series Hessian')
+ increment=xi[1] if relaxed else I(0);exact(p(raw['proposed_plastic_increment_bounds_m']),increment,'serial plastic proposal')
+ c(p(state['plastic_slip_bounds_m'])+increment,raw['proposed_plastic_slip_bounds_m'],'plastic proposal')
+ c(p(state['cumulative_slip_bounds_m'])+absolute(increment,I),raw['proposed_cumulative_slip_bounds_m'],'cumulative proposal')
+ if relaxed:exact(raw['contact_jump_bounds_m'],raw['proposed_plastic_slip_bounds_m'],'relaxed contactjump')
+ else:c(p(state['plastic_slip_bounds_m'])+tt/kt,raw['contact_jump_bounds_m'],'predictor contactjump')
+ counts['serial_declaration_replay_count']+=1;counts['serial_response_count']+=1
+ counts['energy_component_replay_count']+=6;counts['residual_entry_count']+=n;counts['hessian_entry_count']+=n*n
+ return energies,residual,hessian
+
+def bernstein_point(coeff,z):
+ n=len(coeff)-1
+ return sum((b*comb(n,k)*z**k*(1-z)**(n-k) for k,b in enumerate(coeff)),F(0))
+def bernstein_cdf(coeff,z):
+ n=len(coeff)-1;out=F(0)
+ for k,b in enumerate(coeff):
+  for j in range(n-k+1):out+=b*comb(n,k)*comb(n-k,j)*(-1)**j*z**(k+j+1)/(k+j+1)
+ return out
+
+MEASURE_FORMAT='native-common-contact-reference-depth-measure-1'
+MEASURE_SCOPE='DECLARED_POINT_REFERENCE_MEASURE_NO_GLOBAL_TRANSFER'
+MEASURE_MODEL='new_normalized_source_reference_area_depth_profile'
+MEASURE_FALSE=(
+ 'inherited_three_dimensional_source_depth_profile','full_face_memory_measure_transfer_certified',
+ 'global_receiver_source_allocation_certified','old_mechanical_atom_area_assigned','old_rod_energy_or_prestress_transferred',
+ 'source_state_or_thermal_state_advanced','force_equilibrium_certified','physical_material_admission_authorized')
+MEASURE_TRUE=('active_point_depth_profile_model_declared',)
+
+def measure_scope(raw):
+ exact(raw['format'],MEASURE_FORMAT,'measure format');exact(raw['scope'],MEASURE_SCOPE,'measure scope');exact(raw['model'],MEASURE_MODEL,'explicit new depth allocation')
+ for k in MEASURE_FALSE:exact(raw.get(k),False,'measure false scope '+k)
+ for k in MEASURE_TRUE:exact(raw.get(k),True,'measure true scope '+k)
+ body=dict(raw);body.pop('model');seal(body,false=MEASURE_FALSE,true=MEASURE_TRUE)
+
+def pi_bounds(I):
+ threshold=F(1,1<<768)
+ def atan_inv(q):
+  x=F(1,q);power=x;total=x;n=0
+  while True:
+   following=-power*x*x*F(2*n+1,2*n+3)
+   if abs(following)<threshold:return I(min(total,total+following),max(total,total+following))
+   total+=following;power=following;n+=1
+ return 16*atan_inv(5)-4*atan_inv(239)
+
+def profile_bounds(coeff,z,I):
+ if len(set(coeff))==1:return I(coeff[0])
+ n=len(coeff)-1
+ return sum((b*comb(n,k)*I(z.lo**k,z.hi**k)*I((1-z.hi)**(n-k),(1-z.lo)**(n-k)) for k,b in enumerate(coeff)),I(0))
+
+def audit_measure(declaration,response,state,ingredients,measure_inputs,cut,before,base,counts,rectangle):
+ I,p,f,c=base.I,base.invparse,base.frac,base.contains
+ measure_scope(declaration);measure_scope(response)
+ tid=state['receiving_trace_id'];history=before['original_physical_history'];atoms=[a for a in history['quadrature_histories'] if a['trace_id']==tid]
+ exact(len(atoms),4,'authentic four original receiver atoms');exact(all(a['original_frame']==atoms[0]['original_frame'] for a in atoms),True,'shared original interface frame')
+ R=literal(history['origin_surface']['radius_km'])*1000;height=literal(atoms[0]['original_material']['contact_height_m']);sine=literal(atoms[0]['original_frame'][0]);C=R*height/sine
+ current=json.loads(state['source_current_memory_trace_json']);extent=literal(current['extent_radians'])
+ cube=p(cut['common_physical_radius_cubed_bounds_m3']);tau=I((R**3-cube.hi)/(3*R**2),(R**3-cube.lo)/(3*R**2));span=tau.hi-tau.lo
+ for key,value in (('source_radius_m',R),('source_interface_height_m',height),('source_literal_original_frame_sine',sine),
+  ('source_interface_area_density_m2_per_computational_radian',C),('source_computational_extent_radians',extent),('source_reference_interface_area_m2',C*extent),('physical_volume_depth_span_m',span)):
+  exact(f(declaration[key]),value,'exact original measure/depth '+key)
+ exact(p(declaration['common_physical_radius_cubed_bounds_m3']),cube,'true complete cut radius cube')
+ exact(p(declaration['physical_volume_depth_bounds_m']),tau,'true complete common physical depth')
+ exact(span>0,True,'positive genuine intersection span; exact source roof offsets retained')
+ coeff=tuple(map(f,declaration['depth_profile_coefficients']));exact(1<=len(coeff)<=33 and all(x>=0 for x in coeff),True,'nonnegative exact Bernstein profile')
+ exact(sum(coeff,F(0)),F(len(coeff)),'normalized Bernstein sum/(n+1)=1')
+ exact(f(declaration['depth_profile_integral_exact']),bernstein_cdf(coeff,F(1))-bernstein_cdf(coeff,F(0)),'exact CDF normalization')
+ exact(f(declaration['depth_profile_integral_exact']),F(1),'depth profile integral exactly1')
+ if not declaration['provenance'].strip():raise AssertionError('missing explicit new conditional-depth provenance')
+ for key in ('source_snapshot_sha256','source_history_binding_sha256','source_current_memory_sha256','source_current_atom_states_sha256','source_current_node_epoch',
+  'source_native_elapsed_time_s','source_memory_elapsed_time_s','source_memory_stage_count','source_contact_elapsed_time_s','source_contact_step_count','receiving_trace_id'):
+  exact(declaration[key],state[key],'measure source field '+key)
+ exact(declaration['source_current_memory_trace_sha256'],hashlib.sha256(state['source_current_memory_trace_json'].encode()).hexdigest(),'actual current memory JSON sha')
+ for key in ('reference_snapshot_sha256','cut_snapshot_sha256','port_binding_sha256'):
+  exact(declaration[key],ingredients[key],'measure dependency '+key);exact(response[key],ingredients[key],'measure response dependency '+key)
+ exact(response['declaration_binding_sha256'],declaration['binding_sha256'],'measure declarationbinding')
+ exact(response['geometry_bounds_sha256'],ingredients['geometry_bounds_sha256'],'measure actual geometrybinding')
+ exact(response['source_state_observation_binding_sha256'],state['binding_sha256'],'measure actual sourceobservation')
+ exact(response['computational_angle_bounds'],state['computational_angle_bounds'],'actual current θ query')
+ exact(response['source_plastic_slip_bounds_m'],state['plastic_slip_bounds_m'],'actual current p');exact(response['source_cumulative_slip_bounds_m'],state['cumulative_slip_bounds_m'],'actual current c')
+ exact(response['source_current_memory_sha256'],state['source_current_memory_sha256'],'actual current memorysha')
+ exact(response['precision'],96,'new measure arithmeticprecision');exact(declaration['precision'],96,'new measure declarationprecision')
+ trace=json.loads(state['source_trace_json']);S,T=(tuple(I(literal(float(v))) for v in trace[k]) for k in ('start','end'))
+ q=base._tree(measure_inputs['receiver_owner_local_unit_direction_bounds'],(3,));Up=base._tree(measure_inputs['source_unit_world_direction_parameter_derivative_bounds'],(3,))
+ pose=base._tree(measure_inputs['receiver_source_pose_intervals'],(3,3));qp=tuple(base._dot(tuple(pose[j][i] for j in range(3)),Up) for i in range(3))
+ x,y=base._dot(S,q),base._dot(T,q);xp,yp=base._dot(S,qp),base._dot(T,qp)
+ exact(tuple(map(p,response['receiver_projection_coordinate_bounds'])),(x,y),'actual original receiver projection')
+ exact(tuple(map(p,response['receiver_projection_coordinate_parameter_derivative_bounds'])),(xp,yp),'general inverse-pose source derivative')
+ denominator=square(x,I)+square(y,I)
+ if denominator.lo<=0:raise AssertionError('singular receiver angle projection')
+ c(denominator,response['projection_squared_radius_bounds'],'receiver squared projection norm')
+ native=(x*yp-y*xp)/denominator
+ c(native,response['receiving_native_angle_parameter_derivative_bounds'],'general native θ derivative')
+ c(I(-1),response['receiving_native_angle_parameter_derivative_bounds'],'independent genuine-plane exact native−1 oracle')
+ derivative=native*extent/(pi_bounds(I)/2)
+ c(derivative,response['receiving_computational_angle_parameter_derivative_bounds'],'exact extent and independent pi derivative')
+ exact(response['receiving_angle_orientation'],-1,'strict source-angle orientation');exact(p(response['receiving_computational_angle_parameter_derivative_bounds']).hi<0,True,'strict derivative sign')
+ querytau=p(measure_inputs['common_physical_volume_depth_bounds_m']);z=(querytau-tau.lo)/span
+ exact(0<=z.lo<=z.hi<=1,True,'normalized true depth insidecut');exact(p(response['normalized_depth_bounds']),z,'actual normalized truecommon depth')
+ profile=profile_bounds(coeff,z,I);c(profile,response['depth_profile_value_bounds'],'independent normalized Bernstein value')
+ density=C*(-derivative)*profile/span
+ c(density,response['reference_area_density_bounds_m2_per_parameter_per_physical_volume_depth_m'],'source reference Cθprime f/trueH')
+ physical=p(measure_inputs['physical_area_density_bounds']);exact(p(response['physical_area_density_bounds_m2_per_parameter_per_physical_volume_depth_m']),physical,'true COMMON J unchanged')
+ if physical.lo<=0:raise AssertionError('nonpositive genuine J')
+ c(density/physical,response['reference_to_physical_area_density_ratio_bounds'],'reference-material vs genuinephysical density ratio')
+ thetabounds=p(rectangle['computational_angle_bounds']);zbounds=p(rectangle['normalized_depth_bounds'])
+ exact(0<=thetabounds.lo<=thetabounds.hi<=extent,True,'source rectangle θ extent');exact(0<=zbounds.lo<=zbounds.hi<=1,True,'source rectangle normalizeddepth')
+ area=C*(thetabounds.hi-thetabounds.lo)*(bernstein_cdf(coeff,zbounds.hi)-bernstein_cdf(coeff,zbounds.lo))
+ exact(f(rectangle['area_m2']),area,'independent exact source rectangle CDF area')
+ counts['reference_area_density_case_count']+=1;counts['source_rectangle_exact_cdf_case_count']+=1
+ counts['general_receiver_projection_derivative_case_count']+=1;counts['source_exact_frame_density_case_count']+=1
+ return p(response['reference_area_density_bounds_m2_per_parameter_per_physical_volume_depth_m'])
+
+def audit_weighted(raw,series,weight,base,counts):
+ I,p=base.I,base.invparse
+ exact(p(raw['energy_bounds_j_per_parameter_per_physical_volume_depth_m']),p(series['total_energy_bounds_j_m2'])*weight,'reference-weighted serial energy')
+ expected=tuple(p(x)*weight for x in series['residual_bounds_per_reference_m2']);exact(tuple(map(p,raw['residual_bounds_per_parameter_per_physical_volume_depth_m'])),expected,'reference-weighted force integrand')
+ expected=tuple(tuple(p(x)*weight for x in row) for row in series['hessian_bounds_per_reference_m2'])
+ exact(base._tree(raw['hessian_bounds_per_parameter_per_physical_volume_depth_m'],(20,20)),expected,'reference-weighted complete Hessian integrand')
+ exact(raw['finite_point_area_assigned'],False,'point density is not finite area');exact(raw['globally_integrated_force_solution'],False,'local integrand is not equilibrium')
+ exact(raw['reference_density_derivatives_with_respect_to_fresh_generalized_coordinates'],'zero by declared material reference','density frozeninreference')
+ counts['reference_weighted_integrand_case_count']+=1
+
+def audit_packet(packet,base):
+ counts={k:0 for k in ('kinematic_query_count','scalar_first_derivative_entry_count','scalar_second_derivative_entry_count','jump_second_vector_entry_count','shared_owner_query_count',
+  'serial_declaration_replay_count','serial_response_count','energy_component_replay_count','residual_entry_count','hessian_entry_count','reference_area_density_case_count','source_rectangle_exact_cdf_case_count',
+  'general_receiver_projection_derivative_case_count','source_exact_frame_density_case_count','reference_weighted_integrand_case_count')}
+ before=json.loads(dict(packet['complete_source_dto_json'])['before']);cuts={r['cut_id']:r for r in packet['cut_set']['cuts']}
+ profiles=set();keys=set()
+ for row in packet['contact_query_rows']:
+  exact(row['depth_profile_is_explicitly_declared_not_inferred'],True,'newallocation explicitrow');exact(set(row['cases']),{'zero','nonzero'},'zero andnonzero sourcecases')
+  key=(row['cut_id'],row['sample']);exact(key not in keys,True,'no duplicate queryrow');keys.add(key)
+  for label,case in row['cases'].items():
+   state=case['source_observation'];ingredients=case['port_ingredients'];decl=case['measure_declaration'];response=case['measure_response']
+   profiles.add(tuple(map(base.frac,decl['depth_profile_coefficients'])))
+   exact(case['source_budget_allocated_in_full_to_this_cut'],False,'source budget not admitted in full to every cut')
+   budgets=case['source_rectangle_area_budgets'];params=case['source_rectangle_budget_parameters']
+   exact(set(budgets),{'full_source_rectangle','first_depth_third','remaining_depth','interior_source_rectangle'},'exact four source rectangle budgets')
+   exact(set(params),set(budgets),'source rectangle argument closure')
+   name='interior_source_rectangle';rectangle=dict(params[name],area_m2=budgets[name])
+   weight=audit_measure(decl,response,state,ingredients,case['measure_ingredients'],cuts[row['cut_id']],before,base,counts,rectangle)
+   C=base.frac(decl['source_interface_area_density_m2_per_computational_radian']);coeff=tuple(map(base.frac,decl['depth_profile_coefficients']))
+   for name in ('full_source_rectangle','first_depth_third','remaining_depth'):
+    theta=base.invparse(params[name]['computational_angle_bounds']);z=base.invparse(params[name]['normalized_depth_bounds'])
+    expected=C*(theta.hi-theta.lo)*(bernstein_cdf(coeff,z.hi)-bernstein_cdf(coeff,z.lo))
+    exact(base.frac(budgets[name]),expected,'independent exact CDF '+name)
+    counts['source_rectangle_exact_cdf_case_count']+=1
+   exact(base.frac(budgets['first_depth_third'])+base.frac(budgets['remaining_depth']),base.frac(budgets['full_source_rectangle']),'source depth budget partitions exactly')
+   exact(set(case['series_responses']),{'relaxed_source','frozen_memory_predictor'},'both declared serialbranches')
+   for branch,item in case['series_responses'].items():
+    audit_series_response(item['response'],case['carrier_declaration'],state,ingredients,branch,label,base,counts)
+    audit_weighted(item['reference_weighted_integrands'],item['response'],weight,base,counts)
+ expected={(r['cut_id'],sample) for r in cuts.values() if r['receiving_trace_id'] is not None for sample in (1,2)}
+ exact(keys,expected,'two queries for allfive actualcoldcuts');exact(profiles,{(F(1),),(F(0),F(2))},'two exact explicitlydeclared depthprofiles')
+ for key,expected in (('serial_response_count',40),('reference_area_density_case_count',20),('source_rectangle_exact_cdf_case_count',80),('reference_weighted_integrand_case_count',40),('residual_entry_count',800),('hessian_entry_count',16000)):
+  exact(counts[key],expected,'independent count '+key)
+ return counts

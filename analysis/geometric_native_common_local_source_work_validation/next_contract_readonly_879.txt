@@ -1,0 +1,168 @@
+READ-ONLY NEXT DEPENDENCY CONTRACT — not completed physics
+2026-10-06; prepared during879 gate01. No project module/query, test, solver or
+quadrature was executed for this note. The original point1 and its three
+remaining physical conditions are unchanged.
+
+Evidence read and immutable core pins
+------------------------------------
+tectonics/geometric_native_common_source_carrier.py
+ b188348e7b927c1a1d797cf19b99c33990ba402dd3b942f0ac23cc8d6fe3b0eb
+ _world_reactions:115; _source_jet:128; NativeCommonSourceCarrier:216;
+ evaluate_native_common_source_carrier:550.
+tectonics/geometric_native_common_material_transfer.py
+ 9c534d3b664570fd7d61f4f26601be3af7882de373264b64ba8e071856af9929
+ NativeCommonOriginalMaterialAttachment:150; material point:476–543.
+tectonics/geometric_native_common_strain_projection.py
+ 4b7659d50d73e3c60b7b8c2888277813489034e866dfb4161515a79e37514488
+ _projection_algebra:239; energy guard:419; _source_kernel:480;
+ _global_chain:579; evaluate_native_common_strain_projection:606.
+tectonics/geometric_native_common_material_surface_transport.py
+ 8e6781187f5c8afad8dd201dfbf3c2165c2f07e862bf72ef1017cd5d20433438
+ genuine5coldcut F/cofactor/Nanson/memory; original32 local X+u,F and gradients.
+tectonics/geometric_native_common_contact_series.py
+ 43edcd3d8a1c7bba1ae9548f5e8085dccb547e6d8e82c80cceeec61059e297e2
+ evaluate_native_common_contact_series_carrier:250; newface serial law is a
+ replacement for contact-only energy, not an additional parallel store.
+
+What is already an executable mechanical source, and what is geometry only
+-------------------------------------------------------------------------
+867 exposes all16 IDs/A_i/t0_i/Kexact_i/freeanchors/E0_contact+columns, current
+state and unchanged work lineage, both geometric bases and binary-rounding
+receipts. ACTUAL saved world forces were produced at archival geometry0 with
+contact state2e6; current_objective geometry1e6 is different. 871 supplies
+32 same-original-material identities (8 archived donor+24 live sides), actual
+COMMON geometry1e6 and a declared passive archive chart, ownerQ0 and oldsource
+virtual lever. No source normalization or atom-area smoothing is licensed.
+875 currently composes the SAME source atom kernel with bankwide eight
+s_b=a0+p_b/kappa_b, and adds eight oldbeams plus eight Rperp=N/2-p^2/(2kappa).
+Its body forces are bankwise projection forces, not forces from the actual
+original-point displacements. 879 now provides those actual local
+u_b(q,z)=sum a_k Psi_k and F_b=I+sum a_k G_k, genuine reference geometry,
+Nanson cofactor/J/rho, full cold7 jets and literal current memory at realcuts.
+It changes NO potential. F is already complete, not a displacement gradient.
+
+Nearest substantial implementable target
+---------------------------------------
+One global material-attached source-mechanism potential with full force/work
+and Hessian assembly, REPLACING the sixteen bank-projected atom terms in875,
+while retaining the already authenticated eight beam projections and Rperp
+once. This gives actual nonzero LOCAL mode forces at all32 original material
+points, including archived donors, and makes the remaining source/local-face
+mismatch inspectable. It is not a claim that archived original points are on
+currentcuts or that a physical3D rod has been recovered.
+
+A concrete candidate mechanical closure uses existing source-derived vectors,
+not new lengths or fabricated far endpoints. For each side take the real
+reference point X_b0 at original material depth0, source chosen basis
+p_b0=carrier.archival_old_reference.position, and l_b0=p_b0-X_b0. Declare the
+source attachment vector to be a convected INTERNAL material vector:
+ x_b(a,theta)=R_theta_b(X_b0+u_b(a));
+ y_b(a,theta)=R_theta_b(X_b0+u_b(a)+F_b(a) l_b0).
+Here R_theta is the fresh owner chart after frozen COMMON/body deformation;
+y is explicitly a virtual internal source point, not a rod endpoint or a
+current contact-face material point. At a=theta=0, y_b=p_b0 by a correlated
+symbolic identity. This is stronger than reusing owner-only rigid offsets:
+D_a y=Psi_a+G_a l_b0, and the induced source attachment couple does work on
+local modal gradients. Owner-only offsets omit this local gradient work and
+cannot silently be called a physical material-couple attachment.
+
+The convected-vector closure is an explicit reduced mechanical assumption,
+not something proved by879 alone. An alternative rigid attachment requires
+an equally explicit, justified body/microrotation driver; multiplying an
+owner couple by body-zero columns is not that proof. The source receiver
+mechanical director law must also be declared: keeping the existing rigid
+owner-transported archival directors is possible for the retained reduced
+source mechanism; adopting cofactor-transported normals/F-transported tangent
+microdirectors changes the constitutive kinematics and requires its own
+material-law proof. 879 current geometric normals must not be fed into oldU
+just because they are available. Literal director amplitudes/rounding must
+be retained, especially for the binary64 tangent vector. No force-basis
+switch to current_objective without a separate paid/objective transport
+receipt from the actual archive.
+
+With the chosen, explicit director law e_i_alpha(q), define
+ eta_i_alpha=e_i_alpha(q).(y_over-y_sub)-the CORRELATED reference scalar;
+ W_i=E0_i+A_i sum_alpha[t0_i_alpha eta_i_alpha
+                     +K_i_alpha eta_i_alpha^2/2].
+Use the actual source relaxed-zero-strength-shear branch (Kt=0, t0t=0) or
+its separately named frozen predictor; preserve strict compression guards,
+freeanchors+eta, plastic PROPOSAL and actual stored p/c without advancing.
+The single global force/Hessian is
+ g=sum_i A_i B_i^T tau_i +g_beam+g_Rperp;
+ H=sum_i A_i(B_i^T K_i B_i+sum_alpha tau_i_alpha H_i_alpha)
+     +H_beam+H_Rperp.
+B/H must include full receiver-director spin, owner/body cross derivatives,
+local G*l work and any adopted director-F twojets, not only K B^T B.
+
+Mechanical work at an actual material point separates into point force and
+internal-vector/hyperstress work. For side force f_b, the convected-vector
+term supplies P_b=f_b tensor l_b0 acting on deltaF_b, in addition to
+f_b.delta x_b. Its skew/owner variation produces the lever couple. The old
+receiver-frame couple remains essential: (y_over-y_sub) cross F. Thus
+x_sub cross F +levercouple_sub=y_sub cross F and the corresponding receiver
+force torque+levercouple+director couple sums to -y_sub cross F. At reference
+this preserves archived WORLD force/moment mathematics; retain the existing
+mathematical-minus-archival-binary residual as a separate receipt. It does
+not automatically preserve all old14 modal work/Hessian or physical3D rods.
+
+Once-only energy ownership is a callable guard, not merely a report flag:
+ U_new=sum_i W_i + Ebeam_ref_literal
+       +sum_b k_old_b(wref_b s_b+s_b^2/2)+sum_b Rperp_b.
+Do NOT add old875 fullU, a second871 beam term, or COMMONcold's full calibrated
+beam+Rperp energy. Keep its literal beam E0 constant offset, exact k/wref
+slope and signed binary residual. Source oldcontact/column E0 components
+remain literal; no re-zeroing to density-calculated source E or paying old
+bending work/dissipation again. Registered raw cold integrals at the exact
+query coordinates can be reused; no new quadrature is needed for existing
+875 diagnostic probes. Do not invent a zero bulk Hessian from the nonzero
+packet. Geometry/source reference identities at zero are distinct from a
+registered whole-bank zero-query integral.
+
+Full old-source14 preservation needs a NEW global proof, not the old875
+inverse certificate: one T92x14 and H_Psi92x14x14 satisfying simultaneously
+for ALL16 scalar rows B_local_i T=B_old_i and
+ H_local_i[T,T]+B_local_i H_Psi=H_old_i, plus the eight beam-projection
+first/second identities and rigid-owner/body driver constraints. Pointwise
+inverses/pseudoinverses, q normalization or frozen lever position matching
+are not this proof. If the local field image lacks these source modes, retain
+a named genuine internal material residual subsystem with energy/work owner;
+do not claim a92-coordinate complete physical reduction. The existing875
+source-only inverse result is specific to its bankwise Pi and is invalid to
+reuse after changing the sixteen atom embeddings. New total Rperp work is
+not old source work even when the source-only correspondence is proved.
+
+Role of the five genuine cuts and genuinely missing physical inputs
+-----------------------------------------------------------------
+Their879 F/J/rho and current p/c can be coupled to the SAME assembled trial
+coordinates now, giving actual face kinematics and local material-measure
+work receipts. They cannot be energized in parallel with the sixteen atom
+mechanisms. Replacing atoms by the existing853/series continuous face law
+requires a global material-and-virtual-work transition: identical virtual
+work and prestress/energy budget under the declared map, not just equal
+integrated area or memory at theta. A_i delta_material and mu_ref dtheta dz
+are different measures. New pressure times CURRENT normal at a cut is not
+the old archived literal force vector; an E0 constant correction cannot fix
+force, Hessian, local momentum or material identity mismatches. The eight
+archived donor labels are not genuine current-donor labels on those cuts.
+
+Still genuinely missing for whole physical handover: an authenticated3D
+motion/constitutive/mean chart for the archived cohorts beyond the declared
+same-parent extension; actual spatial oldcolumn preload/strain/rod endpoint
+or an explicitly admitted internal reduced subsystem with proved material
+budget and work; receiver director/attachment law under local deformation;
+source-to-current-cut material correspondence and one global measure/work
+operator including archive material; HOT receiving/mean constitutive law;
+loads/drag and mixed equilibrium. Genuine owner/body support, full rank/
+compatibility and the prestress curvature identities must be proved, not
+asserted from levermatching. Whole-clock all-pair admission and accepted
+continuation/balances/restart remain the same second and third conditions.
+
+Specific geometric archive gap:879 depth0 and0..originalA are queries of the
+DECLARED same-parent COMMON extension. They do not supply the archived slab's
+physical burial/roof/depth field after first entry, its receiving-layer
+separation or a volume/mean-motion chart admitted against the thirteen live
+bodies. Source archive/cohort membership is real, but removed-from-live is
+not a3Dplacement law. Any next assembly must distinguish authentic original
+material identity, the reduced reference immersion used for source work,
+and an independently proved physically placed archive subsystem. The latter
+cannot be inferred from detF>0 at64 local probes or material area balance.

@@ -1,0 +1,172 @@
+{
+  "format": "geometric-local-contact-cloud-stage-validation-1",
+  "base_commit": "224a07ac1b981b95163cdf6633f424af1599b2f2",
+  "branch": "fix/genesis-mantle-convection",
+  "environment": {
+    "python": "3.12.14",
+    "platform": "Linux-6.18.44-x86_64-with-glibc2.41",
+    "packages": {
+      "numpy": "2.5.3",
+      "scipy": "1.18.1",
+      "PyYAML": "6.0.3",
+      "pytest": "9.1.1"
+    }
+  },
+  "source_verification": {
+    "files": 9,
+    "source_bytes": 2110696,
+    "verified": true
+  },
+  "focused_cloud_suite": {
+    "exit_code": 0,
+    "passed": 490,
+    "failed": 0,
+    "skipped": 0,
+    "wall_seconds": 455.68,
+    "log": "results/cloud_baseline_validation/final_cloud_tests.log",
+    "last_new_adapter_binding_test_added_after_collection": true
+  },
+  "latest_local_mechanics_tests": {
+    "passed": 54,
+    "failed": 0,
+    "seconds": 5.75,
+    "files": [
+      "tests/test_geometric_contact_mechanics.py",
+      "tests/test_geometric_contact_mechanics_adapter.py"
+    ]
+  },
+  "current_focused_selection_count": 491,
+  "selection_note": "Full suite collected 490 tests before the final solved-traction provenance test was added; the subsequent 54-test local suite covers the current local mechanics files. Test counts overlap.",
+  "starter_regression": {
+    "exit_code": 0,
+    "passed": 64,
+    "failed": 0,
+    "wall_seconds": 26.1,
+    "log": "results/cloud_baseline_validation/starter_mesh_regression.log"
+  },
+  "synthetic_admission": {
+    "exit_code": 0,
+    "status": "complete",
+    "removed": {
+      "area_km2": 40.00000000000001,
+      "oceanic_volume_km3": 80.00000000000001,
+      "cold_mantle_volume_km3": 320.00000000000006,
+      "density_excess_mass_kg": 40000000000000.01
+    },
+    "maximum_relative_material_ledger_residuals": {
+      "area_km2": 0.0,
+      "oceanic_volume_km3": 0.0,
+      "cold_mantle_volume_km3": 0.0,
+      "density_excess_mass_kg": 0.0
+    },
+    "exact_restart": true,
+    "checkpoint_bytes_identical": true,
+    "source_preserved": true,
+    "code_unchanged": true,
+    "report": "results/cloud_admission_control_final/report.json"
+  },
+  "real_saved50": {
+    "exit_code": 2,
+    "status": "unresolved_initiation",
+    "completed_steps": 0,
+    "contacts": 245,
+    "contact_status_counts": {
+      "conflicting_local_history": 8,
+      "no_oriented_fault": 237
+    },
+    "overlaps": 559,
+    "overlap_reason_counts": {
+      "no_oriented_fault": 512,
+      "conflicting_local_history": 39,
+      "no_resolved_initial_contact": 8
+    },
+    "checkpoint_file": null,
+    "source_unchanged": true,
+    "code_changed_during_run": false,
+    "passive_boundary": {
+      "version": "geometric-boundary-1",
+      "time_myr": 50.87812194824219,
+      "cohort_count": 0,
+      "transaction_count": 0,
+      "accepted": {
+        "area_km2": 0.0,
+        "oceanic_volume_km3": 0.0,
+        "cold_mantle_volume_km3": 0.0,
+        "density_excess_mass_kg": 0.0
+      },
+      "by_attachment": {
+        "geometric_contact": {
+          "area_km2": 0.0,
+          "oceanic_volume_km3": 0.0,
+          "cold_mantle_volume_km3": 0.0,
+          "density_excess_mass_kg": 0.0
+        },
+        "unresolved_attachment": {
+          "area_km2": 0.0,
+          "oceanic_volume_km3": 0.0,
+          "cold_mantle_volume_km3": 0.0,
+          "density_excess_mass_kg": 0.0
+        },
+        "unresolved_connectivity": {
+          "area_km2": 0.0,
+          "oceanic_volume_km3": 0.0,
+          "cold_mantle_volume_km3": 0.0,
+          "density_excess_mass_kg": 0.0
+        },
+        "unresolved_lateral_allocation": {
+          "area_km2": 0.0,
+          "oceanic_volume_km3": 0.0,
+          "cold_mantle_volume_km3": 0.0,
+          "density_excess_mass_kg": 0.0
+        }
+      },
+      "attachment_counts": {
+        "geometric_contact": 0,
+        "unresolved_attachment": 0,
+        "unresolved_connectivity": 0,
+        "unresolved_lateral_allocation": 0
+      },
+      "forces_active": false,
+      "thermal_evolution": "archival values frozen; optional passive warming diagnostic only"
+    },
+    "wall_seconds": 122.98969646800015,
+    "report": "results/cloud_saved50_admission_final_bound/report.json"
+  },
+  "local_contact_control": {
+    "status": "complete",
+    "maximum_force_relative_residual": 4.563480615615845e-16,
+    "maximum_energy_balance_relative_error": 9.384819482937432e-16,
+    "source_surface_preserved": true,
+    "passive_material_archive_preserved": true,
+    "transferred_material_area_km2": 0.0,
+    "new_slab_cohorts": 0,
+    "restart_exact": true,
+    "checkpoint_bytes_identical": true
+  },
+  "local_contact_report": "analysis/geometric_contact_loading_validation/cloud_control/report.json",
+  "cloud_source_bundle_sha256": {
+    "cloud_sources.zip": "6418f8e711bd36e72b2c01b55c30e57c64f644fdc6cd9de863b0d32785d7d14f",
+    "cloud_sources_manifest.json": "30c5bceb3643175e9824c96e802268504f002818b16fddecb095eee3899db3b2"
+  },
+  "code_sha256": {
+    "tectonics/geometric_contact_mechanics.py": "f456cba9bce741f577f760fee528965fa6d0bce4109525dc7e645dcd3802f9eb",
+    "tectonics/geometric_contact_mechanics_adapter.py": "e36b34674913aa74cca8eaa8a618a4cd03d961f082a72ee8e1aecab39424a2ec",
+    "tectonics/genesis_contact_law.py": "bb788c1bc67a46af2cc95c020b7e3776438f8810cafc8892158fd8fbf8796567",
+    "tectonics/geometric_initiation.py": "fd10d22bc9446b75df47edf979eaa7641b89f07250b8464ee234239a09716c0f",
+    "tectonics/geometric_initiation_adapter.py": "eb81ed8b0b66b572db2c8b8e94eebc2a566a9717d0dc09c33e5ad6313cb57877",
+    "tectonics/geometric_boundary.py": "aca2332ff807a2b599192f345bc5e06f5030b9b2ffedf6509b8f62387d8b45b6",
+    "tectonics/geometric_boundary_io.py": "2ae3af3ab8f804675345757c7842a57b8c3c6d6d0b6d7e26cfa33a52f5b69f13",
+    "tectonics/geometric_contacts.py": "ea9448e7b86667a57d2bb9e773648b3008016dc71d001e5eb787e6d098aa0e5c",
+    "tectonics/geometric_surface.py": "e3ecf79aec7eeb1efb8d92d31beee349c86e275e1f0ae6c11747ea9763985494",
+    "tectonics/spherical_polygons.py": "c9328bd5cf9f00cae825ebda5564e25837a4a8a1c34a6530426e466e0d6b12f3",
+    "tectonics/mesh.py": "cd372091b60a89510ac2bdcd3aac3a6a2114e4f87ef7cb8ce2ccee202f3e4c6d",
+    "analysis/geometric_initiation_validation/admission_case.py": "66c24e0c0efaec9181d6164870eb5b8356198b1393c8b9683fcd8a637b23783b",
+    "analysis/geometric_contact_loading_validation/contact_case.py": "67a691fd79d81053eed3562e729baa7004bb974e53b45adafca80f0030a980d0"
+  },
+  "limitations": [
+    "Prescribed pre-existing oriented planes and displacement clamps; no spontaneous fault formation.",
+    "Frozen surface and passive material archive; plastic section slip is not spherical material transfer.",
+    "No global Euler velocity equilibrium, bending or self-sustaining initiation.",
+    "Closed thin-strip contact with explicitly zero pore pressure; traction-derived stress is valid for its own declared plane only."
+  ]
+}

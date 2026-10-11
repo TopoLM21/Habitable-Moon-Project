@@ -1,0 +1,327 @@
+"""Stdlib preservation of sealed903 plus exactly four authorized907 sources.
+
+Only authenticated old definitions/preserved_inputs are reused. Old run/main,
+readers/auditors, project math, tests, solver and quadrature are not executed.
+Fresh903 was read before the four new907 repository Python sources existed.
+Mutable handoff document bytes are not inherited dependency pins.
+"""
+from pathlib import Path
+import hashlib
+import json
+import sys
+import time
+import types
+
+ROOT = Path('/workspace/Habitable-Moon-Project')
+PARENT = ROOT / 'analysis/geometric_native_common_hot_mean_validation'
+FINAL = ROOT / 'analysis/geometric_native_common_hot_mean_final_readback'
+NEW_PARENT = ROOT / 'analysis/geometric_native_common_mixed_force_validation'
+STAGE = Path('/workspace/mixed_force_baseline_20261007')
+ADDED_NAMES = frozenset((
+    'tectonics/geometric_native_common_mixed_force.py',
+    'tests/test_geometric_native_common_mixed_force.py',
+    'analysis/geometric_native_common_mixed_force_validation/native_control.py',
+    'analysis/geometric_native_common_mixed_force_validation/validate.py',
+))
+PRESERVATION899_RAW = '7410ed4264a972cd4a08e3af4fae4c2f0b7113225a81c8fd9d525e25f0ccbc62'
+MANIFEST_RAW = 'f1129e1e1dba1915c3c10aa53dd34aeab1c054d0c1cfa85a8f1c658928c58f43'
+MANIFEST_SEAL = 'e222fe4d2785e4e13ef206ffe64b98832e461ef399be1efabbc5626b51515e68'
+FINAL_ARCHIVE_RAW = 'f80caa1b9c8d5ee6ca00e1ecb3515209e63a400fa69b9fda80f172cf6360b32a'
+FINAL_ARCHIVE_SEAL = '246003cb9ade5b327620ed6e6be7e83a271604dbb0902cdf9f1a0cde8d9d9719'
+READER_RAW = 'f19b8319e5f9dd6355b23d7160e44e2cc432b17d501b48b064fab885fa7d3b4f'
+FRESH_REPORT_RAW = 'a0b32522760e94830d2c4344cbea28056f342f555515e16d19d4e43b054a898e'
+FRESH_REPORT_SEAL = 'f685aa3cfb89f991a86b44a29474dcf47d849d826aca2da08c8cc81a234a627f'
+FRESH_PRIOR_RAW = 'cc30dc77e2d3f76bdb94e44606b03a10cc0549280ea33a06ccb90900feaa297c'
+FRESH_PRIOR_SEAL = 'df51f94cc68f54a8c8b0e27dd40014ab212fc38f11b1e56a2a6d35d8bbc35d08'
+FRESH_FACTS_RAW = '88789eca65aa47cde2958a3ec144af3980804b313719daed3a5343aa9c3c569b'
+SCOPE = 'DECLARED_COMPLETE_HOT_FINITE_BASE_MEAN_ENDPOINT_ONLY'
+RELEASE_FILES = frozenset(('report.json', 'pytest.log', 'control_console.log',
+                          'native_control/report.json', 'native_control/source_packet.json'))
+REMAINING_CONDITIONS = [
+    'Whole-source physical material and old-force/prestress/work handover, HOT law/mean chart, loads/drag and NEW mixed equilibrium',
+    'Whole-clock all-pair admission including reverse C5 to C1',
+    'Accepted continuation with independent path work, balances and joint restart',
+]
+SAVED_ENDPOINT_FIELDS = dict(
+    complete_cold_continuum_operator_certified=True,
+    whole_cold_material_support_geometry_certified=True,
+    physical_source_force_prestress_work_handover_certified=False,
+    historical_archived_three_dimensional_prestress_recovered=False,
+    prepared_reference_full_system_work_certified=False,
+    reference_change_full_system_work_certified=False,
+    new_mixed_force_equilibrium_certified=False,
+    physical_material_admission_authorized=False,
+    whole_clock_all_pair_admission_authorized=False,
+    full_system_temporal_path_work_certified=False,
+    complete_hot_material_constitutive_operator_certified=True,
+    finite_hot_base_mean_chart_certified=True,
+    hot_constitutive_law_defined=True, finite_mean_chart_defined=True,
+    finite_mean_equilibrium_certified=False,
+    clocks_advanced=False, proposed_source_damage_adopted=False,
+    historical_force_solve_reexecuted=False, previous_tensor_quadrature_reexecuted=False,
+    source_geometry_elapsed_time_s=0, contact_geometry_elapsed_time_s=2000000,
+    memory_elapsed_time_s=1000000, material_geometry_elapsed_time_s=1000000,
+    accepted_original_native_intervals=1, accepted_new_native_intervals=0,
+    original_point_1_remaining_work_blocks=1, original_point_1_completed=False,
+)
+
+
+def primitives():
+    """Authenticate old stdlib definitions without calling any run/main."""
+    helper = PARENT / 'baseline_899_preservation_source.txt'
+    if hashlib.sha256(helper.read_bytes()).hexdigest() != PRESERVATION899_RAW:
+        raise ValueError('Immutable899 stdlib primitive source changed')
+    module = types.ModuleType('_private_907_preservation_primitives')
+    module.__file__ = str(helper)
+    exec(compile(helper.read_bytes(), str(helper), 'exec'), module.__dict__)
+    prior, byte_checks = module.primitives()
+    module._prior_definitions = prior
+    return module, byte_checks
+
+
+def project_modules():
+    return {name: module for name, module in sys.modules.items()
+            if name in ('tectonics', 'tests', 'analysis', 'scripts') or
+            name.startswith(('tectonics.', 'tests.', 'analysis.', 'scripts.'))}
+
+
+def preserved_inputs(old, b):
+    """Preserve903P77/F4,899P36/F4,895P50/F4,891P44/F4,887P41/F4,341/15/11."""
+    frozen_previous, saved_previous, pins = old.preserved_inputs(old._prior_definitions, b)
+    b.pin(pins, PARENT / 'baseline_899_preservation_source.txt', PRESERVATION899_RAW)
+    b.pin(pins, old.STAGE / 'baseline_899_preservation_source.txt', PRESERVATION899_RAW)
+    b.pin(pins, PARENT / 'artifact_manifest.json', MANIFEST_RAW)
+    manifest = b.sealed(PARENT / 'artifact_manifest.json', 'manifest_sha256')
+    for key, expected in (('manifest_sha256', MANIFEST_SEAL),
+                          ('format', 'native-common-hot-mean-component-manifest-1'),
+                          ('status', 'PASS_COMPONENT_ARTIFACTS_CLOSED'),
+                          ('source_count', 903), ('closed_component_file_count', 77),
+                          ('physical_scope', SCOPE), ('current_release', 'release_validation_02')):
+        b.exact(manifest[key], expected, 'Saved current903 manifest ' + key)
+    b.exact(len(manifest['files']), 77, 'Complete saved903 seventy-seven-file map')
+    expected_parent = set()
+    for name, row in manifest['files'].items():
+        path = ROOT / name
+        b.require(path.resolve() == path and path.is_relative_to(ROOT), 'Canonical903 manifest path')
+        b.exact(set(row), {'bytes', 'sha256'}, 'Complete903 raw pin row')
+        b.exact(b.regular(path).stat().st_size, row['bytes'], 'Current903 manifest file size')
+        b.pin(pins, path, row['sha256'])
+        if path.is_relative_to(PARENT):
+            expected_parent.add(str(path.relative_to(PARENT)))
+    b.exact(b.files_under(PARENT), expected_parent | {'artifact_manifest.json'},
+            'Strict whole current903 seventy-seven-file parent closure')
+    release = PARENT / manifest['current_release']
+    b.exact({str(p.relative_to(release)) for p in release.rglob('*') if p.is_file()},
+            set(RELEASE_FILES), 'Strict current903 complete five-file release')
+    gate = b.sealed(release / 'report.json', 'report_sha256')
+    for key, expected in (('status', 'PASS'), ('source_count', 903), ('previous_source_count', 899),
+                          ('tests_collected', 16), ('tests_passed', 16), ('tests_failed', 0),
+                          ('tests_skipped', 0), ('tests_exit_code', 0), ('native_control_succeeded', True),
+                          ('current_physical_scope', SCOPE)):
+        b.exact(gate[key], expected, 'Saved903 current release ' + key)
+    b.exact(manifest['gate_report_selfseal'], gate['report_sha256'], 'Saved903 actual gate link')
+    b.exact(set(gate['output_raw_sha256']), set(RELEASE_FILES) - {'report.json'},
+            'Saved903 all four output pins including native report')
+    for name, expected in gate['output_raw_sha256'].items():
+        b.pin(pins, release / name, expected)
+    b.exact(set(gate['additional_source_sha256']), set(old.ADDED_NAMES), 'Saved903 prior exact four')
+    frozen_path = ROOT / gate['frozen_source_map_path']
+    b.require(frozen_path.resolve() == frozen_path and frozen_path.is_relative_to(PARENT),
+              'Canonical saved903 frozen source authority')
+    b.pin(pins, frozen_path, gate['frozen_source_map_raw_sha256'])
+    frozen903 = json.loads(frozen_path.read_bytes())
+    b.exact(len(frozen903), 903, 'Complete saved903 source map')
+    b.exact(b.value_digest(frozen903), gate['frozen_source_map_sha256'], 'Saved903 canonical map')
+    b.exact(frozen903, dict(frozen_previous, **gate['additional_source_sha256']),
+            'Saved903 exactly preserved899 plus authenticated prior four')
+    for name, expected in frozen903.items():
+        b.pin(pins, ROOT / name, expected)
+    snapshots = {str(PARENT.relative_to(ROOT) / 'source_snapshots' / manifest['current_release'] /
+                     (name.replace('/', '__') + '.txt')): pin
+                 for name, pin in gate['additional_source_sha256'].items()}
+    b.exact(gate['executing_source_snapshots'], snapshots, 'Complete four executing903 snapshots')
+    for name, expected in snapshots.items():
+        b.pin(pins, ROOT / name, expected)
+    control = b.sealed(release / 'native_control/report.json', 'report_sha256')
+    packet = b.sealed(release / 'native_control/source_packet.json', 'packet_sha256')
+    b.exact(control['status'], 'PASS', 'Saved903 actual native PASS')
+    b.exact(control['physical_candidate_status'], SCOPE, 'Saved903 native explicit scope')
+    b.exact(packet['physical_candidate_status'], SCOPE, 'Saved903 packet explicit scope')
+    for key, expected in SAVED_ENDPOINT_FIELDS.items():
+        b.exact(control[key], expected, 'Saved903 native endpoint boundary ' + key)
+        b.exact(packet[key], expected, 'Saved903 packet endpoint boundary ' + key)
+    b.exact(control['remaining_physical_conditions'], REMAINING_CONDITIONS, 'Saved903 same original conditions')
+    b.exact(packet['remaining_physical_conditions'], REMAINING_CONDITIONS, 'Saved903 packet same original conditions')
+    b.exact(gate['native_control_report_sha256'], control['report_sha256'], 'Saved903 native link')
+    b.exact(control['source_packet_sha256'], packet['packet_sha256'], 'Saved903 complete packet link')
+    b.exact(control['source_packet_raw_sha256'], b.digest(release / 'native_control/source_packet.json'),
+            'Saved903 packet actual raw link')
+    audit = b.sealed(PARENT / 'independent_audit/report.json', 'audit_sha256')
+    b.exact(audit['status'], 'PASS', 'Saved903 actual independent audit PASS')
+    b.exact(manifest['independent_audit_selfseal'], audit['audit_sha256'], 'Saved903 audit link')
+    b.exact(audit['source_packet_raw_sha256'], b.digest(release / 'native_control/source_packet.json'),
+            'Saved903 audit actual packet raw link')
+    b.exact(audit['executing_source_raw_sha256'], b.digest(PARENT / 'independent_audit/audit_source.txt'),
+            'Saved903 audit actual executing TXT raw link')
+    b.pin(pins, FINAL / 'archive.json', FINAL_ARCHIVE_RAW)
+    archive = b.sealed(FINAL / 'archive.json', 'archive_sha256')
+    for key, expected in (('archive_sha256', FINAL_ARCHIVE_SEAL),
+                          ('format', 'native-common-hot-mean-final-archive-1'),
+                          ('status', 'PASS_FINAL903_READBACK_ARCHIVE_CLOSED'),
+                          ('total_closed_file_count', 4)):
+        b.exact(archive[key], expected, 'Saved final903 archive ' + key)
+    b.exact(set(archive['files']), {'readback_source.txt', 'readback.json', 'console.log'},
+            'Exactly three saved903 final payloads')
+    b.exact({str(p.relative_to(FINAL)) for p in FINAL.rglob('*') if p.is_file()},
+            set(archive['files']) | {'archive.json'}, 'Strict saved903 final four-file closure')
+    for name, row in archive['files'].items():
+        b.exact(set(row), {'bytes', 'sha256'}, 'Complete final903 payload row')
+        b.exact(b.regular(FINAL / name).stat().st_size, row['bytes'], 'Final903 payload size')
+        b.pin(pins, FINAL / name, row['sha256'])
+    b.pin(pins, FINAL / 'readback_source.txt', READER_RAW)
+    saved903 = b.sealed(FINAL / 'readback.json', 'audit_sha256')
+    b.exact(archive['readback_selfseal'], saved903['audit_sha256'], 'Final903 archive readback link')
+    b.pin(pins, STAGE / 'fresh903_executed_source.txt', READER_RAW)
+    b.pin(pins, STAGE / 'fresh903_readback.json', FRESH_REPORT_RAW)
+    b.pin(pins, STAGE / 'fresh903_actual_console.log', FRESH_REPORT_RAW)
+    b.pin(pins, STAGE / 'fresh903_actual_stderr.log', hashlib.sha256(b'').hexdigest())
+    b.pin(pins, STAGE / 'fresh903_actual_facts.json', FRESH_FACTS_RAW)
+    fresh903 = b.sealed(STAGE / 'fresh903_readback.json', 'audit_sha256')
+    b.exact(fresh903['audit_sha256'], FRESH_REPORT_SEAL, 'Authentic fresh pre-new-source903 seal')
+    for receipt in (saved903, fresh903):
+        for key, expected in (('status', 'PASS_FINAL903_EVIDENCE_READBACK_ONLY'), ('source_count', 903),
+                              ('physical_scope', SCOPE), ('executing_readback_source_raw_sha256', READER_RAW),
+                              ('current_manifest_file_count', 77), ('current_manifest_raw_sha256', MANIFEST_RAW),
+                              ('current_manifest_selfseal', MANIFEST_SEAL), ('prior_899_manifest_file_count', 36), ('prior_899_final_archive_file_count', 4),
+                              ('prior_895_manifest_file_count', 50),
+                              ('prior_895_final_archive_file_count', 4), ('prior_891_manifest_file_count', 44),
+                              ('prior_891_final_archive_file_count', 4), ('prior_887_manifest_file_count', 41),
+                              ('prior_887_final_archive_file_count', 4), ('prior_883_dependency_pin_count', 341),
+                              ('temporary_alias_count', 15), ('strict_ancestry_closure_count', 11),
+                              ('project_imports', False), ('math_or_tests_or_solver_or_quadrature_reexecuted', False)):
+            b.exact(receipt[key], expected, 'Authenticated saved903 metadata ' + key)
+        for key, expected in SAVED_ENDPOINT_FIELDS.items():
+            b.exact(receipt[key], expected, 'Authenticated saved903 endpoint boundary ' + key)
+        for name, expected in receipt['current_dependency_raw_sha256'].items():
+            b.require(name in pins, 'Saved903 dependency independently retained')
+            b.exact(pins[name], expected, 'Saved903 complete current dependency raw map')
+    b.exact(fresh903['current_final_archive_raw_sha256'], FINAL_ARCHIVE_RAW, 'Fresh closed903 archive raw link')
+    b.exact(fresh903['current_final_archive_selfseal'], FINAL_ARCHIVE_SEAL, 'Fresh closed903 archive selfseal link')
+    b.exact(fresh903['current_final_archive_file_count'], 4, 'Fresh actual closed903 archive count')
+    b.pin(pins, Path(fresh903['prior_899_preservation_path']), FRESH_PRIOR_RAW)
+    b.exact(fresh903['prior_899_preservation_raw_sha256'], FRESH_PRIOR_RAW,
+            'Fresh903 actually executed899 preservation raw link')
+    b.pin(pins, STAGE / 'fresh903_prior899_preservation.json', FRESH_PRIOR_RAW)
+    b.pin(pins, NEW_PARENT / 'fresh903_prior899_preservation_at_start.json', FRESH_PRIOR_RAW)
+    facts = json.loads((STAGE / 'fresh903_actual_facts.json').read_bytes())
+    for key, expected in (('exit_code', 0), ('stderr_bytes', 0),
+                          ('actual_stdout_equals_readback', True),
+                          ('executing_source_raw_sha256', READER_RAW),
+                          ('executing_source_path', str(FINAL / 'readback_source.txt')),
+                          ('actual_stdout_path', str(STAGE / 'fresh903_actual_console.log')),
+                          ('actual_stderr_path', str(STAGE / 'fresh903_actual_stderr.log')),
+                          ('status', 'PASS_FINAL903_EVIDENCE_READBACK_ONLY')):
+        b.exact(facts[key], expected, 'Authentic fresh903 actual execution fact ' + key)
+    b.exact((STAGE / 'fresh903_actual_console.log').read_bytes(),
+            (STAGE / 'fresh903_readback.json').read_bytes(), 'Fresh903 true stdout byte equals readback')
+    prior = b.sealed(Path(fresh903['prior_899_preservation_path']), 'preservation_sha256')
+    b.exact(prior['preservation_sha256'], FRESH_PRIOR_SEAL, 'Fresh903 actual899 independently pinned seal')
+    b.exact(prior['preservation_sha256'], fresh903['prior_899_preservation_selfseal'],
+            'Fresh903 actual899 preservation selfseal link')
+    b.exact(prior['current_python_source_count'], 903, 'Fresh903 actual preserved source metadata')
+    b.exact(prior['additional_python_source_sha256'], gate['additional_source_sha256'],
+            'Fresh903 actual prior four match frozen903')
+    for key, expected in (('status', 'PASS_IMMUTABLE899_WITH_EXACT_FOUR_DECLARED_SOURCE_ADDITIONS'),
+                          ('prior_python_source_count', 899), ('all899_python_sources_unchanged', True),
+                          ('complete_actual_source_map_checked_before_after', True),
+                          ('project_modules_imported_reloaded_or_replaced', False),
+                          ('prior_reader_or_auditor_or_preservation_main_reexecuted', False),
+                          ('math_or_solver_or_test_or_quadrature_reexecuted', False),
+                          ('executing_preservation_source_raw_sha256', PRESERVATION899_RAW)):
+        b.exact(prior[key], expected, 'Fresh903 actual899 before-after preservation metadata ' + key)
+    for name, expected in prior['dependency_raw_sha256'].items():
+        b.require(name in pins, 'Fresh903 actual prior899 dependency independently retained')
+        b.exact(pins[name], expected, 'Fresh903 actual prior899 dependency raw map')
+    return frozen903, fresh903, pins
+
+
+def run(additional_source_sha256, *, output_path):
+    """Write a fresh external receipt for immutable903 plus authorized four907."""
+    started = time.perf_counter()
+    modules_before = project_modules()
+    old, b = primitives()
+    b.require(not any(name.startswith('__ROOT_PENDING_') for name in ADDED_NAMES),
+              'Authorized exact four907 paths supplied by root')
+    b.require(type(additional_source_sha256) is dict, 'Literal additional four source map')
+    b.exact(set(additional_source_sha256), set(ADDED_NAMES), 'Exactly four authorized907 source paths')
+    requested = Path(output_path)
+    b.require(requested.is_absolute() and requested.resolve() == requested and not requested.exists()
+              and not requested.is_symlink() and requested.parent.is_dir()
+              and requested.parent.resolve() == requested.parent and requested.suffix == '.json'
+              and not requested.is_relative_to(ROOT) and
+              (requested.is_relative_to(Path('/workspace')) or requested.is_relative_to(Path('/tmp'))),
+              'Fresh canonical exclusive JSON output outside repository')
+    producer = b.regular(Path(__file__).resolve())
+    producer_raw = b.digest(producer)
+    frozen_prior, baseline, pins = preserved_inputs(old, b)
+    declared = dict(frozen_prior)
+    for name, expected in additional_source_sha256.items():
+        b.require(name not in frozen_prior, 'Authorized907 source genuinely new')
+        b.pin(pins, ROOT / name, expected)
+        declared[name] = expected
+    b.exact(b.source_map(), declared, 'Actual907 equals immutable903 plus exactly declared four')
+    b.pin(pins, producer, producer_raw)
+    b.require(str(requested) not in pins, 'Fresh output disjoint from preserved dependencies')
+    after_frozen, after_baseline, after_pins = preserved_inputs(old, b)
+    b.exact(after_frozen, frozen_prior, 'Saved903 authority unchanged AFTER')
+    b.exact(after_baseline, baseline, 'Fresh pre-new-source903 baseline unchanged AFTER')
+    for name, expected in pins.items():
+        if name in after_pins:
+            b.exact(after_pins[name], expected, 'Preserved dependency unchanged AFTER ' + name)
+        else:
+            b.exact(b.digest(name), expected, 'Added source/producer unchanged AFTER ' + name)
+    b.exact(b.source_map(), declared, 'Complete actual907 source map unchanged AFTER')
+    modules_after = project_modules()
+    b.exact(set(modules_after), set(modules_before), 'Caller project module names preserved')
+    b.require(all(modules_after[name] is module for name, module in modules_before.items()),
+              'Caller project module identities preserved')
+    result = dict(
+        format='native-common-mixed-force-prior903-preservation-1',
+        status='PASS_IMMUTABLE903_WITH_EXACT_FOUR_DECLARED_SOURCE_ADDITIONS',
+        prior_python_source_count=903, current_python_source_count=907,
+        prior_python_source_map_canonical_sha256=b.value_digest(frozen_prior),
+        current_python_source_map_canonical_sha256=b.value_digest(declared),
+        additional_python_source_count=4, additional_python_source_sha256=additional_source_sha256,
+        all903_python_sources_unchanged=True, complete_actual_source_map_checked_before_after=True,
+        prior_903_metadata_is_authenticated_saved_readback_only=True,
+        fresh_pre_new_source_903_readback_path=str(STAGE / 'fresh903_readback.json'),
+        fresh_pre_new_source_903_readback_raw_sha256=FRESH_REPORT_RAW,
+        fresh_pre_new_source_903_readback_selfseal=FRESH_REPORT_SEAL,
+        fresh_pre_new_source_903_readback_seconds=baseline['seconds'],
+        preserved_prior883_raw_dependency_pin_count=341,
+        recorded_raw_dependency_pin_count=len(pins), dependency_raw_sha256=pins,
+        preserved_current903_manifest_file_count=77,
+        preserved_current903_manifest_raw_sha256=MANIFEST_RAW,
+        preserved_current903_manifest_selfseal=MANIFEST_SEAL,
+        preserved_current903_final_readback_archive_file_count=4,
+        preserved_current903_final_readback_archive_raw_sha256=FINAL_ARCHIVE_RAW,
+        preserved_prior899_manifest_file_count=36, preserved_prior899_final_readback_archive_file_count=4,
+        preserved_prior895_manifest_file_count=50, preserved_prior895_final_readback_archive_file_count=4,
+        preserved_prior891_manifest_file_count=44, preserved_prior891_final_readback_archive_file_count=4,
+        preserved_prior887_manifest_file_count=41, preserved_prior887_final_readback_archive_file_count=4,
+        authoritative_ancestry_release_closure_count=11,
+        preserved_current903_release_closed_file_count=5,
+        temporary_dependency_copy_association_count=15,
+        current_tmp_inputs_restored_by_this_guard=False,
+        pre_baseline_authenticated_tmp_alias_restoration_count=0,
+        project_modules_imported_reloaded_or_replaced=False,
+        caller_existing_project_module_count=len(modules_before),
+        prior_reader_or_auditor_or_preservation_main_reexecuted=False,
+        math_or_solver_or_test_or_quadrature_reexecuted=False,
+        executing_preservation_source_raw_sha256=producer_raw,
+        seconds=time.perf_counter() - started,
+    )
+    result['preservation_sha256'] = b.value_digest(result)
+    with requested.open('xb') as stream:
+        stream.write(b.encoded(result) + b'\n')
+    return result

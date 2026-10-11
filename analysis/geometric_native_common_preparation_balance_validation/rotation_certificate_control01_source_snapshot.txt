@@ -1,0 +1,1067 @@
+"""Independent 220-digit coupled-preparation oracle; no project imports.
+
+Only scalar mathematics and read-only frozen-source adapters belong here.
+No old force, body-quadrature, audit or test main is called.
+The completed CLI adapter is added once the new native DTO is frozen.
+"""
+import argparse
+import hashlib
+import json
+import mmap
+import sys
+import time
+from fractions import Fraction as F
+from functools import lru_cache
+from math import factorial
+from pathlib import Path
+import mpmath as mp
+
+if hasattr(sys, 'set_int_max_str_digits'):
+    sys.set_int_max_str_digits(0)
+mp.mp.dps = 220
+ROOT = Path('/workspace/Habitable-Moon-Project')
+TOL = mp.mpf('1e-180')
+GEOMETRY_SOURCE = ROOT/'analysis/geometric_native_archive_material_carrier_validation/independent_audit/audit_source.txt'
+GEOMETRY_RAW = 'eebb98815e2dcdd82e7f6a4d8cb18bfa5ffd2ed2e6e3d78d474b94677cd95c56'
+SOURCE907 = ROOT/'analysis/geometric_native_common_mixed_force_validation/release_validation_01/native_control/source_packet.json'
+SOURCE907_RAW = '5e5555712e57fd69156ee475fe5feb161baef3cb96dd911a443228d160f53005'
+SOURCE891 = ROOT/'analysis/geometric_native_common_carrier_source_work_validation/release_validation_02/native_control/source_packet.json'
+SOURCE891_RAW = 'b45d5d4d80c74c509bfac033c4a60c5b96c8327704e0c727fcf680406d82e57e'
+SOURCE895 = ROOT/'analysis/geometric_native_common_cold_material_carrier_validation/release_validation_02/native_control/source_packet.json'
+SOURCE895_RAW = 'fbafd092a4eb98472e60f79665e1e0fe8e9e1c2c2b9d3679344a32e59593cc89'
+LEGACY_REPO_SOURCE = ROOT/'analysis/geometric_native_common_preparation_balance_validation/independent_sources/legacy_source_reconstruction.txt'
+LEGACY_OUTSIDE_SOURCE = Path('/workspace/joint_preparation_legacy_source_reconstruction_20261008.txt')
+LEGACY_SOURCE = LEGACY_REPO_SOURCE if LEGACY_REPO_SOURCE.is_file() else LEGACY_OUTSIDE_SOURCE
+LEGACY_RAW = 'ddffe963ff9f08c24620e0ec6981fcc1a69c3eba64f24bf9a662a8e90b54d3a8'
+SOURCE923 = ROOT/'analysis/geometric_native_common_cold_preparation_energy_validation/development_native01/native_control.json'
+SOURCE923_RAW = '33b6a3585b6d8cd644e29d30bf2e648e2479f6e87393b7122061dda56d08a5d4'
+SOURCE899 = ROOT/'analysis/geometric_native_common_cold_continuum_energy_validation/release_validation_01/native_control/source_packet.json'
+SOURCE899_RAW = '4a5c059176cef063bf12ff7bd98df830395504d6c12051f269a177fcbc375fec'
+SOURCE903 = ROOT/'analysis/geometric_native_common_hot_mean_validation/release_validation_02/native_control/source_packet.json'
+SOURCE903_RAW = '0f8a0ee8ae082e3434b136bab7515944354eaf059db95965d0e87259f6791035'
+SOURCE923_MAP = ROOT/'analysis/geometric_native_common_cold_preparation_energy_validation/frozen_source_map_923.json'
+SOURCE923_MAP_RAW = '8df0ad5eeb5ccdaed5dd270c93febc9a5bb528101fc0c2ca63e7583706104d53'
+NEW_PY = frozenset(('tectonics/geometric_native_common_preparation_contacts.py',
+    'tests/test_geometric_native_common_preparation_contacts.py',
+    'tectonics/geometric_native_common_preparation_balance.py',
+    'tests/test_geometric_native_common_preparation_balance.py'))
+
+def encoded(x):
+    return json.dumps(x, sort_keys=True, separators=(',', ':'), ensure_ascii=False, allow_nan=False).encode()
+
+def digest(x):
+    return hashlib.sha256(encoded(x)).hexdigest()
+
+def raw_sha(path):
+    h = hashlib.sha256()
+    with Path(path).open('rb') as stream:
+        while block := stream.read(1<<20):
+            h.update(block)
+    return h.hexdigest()
+
+def require(ok, label):
+    if not ok:
+        raise AssertionError(label)
+
+def rat(x):
+    require(type(x) is not bool, 'A Boolean cannot replace a source rational')
+    if type(x) is list:
+        require(len(x)==2 and all(type(y) is int for y in x) and x[1]>0, 'Exact source rational pair')
+        return F(*x)
+    return F.from_float(x) if type(x) is float else F(x)
+
+def num(x):
+    x = x if type(x) is F else rat(x)
+    return mp.mpf(x.numerator)/x.denominator
+
+def value(x):
+    if type(x) is dict and set(x)=={'lo', 'hi'}:
+        # A fixed, authenticated enclosure representative is only an algebra
+        # diagnostic, never an accepted material point or chronology root.
+        return num((rat(x['lo'])+rat(x['hi']))/2)
+    return num(x)
+
+def vector(x):
+    return tuple(value(v) for v in x)
+
+def matrix(x):
+    return tuple(vector(row) for row in x)
+
+def bounds(raw):
+    if type(raw) is dict and set(raw)=={'lo', 'hi'}:
+        return num(raw['lo']), num(raw['hi'])
+    v = num(raw)
+    return v, v
+
+def compare(v, raw, label, counts):
+    lo, hi = bounds(raw)
+    margin = TOL*max(mp.mpf(1), abs(v), abs(lo), abs(hi))
+    require(lo-margin <= v <= hi+margin, label+' outside native complete interval')
+    counts['scalar_enclosure_checks'] += 1
+
+def compare_tree(v, raw, label, counts):
+    if type(v) in (tuple, list):
+        require(len(v)==len(raw), label+' complete array shape')
+        for i, (entry, receipt) in enumerate(zip(v, raw)):
+            compare_tree(entry, receipt, label+'.'+str(i), counts)
+    else:
+        compare(v, raw, label, counts)
+
+def identity(v, label, counts):
+    require(abs(v) <= TOL*max(1,abs(v)), label+' independent identity')
+    counts['analytic_identity_checks'] += 1
+
+class Jet:
+    """Independent sparse true first/second derivatives in the 15-block.
+
+    Lambda has index14. Six fresh owner coordinates have indices0..5 and
+    the eight literal original internal drivers indices6..13.
+    """
+    __slots__ = ('v', 'g', 'H')
+    def __init__(self, v, d=0, h=0, g=None, H=None):
+        self.v = mp.mpf(v)
+        self.g = {i:mp.mpf(x) for i,x in (g or {}).items() if x}
+        self.H = {ij:mp.mpf(x) for ij,x in (H or {}).items() if x}
+        if d:
+            self.g[14]=mp.mpf(d)
+        if h:
+            self.H[14,14]=mp.mpf(h)
+    @property
+    def d(self):
+        return self.g.get(14,mp.mpf(0))
+    @property
+    def h(self):
+        return self.H.get((14,14),mp.mpf(0))
+    @staticmethod
+    def variable(v,index):
+        require(type(index) is int and 0<=index<15, 'Independent15 coordinate')
+        return Jet(v,g={index:mp.mpf(1)})
+    @staticmethod
+    def scalar(v):
+        return v if isinstance(v, Jet) else Jet(v)
+    def __add__(self, other):
+        o=self.scalar(other)
+        g,H=dict(self.g),dict(self.H)
+        for i,x in o.g.items():
+            g[i]=g.get(i,0)+x
+        for ij,x in o.H.items():
+            H[ij]=H.get(ij,0)+x
+        return Jet(self.v+o.v,g=g,H=H)
+    __radd__=__add__
+    def __neg__(self):
+        return Jet(-self.v,g={i:-x for i,x in self.g.items()},H={ij:-x for ij,x in self.H.items()})
+    def __sub__(self, other):
+        return self+-self.scalar(other)
+    def __rsub__(self, other):
+        return self.scalar(other)+-self
+    def __mul__(self, other):
+        o=self.scalar(other)
+        g={i:x*o.v for i,x in self.g.items()};H={ij:x*o.v for ij,x in self.H.items()}
+        for i,x in o.g.items():
+            g[i]=g.get(i,0)+x*self.v
+        for ij,x in o.H.items():
+            H[ij]=H.get(ij,0)+x*self.v
+        for i,x in self.g.items():
+            for j,y in o.g.items():
+                ij=(min(i,j),max(i,j))
+                H[ij]=H.get(ij,0)+x*y*(2 if i==j else 1)
+        return Jet(self.v*o.v,g=g,H=H)
+    __rmul__=__mul__
+    def unary(self, f, first, second):
+        a,b=first(self.v),second(self.v);H={ij:a*x for ij,x in self.H.items()}
+        items=sorted(self.g.items())
+        for k,(i,x) in enumerate(items):
+            for j,y in items[k:]:
+                H[i,j]=H.get((i,j),0)+b*x*y
+        return Jet(f(self.v),g={i:a*x for i,x in self.g.items()},H=H)
+    def reciprocal(self):
+        require(self.v!=0, 'Nonzero independent jet denominator')
+        return self.unary(lambda x:1/x, lambda x:-1/x**2, lambda x:2/x**3)
+    def sqrt(self):
+        require(self.v>0, 'Positive independent squared normal norm')
+        return self.unary(mp.sqrt, lambda x:1/(2*mp.sqrt(x)), lambda x:-1/(4*x*mp.sqrt(x)))
+    def sin(self):
+        return self.unary(mp.sin, mp.cos, lambda x:-mp.sin(x))
+    def cos(self):
+        return self.unary(mp.cos, lambda x:-mp.sin(x), lambda x:-mp.cos(x))
+    def __truediv__(self, other):
+        return self*self.scalar(other).reciprocal()
+    def __rtruediv__(self, other):
+        return self.scalar(other)*self.reciprocal()
+
+def dot(a,b):
+    return sum((x*y for x,y in zip(a,b)), Jet(0))
+
+def mv(A,x):
+    return tuple(dot(row,x) for row in A)
+
+def mm(A,B):
+    return tuple(tuple(dot(row,col) for col in zip(*B)) for row in A)
+
+def tr(A):
+    return tuple(zip(*A))
+
+def cof(A):
+    out=[]
+    for i in range(3):
+        rows=[k for k in range(3) if k!=i];row=[]
+        for j in range(3):
+            cols=[k for k in range(3) if k!=j]
+            row.append((-1)**(i+j)*(A[rows[0]][cols[0]]*A[rows[1]][cols[1]]
+                -A[rows[0]][cols[1]]*A[rows[1]][cols[0]]))
+        out.append(tuple(row))
+    return tuple(out)
+
+def determinant(A):
+    return dot(A[0],cof(A)[0])
+
+def inverse(A):
+    C,D = cof(A),determinant(A)
+    return tuple(tuple(C[j][i]/D for j in range(3)) for i in range(3))
+
+def numeric(A):
+    if type(A) in (tuple,list):
+        return tuple(numeric(x) for x in A)
+    return A.v if isinstance(A,Jet) else A
+
+def d1(A):
+    if type(A) in (tuple,list):
+        return tuple(d1(x) for x in A)
+    return A.d if isinstance(A,Jet) else mp.mpf(0)
+
+def d2(A):
+    if type(A) in (tuple,list):
+        return tuple(d2(x) for x in A)
+    return A.h if isinstance(A,Jet) else mp.mpf(0)
+
+def cross(a,b):
+    return (a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0])
+
+class Twist:
+    def __init__(self,R,s,omega):
+        self.R,self.s,self.omega = R,s,omega
+        self.k = mp.sqrt(sum(w*w for w in omega))
+        require(self.k>0, 'Authentic nonzero common twist rate')
+        a,b,c = omega
+        self.W = ((0,-c,b),(c,0,-a),(-b,a,0))
+        self.W2 = numeric(mm(self.W,self.W))
+    def map_gradient(self,x,lam):
+        rho = mp.sqrt(sum(v*v for v in x))
+        tau = (self.R**3-(rho/self.s)**3)/(3*self.R**2)
+        g = tuple(-rho*v/(self.s**3*self.R**2) for v in x)
+        v = cross(self.omega,x)
+        d = tuple(tuple(v[i]*g[j] for j in range(3)) for i in range(3))
+        angle = lam*(tau*self.k)
+        a,b = angle.sin()/self.k,(1-angle.cos())/(self.k*self.k)
+        Q = tuple(tuple(int(i==j)+a*self.W[i][j]+b*self.W2[i][j] for j in range(3)) for i in range(3))
+        D = mm(Q,tuple(tuple(int(i==j)+lam*d[i][j] for j in range(3)) for i in range(3)))
+        return mv(Q,x),D,tau,d,Q
+    def scalar_component(self,i,x,lam):
+        # Independently differentiable scalar Rodrigues expression, retained
+        # for Cartesian and lambda mpmath.diff controls of the jet algebra.
+        rho=mp.sqrt(sum(v*v for v in x));tau=(self.R**3-(rho/self.s)**3)/(3*self.R**2)
+        axis=tuple(w/self.k for w in self.omega);c,s=mp.cos(lam*tau*self.k),mp.sin(lam*tau*self.k)
+        turn=cross(axis,x);along=sum(u*v for u,v in zip(axis,x))
+        return c*x[i]+s*turn[i]+(1-c)*axis[i]*along
+
+def fresh_owner_rotation(owner):
+    require(type(owner) is int and owner in (0,1), 'Actual source owner')
+    generators=(((0,0,0),(0,0,-1),(0,1,0)),
+        ((0,0,1),(0,0,0),(-1,0,0)),((0,-1,0),(1,0,0),(0,0,0)))
+    second={}
+    for i in range(3):
+        for j in range(i,3):
+            a,b=numeric(mm(generators[i],generators[j])),numeric(mm(generators[j],generators[i]))
+            second[i,j]=tuple(tuple((a[r][c]+b[r][c])/2 for c in range(3)) for r in range(3))
+    return tuple(tuple(Jet(int(r==c),g={3*owner+i:generators[i][r][c] for i in range(3)},
+        H={(3*owner+i,3*owner+j):a[r][c] for (i,j),a in second.items()}) for c in range(3)) for r in range(3))
+
+def side(x,A0,Aold,l0,twist,lam,*,internal=None,vold=None,owner=None):
+    y,D,tau,d,Q = twist.map_gradient(x,lam)
+    A = mm(D,A0)
+    arm=l0 if internal is None else tuple(a+internal*v for a,v in zip(l0,vold))
+    transported = mv(mm(A,inverse(Aold)),arm)
+    Y = tuple(u+v for u,v in zip(y,transported))
+    return dict(material_position=y,original_gradient=A,attachment_position=Y,
+        map_gradient=D,depth=tau,d=d,rotation=Q,owner=owner,internal_arm=arm)
+
+def normal(A,N):
+    w = mv(cof(A),N)
+    length = dot(w,w).sqrt()
+    return tuple(v/length for v in w),w,length
+
+def cohesive(d,kn,C,T,Gamma):
+    K = 1/(1/kn+C);g0=T/kn;gf=2*Gamma/T;onset=g0+C*T
+    require(gf>onset>0, 'Actual source no-snapback loading law')
+    if d.v<onset:
+        gap = d/(1+C*kn);traction=K*d;damage=Jet(0);fracture=Jet(0)
+        phi=K*d*d/2;recoverable=kn*gap*gap/2+C*traction*traction/2
+        branch='intact_or_compressed'
+    elif d.v>gf:
+        gap=d;traction=Jet(0);damage=Jet(1);fracture=Jet(Gamma)
+        phi=Jet(Gamma);recoverable=Jet(0);branch='fully_failed_open'
+    else:
+        require(onset<d.v<gf, 'A branch corner has no unique classical second derivative')
+        gap=g0+(d-onset)*(gf-g0)/(gf-onset)
+        traction=T*(gf-d)/(gf-onset);damage=gf/(gf-g0)*(1-g0/gap)
+        fracture=Gamma*(gap-g0)/(gf-g0)
+        delta=d-onset;phi=T*onset/2+T*delta-T*delta*delta/(2*(gf-onset))
+        recoverable=kn*(1-damage)*gap*gap/2+C*traction*traction/2
+        branch='monotone_softening'
+    return dict(branch=branch,phi=phi,recoverable=recoverable,fracture=fracture,
+        contact_gap=gap,traction=traction,damage=damage,onset=onset,failure=gf)
+
+def contact(sub,over,N,baseline,anchor,area,literal,law):
+    n,w,length=normal(over['original_gradient'],N)
+    Ysub,Yover=sub['attachment_position'],over['attachment_position']
+    if sub['owner'] is not None:
+        Ysub=mv(fresh_owner_rotation(sub['owner']),Ysub)
+    if over['owner'] is not None:
+        R=fresh_owner_rotation(over['owner'])
+        Yover=mv(R,Yover);n=mv(R,n)
+    delta=dot(n,tuple(b-a for a,b in zip(Ysub,Yover)))-baseline
+    d=anchor+delta
+    loading=cohesive(d,**law);initial=cohesive(Jet(anchor),**law)
+    offset=literal-area*initial['phi'].v
+    return dict(normal=n,normal_cofactor=w,normal_length=length,delta=delta,free_gap=d,
+        sub_attachment=Ysub,over_attachment=Yover,
+        energy=offset+area*loading['phi'],recoverable=offset+area*loading['recoverable'],
+        fracture=area*loading['fracture'],offset=offset,loading=loading,
+        initial_positive_loading_energy=area*initial['phi'].v)
+
+def exact_source_law(atom):
+    source=json.loads(atom['complete_original_atom_history_json'])['original_material']
+    law,columns=source['law'],source['columns']
+    kn=rat(law['normal_stiffness_pa_m']);T=rat(law['tensile_strength_pa']);Gamma=rat(law['fracture_energy_j_m2'])
+    C=rat(columns['sub_length_m'])/rat(columns['sub_normal_modulus_pa'])+rat(columns['over_length_m'])/rat(columns['over_normal_modulus_pa'])
+    K=1/(1/kn+C)
+    require(K==rat(atom['series_stiffness_exact_pa_m'][0]), 'Actual complete source series stiffness')
+    return dict(kn=num(kn),C=num(C),T=num(T),Gamma=num(Gamma)),K
+
+def source_loading_cap(atoms):
+    total=F(0)
+    for atom in atoms:
+        _,K=exact_source_law(atom);tau=rat(atom['literal_source_tractions_pa'][0]);area=rat(atom['original_area_m2'])
+        require(tau<0 and area>0, 'Actual positive compressed original source atom')
+        total+=area*tau*tau/(2*K)
+    return total
+
+def extract_token(path,token):
+    # Bytes are only observed from the old authority. The old mathematical
+    # controls are neither imported nor called to restore this saved value.
+    decoder=json.JSONDecoder()
+    with Path(path).open('rb') as stream,mmap.mmap(stream.fileno(),0,access=mmap.ACCESS_READ) as mapped:
+        pos=mapped.find(token.encode());require(pos>=0, 'Saved authority token '+token)
+        pos+=len(token);extent=1<<20
+        while extent<=1<<28:
+            text=mapped[pos:min(len(mapped),pos+extent)].decode('utf-8',errors='ignore').lstrip()
+            try:
+                return decoder.raw_decode(text)[0]
+            except json.JSONDecodeError:
+                extent*=2
+    raise AssertionError('Explicit256MiB saved token extraction bound')
+
+def extract_array_row(path,array_key,label):
+    decoder=json.JSONDecoder();token=('"'+array_key+'":[').encode()
+    with Path(path).open('rb') as stream,mmap.mmap(stream.fileno(),0,access=mmap.ACCESS_READ) as mapped:
+        pos=mapped.find(token);require(pos>=0, 'Saved complete authority array '+array_key)
+        pos+=len(token)
+        while pos<len(mapped):
+            while mapped[pos] in b' \n\r\t,':
+                pos+=1
+            require(mapped[pos]!=ord(']'), 'Named saved authority row '+label)
+            extent=1<<20
+            while extent<=1<<28:
+                text=mapped[pos:min(len(mapped),pos+extent)].decode('utf-8',errors='ignore')
+                try:
+                    row,end=decoder.raw_decode(text)
+                    break
+                except json.JSONDecodeError:
+                    extent*=2
+            else:
+                raise AssertionError('Explicit256MiB saved array-row extraction bound')
+            if row['label']==label:
+                return row
+            pos+=len(text[:end].encode('utf-8'))
+    raise AssertionError('Named saved authority row '+label)
+
+def load_geometry_library():
+    require(raw_sha(GEOMETRY_SOURCE)==GEOMETRY_RAW, 'Frozen independent887 geometry definitions changed')
+    namespace=dict(__file__=str(GEOMETRY_SOURCE),__name__='independent_readonly887_geometry_definitions')
+    exec(compile(GEOMETRY_SOURCE.read_text(),str(GEOMETRY_SOURCE),'exec'),namespace)
+    require(namespace['mp'] is mp, 'Shared220-digit standalone mathematical context')
+    mp.mp.dps=220
+    return namespace
+
+def project_modules():
+    return {n:v for n,v in sys.modules.items() if n in ('tectonics','tests','analysis','scripts') or n.startswith(('tectonics.','tests.','analysis.','scripts.'))}
+
+@lru_cache(maxsize=1)
+def context():
+    before=project_modules()
+    require(raw_sha(LEGACY_SOURCE)==LEGACY_RAW, 'Executed independent exact old-source reconstruction changed')
+    legacy=dict(__file__=str(LEGACY_SOURCE),__name__='independent_exact_old_source_definitions')
+    exec(compile(LEGACY_SOURCE.read_text(),str(LEGACY_SOURCE),'exec'),legacy)
+    ctx=legacy['context']()
+    require(raw_sha(SOURCE907)==SOURCE907_RAW, 'Frozen full907 source authority changed')
+    row=extract_array_row(SOURCE907,'contact_field_authorities','prepared_zero_cold_reference')
+    require(row['label']=='prepared_zero_cold_reference', 'Authentic full907 prepared-zero contact field authority')
+    auth=row['authority']
+    require(auth['binding_sha256']=='7df9a726e5cf3905ca2a1a8a7862724816780e6e7720506ac6698ae5187b3183', 'Frozen zero907 full32 authority binding')
+    require(auth['original_atom_count']==16 and auth['original_material_point_count']==32, 'Once-only full907 source catalogue')
+    points={(p['point_id'],p['side']):p for p in auth['point_receipts']}
+    geometry=load_geometry_library()
+    history=geometry['IndependentHistory'](journal=ctx['journal'])
+    heights={parent:num(height) for parent,height in ctx['carrier']['whole_domain_certificate']['original_parent_thicknesses_m']}
+    cert=ctx['source895_system']['whole_domain_certificate']
+    scales={cert[k]['owner']:num(cert[k]['fixed_radial_scale']) for k in ('donor','receiver')}
+    physical={}
+    for item in ctx['seed']['attachments']:
+        field=item['field'];key=(field['point_id'],field['side']);parent=field['original_parent_id'];bank=ctx['banks'][parent]
+        owner=field['owner'];radius=num(bank['radius_m']);args=dict(radius=radius,depth=mp.mpf(0),t=mp.mpf(1))
+        if owner==1:
+            computed=geometry['donor_point'](history,item['original_ray'],dip=num(ctx['carrier']['common_dip_radians']),**args)
+        else:
+            computed=geometry['upper_point'](history,item['original_ray'],owner=owner,thickness=heights[parent],**args)
+        scale=scales[owner]
+        x=tuple(scale*computed['position'][i] for i in range(3))
+        A=tuple(tuple(scale*computed['F'][i,j] for j in range(3)) for i in range(3))
+        physical[key]=dict(x=x,A0=A,s=scale,computed=computed,
+            angular_rate_exact=tuple(rat(v) for v in bank['angular_rate_per_physical_volume_depth_m']),
+            twist=Twist(radius,scale,tuple(num(v) for v in bank['angular_rate_per_physical_volume_depth_m'])),
+            item=item,owner=owner,legacy=ctx['geometry'][key],frozen_point=points[key])
+    require(len(physical)==32 and len(ctx['banks'])==8, 'All authentic original sides and parents')
+    require(project_modules()==before, 'The independent source reconstruction imported project physics')
+    return dict(legacy=ctx,physical=physical,authority=auth,history=history,
+        source_loading_relaxation_cap_j=source_loading_cap(ctx['seed']['source_atoms']))
+
+def fixture_side(ctx,key,lam,internal_values=None):
+    entry=ctx['physical'][key];old=entry['legacy'];field=entry['item']['field']
+    residual=field['residual_coordinate_index']
+    require(type(residual) is int and 92<=residual<100, 'Literal source internal residual catalogue')
+    rindex=6+residual-92
+    r=Jet.variable(mp.mpf(0) if internal_values is None else internal_values[rindex-6],rindex)
+    l0=tuple(old['p0'][i]-old['Xold'][i] for i in range(3))
+    vold=tuple(num(v) for v in entry['item']['original_ray'])
+    return side(entry['x'],entry['A0'],tuple(tuple(old['Aold'][i,j] for j in range(3)) for i in range(3)),
+        l0,entry['twist'],lam,internal=r,vold=vold,owner=entry['owner'])
+
+def fixture_contact(ctx,atom,lam,internal_values=None):
+    aid=atom['point_id'];sub=fixture_side(ctx,(aid,'sub'),lam,internal_values)
+    over=fixture_side(ctx,(aid,'over'),lam,internal_values)
+    baseline_sub=fixture_side(ctx,(aid,'sub'),Jet(0),[mp.mpf(0)]*8)
+    baseline_over=fixture_side(ctx,(aid,'over'),Jet(0),[mp.mpf(0)]*8)
+    N=tuple(ctx['legacy']['atoms'][aid]['Nsource'][i] for i in range(3))
+    n0,_,_=normal(baseline_over['original_gradient'],N)
+    baseline=dot(numeric(n0),tuple(b-a for a,b in zip(numeric(baseline_sub['attachment_position']),numeric(baseline_over['attachment_position'])))).v
+    law,K=exact_source_law(atom);anchor=num(rat(atom['literal_source_tractions_pa'][0])/K)
+    literal=num(sum((rat(v) for v in atom['stored_source_energy_components_j']),F(0)));area=num(atom['original_area_m2'])
+    result=contact(sub,over,N,baseline,anchor,area,literal,law)
+    return dict(result,sub_side=sub,over_side=over,baseline=baseline,material_normal=N,law=law)
+
+def check_binding(dto,*,hashed_json=False):
+    require(type(dto) is dict and type(dto.get('binding_sha256')) is str, 'Complete native binding DTO')
+    body={k:v for k,v in dto.items() if k not in ('format','binding_sha256')}
+    if hashed_json:
+        body={k:hashlib.sha256(v.encode()).hexdigest() if k.endswith('_json') and type(v) is str else v for k,v in body.items()}
+    require(digest(body)==dto['binding_sha256'], 'Entire native DTO binding '+dto['format'])
+
+def check_jet(jet,raw,label,counts):
+    require(set(raw)=={'value_bounds','first_derivative_bounds','second_derivative_bounds'}, label+' complete twojet DTO')
+    g={i:v for i,v in raw['first_derivative_bounds']}
+    H={(i,j):v for i,j,v in raw['second_derivative_bounds']}
+    require(len(g)==len(raw['first_derivative_bounds']) and len(H)==len(raw['second_derivative_bounds']), label+' unique derivative channels')
+    require(all(type(i) is int and 0<=i<15 for i in g)
+        and all(type(i) is int and type(j) is int and 0<=i<=j<15 for i,j in H), label+' actual15 derivative coordinates')
+    compare(jet.v,raw['value_bounds'],label+'.value',counts)
+    zero={'lo':[0,1],'hi':[0,1]}
+    for i in range(15):
+        compare(jet.g.get(i,mp.mpf(0)),g.get(i,zero),label+'.first.'+str(i),counts)
+        for j in range(15):
+            compare(jet.H.get((min(i,j),max(i,j)),mp.mpf(0)),H.get((min(i,j),max(i,j)),zero),label+'.second.'+str(i)+'.'+str(j),counts)
+
+def check_dense_jet(jet,response,label,counts):
+    require(len(response['gradient_bounds'])==15 and len(response['hessian_bounds'])==15
+        and all(len(row)==15 for row in response['hessian_bounds']), label+' complete15 dense operator')
+    compare(jet.v,response['energy_bounds_j'],label+'.energy',counts)
+    for i in range(15):
+        compare(jet.g.get(i,mp.mpf(0)),response['gradient_bounds'][i],label+'.G.'+str(i),counts)
+        for j in range(15):
+            compare(jet.H.get((min(i,j),max(i,j)),mp.mpf(0)),response['hessian_bounds'][i][j],label+'.H.'+str(i)+'.'+str(j),counts)
+            require(response['hessian_bounds'][i][j]==response['hessian_bounds'][j][i],label+' complete literal Hessian symmetry')
+
+def qbounds(raw):
+    if type(raw) is dict and set(raw)=={'lo','hi'}:
+        return rat(raw['lo']),rat(raw['hi'])
+    exact=rat(raw)
+    return exact,exact
+
+def rational_interval(raw):
+    lo,hi=qbounds(raw)
+    require(lo<=hi,'Ordered exact rational certificate interval')
+    return lo,hi
+
+def rational_add(a,b):
+    return a[0]+b[0],a[1]+b[1]
+
+def rational_multiply(a,b):
+    products=tuple(x*y for x in a for y in b)
+    return min(products),max(products)
+
+def rational_round(a,precision):
+    """Enclose a rational interval on the declared relative binary grid.
+
+    3322/1000 is a rational upper bound for log2(10); eight guard bits
+    define the inherited arithmetic grid. This verifier has no imports
+    from the native arithmetic implementation.
+    """
+    maximum=max(abs(a[0]),abs(a[1]))
+    if not maximum:
+        return F(0),F(0)
+    exponent=maximum.numerator.bit_length()-maximum.denominator.bit_length()
+    below=(maximum.numerator < maximum.denominator*(1<<exponent)) if exponent>=0 else (
+        maximum.numerator*(1<<(-exponent)) < maximum.denominator)
+    exponent-=int(below)
+    bits=(3322*precision+999)//1000+8
+    shift=bits-exponent
+    scale=F(1<<shift) if shift>=0 else F(1,1<<(-shift))
+    lo,hi=a[0]*scale,a[1]*scale
+    return F(lo.numerator//lo.denominator)/scale,F(-((-hi.numerator)//hi.denominator))/scale
+
+def rational_matrix_product(a,b,precision):
+    result=[]
+    for i in range(3):
+        row=[]
+        for j in range(3):
+            total=(F(0),F(0))
+            for k in range(3):
+                total=rational_add(total,rational_multiply(a[i][k],b[k][j]))
+            row.append(rational_round(total,precision))
+        result.append(tuple(row))
+    return tuple(result)
+
+@lru_cache(maxsize=4096)
+def replay_rotation_certificate(canonical_certificate):
+    """Verify the short new certificate, not an old physics or audit main."""
+    c=json.loads(canonical_certificate)
+    p,work=c['output_precision_decimal_digits'],c['work_precision_decimal_digits']
+    s,n=c['scaling_squaring_count'],c['taylor_term_count']
+    K=tuple(tuple(rational_interval(v) for v in row) for row in c['unscaled_generator_bounds'])
+    divisor=F(1<<s)
+    K=tuple(tuple((v[0]/divisor,v[1]/divisor) for v in row) for row in K)
+    one=tuple(tuple((F(int(i==j)),)*2 for j in range(3)) for i in range(3))
+    term,total=one,one
+    for k in range(1,n+1):
+        product=rational_matrix_product(term,K,work)
+        term=tuple(tuple(rational_round((v[0]/k,v[1]/k),work) for v in row) for row in product)
+        total=tuple(tuple(rational_round(rational_add(total[i][j],term[i][j]),work)
+            for j in range(3)) for i in range(3))
+    tail=rat(c['tail_scaled_matrix_upper'])
+    total=tuple(tuple(rational_round((v[0]-tail,v[1]+tail),work) for v in row) for row in total)
+    for _ in range(s):
+        total=rational_matrix_product(total,total,work)
+    return tuple(tuple(rational_round(v,p) for v in row) for row in total)
+
+def audit_rotation_certificate(expected,side_receipt,label,counts,preparation_fraction,preparation_binding):
+    c=side_receipt['rotation_certificate'];entry=expected['fixture'];cur=entry['frozen_point']['current']
+    require(c['method']=='OUTWARD_INTERVAL_MATRIX_TAYLOR_SCALING_SQUARING'
+        and c['tail_theorem']=='b^(N+1)/(N+1)!/(1-b/(N+2))',label+' explicit proven matrix tail theorem')
+    require(c['midpoint_inputs_used'] is False and c['rigorous_outward_rational_matrix_arithmetic'] is True
+        and c['tail_bound_outward_compressed'] is True,label+' outward source uncertainty retained')
+    require(c['original_material_point_binding_sha256']==cur['binding_sha256']
+        ==side_receipt['original_material_point_binding_sha256']
+        and c['preparation_binding_sha256']==preparation_binding
+        and rat(c['preparation_fraction_exact'])==preparation_fraction,label+' complete point/preparation/lambda cache association')
+    require(side_receipt['original_position_bounds_m']==cur['position_bounds_m']
+        and side_receipt['original_cartesian_gradient_bounds']==cur['original_cartesian_gradient_bounds']
+        and side_receipt['allocation']==cur['allocation']
+        and side_receipt['archive_debits']==cur['archive_debits'],label+' full authentic point state retained')
+    p,work,guard=(c[k] for k in ('output_precision_decimal_digits','work_precision_decimal_digits','guard_precision_decimal_digits'))
+    s,n,budget=(c[k] for k in ('scaling_squaring_count','taylor_term_count','maximum_taylor_terms'))
+    require(all(type(v) is int for v in (p,work,guard,s,n,budget))
+        and 96<=p<=512 and guard==32 and work==p+guard and budget==max(128,p+64)
+        and s>=0 and 1<=n<=budget,label+' declared finite exact precision/scaling/Taylor budget')
+    rawK=c['unscaled_generator_bounds']
+    require(len(rawK)==3 and all(len(row)==3 for row in rawK),label+' complete generator matrix')
+    K=tuple(tuple(rational_interval(v) for v in row) for row in rawK)
+    a,b,d=entry['angular_rate_exact'];W=((F(0),-d,b),(d,F(0),-a),(-b,a,F(0)))
+    tau=rational_interval(side_receipt['physical_volume_depth_bounds_m'])
+    for i in range(3):
+        for j in range(3):
+            coefficient=preparation_fraction*W[i][j]
+            ideal=tuple(sorted((coefficient*tau[0],coefficient*tau[1])))
+            require(K[i][j][0]<=ideal[0]<=ideal[1]<=K[i][j][1],label+' full generator source uncertainty')
+            require(rational_round(K[i][j],work)==K[i][j],label+' declared generator rounding grid')
+    b0=max(sum((max(abs(lo),abs(hi)) for lo,hi in row),F(0)) for row in K)
+    scaled=b0/F(1<<s)
+    require(rat(c['unscaled_generator_infinity_norm_upper'])==b0
+        and rat(c['scaled_generator_infinity_norm_upper'])==scaled and scaled<=F(1,2)
+        and (s==0 or 2*scaled>F(1,2)),label+' exact induced infinity norm and minimal binary scaling')
+    ratio=scaled/F(n+2)
+    require(rat(c['tail_ratio'])==ratio and 0<=ratio<1,label+' exact convergent geometric tail ratio')
+    exacttail=scaled**(n+1)/factorial(n+1)/(1-ratio)
+    tail=rat(c['tail_scaled_matrix_upper']);target=F(1,10**(p+8))
+    require(exacttail<=tail<=target and rat(c['tail_target_upper'])==target
+        and tail==rational_round((exacttail,exacttail),work)[1],label+' independently reconstructed outward tail upper bound')
+    if n>1:
+        previous_ratio=scaled/F(n+1)
+        previous=scaled**n/factorial(n)/(1-previous_ratio)
+        require(rational_round((previous,previous),work)[1]>target,label+' first successful adaptive Taylor budget')
+    replay=replay_rotation_certificate(encoded(c).decode())
+    reported=side_receipt['preparation_rotation_bounds']
+    for i in range(3):
+        for j in range(3):
+            lo,hi=rational_interval(reported[i][j])
+            require(lo<=replay[i][j][0]<=replay[i][j][1]<=hi,label+' final outward series and all squarings replayed')
+    counts['exact_rotation_certificate_checks']+=1
+    counts['rotation_receipt_count']+=1
+
+def source_scope(dto):
+    for key in ('full_general_state_mixed_operator_certified','full_physical_preparation_balance_certified',
+            'general_state_mixed_operator_certified','new_mixed_force_equilibrium_certified',
+            'reference_preparation_work_paid','complete_physical_system_preparation_work_paid',
+            'full_system_preparation_work_certified','historical_normal_fracture_memory_recovered',
+            'historical_archived_three_dimensional_prestress_recovered','proposed_normal_damage_or_fracture_work_applied',
+            'full_system_temporal_path_work_certified','physical_material_admission_authorized',
+            'whole_clock_all_pair_admission_authorized','clocks_advanced'):
+        if key in dto:
+            require(dto[key] is False,'Unwarranted physical assertion '+key)
+    if 'accepted_new_native_intervals' in dto:
+        require(type(dto['accepted_new_native_intervals']) is int and dto['accepted_new_native_intervals']==0,
+            'No diagnostic preparation interval is accepted')
+
+def audit_side(expected,raw,label,counts,*,preparation_fraction,preparation_binding):
+    entry=expected['fixture']
+    require(raw['original_parent_id']==entry['item']['field']['original_parent_id']
+        and raw['original_material_id']==entry['item']['field']['original_material_id']
+        and raw['owner']==entry['owner'], label+' original material label')
+    require(raw['original_internal_coordinate_index']==entry['item']['field']['residual_coordinate_index']
+        and raw['active_internal_coordinate_index']==6+entry['item']['field']['residual_coordinate_index']-92,
+        label+' distinct original arm driver')
+    compare_tree(entry['x'],raw['original_position_bounds_m'],label+'.actual_zero_x',counts)
+    compare_tree(entry['A0'],raw['original_cartesian_gradient_bounds'],label+'.actual_zero_A',counts)
+    rho=mp.sqrt(sum(v*v for v in entry['x']));twist=entry['twist']
+    compare_tree(tuple(-rho*v/(twist.s**3*twist.R**2) for v in entry['x']),
+        raw['physical_volume_depth_gradient_bounds'],label+'.actual_tau_gradient',counts)
+    oldA=tuple(tuple(entry['legacy']['Aold'][i,j] for j in range(3)) for i in range(3))
+    compare_tree(oldA,raw['old_original_cartesian_gradient_bounds'],label+'.complete_old_A',counts)
+    compare_tree(numeric(inverse(oldA)),raw['old_original_cartesian_inverse_bounds'],label+'.complete_old_inverse',counts)
+    compare_tree(numeric(expected['material_position']),raw['preparation_map_position_bounds_m'],label+'.map_x',counts)
+    compare_tree(numeric(expected['map_gradient']),raw['preparation_map_spatial_gradient_bounds'],label+'.DT',counts)
+    compare_tree(d1(expected['map_gradient']),raw['preparation_map_spatial_gradient_first_bounds'],label+'.DT_lambda',counts)
+    compare_tree(d2(expected['map_gradient']),raw['preparation_map_spatial_gradient_second_bounds'],label+'.DT_lambda_lambda',counts)
+    compare_tree(numeric(expected['original_gradient']),raw['prepared_original_gradient_bounds'],label+'.complete_A',counts)
+    compare_tree(d1(expected['original_gradient']),raw['prepared_original_gradient_first_bounds'],label+'.complete_A_lambda',counts)
+    compare_tree(d2(expected['original_gradient']),raw['prepared_original_gradient_second_bounds'],label+'.complete_A_lambda_lambda',counts)
+    compare_tree(numeric(expected['rotation']),raw['preparation_rotation_bounds'],label+'.Q',counts)
+    compare(expected['depth'],raw['physical_volume_depth_bounds_m'],label+'.tau',counts)
+    compare_tree(expected['d'],raw['rank_one_twist_gradient_bounds'],label+'.rank_one_d',counts)
+    for i,jet in enumerate(expected['attachment_position']):
+        check_jet(jet,raw['attachment_position_twojet'][i],label+'.material_attachment.'+str(i),counts)
+    require(raw['original_measure_not_current_nanson_measure_used'] is True
+        and rat(raw['map_jacobian_exact'])==1, label+' exact measure and determinant')
+    compare_tree(tuple(tuple(mp.mpf(int(i==j)) for j in range(3)) for i in range(3)),
+        raw['complete_old_material_inverse_identity_bounds'],label+'.old_complete_inverse_identity',counts)
+    audit_rotation_certificate(expected,raw,label+'.rotation_certificate',counts,preparation_fraction,preparation_binding)
+
+def audit_contacts(ctx,response,label,counts):
+    check_binding(response);source_scope(response)
+    require(response['original_atom_count']==16 and response['original_material_point_count']==32
+        and response['original_live_attachment_count']==24 and response['original_archived_attachment_count']==8,
+        label+' original full source catalogue once')
+    require(response['active_original100_indices']==list(range(6))+list(range(92,100))
+        and response['lambda_coordinate_index']==14 and len(response['coordinate_order'])==15,
+        label+' actual15 original source injection')
+    require(rat(response['source_contact_relaxation_lower_bound_j'])==-ctx['source_loading_relaxation_cap_j'],label+' full16 exact relaxation bound')
+    lo,hi=qbounds(response['preparation_fraction_bounds']);require(lo==hi,label+' actual exact lambda query')
+    lam=Jet.variable(num(lo),14);internal=[num(v) for v in response['internal_coordinates']]
+    require(len(internal)==8,label+' all internal coordinates')
+    native_atoms=[json.loads(v) for v in response['atoms_json']]
+    source_atoms={a['point_id']:a for a in ctx['legacy']['seed']['source_atoms']}
+    require(len(native_atoms)==16 and {a['point_id'] for a in native_atoms}==set(source_atoms),label+' once-only genuine atom identities')
+    E,R,D=Jet(0),Jet(0),Jet(0);branches={};atom_results={}
+    for raw in native_atoms:
+        aid=raw['point_id'];atom=source_atoms[aid]
+        require(raw['original_atom']==atom,label+' complete old material law/history/ledger')
+        expected=fixture_contact(ctx,atom,lam,internal);atom_results[aid]=expected
+        for sidename in ('sub','over'):
+            expected[sidename+'_side']['fixture']=ctx['physical'][aid,sidename]
+            owner=expected[sidename+'_side']['fixture']['owner']
+            audit_side(expected[sidename+'_side'],raw[sidename],label+'.'+aid+'.'+sidename,counts,
+                preparation_fraction=lo,preparation_binding=ctx['preparation_binding_sha256s'][owner])
+        check_jet(expected['delta'],raw['scalar_increment_twojet'],label+'.'+aid+'.gap',counts)
+        check_jet(expected['energy'],raw['energy_twojet'],label+'.'+aid+'.energy',counts)
+        compare(expected['baseline'],raw['prepared_zero_attachment_scalar_bounds_m'],label+'.'+aid+'.saved_zero_calibration',counts)
+        compare(expected['offset'],raw['literal_energy_offset_bounds_j'],label+'.'+aid+'.literal_rounding_offset',counts)
+        compare(expected['energy'].v,raw['energy_bounds_j'],label+'.'+aid+'.loading',counts)
+        compare(expected['recoverable'].v,raw['recoverable_energy_bounds_j'],label+'.'+aid+'.recoverable',counts)
+        compare(expected['fracture'].v,raw['fracture_work_bounds_j'],label+'.'+aid+'.fracture',counts)
+        loading=expected['loading'];receipt=raw['loading'];require(loading['branch']==receipt['branch'],label+' actual cohesive branch')
+        branches[loading['branch']]=branches.get(loading['branch'],0)+1
+        for field,key in (('free_gap_bounds_m','free_gap'),('contact_gap_bounds_m','contact_gap'),
+                ('traction_bounds_pa','traction'),('proposed_damage_bounds','damage'),
+                ('loading_potential_density_bounds_j_m2','phi'),('recoverable_energy_density_bounds_j_m2','recoverable'),
+                ('fracture_work_density_bounds_j_m2','fracture')):
+            compare((expected[key] if key=='free_gap' else loading[key]).v,receipt[field],label+'.'+aid+'.law.'+field,counts)
+        for j in range(3):
+            identity(expected['energy'].g.get(j,0)+expected['energy'].g.get(j+3,0),label+'.'+aid+'.common_spin',counts)
+        body_normal,cofactor_normal,normal_length=normal(expected['over_side']['original_gradient'],expected['material_normal'])
+        nreceipt=raw['receiver_nanson_normal']
+        compare_tree(expected['material_normal'],nreceipt['original_material_normal_bounds'],label+'.'+aid+'.Nsource',counts)
+        for i in range(3):
+            check_jet(cofactor_normal[i],nreceipt['transported_cofactor_normal_twojet'][i],label+'.'+aid+'.cofactor_normal.'+str(i),counts)
+            check_jet(body_normal[i],nreceipt['unit_normal_twojet'][i],label+'.'+aid+'.unit_normal.'+str(i),counts)
+        check_jet(dot(cofactor_normal,cofactor_normal),nreceipt['transported_cofactor_normal_norm_squared_twojet'],label+'.'+aid+'.normal_squared_norm',counts)
+        compare(normal_length.v,nreceipt['transported_cofactor_normal_norm_bounds'],label+'.'+aid+'.normal_norm',counts)
+        require(nreceipt['current_area_energy_multiplier_added'] is False and nreceipt['whole_box_normal_norm_strictly_positive'] is True,
+            label+' no extra Nanson energy measure')
+        area=num(atom['original_area_m2']);traction=loading['traction'].v;n=numeric(expected['normal'])
+        Ys,Yo=expected['sub_attachment'],expected['over_attachment'];difference=tuple(b-a for a,b in zip(Ys,Yo))
+        force_sub=tuple(area*traction*v for v in n);force_over=tuple(-v for v in force_sub)
+        couple=tuple(-area*traction*v for v in cross(n,numeric(difference)))
+        compare_tree(force_sub,raw['force_on_sub_bounds_n'],label+'.'+aid+'.sub_force',counts)
+        compare_tree(force_over,raw['force_on_over_bounds_n'],label+'.'+aid+'.over_force',counts)
+        compare_tree(couple,raw['receiver_normal_orientation_couple_bounds_nm'],label+'.'+aid+'.orientation_couple',counts)
+        moment=tuple(a+b+c for a,b,c in zip(cross(numeric(Ys),force_sub),cross(numeric(Yo),force_over),couple))
+        for i,v in enumerate(moment):
+            identity(v,label+'.'+aid+'.moment_closure',counts)
+            compare(mp.mpf(0),raw['global_moment_residual_bounds_nm'][i],label+'.'+aid+'.moment_receipt',counts)
+        virtual={v['active_coordinate_index']:v for v in raw['virtual_work']}
+        require(set(virtual)==set(range(15)) and len(raw['virtual_work'])==15,label+' complete15 physical virtual work')
+        for i in range(15):
+            translation=area*traction*sum(n[j]*difference[j].g.get(i,0) for j in range(3))
+            orientation=area*traction*sum(expected['normal'][j].g.get(i,0)*difference[j].v for j in range(3))
+            compare(translation,virtual[i]['material_attachment_work_bounds'],label+'.'+aid+'.material_virtual_work.'+str(i),counts)
+            compare(orientation,virtual[i]['nanson_orientation_work_bounds'],label+'.'+aid+'.orientation_virtual_work.'+str(i),counts)
+            compare(mp.mpf(0),virtual[i]['residual_bounds'],label+'.'+aid+'.virtual_work_receipt.'+str(i),counts)
+            identity(expected['energy'].g.get(i,0)-translation-orientation,label+'.'+aid+'.physical_virtual_work.'+str(i),counts)
+        for k in ('v','d','h'):
+            identity(getattr(expected['energy']-expected['recoverable']-expected['fracture'],k),label+'.'+aid+'.loading_partition.'+k,counts)
+        E+=expected['energy'];R+=expected['recoverable'];D+=expected['fracture']
+    check_dense_jet(E,response,label,counts)
+    compare(R.v,response['recoverable_energy_bounds_j'],label+'.recoverable_total',counts)
+    compare(D.v,response['fracture_work_bounds_j'],label+'.fracture_total',counts)
+    for raw in response['simultaneous_owner_rotation_directional_first_derivative_bounds']:
+        require(qbounds(raw)==(F(0),F(0)),label+' exact objectivity receipt')
+    return dict(E=E,R=R,D=D,branches=branches,atoms=atom_results,lam=lo,internal=internal)
+
+def audit_systems(ctx,contacts,balance,counts):
+    check_binding(contacts);check_binding(balance,hashed_json=True);source_scope(balance)
+    require(contacts['active_original100_indices']==list(range(6))+list(range(92,100))
+        and contacts['lambda_coordinate_index']==14 and len(contacts['coordinate_order'])==15,
+        'Complete fifteen-coordinate contact system')
+    require(contacts['cold_coordinate_increments']==[[0,1]]*56 and contacts['hot_coordinate_increments']==[[0,1]]*30,
+        'Body86 coordinates are explicitly frozen zero on the declared slice')
+    require(contacts['source_clocks_s']==[[0,1],[2000000,1],[1000000,1],[1000000,1]],'All source clocks unchanged')
+    require(contacts['source907_raw_sha256']==SOURCE907_RAW and contacts['source891_raw_sha256']==SOURCE891_RAW
+        and contacts['source895_raw_sha256']==SOURCE895_RAW
+        and contacts['zero_contact_authority_binding_sha256']==ctx['authority']['binding_sha256'],
+        'Full authentic contact source identities')
+    require(balance['contacts_system_binding_sha256']==contacts['binding_sha256']
+        and balance['coordinate_order']==contacts['coordinate_order']
+        and balance['active_original100_indices']==contacts['active_original100_indices'],
+        'All components share the same source15 coordinate injection')
+    require(balance['frozen_original100_indices']==list(range(6,92)) and balance['frozen_body_coordinate_values']==[[0,1]]*86,
+        'All original body coordinates fixed explicitly, never deleted source loads')
+    for path,pin in ((SOURCE923,SOURCE923_RAW),(SOURCE899,SOURCE899_RAW),(SOURCE903,SOURCE903_RAW)):
+        require(raw_sha(path)==pin,'Whole immutable constitutive source bytes '+str(path))
+    cold923=json.loads(SOURCE923.read_bytes());hot903=json.loads(SOURCE903.read_bytes())
+    require(contacts['preparation_binding_sha256s']==cold923['integral']['preparation_binding_sha256s']
+        and contacts['preparation_reference_snapshot_sha256']==cold923['integral']['preparation_reference_snapshot_sha256'],
+        'Both actual preparation declarations retain the authenticated whole923 associations')
+    ctx['preparation_binding_sha256s']=contacts['preparation_binding_sha256s']
+    require(json.loads(balance['complete_frozen923_native_json'])==cold923,'Complete saved923 cost retained')
+    energy=cold923['energy'];source=cold923['source_context']
+    for target,key in (('cold_energy_polynomial_coefficients_j','energy_polynomial_coefficients_j'),
+            ('cold_tip_projection_linear_m','tip_projection_linear_m'),
+            ('cold_tip_projection_quadratic_m','tip_projection_quadratic_m'),
+            ('inactive_complement_half_norm_coefficients_j','inactive_complement_half_norm_coefficients_j'),
+            ('eight_literal_beam_relaxation_cap_j','eight_literal_beam_relaxation_cap_j')):
+        require(balance[target]==energy[key],'Whole923 inherited cost field '+target)
+    for target,key in (('source_beam_forces_n','literal_reference_forces_n'),
+            ('source_beam_stiffnesses_n_m','tip_stiffnesses_n_m'),('source_beam_energies_j','literal_reference_energies_j')):
+        require(balance[target]==source[key],'Same eight literal ledgers '+target)
+    require(energy['source_beams_included_once'] is True and balance['source_beams_included_once'] is True
+        and balance['internal_residuals_shift_existing_beams_once'] is True
+        and balance['old891_complete_beam_bulk_operator_added_again'] is False
+        and balance['old_scalar_hot_foundation_added_again'] is False,'Once-only calibrated material and beam ownership')
+    beam_catalog=json.loads(balance['complete_original_cold_beam_catalog_json'])
+    indices=[6+b['global_coordinate_index']-92 for b in beam_catalog]
+    require(len(beam_catalog)==8 and len(set(indices))==8 and set(indices)==set(range(6,14))
+        and balance['original_beam_internal_indices']==indices,'Every original beam shifts its own genuine driver')
+    beamcap=sum((rat(f)**2/(2*rat(k)) for f,k in zip(balance['source_beam_forces_n'],balance['source_beam_stiffnesses_n_m'])),F(0))
+    require(rat(balance['eight_literal_beam_relaxation_cap_j'])==beamcap,'Same eight beam relaxation cap exactly once')
+    contactcap=ctx['source_loading_relaxation_cap_j']
+    require(rat(balance['source_contact_relaxation_lower_bound_j'])==-contactcap
+        and rat(contacts['source_contact_relaxation_lower_bound_j'])==-contactcap,'Complete original16 contact relaxation cap')
+    source_literal=sum((sum((rat(v) for v in a['stored_source_energy_components_j']),F(0)) for a in ctx['legacy']['seed']['source_atoms']),F(0))
+    require(rat(balance['source_contact_literal_energy_j'])==source_literal,'Literal source contact baseline retained')
+    u0=sum((rat(v) for v in balance['source_beam_energies_j']),F(0))+source_literal
+    require(rat(balance['prepared_zero_total_energy_j'])==u0,'Exact whole prepared-zero constant retained once')
+    hotzero=next(q['response'] for q in hot903['evaluation_queries'] if q['response']['coordinate_increments']==[[0,1]]*30)
+    require(json.loads(balance['complete_saved_hot_zero_response_json'])==hotzero
+        and qbounds(hotzero['energy_bounds_j'])==(F(0),F(0)) and rat(balance['hot_fixed_energy_j'])==0,
+        'Saved HOT903 zero energy retained as a constant')
+    mixed=extract_token(SOURCE907,'"mixed_force_system":')
+    oldcatalog=json.loads(balance['complete_current907_catalog_json'])
+    require(oldcatalog=={k:mixed[k] for k in oldcatalog},'Entire saved coordinate/load catalogue retained')
+    require(balance['complete_current_owner_load_json']==mixed['complete_current_load_json']
+        ==hot903['hot_mean_system']['complete_current_load_json'],'Whole authentic owner load authority')
+    load=json.loads(balance['complete_current_owner_load_json'])
+    require(load['geometric_measure_midpoint_is_material_debit'] is False
+        and balance['owner_torque_bounds_nm']==load['torque_bounds_nm']
+        and balance['owner_drag_bounds_nm_s']==load['drag_bounds_nm_s'],
+        'Source owner load data never debit a midpoint surrogate')
+    tau=[qbounds(x) for x in balance['owner_torque_bounds_nm']]
+    drag=[[qbounds(x) for x in row] for row in balance['owner_drag_bounds_nm_s']]
+    sym=[[((drag[i][j][0]+drag[j][i][0])/2,(drag[i][j][1]+drag[j][i][1])/2) for j in range(6)] for i in range(6)]
+    rows=[sym[i][i][0]-sum((max(abs(a),abs(b)) for j,(a,b) in enumerate(sym[i]) if j!=i),F(0)) for i in range(6)]
+    alpha=min(rows);require(alpha>0,'Source drag has rigorous positive symmetric Gershgorin lower bound')
+    require([rat(v) for v in balance['owner_drag_gershgorin_row_lower_bounds_nm_s']]==rows
+        and rat(balance['owner_drag_gershgorin_lower_bound_nm_s'])==alpha,'Exact Gershgorin whole-matrix certificate')
+    dt=rat(balance['owner_drag_time_scale_s']);require(dt==1000000,'NEW declared owner drag calibration retained')
+    ownercap=dt*sum((max(abs(a),abs(b))**2 for a,b in tau),F(0))/(2*alpha)
+    require(rat(balance['owner_potential_relaxation_cap_j'])==ownercap,'Exact full frozen owner-potential relaxation proof')
+    registered=extract_array_row(SOURCE907,'evaluation_queries','registered_cold_endpoint__genuine_zero_hot_source__zero_internal')['response']
+    require(registered['coordinate_increments']==mixed['bound_coordinate_increments']
+        and registered['binding_sha256']==balance['registered_source_response_binding_sha256']
+        and registered['energy_bounds_j']==balance['registered_source_energy_bounds_j'],
+        'Whole saved COMMON100 registered energy baseline, never an isolated old component')
+    counts['exact_source_and_scope_checks']+=53
+    return dict(balance=balance,cold923=cold923,hot903=hot903,mixed=mixed,beamcap=beamcap,
+        contactcap=contactcap,ownercap=ownercap,u0=u0,registered=registered)
+
+def polynomial_jet(coefficients,lam):
+    result=Jet(value(coefficients[-1]))
+    for coefficient in reversed(coefficients[:-1]):
+        result=value(coefficient)+lam*result
+    return result
+
+def audit_balance(system_context,response,contacts_result,label,counts):
+    check_binding(response,hashed_json=True);source_scope(response)
+    s=system_context['balance'];lam=contacts_result['lam'];internal=contacts_result['internal']
+    require(response['preparation_fraction']==[lam.numerator,lam.denominator]
+        and response['internal_coordinates']==[[rat(v).numerator,rat(v).denominator] for v in response['internal_coordinates']]
+        and [num(v) for v in response['internal_coordinates']]==internal,'Same exact contact and balance query')
+    require(response['coordinate_values']==[[0,1]]*6+response['internal_coordinates']+[response['preparation_fraction']],
+        'Explicit zero owner chart and full internal/lambda values')
+    L=Jet.variable(num(lam),14);cold=polynomial_jet(s['cold_energy_polynomial_coefficients_j'],L)
+    correction=Jet(0);receipts=[json.loads(v) for v in response['internal_beam_corrections_json']]
+    require(len(receipts)==8,'Eight same-beam corrections once')
+    for k,(f,stiff,p1,p2,index) in enumerate(zip(s['source_beam_forces_n'],s['source_beam_stiffnesses_n_m'],
+            s['cold_tip_projection_linear_m'],s['cold_tip_projection_quadratic_m'],s['original_beam_internal_indices'])):
+        f,stiff=num(f),num(stiff);p=L*value(p1)+L*L*value(p2);r=Jet.variable(internal[index-6],index)
+        E=(f+stiff*p)*r+stiff*r*r/2;correction+=E;receipt=receipts[k]
+        require(receipt['cold_bank_index']==k and receipt['active_internal_coordinate_index']==index
+            and receipt['old_beam_reference_energy_added_again'] is False,'Original beam reference is never added again')
+        compare(p.v,receipt['tip_projection_m'],label+'.beam.'+str(k)+'.p',counts)
+        compare(p.d,receipt['tip_projection_lambda_first_m'],label+'.beam.'+str(k)+'.p_lambda',counts)
+        compare(p.h,receipt['tip_projection_lambda_second_m'],label+'.beam.'+str(k)+'.p_lambda_lambda',counts)
+        compare(E.v,receipt['energy_increment_bounds_j'],label+'.beam.'+str(k)+'.increment',counts)
+    theta=[Jet.variable(0,i) for i in range(6)];load=Jet(0);dt=num(s['owner_drag_time_scale_s'])
+    for i in range(6):
+        load-=value(s['owner_torque_bounds_nm'][i])*theta[i]
+        for j in range(6):
+            load+=theta[i]*theta[j]*value(s['owner_drag_bounds_nm_s'][i][j])/(2*dt)
+    E=cold+correction+contacts_result['E']+num(s['hot_fixed_energy_j'])+load
+    check_dense_jet(E,response,label,counts)
+    work=E.v-num(system_context['u0'])
+    compare(work,response['potential_path_work_from_prepared_zero_bounds_j'],label+'.work',counts)
+    compare(-work,response['physical_reaction_work_from_prepared_zero_bounds_j'],label+'.reaction',counts)
+    parts=json.loads(response['energy_partitions_json'])
+    for field,v in (('cold_whole_material_and_existing_eight_beams_bounds_j',cold.v),
+            ('same_eight_internal_beam_driver_correction_bounds_j',correction.v),
+            ('frozen_hot30_energy_bounds_j',num(s['hot_fixed_energy_j'])),
+            ('actual_source16_contact_loading_potential_bounds_j',contacts_result['E'].v),
+            ('actual_source16_contact_recoverable_bounds_j',contacts_result['R'].v),
+            ('actual_source16_contact_fracture_work_bounds_j',contacts_result['D'].v),
+            ('frozen_owner6_load_drag_potential_bounds_j',load.v),('total_bounds_j',E.v)):
+        compare(v,parts[field],label+'.partition.'+field,counts)
+    for i in range(3):
+        expected=-value(s['owner_torque_bounds_nm'][i])-value(s['owner_torque_bounds_nm'][i+3])
+        compare(expected,response['common_owner_rotation_gradient_bounds_nm'][i],label+'.common_owner_spin.'+str(i),counts)
+        identity(E.g.get(i,0)+E.g.get(i+3,0)-expected,label+'.common_owner_spin_identity.'+str(i),counts)
+    require(qbounds(response['common_owner_rotation_gradient_bounds_nm'][2])[1]<0
+        and response['common_owner_z_rotation_strict_descent_certified'] is True
+        and response['clamped_owner_slice_is_free_mixed_equilibrium'] is False,'Actual common-owner strict descent excludes free equilibrium')
+    lower2,lower4=(qbounds(v)[0] for v in s['inactive_complement_half_norm_coefficients_j'])
+    fixedlower=lam**2*lower2+lam**4*lower4-system_context['beamcap']-system_context['contactcap']
+    relaxedlower=fixedlower-system_context['ownercap']
+    registeredlo,registeredhi=qbounds(system_context['registered']['energy_bounds_j'])
+    require(rat(response['independent_fixed_owner_potential_work_lower_bound_j'])==fixedlower
+        and rat(response['independent_owner_relaxed_potential_work_lower_bound_j'])==relaxedlower
+        and rat(response['independent_registered_source_potential_energy_difference_lower_bound_j'])
+        ==fixedlower-(registeredhi-system_context['u0']),'All independent preparation and original-state lower bounds')
+    compare(E.v-value(system_context['registered']['energy_bounds_j']),response['registered_source_potential_energy_difference_bounds_j'],
+        label+'.full_registered_energy_difference',counts)
+    return dict(E=E,work=work,fixedlower=fixedlower,relaxedlower=relaxedlower)
+
+def source_snapshot():
+    require(raw_sha(SOURCE923_MAP)==SOURCE923_MAP_RAW,'Closed923 exact source map raw pin')
+    old=json.loads(SOURCE923_MAP.read_bytes());require(len(old)==923,'Exact closed923 Python source set')
+    actual={str(p.relative_to(ROOT)):raw_sha(p) for folder in ('tectonics','tests','scripts','analysis')
+        for p in sorted((ROOT/folder).rglob('*.py'))}
+    require(set(actual)==set(old)|NEW_PY and all(actual[p]==pin for p,pin in old.items()),
+        'Old923 sources unchanged; exactly four additive Python sources')
+    return actual
+
+def arbitrary_owner_rotation(theta):
+    a,b,c=theta
+    return mp.expm(mp.matrix(((0,-c,b),(c,0,-a),(-b,a,0))))
+
+def numeric_contact_coordinate(ctx,atom,coords,*,energy=False):
+    aid=atom['point_id'];lam=Jet(coords[14]);internal=list(coords[6:14])
+    prepared=fixture_contact(ctx,atom,lam,internal)
+    Ys,Yo=prepared['sub_side']['attachment_position'],prepared['over_side']['attachment_position']
+    body_normal,_,_=normal(prepared['over_side']['original_gradient'],prepared['material_normal'])
+    owners=[ctx['physical'][aid,side_name]['owner'] for side_name in ('sub','over')]
+    matrices=[arbitrary_owner_rotation(coords[3*owner:3*owner+3]) for owner in owners]
+    vectors=[matrix_*mp.matrix(numeric(Y)) for matrix_,Y in zip(matrices,(Ys,Yo))]
+    n=matrices[1]*mp.matrix(numeric(body_normal))
+    gap=sum(n[i]*(vectors[1][i]-vectors[0][i]) for i in range(3))-prepared['baseline']
+    if not energy:
+        return gap
+    loading=cohesive(Jet(prepared['free_gap'].v-prepared['delta'].v+gap),**prepared['law'])
+    return prepared['offset']+num(atom['original_area_m2'])*loading['phi'].v
+
+def independent_derivative_controls(ctx,rows,counts):
+    # Choose an actual representative of each encountered cohesive branch.
+    choices={}
+    source_atoms={a['point_id']:a for a in ctx['legacy']['seed']['source_atoms']}
+    for row in rows:
+        for aid,entry in row['contacts']['atoms'].items():
+            choices.setdefault(entry['loading']['branch'],(row,aid,entry))
+    summaries=[]
+    for branch,(row,aid,expected) in choices.items():
+        atom=source_atoms[aid];coords=[mp.mpf(0)]*6+row['contacts']['internal']+[num(row['contacts']['lam'])]
+        sf=ctx['physical'][aid,'sub']['item']['field'];of=ctx['physical'][aid,'over']['item']['field']
+        subr,overr=6+sf['residual_coordinate_index']-92,6+of['residual_coordinate_index']-92
+        subowner,overowner=sf['owner'],of['owner']
+        first=sorted(set((3*subowner+2,3*overowner,subr,overr,14)))
+        pairs=sorted(set(tuple(sorted(p)) for p in ((14,14),(14,subr),(14,overr),(subr,overr),
+            (3*subowner+2,14),(3*overowner+2,14),(3*subowner,subr),(3*overowner+1,overr),
+            (3*subowner,3*overowner+1),(3*subowner+1,3*subowner+2))))
+        for energy,jet in ((False,expected['delta']),(True,expected['energy'])):
+            for i in first:
+                f=lambda increment,i=i:numeric_contact_coordinate(ctx,atom,
+                    [v+increment*int(j==i) for j,v in enumerate(coords)],energy=energy)
+                actual=mp.diff(f,mp.mpf(0))
+                identity(actual-jet.g.get(i,0),'Independent scalar Rodrigues first derivative '+str((branch,energy,i)),counts)
+                counts['independent_mpmath_derivative_controls']+=1
+            for i,j in pairs:
+                if i==j:
+                    f=lambda increment,i=i:numeric_contact_coordinate(ctx,atom,
+                        [v+increment*int(k==i) for k,v in enumerate(coords)],energy=energy)
+                    actual=mp.diff(f,mp.mpf(0),2)
+                else:
+                    f=lambda a,b,i=i,j=j:numeric_contact_coordinate(ctx,atom,
+                        [v+a*int(k==i)+b*int(k==j) for k,v in enumerate(coords)],energy=energy)
+                    actual=mp.diff(f,(mp.mpf(0),mp.mpf(0)),(1,1))
+                identity(actual-jet.H.get((i,j),0),'Independent scalar Rodrigues second derivative '+str((branch,energy,i,j)),counts)
+                counts['independent_mpmath_derivative_controls']+=1
+        summaries.append(dict(branch=branch,point_id=aid,query_label=row['label'],first_coordinate_controls=first,
+            second_coordinate_controls=[list(p) for p in pairs]))
+    return summaries
+
+def run(native_path,output_path):
+    started=time.monotonic();before_modules=project_modules();before_sources=source_snapshot()
+    native_path=Path(native_path).resolve();output_path=Path(output_path).resolve()
+    require(not output_path.exists(),'A fresh independent audit output is required')
+    input_raw=raw_sha(native_path);source_before={str(p):raw_sha(p) for p in
+        (SOURCE891,SOURCE895,SOURCE907,SOURCE899,SOURCE903,SOURCE923,SOURCE923_MAP,GEOMETRY_SOURCE,LEGACY_SOURCE,Path(__file__).resolve())}
+    native=json.loads(native_path.read_bytes())
+    require(native['sha256']==digest({k:v for k,v in native.items() if k!='sha256'}),'Entire new native control selfseal')
+    require(type(native['status']) is str and native['status'].startswith('PASS'),'Genuine completed native control')
+    ctx=context();counts=dict(scalar_enclosure_checks=0,analytic_identity_checks=0,
+        exact_source_and_scope_checks=0,independent_mpmath_derivative_controls=0,
+        exact_rotation_certificate_checks=0,rotation_receipt_count=0)
+    systems=audit_systems(ctx,native['contacts_system'],native['balance_system'],counts)
+    rows=[];query_summaries=[];seen_branches=set();labels=set()
+    for query in native['queries']:
+        label=query['label'];require(type(label) is str and label not in labels,'Unique genuine native query labels');labels.add(label)
+        contact_response,balance_response=query['contact_response'],query['balance_response']
+        require(query['preparation_fraction']==balance_response['preparation_fraction']
+            and query['internal_coordinates']==balance_response['internal_coordinates']
+            and query['internal_coordinates']==contact_response['internal_coordinates'],
+            'Native query arguments retain their complete source response association')
+        require(contact_response['system_binding_sha256']==native['contacts_system']['binding_sha256']
+            and balance_response['system_binding_sha256']==native['balance_system']['binding_sha256']
+            and balance_response['contact_response_binding_sha256']==contact_response['binding_sha256'],
+            'Full native joint query bindings')
+        contacts=audit_contacts(ctx,contact_response,label+'.contacts',counts)
+        balance=audit_balance(systems,balance_response,contacts,label+'.balance',counts)
+        seen_branches.update(contacts['branches']);rows.append(dict(label=label,contacts=contacts,balance=balance))
+        query_summaries.append(dict(label=label,preparation_fraction=query['preparation_fraction'],
+            internal_coordinates=query['internal_coordinates'],actual_contact_branch_counts=contacts['branches'],
+            independent_contact_energy_j=mp.nstr(contacts['E'].v,70),
+            independent_contact_preparation_first_derivative_j=mp.nstr(contacts['E'].d,70),
+            independent_contact_preparation_second_derivative_j=mp.nstr(contacts['E'].h,70),
+            independent_fixed_owner_work_lower_bound_j=str(balance['fixedlower']),
+            independent_owner_relaxed_work_lower_bound_j=str(balance['relaxedlower'])))
+    require({'intact_or_compressed','monotone_softening','fully_failed_open'}<=seen_branches,
+        'Actual source controls exercise all three cohesive branches')
+    require(counts['rotation_receipt_count']==32*len(rows)
+        and counts['exact_rotation_certificate_checks']==counts['rotation_receipt_count'],
+        'Every genuine material side retains one fully verified rotation certificate')
+    require(any(row['contacts']['lam']==0 and not any(row['contacts']['internal']) for row in rows)
+        and any(row['contacts']['lam']==1 and not any(row['contacts']['internal']) for row in rows)
+        and any(any(row['contacts']['internal']) for row in rows),'Prepared zero, complete endpoint and genuine internal mixed diagnostics')
+    derivative_summaries=independent_derivative_controls(ctx,rows,counts)
+    paths=[]
+    require(type(native.get('signed_state_differences')) is list
+        and [(rat(p['before_preparation_fraction']),rat(p['after_preparation_fraction']))
+            for p in native['signed_state_differences']]==[(F(0),F(1)),(F(1),F(0)),(F(1,2),F(1,2))],
+        'All three forward, reverse and equal signed declared state controls')
+    for raw in native['signed_state_differences']:
+        require(raw['sha256']==digest({k:v for k,v in raw.items() if k!='sha256'}),'Complete signed state-difference seal')
+        source_scope(raw)
+        require(raw['physical_reverse_unloading_authorized'] is False and raw['temporal_path_work_certified'] is False,
+            'An endpoint potential difference is not adopted reverse loading')
+        b=next(row for row in rows if row['contacts']['lam']==rat(raw['before_preparation_fraction'])
+            and row['contacts']['internal']==[num(v) for v in raw['before_internal_coordinates']])
+        a=next(row for row in rows if row['contacts']['lam']==rat(raw['after_preparation_fraction'])
+            and row['contacts']['internal']==[num(v) for v in raw['after_internal_coordinates']])
+        delta=a['balance']['E'].v-b['balance']['E'].v
+        compare(delta,raw['potential_energy_change_bounds_j'],'Signed complete declared potential difference',counts)
+        compare(-delta,raw['opposite_reaction_potential_difference_bounds_j'],'Opposite reaction endpoint difference',counts)
+        paths.append(dict(before=raw['before_preparation_fraction'],after=raw['after_preparation_fraction'],
+            physical_reverse_unloading_authorized=False))
+    require(source_snapshot()==before_sources,'All old923 and new4 source bytes unchanged during independent audit')
+    require(raw_sha(native_path)==input_raw and all(raw_sha(Path(p))==pin for p,pin in source_before.items()),
+        'All executed sources and observed authorities unchanged during independent audit')
+    require(project_modules()==before_modules,'The independent oracle imported project physics or controls')
+    result=dict(format='independent-native-common-preparation-active15-audit-1',
+        status='PASS_INDEPENDENT_ACTUAL_SOURCE_PREPARATION_ACTIVE15',precision_decimal_digits=220,
+        counts=counts,source_python_file_count=927,inherited_source_python_file_count=923,
+        additive_source_python_file_count=4,source_point_count=32,source_atom_count=16,
+        original_beam_count=8,original_parent_count=8,source_original_live_attachment_count=24,
+        source_original_archived_attachment_count=8,source_geometry_reconstructed_without_midpoints=True,
+        source_owner_history_order_and_exact_binary64_products_retained=True,
+        complete_native_source_fields_and_original_measures_verified=True,
+        all_fifteen_gradient_rows_and_225_hessian_entries_checked_per_atom_and_response=True,
+        exact_rational_generator_norm_tail_and_scaling_budget_verified=True,
+        all_new_matrix_taylor_certificates_and_outward_squarings_replayed=True,
+        exact_point_preparation_and_lambda_cache_associations_verified=True,
+        scaled_taylor_tail_is_not_final_field_error_bound=True,
+        retained_cold923_coefficient_representatives_are_algebra_diagnostics=True,
+        independent_scalar_Rodrigues_derivative_controls=derivative_summaries,
+        independent_contact_positive_loading_relaxation_cap_j=str(systems['contactcap']),
+        independent_eight_same_beam_relaxation_cap_j=str(systems['beamcap']),
+        independent_owner_relaxation_cap_j=str(systems['ownercap']),
+        native_input_path=str(native_path),native_input_raw_sha256=input_raw,
+        authoritative_input_raw_sha256=source_before,executed_new_source_raw_sha256={p:before_sources[p] for p in sorted(NEW_PY)},
+        query_summaries=query_summaries,state_difference_checks=paths,
+        old_force_or_quadrature_or_test_or_audit_mains_executed=False,project_physics_modules_imported=False,
+        full_physical_preparation_balance_certified=False,general_state_mixed_operator_certified=False,
+        new_mixed_force_equilibrium_certified=False,reference_preparation_work_paid=False,
+        physical_material_admission_authorized=False,whole_clock_all_pair_admission_authorized=False,
+        physical_reverse_unloading_authorized=False,clocks_advanced=False,accepted_new_native_intervals=0,
+        elapsed_seconds=time.monotonic()-started)
+    result['report_sha256']=digest(result)
+    output_path.write_bytes(encoded(result)+b'\n');print(encoded(result).decode())
+    return result
+
+if __name__=='__main__':
+    parser=argparse.ArgumentParser()
+    parser.add_argument('--native',required=True);parser.add_argument('--output',required=True)
+    arguments=parser.parse_args();run(arguments.native,arguments.output)

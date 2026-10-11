@@ -1,0 +1,68 @@
+"""Byte-only closed927 preservation guard; no project physics imports or replay.
+Before/after associations use a freshly restored/read-only927 baseline supplied
+by --baseline; --new-config declares only root-authorized new *.py sources.
+"""
+from pathlib import Path
+import json,hashlib,time,argparse
+ROOT=Path('/workspace/Habitable-Moon-Project')
+P=ROOT/'analysis/geometric_native_common_preparation_balance_validation'
+F=ROOT/'analysis/geometric_native_common_preparation_balance_final_readback'
+OLD_MANIFEST_RAW='c80fdf9e00f37c89b0fc920bbd3762153182dd5580f4f025d87661cd286c77ee'
+OLD_ARCHIVE_RAW='8c224bb43837da221e3ffe0d1cae22f724185ea5131ad443cb9392178b33be68'
+def enc(x):return json.dumps(x,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+def digest(p):
+ h=hashlib.sha256()
+ with Path(p).open('rb') as f:
+  for b in iter(lambda:f.read(1024*1024),b''):h.update(b)
+ return h.hexdigest()
+def load(p):return json.loads(Path(p).read_bytes())
+def sealed(p):
+ x=load(p);key='report_sha256' if 'report_sha256' in x else 'sha256'
+ assert x[key]==hashlib.sha256(enc({k:v for k,v in x.items() if k!=key})).hexdigest(),p
+ return x
+
+def meaningful(p):return {str(x.relative_to(p)) for x in p.rglob('*') if x.is_file() and '__pycache__' not in x.parts and x.suffix!='.pyc'}
+def run(output,baseline,new_config=None,baseline_console=None,baseline_stderr=None):
+ t=time.perf_counter();assert digest(P/'artifact_manifest.json')==OLD_MANIFEST_RAW
+ assert digest(F/'archive.json')==OLD_ARCHIVE_RAW
+ manifest=sealed(P/'artifact_manifest.json');assert manifest['source_count']==927 and len(manifest['files'])==169
+ inherited=sealed(P/'after_preservation.json');assert inherited['status']=='PASS_CLOSED923_AND_ANCESTRY_PRESERVED'
+ assert inherited['dependency_count']==1986 and len(inherited['dependency_raw_sha256'])==1986 and inherited['old_math_executed'] is False
+ pins=dict(inherited['dependency_raw_sha256']);names=set()
+ for name,row in manifest['files'].items():
+  path=ROOT/name;assert path.stat().st_size==row['bytes'];pins[str(path)]=row['sha256']
+  if path.is_relative_to(P):names.add(str(path.relative_to(P)))
+ assert meaningful(P)==names|{'artifact_manifest.json'}
+ archive=sealed(F/'archive.json')
+ assert archive['status']=='PASS_FINAL927_READBACK_ARCHIVE_CLOSED' and archive['source_count']==927
+ assert archive['manifest_raw_sha256']==OLD_MANIFEST_RAW
+ assert archive['actual_reader_exit_code']==0 and archive['actual_reader_stderr_bytes']==0 and archive['actual_reader_stdout_equals_report'] is True
+ assert archive['reader_execution_facts']['actual_exit_code']==0 and archive['reader_execution_facts']['actual_stderr_bytes']==0
+ assert meaningful(F)=={'archive.json','readback_source.txt','readback.json','console.log'}
+ for name,row in archive['files'].items():
+  path=F/name;assert path.stat().st_size==row['bytes'];pins[str(path)]=row['sha256']
+ assert (F/'console.log').read_bytes()==(F/'readback.json').read_bytes()
+ for path in (P/'artifact_manifest.json',F/'archive.json'):pins[str(path)]=digest(path)
+ assert len(pins)==2160
+ for path,pin in pins.items():assert digest(path)==pin,path
+ old=load(P/'frozen_source_map_927.json');assert len(old)==927
+ actual={str(p.relative_to(ROOT)):digest(p) for d in ('tectonics','tests','scripts','analysis') for p in (ROOT/d).rglob('*.py')}
+ extras=set()
+ if new_config is not None:
+  extras=set(load(new_config)['new_sources']);assert len(extras)==4
+  assert all((ROOT/n).resolve().is_relative_to(ROOT) and n.endswith('.py') for n in extras)
+ assert set(actual)-set(old)==extras and all(actual[k]==v for k,v in old.items())
+ base=Path(baseline).resolve();assert base.is_relative_to('/workspace') and not base.is_relative_to(ROOT)
+ base_report=sealed(base);assert base_report['status']=='PASS_FINAL927_EVIDENCE_READBACK_ONLY'
+ assert base_report['source_count']==927 and base_report['old_physical_math_executed'] is False and base_report['closed_final_archive_verified'] is True
+ console=Path(baseline_console).resolve() if baseline_console else base.with_name(base.stem+'_console.log')
+ stderr=Path(baseline_stderr).resolve() if baseline_stderr else base.with_name(base.stem+'_stderr.log')
+ assert console.is_relative_to('/workspace') and stderr.is_relative_to('/workspace') and not console.is_relative_to(ROOT) and not stderr.is_relative_to(ROOT)
+ assert base.read_bytes()==console.read_bytes() and stderr.stat().st_size==0
+ result=dict(status='PASS_CLOSED927_AND_ANCESTRY_PRESERVED',prior_source_count=927,source_count=len(actual),dependency_count=len(pins),dependency_raw_sha256=pins,source_sha256=actual,baseline_readback_raw_sha256=digest(base),old_math_executed=False,seconds=time.perf_counter()-t)
+ result['sha256']=hashlib.sha256(enc(result)).hexdigest()
+ output=Path(output).resolve();assert output.is_relative_to('/workspace') and not output.is_relative_to(ROOT)
+ with output.open('xb') as f:f.write(enc(result)+b'\n')
+ print(enc({k:v for k,v in result.items() if k not in ('dependency_raw_sha256','source_sha256')}).decode())
+if __name__=='__main__':
+ p=argparse.ArgumentParser();p.add_argument('--output',required=True);p.add_argument('--baseline',required=True);p.add_argument('--new-config');p.add_argument('--baseline-console');p.add_argument('--baseline-stderr');a=p.parse_args();run(a.output,a.baseline,a.new_config,a.baseline_console,a.baseline_stderr)

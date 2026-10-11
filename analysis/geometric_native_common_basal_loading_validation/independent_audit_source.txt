@@ -1,0 +1,955 @@
+"""Standalone 220-digit basal virtual-work oracle, outside repository.
+
+No project physics module, old quadrature, force solve, or prior audit main is
+executed. Frozen source definitions may be inspected only to reconstruct an
+original authentic material label. A local Taylor chart is a derivative control
+of the explicit basal law, not a continuum quadrature or physical trajectory.
+"""
+import argparse
+import hashlib
+import json
+import sys
+import time
+from fractions import Fraction as F
+from pathlib import Path
+from math import isqrt, factorial, fsum, comb
+from functools import lru_cache
+import mpmath as mp
+
+if hasattr(sys, 'set_int_max_str_digits'):
+    sys.set_int_max_str_digits(0)
+mp.mp.dps = 220
+ROOT=Path('/workspace/Habitable-Moon-Project')
+BETA=F.from_float(1.2e14)
+OMEGA=(F(0),F(0),F.from_float(1.1e-12))
+AMPLITUDE_CONSTANT=F.from_float(1.)
+AMPLITUDE_GRADIENT=(F.from_float(.17),F(0),F(0))
+TOL=mp.mpf('1e-180')
+
+
+def encoded(x):
+    return json.dumps(x,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+
+def digest(x):
+    return hashlib.sha256(encoded(x)).hexdigest()
+
+def raw_sha(path):
+    h=hashlib.sha256()
+    with Path(path).open('rb') as stream:
+        while block:=stream.read(1<<20):h.update(block)
+    return h.hexdigest()
+
+def require(ok,label):
+    if not ok:raise AssertionError(label)
+
+def rat(x):
+    require(type(x) is not bool,'Boolean is not a scalar')
+    if type(x) is list:
+        require(len(x)==2 and all(type(v) is int for v in x) and x[1]>0,'Exact rational pair')
+        return F(*x)
+    return F.from_float(x) if type(x) is float else F(x)
+
+def number(x):
+    if type(x) is dict and set(x)=={'lo','hi'}:
+        x=(rat(x['lo'])+rat(x['hi']))/2
+    else:x=rat(x)
+    return mp.mpf(x.numerator)/x.denominator
+
+def vector(x):return tuple(number(v) for v in x)
+
+def bounds(x):
+    if type(x) is dict and set(x)=={'lo','hi'}:return number(x['lo']),number(x['hi'])
+    v=number(x);return v,v
+
+def compare(value,raw,label,counts):
+    lo,hi=bounds(raw)
+    margin=TOL*max(mp.mpf(1),abs(value),abs(lo),abs(hi))
+    require(lo-margin<=value<=hi+margin,label+' lies outside registered enclosure')
+    counts['scalar_enclosure_checks']+=1
+
+def identity(value,label,counts,scale=1):
+    require(abs(value)<=TOL*max(mp.mpf(1),abs(scale)),label)
+    counts['analytic_identity_checks']+=1
+
+def dot(a,b):return sum((x*y for x,y in zip(a,b)),mp.mpf(0))
+
+def cross(a,b):return (a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0])
+
+def add(a,b):return tuple(x+y for x,y in zip(a,b))
+
+def scaled(a,s):return tuple(s*x for x in a)
+
+
+def source_at(y,radius):
+    """Independent scalar differentiation of fixed-global angular source."""
+    norm=mp.sqrt(dot(y,y));require(norm>0,'Positive actual spatial radius')
+    q=scaled(y,1/norm)
+    beta=number(BETA);omega=vector(OMEGA);gradient=vector(AMPLITUDE_GRADIENT)
+    a=number(AMPLITUDE_CONSTANT)+dot(gradient,q)
+    tau=scaled(cross(omega,q),beta*radius*a)
+    columns=[]
+    for k in range(3):
+        direction=tuple(mp.mpf(i==k) for i in range(3))
+        dq=scaled(add(direction,scaled(q,-q[k])),1/norm)
+        dtau=scaled(add(scaled(cross(omega,q),dot(gradient,dq)),scaled(cross(omega,dq),a)),beta*radius)
+        columns.append(dtau)
+    dtau=tuple(tuple(columns[j][i] for j in range(3)) for i in range(3))
+    return dict(q=q,norm=norm,amplitude=a,tau=tau,dtau=dtau)
+
+
+def material_record(y,J,H,weight,radius,rates):
+    """Compute one sparse material record, preserving all local coordinate jets."""
+    n=len(J);require(len(H)==n and all(len(row)==n for row in H),'Complete local kinematic source')
+    source=source_at(y,radius);beta=number(BETA)
+    u=tuple(sum((J[i][a]*rates[i] for i in range(n)),mp.mpf(0)) for a in range(3))
+    transmitted=add(source['tau'],scaled(u,-beta))
+    L=tuple(weight*dot(J[i],source['tau']) for i in range(n))
+    D=tuple(tuple(weight*beta*dot(J[i],J[j]) for j in range(n)) for i in range(n))
+    Q=tuple(weight*dot(J[i],transmitted) for i in range(n))
+    changes=[]
+    for k in range(n):
+        du=tuple(sum((H[j][k][a]*rates[j] for j in range(n)),mp.mpf(0)) for a in range(3))
+        dtau=tuple(dot(source['dtau'][a],J[k]) for a in range(3))
+        changes.append(add(dtau,scaled(du,-beta)))
+    dQ=tuple(tuple(weight*(dot(H[i][k],transmitted)+dot(J[i],changes[k])) for k in range(n)) for i in range(n))
+    return dict(source=source,u=u,transmitted=transmitted,L=L,D=D,Q=Q,dQ=dQ,
+        driving_power=weight*dot(source['tau'],u),dissipation=weight*beta*dot(u,u),
+        net_power=weight*dot(transmitted,u))
+
+def local_taylor(y,J,H,delta):
+    """Local diagnostic chart retaining the actual complete first/second jets."""
+    n=len(J)
+    yy=tuple(y[a]+sum((J[i][a]*delta[i] for i in range(n)),mp.mpf(0))
+        +sum((H[i][j][a]*delta[i]*delta[j]/2 for i in range(n) for j in range(n)),mp.mpf(0)) for a in range(3))
+    JJ=tuple(tuple(J[i][a]+sum((H[i][j][a]*delta[j] for j in range(n)),mp.mpf(0)) for a in range(3)) for i in range(n))
+    return yy,JJ
+
+
+def local_Q(y,J,H,weight,radius,rates,i,k,t):
+    # Only coordinate k is displaced, so no algebraic dense chart evaluation
+    # supplies the differentiated formula being checked.
+    yy=tuple(y[a]+J[k][a]*t+H[k][k][a]*t*t/2 for a in range(3))
+    JJ=tuple(tuple(J[j][a]+H[j][k][a]*t for a in range(3)) for j in range(len(J)))
+    q=scaled(yy,1/mp.sqrt(dot(yy,yy)))
+    tau=scaled(cross(vector(OMEGA),q),number(BETA)*radius*(number(AMPLITUDE_CONSTANT)+dot(vector(AMPLITUDE_GRADIENT),q)))
+    u=tuple(sum((JJ[j][a]*rates[j] for j in range(len(J))),mp.mpf(0)) for a in range(3))
+    return weight*dot(JJ[i],add(tau,scaled(u,-number(BETA))))
+
+
+def exact_contractions(J,rates,weight,traction):
+    """Rational Gram/virtual-work controls on authenticated representatives."""
+    n=len(J);r=tuple(rat(x) for x in rates)
+    def center(v):return (rat(v['lo'])+rat(v['hi']))/2 if type(v) is dict else rat(v)
+    j=tuple(tuple(center(v) for v in row) for row in J)
+    w=center(weight);tau=tuple(center(v) for v in traction)
+    require(w>0,'Strictly positive registered reference weight')
+    u=tuple(sum((j[i][a]*r[i] for i in range(n)),F(0)) for a in range(3))
+    diss=w*BETA*sum((x*x for x in u),F(0))
+    contracted=sum((r[i]*r[k]*w*BETA*sum((j[i][a]*j[k][a] for a in range(3)),F(0)) for i in range(n) for k in range(n)),F(0))
+    require(diss==contracted and diss>=0,'Exact101 drag contraction equals nonnegative spatial dissipation')
+    driving=w*sum((tau[a]*u[a] for a in range(3)),F(0))
+    generalized=sum((r[i]*w*sum((j[i][a]*tau[a] for a in range(3)),F(0)) for i in range(n)),F(0))
+    require(driving==generalized,'Exact source virtual work equals full-coordinate contraction')
+    slip=tuple(tau[a]-BETA*u[a] for a in range(3))
+    net=w*sum((slip[a]*u[a] for a in range(3)),F(0))
+    contracted_net=sum((r[i]*w*sum((j[i][a]*slip[a] for a in range(3)),F(0)) for i in range(n)),F(0))
+    require(net==contracted_net and net==driving-diss,'Exact net virtual work and source-minus-dissipation identity')
+    return driving,diss,net
+
+
+class QI:
+    """Independent exact rational interval algebra, no repository dependency."""
+    __slots__=('lo','hi')
+    def __init__(self,lo=0,hi=None):
+        self.lo=F(lo);self.hi=self.lo if hi is None else F(hi)
+        require(self.lo<=self.hi,'Ordered rational enclosure')
+    def __add__(self,other):
+        other=qi(other);return QI(self.lo+other.lo,self.hi+other.hi)
+    __radd__=__add__
+    def __neg__(self):return QI(-self.hi,-self.lo)
+    def __sub__(self,other):return self+-qi(other)
+    def __rsub__(self,other):return qi(other)+-self
+    def __mul__(self,other):
+        other=qi(other);v=(self.lo*other.lo,self.lo*other.hi,self.hi*other.lo,self.hi*other.hi)
+        return QI(min(v),max(v))
+    __rmul__=__mul__
+    def __truediv__(self,other):
+        other=qi(other);require(not other.lo<=0<=other.hi,'Nonzero interval divisor')
+        return self*QI(1/other.hi,1/other.lo)
+    def __rtruediv__(self,other):return qi(other)/self
+
+
+def qi(v):
+    if type(v) is QI:return v
+    if type(v) is dict and set(v)=={'lo','hi'}:return QI(rat(v['lo']),rat(v['hi']))
+    return QI(rat(v))
+
+def qsquare(v):
+    v=qi(v);return QI(0 if v.lo<=0<=v.hi else min(v.lo*v.lo,v.hi*v.hi),max(v.lo*v.lo,v.hi*v.hi))
+
+def qlog2(v):
+    require(v>0,'Positive rational scale')
+    a,b=v.numerator,v.denominator;e=a.bit_length()-b.bit_length()
+    return e-int(a<(b<<e) if e>=0 else (a<<(-e))<b)
+
+def qpower2(e):return F(1<<e) if e>=0 else F(1,1<<(-e))
+
+def qround(v,precision):
+    # Carrier compression has sixteen additional decimal guard digits.
+    v=qi(v);maximum=max(abs(v.lo),abs(v.hi))
+    if maximum==0:return QI(0)
+    bits=(3322*(precision+16)+999)//1000+8
+    scale=qpower2(bits-qlog2(maximum));l=v.lo*scale;h=v.hi*scale
+    return QI(F(l.numerator//l.denominator)/scale,F(-((-h.numerator)//h.denominator))/scale)
+
+def qsqrt(v,precision):
+    v=qi(v);require(v.lo>=0,'Nonnegative radial square')
+    def point(x):
+        if x==0:return QI(0)
+        a,b=isqrt(x.numerator),isqrt(x.denominator)
+        if a*a==x.numerator and b*b==x.denominator:return QI(F(a,b))
+        bits=(3322*precision+999)//1000+8
+        scale=qpower2(bits-qlog2(x)//2);s=x*scale*scale;r=isqrt(s.numerator//s.denominator)
+        z=QI(F(r)/scale,F(r+1)/scale)
+        require(z.lo*z.lo<=x<=z.hi*z.hi,'Exact integer square-root enclosure')
+        return z
+    l,h=point(v.lo),point(v.hi);return QI(l.lo,h.hi)
+
+def qdot(a,b):return sum((x*y for x,y in zip(a,b)),QI(0))
+
+def qcross(a,b):return (a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0])
+
+def qintersection(a,b):
+    require(a.lo<=b.hi and b.lo<=a.hi,'Independent interval overlap')
+    return QI(max(a.lo,b.lo),min(a.hi,b.hi))
+
+def qequal(actual,raw,label,counts):
+    raw=qi(raw);require(actual.lo==raw.lo and actual.hi==raw.hi,label+' exact rational replay mismatch')
+    counts['exact_rational_operator_enclosure_replays']+=1
+
+def qsource(position,radius,precision):
+    x=tuple(qi(v) for v in position);r=qsqrt(sum((qsquare(v) for v in x),QI(0)),precision+16)
+    require(r.lo>0,'Authentic material point separated from origin')
+    q=tuple(qround(v/r,precision) for v in x);omega=tuple(QI(v) for v in OMEGA);g=tuple(QI(v) for v in AMPLITUDE_GRADIENT)
+    a=QI(AMPLITUDE_CONSTANT)+qdot(g,q);c=qcross(omega,q);calibration=BETA*radius
+    tau=tuple(qround(calibration*a*v,precision) for v in c)
+    W=tuple(tuple(qcross(omega,tuple(QI(int(l==j)) for l in range(3)))[i] for j in range(3)) for i in range(3))
+    P=tuple(tuple(QI(int(i==j))-q[i]*q[j] for j in range(3)) for i in range(3))
+    derivative=tuple(tuple(qround(calibration/r*sum(((c[i]*g[l]+a*W[i][l])*P[l][j] for l in range(3)),QI(0)),precision) for j in range(3)) for i in range(3))
+    return tau,derivative,dict(current_radius_bounds_m=r,current_unit_direction_bounds=q,amplitude_bounds=a)
+
+def qreplay(records,response,radius,counts):
+    """Full exactFraction enclosure replay of each authentic trace contribution."""
+    n=101;p=response['precision'];rates=tuple(rat(v) for v in response['coordinate_rates'])
+    L=[QI(0) for _ in range(n)];Q=[QI(0) for _ in range(n)]
+    D=[[QI(0) for _ in range(n)] for _ in range(n)];K=[[QI(0) for _ in range(n)] for _ in range(n)]
+    ps,pd,pn=QI(0),QI(0),QI(0)
+    receipts=response['per_trace_receipts_json'];require(len(receipts)==len(records),'Exactly one operator receipt per positive source row')
+    for record,receipt_raw in zip(records,receipts):
+        receipt=json.loads(receipt_raw) if type(receipt_raw) is str else receipt_raw
+        ids=record['global_coordinate_indices'];m=len(ids);w=qi(record['source_weight_bounds_m2'])
+        J=tuple(tuple(qi(v) for v in row) for row in record['position_first_bounds'])
+        H=tuple(tuple(tuple(qi(v) for v in row) for row in plane) for plane in record['position_second_bounds'])
+        tau,dtau,src=qsource(record['position_bounds_m'],radius,p)
+        u=tuple(qround(sum((J[a][j]*rates[g] for j,g in enumerate(ids)),QI(0)),p) for a in range(3))
+        slip=tuple(qround(t-BETA*v,p) for t,v in zip(tau,u))
+        cols=tuple(tuple(J[a][i] for a in range(3)) for i in range(m))
+        changes=[]
+        for k in range(m):
+            du=tuple(qround(sum((H[a][j][k]*rates[g] for j,g in enumerate(ids)),QI(0)),p) for a in range(3))
+            changes.append(tuple(qdot(row,cols[k])-BETA*d for row,d in zip(dtau,du)))
+        for i,g in enumerate(ids):
+            L[g]=qround(L[g]+qround(w*qdot(cols[i],tau),p),p)
+            Q[g]=qround(Q[g]+qround(w*qdot(cols[i],slip),p),p)
+            for j,h in enumerate(ids):
+                if j>=i:
+                    D[g][h]=qround(D[g][h]+qround(BETA*w*qdot(cols[i],cols[j]),p),p)
+                    if h!=g:D[h][g]=D[g][h]
+                hess=tuple(H[a][i][j] for a in range(3))
+                K[g][h]=qround(K[g][h]+qround(w*(qdot(hess,slip)+qdot(cols[i],changes[j])),p),p)
+        s=qround(w*qdot(tau,u),p);d=qround(BETA*w*sum((qsquare(v) for v in u),QI(0)),p);net=qround(w*qdot(slip,u),p)
+        ps=qround(ps+s,p);pd=qround(pd+d,p);pn=qround(pn+net,p)
+        for field,actual in (('prescribed_driving_traction_bounds_pa',tau),('actual_material_velocity_bounds_m_s',u),('net_basal_traction_bounds_pa',slip)):
+            for a in range(3):qequal(actual[a],receipt[field][a],record.get('trace_id','trace')+'.'+field,counts)
+        for a in range(3):
+            qequal(src['current_unit_direction_bounds'][a],receipt['current_unit_direction_bounds'][a],'Current q',counts)
+            for b in range(3):qequal(dtau[a][b],receipt['prescribed_spatial_derivative_bounds_pa_m'][a][b],'Nonsymmetric Cartesian source derivative',counts)
+        for field,actual in (('source_power_bounds_w',s),('drag_dissipation_bounds_w',d),('net_power_bounds_w',net),('current_radius_bounds_m',src['current_radius_bounds_m']),('amplitude_bounds',src['amplitude_bounds'])):
+            qequal(actual,receipt[field],field,counts)
+    gs=qround(sum((L[i]*rates[i] for i in range(n)),QI(0)),p)
+    gd=qround(sum((rates[i]*D[i][j]*rates[j] for i in range(n) for j in range(n)),QI(0)),p)
+    gn=qround(sum((Q[i]*rates[i] for i in range(n)),QI(0)),p)
+    finalsource=qintersection(ps,gs);finaldiss=qintersection(pd,gd);finalnet=qintersection(qintersection(pn,gn),finalsource-finaldiss)
+    contracted=tuple(qround(L[i]-sum((D[i][j]*rates[j] for j in range(n)),QI(0)),p) for i in range(n))
+    residual=tuple(qintersection(Q[i],contracted[i]) for i in range(n))
+    for field,values in (('prescribed_generalized_force_bounds',L),('residual_bounds',residual)):
+        for i in range(n):qequal(values[i],response[field][i],field+'.'+str(i),counts)
+    for field,values in (('drag_bounds',D),('state_tangent_bounds',K),('velocity_tangent_bounds',[[ -x for x in row ] for row in D])):
+        for i in range(n):
+            for j in range(n):qequal(values[i][j],response[field][i][j],field+'.'+str(i)+','+str(j),counts)
+    for field,v in (('source_power_bounds_w',finalsource),('drag_dissipation_bounds_w',finaldiss),('net_power_bounds_w',finalnet),('independently_projected_source_power_bounds_w',ps),('independently_projected_drag_dissipation_bounds_w',pd),('independently_projected_net_power_bounds_w',pn),('generalized_source_power_bounds_w',gs),('generalized_drag_dissipation_bounds_w',gd),('generalized_net_power_bounds_w',gn)):
+        qequal(v,response[field],field,counts)
+    require(finaldiss.lo>=0,'Rigorous nonnegative complete declared drag dissipation')
+    return dict(source_power=finalsource,dissipation=finaldiss,net_power=finalnet)
+
+
+def decoded_record(record):
+    ids=tuple(record['global_coordinate_indices']);m=len(ids)
+    require(len(set(ids))==m and all(type(i) is int and 0<=i<101 for i in ids),'Complete distinct material coordinate support')
+    Jraw=record['position_first_bounds'];Hraw=record['position_second_bounds']
+    require(len(Jraw)==3 and all(len(row)==m for row in Jraw),'Position first jet3xN')
+    require(len(Hraw)==3 and all(len(plane)==m and all(len(row)==m for row in plane) for plane in Hraw),'Position second jet3xNxN')
+    require(all(Hraw[a][i][j]==Hraw[a][j][i] for a in range(3) for i in range(m) for j in range(m)),'Authentic position curvature symmetric')
+    J=tuple(tuple(number(Jraw[a][i]) for a in range(3)) for i in range(m))
+    H=tuple(tuple(tuple(number(Hraw[a][i][j]) for a in range(3)) for j in range(m)) for i in range(m))
+    return ids,vector(record['position_bounds_m']),J,H
+
+
+def mpaudit(records,response,radius,counts,*,derivatives=True):
+    n=101;rates=tuple(rat(v) for v in response['coordinate_rates'])
+    L=[mp.mpf(0) for _ in range(n)];Q=[mp.mpf(0) for _ in range(n)]
+    D=[[mp.mpf(0) for _ in range(n)] for _ in range(n)];K=[[mp.mpf(0) for _ in range(n)] for _ in range(n)]
+    driving=diss=net=mp.mpf(0);mp_radius=number(radius);selected=[]
+    receipts=response['per_trace_receipts_json']
+    for k,(record,receipt_raw) in enumerate(zip(records,receipts)):
+        receipt=json.loads(receipt_raw) if type(receipt_raw) is str else receipt_raw
+        ids,y,J,H=decoded_record(record);weight=number(record['source_weight_bounds_m2'])
+        local_rates=tuple(number(rates[g]) for g in ids)
+        math=material_record(y,J,H,weight,mp_radius,local_rates)
+        for i,g in enumerate(ids):
+            L[g]+=math['L'][i];Q[g]+=math['Q'][i]
+            for j,h in enumerate(ids):D[g][h]+=math['D'][i][j];K[g][h]+=math['dQ'][i][j]
+        driving+=math['driving_power'];diss+=math['dissipation'];net+=math['net_power']
+        for a in range(3):
+            compare(math['source']['q'][a],receipt['current_unit_direction_bounds'][a],'220digit actual q',counts)
+            compare(math['source']['tau'][a],receipt['prescribed_driving_traction_bounds_pa'][a],'220digit actual fixedR driving',counts)
+            compare(math['u'][a],receipt['actual_material_velocity_bounds_m_s'][a],'220digit actual spatial material velocity',counts)
+            compare(math['transmitted'][a],receipt['net_basal_traction_bounds_pa'][a],'220digit independent full-vector slip',counts)
+            for j in range(3):compare(math['source']['dtau'][a][j],receipt['prescribed_spatial_derivative_bounds_pa_m'][a][j],'220digit actual nonsymmetric source derivative',counts)
+        require(math['dissipation']>=0,'Independent positive spatial dissipation')
+        require(receipt['amplitude_multiplies_drag'] is False and receipt['spatial_derivative_assumed_symmetric'] is False,'Independent driving amplitude and full unsymmetric spatial derivative')
+        rawcolumns=tuple(tuple(record['position_first_bounds'][a][i] for a in range(3)) for i in range(len(ids)))
+        exact_contractions(rawcolumns,tuple(rates[g] for g in ids),record['source_weight_bounds_m2'],receipt['prescribed_driving_traction_bounds_pa'])
+        counts['exact_rational_algebra_controls']+=4
+        # Controls retain actual supplied geometry, source radius, all local
+        # rates and the exact second jet. They differentiate the scalar law,
+        # independently of its analytic derivative implementation.
+        kind=record.get('material_kind',record.get('source_material_kind',''))
+        chosen=[i for i,g in enumerate(ids) if g<6][:1]+[i for i,g in enumerate(ids) if 6<=g<92][:2]+[i for i,g in enumerate(ids) if g==100]
+        if derivatives and (k==0 or ('hot' in str(kind).lower() and not any(v.get('hot') for v in selected))):
+            for i in chosen:
+                for j in chosen:
+                    expected=math['dQ'][i][j]
+                    got=mp.diff(lambda t:local_Q(y,J,H,weight,mp_radius,local_rates,i,j,t),mp.mpf(0))
+                    identity(got-expected,'Independent scalar material basal dQ/dx',counts,max(abs(got),abs(expected)))
+                    counts['independent_mpmath_derivative_controls']+=1
+            selected.append(dict(trace_id=record.get('trace_id'),global_coordinate_controls=[ids[i] for i in chosen],hot='hot' in str(kind).lower()))
+    for i in range(n):
+        compare(L[i],response['prescribed_generalized_force_bounds'][i],'Full101 prescribed generalized load',counts)
+        compare(Q[i],response['residual_bounds'][i],'Full101 direct residual',counts)
+        for j in range(n):
+            compare(D[i][j],response['drag_bounds'][i][j],'Full101x101 independent Gram drag',counts)
+            compare(K[i][j],response['state_tangent_bounds'][i][j],'Full101x101 material prestress/spatial/drag tangent',counts)
+            compare(-D[i][j],response['velocity_tangent_bounds'][i][j],'Full101x101 velocity tangent',counts)
+    rr=tuple(number(x) for x in rates)
+    driving_contracted=sum((rr[i]*L[i] for i in range(n)),mp.mpf(0))
+    diss_contracted=sum((rr[i]*D[i][j]*rr[j] for i in range(n) for j in range(n)),mp.mpf(0))
+    net_contracted=sum((rr[i]*Q[i] for i in range(n)),mp.mpf(0))
+    identity(driving-driving_contracted,'All101 driving/spatial virtual work',counts,driving)
+    identity(diss-diss_contracted,'All101 Gram/spatial dissipation',counts,diss)
+    identity(net-net_contracted,'All101 net/spatial virtual work',counts,net)
+    identity(net-driving+diss,'Actual full discrete power balance',counts,max(abs(net),abs(driving),diss))
+    for field,value in (('source_power_bounds_w',driving),('drag_dissipation_bounds_w',diss),('net_power_bounds_w',net),('independently_projected_source_power_bounds_w',driving),('independently_projected_drag_dissipation_bounds_w',diss),('independently_projected_net_power_bounds_w',net),('generalized_source_power_bounds_w',driving_contracted),('generalized_drag_dissipation_bounds_w',diss_contracted),('generalized_net_power_bounds_w',net_contracted)):
+        compare(value,response[field],field,counts)
+    return dict(independent_driving_power_w=mp.nstr(driving,75),independent_drag_dissipation_w=mp.nstr(diss,75),independent_net_power_w=mp.nstr(net,75),derivative_controls=selected)
+
+
+GEOMETRY_SOURCE=ROOT/'analysis/geometric_native_archive_material_carrier_validation/independent_audit/audit_source.txt'
+GEOMETRY_RAW='eebb98815e2dcdd82e7f6a4d8cb18bfa5ffd2ed2e6e3d78d474b94677cd95c56'
+LEGACY_SOURCE=ROOT/'analysis/geometric_native_common_preparation_balance_validation/independent_sources/legacy_source_reconstruction.txt'
+LEGACY_RAW='ddffe963ff9f08c24620e0ec6981fcc1a69c3eba64f24bf9a662a8e90b54d3a8'
+SOURCE895=ROOT/'analysis/geometric_native_common_cold_material_carrier_validation/release_validation_02/native_control/source_packet.json'
+SOURCE895_RAW='fbafd092a4eb98472e60f79665e1e0fe8e9e1c2c2b9d3679344a32e59593cc89'
+SOURCE903=ROOT/'analysis/geometric_native_common_hot_mean_validation/release_validation_02/native_control/source_packet.json'
+SOURCE903_RAW='0f8a0ee8ae082e3434b136bab7515944354eaf059db95965d0e87259f6791035'
+SOURCE907=ROOT/'analysis/geometric_native_common_mixed_force_validation/release_validation_01/native_control/source_packet.json'
+SOURCE907_RAW='5e5555712e57fd69156ee475fe5feb161baef3cb96dd911a443228d160f53005'
+SOURCE927_MAP=ROOT/'analysis/geometric_native_common_preparation_balance_validation/frozen_source_map_927.json'
+SOURCE927_MAP_RAW='79deb660805dd5dfbb39f0b7d2c8aa0f16ffa664b226db7a72f726dfc03e7009'
+NEW_PY=('tectonics/geometric_native_common_basal_trace.py','tests/test_geometric_native_common_basal_trace.py',
+ 'tectonics/geometric_native_common_basal_loading.py','tests/test_geometric_native_common_basal_loading.py')
+HOT_GENERATORS=(((1,0,0),(0,1,0),(0,0,1)),((1,0,0),(0,-1,0),(0,0,0)),((1,0,0),(0,1,0),(0,0,-2)),
+ ((0,1,0),(1,0,0),(0,0,0)),((0,0,1),(0,0,0),(1,0,0)),((0,0,0),(0,0,1),(0,1,0)))
+COLD_GENERATORS=(((1,0,0),(0,0,0),(0,0,0)),((0,0,0),(0,1,0),(0,0,0)),((0,0,0),(0,0,0),(0,0,1)))+HOT_GENERATORS[3:]
+
+
+def mpmap(A,x):return tuple(dot(row,x) for row in A)
+
+def mpmm(A,B):return tuple(tuple(sum((A[i][k]*B[k][j] for k in range(3)),mp.mpf(0)) for j in range(3)) for i in range(3))
+
+def mptranspose(A):return tuple(tuple(A[j][i] for j in range(3)) for i in range(3))
+
+def rodrigues(v):
+    v=mp.matrix(v);K=mp.matrix(((0,-v[2],v[1]),(v[2],0,-v[0]),(-v[1],v[0],0)))
+    angle=mp.sqrt(sum(x*x for x in v))
+    if angle==0:return tuple(tuple(mp.mpf(i==j) for j in range(3)) for i in range(3))
+    Q=mp.eye(3)+mp.sin(angle)/angle*K+(1-mp.cos(angle))/(angle*angle)*(K*K)
+    return tuple(tuple(Q[i,j] for j in range(3)) for i in range(3))
+
+def ordered_pose(rows):
+    Q=tuple(tuple(mp.mpf(i==j) for j in range(3)) for i in range(3))
+    for row in rows:
+        require(set(row)=={'dt_myr','omega_rad_per_myr'},'Complete literal ordered pose increment')
+        Q=mpmm(rodrigues(tuple(number(row['dt_myr'])*number(v) for v in row['omega_rad_per_myr'])),Q)
+    return Q
+
+def qi_raw(v):return {'lo':[v.lo.numerator,v.lo.denominator],'hi':[v.hi.numerator,v.hi.denominator]}
+
+def qmatrix_product(A,B,precision):
+    return tuple(tuple(qround(sum((A[i][k]*B[k][j] for k in range(3)),QI(0)),precision) for j in range(3)) for i in range(3))
+
+def qmatrix_map(A,x,precision):return tuple(qround(qdot(row,x),precision) for row in A)
+
+def rotation_certificate(raw,expected_generator,counts):
+    c=raw;p=c['output_precision_decimal_digits'];work=c['work_precision_decimal_digits'];n=c['taylor_term_count'];s=c['scaling_squaring_count']
+    require(c['method']=='OUTWARD_INTERVAL_MATRIX_TAYLOR_SCALING_SQUARING' and c['tail_theorem']=='b^(N+1)/(N+1)!/(1-b/(N+2))','Actual matrix tail theorem retained')
+    require(work==p+32 and c['guard_precision_decimal_digits']==32 and c['maximum_taylor_terms']==max(128,p+64),'Authentic Taylor precision and finite budget')
+    K=tuple(tuple(qi(v) for v in row) for row in c['unscaled_generator_bounds'])
+    require(all(K[i][j].lo<=expected_generator[i][j].lo<=expected_generator[i][j].hi<=K[i][j].hi for i in range(3) for j in range(3)),'Original physical generator enclosed')
+    b0=max(sum((max(abs(v.lo),abs(v.hi)) for v in row),F(0)) for row in K);b=b0/F(1<<s)
+    require(rat(c['unscaled_generator_infinity_norm_upper'])==b0 and rat(c['scaled_generator_infinity_norm_upper'])==b and b<=F(1,2) and (s==0 or 2*b>F(1,2)),'Exact induced norm and minimal scaling')
+    ratio=b/F(n+2);tail=b**(n+1)/factorial(n+1)/(1-ratio);upper=rat(c['tail_scaled_matrix_upper']);target=F(1,10**(p+8))
+    require(rat(c['tail_ratio'])==ratio and qround(QI(tail),work).hi==upper and tail<=upper<=target,'Exact scaled Taylor geometric-tail proof')
+    if n>1:
+        previous=b**n/factorial(n)/(1-b/F(n+1));require(qround(QI(previous),work).hi>target,'First sufficient Taylor degree')
+    K=tuple(tuple(v/F(1<<s) for v in row) for row in K)
+    term=total=tuple(tuple(QI(int(i==j)) for j in range(3)) for i in range(3))
+    for k in range(1,n+1):
+        term=tuple(tuple(qround(v/k,work) for v in row) for row in qmatrix_product(term,K,work))
+        total=tuple(tuple(qround(total[i][j]+term[i][j],work) for j in range(3)) for i in range(3))
+    total=tuple(tuple(qround(QI(v.lo-upper,v.hi+upper),work) for v in row) for row in total)
+    for _ in range(s):total=qmatrix_product(total,total,work)
+    counts['exact_rotation_certificate_checks']+=1
+    return tuple(tuple(qround(v,p) for v in row) for row in total)
+
+
+def qmean_jet(body,h,b,precision):
+    R=rat(body['radius_m']);rb=qi(body['prepared_base_radius_bounds_m']);area=qi(body['actual_area_bounds_sr'])
+    T=tuple(tuple(sum((b[k]*HOT_GENERATORS[k+1][i][j] for k in range(5)),F(0)) for j in range(3)) for i in range(3))
+    rho=max(sum((abs(v) for v in row),F(0)) for row in T)
+    eigen=QI(1+(h.lo-rho)/R,1+(h.hi+rho)/R);require(eigen.lo>0,'Positive full implicit HOT mean chart')
+    isotropic=not any(b);integrals=[QI(0) for _ in range(43)]
+    for encoded_cell in body['mask_cells']:
+        cell=json.loads(encoded_cell);w=qi(cell['area_bounds_sr']);v=tuple(qi(x) for x in cell['direction_bounds'])
+        t=QI(1)+h/R;Tv=tuple(qdot(row,v) for row in T);a=qdot(v,Tv)
+        delta=2*t*a/R+qdot(Tv,Tv)/(R*R)
+        rad=qsqrt(qintersection(t*t+delta,QI(eigen.lo**2,eigen.hi**2)),precision)
+        d=rb*((h/R)*(2+h/R)+delta)/(rad+1)
+        kv=tuple(tuple(qdot(row,v) for row in K) for K in HOT_GENERATORS)
+        y=tuple(t*v[i]+Tv[i]/R for i in range(3))
+        products=tuple((t+a/R) if k==0 else qdot(y,kv[k]) for k in range(6))
+        g=tuple(qround(rb*products[k]/(R*rad),precision) for k in range(6))
+        H=[]
+        for i in range(6):
+            row=[]
+            for j in range(6):
+                if isotropic and (i==0 or j==0):value=QI(0)
+                else:value=rb/(R*R)*((QI(1) if i==j==0 else qdot(kv[i],kv[j]))/rad-products[i]*products[j]/(rad*rad*rad))
+                row.append(qround(value,precision))
+            H.append(tuple(row))
+        if isotropic:
+            d=rb*h/R;g=(rb/R,)+tuple(qround(rb*qdot(v,kv[k])/R,precision) for k in range(1,6))
+        values=(qround(d,precision),)+g+tuple(x for row in H for x in row)
+        for k,value in enumerate(values):integrals[k]+=qround(w*value,precision)
+    values=tuple(qround(qround(v,precision)/area,precision) for v in integrals)
+    mean=values[0];g=values[1:7];H=tuple(values[7+6*i:13+6*i] for i in range(6))
+    g=(qintersection(g[0],QI(rb.lo/R*eigen.lo/eigen.hi,rb.hi/R)),)+g[1:]
+    if isotropic:mean=rb*h/R;g=(rb/R,)+g[1:]
+    jac=(QI(1)/g[0],)+tuple(-g[i]/g[0] for i in range(1,6))
+    J=tuple(tuple(jac[a] if i==0 else QI(int(i==a)) for a in range(6)) for i in range(6))
+    hs=tuple(tuple(qround(-sum((J[i][a]*H[i][j]*J[j][bb] for i in range(6) for j in range(6)),QI(0))/g[0],precision) for bb in range(6)) for a in range(6))
+    return mean,g,J,hs
+
+
+def audit_hot_geometry(record,body,coordinates,counts):
+    geo=record['geometry_receipt'];p=coordinates['precision'];values=coordinates['values'];order=coordinates['order']
+    ids=tuple(i for i,row in enumerate(order[:100]) if row[0]=='body' and row[1]==body['component_id'])
+    require(len(ids)==6 and ids==tuple(range(ids[0],ids[0]+6)),'Actual complete HOT6 physical chart')
+    z=tuple(rat(values[i]) for i in ids);q,b=z[0],z[1:]
+    cert=geo['finite_mean_root_certificate'];h=qi(cert['scalar_affine_amplitude_bounds_m'])
+    require(cert['component_id']==body['component_id'] and cert['prepared_base_radius_bounds_m']==body['prepared_base_radius_bounds_m'] and cert['actual_source_area_bounds_sr']==body['actual_area_bounds_sr'],'Full actual implicit HOT mean source association')
+    require(rat(cert['prescribed_mean_m'])==q and tuple(rat(v) for v in cert['five_tracefree_amplitudes_m'])==b,'Literal current HOT6 root query')
+    require(cert['whole_mask_unique_root_certified'] is True and cert['literal_root_replaced_by_midpoint'] is False and cert['positive_source_area_floor_used'] is False,'Physical root remains a complete unique enclosure without midpoint/floor')
+    mean,g,J,hs=qmean_jet(body,h,b,p)
+    qequal(mean,cert['actual_mean_bounds_m'],'Independent complete HOT mask mean',counts)
+    qequal(g[0],cert['complete_mask_mean_h_derivative_positive_bounds'],'Independent positive implicit HOT mean derivative',counts)
+    require(mean.lo<=q<=mean.hi and g[0].lo>0,'Actual full mean root contains its prescribed value and is monotone')
+    for i in range(6):
+        for j in range(6):
+            qequal(J[i][j],geo['implicit_chart_jacobian'][i][j],'Complete HOT implicit chart J',counts)
+            qequal(hs[i][j],geo['implicit_scalar_hessian'][i][j],'Complete HOT implicit h curvature',counts)
+    cells=[json.loads(x) for x in body['mask_cells']];receipts=cert['complete_mask_cells']
+    require(len(cells)==len(receipts),'Every full HOT polygon/correction cell retained')
+    for cell,receipt in zip(cells,receipts):
+        require(receipt['source_sha256']==cell['source_sha256'] and receipt['kind']==cell['kind'] and receipt['area_bounds_sr']==cell['area_bounds_sr'] and receipt['full_direction_bounds']==cell['direction_bounds'],'Actual full source mean cells/curved corrections once')
+    omega=tuple(rat(v) for v in body['angular_rate_per_physical_volume_depth_m']);depth=rat(body['areal_material_thickness_m']);R=rat(body['radius_m'])
+    W=((QI(0),QI(-omega[2]),QI(omega[1])),(QI(omega[2]),QI(0),QI(-omega[0])),(QI(-omega[1]),QI(omega[0]),QI(0)))
+    generator=tuple(tuple(depth*v for v in row) for row in W)
+    rotation=rotation_certificate(geo['physical_base_rotation_certificate'],generator,counts)
+    ray=tuple(QI(rat(v)) for v in record['original_ray']);norm=qsqrt(sum((qsquare(v) for v in ray),QI(0)),p+16)
+    direction=tuple(qround(v/norm,p) for v in ray)
+    base=tuple(qround(qi(body['prepared_base_radius_bounds_m'])*v,p) for v in qmatrix_map(rotation,direction,p))
+    physical=tuple(qmatrix_map(tuple(tuple(QI(F(v,R)) for v in row) for row in K),base,p) for K in HOT_GENERATORS)
+    x=tuple(qround(base[a]+h*physical[0][a]+sum((b[k]*physical[k+1][a] for k in range(5)),QI(0)),p) for a in range(3))
+    first=tuple(tuple(qround(sum((physical[k][a]*J[k][i] for k in range(6)),QI(0)),p) for a in range(3)) for i in range(6))
+    second=tuple(tuple(tuple(qround(physical[0][a]*hs[i][j],p) for a in range(3)) for j in range(6)) for i in range(6))
+    audit_owner_lift(x,ids,first,second,record,counts,exact=True)
+    require(geo['source_polygon_pose_applied_once'] is True and geo['additional_historical_owner_pose_applied'] is False,'No doubled historical HOT owner transform')
+    counts['independent_hot_complete_geometry_checks']+=1
+
+
+def audit_owner_lift(x,ids,first,second,record,counts,*,exact=False):
+    own=tuple(3*record['owner']+i for i in range(3));axes=tuple(tuple(QI(int(i==j)) if exact else mp.mpf(i==j) for i in range(3)) for j in range(3))
+    cr=qcross if exact else cross
+    f=dict(zip(ids,first));h={(a,b):second[i][j] for i,a in enumerate(ids) for j,b in enumerate(ids)}
+    for k,index in enumerate(own):f[index]=tuple(qround(v,record['_precision']) for v in cr(axes[k],x)) if exact else cr(axes[k],x)
+    for i,a in enumerate(own):
+        for j,b in enumerate(own):
+            vals=tuple((u+v)/2 for u,v in zip(cr(axes[i],cr(axes[j],x)),cr(axes[j],cr(axes[i],x))))
+            h[a,b]=tuple(qround(v,record['_precision']) for v in vals) if exact else vals
+        for b in ids:
+            vals=cr(axes[i],f[b]);h[a,b]=h[b,a]=tuple(qround(v,record['_precision']) for v in vals) if exact else vals
+    indices=tuple(sorted(own+ids));require(tuple(record['global_coordinate_indices'])==indices,'Exact complete original material coordinate support')
+    check=qequal if exact else compare
+    for a in range(3):
+        check(x[a],record['position_bounds_m'][a],'Source authentic bottom position',counts)
+        for i,index in enumerate(indices):
+            check(f[index][a],record['position_first_bounds'][a][i],'Source authentic complete owner/body/lambda velocity column',counts)
+            for j,other in enumerate(indices):check(h[index,other][a],record['position_second_bounds'][a][i][j],'Source authentic complete owner/body/lambda curvature',counts)
+
+
+@lru_cache(maxsize=1)
+def independent_geometry_context():
+    require(raw_sha(GEOMETRY_SOURCE)==GEOMETRY_RAW and raw_sha(LEGACY_SOURCE)==LEGACY_RAW,'Frozen read-only independent source reconstruction definitions intact')
+    before=project_modules()
+    legacy=dict(__name__='standalone_frozen_old_source_definitions',__file__=str(LEGACY_SOURCE))
+    exec(compile(LEGACY_SOURCE.read_text(),str(LEGACY_SOURCE),'exec'),legacy)
+    ctx=legacy['context']();mp.mp.dps=220
+    require(project_modules()==before,'Frozen independent definitions import no project physics')
+    cert=ctx['source895_system']['whole_domain_certificate'];ctx['owner_scales']={cert[k]['owner']:number(cert[k]['fixed_radial_scale']) for k in ('donor','receiver')}
+    original=ctx['journal']['source_surface']['fragments']
+    require(len(original)==8 and {r['fragment_id'] for r in original}==set(ctx['banks']),'Full actual OLD material journal has the original8 parents')
+    for fragment in original:
+        bank=ctx['banks'][fragment['fragment_id']];geometry=fragment['geometry']
+        require(fragment['parcel']['plate']==bank['owner'] and geometry['pose']==[] and all(p['rotations']==[] for p in geometry['supports']),'Source OLD journal uses actual original owner axes and zero initial rotations')
+        require(any(tuple(rat(v) for v in p['normal'])==tuple(rat(v) for v in bank['original_quarter_inward']) for p in geometry['supports']),'Source OLD gap proof uses actual original donor/receiver hemisphere axis')
+    return ctx
+
+
+def exact_matrix_product(A,B):
+    return tuple(tuple(sum((A[i][k]*B[k][j] for k in range(3)),F(0)) for j in range(3)) for i in range(3))
+
+@lru_cache(maxsize=512)
+def original_donor_live_proof(original_ray):
+    """New exact algebra proof of the immutable OLD source-LIVE ray only.
+
+    q.T exp(-Wd*s)exp(Wr*s)(-ex) has a rigorously bounded finite
+    polynomial on the old accepted clock[0,1]. The Bernstein hull bounds
+    the whole interval. This does not certify any NEW prepared all-pair path.
+    """
+    ctx=independent_geometry_context();journal=ctx['journal'];rates=dict(journal['omega_rad_per_myr']);dt=rat(journal['dt_myr'])
+    def skew(v):return ((F(0),-v[2],v[1]),(v[2],F(0),-v[0]),(-v[1],v[0],F(0)))
+    Wd=skew(tuple(-rat(v)*dt for v in rates[1]));Wr=skew(tuple(rat(v)*dt for v in rates[0]))
+    b=max(sum((abs(v) for v in row),F(0)) for row in Wd)+max(sum((abs(v) for v in row),F(0)) for row in Wr)
+    ray=tuple(rat(v) for v in original_ray);qnorm=sum(map(abs,ray),F(0));one=tuple(tuple(F(int(i==j)) for j in range(3)) for i in range(3))
+    for degree in (8,16,32,64):
+        require(b/F(degree+2)<1,'Convergent rigorous old source gap series tail')
+        Ad=[one];Ar=[one]
+        for n in range(1,degree+1):
+            Ad.append(tuple(tuple(v/n for v in row) for row in exact_matrix_product(Ad[-1],Wd)))
+            Ar.append(tuple(tuple(v/n for v in row) for row in exact_matrix_product(Ar[-1],Wr)))
+        coefficients=[]
+        for n in range(degree+1):
+            v=F(0)
+            for j in range(n+1):
+                M=exact_matrix_product(Ad[j],Ar[n-j]);v-=sum((ray[i]*M[i][0] for i in range(3)),F(0))
+            coefficients.append(v)
+        hull=tuple(sum((coefficients[n]*F(comb(k,n),comb(degree,n)) for n in range(k+1)),F(0)) for k in range(degree+1))
+        tail=qnorm*b**(degree+1)/factorial(degree+1)/(1-b/F(degree+2))
+        if max(hull)+tail<0:
+            return dict(polynomial_degree=degree,full_clock_gap_upper=max(hull)+tail,strict_original_live_no_entry_certified=True)
+    raise AssertionError('Independent whole OLD-clock negative gap not yet proved for source-LIVE donor')
+
+
+def gap_matrix_coefficients(ray,donor,receiver,degree):
+    def skew(v):return ((F(0),-v[2],v[1]),(v[2],F(0),-v[0]),(-v[1],v[0],F(0)))
+    A=skew(tuple(-v for v in donor));B=skew(receiver);one=tuple(tuple(F(int(i==j)) for j in range(3)) for i in range(3))
+    Aa=[one];Bb=[one]
+    for n in range(1,degree+1):
+        Aa.append(tuple(tuple(v/n for v in row) for row in exact_matrix_product(Aa[-1],A)))
+        Bb.append(tuple(tuple(v/n for v in row) for row in exact_matrix_product(Bb[-1],B)))
+    return tuple(-sum((ray[i]*sum((Aa[j][i][k]*Bb[n-j][k][0] for k in range(3)),F(0)) for j in range(n+1) for i in range(3)),F(0)) for n in range(degree+1))
+
+
+def audit_old_live_receipt(proof,record,bank,counts):
+    ctx=independent_geometry_context();state=ctx['source_material_state'];archive=ctx['archive'];journal=ctx['journal'];rates=dict(journal['omega_rad_per_myr']);dt=rat(journal['dt_myr'])
+    donor=tuple(rat(v)*dt for v in rates[1]);receiver=tuple(rat(v)*dt for v in rates[0]);ray=tuple(rat(v) for v in record['original_ray']);p=record.get('_precision',96)
+    require(proof['format']=='source-bound-live-original-material-whole-clock-proof-1' and proof['material_state_sha256']==state['state_sha256'] and proof['archive_model_sha256']==archive['model_sha256'],'Full original material transaction and archive model source-proof binding')
+    require(proof['original_parent_id']==bank['original_parent_id'] and proof['material_id']==bank['original_material_id'] and proof['owner']==bank['owner'] and tuple(rat(v) for v in proof['original_ray'])==ray,'Exact original live material label and owner source proof')
+    require(tuple(rat(v) for v in proof['actual_journal_donor_axis'])==tuple(rat(v) for v in proof['archive_model_donor_axis'])==donor and tuple(rat(v) for v in proof['actual_journal_receiver_axis'])==tuple(rat(v) for v in proof['archive_model_receiver_axis'])==receiver and proof['journal_and_archive_axes_identical'] is True,'Actual complete journal and old archive rotation axes identical')
+    support=json.loads(bank['source_context_json'])['embedding_bank'];require(proof['actual_owner_history_json']==support['source_owner_history_json'],'Actual original material ordered owner history retained in old source proof')
+    allocation=next(a for a in state['parent_allocations'] if a['fragment_id']==bank['original_parent_id'])
+    require(proof['original_parent_payload_sha256']==allocation['parent_payload_sha256'],'Entire original parent physical payload source retained')
+    require(qi(proof['complete_old_clock_fraction_bounds']).lo==0 and qi(proof['complete_old_clock_fraction_bounds']).hi==1 and proof['all_clock_live_material_allocation_proved'] is True and proof['historical_archive_activation_beta_identically_zero'] is True and proof['archived_material_receives_basal_loading'] is False and proof['whole_clock_all_pair_admission_authorized'] is False and proof['preparation_clock_or_work_advanced'] is False,'Old whole-clock LIVE and zero activation do not authorize a NEW path')
+    gap=proof['gap_proof'];require(tuple(rat(v) for v in gap['original_ray'])==ray and qi(gap['clock_fraction_bounds']).lo==0 and qi(gap['clock_fraction_bounds']).hi==1 and gap['endpoint_only_proof'] is False,'Old source proof uses full old clock and exact label')
+    if bank['owner']==0:
+        require(gap['method']=='AUTHENTIC_RECEIVING_ORIGINAL_ZERO_ARCHIVE_AND_ZERO_ACTIVATION_POLICY' and qi(gap['archived_source_area_bounds_sr']).lo==qi(gap['archived_source_area_bounds_sr']).hi==0 and qi(allocation['archived_area_bounds_sr']).lo==qi(allocation['archived_area_bounds_sr']).hi==0,'Actual original receiving cold material has exactly zero selected archive')
+    else:
+        require(tuple(rat(v) for v in gap['donor_axis'])==donor and tuple(rat(v) for v in gap['receiver_axis'])==receiver,'Full three component genuine old motion axes')
+        gamma=sum(map(abs,donor),F(0))+sum(map(abs,receiver),F(0));size=sum(map(abs,ray),F(0))
+        require(rat(gap['axis_l1_sum'])==gamma and rat(gap['ray_l1_norm'])==size and gamma<F(1,4),'Exact old product norm majorant inputs')
+        if gap['method']=='EXACT_RELATIVE_ROTATION_L1_MAJORANT':
+            deviation=gamma/(1-gamma);upper=-ray[0]+deviation*size
+            require(rat(gap['relative_pose_deviation_upper'])==deviation and upper<0 and rat(gap['whole_clock_gap_upper'])==qround(QI(upper),p+16).hi<0,'Rigorous entire old clock norm deviation and negative material gap')
+        else:
+            require(gap['method']=='EXACT_RATIONAL_TAYLOR_BERNSTEIN_WITH_PRODUCT_NORM_TAIL' and gap['taylor_order'] in (24,48,64),'Declared finite exact old gap polynomial')
+            N=gap['taylor_order'];coefficients=gap_matrix_coefficients(ray,donor,receiver,N)
+            tail=size*gamma**(N+1)/factorial(N+1)/(1-gamma/F(N+2))
+            require(rat(gap['product_exponential_tail_upper'])==qround(QI(tail),p+16).hi and gap['tail_theorem']=='||ray||1*gamma^(N+1)/(N+1)!/(1-gamma/(N+2))','Independent exact old product exponential tail')
+            for actual,raw in zip(coefficients,gap['power_coefficient_bounds']):qequal(qround(QI(actual),p+16),raw,'Exact whole OLD-clock relative gap coefficient',counts)
+            next_edge=F(0)
+            for cell in gap['cells']:
+                bounds_cell=qi(cell['clock_fraction_bounds']);lo,hi=bounds_cell.lo,bounds_cell.hi;require(lo==next_edge and lo<hi<=1,'OLD clock Bernstein partition has exact no-gap coverage');next_edge=hi
+                translated=tuple((hi-lo)**n*sum((coefficients[j]*comb(j,n)*lo**(j-n) for j in range(n,N+1)),F(0)) for n in range(N+1))
+                hull=tuple(sum((translated[n]*F(comb(k,n),comb(N,n)) for n in range(k+1)),F(0)) for k in range(N+1))
+                for actual,raw in zip(hull,cell['bernstein_coefficient_bounds']):qequal(qround(QI(actual),p+16),raw,'Exact entire OLD-clock cell Bernstein coefficient',counts)
+                upper=max(hull)+tail;require(upper<0 and rat(cell['whole_cell_gap_upper'])==qround(QI(upper),p+16).hi<0,'Strict entire OLD material cell negative gap')
+            require(next_edge==1,'The complete OLD accepted source clock is covered')
+        original_donor_live_proof(ray)
+    counts['exact_old_source_live_receipt_checks']+=1
+
+
+def seam_axis(ray,numerator,denominator,delta):
+    a,b=ray[numerator],abs(ray[denominator])
+    if b==0:return mp.mpf('0.5') if a==0 else mp.mpf(a>0)
+    angle=mp.atan(a/b)
+    if angle<=-delta:return mp.mpf(0)
+    if angle>=delta:return mp.mpf(1)
+    t=(angle+delta)/(2*delta);return t**3*(10+t*(-15+6*t))
+
+
+def authentic_cold_unprepared(record,values,order):
+    ctx=independent_geometry_context();bank=ctx['banks'][record['source_original_parent_id']]
+    require(record['owner']==bank['owner'],'Original COLD owner retained')
+    ray=vector(record['original_ray']);depth=number(record['material_depth_m']);R=number(bank['radius_m']);owner=bank['owner'];scale=ctx['owner_scales'][owner]
+    journal=ctx['journal'];rates=dict(journal['omega_rad_per_myr']);dt=number(journal['dt_myr'])
+    Q=rodrigues(tuple(number(v)*dt for v in rates[owner]))
+    if owner==1:
+        original_donor_live_proof(tuple(rat(v) for v in record['original_ray']))
+        radius=mp.root(R**3-3*R**2*depth,3)
+    else:radius=R
+    archive_position=mpmap(Q,scaled(ray,radius/mp.sqrt(dot(ray,ray))))
+    archive_dto=json.loads(record['geometry_receipt']['source_archive_point_json']);archive=archive_dto['response']
+    if archive_dto['format']=='new-source-bound-closed-live-archive-model-point-1':
+        require(archive_dto['old_archive_point_api_reexecuted'] is False and archive_dto['full_original_clock_live_material_allocation_proved'] is True and archive_dto['archive_model_activation_beta_identically_zero'] is True and archive_dto['complete_cartesian_material_gradient_computed'] is False,'New exact OLD LIVE position recipe keeps its physical scope')
+        proof=json.loads(archive['live_whole_clock_proof_json']);audit_old_live_receipt(proof,record,bank,record['_counts'])
+        reference=qi(archive['reference_radius_bounds_m']);cube=rat(bank['radius_m'])**3-3*rat(bank['radius_m'])**2*rat(record['material_depth_m'])
+        require(reference.lo>0 and reference.lo**3<=cube<=reference.hi**3,'Authentic positive full-depth original cube-root radius enclosure')
+        support=qi(archive['radial_support_bounds_m']);require((support.lo,support.hi)==((reference.lo,reference.hi) if owner==1 else (rat(bank['radius_m']),rat(bank['radius_m']))),'OLD donor/receiver actual physical bottom radius preserved')
+        axis=tuple(rat(v)*rat(journal['dt_myr']) for v in rates[owner]);W=((QI(0),QI(-axis[2]),QI(axis[1])),(QI(axis[2]),QI(0),QI(-axis[0])),(QI(-axis[1]),QI(axis[0]),QI(0)))
+        rotation_certificate(json.loads(archive['source_owner_rotation_certificate_json']),W,record['_counts'])
+        require(qi(archive['beta_bounds']).lo==qi(archive['beta_bounds']).hi==0,'Original source activation is identically zero after full OLD-clock proof')
+    require(archive['response_sha256']==digest({k:v for k,v in archive.items() if k!='response_sha256'}),'Complete authentic archive point response seal')
+    require(archive['allocation']=='live' and archive['archive_debits']==0 and archive['original_parent_id']==record['source_original_parent_id'] and tuple(rat(v) for v in archive['original_ray'])==tuple(rat(v) for v in record['original_ray']) and qi(archive['material_depth_bounds_m']).lo==qi(archive['material_depth_bounds_m']).hi==rat(record['material_depth_m']) and rat(archive['time_fraction'])==1,'Complete literal LIVE authentic bottom query and zero archive debits')
+    for a in range(3):
+        lo,hi=bounds(archive['position_bounds_m'][a]);require(lo-TOL<=archive_position[a]<=hi+TOL,'Independent authentic old bottom position before cold source field')
+    q=scaled(ray,1/mp.sqrt(dot(ray,ray)))
+    delta=number(ctx['source895_system']['whole_domain_certificate']['seam_half_width_radians'])
+    wy=seam_axis(ray,1,2,delta);wz=seam_axis(ray,2,1,delta)
+    columns={}
+    for parent,other in ctx['banks'].items():
+        if other['owner']!=owner:continue
+        start,end=vector(other['original_quarter_start']),vector(other['original_quarter_end'])
+        w=(wy if start[1]+end[1]>0 else 1-wy)*(wz if start[2]+end[2]>0 else 1-wz)
+        inward=vector(other['original_quarter_inward']);beta=mp.atan(dot(inward,ray)/mp.sqrt(ray[1]**2+ray[2]**2))
+        clamp=number(other['beta_cut_radians']);active=beta<clamp
+        ids=tuple(i for i,row in enumerate(order[:100]) if row[0]=='body' and row[1]==other['component_id'])
+        require(len(ids)==7,'Actual complete COLD7 source bank')
+        if not active or w==0:continue
+        t=beta/clamp;chi=(1-t)**2*(t+2)/2
+        top=R+number(other['roof_radial_displacement_m']);rold=mp.root(top**3-3*R**2*depth,3)
+        tau=depth+(R**3-top**3)/(3*R**2)
+        Omega=vector(other['angular_rate_per_physical_volume_depth_m'])
+        e=mpmap(rodrigues(scaled(Omega,tau)),mpmap(tuple(tuple(ctx['poses'][owner][i,j] for j in range(3)) for i in range(3)),q))
+        X=scaled(e,rold)
+        modes=(scaled(e,chi),)+tuple(scaled(mpmap(E,X),chi/R) for E in COLD_GENERATORS)
+        for index,mode in zip(ids,modes):
+            v=scaled(mode,w)
+            if any(x!=0 for x in v):columns[index]=v
+    x=tuple(scale*archive_position[a]+sum((number(values[i])*v[a] for i,v in columns.items()),mp.mpf(0)) for a in range(3))
+    return x,columns,R,scale,vector(bank['angular_rate_per_physical_volume_depth_m'])
+
+
+def audit_cold_geometry(record,coordinates,counts):
+    values=coordinates['values'];order=coordinates['order'];lam=number(values[100])
+    x,columns,R,s,omega=authentic_cold_unprepared(record,values,order)
+    r=mp.sqrt(dot(x,x));tau=(R**3-(r/s)**3)/(3*R**2)
+    g=scaled(x,-r/(s**3*R**2))
+    ht=tuple(tuple(-(r*mp.mpf(i==j)+x[i]*x[j]/r)/(s**3*R**2) for j in range(3)) for i in range(3))
+    rot=rodrigues(scaled(omega,lam*tau));wx=cross(omega,x);wwx=cross(omega,wx)
+    ids=tuple(sorted(columns))+(100,);cols=tuple(columns[i] for i in sorted(columns))
+    first=tuple(mpmap(rot,add(v,scaled(wx,lam*dot(g,v)))) for v in cols)+(mpmap(rot,scaled(wx,tau)),)
+    H=[]
+    for a in cols:
+        ga=dot(g,a);wa=cross(omega,a);row=[]
+        for b in cols:
+            gb=dot(g,b);wb=cross(omega,b);hab=dot(a,mpmap(ht,b))
+            val=add(scaled(add(add(scaled(wa,gb),scaled(wb,ga)),scaled(wx,hab)),lam),scaled(wwx,lam*lam*ga*gb))
+            row.append(mpmap(rot,val))
+        row.append(mpmap(rot,add(add(scaled(cross(omega,a),tau),scaled(wx,ga)),scaled(wwx,lam*tau*ga))))
+        H.append(tuple(row))
+    H.append(tuple(mpmap(rot,add(add(scaled(cross(omega,a),tau),scaled(wx,dot(g,a))),scaled(wwx,lam*tau*dot(g,a)))) for a in cols)+(mpmap(rot,scaled(wwx,tau*tau)),))
+    audit_owner_lift(mpmap(rot,x),ids,first,tuple(H),record,counts)
+    compare(tau,record['geometry_receipt']['physical_volume_depth_bounds_m'],'Authentic current volume-depth preparation',counts)
+    generator=tuple(tuple(qround(qi(record['geometry_receipt']['physical_volume_depth_bounds_m'])*rat(values[100])*v,record['_precision']) for v in row) for row in ((F(0),-rat(record['_bank_omega'][2]),rat(record['_bank_omega'][1])),(rat(record['_bank_omega'][2]),F(0),-rat(record['_bank_omega'][0])),(-rat(record['_bank_omega'][1]),rat(record['_bank_omega'][0]),F(0))))
+    rotation_certificate(record['geometry_receipt']['rotation_certificate'],generator,counts)
+    counts['independent_authentic_cold_bottom_geometry_checks']+=1
+    if record['owner']==1:counts['independent_old_source_live_whole_clock_gap_proofs']+=1
+
+
+@lru_cache(maxsize=1)
+def legacy_icosphere():
+    # Exact reproduction of the original binary64 mesh convention, with no
+    # project import and no original quadrature main. This verifies byte-level
+    # source compatibility only; these centroids are never material labels.
+    import numpy as np
+    phi=(1.+np.sqrt(5.))/2.
+    vertices=np.asarray(((-1,phi,0),(1,phi,0),(-1,-phi,0),(1,-phi,0),(0,-1,phi),(0,1,phi),(0,-1,-phi),(0,1,-phi),(phi,0,-1),(phi,0,1),(-phi,0,-1),(-phi,0,1)),dtype=np.float64)
+    vertices=vertices/np.linalg.norm(vertices,axis=-1,keepdims=True)
+    faces=np.asarray(((0,11,5),(0,5,1),(0,1,7),(0,7,10),(0,10,11),(1,5,9),(5,11,4),(11,10,2),(10,7,6),(7,1,8),(3,9,4),(3,4,2),(3,2,6),(3,6,8),(3,8,9),(4,9,5),(2,4,11),(6,2,10),(8,6,7),(9,8,1)),dtype=np.int64)
+    centroid=vertices[faces].sum(axis=1);centroid=centroid/np.linalg.norm(centroid,axis=-1,keepdims=True)
+    areas=[]
+    for a,b,c in vertices[faces]:
+        numerator=abs(float(np.dot(a,np.cross(b,c))));denominator=1.+float(np.dot(a,b)+np.dot(b,c)+np.dot(c,a))
+        areas.append(float(2.*np.arctan2(numerator,denominator)))
+    body=dict(vertices=vertices.tolist(),faces=faces.tolist(),centroids=centroid.tolist(),areas_unit_sphere=areas)
+    require(digest(body)=='a333aa866eee6828f9a9fd7c84547ba681fe011f881f5e7ab98ec6e20f82ee66','Independent complete original mesh byte fingerprint')
+    return vertices,faces,centroid
+
+
+def audit_legacy903_contract(load,radius,counts):
+    import numpy as np
+    _,_,positions=legacy_icosphere();owners=load['plate_ids'];require(owners==[0,1],'Original complete two-owner legacy load')
+    source=load['source'];beta=F.from_float(source['basal_drag_pa_s_m']);R=radius
+    T=[QI(0) for _ in range(6)];D=[[QI(0) for _ in range(6)] for _ in range(6)]
+    for row in load['owner_cell_area_bounds_m2']:
+        cell,owner=row['cell'],row['owner'];area=qi(row['area_bounds_m2']);q=tuple(F.from_float(float(v)) for v in positions[cell])
+        # The old source samples literal physical centroids. Preserve its
+        # actual float multiplication semantics before exact accumulation.
+        amplitude=fsum((source['amplitude_constant'],*(a*float(x) for a,x in zip(source['amplitude_gradient'],positions[cell]))))
+        floattraction=source['basal_drag_pa_s_m']*float(R)*amplitude*np.cross(np.asarray(source['angular_velocity_rad_s']),positions[cell])
+        tau=tuple(F.from_float(float(v)) for v in floattraction)
+        crossing=(q[1]*tau[2]-q[2]*tau[1],q[2]*tau[0]-q[0]*tau[2],q[0]*tau[1]-q[1]*tau[0]);norm2=sum((v*v for v in q),F(0));start=3*owners.index(owner)
+        for i in range(3):
+            T[start+i]+=R*crossing[i]*area
+            for j in range(3):D[start+i][start+j]+=beta*R*R*((norm2 if i==j else F(0))-q[i]*q[j])*area
+    for i in range(6):
+        saved=qi(load['torque_bounds_nm'][i]);require(saved.lo<=T[i].lo<=T[i].hi<=saved.hi,'Original literal903 torque lies in complete saved bound')
+        counts['legacy_literal_centroid_contract_checks']+=1
+        for j in range(6):
+            saved=qi(load['drag_bounds_nm_s'][i][j]);require(saved.lo<=D[i][j].lo<=D[i][j].hi<=saved.hi,'Original literal903 drag lies in complete saved bound')
+            counts['legacy_literal_centroid_contract_checks']+=1
+    return dict(legacy_complete_owner6_force_and36_drag_bounds_reconstructed=True,
+        literal_float_centroids_and_traction_products_replayed=True,
+        source_amplitude_multiplies_drag=False,legacy_centroid_norm_forced_to_exact_one=False,
+        legacy_centroids_promoted_to_true_material_labels=False,
+        legacy_centroid_contract_identical_to_new_normalized_bottom_contract=False)
+
+
+def audit_witnesses(system,source903,source895,source907,counts):
+    hot=source903['hot_mean_system'];cold=source895['cold_material_carrier_system'];mixed=source907['mixed_force_system']
+    load=json.loads(hot['complete_current_load_json']);rows=load['material_cell_measures'];witnesses=[json.loads(x) for x in system['source_row_witnesses_json']]
+    require(system['complete_source903_load_json']==hot['complete_current_load_json']==mixed['complete_current_load_json'],'Entire full saved903 physical load preserved')
+    require(system['source903_load_sha256']==load['load_sha256'] and system['source_epoch_sha256']==load['epoch_sha256'] and system['source_mesh_sha256']==load['mesh_sha256']=='a333aa866eee6828f9a9fd7c84547ba681fe011f881f5e7ab98ec6e20f82ee66','Original source geometry/load/mesh exact binding')
+    require(system['source_mantle_json']==encoded(load['source']).decode() and rat(system['source_radius_m'])==F(100000),'Source fixed radius and entire mantle packet')
+    require(load['archived_material_receives_basal_loading'] is False and load['geometric_measure_midpoint_is_material_debit'] is False,'Original archive exclusion and complete measures retained')
+    expected=dict(basal_drag_pa_s_m=number(BETA),amplitude_constant=number(AMPLITUDE_CONSTANT),amplitude_gradient=tuple(number(v) for v in AMPLITUDE_GRADIENT),angular_velocity_rad_s=tuple(number(v) for v in OMEGA))
+    require(number(load['source']['basal_drag_pa_s_m'])==expected['basal_drag_pa_s_m'] and vector(load['source']['amplitude_gradient'])==expected['amplitude_gradient'] and vector(load['source']['angular_velocity_rad_s'])==expected['angular_velocity_rad_s'] and number(load['source']['amplitude_constant'])==expected['amplitude_constant'],'Every independent prescribed source coefficient literal retained')
+    require(len(rows)==len(witnesses)==68 and sum(r['material_kind']=='original_live' for r in rows)==59 and sum(r['material_kind']=='hot_birth' for r in rows)==9 and len(load['correction_cell_measures'])==1,'All68 positive rows59cold9hot, once-only paired correction metadata')
+    cold_banks={b['component_id']:b for b in cold['banks']};hot_bodies={b['component_id']:b for b in hot['bodies']}
+    vertices,faces,_=legacy_icosphere();seen=set();minimum=None
+    for index,(row,w) in enumerate(zip(rows,witnesses)):
+        require(w['source_material_cell_index']==index and w['complete_source_material_cell_row']==row,'Authentic registered source row, exact order, used once')
+        key=(row['cell'],row['component_id']);require(key not in seen,'Each material-cell source row occurs once');seen.add(key)
+        area=qi(row['area_bounds_m2']);require(area.lo>0 and w['source_weight_bounds_m2']==row['area_bounds_m2'],'Strictly positive complete corrected source reference weight; no floor')
+        minimum=area.lo if minimum is None else min(minimum,area.lo)
+        require(w['source_binding_sha256']==digest(dict(packet903=source903['packet_sha256'],load=load['load_sha256'],row=row)),'Complete903 row source binding')
+        require(w['corrected_source_weight_included_once'] is True and w['paired_correction_added_as_extra_weight'] is False and w['point_is_material_cell_centroid'] is False and w['positive_curved_subset_point_claimed'] is False,'Explicit new material trace rule keeps complete corrected area once')
+        require(w['source_component_id']==row['component_id'] and w['source_material_id']==row['material_id'] and w['source_original_parent_id']==row['original_parent_id'] and w['source_cell']==row['cell'] and w['owner']==row['owner'] and w['material_kind']==row['material_kind'],'Full actual material/owner/source row identity')
+        bank=(cold_banks if row['material_kind']=='original_live' else hot_bodies)[row['component_id']]
+        require(rat(w['material_depth_m'])==rat(bank['areal_material_thickness_m']) and rat(bank['radius_m'])==F(100000),'Authentic full source bottom label and fixed source radius')
+        support=json.loads(bank['source_context_json'])['embedding_bank'] if row['material_kind']=='original_live' else json.loads(bank['complete_common_bank_json'])
+        mask=json.loads(support['complete_mask_source_json']);proxy=mask['proxy_geometries'][w['source_proxy_index']]
+        require(json.loads(w['source_proxy_polygon_json'])==proxy,'Witness uses actual full source proxy, no containing-chart material substitution')
+        source_history=json.loads(support['source_owner_history_json']) if row['material_kind']=='original_live' else []
+        world_definition=json.loads(w['source_world_ray_json']);reference=tuple(rat(v) for v in world_definition['reference']);literal_ray=tuple(rat(v) for v in w['original_ray'])
+        require(world_definition['kind']=='seed' and world_definition['planes']==[] and world_definition['sign']==1 and world_definition['rotations']==source_history and all(v==0 for v in (reference[1]*literal_ray[2]-reference[2]*literal_ray[1],reference[2]*literal_ray[0]-reference[0]*literal_ray[2],reference[0]*literal_ray[1]-reference[1]*literal_ray[0])) and sum((a*b for a,b in zip(reference,literal_ray)),F(0))>0,'Complete true source world ray retains exact original label and ordered pose once')
+        ray=vector(w['original_ray']);world=mpmap(ordered_pose(source_history),ray) if row['material_kind']=='original_live' else ray
+        if row['material_kind']=='original_live':
+            require(w['endpoint_allocation']=='AUTHENTIC_ENDPOINT_LIVE_ORIGINAL_MATERIAL','Actual original LIVE witness allocation')
+            require(type(w.get('cold_live_whole_clock_proof_json')) is str or type(w['cold_point_chronology_json']) is str,'Whole actual first-entry source chronology or full OLD-clock zero-activation proof retained')
+            if type(w.get('cold_live_whole_clock_proof_json')) is str:
+                audit_old_live_receipt(json.loads(w['cold_live_whole_clock_proof_json']),w,bank,counts)
+                require(w['material_live_proof_is_endpoint_only'] is False and w['cold_historical_activation_beta_zero_proved'] is True,'Original source LIVE proof covers the entire OLD clock')
+            if type(w['cold_point_chronology_json']) is str:
+                chronology=json.loads(w['cold_point_chronology_json'])
+                require(chronology['point_chronology_sha256']==digest({k:v for k,v in chronology.items() if k!='point_chronology_sha256'}),'Complete true first-entry chronology source seal')
+                require(chronology['original_parent_id']==row['original_parent_id'] and tuple(rat(v) for v in chronology['original_point'])==literal_ray and chronology['material_state_sha256']==json.loads(hot['complete_original_material_state_json'])['state_sha256'],'Exact first-entry original label and whole original material transaction')
+                if chronology['first_entry_certificate'] is not None:
+                    require(chronology['first_entry_certificate']['first_entry_time_fraction'] is None,'Source-LIVE original witness has no first archive entry')
+            inward=vector(bank['original_quarter_inward']);require(dot(inward,ray)>0,'Original material hemisphere membership')
+        else:
+            require(w['endpoint_allocation']=='AUTHENTIC_HOT_SOURCE_PROXY_INTERIOR' and w['cold_point_chronology_json'] is None,'Actual HOT source proxy with no archived/live allocation alias')
+        for poly in (proxy,json.loads(w['source_intersection_polygon_json'])):
+            for plane in poly['supports']:
+                normal=mpmap(ordered_pose(plane['rotations']+poly['pose']),vector(plane['normal']))
+                require(dot(world,normal)>0,'Independent220digit strict actual source/native intersection membership')
+                counts['independent_strict_material_support_sign_checks']+=1
+        face=vertices[faces[row['cell']]]
+        for a,b in zip(face,(face[1],face[2],face[0])):
+            normal=cross(tuple(number(float(x)) for x in a),tuple(number(float(x)) for x in b));require(dot(world,normal)>0,'Independent physical source mesh cell membership')
+            counts['independent_strict_material_support_sign_checks']+=1
+        counts['exact_source_and_scope_checks']+=10
+    return dict(load=load,cold_banks=cold_banks,hot_bodies=hot_bodies,witnesses=witnesses,minimum_positive_reference_weight_m2=str(minimum))
+
+
+def kernel_controls():
+    counts=dict(independent_mpmath_derivative_controls=0,exact_rational_algebra_controls=0,analytic_identity_checks=0)
+    cases=[]
+    # Explicit all101 nonzero rates and ten mixed geometry directions; bottom
+    # radius has no effect on the prescribed source radius calibration.
+    for case,y in enumerate(((mp.mpf(3),mp.mpf(4),mp.mpf(5)),(mp.mpf(-7),mp.mpf(2),mp.mpf(11)),(mp.mpf(1),mp.mpf(0),mp.mpf(0)))):
+        radius=mp.mpf('1737100')
+        source=source_at(y,radius)
+        for k in range(3):
+            for a in range(3):
+                def scalar(t):
+                    yy=list(y);yy[k]+=t;qq=scaled(yy,1/mp.sqrt(dot(yy,yy)))
+                    return number(BETA)*radius*(number(AMPLITUDE_CONSTANT)+dot(vector(AMPLITUDE_GRADIENT),qq))*cross(vector(OMEGA),qq)[a]
+                got=mp.diff(scalar,mp.mpf(0))
+                identity(got-source['dtau'][a][k],'Independent normalized-source derivative',counts,got)
+                counts['independent_mpmath_derivative_controls']+=1
+        identity(dot(source['tau'],y),'Angular driving is tangential',counts,mp.sqrt(dot(source['tau'],source['tau']))*mp.sqrt(dot(y,y)))
+        non_symmetric=any(source['dtau'][i][k]!=source['dtau'][k][i] for i in range(3) for k in range(3))
+        require(non_symmetric,'Actual spatial source derivative is generally nonsymmetric')
+        cases.append(dict(case=case,angular_source_jacobian_is_nonsymmetric=True))
+    return counts,cases
+
+
+def project_modules():
+    return {k:v for k,v in sys.modules.items() if k in ('tectonics','analysis','tests','scripts') or k.startswith(('tectonics.','analysis.','tests.','scripts.'))}
+
+
+def check_binding(dto):
+    require(dto['binding_sha256']==digest({k:v for k,v in dto.items() if k not in ('format','binding_sha256')}),'Complete registered DTO mathematical source seal')
+
+
+def source_snapshot():
+    source={str(p.relative_to(ROOT)):raw_sha(p) for folder in ('tectonics','tests','analysis','scripts') for p in sorted((ROOT/folder).rglob('*.py'))}
+    require(raw_sha(SOURCE927_MAP)==SOURCE927_MAP_RAW,'Frozen927 exact source map intact')
+    old=json.loads(SOURCE927_MAP.read_bytes())
+    require(len(old)==927 and len(source)==931 and set(source)==set(old)|set(NEW_PY) and all(source[p]==v for p,v in old.items()),'Exactly927 unchanged inherited PY plus4 authorized source bodies')
+    return source
+
+
+def scope_check(raw,counts):
+    for field in ('clocks_advanced','new_mixed_force_equilibrium_certified','physical_material_admission_authorized','whole_clock_all_pair_admission_authorized','full_system_temporal_path_work_certified','original_point_1_completed','continuum_basal_quadrature_certified','continuum_whole_base_quadrature_certified','complete_actual_bottom_support_certified','full_general_state_mixed_operator_certified','general_state_full_physics_operator_certified','physical_current_area_traction_law_certified','physical_source_force_prestress_work_handover_certified'):
+        if field in raw:require(raw[field] is False,'Physical scope remains unadopted: '+field);counts['exact_source_and_scope_checks']+=1
+    if 'accepted_new_native_intervals' in raw:require(type(raw['accepted_new_native_intervals']) is int and raw['accepted_new_native_intervals']==0,'No accepted new physical interval')
+
+
+def run(native_path,output_path):
+    started=time.monotonic();before_modules=project_modules();before_sources=source_snapshot()
+    native_path=Path(native_path).resolve();output_path=Path(output_path).resolve();require(not output_path.exists(),'A fresh independent output is required')
+    authoritative=(SOURCE895,SOURCE903,SOURCE907,SOURCE927_MAP,GEOMETRY_SOURCE,LEGACY_SOURCE,Path(__file__).resolve())
+    pins=(SOURCE895_RAW,SOURCE903_RAW,SOURCE907_RAW,SOURCE927_MAP_RAW,GEOMETRY_RAW,LEGACY_RAW,None)
+    authorities={str(p):raw_sha(p) for p in authoritative}
+    for p,pin in zip(authoritative,pins):
+        if pin is not None:require(authorities[str(p)]==pin,'Unchanged complete immutable authority: '+str(p))
+    input_sha=raw_sha(native_path);native=json.loads(native_path.read_bytes())
+    require(native['sha256']==digest({k:v for k,v in native.items() if k!='sha256'}),'Whole genuine native931 packet seal')
+    require(native['status']=='PASS_NATIVE931_DECLARED_MATERIAL_BASAL_TRACE_LOADING','Completed genuine source-bound native931 control')
+    counts,cases=kernel_controls();counts.update(exact_rational_operator_enclosure_replays=0,scalar_enclosure_checks=0,exact_source_and_scope_checks=0,exact_rotation_certificate_checks=0,independent_hot_complete_geometry_checks=0,independent_authentic_cold_bottom_geometry_checks=0,independent_strict_material_support_sign_checks=0,legacy_literal_centroid_contract_checks=0,independent_old_source_live_whole_clock_gap_proofs=0,exact_old_source_live_receipt_checks=0)
+    scope_check(native,counts)
+    for k,v in (('full_mixed_force_and_tangent_certified',False),('reference_preparation_work_paid',False),('full_system_preparation_work_certified',False),('historical_archived_three_dimensional_prestress_recovered',False),('new_preparation_path_constitutive_admissibility_certified',False),('general_finite_owner_state_chart_defined',False),('previous_tensor_quadrature_reexecuted',False),('historical_force_solve_reexecuted',False)):
+        require(native[k] is v,'Physical unchanged native scope: '+k)
+    for k,v in (('source_geometry_elapsed_time_s',0),('contact_geometry_elapsed_time_s',2000000),('memory_elapsed_time_s',1000000),('material_geometry_elapsed_time_s',1000000),('accepted_original_native_intervals',1),('accepted_new_native_intervals',0),('original_point_1_remaining_work_blocks',1)):
+        require(type(native[k]) is int and native[k]==v,'Original accepted physical clock/status: '+k)
+    require(len(native['remaining_physical_conditions'])==3 and native['complete_trace_restart_equal'] is True and native['complete_loading_restart_equal'] is True,'Same three physical remaining conditions, full exact restarts')
+    source895=json.loads(SOURCE895.read_bytes());source903=json.loads(SOURCE903.read_bytes());source907=json.loads(SOURCE907.read_bytes())
+    trace_system=native['trace_system'];loading_system=native['loading_system']
+    check_binding(trace_system);check_binding(loading_system);scope_check(trace_system,counts);scope_check(loading_system,counts)
+    order=source907['mixed_force_system']['coordinate_order']+[['preparation','cold_depth_twist','lambda']]
+    require(trace_system['coordinate_order']==loading_system['coordinate_order']==order and trace_system['coordinate_units']==['rad']*6+['m']*94+['1'],'Complete unchanged100 catalog plus genuine preparation lambda')
+    require(loading_system['trace_system_binding_sha256']==trace_system['binding_sha256'],'Complete declared basal system binds genuine trace port')
+    require(rat(loading_system['source_radius_m'])==F(100000) and rat(loading_system['basal_drag_pa_s_m'])==BETA and tuple(rat(v) for v in loading_system['mantle_angular_velocity_rad_s'])==OMEGA and rat(loading_system['prescribed_amplitude_constant'])==AMPLITUDE_CONSTANT and tuple(rat(v) for v in loading_system['prescribed_amplitude_gradient'])==AMPLITUDE_GRADIENT,'Entire literal fixed-global angular source and independent drag retained')
+    source=audit_witnesses(trace_system,source903,source895,source907,counts)
+    legacy=audit_legacy903_contract(source['load'],F(100000),counts)
+    require([q['label'] for q in native['queries']]==['zero_source_zero_rates','half_preparation_full_body_rates','same_state_opposite_rates','full_preparation_cold_body_rates'],'All four declared state/rate controls present')
+    seen=set();query_summaries=[];geometry_seen=set()
+    for query in native['queries']:
+        label=query['label'];trace_response=query['trace_response'];loading_response=query['loading_response']
+        check_binding(trace_response);check_binding(loading_response);scope_check(trace_response,counts);scope_check(loading_response,counts)
+        require(trace_response['system_binding_sha256']==trace_system['binding_sha256'] and loading_response['system_binding_sha256']==loading_system['binding_sha256'] and loading_response['trace_evaluation_binding_sha256']==trace_response['binding_sha256'],'Every complete trace/force response keeps exact state/source association')
+        require(query['coordinate_values']==trace_response['coordinate_values']==loading_response['coordinate_values'] and query['coordinate_rates']==loading_response['coordinate_rates'],'Exact state and101 physical rate query retained')
+        require(len(query['coordinate_values'])==len(query['coordinate_rates'])==101 and not any(rat(v) for v in query['coordinate_values'][:6]),'Full literal101 state and explicit rate vector, queried zero-owner slice')
+        require(query['complete_trace_response_restart_equal'] is True and query['complete_loading_response_restart_equal'] is True,'Every complete exact-query state/rates restart')
+        require(loading_response['state_tangent_assumed_symmetric'] is False and loading_response['conservative_spatial_loading_potential_used'] is False and loading_response['physical_time_schedule_inferred_from_calibration'] is False,'No symmetric tangent, global loading potential or fabricated time schedule')
+        records=[json.loads(x) for x in trace_response['trace_records_json']]
+        require(len(records)==68 and len(loading_response['per_trace_receipts_json'])==68,'Full68 source traces and pertrace operator receipts once')
+        for record,witness,receipt_raw in zip(records,source['witnesses'],loading_response['per_trace_receipts_json']):
+            receipt=json.loads(receipt_raw)
+            require(all(record[k]==v for k,v in witness.items()),'All exact original material/source witness fields preserved in current101 state')
+            require(receipt['source_material_cell_index']==record['source_material_cell_index'] and receipt['source_binding_sha256']==record['source_binding_sha256'] and receipt['trace_record_sha256']==digest(record),'Entire actual position/J/H/source fields included in loading record receipt')
+            require(not set(record['global_coordinate_indices'])&set(range(92,100)),'Eight authenticated source arm-only fields do not invent a basal body velocity')
+        if trace_response['binding_sha256'] not in geometry_seen:
+            coordinates=dict(values=trace_response['coordinate_values'],precision=trace_response['precision'],order=order)
+            for raw_record in records:
+                record=dict(raw_record,_precision=trace_response['precision'],_counts=counts)
+                if record['material_kind']=='original_live':
+                    bank=source['cold_banks'][record['source_component_id']];record['_bank_omega']=bank['angular_rate_per_physical_volume_depth_m'];audit_cold_geometry(record,coordinates,counts)
+                else:audit_hot_geometry(record,source['hot_bodies'][record['source_component_id']],coordinates,counts)
+            geometry_seen.add(trace_response['binding_sha256'])
+        qreplay(records,loading_response,F(100000),counts)
+        maths=mpaudit(records,loading_response,F(100000),counts,derivatives=any(rat(v) for v in query['coordinate_rates']))
+        active=[i for i in range(6,92) if rat(loading_response['drag_bounds'][i][i]['lo'])>0]
+        possible=[i for i in range(6,92) if rat(loading_response['drag_bounds'][i][i]['hi'])>0]
+        require(possible==query['possibly_nonzero_drag_body_coordinate_indices'] and query['positive_drag_diagonal_lower_bounds_used'] is True,'Actual certified positive Gram support uses strict lower bounds, separate from nonzero upper possibilities')
+        require(active==query['positive_weight_drag_body_coordinate_indices'],'Actual complete positive-measure modal Gram support retained')
+        every_modal_column_positive=active==list(range(6,92))
+        antisymmetric=0
+        for i in range(101):
+            for j in range(i):
+                a=qi(loading_response['state_tangent_bounds'][i][j])-qi(loading_response['state_tangent_bounds'][j][i])
+                antisymmetric+=int(a.lo>0 or a.hi<0)
+        require(antisymmetric==query['strictly_antisymmetric_state_tangent_entry_count'] and antisymmetric>0,'Actual state tangent has certified unsymmetric entries')
+        for i in range(92,100):
+            require(qi(loading_response['residual_bounds'][i]).lo==qi(loading_response['residual_bounds'][i]).hi==0,'Authentic arm-only residual exactly zero')
+            require(all(qi(v).lo==qi(v).hi==0 for v in loading_response['drag_bounds'][i]),'Authentic arm-only drag row exactly zero')
+        query_summaries.append(dict(label=label,independent_full101_operator_checked=True,independent_10201_entries_per_matrix_checked=True,positive_modal_gram_coordinate_count=len(active),positive_modal_gram_coordinate_indices=active,possibly_nonzero_modal_gram_coordinate_indices=possible,every_modal_coordinate_has_certified_positive_gram_support=every_modal_column_positive,strict_antisymmetric_entry_count=antisymmetric,**maths))
+    plus,minus=native['queries'][1]['loading_response'],native['queries'][2]['loading_response']
+    require(plus['prescribed_generalized_force_bounds']==minus['prescribed_generalized_force_bounds'] and plus['drag_bounds']==minus['drag_bounds'] and plus['drag_dissipation_bounds_w']==minus['drag_dissipation_bounds_w'],'Same-state rate reversal keeps source/drag and even dissipation')
+    require(all(rat(a)==-rat(b) for a,b in zip(plus['coordinate_rates'],minus['coordinate_rates'])),'All101 physical rates reversed explicitly')
+    require(source_snapshot()==before_sources and raw_sha(native_path)==input_sha and all(raw_sha(Path(p))==v for p,v in authorities.items()),'All inherited927/new4 PY, whole authorities, native and auditor unchanged throughout actual audit')
+    require(project_modules()==before_modules,'Independent auditor imported no project physics or control modules')
+    result=dict(format='independent-native-common-material-basal101-audit-1',status='PASS_INDEPENDENT_ACTUAL_SOURCE_BASAL101',precision_decimal_digits=220,counts=counts,source_python_file_count=931,inherited_source_python_file_count=927,additive_source_python_file_count=4,positive_reference_source_row_count=68,original_live_material_trace_count=59,hot_birth_material_trace_count=9,independent_distinct_complete_trace_response_count=len(geometry_seen),minimum_positive_reference_weight_m2=source['minimum_positive_reference_weight_m2'],query_summaries=query_summaries,standalone_angular_kernel_controls=cases,legacy903_literal_contract=legacy,native_input_path=str(native_path),native_input_raw_sha256=input_sha,authoritative_input_raw_sha256=authorities,executed_new_source_raw_sha256={p:before_sources[p] for p in NEW_PY},all101_load_residual_rows_and10201_drag_state_velocity_tangent_entries_checked=True,all_positive_corrected_source_reference_weights_used_once=True,all_original_cold_bottom_labels_and_nonlinear_Tlambda_fields_reconstructed_without_midpoints=True,all_hot_full_mask_implicit_jacobians_and_curvatures_replayed_exact_rationally=True,all_material_trace_owner_first_and_second_derivatives_checked=True,interval_representatives_used_only_for_independent_algebra_diagnostics=True,full_body86_projected_driving_and_drag_fields_have_positive_source_measure=all(q['every_modal_coordinate_has_certified_positive_gram_support'] for q in query_summaries),old_force_or_quadrature_or_test_or_audit_mains_executed=False,project_physics_modules_imported=False,continuum_whole_base_quadrature_certified=False,complete_actual_bottom_support_certified=False,general_state_full_physics_operator_certified=False,full_physical_material_force_prestress_work_handover_certified=False,reference_preparation_work_paid=False,new_mixed_force_equilibrium_certified=False,physical_material_admission_authorized=False,whole_clock_all_pair_admission_authorized=False,full_system_temporal_path_work_certified=False,clocks_advanced=False,accepted_new_native_intervals=0,original_point_1_completed=False,elapsed_seconds=time.monotonic()-started)
+    result['report_sha256']=digest(result);output_path.write_bytes(encoded(result)+b'\n');print(encoded(result).decode());return result
+
+
+if __name__=='__main__':
+    parser=argparse.ArgumentParser();parser.add_argument('--native');parser.add_argument('--output');parser.add_argument('--kernel-only',action='store_true')
+    args=parser.parse_args()
+    if args.kernel_only:
+        counts,cases=kernel_controls();print(encoded(dict(status='PASS_INDEPENDENT_BASAL_KERNEL_CONTROLS',precision_decimal_digits=220,counts=counts,cases=cases)).decode())
+    else:
+        require(args.native and args.output,'Final audit requires actual native and fresh output');run(args.native,args.output)

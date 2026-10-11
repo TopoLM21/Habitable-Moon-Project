@@ -1,0 +1,859 @@
+"""Reconstructed stdlib883 evidence closure after environment restart.
+
+This is NEW source, not a recovery of lost draft07 bytes. No project imports,
+physics, tests, solver, quadrature, baseline helper or auditor main runs here.
+Old1633 preservation is saved receipts plus recorded raw hashes and strict
+closures. Missing/wrong current TMP inputs fail; this reader never restores.
+Manifest closes actual discovered component files; final documents are linked
+separately BEFORE/AFTER reader execution. Frozen source epoch is actual883.
+"""
+from pathlib import Path,PurePosixPath
+import argparse,ast,hashlib,json,sys,time
+ROOT=Path('/workspace/Habitable-Moon-Project')
+PARENT=ROOT/'analysis/geometric_native_common_local_source_work_validation'
+PRIOR=ROOT/'analysis/geometric_native_common_material_surface_transport_validation'
+OLD_FINAL=ROOT/'analysis/geometric_native_common_material_surface_transport_final_readback'
+RELEASE_NAME='release_validation_02'
+RELEASE=PARENT/RELEASE_NAME
+MANIFEST_RAW='37d61376834819cb37d7ecfde9369d0e956fc455037aab720715fc2aa77cba8b'
+MANIFEST_SEAL='90d2709f53073a343ec908e8a41cb315c1cef46ecb19a4a5f48c4a3b57264325'
+AUDITOR_BASENAME='independent_audit_release02_source.txt'
+AUDITOR_SHA='8ae507a66b9087de086a7031d5f18e34336731792f6ef6f91f268fcd7096fc1f'
+REUSABLE_SHA='0ab740087c8a1ca3f8aee474e2d4b114d6ab8805eaf035419bb85248c42ecb25'
+ADDED=frozenset(('tectonics/geometric_native_common_local_source_work.py','tests/test_geometric_native_common_local_source_work.py','analysis/geometric_native_common_local_source_work_validation/native_control.py','analysis/geometric_native_common_local_source_work_validation/validate.py'))
+OUTPUTS=frozenset(('pytest.log','control_console.log','native_control/report.json','native_control/source_packet.json'))
+SOURCE_FREEZE_SEAL='13f56e1afe8678f1c555e7e859c0af3c25a89163423164c5f632cd443f741367'
+LOST_DRAFT_HASHES={'manifest_draft07':'04f077937624f667f3caf6ef4ae14bbd4c215e34f2981110a5445ef4d8736ab7','reader_draft07':'c03233e6ae93d452704824403b1b072486e3a44750067d64cdcd29f1f47d9ac5','preflight_v2':'7f8455f1e4f475cbf3e3e59f39653189ef86a662e85b11ef50080d46b9b85aba','recovery_template_v2':'453b6fa67be37a0a388ac72761bbbd389ea46ef28d20409d1126f7560e4af6fb'}
+MAP='5ec421080c7450b362ae5a5b3d02e1b3f82ecf67ee514034a56e60b4a86d4c51'
+MAP_RAW='1638c727bea07487d9f9c734e0aa5469bde0e79032221b3d1f4134379905a360'
+OLD_MAP='4a75d4bc7d404fc11d5d252302fe6b6d961797b4a637f921c38acb679485b79c'
+OLD_MAP_RAW='1b948eace979f3125756f6f0dea803fb55d0d2e87650890a2236c07502b0c336'
+OLD_MANIFEST_RAW='1347310d09095ce8e3dff7db970262524c323a5542861fa2402bb1431c7f7e4b'
+OLD_MANIFEST_SEAL='651f204118935dadff0a6326b5534772e30a7e2af9374c41ba5ac099641cde66'
+SCOPE='LOCAL_SOURCE_FORCE_WORK_WITH_DECLARED_INTERNAL_RESIDUAL_COMPONENT_ONLY'
+REMAINING=['Whole-source physical material and old-force/prestress/work handover, HOT law/mean chart, loads/drag and NEW mixed equilibrium', 'Whole-clock all-pair admission including reverse C5 to C1', 'Accepted continuation with independent path work, balances and joint restart']
+ANCESTRY=(('analysis/geometric_native_affine_body_validation/release_validation_01', 826, 39, 'a5ed86778a9388a56df2c89d758d17795c861c118bd4de66c6be0b5400b084db'), ('analysis/geometric_native_cold_body_validation/release_validation_01', 833, 20, 'a0843a4f9d886e61125eae0bda9c4964b60d54736b539776b1d32d46d8e56a67'), ('analysis/geometric_native_common_reference_validation/release_validation_01', 841, 36, '9898f31f796006a7791140bf1c290c0e1605555a12e476e1585ce3f5992a743f'), ('analysis/geometric_native_common_contact_validation/release_validation_01', 847, 25, 'e8ffabb1a29c1fb021e94fe53e815b6ad8d16ea14e9103a30b9f7428ac9ab847'), ('analysis/geometric_native_common_contact_force_validation/release_validation_02', 853, 19, '1d7a6ac8113a408aab6764f1c4a9fccb09f8d48184f5118434fc685574504313'), ('analysis/geometric_native_common_contact_transfer_validation/release_validation_01', 859, 21, '1b5e1695f2ddfa8ea879619e91cde6b4cfb2c7c7c89e34db04148d8765f7f9ae'), ('analysis/geometric_native_common_source_allocation_validation/release_validation_02', 863, 17, '7df81606a168656cd51208a71d7ad425714751f736d9ed4ca50218263e106f95'), ('analysis/geometric_native_common_source_carrier_validation/release_validation_02', 867, 18, '47b5c882c041f5a2c6d460c71eae11091a6217ff78a0df14af9b57f214ba633e'), ('analysis/geometric_native_common_material_transfer_validation/release_validation_01', 871, 14, '44d12b3fb10edfef90a83c50385278b45135d1b051a5733d2b2f7d98f2755b56'), ('analysis/geometric_native_common_strain_projection_validation/release_validation_03', 875, 14, 'a7e74fc5d8774eaaabdcf3919357d27dbd6c35f0c79ea741cb0a89057e51e10e'), ('analysis/geometric_native_common_material_surface_transport_validation/release_validation_02', 879, 14, '82f3b165a6a4da350ae83a587ea77ce114aef97f7794d7e6e7a871dfd900715c'))
+OLD_PACKETS={'carrier': ('analysis/geometric_native_common_source_carrier_validation/release_validation_02/native_control/source_packet.json', '265206430b4c864db32bce1be0a9a75b71fa180158f3d81e4f52131bebdf320c', None), 'material': ('analysis/geometric_native_common_material_transfer_validation/release_validation_01/native_control/source_packet.json', 'a9fcc7874c0e68940e20ded658748300f55d9f1d296db5c9d67b59269ac8b3ed', 'cd1e2457a857b47891cd40a89219abfac3aa2228028aa9636f0e77f7a10082dd'), 'projection': ('analysis/geometric_native_common_strain_projection_validation/release_validation_03/native_control/source_packet.json', '2ddf12415b9abecbbeead78a203ba82d7e18fea84bc9197aa789a607514939b2', 'f4c5f9519698c28bf12b9854dc05f78704f25068fca427478a0cfc98786f1a8d'), 'surface': ('analysis/geometric_native_common_material_surface_transport_validation/release_validation_02/native_control/source_packet.json', 'f2884284f663564d304537f91614efbb01e5b7df5ebdab86ac7eb6e77287ee64', '368a524a954ac5f2ba3a6b92c182d34d1c3567ba7df1314c0afd02b2cff2c23e')}
+AUDIT_FIELDS=('status', 'audit_scope', 'final_python_sources', 'unchanged_prior_python_sources', 'fresh_tests', 'source_map_canonical_sha256', 'frozen_source_map_raw_sha256', 'source_map_before_after_identical', 'added_python_source_count', 'added_python_sources', 'output_closure_count', 'output_manifest', 'wrapper_raw_sha256', 'wrapper_selfseal', 'native_raw_sha256', 'native_selfseal', 'source_packet_raw_sha256', 'source_packet_selfseal', 'initial_current_release_raw_sha256', 'initial_current_release_selfseal_by_path', 'independent_complete100_query_count', 'independent_source14_reference_query_count', 'independent_local_atom_query_count', 'independent_source_beam_query_count', 'independent_joint_body_internal_atom_path_count', 'independent_registered_projection_and_bulk_remainder_count', 'independent_original_material_attachment_count', 'independent_archived_original_donor_attachment_count', 'independent_live_original_donor_attachment_count', 'independent_live_original_receiver_attachment_count', 'independent_geometry_only_genuine_surface_binding_count', 'global_coordinate_count', 'owner_coordinate_count', 'cold_coordinate_count', 'hot_coordinate_count', 'source_internal_coordinate_count', 'complete100_potential_gradient_and_prestress_hessian_rederived', 'body_internal_Gv_second_variations_retained', 'fresh_owner_material_internal_spin_and_director_couples_retained', 'receiver_owner_over_material_mixed_scalar_terms_cancel_exactly', 'force_hyperstress_internal_and_owner_physical_work_is_minus_energy_gradient', 'joint_atom_path_potential_work_is_plus_energy_difference', 'joint_atom_paths_wholly_strict_compressed_by_quadratic_bernstein_bound', 'old16projected_atom_terms_replaced', 'serial_contact_and_column16_stores_retained_once', 'literal_global_beam_reference_energy_and_signed_residual_retained_once', 'beam_driver_is_common_strain_projection_plus_authentic_internal_residual', 'orthogonal_bulk_remainder8_retained_once', 'full_common_calibrated_cold_or_continuous_face_energy_added', 'old14_first_second_and_energy_source_only_restriction_rederived', 'old14_owner_internal_embedding_is_single_identity_injection', 'cold_zero_reference_is_symbolic_not_bulk_query', 'unknown_body_zero_bulk_energy_or_hessian_supplied', 'original875_nonzero_operator_equivalence_claimed', 'current_mechanical_directors_are_original_archival_owner_rotated_microdirectors', 'nanson_normals_substituted_into_contact_law', 'all_hundred_coordinates_necessary_proved', 'ninety_two_coordinate_reduction_impossible_proved', 'literal_original_q_normalized_in_source_mechanics', 'complete_old_certified_mode_and_integral_bounds_are_authenticated_inputs', 'previous879_field_or_nanson_mathematics_reexecuted', 'previous875_integral_quadrature_reexecuted', 'current_local_attachment_and_potential_algebra_independently_rederived', 'geometry_only_density_state_binding_tokens_reconstructed', 'source_state_or_work_advanced', 'old_work_ledgers_and_memory_stores_retained_without_reset', 'source_contact_epoch_s', 'source_memory_epoch_s', 'actual_material_reference_geometry_epoch_s', 'virtual_archival_source_geometry_epoch_s', 'physical_archived_three_dimensional_handover_certified', 'current_common_face_force_transition_certified', 'hot_receiving_law_certified', 'full_three_dimensional_rod_endpoints_recovered', 'whole_archived_three_dimensional_history_recovered', 'whole_face_measure_or_memory_integral_certified', 'new_mixed_force_equilibrium_certified', 'whole_clock_all_pair_admission_authorized', 'physical_material_admission_authorized', 'accepted_original_native_intervals', 'accepted_new_native_intervals', 'original_point_1_completed', 'original_point_1_remaining_work_blocks', 'remaining_physical_condition_count', 'remaining_physical_conditions', 'preserved_old1633_artifact_chain', 'old1633_preservation_is_saved_before_math_receipt_and_recorded277_raw_dependencies_and_strict_closures_only', 'baseline1633_reexecuted', 'preserved_879_closed_manifest_file_count', 'complete_old879_noncached_parent_file_set_checked_before_after_math', 'complete_old_final879_six_file_archive_closure_checked_before_after_math', 'preserved_879_recorded_raw_dependency_pin_count', 'preserved_old_final879_separate_readback_archive_file_count', 'preserved_879_and_separate_archive_raw_dependency_pin_count', 'preserved_authoritative_ancestry_release_closure_count_after_math', 'ancestry_release_wrapper_raw_sha256', 'complete_recorded_dependency_hashes_checked_before_after_math', 'dependency_raw_sha256', 'project_imports', 'old_pytest_or_control_reexecuted', 'historical_force_solver_reexecuted', 'old_contact_force_or_Hessian_quadratures_reexecuted', 'old_tensor_quadratures_reexecuted', 'old_auditor_mains_reexecuted', 'independent_fraction_geometry_uses_no_midpoint_or_tolerance_classification', 'baseline879_reusable_producer_sha256', 'baseline879_readback_path', 'baseline879_readback_raw_sha256', 'baseline879_readback_selfseal', 'baseline879_readback_timing', 'baseline879_projected_reader_report_path', 'baseline879_projected_reader_report_raw_sha256', 'baseline879_projected_reader_selfseal', 'executing_producer_raw_sha256_checked_before_after', 'auditor_script_sha256', 'evaluation_query_receipts', 'source_reference_query_receipts', 'seconds', 'audit_packet_sha256')
+AUDIT_STATIC_EXPECTED={'status': 'PASS', 'audit_scope': 'LOCAL_SOURCE_FORCE_WORK_WITH_DECLARED_INTERNAL_RESIDUAL_COMPONENT_ONLY', 'final_python_sources': 883, 'unchanged_prior_python_sources': 879, 'fresh_tests': 14, 'source_map_canonical_sha256': '5ec421080c7450b362ae5a5b3d02e1b3f82ecf67ee514034a56e60b4a86d4c51', 'frozen_source_map_raw_sha256': '1638c727bea07487d9f9c734e0aa5469bde0e79032221b3d1f4134379905a360', 'source_map_before_after_identical': True, 'added_python_source_count': 4, 'output_closure_count': 4, 'independent_complete100_query_count': 4, 'independent_source14_reference_query_count': 4, 'independent_local_atom_query_count': 64, 'independent_source_beam_query_count': 32, 'independent_joint_body_internal_atom_path_count': 64, 'independent_registered_projection_and_bulk_remainder_count': 8, 'independent_original_material_attachment_count': 32, 'independent_archived_original_donor_attachment_count': 8, 'independent_live_original_donor_attachment_count': 8, 'independent_live_original_receiver_attachment_count': 16, 'independent_geometry_only_genuine_surface_binding_count': 5, 'global_coordinate_count': 100, 'owner_coordinate_count': 6, 'cold_coordinate_count': 56, 'hot_coordinate_count': 30, 'source_internal_coordinate_count': 8, 'complete100_potential_gradient_and_prestress_hessian_rederived': True, 'body_internal_Gv_second_variations_retained': True, 'fresh_owner_material_internal_spin_and_director_couples_retained': True, 'receiver_owner_over_material_mixed_scalar_terms_cancel_exactly': True, 'force_hyperstress_internal_and_owner_physical_work_is_minus_energy_gradient': True, 'joint_atom_path_potential_work_is_plus_energy_difference': True, 'joint_atom_paths_wholly_strict_compressed_by_quadratic_bernstein_bound': True, 'old16projected_atom_terms_replaced': True, 'serial_contact_and_column16_stores_retained_once': True, 'literal_global_beam_reference_energy_and_signed_residual_retained_once': True, 'beam_driver_is_common_strain_projection_plus_authentic_internal_residual': True, 'orthogonal_bulk_remainder8_retained_once': True, 'full_common_calibrated_cold_or_continuous_face_energy_added': False, 'old14_first_second_and_energy_source_only_restriction_rederived': True, 'old14_owner_internal_embedding_is_single_identity_injection': True, 'cold_zero_reference_is_symbolic_not_bulk_query': True, 'unknown_body_zero_bulk_energy_or_hessian_supplied': False, 'original875_nonzero_operator_equivalence_claimed': False, 'current_mechanical_directors_are_original_archival_owner_rotated_microdirectors': True, 'nanson_normals_substituted_into_contact_law': False, 'all_hundred_coordinates_necessary_proved': False, 'ninety_two_coordinate_reduction_impossible_proved': False, 'literal_original_q_normalized_in_source_mechanics': False, 'complete_old_certified_mode_and_integral_bounds_are_authenticated_inputs': True, 'previous879_field_or_nanson_mathematics_reexecuted': False, 'previous875_integral_quadrature_reexecuted': False, 'current_local_attachment_and_potential_algebra_independently_rederived': True, 'geometry_only_density_state_binding_tokens_reconstructed': False, 'source_state_or_work_advanced': False, 'old_work_ledgers_and_memory_stores_retained_without_reset': True, 'source_contact_epoch_s': 2000000, 'source_memory_epoch_s': 1000000, 'actual_material_reference_geometry_epoch_s': 1000000, 'virtual_archival_source_geometry_epoch_s': 0, 'physical_archived_three_dimensional_handover_certified': False, 'current_common_face_force_transition_certified': False, 'hot_receiving_law_certified': False, 'full_three_dimensional_rod_endpoints_recovered': False, 'whole_archived_three_dimensional_history_recovered': False, 'whole_face_measure_or_memory_integral_certified': False, 'new_mixed_force_equilibrium_certified': False, 'whole_clock_all_pair_admission_authorized': False, 'physical_material_admission_authorized': False, 'accepted_original_native_intervals': 1, 'accepted_new_native_intervals': 0, 'original_point_1_completed': False, 'original_point_1_remaining_work_blocks': 1, 'remaining_physical_condition_count': 3, 'remaining_physical_conditions': ['Whole-source physical material and old-force/prestress/work handover, HOT law/mean chart, loads/drag and NEW mixed equilibrium', 'Whole-clock all-pair admission including reverse C5 to C1', 'Accepted continuation with independent path work, balances and joint restart'], 'preserved_old1633_artifact_chain': True, 'old1633_preservation_is_saved_before_math_receipt_and_recorded277_raw_dependencies_and_strict_closures_only': True, 'baseline1633_reexecuted': False, 'preserved_879_closed_manifest_file_count': 83, 'complete_old879_noncached_parent_file_set_checked_before_after_math': True, 'complete_old_final879_six_file_archive_closure_checked_before_after_math': True, 'preserved_879_recorded_raw_dependency_pin_count': 271, 'preserved_old_final879_separate_readback_archive_file_count': 6, 'preserved_879_and_separate_archive_raw_dependency_pin_count': 277, 'preserved_authoritative_ancestry_release_closure_count_after_math': 11, 'complete_recorded_dependency_hashes_checked_before_after_math': True, 'project_imports': False, 'old_pytest_or_control_reexecuted': False, 'historical_force_solver_reexecuted': False, 'old_contact_force_or_Hessian_quadratures_reexecuted': False, 'old_tensor_quadratures_reexecuted': False, 'old_auditor_mains_reexecuted': False, 'independent_fraction_geometry_uses_no_midpoint_or_tolerance_classification': True, 'baseline879_reusable_producer_sha256': '0ab740087c8a1ca3f8aee474e2d4b114d6ab8805eaf035419bb85248c42ecb25', 'baseline879_readback_timing': 'BEFORE_NEW_LOCAL_SOURCE_FORCE_WORK_MATHEMATICS', 'executing_producer_raw_sha256_checked_before_after': True}
+BASELINE_FIELDS=('status', 'baseline_source_count', 'current_python_source_count', 'source_stage', 'source_epoch', 'declared_next_component_physical_scope', 'new_component_physics_validated', 'original_point_1_completed', 'accepted_original_native_intervals', 'accepted_new_native_intervals', 'original_point_1_remaining_work_blocks', 'remaining_physical_conditions', 'exact_authorized_four_path_whitelist_checked', 'declared_additional_source_count', 'declared_additional_source_paths', 'additional_python_source_count', 'additional_python_sources', 'all879_python_sources_unchanged', 'complete_full_actual_source_map_independently_checked_before_after', 'complete_declared883_or_frozen879_source_map_before_after_identical', 'current_python_source_map_sha256', 'frozen879_source_map_canonical_sha256', 'frozen879_source_map_raw_sha256', 'frozen879_projection_disclosed', 'nested_reader_source_view', 'nested_reader_actual879_count_and_flags_are_projected_view_only', 'nested_reader_import_guard_view', 'nested_reader_project_import_flag_has_disclosed_preexisting_caller_exclusion', 'full_real_caller_project_modules_independently_identity_checked_before_after', 'preexisting_project_module_names', 'preexisting_project_modules_preserved', 'real_sys_modules_project_entries_deleted_or_replaced', 'reader_helper_registered_in_real_sys_modules', 'preserved_closed879_manifest_file_count', 'closed879_manifest_raw_sha256', 'closed879_manifest_selfseal', 'preserved_old1633_artifact_chain', 'old1633_preservation_is_saved_receipt_plus_recorded_raw_dependencies_and_ten_strict_ancestry_closures_only', 'authoritative_ancestry_release_closure_count', 'preserved_879_recorded_raw_dependency_pin_count', 'nested_reader_recorded_raw_dependency_pin_count', 'old_final879_readback_archive_closed_file_count', 'old_final879_readback_archive_raw_sha256', 'old_final879_readback_archive_selfseal', 'exact_six_file_final879_archive_closure_checked_before_after', 'recorded_raw_dependency_pin_count', 'dependency_raw_sha256', 'all271_recorded_dependency_raw_sha256_hashed_by_wrapper_before_and_after_nested_reader', 'all277_preserved_dependency_and_archive_raw_sha256_hashed_before_after', 'temporary_dependency_exact_closed_copy_associations', 'all_eight_current_temp_and_permanent_raw_copy_associations_verified_before_after', 'missing_or_wrong_temp_dependency_regenerated_or_restored', 'wrapper_selfseal', 'native_selfseal', 'packet_selfseal', 'independent_audit_selfseal', 'bootstrap_reader_raw_sha256', 'bootstrap_report_raw_sha256', 'bootstrap_report_selfseal', 'bootstrap_evidence_preserved', 'bootstrap_archive_association_raw_sha256', 'bootstrap_archive_association_selfseal', 'bootstrap_document_raw_sha256', 'bootstrap_document_hashes_are_initial_readback_only', 'projected_reader_report_path', 'projected_reader_report_raw_sha256', 'projected_reader_selfseal', 'project_imports', 'baseline1633_reexecuted', 'math_or_solver_or_test_or_quadrature_reexecuted', 'auditor_source_sha256', 'seconds', 'audit_sha256')
+BOOTSTRAP_SOURCE_SHA='f23843c4065d8d8bd4095a9f0b1ecbf948386e92ea1047506f09104bbf7a66f1'
+BOOTSTRAP_REPORT_RAW='cd9654ddb97418eb5fede3c445730dee88cfeee2eaeca09d56d2ec3a03e549a9'
+BOOTSTRAP_REPORT_SEAL='d5c033e61f88792b2539410bfbf26a64eb28e9836fa6344dfcdc58627e75a3a7'
+BOOTSTRAP_ASSOCIATION_RAW='a4612fd93eb0aa5208f840f72d515efe8233831ba01ebfa984eac33727a5da41'
+BOOTSTRAP_ASSOCIATION_SEAL='a6a307b2f5b24d9f1410760c1afd9e62008f77cf32da3c4582cf6b9181da8989'
+OLD_ARCHIVE_RAW='915950634fd8a6d30204c834b60a7fec100243522668b1190f33c4837871c397'
+OLD_ARCHIVE_SEAL='5dddf3bd8cdffab69cebdefe8c49ebbb61b516ce11519d719be080393885a401'
+OLD_ARCHIVE_PINS={'archive.json': '915950634fd8a6d30204c834b60a7fec100243522668b1190f33c4837871c397', 'console.log': '32f60449b0a22bf3d102ba5603061abfd08bd5906f515cf79f92da7cc4e1a052', 'manifest_console.log': 'cd38fe6f227a3e701ebd2b6b383b16328c47d074c1ef66e72108e90e9608c037', 'manifest_producer_source.txt': 'e55afa87cf8bc7d94241ab436b14f85e74d73d5ddea36d89018a0e9bd3f31c6d', 'readback.json': '32f60449b0a22bf3d102ba5603061abfd08bd5906f515cf79f92da7cc4e1a052', 'readback_source.txt': 'f23843c4065d8d8bd4095a9f0b1ecbf948386e92ea1047506f09104bbf7a66f1'}
+OLD_READBACK_SEAL='731c273265c8a01cd8593e8413cd59924d60b29cc81038305c5e596b554214ff'
+INITIAL_DOCUMENT_SNAPSHOT={'/workspace/Habitable-Moon-Project/CLOUD_HANDOFF.md': 'dc33c8ad25bd20e507302641ac6e6e15ee609b04212ff0c2f91dbd4cc86b9b01', '/workspace/Habitable-Moon-Project/GEOMETRIC_NATIVE_COMMON_MATERIAL_SURFACE_TRANSPORT_IMPLEMENTATION.md': '600a6d5cc11085290029939b80f52930147599d3141864d7bf28b247f948d838'}
+BASELINE_EVIDENCE={'baseline_879_bootstrap_source.txt': 'f23843c4065d8d8bd4095a9f0b1ecbf948386e92ea1047506f09104bbf7a66f1', 'baseline_879_bootstrap.json': 'cd9654ddb97418eb5fede3c445730dee88cfeee2eaeca09d56d2ec3a03e549a9', 'baseline_879_bootstrap_console.log': 'cd9654ddb97418eb5fede3c445730dee88cfeee2eaeca09d56d2ec3a03e549a9', 'baseline_879_bootstrap_archive_association.json': 'a4612fd93eb0aa5208f840f72d515efe8233831ba01ebfa984eac33727a5da41', 'baseline_879_reusable_source.txt': '0ab740087c8a1ca3f8aee474e2d4b114d6ab8805eaf035419bb85248c42ecb25'}
+
+
+def encoded(value):
+    return json.dumps(value,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+
+def value_digest(value):
+    return hashlib.sha256(encoded(value)).hexdigest()
+
+def require(condition,label):
+    if not condition:raise ValueError(label)
+
+def exact(actual,expected,label):
+    require(type(actual) is type(expected) and actual==expected,label)
+    if type(actual) in (dict,list,tuple):require(encoded(actual)==encoded(expected),label+' complete literal encoding')
+
+def pin_valid(pin):
+    return type(pin) is str and len(pin)==64 and all(c in '0123456789abcdef' for c in pin)
+
+def digest(path):
+    h=hashlib.sha256()
+    with Path(path).open('rb') as stream:
+        for block in iter(lambda:stream.read(1<<20),b''):h.update(block)
+    return h.hexdigest()
+
+def read(path):
+    return json.loads(Path(path).read_bytes())
+
+def sealed(path,key):
+    value=read(path);require(type(value) is dict and key in value,'Complete sealed object '+str(path))
+    body=dict(value);exact(body.pop(key),value_digest(body),'Complete selfseal '+str(path));return value
+
+def regular(path):
+    path=Path(path);require(path.is_absolute() and path.resolve()==path and not path.is_symlink() and path.is_file(),'Canonical regular file '+str(path));return path
+
+def add_pin(pins,path,pin):
+    path=regular(Path(path));require(path.is_relative_to(ROOT) or path.is_relative_to(Path('/tmp')) or path.is_relative_to(Path('/workspace')),'Authorized dependency scope')
+    require(pin_valid(pin),'Raw SHA256 '+str(path));name=str(path)
+    if name in pins:exact(pins[name],pin,'Overlapping dependency pin '+name)
+    else:exact(digest(path),pin,'Declared raw bytes BEFORE closure '+name);pins[name]=pin
+
+def source_map():
+    return {str(p.relative_to(ROOT)):digest(p) for directory in ('tectonics','tests','scripts','analysis') for p in sorted((ROOT/directory).rglob('*.py'))}
+
+def project_modules():
+    return {name:module for name,module in sys.modules.items() if name=='tectonics' or name.startswith('tectonics.') or name=='tests' or name.startswith('tests.') or name=='analysis' or name.startswith('analysis.')}
+
+def no_module_changes(before):
+    after=project_modules();exact(set(after),set(before),'Project module names unchanged');require(all(after[k] is v for k,v in before.items()),'No project reload or replacement');require(not after,'Standalone stdlib verifier imports no project modules')
+
+def static(node,values):
+    if isinstance(node,ast.Name):return values[node.id]
+    if isinstance(node,ast.Dict):return {static(k,values):static(v,values) for k,v in zip(node.keys,node.values)}
+    if isinstance(node,(ast.Tuple,ast.List,ast.Set)):
+        return {ast.Tuple:tuple,ast.List:list,ast.Set:set}[type(node)](static(v,values) for v in node.elts)
+    if isinstance(node,ast.BinOp) and isinstance(node.op,ast.Div):return static(node.left,values)/static(node.right,values)
+    if isinstance(node,ast.Call) and isinstance(node.func,ast.Name):
+        args=[static(x,values) for x in node.args]
+        if node.func.id=='dict':return dict(*args,**{k.arg:static(k.value,values) for k in node.keywords})
+        constructors={'Path':Path,'str':str,'frozenset':frozenset,'list':list,'tuple':tuple,'sorted':sorted}
+        if node.func.id in constructors:return constructors[node.func.id](*args)
+    return ast.literal_eval(node)
+
+def constants(path):
+    tree=ast.parse(Path(path).read_bytes());values={'ROOT':ROOT}
+    for node in tree.body:
+        if isinstance(node,ast.Assign):
+            try:value=static(node.value,values)
+            except (ValueError,KeyError,TypeError):continue
+            for target in node.targets:
+                if isinstance(target,ast.Name):values[target.id]=value
+    return values,tree
+
+def schemas(tree):
+    return {node.name:tuple(item.target.id for item in node.body if isinstance(item,ast.AnnAssign) and isinstance(item.target,ast.Name)) for node in tree.body if isinstance(node,ast.ClassDef)}
+
+def report_declaration(path):
+    values,tree=constants(path)
+    declarations=[node.value for node in ast.walk(tree) if isinstance(node,ast.Assign) and any(isinstance(t,ast.Name) and t.id=='report' for t in node.targets) and isinstance(node.value,ast.Call) and isinstance(node.value.func,ast.Name) and node.value.func.id=='dict']
+    exact(len(declarations),1,'One complete literal report declaration '+str(path));return values,tree,declarations[0]
+
+def summary_literal(path,name):
+    values,tree=constants(path)
+    if Path(path)==PARENT/'native_control.py':
+        origins,_=constants(PRIOR/'native_control.py');exact(list(origins['REMAINING_CONDITIONS']),REMAINING,'Pinned immutable transport physical condition literals')
+        aliases=[n.value for n in tree.body if isinstance(n,ast.Assign) and any(isinstance(t,ast.Name) and t.id=='REMAINING_CONDITIONS' for t in n.targets)]
+        exact(len(aliases),1,'One explicit condition origin alias');require(isinstance(aliases[0],ast.Attribute) and isinstance(aliases[0].value,ast.Name) and aliases[0].value.id=='transport' and aliases[0].attr=='REMAINING_CONDITIONS','Exact immutable transport condition alias')
+        values['REMAINING_CONDITIONS']=origins['REMAINING_CONDITIONS']
+    functions=[n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name==name];exact(len(functions),1,'Exact summary function')
+    returns=[n.value for n in ast.walk(functions[0]) if isinstance(n,ast.Return) and isinstance(n.value,ast.Call) and isinstance(n.value.func,ast.Name) and n.value.func.id=='dict']
+    exact(len(returns),1,'Exact fixed summary return');return {k.arg:static(k.value,values) for k in returns[0].keywords}
+
+def successful_wrapper_schema(expected):
+    _,tree,declaration=report_declaration(PARENT/'validate.py');names={k.arg for k in declaration.keywords}|set(expected)
+    ignored={'failure_type','failure_message','failure_traceback','prior_after_error','frozen_map_after_error'}
+    run=next(n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name=='run')
+    for node in ast.walk(run):
+        if isinstance(node,ast.Call) and isinstance(node.func,ast.Attribute) and isinstance(node.func.value,ast.Name) and node.func.value.id=='report' and node.func.attr=='update':names.update(k.arg for k in node.keywords if k.arg not in ignored)
+        if isinstance(node,ast.Subscript) and isinstance(node.ctx,ast.Store) and isinstance(node.value,ast.Name) and node.value.id=='report' and isinstance(node.slice,ast.Constant) and type(node.slice.value) is str:names.add(node.slice.value)
+    return names
+
+def check_summary(value,expected):
+    for key,flag in expected.items():exact(value[key],flag,'Complete fixed physical scope '+key)
+
+def parent_files(parent,excluded=()):
+    excluded={str(Path(p)) for p in excluded}
+    return {str(p.relative_to(ROOT)) for p in parent.rglob('*') if p.is_file() and '__pycache__' not in p.parts and p.suffix!='.pyc' and str(p) not in excluded}
+
+def strict_release(directory,wrapper,pins,count,tests,raw=None):
+    add_pin(pins,directory/'report.json',raw or digest(directory/'report.json'))
+    for key,value in (('status','PASS'),('source_count',count),('pytest_counts',{'passed':tests})):exact(wrapper[key],value,'Saved strict release '+str(count)+' '+key)
+    exact(set(wrapper['outputs']),set(OUTPUTS),'Exactly four complete output rows')
+    exact({str(p.relative_to(directory)) for p in directory.rglob('*') if p.is_file()},set(OUTPUTS)|{'report.json'},'Exactly five closed release files')
+    for name,row in wrapper['outputs'].items():
+        exact(set(row),{'bytes','sha256'},'Output raw pin shape');exact((directory/name).stat().st_size,row['bytes'],'Closed output length');add_pin(pins,directory/name,row['sha256'])
+
+def manifest_files(manifest,pins,count=None):
+    exact(manifest['status'],'PASS_COMPONENT_EVIDENCE_CLOSED','Manifest PASS');exact(manifest['closed_component_file_count'],len(manifest['files']),'Actual manifest count')
+    if count is not None:exact(len(manifest['files']),count,'Prior immutable explicit file count')
+    for name,row in manifest['files'].items():
+        rel=PurePosixPath(name);require(not rel.is_absolute() and '..' not in rel.parts and str(rel)==name,'Canonical manifest relative path')
+        path=ROOT/name;regular(path);require(path.is_relative_to(ROOT),'Manifest root scope');exact(set(row),{'bytes','sha256'},'Complete file row');exact(path.stat().st_size,row['bytes'],'Manifest size');add_pin(pins,path,row['sha256'])
+
+def last_console_json(path):
+    lines=Path(path).read_text().splitlines();return json.loads(next(line for line in reversed(lines) if line.startswith('{')))
+
+def old_archive_closure(bootstrap,pins):
+    exact({str(p.relative_to(OLD_FINAL)) for p in OLD_FINAL.rglob('*') if p.is_file()},set(OLD_ARCHIVE_PINS),'Exactly six separate old final archive files')
+    for name,pin in OLD_ARCHIVE_PINS.items():add_pin(pins,OLD_FINAL/name,pin)
+    archive=sealed(OLD_FINAL/'archive.json','archive_sha256');exact(archive['archive_sha256'],OLD_ARCHIVE_SEAL,'Old six archive seal')
+    exact(set(archive['files']),set(OLD_ARCHIVE_PINS)-{'archive.json'},'Exactly five old payload rows')
+    for name,row in archive['files'].items():exact(row['sha256'],OLD_ARCHIVE_PINS[name],'Old exact archived raw pin');exact(row['bytes'],(OLD_FINAL/name).stat().st_size,'Old archived size')
+    report=sealed(OLD_FINAL/'readback.json','audit_sha256');exact(report['audit_sha256'],OLD_READBACK_SEAL,'Old final reader seal')
+    exact(last_console_json(OLD_FINAL/'console.log'),report,'Old actual final console report')
+    for key,value in bootstrap.items():
+        if key not in ('audit_sha256','seconds','document_raw_sha256'):exact(report[key],value,'Initial bootstrap and prior closed reader full association '+key)
+    exact(archive['component_manifest_raw_sha256'],OLD_MANIFEST_RAW,'Old archive component raw');exact(archive['component_manifest_selfseal'],OLD_MANIFEST_SEAL,'Old archive manifest seal')
+    return {str(OLD_FINAL/name):pin for name,pin in OLD_ARCHIVE_PINS.items()}
+
+def bootstrap_evidence(pins):
+    for name,pin in BASELINE_EVIDENCE.items():add_pin(pins,PARENT/name,pin)
+    bootstrap=sealed(PARENT/'baseline_879_bootstrap.json','audit_sha256');exact(bootstrap['audit_sha256'],BOOTSTRAP_REPORT_SEAL,'Initial879 bootstrap seal')
+    for key,value in (('status','PASS_FINAL879_EVIDENCE_READBACK_ONLY'),('final_python_source_count',879),('unchanged_prior_python_sources',875),('source_map_canonical_sha256',OLD_MAP),('frozen_source_map_raw_sha256',OLD_MAP_RAW),('recorded_raw_dependency_pin_count',271),('current_manifest_file_count',83),('current_manifest_raw_sha256',OLD_MANIFEST_RAW),('current_manifest_selfseal',OLD_MANIFEST_SEAL),('authoritative_ancestry_release_closure_count',10),('baseline_reexecuted',False),('math_or_solver_or_test_or_quadrature_reexecuted',False),('project_imports',False)):
+        exact(bootstrap[key],value,'Initial authentic bootstrap scope '+key)
+    exact(bootstrap['document_raw_sha256'],INITIAL_DOCUMENT_SNAPSHOT,'Historical bootstrap document snapshot only')
+    exact(len(bootstrap['dependency_raw_sha256']),271,'Whole original271 byte map')
+    for name,pin in bootstrap['dependency_raw_sha256'].items():add_pin(pins,name,pin)
+    association=sealed(PARENT/'baseline_879_bootstrap_archive_association.json','receipt_sha256');exact(association['receipt_sha256'],BOOTSTRAP_ASSOCIATION_SEAL,'Bootstrap archive association seal')
+    exact(association['bootstrap_report_raw_sha256'],BOOTSTRAP_REPORT_RAW,'Bootstrap initial raw');exact(association['bootstrap_report_selfseal'],BOOTSTRAP_REPORT_SEAL,'Bootstrap initial seal')
+    archives=old_archive_closure(bootstrap,pins);inherited=dict(bootstrap['dependency_raw_sha256'])
+    require(not(set(inherited)&set(archives)),'Six disjoint old final archive entries');inherited.update(archives);exact(len(inherited),277,'Full271 plus separate6')
+    return bootstrap,inherited,archives
+
+def saved_baseline(path,frozen,bootstrap,inherited,archives,pins):
+    value=sealed(path,'audit_sha256');add_pin(pins,path,digest(path));exact(set(value),set(BASELINE_FIELDS),'Entire73 saved reusable report schema')
+    literals,_,declaration=report_declaration(PARENT/'baseline_879_reusable_source.txt')
+    for keyword in declaration.keywords:
+        try:expected=static(keyword.value,literals)
+        except (ValueError,KeyError,TypeError):continue
+        exact(value[keyword.arg],expected,'All fixed reusable metadata '+keyword.arg)
+    for key,expected in (('status','PASS_IMMUTABLE879_WITH_DECLARED_SOURCE_ADDITIONS_ONLY'),('current_python_source_count',883),('baseline_source_count',879),('source_stage','DECLARED883'),('source_epoch','IMMUTABLE879_TO_EXACT_AUTHORIZED_LOCAL_SOURCE_WORK883'),('declared_next_component_physical_scope',SCOPE),('additional_python_source_count',4),('current_python_source_map_sha256',MAP),('frozen879_projection_disclosed',True),('nested_reader_actual879_count_and_flags_are_projected_view_only',True),('nested_reader_source_view','IMMUTABLE879_SUBSET_OF_INDEPENDENTLY_CHECKED_FULL_DECLARED883_SOURCE_MAP'),('all879_python_sources_unchanged',True),('authoritative_ancestry_release_closure_count',10),('all277_preserved_dependency_and_archive_raw_sha256_hashed_before_after',True),('recorded_raw_dependency_pin_count',277),('auditor_source_sha256',REUSABLE_SHA)):
+        exact(value[key],expected,'Saved executed baseline fixed stage '+key)
+    exact(value['additional_python_sources'],{name:frozen[name] for name in sorted(ADDED)},'All four actual883 source pins');exact(value['declared_additional_source_paths'],sorted(ADDED),'Exact four declared additions')
+    exact(value['dependency_raw_sha256'],inherited,'Whole277 independently rehashed saved dependency map');exact(value['old_final879_readback_archive_raw_sha256'],archives,'Exact disjoint6 savedarchive map')
+    exact(value['temporary_dependency_exact_closed_copy_associations'],bootstrap['temporary_dependency_exact_closed_copy_associations'],'Complete original8 copy associations')
+    exact(value['remaining_physical_conditions'],REMAINING,'No new physical acceptance');exact(value['bootstrap_document_raw_sha256'],INITIAL_DOCUMENT_SNAPSHOT,'Initial historical documents only')
+    for key in ('wrapper_selfseal','native_selfseal','packet_selfseal','independent_audit_selfseal'):exact(value[key],bootstrap[key],'Frozen879 receipt seals '+key)
+    for name,pin in value['dependency_raw_sha256'].items():add_pin(pins,name,pin)
+    return value
+
+def saved_projection(path,receipt,bootstrap,pins):
+    value=sealed(path,'audit_sha256');add_pin(pins,path,receipt['projected_reader_report_raw_sha256']);exact(value['audit_sha256'],receipt['projected_reader_selfseal'],'Executed nested projection selfseal');exact(set(value),set(bootstrap),'Whole projection schema')
+    for key,expected in bootstrap.items():
+        if key not in ('audit_sha256','seconds','document_raw_sha256'):exact(value[key],expected,'Complete explicitly projected frozen879 view '+key)
+    exact(value['document_raw_sha256'],{},'Projected old reader did not freeze current documents');return value
+
+def copy_association(temporary,permanent,pin,pins,associations):
+    temporary=Path(temporary);require(temporary.is_absolute() and temporary.is_relative_to(Path('/tmp')),'Current temporary alias');add_pin(pins,temporary,pin);add_pin(pins,permanent,pin)
+    row=dict(permanent_copy=str(permanent),sha256=pin)
+    if str(temporary) in associations:exact(associations[str(temporary)],row,'Repeated exact temporary association')
+    associations[str(temporary)]=row
+
+def pure_guard_association(pins,frozen):
+    guard=sealed(PARENT/'test_pure_math_guard.json','receipt_sha256');add_pin(pins,PARENT/'test_pure_math_guard.json',digest(PARENT/'test_pure_math_guard.json'))
+    for key,value in (('status','PASS'),('pure_test_count',3),('actual_python_source_count_before',883),('actual_python_source_count_after',883),('actual_complete_source_maps_before_after_identical',True),('project_package_imported',False),('fresh_pytest_claimed',False),('native_controller_executed',False),('old_solver_or_quadrature_executed',False)):
+        exact(guard[key],value,'Saved AST-only pure guard scope '+key)
+    add_pin(pins,PARENT/'test_pure_math_guard_source.txt',guard['producer_sha256']);add_pin(pins,PARENT/'test_pure_math_guard_console.txt',guard['actual_console_sha256'])
+    before=PARENT/'test_pure_math_guard_sources_before.json';after=PARENT/'test_pure_math_guard_sources_after.json';add_pin(pins,before,guard['sources_before_raw_sha256']);add_pin(pins,after,guard['sources_after_raw_sha256']);oldmap=read(before);exact(oldmap,read(after),'Pure guard actual complete maps');exact(value_digest(oldmap),guard['source_map_canonical_sha256'],'Pure guard prior map')
+    association=read(PARENT/'test_pure_math_guard_input_archive_association.json');exact(association['status'],'PASS','Inputarchive association actualPASS');exact(association['all_archived_inputs_match_captured_executed_input_raw_sha256'],True,'All captured inputs archived')
+    exact(association['final_core_source_raw_sha256'],frozen['tectonics/geometric_native_common_local_source_work.py'],'Actual final core');exact(association['final_core_differs_from_pure_guard_input'],True,'Pure guard priorcore truthfully differs')
+    archived={}
+    for row in association['inputs']:
+        name=row['executed_source_path'];exact(row['raw_sha256'],guard['ast_input_raw_sha256'][name],'Captured input raw before execution');exact(oldmap[name],row['raw_sha256'],'Guard complete prior map input');add_pin(pins,ROOT/row['archive_path'],row['raw_sha256']);archived[name]=ROOT/row['archive_path']
+    exact(set(archived),set(guard['ast_input_raw_sha256']),'Exactly all four AST inputs')
+    coreold=constants(archived['tectonics/geometric_native_common_local_source_work.py'])[1];corefinal=constants(ROOT/'tectonics/geometric_native_common_local_source_work.py')[1]
+    producer_tree=ast.parse((PARENT/'test_pure_math_guard_source.txt').read_bytes())
+    selections=[ast.literal_eval(n.value) for n in ast.walk(producer_tree) if isinstance(n,ast.Assign) and any(isinstance(t,ast.Name) and t.id=='pure' for t in n.targets)]
+    exact(len(selections),1,'One literal actually executed pure selection');names=selections[0];exact(len(names),14,'Exactly fourteen actual selected functions')
+    oldfunctions={n.name:ast.dump(n,include_attributes=False) for n in coreold.body if isinstance(n,ast.FunctionDef)};finalfunctions={n.name:ast.dump(n,include_attributes=False) for n in corefinal.body if isinstance(n,ast.FunctionDef)}
+    for name in names:exact(oldfunctions[name],finalfunctions[name],'Exact unchanged selected mathematical AST '+name)
+    first=sealed(PARENT/'test_pure_math_guard_first_console_execution.json','receipt_sha256')
+    for key,value in (('status','PASS_ACTUAL_TOOL_OUTPUT_PRESERVED'),('input_hashes_at_first_execution_captured',False),('source_maps_at_first_execution_captured',False),('first_source_pins_reconstructed_or_assumed',False)):
+        exact(first[key],value,'First console inputs remain uncaptured '+key)
+    add_pin(pins,PARENT/'test_pure_math_guard_first_executed_source.txt',first['producer_sha256']);add_pin(pins,PARENT/'test_pure_math_guard_first_actual_console.txt',first['actual_console_sha256'])
+
+def restart_evidence(bootstrap,inherited,pins):
+    path=PARENT/'release_validation_01_environment_restart_observation.json';add_pin(pins,path,'ca93def05bd047bbd48ad71243e86655776c3281e4b7def05eec4c3d192f4435');observation=sealed(path,'observation_sha256')
+    exact(observation['observation_sha256'],'baaa807a8e9d526f09818c5f10736b07ea8668d16560f0dce92b1032ca2d92f2','Immutable restart observation seal')
+    for key,value in (('status','INTERRUPTED_NO_SEALED_GATE_RESULT'),('source_count',883),('actual_exit_code_known',False),('gate01_marked_pass',False),('native_and_wrapper_reports_present',False),('lost_gate01_stdout_or_baseline_receipts_recreated',False),('independent_audit_executed_before_restart',False)):
+        exact(observation[key],value,'Truthful interrupted release01 '+key)
+    first=PARENT/'release_validation_01';exact({str(p.relative_to(first)) for p in first.rglob('*') if p.is_file()},set(observation['preserved_release_files']),'Actual interrupted two-file subset');exact(set(observation['preserved_release_files']),{'pytest.log','control_console.log'},'No invented output closure')
+    for name,row in observation['preserved_release_files'].items():exact((first/name).stat().st_size,row['bytes'],'Interrupted length');add_pin(pins,first/name,row['sha256'])
+    exact((first/'pytest.log').read_text().splitlines()[-1],observation['preserved_pytest_summary'],'Actual14test stdout only; no sealed gate claim')
+    path=PARENT/'recover_current879_tmp_after_restart.json';add_pin(pins,path,'450a1db50332f24aa07b329b3af61b137a4f60101bce1b772eb967b1f1b06367');recovery=sealed(path,'recovery_sha256')
+    exact(recovery['recovery_sha256'],'5a9960d6ae24e09b9244e2c95505b5f88602016aa57458454359f3730698013a','New actual recovery selfseal')
+    exact(recovery['dependency_raw_sha256'],inherited,'New recovery verifies old whole277 rawmap');exact(recovery['current_temp_dependency_count'],8,'Eight actual recovered aliases');exact(recovery['baseline_reexecuted'],False,'No old baseline reexecuted')
+    exact(recovery['temporary_dependency_exact_closed_copy_associations'],bootstrap['temporary_dependency_exact_closed_copy_associations'],'Complete old8 authenticated recovery map')
+    add_pin(pins,recovery['executed_source_path'],recovery['executed_source_raw_sha256'])
+    exact(last_console_json(PARENT/'recover_current879_tmp_after_restart_console.log'),recovery,'Actual recovery console complete report')
+    # The current final verifier itself never restores or regenerates inputs.
+    return observation,recovery
+
+def finish_guards(inputs,modules_before,producer_pin,parent_before,documents):
+    for name,pin in inputs['pins'].items():exact(digest(name),pin,'ALL recorded raw dependency bytes AFTER '+name)
+    exact(parent_files(PRIOR,(PRIOR/'artifact_manifest.json',)),inputs['old_parent_expected'],'Prior83 complete parent final closure')
+    exact({str(p.relative_to(OLD_FINAL)) for p in OLD_FINAL.rglob('*') if p.is_file()},set(OLD_ARCHIVE_PINS),'Prior exactsix final closure')
+    exact(parent_files(PARENT,(PARENT/'artifact_manifest.json',)),parent_before,'Current component files remain unchanged')
+    for name,pin in documents.items():exact(digest(name),pin,'Current document bytes AFTER')
+    exact(source_map(),inputs['frozen'],'Full actual883 source endpoint AFTER raw hashes');exact(digest(__file__),producer_pin,'Executing verifier bytes unchanged');no_module_changes(modules_before)
+
+def discovered_component_files():
+    names=parent_files(PARENT,(PARENT/'artifact_manifest.json',))|{'tectonics/geometric_native_common_local_source_work.py','tests/test_geometric_native_common_local_source_work.py'}
+    return sorted(names)
+
+def check_inputs(*,parse_packet):
+    pins={};associations={};before=source_map();frozen=read(PARENT/'frozen_source_map_883.json')
+    # Capture every current artifact byte pin BEFORE any associated metadata is
+    # inspected; final guards and any supplied manifest independently recheck it.
+    for name in discovered_component_files():add_pin(pins,ROOT/name,digest(ROOT/name))
+    exact(len(before),883,'Independent actual883 source count');exact(before,frozen,'Full actual883 source map equals frozen');exact(value_digest(frozen),MAP,'Frozen883 canonical');add_pin(pins,PARENT/'frozen_source_map_883.json',MAP_RAW)
+    old=read(PRIOR/'frozen_source_map_879.json');exact(len(old),879,'All879 predecessor sources');exact(value_digest(old),OLD_MAP,'Old879 canonical');add_pin(pins,PRIOR/'frozen_source_map_879.json',OLD_MAP_RAW)
+    exact(set(before)-set(old),set(ADDED),'Exactly four authorized source additions')
+    for name,pin in old.items():exact(before[name],pin,'Every879 source byte unchanged '+name)
+    freeze=sealed(PARENT/'source_freeze_883.json','freeze_sha256');exact(freeze['freeze_sha256'],SOURCE_FREEZE_SEAL,'Authoritative883 source freeze seal');add_pin(pins,PARENT/'source_freeze_883.json',digest(PARENT/'source_freeze_883.json'))
+    exact(freeze['added_source_raw_sha256'],{name:before[name] for name in sorted(ADDED)},'Frozen exactfour added source hashes')
+    snapshots={'tectonics/geometric_native_common_local_source_work.py':'frozen_geometric_native_common_local_source_work_source.txt','tests/test_geometric_native_common_local_source_work.py':'frozen_test_geometric_native_common_local_source_work_source.txt','analysis/geometric_native_common_local_source_work_validation/native_control.py':'frozen_native_control_source.txt','analysis/geometric_native_common_local_source_work_validation/validate.py':'frozen_validate_source.txt'}
+    for name,snapshot in snapshots.items():add_pin(pins,PARENT/snapshot,before[name])
+    bootstrap,inherited,archives=bootstrap_evidence(pins)
+    old_manifest=sealed(PRIOR/'artifact_manifest.json','manifest_sha256');add_pin(pins,PRIOR/'artifact_manifest.json',OLD_MANIFEST_RAW);exact(old_manifest['manifest_sha256'],OLD_MANIFEST_SEAL,'Old83 manifest seal');manifest_files(old_manifest,pins,83)
+    old_parent_expected={name for name in old_manifest['files'] if PurePosixPath(name).is_relative_to(PurePosixPath(str(PRIOR.relative_to(ROOT))))}
+    exact(parent_files(PRIOR,(PRIOR/'artifact_manifest.json',)),old_parent_expected,'Old83 complete parent file set BEFORE')
+    pure_guard_association(pins,frozen);restart_observation,recovery=restart_evidence(bootstrap,inherited,pins)
+    ancestry={}
+    exact(len(ANCESTRY),11,'Inherited10 plus separate879 current release')
+    for directory,count,tests,pin in ANCESTRY:
+        directory=ROOT/directory;wrapper=sealed(directory/'report.json','report_sha256');strict_release(directory,wrapper,pins,count,tests,pin);ancestry[str(directory/'report.json')]=pin
+    wrapper=sealed(RELEASE/'report.json','report_sha256');strict_release(RELEASE,wrapper,pins,883,14)
+    expected=summary_literal(PARENT/'native_control.py','summary');exact(expected,summary_literal(PARENT/'validate.py','expected_summary'),'Complete fixed native/wrapper summary')
+    exact(set(wrapper),successful_wrapper_schema(expected),'Entire successful same-process wrapper schema')
+    check_summary(wrapper,expected)
+    for key,value in (('format','native-common-local-source-work-same-process-validation-1'),('pytest_exit_code',0),('expected_fresh_test_count',14),('source_map_before_sha256',MAP),('source_map_after_sha256',MAP),('prior_source_map_sha256',OLD_MAP),('verified_prior_python_sources',879),('verified_prior_artifacts',1633),('changed_python_paths',[]),('execution_mode','same_python_process'),('pytest_import_mode','importlib'),('historical_tests_reexecuted',False),('baseline1633_reexecuted',False),('prior_artifacts_and_python_sources_preserved_after',True),('frozen_source_map_raw_sha256',MAP_RAW),('test_paths',['tests/test_geometric_native_common_local_source_work.py']),('control','analysis.geometric_native_common_local_source_work_validation.native_control:run')):
+        exact(wrapper[key],value,'Authoritative complete sealed gate metadata '+key)
+    exact(wrapper['added_python_sources'],{name:frozen[name] for name in sorted(ADDED)},'Gate currentfour raw source association');exact(wrapper['verified_current_baseline_evidence'],BASELINE_EVIDENCE,'Gate five exact initial bootstrap inputs')
+    native=sealed(RELEASE/'native_control/report.json','report_sha256');check_summary(native,expected)
+    exact(set(native),set(expected)|{'format','status','source_packet_sha256','local_source_work_system_sha256','evaluation_queries_sha256','source_reference_queries_sha256','seconds','report_sha256'},'Entire native report schema');exact(native['status'],'PASS','Native PASS');exact(native['format'],'native-common-local-source-work-control-1','Native format')
+    exact(last_console_json(RELEASE/'control_console.log'),native,'Actual native stdout complete report')
+    audit=sealed(PARENT/'independent_audit.json','audit_packet_sha256');exact(set(audit),set(AUDIT_FIELDS),'Entire119 independent audit report schema')
+    for key,value in AUDIT_STATIC_EXPECTED.items():exact(audit[key],value,'All fixed final audit metadata '+key)
+    audit_constants,_,audit_declaration=report_declaration(PARENT/AUDITOR_BASENAME)
+    exact(tuple(k.arg for k in audit_declaration.keywords)+('audit_packet_sha256',),AUDIT_FIELDS,'Exact current executed producer119 AST schema')
+    add_pin(pins,PARENT/AUDITOR_BASENAME,AUDITOR_SHA);exact(audit['auditor_script_sha256'],AUDITOR_SHA,'Exact fresh executed auditor source')
+    add_pin(pins,PARENT/'independent_audit_source.txt','52470d04082d69999945d21a7fa5bd042d0785942d44d5f6c24c699308bc65b5')
+    oldproducer=(PARENT/'independent_audit_source.txt').read_bytes();currentproducer=(PARENT/AUDITOR_BASENAME).read_bytes()
+    restored=currentproducer.replace(b"release==PARENT/'release_validation_02'",b"release==PARENT/'release_validation_01'").replace(b"archived=PARENT/'independent_audit_release02_source.txt'",b"archived=PARENT/'independent_audit_source.txt'").replace(b"only authoritative selected release02",b"only authoritative selected release01")
+    exact(restored,oldproducer,'Only two selector sites and their diagnostic label changed; three literals; old524 preserved unexecuted')
+    current5={str(RELEASE/name):digest(RELEASE/name) for name in set(OUTPUTS)|{'report.json'}}
+    exact(audit['initial_current_release_raw_sha256'],current5,'Current5 raw hashes captured BEFORE audit math')
+    currentseals={str(RELEASE/'report.json'):wrapper['report_sha256'],str(RELEASE/'native_control/report.json'):native['report_sha256'],str(RELEASE/'native_control/source_packet.json'):native['source_packet_sha256']}
+    exact(audit['initial_current_release_selfseal_by_path'],currentseals,'Current three typed seals captured BEFORE audit')
+    for key,value in (('wrapper_raw_sha256',current5[str(RELEASE/'report.json')]),('wrapper_selfseal',wrapper['report_sha256']),('native_raw_sha256',current5[str(RELEASE/'native_control/report.json')]),('native_selfseal',native['report_sha256']),('source_packet_raw_sha256',current5[str(RELEASE/'native_control/source_packet.json')]),('source_packet_selfseal',native['source_packet_sha256'])):
+        exact(audit[key],value,'Audit exact current release raw/seal binding '+key)
+    exact(audit['added_python_sources'],{name:frozen[name] for name in sorted(ADDED)},'Audit actualfour source pins');exact(audit['output_manifest'],wrapper['outputs'],'Audit current four output manifest');exact(audit['ancestry_release_wrapper_raw_sha256'],ancestry,'Whole11 prior strict wrapper map')
+    for name,pin in inherited.items():exact(audit['dependency_raw_sha256'][name],pin,'Audit retains full277 oldraw map')
+    for name,pin in audit['dependency_raw_sha256'].items():add_pin(pins,name,pin)
+    add_pin(pins,PARENT/'independent_audit.json',digest(PARENT/'independent_audit.json'));add_pin(pins,PARENT/'independent_audit_console.log',digest(PARENT/'independent_audit_console.log'));exact(last_console_json(PARENT/'independent_audit_console.log'),audit,'Actual final audit stdout complete119 report')
+    add_pin(pins,PARENT/'wrapper_console.log',digest(PARENT/'wrapper_console.log'));exact(last_console_json(PARENT/'wrapper_console.log'),{key:wrapper[key] for key in ('status','physical_candidate_status','pytest_counts','seconds','source_count','changed_python_paths')},'Actual root wrapper stdout exact final six-key summary')
+    for temporary,row in bootstrap['temporary_dependency_exact_closed_copy_associations'].items():copy_association(temporary,Path(row['permanent_copy']),row['sha256'],pins,associations)
+    for when in ('before','after'):
+        base='baseline_'+when+'_gate';path=PARENT/(base+'.json');add_pin(pins,path,wrapper['prior_baseline_'+when+'_raw_sha256']);receipt=saved_baseline(path,frozen,bootstrap,inherited,archives,pins)
+        exact(receipt,wrapper['prior_baseline_'+when],'Complete saved gate '+when+' receipt');exact(receipt['audit_sha256'],wrapper['prior_baseline_'+when+'_selfseal'],'Gate baseline seal')
+        copy_association(wrapper['prior_baseline_'+when+'_path'],path,wrapper['prior_baseline_'+when+'_raw_sha256'],pins,associations)
+        projection=PARENT/(base+'_projection.json');saved_projection(projection,receipt,bootstrap,pins);copy_association(receipt['projected_reader_report_path'],projection,receipt['projected_reader_report_raw_sha256'],pins,associations)
+    path=PARENT/'baseline_before_independent_audit.json';add_pin(pins,path,audit['baseline879_readback_raw_sha256']);receipt=saved_baseline(path,frozen,bootstrap,inherited,archives,pins);exact(receipt['audit_sha256'],audit['baseline879_readback_selfseal'],'Audit BEFOREmath saved baseline seal')
+    copy_association(audit['baseline879_readback_path'],path,audit['baseline879_readback_raw_sha256'],pins,associations)
+    path=PARENT/'baseline_before_independent_audit_projection.json';saved_projection(path,receipt,bootstrap,pins);exact(audit['baseline879_projected_reader_report_path'],receipt['projected_reader_report_path'],'Audit projection metadata path');exact(audit['baseline879_projected_reader_report_raw_sha256'],receipt['projected_reader_report_raw_sha256'],'Audit projection exactraw');exact(audit['baseline879_projected_reader_selfseal'],receipt['projected_reader_selfseal'],'Audit projection selfseal');copy_association(receipt['projected_reader_report_path'],path,receipt['projected_reader_report_raw_sha256'],pins,associations)
+    executing=[name for name,pin in audit['dependency_raw_sha256'].items() if Path(name).is_relative_to(Path('/tmp')) and name.endswith('.py') and pin==AUDITOR_SHA];exact(len(executing),1,'One actual executing scratch auditor');copy_association(executing[0],PARENT/AUDITOR_BASENAME,AUDITOR_SHA,pins,associations)
+    exact({name for name in pins if Path(name).is_relative_to(Path('/tmp'))},set(associations),'EVERY recorded current TMP input has exact closed permanent association')
+    core_constants,coretree=constants(ROOT/'tectonics/geometric_native_common_local_source_work.py');exact(audit_constants['SCHEMAS'],schemas(coretree),'All seven complete executed audit/core DTO schemas');exact(audit_constants['FLAGS'],core_constants['_FLAGS'],'All19 executed audit/core physical flags')
+    packet=None;packet_metadata={}
+    if parse_packet:
+        packet=sealed(RELEASE/'native_control/source_packet.json','packet_sha256');exact(packet['packet_sha256'],native['source_packet_sha256'],'Actual independently parsed current packet selfseal');packet_metadata=check_packet(packet,native,expected,frozen,pins,audit)
+    return dict(pins=pins,frozen=frozen,bootstrap=bootstrap,inherited=inherited,archives=archives,old_parent_expected=old_parent_expected,
+        wrapper=wrapper,native=native,audit=audit,expected_summary=expected,associations=associations,
+        packet_metadata=packet_metadata,restart_observation=restart_observation,recovery=recovery)
+
+def run_manifest(*,seal_manifest=False):
+    producer_pin=digest(__file__);modules_before=project_modules();names=discovered_component_files()
+    if not seal_manifest:
+        result=dict(status='READONLY_DISCOVERY_ONLY_NOT_VALIDATION',component_file_count=len(names),files=names,source_count=len(source_map()),producer_raw_sha256=producer_pin,complete_gate_or_audit_claimed=False);print(encoded(result).decode(),flush=True);return result
+    require(not(PARENT/'artifact_manifest.json').exists(),'Fresh exclusive manifest only')
+    parent_before=parent_files(PARENT,(PARENT/'artifact_manifest.json',));inputs=check_inputs(parse_packet=False)
+    files={name:dict(bytes=(ROOT/name).stat().st_size,sha256=digest(ROOT/name)) for name in names};exact(names,discovered_component_files(),'Actual file discovery unchanged while hashing')
+    for name,row in files.items():add_pin(inputs['pins'],ROOT/name,row['sha256'])
+    wrapper,native,audit=inputs['wrapper'],inputs['native'],inputs['audit']
+    manifest=dict(format='native-common-local-source-work-component-manifest-1',status='PASS_COMPONENT_EVIDENCE_CLOSED',source_count=883,
+        closed_component_file_count=len(files),closed_release_output_count=4,source_map_canonical_sha256=MAP,source_map_raw_sha256=MAP_RAW,physical_candidate_status=SCOPE,
+        accepted_original_native_intervals=1,accepted_new_native_intervals=0,original_point_1_remaining_work_blocks=1,original_point_1_completed=False,
+        wrapper_selfseal=wrapper['report_sha256'],native_selfseal=native['report_sha256'],packet_selfseal=native['source_packet_sha256'],independent_audit_selfseal=audit['audit_packet_sha256'],exact_independent_producer_raw_sha256=AUDITOR_SHA,files=files)
+    manifest['manifest_sha256']=value_digest(manifest);finish_guards(inputs,modules_before,producer_pin,parent_before,{})
+    with (PARENT/'artifact_manifest.json').open('xb') as stream:stream.write(encoded(manifest)+b'\n')
+    result=dict(status=manifest['status'],file_count=len(files),manifest_path=str(PARENT/'artifact_manifest.json'),manifest_raw_sha256=digest(PARENT/'artifact_manifest.json'),manifest_selfseal=manifest['manifest_sha256'],source_map_canonical_sha256=MAP,producer_raw_sha256=producer_pin,
+        source_packet_json_parsed_by_manifest_protocol=False,packet_selfseal_is_saved_native_and_audit_receipt_metadata_until_final_reader=True,
+        preserved_prior_raw_dependency_pin_count=277,temporary_dependency_copy_association_count=len(inputs['associations']),project_imports=False,baseline_or_math_or_test_reexecuted=False)
+    print(encoded(result).decode(),flush=True);return result
+
+def run_reader(output_path,*,artifact_manifest_path=None,document_paths=()):
+    started=time.perf_counter();output_path=Path(output_path);producer_pin=digest(__file__);modules_before=project_modules()
+    require(pin_valid(MANIFEST_RAW) and pin_valid(MANIFEST_SEAL),'Final configured manifest pins required; draft reader cannot run')
+    require(output_path.is_absolute() and output_path.resolve()==output_path and not output_path.is_symlink() and output_path.parent.is_dir() and output_path.parent.resolve()==output_path.parent,'Canonical fresh output and existing regular parent; no dotdot or symlinks')
+    require((output_path.is_relative_to(Path('/tmp')) or output_path.is_relative_to(Path('/workspace'))) and not output_path.is_relative_to(ROOT) and output_path.suffix=='.json' and not output_path.exists(),'Fresh exclusive output outside immutable repository and all evidence closures')
+    manifest_path=Path(artifact_manifest_path) if artifact_manifest_path else PARENT/'artifact_manifest.json';exact(manifest_path,PARENT/'artifact_manifest.json','Only selected current closed manifest')
+    manifest=sealed(manifest_path,'manifest_sha256');exact(digest(manifest_path),MANIFEST_RAW,'Trusted manifest raw');exact(manifest['manifest_sha256'],MANIFEST_SEAL,'Trusted manifest selfseal')
+    names=discovered_component_files();exact(set(manifest['files']),set(names),'Complete actual current component file set')
+    documents={}
+    for value in document_paths:
+        path=regular(Path(value));require(path.is_relative_to(ROOT) and str(path.relative_to(ROOT)) not in manifest['files'],'Current documentation outside component manifest');documents[str(path)]=digest(path)
+    require(str(output_path) not in set(documents)|{str(ROOT/name) for name in names}|{str(manifest_path)},'Output disjoint from all permanent inputs')
+    parent_before=parent_files(PARENT,(PARENT/'artifact_manifest.json',));inputs=check_inputs(parse_packet=True);manifest_files(manifest,inputs['pins']);add_pin(inputs['pins'],manifest_path,MANIFEST_RAW)
+    for key,value in (('source_count',883),('source_map_canonical_sha256',MAP),('source_map_raw_sha256',MAP_RAW),('closed_release_output_count',4),('physical_candidate_status',SCOPE),('accepted_original_native_intervals',1),('accepted_new_native_intervals',0),('original_point_1_remaining_work_blocks',1),('original_point_1_completed',False),('wrapper_selfseal',inputs['wrapper']['report_sha256']),('native_selfseal',inputs['native']['report_sha256']),('packet_selfseal',inputs['native']['source_packet_sha256']),('independent_audit_selfseal',inputs['audit']['audit_packet_sha256']),('exact_independent_producer_raw_sha256',AUDITOR_SHA)):
+        exact(manifest[key],value,'Actual final manifest linked metadata '+key)
+    require(str(output_path) not in inputs['pins'],'Output disjoint from every current dependency')
+    finish_guards(inputs,modules_before,producer_pin,parent_before,documents)
+    result=dict(status='PASS_FINAL883_EVIDENCE_READBACK_ONLY',final_python_source_count=883,unchanged_prior_python_sources=879,
+        source_map_canonical_sha256=MAP,frozen_source_map_raw_sha256=MAP_RAW,complete_actual883_source_map_before_after_identical=True,
+        current_release=RELEASE_NAME,current_manifest_file_count=len(manifest['files']),current_manifest_raw_sha256=MANIFEST_RAW,current_manifest_selfseal=MANIFEST_SEAL,
+        strict_current_release_closed_output_count=4,strict_current_release_closed_file_count=5,independent_audit_field_count=119,
+        authoritative_ancestry_release_closure_count=11,inherited_old879_receipt_ancestry_release_closure_count=10,
+        preserved_old879_manifest_file_count=83,preserved_old_final879_separate_archive_file_count=6,preserved_prior_raw_dependency_pin_count=277,
+        preserved_old1633_artifact_chain=True,old1633_preservation_is_saved_receipts_and_byte_hashes_and_strict_closures_only=True,
+        verified_prior_receipts_only_not_reexecuted=True,full_reusable879_report_field_count=73,truthful_frozen879_projection_scope_checked=True,
+        recorded_raw_dependency_pin_count=len(inputs['pins']),dependency_raw_sha256=inputs['pins'],temporary_dependency_exact_closed_copy_associations=inputs['associations'],
+        temporary_dependency_copy_association_count=len(inputs['associations']),all_current_temporary_dependencies_have_exact_closed_permanent_copies=True,
+        missing_or_wrong_temp_dependency_regenerated_or_restored=False,current_packet_json_parsed_exactly_once=True,
+        complete_current_dto_and_query_association_metadata=inputs['packet_metadata'],source_freeze_selfseal=SOURCE_FREEZE_SEAL,
+        wrapper_selfseal=inputs['wrapper']['report_sha256'],native_selfseal=inputs['native']['report_sha256'],packet_selfseal=inputs['native']['source_packet_sha256'],independent_audit_selfseal=inputs['audit']['audit_packet_sha256'],
+        actual_independent_auditor_raw_sha256=AUDITOR_SHA,actual_independent_auditor_archive_basename=AUDITOR_BASENAME,
+        interrupted_release01_truthfully_preserved_without_sealed_pass=True,lost_gate01_receipts_or_stdout_recreated=False,
+        current_old8_recovery_is_separate_new_evidence=True,current_reader_restored_inputs=False,
+        pure_guard_prior_source_claimed_identical_to_frozen_final_core=False,selected_fourteen_pure_guard_core_function_asts_match_final_frozen_source=True,first_pure_console_source_pins_or_maps_invented=False,
+        lost_pre_restart_draft_hashes_are_historical_only=LOST_DRAFT_HASHES,reconstructed_source_claimed_equal_to_lost_draft_bytes=False,
+        document_raw_sha256=documents,documents_hashed_before_after_separately_from_component_manifest=True,
+        project_imports=False,project_modules_imported_reloaded_or_replaced=False,baseline_reexecuted=False,baseline1633_reexecuted=False,independent_auditor_main_reexecuted=False,
+        math_or_solver_or_test_or_quadrature_reexecuted=False,physical_candidate_status=SCOPE,accepted_original_native_intervals=1,accepted_new_native_intervals=0,
+        original_point_1_remaining_work_blocks=1,original_point_1_completed=False,remaining_physical_conditions=REMAINING,auditor_source_sha256=producer_pin,seconds=time.perf_counter()-started)
+    result['audit_sha256']=value_digest(result)
+    with output_path.open('xb') as stream:stream.write(encoded(result)+b'\n')
+    print(encoded(result).decode(),flush=True);return result
+
+"""Frozen883 packet structure and saved independent receipt association only.
+
+Integration: call check_packet(packet, native, expected, frozen, pins, audit)
+after the parent reader has authenticated the sealed current gate/audit and
+the full source map. expected is the exact current native.summary AST dict.
+Required shared helpers: constants(path)->(literal_dict, AST), schemas(AST)
+->class_name/ordered-field-tuple, exact, require, sealed, value_digest,
+digest, add_pin(pins,path,pin); globals ROOT, PARENT, PRIOR, AUDITOR_SHA.
+No project imports, producer execution, mechanical oracle or quadrature.
+The saved PASS auditor supplies mechanics; this fragment checks complete
+schemas, bindings, literal query catalogues and all64 saved path associations.
+"""
+
+
+def check_packet(packet, native, expected, frozen, pins, audit):
+    core_path = ROOT / 'tectonics/geometric_native_common_local_source_work.py'
+    producer_path = PARENT / 'independent_audit_release02_source.txt'
+    add_pin(pins, core_path, frozen[str(core_path.relative_to(ROOT))])
+    add_pin(pins, producer_path, AUDITOR_SHA)
+    core, core_tree = constants(core_path)
+    producer, producer_tree = constants(producer_path)
+    public_names = (
+        'NativeCommonLocalSourcePointField', 'NativeCommonLocalSourceSideResponse',
+        'NativeCommonLocalSourceAtomResponse', 'NativeCommonLocalSourceBeamResponse',
+        'NativeCommonLocalSourceReferenceCertificate', 'NativeCommonLocalSourceWorkSystem',
+        'NativeCommonLocalSourceWorkResponse',
+    )
+    current_schemas = schemas(core_tree)
+    declared = {name: tuple(current_schemas[name]) for name in public_names}
+    exact(set(producer['SCHEMAS']), set(public_names), 'exact7 current auditor DTO schemas')
+    exact({name: tuple(producer['SCHEMAS'][name]) for name in public_names}, declared,
+          'all7 auditor schemas equal frozen production field declarations')
+    # _FLAGS is a literal dict(...) declaration, inspected without importing it.
+    flag_assignments = [node for node in core_tree.body
+        if type(node).__name__ == 'Assign' and any(
+            type(target).__name__ == 'Name' and target.id == '_FLAGS'
+            for target in node.targets)]
+    exact(len(flag_assignments), 1, 'one literal production scope-flag declaration')
+    flag_node = flag_assignments[0].value
+    require(type(flag_node).__name__ == 'Call' and type(flag_node.func).__name__ == 'Name'
+            and flag_node.func.id == 'dict' and not flag_node.args,
+            'scope flags are a keyword-only literal dict AST')
+    import ast
+    flags = {}
+    for item in flag_node.keywords:
+        require(item.arg is not None and item.arg not in flags, 'unique literal flag keyword')
+        flags[item.arg] = ast.literal_eval(item.value)
+    exact(len(flags), 19, 'exact19 component scope flags')
+    exact(flags, producer['FLAGS'], 'all production/auditor scope flags equal')
+    scope = core['SCOPE']
+    exact(expected['physical_candidate_status'], scope, 'native summary frozen component scope')
+
+    def rows(value, count, label):
+        require(type(value) is list, label + ': literal list')
+        exact(len(value), count, label + ': full count')
+        return value
+
+    def fraction(value, label):
+        rows(value, 2, label)
+        require(all(type(item) is int for item in value) and value[1] > 0,
+                label + ': literal rational numerator/positive denominator')
+        a, b = abs(value[0]), value[1]
+        while b:
+            a, b = b, a % b
+        exact(a, 1, label + ': canonical reduced rational')
+        return value
+
+    def interval(value, label):
+        require(type(value) is dict, label + ': literal interval object')
+        exact(set(value), {'lo', 'hi'}, label + ': interval endpoint schema')
+        lo, hi = fraction(value['lo'], label + ':lo'), fraction(value['hi'], label + ':hi')
+        require(lo[0] * hi[1] <= hi[0] * lo[1], label + ': ordered interval endpoints')
+        return value
+
+    def shape(value, dimensions, scalar, label):
+        if not dimensions:
+            return scalar(value, label)
+        rows(value, dimensions[0], label)
+        for index, item in enumerate(value):
+            shape(item, dimensions[1:], scalar, label + ':' + str(index))
+        return value
+
+    def contains(outer, inner, label):
+        interval(outer, label + ':packet')
+        interval(inner, label + ':audit')
+        ol, oh, il, ih = outer['lo'], outer['hi'], inner['lo'], inner['hi']
+        require(ol[0] * il[1] <= il[0] * ol[1]
+                and ih[0] * oh[1] <= oh[0] * ih[1], label + ': saved independent enclosure association')
+
+    def bare(raw, name):
+        require(type(raw) is dict, 'literal DTO object: ' + name)
+        exact(set(raw), set(declared[name]), 'entire bare DTO field schema: ' + name)
+        return raw
+
+    def typed(raw, name, format_name):
+        require(type(raw) is dict, 'literal exported DTO object: ' + name)
+        exact(set(raw), set(declared[name]) | set(flags) | {'format', 'scope'},
+              'entire exported DTO field schema: ' + name)
+        exact(raw['format'], format_name, 'current production DTO format: ' + name)
+        exact(raw['scope'], scope, 'current production DTO scope: ' + name)
+        for key, value in flags.items():
+            exact(raw[key], value, 'current production DTO scope flag: ' + key)
+        exact(raw['binding_sha256'], value_digest({key: raw[key] for key in declared[name]
+              if key != 'binding_sha256'}), 'entire typed DTO selfseal: ' + name)
+        return raw
+
+    packet_extra = {'format', 'prior_875_packet_raw_sha256', 'prior_875_packet_selfseal',
+        'prior_879_packet_raw_sha256', 'prior_879_packet_selfseal', 'local_source_work_system',
+        'evaluation_queries', 'source_reference_queries', 'packet_sha256'}
+    native_extra = {'format', 'status', 'source_packet_sha256', 'local_source_work_system_sha256',
+        'evaluation_queries_sha256', 'source_reference_queries_sha256', 'seconds', 'report_sha256'}
+    exact(set(packet), set(expected) | packet_extra, 'entire883 source packet schema')
+    exact(set(native), set(expected) | native_extra, 'entire883 native control schema')
+    exact(packet['format'], 'native-common-local-source-work-packet-1', 'current packet format')
+    exact(native['format'], 'native-common-local-source-work-control-1', 'current native format')
+    exact(native['status'], 'PASS', 'current native control PASS')
+    for key, value in expected.items():
+        exact(packet[key], value, 'packet exact literal summary: ' + key)
+        exact(native[key], value, 'native exact literal summary: ' + key)
+    exact(packet['packet_sha256'], value_digest({key: value for key, value in packet.items()
+          if key != 'packet_sha256'}), 'complete current packet selfseal')
+    exact(native['report_sha256'], value_digest({key: value for key, value in native.items()
+          if key != 'report_sha256'}), 'complete current native selfseal')
+    exact(native['source_packet_sha256'], packet['packet_sha256'], 'native complete packet binding')
+    for key, source in (('local_source_work_system_sha256', 'local_source_work_system'),
+                        ('evaluation_queries_sha256', 'evaluation_queries'),
+                        ('source_reference_queries_sha256', 'source_reference_queries')):
+        exact(native[key], value_digest(packet[source]), 'native complete section binding: ' + source)
+
+    old_packets = {}
+    exact(set(producer['OLD_PACKETS']), {'carrier', 'material', 'projection', 'surface'},
+          'exact4 declared immutable predecessor packets')
+    for name, (relative, pin, seal) in producer['OLD_PACKETS'].items():
+        path = ROOT / relative
+        require(path.resolve() == path and path.is_relative_to(ROOT), 'canonical old packet path')
+        add_pin(pins, path, pin)
+        old_packets[name] = sealed(path, 'packet_sha256')
+        if seal is not None:
+            exact(old_packets[name]['packet_sha256'], seal, 'fixed old packet seal: ' + name)
+    for epoch, name in (('875', 'projection'), ('879', 'surface')):
+        exact(packet['prior_' + epoch + '_packet_raw_sha256'], producer['OLD_PACKETS'][name][1],
+              'literal immutable predecessor raw binding: ' + epoch)
+        exact(packet['prior_' + epoch + '_packet_selfseal'], old_packets[name]['packet_sha256'],
+              'literal immutable predecessor seal binding: ' + epoch)
+    source = old_packets['carrier']['carrier_system']
+    transfer = old_packets['projection']['material_transfer']
+    projection = old_packets['projection']['strain_projection']
+    surface = old_packets['surface']
+    exact(transfer, old_packets['material']['material_transfer'], 'whole immutable original871 material system')
+    exact(surface['material_transfer'], transfer, 'whole875 to879 material transfer identity')
+    exact(surface['common_reference'], old_packets['carrier']['common_reference'], 'entire saved COMMON reference')
+    exact(surface['allocation'], old_packets['carrier']['allocation'], 'entire saved source allocation')
+    system = typed(packet['local_source_work_system'], 'NativeCommonLocalSourceWorkSystem', core['FORMAT'])
+    for key, origin in (('projection_system_binding_sha256', projection['binding_sha256']),
+                        ('material_system_binding_sha256', transfer['binding_sha256']),
+                        ('carrier_system_binding_sha256', source['binding_sha256']),
+                        ('material_reference_snapshot_sha256', transfer['reference_snapshot_sha256'])):
+        exact(system[key], origin, 'complete saved upstream system binding: ' + key)
+    for key in ('source_snapshot_sha256', 'reference_snapshot_sha256', 'original_source_work_lineages',
+                'complete_original_source_material_state_json', 'complete_current_source_states_json',
+                'complete_current_source_memory_json', 'complete_before_work_ledgers_json',
+                'complete_unaccepted_candidate_work_ledgers_json', 'source_serial_reference_energy_j',
+                'source_beam_literal_reference_energy_j', 'source_beam_energy_rounding_residual_j',
+                'source_contact_elapsed_time_s', 'source_contact_step_count', 'source_memory_elapsed_time_s',
+                'source_geometry_elapsed_time_s', 'material_geometry_elapsed_time_s',
+                'projection_blocks', 'hot_zero_coordinate_indices'):
+        exact(system[key], projection[key], 'all saved system state/work/clock/projection receipts: ' + key)
+    for key, value in (('local_source_attachment_law', core['MOTION_LAW']),
+        ('receiver_mechanical_director_law', core['DIRECTOR_LAW']), ('energetic_owner', core['ENERGY_OWNERSHIP']),
+        ('source_internal_coordinate_count', 8), ('source_state_or_work_advanced', False),
+        ('source_force_basis', 'archival_old_reference'), ('precision', 96)):
+        exact(system[key], value, 'declared production system law: ' + key)
+    require(type(system['provenance']) is str and bool(system['provenance'].strip()), 'nonempty system provenance')
+    order, source_order = rows(system['coordinate_order'], 100, 'global100 order'), rows(system['source_coordinate_order'], 14, 'OLD14 order')
+    exact(order, transfer['coordinate_order'], 'literal global100 old catalogue')
+    exact(source_order, transfer['source_coordinate_order'], 'literal OLD14 old catalogue')
+    exact(projection['coordinate_order'], order[:92], 'literal registered92 body catalogue')
+    exact(system['source_to_global_injection'], transfer['source_to_global_injection'], 'entire OLD14/global100 injection')
+    support = list(range(6)) + list(range(92, 100))
+    exact(transfer['source_support_indices'], support, 'OLD14 global support catalogue')
+    injection = rows(system['source_to_global_injection'], 100, 'global100/OLD14 injection rows')
+    for i, row in enumerate(injection):
+        exact(row, [[int(i == j), 1] for j in support], 'literal identity OLD14 injection row')
+    exact(system['bound_coordinate_increments'], projection['bound_coordinate_increments'] + [[0, 1]] * 8,
+          'registered NONZERO92 plus internal8 origin')
+    shape(system['bound_coordinate_increments'], (100,), fraction, 'system100 bound coordinates')
+    exact(system['bound_coordinate_increments'][:6], [[0, 1]] * 6, 'zero fresh owner values')
+    require(any(value != [0, 1] for value in system['bound_coordinate_increments'][6:92]), 'registered body probe is NONZERO')
+    rows(system['hot_zero_coordinate_indices'], 30, 'HOT30 indices')
+    blocks_list = rows(system['projection_blocks'], 8, 'complete eight projection blocks')
+    blocks = {item['component_id']: item for item in blocks_list}
+    exact(len(blocks), 8, 'eight distinct projection component identities')
+    carriers = rows(source['carriers'], 16, 'literal16 archival carriers')
+    fields = rows(system['material_point_fields'], 32, 'complete32 material point fields')
+    point_keys = [(carrier['point_id'], side) for carrier in carriers for side in ('sub', 'over')]
+    exact([(item['point_id'], item['side']) for item in fields], point_keys, 'literal once-only32 point ordering')
+    exact(len(set(point_keys)), 32, 'unique32 original material side labels')
+    originals = {}
+    for row in rows(surface['original_material_queries'], 64, 'old879 original material queries'):
+        if row['arguments']['material_depth_bounds_m'] == {'lo': [0, 1], 'hi': [0, 1]}:
+            key = row['arguments']['point_id'], row['arguments']['side']
+            require(key not in originals, 'unique original topdepth query')
+            originals[key] = row['response']
+    exact(set(originals), set(point_keys), 'all32 genuine original topdepth fields')
+    attachments = {(item['point_id'], item['side']): item for item in rows(transfer['attachments'], 32, 'original material attachments')}
+    by_point = {item['point_id']: item for item in carriers}
+    field_map = {}
+    for item, key in zip(fields, point_keys):
+        bare(item, 'NativeCommonLocalSourcePointField')
+        old = originals[key]
+        carrier, side = by_point[key[0]], key[1]
+        body = blocks[old['geometry_field_component_id']]
+        owner = carrier[side + '_owner']
+        expect_field = dict(point_id=old['point_id'], trace_id=old['trace_id'], side=side,
+            original_parent_id=old['original_parent_id'], original_material_id=old['original_material_id'], owner=owner,
+            original_label_membership=old['original_label_membership'], archive_cohort_id=old['archive_cohort_id'],
+            component_id=old['geometry_field_component_id'], material_response_binding_sha256=old['binding_sha256'],
+            body_snapshot_sha256=old['body_snapshot_sha256'], coordinate_order=old['coordinate_order'], coordinates_m=old['coordinates_m'],
+            body_coordinate_indices=body['global_coordinate_indices'], owner_coordinate_indices=[order.index(['owner', owner, axis]) for axis in 'xyz'],
+            residual_coordinate_index=order.index(['source_internal', carrier['trace_id'], side]),
+            material_reference_position_bounds_m=old['reference_position_bounds_m'],
+            source_reference_position_bounds_m=carrier['archival_old_reference'][side + '_position_bounds_m'],
+            source_virtual_radial_direction_bounds=carrier['archival_old_reference'][side + '_direction_bounds'],
+            mode_displacement_columns=old['mode_displacement_columns'], mode_spatial_gradient_columns_per_m=old['mode_spatial_gradient_columns_per_m'],
+            material_depth_bounds_m=old['material_depth_bounds_m'], source_material_parent_json=old['complete_original_parent_json'],
+            source_material_allocation_json=old['complete_parent_allocation_json'], source_archive_cohort_json=old['complete_archive_cohort_json'])
+        exact(item, expect_field, 'complete original point field DTO association')
+        for meta in ('original_parent_id', 'original_material_id', 'owner', 'original_label_membership', 'archive_cohort_id'):
+            exact(old[meta], attachments[key][meta], 'complete original material attachment metadata: ' + meta)
+        exact(item['coordinates_m'], body['coordinates_m'], 'point uses fixed registered NONZERO bank coordinates')
+        exact(item['coordinate_order'], [order[i][2] for i in item['body_coordinate_indices']], 'point seven-mode global association')
+        field_map[key] = item
+    old_surface_rows = rows(surface['surface_queries'], 10, 'all5 zero/NONZERO old879 surface query pairs')
+    expected_surfaces = [old_surface_rows[2 * index + 1]['response']['binding_sha256']
+                         for index in range(5)]
+    exact(len(expected_surfaces), 5, 'five genuine old879 NONZERO surface bindings')
+    exact(system['genuine_surface_response_binding_sha256'], expected_surfaces, 'all five retained geometry-only surfaces')
+
+    old_queries = rows(old_packets['material']['global_queries'][:4], 4, 'authentic old871 query catalogue')
+    evaluations = rows(packet['evaluation_queries'], 4, 'all4 local100 queries')
+    references = rows(packet['source_reference_queries'], 4, 'all4 OLD14 certificates')
+    audit_evaluations = rows(audit['evaluation_query_receipts'], 4, 'all4 independent local query receipts')
+    audit_references = rows(audit['source_reference_query_receipts'], 4, 'all4 independent OLD14 query receipts')
+    path_count = 0
+    for qi, (row, old_query, receipt) in enumerate(zip(evaluations, old_queries, audit_evaluations)):
+        exact(set(row), {'arguments', 'response'}, 'literal local100 query envelope')
+        old_args = old_query['arguments']
+        args = dict(coordinate_increments=system['bound_coordinate_increments'][:92] + old_args['coordinate_increments'][92:],
+                    branch=old_args['branch'], precision=96)
+        exact(row['arguments'], args, 'complete externally composed local100 query arguments')
+        response = typed(row['response'], 'NativeCommonLocalSourceWorkResponse', core['RESPONSE_FORMAT'])
+        exact(response['system_binding_sha256'], system['binding_sha256'], 'complete response→system binding')
+        exact(response['coordinate_increments'], args['coordinate_increments'], 'queried100 values returned unchanged')
+        exact(response['branch'], args['branch'], 'queried physical branch returned')
+        exact(response['precision'], 96, 'queried precision returned')
+        for key in ('coordinate_order', 'original_source_work_lineages', 'genuine_surface_response_binding_sha256',
+                    'hot_zero_coordinate_indices', 'source_contact_elapsed_time_s', 'source_memory_elapsed_time_s',
+                    'source_geometry_elapsed_time_s', 'material_geometry_elapsed_time_s', 'energetic_owner',
+                    'source_internal_coordinate_count', 'source_state_or_work_advanced'):
+            exact(response[key], system[key], 'full response system metadata association: ' + key)
+        exact(response['hot_thirty_source_coupling_exact_zero'], True, 'explicit exact HOT zero declaration')
+        for key in ('source_gradient_bounds', 'orthogonal_gradient_bounds', 'potential_gradient_bounds'):
+            shape(response[key], (100,), interval, 'complete100 vector: ' + key)
+        for key in ('source_hessian_bounds', 'orthogonal_hessian_bounds', 'potential_hessian_bounds'):
+            shape(response[key], (100, 100), interval, 'complete100x100 matrix: ' + key)
+        for key in ('source_potential_bounds_j', 'orthogonal_energy_bounds_j', 'potential_bounds_j'):
+            interval(response[key], 'complete energy: ' + key)
+        for index in system['hot_zero_coordinate_indices']:
+            require(type(index) is int and 0 <= index < 100, 'literal HOT global index')
+            exact(response['potential_gradient_bounds'][index], {'lo': [0, 1], 'hi': [0, 1]}, 'HOT zero potential gradient')
+            for j in range(100):
+                exact(response['potential_hessian_bounds'][index][j], {'lo': [0, 1], 'hi': [0, 1]}, 'HOT zero Hessian row')
+                exact(response['potential_hessian_bounds'][j][index], {'lo': [0, 1], 'hi': [0, 1]}, 'HOT zero Hessian column')
+        receipt_fields = {'query_index', 'branch', 'coordinate_increments', 'potential_bounds_j', 'source_potential_bounds_j',
+            'orthogonal_energy_bounds_j', 'atom_joint_path_receipts', 'complete100_first_and_second_variations',
+            'source_atom_count', 'beam_count', 'orthogonal_bulk_owner_count', 'hot_zero_count'}
+        exact(set(receipt), receipt_fields, 'entire independent evaluation receipt schema')
+        for key, value in (('query_index', qi), ('branch', args['branch']), ('coordinate_increments', args['coordinate_increments']),
+            ('complete100_first_and_second_variations', True), ('source_atom_count', 16), ('beam_count', 8),
+            ('orthogonal_bulk_owner_count', 8), ('hot_zero_count', 30)):
+            exact(receipt[key], value, 'independent evaluation query association: ' + key)
+        for key in ('potential_bounds_j', 'source_potential_bounds_j', 'orthogonal_energy_bounds_j'):
+            contains(response[key], receipt[key], 'independent complete potential association: ' + key)
+        atoms = rows(response['source_atom_responses'], 16, 'all16 source atoms')
+        beams = rows(response['source_beam_responses'], 8, 'all8 source beams')
+        paths = rows(receipt['atom_joint_path_receipts'], 16, 'all16 independent joint paths')
+        for atom, carrier, path in zip(atoms, carriers, paths):
+            bare(atom, 'NativeCommonLocalSourceAtomResponse')
+            point_id = carrier['point_id']
+            exact(atom['point_id'], point_id, 'source atom literal original point identity')
+            exact(atom['trace_id'], carrier['trace_id'], 'source atom literal original trace identity')
+            for local, original in (('source_accounting_bucket', 'source_accounting_bucket'), ('original_area_m2', 'original_area_m2'),
+                ('stored_source_energy_components_j', 'stored_source_energy_components_j'), ('original_source_state_json', 'source_local_state_json'),
+                ('source_work_lineage_id', 'original_source_work_lineage_id'), ('archival_literal_world_reactions_json', 'archival_literal_world_reactions_json'),
+                ('archival_mathematical_minus_literal_reaction_bounds', 'archival_mathematical_minus_literal_reaction_bounds'),
+                ('series_stiffness_binary64_pa_m', 'series_stiffness_binary64_pa_m'), ('traction_rounding_residual_pa', 'traction_rounding_residual_pa'),
+                ('source_energy_rounding_residual_j', 'energy_rounding_residual_j')):
+                exact(atom[local], carrier[original], 'literal old atom material/work/budget: ' + local)
+            exact(atom['receiver_director_bounds'], carrier['archival_old_reference']['receiver_director_bounds'], 'literal mechanical directors retained')
+            expected_active = set()
+            for side in ('sub', 'over'):
+                side_raw = bare(atom[side], 'NativeCommonLocalSourceSideResponse')
+                field = field_map[point_id, side]
+                exact(side_raw['field'], field, 'atom side complete original material field association')
+                exact(side_raw['residual_increment_m'], args['coordinate_increments'][field['residual_coordinate_index']], 'atom side global internal residual association')
+                for key in ('actual_material_position_bounds_m', 'virtual_source_position_bounds_m', 'virtual_source_displacement_bounds_m',
+                            'reference_internal_arm_bounds_m', 'internal_arm_bounds_m', 'convected_internal_arm_bounds_m', 'virtual_radial_driver_bounds'):
+                    shape(side_raw[key], (3,), interval, 'complete side vector: ' + key)
+                shape(side_raw['deformation_gradient_bounds'], (3, 3), interval, 'complete finite side gradient')
+                shape(side_raw['body_driver_columns'], (7, 3), interval, 'all7 finite body driver columns')
+                expected_active.update(field['body_coordinate_indices'])
+                expected_active.update(field['owner_coordinate_indices'])
+                expected_active.add(field['residual_coordinate_index'])
+            exact(atom['active_coordinate_indices'], sorted(expected_active), 'complete sorted atom sparse owner/body/internal support')
+            exact(len(expected_active), 22, 'literal22 active atom coordinates')
+            shape(atom['scalar_first_derivative_bounds'], (2, 22), interval, 'all scalar first columns')
+            shape(atom['scalar_second_derivative_bounds'], (2, 22, 22), interval, 'all scalar second pairs')
+            shape(atom['potential_gradient_bounds'], (22,), interval, 'all sparse atom gradient entries')
+            for key in ('potential_hessian_bounds', 'prestress_curvature_hessian_bounds'):
+                shape(atom[key], (22, 22), interval, 'all sparse atom Hessian entries: ' + key)
+            interval(atom['potential_bounds_j'], 'source atom potential')
+            path_fields = {'point_id', 'trace_id', 'branch', 'active_coordinate_indices', 'normal_traction_bounds_pa',
+                'joint_body_steps', 'joint_internal_steps', 'joint_path_channels',
+                'physical_force_hyperstress_internal_owner_work_is_minus_gradient', 'source_state_or_work_advanced'}
+            exact(set(path), path_fields, 'entire independent atom path receipt schema')
+            for key in ('point_id', 'trace_id', 'active_coordinate_indices'):
+                exact(path[key], atom[key], 'independent path current atom association: ' + key)
+            exact(path['branch'], args['branch'], 'independent path branch association')
+            exact(path['physical_force_hyperstress_internal_owner_work_is_minus_gradient'], True, 'saved independent physical work sign declaration')
+            exact(path['source_state_or_work_advanced'], False, 'joint path does not advance historical state/work')
+            sub, over = field_map[point_id, 'sub'], field_map[point_id, 'over']
+            expected_body_steps = {str(sub['body_coordinate_indices'][0]): [1, 10**8],
+                str(sub['body_coordinate_indices'][4]): [-1, 3 * 10**8], str(over['body_coordinate_indices'][1]): [1, 7 * 10**8]}
+            expected_internal_steps = {str(sub['residual_coordinate_index']): [1, 10**8],
+                str(over['residual_coordinate_index']): [-1, 2 * 10**8]}
+            exact(path['joint_body_steps'], expected_body_steps, 'literal joint body path steps attached to this atom')
+            exact(path['joint_internal_steps'], expected_internal_steps, 'literal joint internal path steps attached to this atom')
+            contains(atom['traction_bounds_pa'][0], path['normal_traction_bounds_pa'], 'independent current normal traction association')
+            require(path['normal_traction_bounds_pa']['hi'][0] < 0, 'saved strict compressed current normal branch')
+            channels = rows(path['joint_path_channels'], 2, 'both complete independent path channels')
+            channel_fields = {'eta_polynomial', 'power_polynomial', 'work_integral', 'potential_difference',
+                'scalar_range_bound', 'traction_range_bound', 'power_convention', 'equality_is_correlated_algebra',
+                'complete_physical_attachment_power_polynomial', 'complete_physical_work_integral', 'physical_power_convention'}
+            for ci, channel in enumerate(channels):
+                exact(set(channel), channel_fields, 'entire independent polynomial path channel schema')
+                shape(channel['eta_polynomial'], (3,), interval, 'complete quadratic path scalar coefficients')
+                shape(channel['power_polynomial'], (4,), interval, 'complete cubic path potential-power coefficients')
+                shape(channel['complete_physical_attachment_power_polynomial'], (4,), interval, 'complete cubic path physical-power coefficients')
+                for key in ('work_integral', 'potential_difference', 'scalar_range_bound', 'traction_range_bound', 'complete_physical_work_integral'):
+                    interval(channel[key], 'saved independent complete path scalar: ' + key)
+                exact(channel['power_convention'], 'PLUS_POTENTIAL_DIFFERENTIAL_DU', 'potential path sign convention')
+                exact(channel['physical_power_convention'], 'MINUS_POTENTIAL_DIFFERENTIAL_DU', 'physical path sign convention')
+                exact(channel['equality_is_correlated_algebra'], True, 'saved correlated path identity declaration')
+                if ci == 0:
+                    require(channel['traction_range_bound']['hi'][0] < 0, 'saved WHOLE path strict compressed branch')
+            for key in ('complete_physical_attachment_power_polynomial', 'complete_physical_work_integral', 'physical_power_convention'):
+                exact(channels[0][key], channels[1][key], 'both channels retain same whole physical path: ' + key)
+            path_count += 1
+        old_beams = rows(transfer['beams'], 8, 'all8 authentic OLD14 beam identities')
+        for beam, old_beam in zip(beams, old_beams):
+            bare(beam, 'NativeCommonLocalSourceBeamResponse')
+            for key in ('trace_id', 'side', 'source_coordinate_index', 'stiffness_exact_n_m', 'reference_force_exact_n', 'reference_energy_exact_j'):
+                exact(beam[key], old_beam[key], 'literal OLD14 beam identity/budget: ' + key)
+            source_index = beam['source_coordinate_index']
+            require(type(source_index) is int and 6 <= source_index < 14, 'beam index belongs to OLD14 catalogue6..13')
+            exact(source_order[source_index], ['radial', beam['trace_id'], beam['side']], 'OLD14 beam radial coordinate identity')
+            global_residual = order.index(['source_internal', beam['trace_id'], beam['side']])
+            require(92 <= global_residual < 100, 'global internal beam coordinate belongs to92..99')
+            matched = [item for item in blocks_list if item['source_coordinate_index'] == source_index]
+            exact(len(matched), 1, 'unique projection bank associated with this OLD14 beam')
+            block = matched[0]
+            exact(beam['active_coordinate_indices'], block['global_coordinate_indices'] + [global_residual], 'beam active body7 then independent global internal coordinate')
+            exact(beam['residual_increment_m'], args['coordinate_increments'][global_residual], 'beam global internal residual value')
+            exact(beam['projected_body_increment_bounds_m'], block['projection_increment_bounds_m'], 'beam saved authentic body projection')
+            shape(beam['potential_gradient_bounds'], (8,), interval, 'beam full active8 gradient')
+            shape(beam['potential_hessian_bounds'], (8, 8), interval, 'beam full active8 Hessian')
+            for key in ('driver_increment_bounds_m', 'potential_increment_bounds_j'):
+                interval(beam[key], 'saved finite beam driver/energy: ' + key)
+
+    for qi, (row, old_query, receipt) in enumerate(zip(references, old_queries, audit_references)):
+        exact(set(row), {'arguments', 'response'}, 'literal OLD14 certificate query envelope')
+        old_args = old_query['arguments']
+        args = dict(source_coordinate_increments=[old_args['coordinate_increments'][index] for index in support],
+                    branch=old_args['branch'], precision=96)
+        exact(row['arguments'], args, 'complete externally composed OLD14 certificate query')
+        response = typed(row['response'], 'NativeCommonLocalSourceReferenceCertificate', core['REFERENCE_FORMAT'])
+        for key, value in (('system_binding_sha256', system['binding_sha256']), ('source_coordinate_order', source_order),
+            ('source_coordinate_increments', args['source_coordinate_increments']), ('source_to_global_injection', system['source_to_global_injection']),
+            ('branch', args['branch']), ('precision', 96), ('cold_body_zero_is_a_symbolic_restriction_not_a_bulk_query', True),
+            ('source_atoms_and_beams_only', True), ('zero_bulk_hessian_claimed', False),
+            ('original875_nonzero_anchor_operator_identity_claimed', False), ('full_registered_nonzero_bulk_work_identified_with_old_source', False)):
+            exact(response[key], value, 'complete truthful OLD14 certificate association: ' + key)
+        shape(response['source_coordinate_increments'], (14,), fraction, 'all14 source certificate coordinates')
+        for key in ('gradient_bounds', 'old_source_gradient_bounds', 'source_first_variation_residual_bounds'):
+            shape(response[key], (14,), interval, 'all14 source certificate first variations: ' + key)
+        for key in ('hessian_bounds', 'old_source_hessian_bounds', 'source_second_variation_residual_bounds'):
+            shape(response[key], (14, 14), interval, 'all14x14 source certificate second variations: ' + key)
+        for key in ('potential_bounds_j', 'old_source_potential_bounds_j', 'source_energy_identity_residual_bounds_j'):
+            interval(response[key], 'complete source certificate energy: ' + key)
+        for key, dims in (('atom_scalar_first_identity_residual_bounds', (2, 14)),
+                          ('atom_scalar_second_identity_residual_bounds', (2, 14, 14)),
+                          ('atom_scalar_increment_identity_residual_bounds', (2,))):
+            values = rows(response[key], 16, 'all16 source-only atom identity residual rows: ' + key)
+            for pair, carrier in zip(values, carriers):
+                rows(pair, 2, 'source-only point/residual pair')
+                exact(pair[0], carrier['point_id'], 'source-only identity original atom association')
+                shape(pair[1], dims, interval, 'complete source-only scalar identity tensor: ' + key)
+        receipt_fields = {'query_index', 'branch', 'source_coordinate_increments', 'potential_bounds_j',
+            'cold_zero_is_symbolic_source_restriction', 'old14_owner_internal_identity_injection',
+            'full_first_and_second_variations', 'bulk_energy_or_hessian_at_zero_supplied', 'original_nonzero875_operator_identity_claimed'}
+        exact(set(receipt), receipt_fields, 'entire independent OLD14 certificate receipt schema')
+        for key, value in (('query_index', qi), ('branch', args['branch']), ('source_coordinate_increments', args['source_coordinate_increments']),
+            ('cold_zero_is_symbolic_source_restriction', True), ('old14_owner_internal_identity_injection', True),
+            ('full_first_and_second_variations', True), ('bulk_energy_or_hessian_at_zero_supplied', False),
+            ('original_nonzero875_operator_identity_claimed', False)):
+            exact(receipt[key], value, 'independent OLD14 source-only query association: ' + key)
+        contains(response['old_source_potential_bounds_j'], receipt['potential_bounds_j'], 'independent original source potential association')
+    exact(path_count, 64, 'all64 independent current atom joint paths associated')
+    return dict(complete_packet_native_summary_and_section_selfseals_checked=True,
+        current_frozen_production_and_auditor_dto_schema_count=7,
+        current_frozen_production_and_auditor_scope_flag_count=19,
+        complete_original_point_field_association_count=32,
+        complete_local100_query_association_count=4,
+        complete_original14_certificate_association_count=4,
+        complete_independent_atom_joint_path_receipt_association_count=64,
+        old14_beam_indices_distinguished_from_global100_internal_indices=True,
+        saved_independent_mechanics_receipts_only_no_mechanical_oracle_reexecuted=True)
+
+
+if __name__=='__main__':
+    parser=argparse.ArgumentParser()
+    parser.add_argument('--seal-manifest',action='store_true')
+    parser.add_argument('--out')
+    parser.add_argument('--manifest')
+    parser.add_argument('--document',action='append',default=[])
+    args=parser.parse_args()
+    if args.seal_manifest:
+        require(args.out is None and args.manifest is None and not args.document,'Manifest mode has no reader output/document options')
+        run_manifest(seal_manifest=True)
+    else:
+        require(args.out is not None,'Explicit fresh reader output required')
+        run_reader(Path(args.out),artifact_manifest_path=args.manifest,document_paths=args.document)

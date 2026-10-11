@@ -1,0 +1,294 @@
+"""Reusable stdlib readback of immutable863 with explicitly declared additions.
+
+Only hashes, saved receipt schemas, seals and exact output closures are checked.
+The frozen863 bootstrap independently replays formulas once; this reader does
+not repeat project tests, endpoint formulas, force/Hessian, or quadratures.
+
+The old859 reader requires a source map of exactly863. Its source-map helper
+therefore receives the explicitly disclosed frozen863 projection. The complete
+current source map, including declared additions, is checked independently
+before and after that reader and every old source hash is checked directly.
+"""
+from contextlib import redirect_stdout
+from pathlib import Path, PurePosixPath
+import argparse, hashlib, io, json, sys, time, types
+
+ROOT = Path('/workspace/Habitable-Moon-Project')
+PARENT = ROOT / 'analysis/geometric_native_common_source_allocation_validation'
+OLD = ROOT / 'analysis/geometric_native_common_contact_transfer_validation'
+RELEASE = PARENT / 'release_validation_02'
+OUT = Path('/tmp/native_source_carrier_baseline863_reusable_readback_20261006.json')
+OLD859_OUT = Path('/tmp/native_source_carrier_baseline863_reusable_old859_readback_20261006.json')
+BOOTSTRAP_SOURCE = Path('/tmp/native_source_carrier_baseline863_producer_20261006.py')
+BOOTSTRAP_REPORT = Path('/tmp/native_source_carrier_baseline863_20261006.json')
+BOOTSTRAP_SOURCE_SHA = 'eafbd34a81e9a6ee1f6d06c368797e4cec6291f445c8efc5e024ac16ffda4572'
+BOOTSTRAP_REPORT_RAW = 'bfd7d18e5f407083ade3aea48e7ed183952c00b01d7ad66ad2cbbe2a09811732'
+BOOTSTRAP_REPORT_SEAL = 'a109a6dfce8999aa2fd6ec6bc19f0cb3ab9d5fd4adce29703e2889d16182c0da'
+MAP = '83ebcc92428688af96c4f104b5ce9bbd96f29625e8a46d2b08e77b2fbad99406'
+MAP_RAW = 'e9e1dc52ae057b29f06e1e345e8ac055fd67aa8314f147d2dd5105d75a9bd2bf'
+AUDIT_RAW = '2d9af7d2a38dcf55afa1269b0fe983fa5f51a6dcec5db93b6c4026dcda29a009'
+AUDIT_SEAL = '64dabc8a7a9d23e1ced792db03ba413f17cbbb7c43a5a0f0be7e727de5b2bf9a'
+OLD859_BASELINE_RAW = '778787b5231c6d03e1c87857038b52889077be0e37290a542fc88acda7c34836'
+OLD859_BOOTSTRAP_SOURCE_RAW = '240127f21ee6077212795b512bdab2cb1cd83cf88f6f2293cfd8d1f44a91730d'
+OLD859_BOOTSTRAP_REPORT_RAW = 'e44d4f4512e090469fe2204f64f9f5d943e99447e57e1d99ec3c38bc0076e655'
+WRAPPER_RAW = '7df81606a168656cd51208a71d7ad425714751f736d9ed4ca50218263e106f95'
+WRAPPER_SEAL = 'f81c0ab0dbd2aebf59124274a6b8a5211934fdd36363e7b6aebe4fc1ea9ef9a4'
+NATIVE_RAW = 'b554486533b7faa9bde66ac5ca6daecdb0b80000342de903410f4d536352d704'
+NATIVE_SEAL = '35cfaf3711db0aec9905e1dd41ee7b6beb6fe4721c16b79a73e1132fe4ff4fd0'
+PACKET_RAW = 'dfda996840a53d54610055dc0a427a12365dda6d3d550971190b0b73a0815dcb'
+PACKET_SEAL = 'b55d3e4c55c940eb95d55ba714e1b13a7c4c833615686559822119b9251358d0'
+EXPECTED_ADDED_COUNT = 4
+EXPECTED_ADDED_PATHS = frozenset({
+    'tectonics/geometric_native_common_source_carrier.py',
+    'tests/test_geometric_native_common_source_carrier.py',
+    'analysis/geometric_native_common_source_carrier_validation/native_control.py',
+    'analysis/geometric_native_common_source_carrier_validation/validate.py',
+})
+
+
+def enc(x):
+    return json.dumps(x, sort_keys=True, separators=(',', ':'), ensure_ascii=False, allow_nan=False).encode()
+
+
+def vd(x):
+    return hashlib.sha256(enc(x)).hexdigest()
+
+
+def digest(path):
+    h = hashlib.sha256()
+    with Path(path).open('rb') as stream:
+        for block in iter(lambda: stream.read(1 << 20), b''):
+            h.update(block)
+    return h.hexdigest()
+
+
+def read(path):
+    return json.loads(Path(path).read_bytes())
+
+
+def sealed(path, key):
+    raw = read(path)
+    body = dict(raw)
+    assert body.pop(key) == vd(body), str(path)
+    return raw
+
+
+def load(path, name, pin):
+    assert digest(path) == pin, str(path)
+    module = types.ModuleType(name)
+    module.__file__ = str(path)
+    sys.modules[name] = module
+    exec(compile(Path(path).read_bytes(), str(path), 'exec'), module.__dict__)
+    return module
+
+
+def source_map():
+    return {str(p.relative_to(ROOT)): digest(p)
+            for folder in ('tectonics', 'tests', 'scripts', 'analysis')
+            for p in sorted((ROOT / folder).rglob('*.py'))}
+
+
+def normalized_declared_paths(paths):
+    assert type(EXPECTED_ADDED_COUNT) is int and EXPECTED_ADDED_COUNT > 0, 'Freeze exact addition count first'
+    assert not isinstance(paths, (str, bytes)), 'Pass an iterable of explicit path strings'
+    names = tuple(paths)
+    assert len(names) == len(set(names)) == EXPECTED_ADDED_COUNT, 'Wrong declared addition count'
+    for name in names:
+        assert isinstance(name, str) and name, 'Nonempty path strings required'
+        path = PurePosixPath(name)
+        assert not path.is_absolute() and str(path) == name, name
+        assert len(path.parts) >= 2 and '..' not in path.parts, name
+        assert path.parts[0] in ('tectonics', 'tests', 'scripts', 'analysis'), name
+        assert path.suffix == '.py', name
+    assert frozenset(names) == EXPECTED_ADDED_PATHS, 'Use the exact four authorized carrier source paths'
+    return frozenset(names)
+
+
+def run(declared_additional_source_paths, *, output_path=None,
+        bootstrap_source_path=BOOTSTRAP_SOURCE, bootstrap_report_path=BOOTSTRAP_REPORT):
+    started = time.perf_counter()
+    declared = normalized_declared_paths(declared_additional_source_paths)
+    result_path = Path(output_path) if output_path is not None else OUT
+    bootstrap_source_path = Path(bootstrap_source_path)
+    bootstrap_report_path = Path(bootstrap_report_path)
+    assert result_path.resolve().is_relative_to(Path('/tmp')), 'Scratch /tmp output required'
+    assert result_path.suffix == '.json', 'JSON scratch output required'
+    assert result_path.resolve() not in {
+        bootstrap_source_path.resolve(), bootstrap_report_path.resolve(), OLD859_OUT.resolve()}, 'Immutable evidence or nested output'
+    assert digest(bootstrap_source_path) == BOOTSTRAP_SOURCE_SHA
+    assert digest(bootstrap_report_path) == BOOTSTRAP_REPORT_RAW
+    bootstrap = sealed(bootstrap_report_path, 'audit_packet_sha256')
+    assert bootstrap['audit_packet_sha256'] == BOOTSTRAP_REPORT_SEAL
+    assert bootstrap['auditor_script_sha256'] == BOOTSTRAP_SOURCE_SHA
+    assert bootstrap['status'] == 'PASS' and bootstrap['final_python_sources'] == 863
+    assert bootstrap['source_map_canonical_sha256'] == MAP
+    assert bootstrap['frozen_source_map_raw_sha256'] == MAP_RAW
+    frozen = read(PARENT / 'frozen_source_map_863.json')
+    assert len(frozen) == 863 and vd(frozen) == MAP
+    assert digest(PARENT / 'frozen_source_map_863.json') == MAP_RAW
+    before = source_map()
+    current_count = 863 + EXPECTED_ADDED_COUNT
+    assert len(before) == current_count
+    assert set(before) - set(frozen) == declared and not declared.intersection(frozen)
+    assert all(before.get(name) == pin for name, pin in frozen.items())
+    old859 = load(PARENT / 'baseline_859_reusable_source.txt',
+                  'source_carrier863_old859_receipt_readback', OLD859_BASELINE_RAW)
+    original_source_map = old859.source_map
+
+    def frozen863_source_view():
+        actual = original_source_map()
+        assert set(actual) == set(before) and actual == before, 'Complete source map changed during old859 readback'
+        return {name: actual[name] for name in frozen}
+
+    old859.source_map = frozen863_source_view
+    old859_frozen = read(OLD / 'frozen_source_map_859.json')
+    original863_additions = set(frozen) - set(old859_frozen)
+    assert len(original863_additions) == 4
+    with redirect_stdout(io.StringIO()):
+        prior = old859.run(original863_additions, output_path=OLD859_OUT,
+                          bootstrap_source_path=PARENT / 'baseline_859_bootstrap_source.txt',
+                          bootstrap_report_path=PARENT / 'baseline_859_bootstrap.json')
+    assert prior['status'] == 'PASS_IMMUTABLE859_WITH_DECLARED863_SOURCE_ADDITIONS_ONLY'
+    assert prior['all859_python_sources_unchanged'] is True
+    assert prior['preserved_old1633_artifact_chain'] is True
+    assert prior['preserved826_833_841_847_853_and859_output_closures'] is True
+    auditor = load(PARENT / 'independent_audit_source.txt',
+                   'source_carrier863_archived_schema_auditor', BOOTSTRAP_SOURCE_SHA)
+    assert original863_additions == auditor.ADDED
+    for name, pin in frozen.items():
+        assert digest(ROOT / name) == pin, name
+    assert digest(RELEASE / 'report.json') == WRAPPER_RAW
+    wrapper = sealed(RELEASE / 'report.json', 'report_sha256')
+    assert wrapper['report_sha256'] == WRAPPER_SEAL and wrapper['status'] == 'PASS'
+    assert wrapper['source_count'] == 863 and wrapper['verified_prior_python_sources'] == 859
+    assert wrapper['verified_prior_artifacts'] == 1633
+    assert wrapper['source_map_before_sha256'] == wrapper['source_map_after_sha256'] == MAP
+    assert wrapper['changed_python_paths'] == []
+    assert wrapper['prior_artifacts_and_python_sources_preserved_after'] is True
+    assert wrapper['added_python_sources'] == {k: frozen[k] for k in sorted(auditor.ADDED)}
+    assert wrapper['pytest_counts'] == {'passed': 17} and wrapper['pytest_exit_code'] == 0
+    assert wrapper['execution_mode'] == 'same_python_process'
+    assert wrapper['pytest_import_mode'] == 'importlib' and wrapper['historical_tests_reexecuted'] is False
+    assert wrapper['test_paths'] == ['tests/test_geometric_native_common_source_allocation.py']
+    auditor.closure(RELEASE, wrapper)
+    assert digest(RELEASE / 'native_control/report.json') == NATIVE_RAW
+    native = sealed(RELEASE / 'native_control/report.json', 'report_sha256')
+    assert native['report_sha256'] == NATIVE_SEAL and native['status'] == 'PASS'
+    assert digest(RELEASE / 'native_control/source_packet.json') == PACKET_RAW
+    packet = sealed(RELEASE / 'native_control/source_packet.json', 'packet_sha256')
+    assert packet['packet_sha256'] == PACKET_SEAL
+    assert native['source_packet_sha256'] == PACKET_SEAL
+    assert native['density_queries_sha256'] == vd(packet['density_queries'])
+    assert native['source_memory_queries_sha256'] == vd(packet['source_memory_queries'])
+    assert native['allocation_binding_sha256'] == packet['allocation']['binding_sha256']
+    for raw in (wrapper, native, packet):
+        auditor.global_scope(raw)
+    assert native['remaining_physical_conditions'] == packet['remaining_physical_conditions']
+    assert len(packet['remaining_physical_conditions']) == 3
+    assert digest(PARENT / 'independent_audit.json') == AUDIT_RAW
+    audit = sealed(PARENT / 'independent_audit.json', 'audit_packet_sha256')
+    assert audit['audit_packet_sha256'] == AUDIT_SEAL and audit['status'] == 'PASS'
+    assert audit['auditor_script_sha256'] == BOOTSTRAP_SOURCE_SHA
+    for key, expected in (
+        ('final_python_sources', 863), ('unchanged_prior_python_sources', 859), ('added_python_source_count', 4),
+        ('fresh_tests', 17), ('output_closure_count', 4), ('source_family_count', 4), ('source_cell_count', 8),
+        ('active_source_cell_count', 5), ('inactive_source_cell_count', 3), ('source_boundary_count', 12),
+        ('literal_source_atom_count', 16), ('full_literal_atom_epoch_replay_count', 48),
+        ('exact_literal_epoch_work_store_replay_count', 288), ('allocated_density_query_count', 10),
+        ('whole_current_source_memory_query_count', 4), ('exact_symbolic_source_area_closure_count', 4)):
+        assert audit[key] == expected, key
+    assert audit['source_map_canonical_sha256'] == MAP and audit['frozen_source_map_raw_sha256'] == MAP_RAW
+    assert audit['output_manifest'] == wrapper['outputs']
+    assert audit['wrapper_raw_sha256'] == WRAPPER_RAW and audit['wrapper_selfseal'] == WRAPPER_SEAL
+    assert audit['native_raw_sha256'] == NATIVE_RAW and audit['native_selfseal'] == NATIVE_SEAL
+    assert audit['source_packet_raw_sha256'] == PACKET_RAW and audit['source_packet_selfseal'] == PACKET_SEAL
+    assert audit['source_map_before_after_identical'] is True
+    assert audit['preserved_old1633_artifact_chain'] is True
+    assert audit['preserved826_833_841_847_853_and859_output_closures'] is True
+    for key in ('project_imports', 'pytest_reexecuted', 'source_history_advanced',
+                'second_certified_tensor_quadrature_performed', 'second_certified_whole_boundary_quadrature_performed',
+                'new_force_quadratures_repeated', 'physical_source_material_handover_certified',
+                'old_world_force_pullback_preserved', 'old_rod_prestrain_or_energy_transferred',
+                'new_mixed_force_equilibrium_certified', 'physical_material_admission_authorized'):
+        assert audit[key] is False, key
+    assert audit['accepted_original_native_intervals'] == 1 and audit['accepted_new_native_intervals'] == 0
+    assert audit['original_point_1_remaining_work_blocks'] == 1 and audit['remaining_physical_condition_count'] == 3
+    assert bootstrap['output_manifest'] == audit['output_manifest']
+    assert bootstrap['wrapper_raw_sha256'] == audit['wrapper_raw_sha256']
+    assert bootstrap['native_raw_sha256'] == audit['native_raw_sha256']
+    assert bootstrap['source_packet_raw_sha256'] == audit['source_packet_raw_sha256']
+    dependencies = dict(prior['dependency_raw_sha256'])
+    dependencies.update({
+        str(PARENT / 'independent_audit_source.txt'): BOOTSTRAP_SOURCE_SHA,
+        str(PARENT / 'independent_audit.json'): AUDIT_RAW,
+        str(PARENT / 'frozen_source_map_863.json'): MAP_RAW,
+        str(PARENT / 'baseline_859_reusable_source.txt'): OLD859_BASELINE_RAW,
+        str(PARENT / 'baseline_859_bootstrap_source.txt'): OLD859_BOOTSTRAP_SOURCE_RAW,
+        str(PARENT / 'baseline_859_bootstrap.json'): OLD859_BOOTSTRAP_REPORT_RAW,
+        str(OLD / 'source_theta_allocation_design_source.txt'): auditor.THETA_PRODUCER_RAW,
+        str(OLD / 'source_theta_allocation_design.json'): auditor.THETA_JSON_RAW,
+        str(OLD / 'original_atom_receiver_accounting_source.txt'): auditor.ATOM_PRODUCER_RAW,
+        str(OLD / 'original_atom_receiver_accounting.json'): auditor.ATOM_JSON_RAW,
+        str(auditor.GEOMETRY_HELPER): auditor.GEOMETRY_HELPER_RAW,
+        str(auditor.SOURCE): auditor.SOURCE_RAW,
+        str(auditor.CUT_AUDIT): auditor.CUT_AUDIT_RAW,
+    })
+    for name, pin in dependencies.items():
+        assert digest(name) == pin, name
+    assert bootstrap['baseline859_dependency_raw_sha256'] == prior['dependency_raw_sha256']
+    del packet
+    after = source_map()
+    assert after == before, 'Complete source map changed during immutable863 readback'
+    auditor.closure(RELEASE, wrapper)
+    assert digest(RELEASE / 'report.json') == WRAPPER_RAW
+    assert digest(RELEASE / 'native_control/report.json') == NATIVE_RAW
+    assert digest(RELEASE / 'native_control/source_packet.json') == PACKET_RAW
+    assert digest(PARENT / 'independent_audit_source.txt') == BOOTSTRAP_SOURCE_SHA
+    assert digest(PARENT / 'independent_audit.json') == AUDIT_RAW
+    assert digest(PARENT / 'frozen_source_map_863.json') == MAP_RAW
+    for name, pin in frozen.items():
+        assert digest(ROOT / name) == pin, name
+    assert digest(bootstrap_source_path) == BOOTSTRAP_SOURCE_SHA
+    assert digest(bootstrap_report_path) == BOOTSTRAP_REPORT_RAW
+    report = dict(
+        status=f'PASS_IMMUTABLE863_WITH_DECLARED{current_count}_SOURCE_ADDITIONS_ONLY', baseline_source_count=863,
+        current_python_source_count=current_count, current_python_source_map_sha256=vd(before),
+        declared_additional_source_paths=sorted(declared), additional_python_source_count=EXPECTED_ADDED_COUNT,
+        additional_python_sources={k: before[k] for k in sorted(declared)},
+        additional_sources_only_whitelisted=True, current_source_map_before_after_identical=True,
+        source_map_canonical_sha256=MAP, frozen_map_raw_sha256=MAP_RAW,
+        bootstrap_source_sha256=BOOTSTRAP_SOURCE_SHA, bootstrap_report_raw_sha256=BOOTSTRAP_REPORT_RAW,
+        bootstrap_report_selfseal=BOOTSTRAP_REPORT_SEAL, bootstrap_evidence_preserved=True,
+        old859_python_sources_unchanged=True, all863_python_sources_unchanged=True,
+        preserved_old1633_artifact_chain=True, preserved826_833_841_847_853_and859_output_closures=True,
+        preserved826_833_841_847_853_859_and863_output_closures=True,
+        release_output_closure_count=4, previous_added_source_count=4,
+        wrapper_raw_sha256=WRAPPER_RAW, wrapper_selfseal=WRAPPER_SEAL,
+        native_raw_sha256=NATIVE_RAW, native_selfseal=NATIVE_SEAL,
+        packet_raw_sha256=PACKET_RAW, packet_selfseal=PACKET_SEAL,
+        prior_independent_audit_raw_sha256=AUDIT_RAW, prior_independent_audit_selfseal=AUDIT_SEAL,
+        current_archived_producer_sha256=BOOTSTRAP_SOURCE_SHA,
+        dependency_raw_sha256=dependencies, fresh_release_tests_preserved=17,
+        baseline859_readback_path=str(OLD859_OUT), baseline859_readback_selfseal=prior['audit_sha256'],
+        baseline859_readback_source_view='IMMUTABLE863_SUBSET_OF_DECLARED_CURRENT_SOURCE_MAP',
+        baseline859_projection_disclosed=True, complete_current_source_map_independently_checked=True,
+        physics_formula_reexecuted=False, project_imports=False, pytest_or_quadratures_reexecuted=False,
+        accepted_original_native_intervals=1, accepted_new_native_intervals=0,
+        original_point_1_remaining_work_blocks=1, remaining_physical_condition_count=3,
+        physical_material_admission_authorized=False, new_mixed_force_equilibrium_certified=False,
+        auditor_source_sha256=digest(__file__), seconds=time.perf_counter() - started)
+    report['audit_sha256'] = vd(report)
+    result_path.write_bytes(enc(report) + b'\n')
+    print(enc(report).decode())
+    return report
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--expected-added-path', action='append', required=True)
+    parser.add_argument('--out', default=str(OUT))
+    parser.add_argument('--bootstrap-source', default=str(BOOTSTRAP_SOURCE))
+    parser.add_argument('--bootstrap-report', default=str(BOOTSTRAP_REPORT))
+    args = parser.parse_args()
+    run(args.expected_added_path, output_path=args.out,
+        bootstrap_source_path=args.bootstrap_source, bootstrap_report_path=args.bootstrap_report)

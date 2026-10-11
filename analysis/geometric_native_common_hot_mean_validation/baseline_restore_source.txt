@@ -1,0 +1,249 @@
+"""Restore only authenticated missing STAGE/TMP bytes for a closed903 bundle.
+
+No repository file is written. No old/new reader, guard, auditor, project math,
+test, solver, native control or quadrature is executed. Default is a read-only
+plan; --restore copies missing bytes exclusively. Existing unequal bytes stop
+the entire preflight. Archive this TXT in903P before its manifest is sealed.
+"""
+from pathlib import Path
+import argparse
+import ast
+import hashlib
+import json
+import sys
+
+ROOT = Path('/workspace/Habitable-Moon-Project')
+PARENT = ROOT / 'analysis/geometric_native_common_hot_mean_validation'
+FINAL = ROOT / 'analysis/geometric_native_common_hot_mean_final_readback'
+STAGE = Path('/workspace/hot_mean_baseline_20261007')
+GUARD_RAW = '7410ed4264a972cd4a08e3af4fae4c2f0b7113225a81c8fd9d525e25f0ccbc62'
+OLD_MANIFEST = ROOT / 'analysis/geometric_native_common_cold_continuum_energy_validation/artifact_manifest.json'
+OLD_MANIFEST_RAW = '4baa3eaab5de3310481051d157c8d8ae5e5a2a86f33b910176074076882ba0e8'
+OLD_MANIFEST_SEAL = 'f8d8ab8ef8b660f1d74ca94c5db08aa1ea84ead4f564aa0816b30f632bbe8fdc'
+ASSOCIATION_READER = ROOT / 'analysis/geometric_native_common_local_source_work_final_readback/readback.json'
+
+
+def encoded(value):
+    return json.dumps(value, sort_keys=True, separators=(',', ':'),
+                      ensure_ascii=False, allow_nan=False).encode()
+
+
+def value_digest(value):
+    return hashlib.sha256(encoded(value)).hexdigest()
+
+
+def require(condition, label):
+    if not condition:
+        raise ValueError(label)
+
+
+def exact(actual, expected, label):
+    require(type(actual) is type(expected) and actual == expected, label)
+    if type(actual) in (dict, list, tuple):
+        require(encoded(actual) == encoded(expected), label + ' complete literal encoding')
+
+
+def regular(path):
+    path = Path(path)
+    require(path.is_absolute() and path.resolve() == path and not path.is_symlink()
+            and path.is_file(), 'Canonical regular file ' + str(path))
+    return path
+
+
+def digest(path):
+    h = hashlib.sha256()
+    with regular(path).open('rb') as stream:
+        for block in iter(lambda: stream.read(1 << 20), b''):
+            h.update(block)
+    return h.hexdigest()
+
+
+def sealed(path, key):
+    value = json.loads(regular(path).read_bytes())
+    require(type(value) is dict and key in value, 'Complete selfsealed object')
+    exact(value[key], value_digest({k: v for k, v in value.items() if k != key}),
+          'Complete selfseal ' + str(path))
+    return value
+
+
+def literals(source, names):
+    tree = ast.parse(regular(source).read_bytes())
+    result = {}
+    for name in names:
+        matches = [node.value for node in tree.body if isinstance(node, ast.Assign)
+                   and any(isinstance(target, ast.Name) and target.id == name for target in node.targets)]
+        exact(len(matches), 1, 'Exactly one literal declaration ' + name)
+        result[name] = ast.literal_eval(matches[0])
+    return result
+
+
+def all_files(directory):
+    return {str(path.relative_to(directory)) for path in directory.rglob('*') if path.is_file()}
+
+
+def project_modules():
+    return {name: module for name, module in sys.modules.items()
+            if name in ('tectonics', 'tests', 'analysis', 'scripts') or
+            name.startswith(('tectonics.', 'tests.', 'analysis.', 'scripts.'))}
+
+
+def run(args):
+    modules_before = project_modules()
+    archive = sealed(FINAL / 'archive.json', 'archive_sha256')
+    for key, expected in (('format', 'native-common-hot-mean-final-archive-1'),
+                          ('status', 'PASS_FINAL903_READBACK_ARCHIVE_CLOSED'), ('total_closed_file_count', 4)):
+        exact(archive[key], expected, 'Closed903 final archive ' + key)
+    exact(set(archive['files']), {'readback_source.txt', 'readback.json', 'console.log'}, 'Exactly final three payloads')
+    exact(all_files(FINAL), set(archive['files']) | {'archive.json'}, 'Strict closed903 F4 namespace')
+    for name, row in archive['files'].items():
+        exact(set(row), {'bytes', 'sha256'}, 'Complete final payload row')
+        exact(regular(FINAL / name).stat().st_size, row['bytes'], 'Final payload size')
+        exact(digest(FINAL / name), row['sha256'], 'Closed final payload raw')
+    readback = sealed(FINAL / 'readback.json', 'audit_sha256')
+    exact(readback['audit_sha256'], archive['readback_selfseal'], 'Closed903 archive actual readback link')
+    exact(readback['status'], 'PASS_FINAL903_EVIDENCE_READBACK_ONLY', 'Closed903 saved readback PASS')
+    exact(readback['source_count'], 903, 'Closed903 saved readback source count')
+    exact((FINAL / 'console.log').read_bytes(), (FINAL / 'readback.json').read_bytes(), 'Closed903 actual stdout/readback bytes')
+    current_pins = literals(FINAL / 'readback_source.txt', ('MANIFEST_RAW', 'MANIFEST_SEAL', 'MANIFEST_FILE_COUNT'))
+    exact(readback['current_manifest_raw_sha256'], current_pins['MANIFEST_RAW'], 'Closed903 readback manifest raw link')
+    exact(readback['current_manifest_selfseal'], current_pins['MANIFEST_SEAL'], 'Closed903 readback manifest seal link')
+    exact(readback['executing_readback_source_raw_sha256'], digest(FINAL / 'readback_source.txt'), 'Closed903 readback executing source link')
+    exact(digest(PARENT / 'artifact_manifest.json'), current_pins['MANIFEST_RAW'], 'Archived reader current903 manifest raw pin')
+    current = sealed(PARENT / 'artifact_manifest.json', 'manifest_sha256')
+    exact(current['manifest_sha256'], current_pins['MANIFEST_SEAL'], 'Archived reader current903 manifest selfseal pin')
+    exact(current['source_count'], 903, 'Closed current903 component source count')
+    exact(current['format'], 'native-common-hot-mean-component-manifest-1', 'Closed current903 component format')
+    exact(current['status'], 'PASS_COMPONENT_ARTIFACTS_CLOSED', 'Closed current component status')
+    exact(len(current['files']), current_pins['MANIFEST_FILE_COUNT'], 'Complete current903 manifest row count')
+    guard_source = PARENT / 'baseline_899_preservation_source.txt'
+    exact(digest(guard_source), GUARD_RAW, 'Exact reviewed899 guard source; parsed, never executed')
+    constants = literals(guard_source, ('READER_RAW', 'FRESH_REPORT_RAW', 'FRESH_REPORT_SEAL',
+        'FRESH_PRIOR_RAW', 'FRESH_FACTS_RAW'))
+    baseline = {
+        'fresh899_executed_source.txt': constants['READER_RAW'],
+        'fresh899_readback.json': constants['FRESH_REPORT_RAW'],
+        'fresh899_actual_console.log': constants['FRESH_REPORT_RAW'],
+        'fresh899_stderr.log': hashlib.sha256(b'').hexdigest(),
+        'fresh899_facts.json': constants['FRESH_FACTS_RAW'],
+        'fresh899_prior895_preservation.json': constants['FRESH_PRIOR_RAW'],
+        'baseline_899_preservation_source.txt': GUARD_RAW,
+    }
+    plan = {}
+
+    def declare(target, source, expected, authority):
+        target = Path(target)
+        source = regular(source)
+        require(target.is_absolute() and target.resolve() == target and not target.is_symlink()
+                and not target.is_relative_to(ROOT)
+                and (target.is_relative_to(Path('/workspace')) or target.is_relative_to(Path('/tmp'))),
+                'Only canonical STAGE/TMP target outside repository')
+        require(source.is_relative_to(ROOT), 'Only permanent repository copies are restoration sources')
+        exact(digest(source), expected, 'Authenticated permanent restoration source')
+        row = dict(source=str(source), sha256=expected, bytes=source.stat().st_size, authority=authority)
+        if str(target) in plan:
+            exact(plan[str(target)]['sha256'], expected, 'Overlapping restored raw pin')
+            return
+        if target.exists():
+            exact(digest(target), expected, 'Existing bytes unequal; no overwrite allowed')
+        plan[str(target)] = row
+
+    for name, expected in baseline.items():
+        source = PARENT / name
+        row = current['files'][str(source.relative_to(ROOT))]
+        exact(row['sha256'], expected, 'Closed903 baseline row matches independently known899 pin')
+        declare(STAGE / name, source, expected, 'CLOSED903_BASELINE_COPY_AND_REVIEWED899_GUARD')
+    fresh = sealed(PARENT / 'fresh899_readback.json', 'audit_sha256')
+    exact(fresh['audit_sha256'], constants['FRESH_REPORT_SEAL'], 'Authentic pre903 fresh899 selfseal')
+    prior_source = PARENT / 'fresh899_prior895_preservation.json'
+    prior = sealed(prior_source, 'preservation_sha256')
+    exact(prior['preservation_sha256'], fresh['prior_895_preservation_selfseal'], 'Actual fresh899 prior895 receipt link')
+    exact(digest(prior_source), fresh['prior_895_preservation_raw_sha256'], 'Actual prior895 receipt raw link')
+    declare(Path(fresh['prior_895_preservation_path']), prior_source, constants['FRESH_PRIOR_RAW'],
+            'AUTHENTIC_FRESH899_ACTUAL_PRIOR895_RECEIPT_COPY')
+    inherited = prior['dependency_raw_sha256']
+    manifests = {str(PARENT / 'artifact_manifest.json'): current_pins['MANIFEST_RAW'],
+                 str(OLD_MANIFEST): OLD_MANIFEST_RAW}
+    manifests.update({name: expected for name, expected in inherited.items()
+                      if name.endswith('/artifact_manifest.json') and Path(name).is_relative_to(ROOT)})
+    index = {}
+    for name, expected in sorted(manifests.items()):
+        path = regular(Path(name))
+        exact(digest(path), expected, 'Authenticated closed manifest index raw')
+        manifest = sealed(path, 'manifest_sha256')
+        if path == OLD_MANIFEST:
+            exact(manifest['manifest_sha256'], OLD_MANIFEST_SEAL, 'Pinned old899 manifest selfseal')
+        for relative, row in manifest['files'].items():
+            exact(set(row), {'bytes', 'sha256'}, 'Complete authenticated manifest candidate row')
+            source = ROOT / relative
+            require(source.resolve() == source and source.is_relative_to(ROOT), 'Canonical permanent manifest candidate')
+            index.setdefault(row['sha256'], set()).add(str(source))
+    exact(digest(ASSOCIATION_READER), inherited[str(ASSOCIATION_READER)], 'Pinned883 association declaration source')
+    aliases = sealed(ASSOCIATION_READER, 'audit_sha256')['temporary_dependency_exact_closed_copy_associations']
+    tmp_dependencies = {name: expected for name, expected in inherited.items() if Path(name).is_relative_to(Path('/tmp'))}
+    exact(len(aliases), 15, 'Exactly fifteen authoritative TMP associations')
+    exact(set(aliases), set(tmp_dependencies), 'Complete inherited TMP dependency association namespace')
+    outside = {name: expected for name, expected in inherited.items() if not Path(name).is_relative_to(ROOT)}
+    for target, expected in sorted(outside.items()):
+        if target in aliases:
+            association = aliases[target]
+            exact(association['sha256'], expected, 'Exact authoritative TMP association raw')
+            source = Path(association['permanent_copy'])
+            require(str(source) in index.get(expected, set()), 'TMP source is an authenticated closed manifest member')
+            authority = 'EXACT_AUTHENTICATED883_TMP_COPY_ASSOCIATION'
+        else:
+            candidates = sorted(index.get(expected, set()))
+            require(bool(candidates), 'No closed permanent copy for pinned STAGE dependency ' + target)
+            source = Path(candidates[0])
+            authority = 'AUTHENTICATED_INHERITED_RAW_PIN_AND_CLOSED_MANIFEST_MEMBER'
+        declare(Path(target), source, expected, authority)
+    output = Path(args.output) if args.output else None
+    if output is not None:
+        require(output.is_absolute() and output.resolve() == output and not output.exists()
+                and not output.is_symlink() and output.parent.is_dir() and not output.is_relative_to(ROOT)
+                and (output.is_relative_to(Path('/workspace')) or output.is_relative_to(Path('/tmp')))
+                and str(output) not in plan, 'Fresh exclusive external restoration receipt')
+    require(not args.restore or output is not None, '--restore requires --output for its actual receipt')
+    existing = [name for name in sorted(plan) if Path(name).exists()]
+    missing = [name for name in sorted(plan) if not Path(name).exists()]
+    restored = []
+    if args.restore:
+        for name in missing:
+            target = Path(name)
+            row = plan[name]
+            target.parent.mkdir(parents=True, exist_ok=True)
+            require(target.parent.resolve() == target.parent, 'Canonical restored parent')
+            with target.open('xb') as stream, regular(Path(row['source'])).open('rb') as source:
+                for block in iter(lambda: source.read(1 << 20), b''):
+                    stream.write(block)
+            exact(digest(target), row['sha256'], 'Actual restored exact raw bytes')
+            exact(target.stat().st_size, row['bytes'], 'Actual restored exact byte count')
+            restored.append(dict(target=name, **row))
+        for name, row in plan.items():
+            exact(digest(Path(name)), row['sha256'], 'Complete required STAGE/TMP map after restoration')
+    modules_after = project_modules()
+    exact(set(modules_after), set(modules_before), 'Caller project module names preserved')
+    require(all(modules_after[name] is module for name, module in modules_before.items()), 'Caller project module identities preserved')
+    result = dict(
+        format='native-common-hot-mean-baseline-byte-restoration-1',
+        status='PASS_AUTHENTICATED_BASELINES_AND_ALIASES_RESTORED' if args.restore else 'PASS_AUTHENTICATED_RESTORE_PLAN',
+        current903_manifest_raw_sha256=current_pins['MANIFEST_RAW'], reviewed899_guard_raw_sha256=GUARD_RAW,
+        baseline_closed_copy_count=len(baseline), inherited_external_dependency_count=len(outside),
+        exact_tmp_association_count=len(aliases), complete_required_target_count=len(plan),
+        already_exact=existing, missing_before=missing, restored=restored,
+        repository_files_written=False, old_reader_or_guard_or_auditor_main_executed=False,
+        project_imports=False, math_or_tests_or_solver_or_native_or_quadrature_executed=False,
+        executing_restoration_source_raw_sha256=digest(regular(Path(__file__).absolute())),
+    )
+    result['restoration_sha256'] = value_digest(result)
+    if output is not None:
+        with output.open('xb') as stream:
+            stream.write(encoded(result) + b'\n')
+    print(encoded(result).decode())
+    return result
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--restore', action='store_true')
+    parser.add_argument('--output')
+    run(parser.parse_args())

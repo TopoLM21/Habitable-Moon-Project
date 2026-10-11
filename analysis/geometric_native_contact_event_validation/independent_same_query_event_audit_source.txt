@@ -1,0 +1,173 @@
+"""Independent full-vector audit of exactly the frozen queried arc ratio.
+
+Only the standalone Decimal oracle is imported, never a production module.
+The physical query ratio and all enclosure endpoints are converted from exact
+rationals.  Strict lower/upper gap signs establish two distinct brackets for
+the same material point as production; no ideal-midpoint substitution occurs.
+"""
+from decimal import Decimal, localcontext
+from fractions import Fraction
+import hashlib
+import json
+from pathlib import Path
+import sys
+
+ROOT = Path('/workspace/Habitable-Moon-Project')
+sys.path.insert(0, str(ROOT))
+from analysis.geometric_native_contact_event_validation.independent_event_oracle import (
+    IndependentTrajectory, bisect_scalar_root, decimal, trajectory_from_actual_probe,
+)
+
+DIRECTORY = ROOT/'analysis/geometric_native_contact_event_validation/event_control_release_01'
+SOURCE_COPY = ROOT/'analysis/geometric_native_contact_event_validation/independent_same_query_event_audit_source.txt'
+OUT = DIRECTORY/'same_query_event_receipt.json'
+
+
+def encoded(raw):
+    return json.dumps(raw, sort_keys=True, separators=(',', ':'), allow_nan=False).encode()
+
+
+def sha(path):
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
+def no_duplicates(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError('Independent audit rejects duplicated JSON keys')
+        result[key] = value
+    return result
+
+
+def read(path):
+    return json.loads(Path(path).read_text(), object_pairs_hook=no_duplicates,
+                      parse_constant=lambda value: (_ for _ in ()).throw(ValueError(value)))
+
+
+def rational(raw):
+    if (type(raw) is not dict or set(raw) != {'numerator', 'denominator'}
+            or type(raw['numerator']) is not int or type(raw['denominator']) is not int
+            or raw['denominator'] <= 0):
+        raise ValueError('Exact explicit rational required')
+    return Fraction(raw['numerator'], raw['denominator'])
+
+
+def checked_source_snapshot(reference):
+    actual = {name: sha(ROOT/name) for name in reference}
+    if actual != reference:
+        raise AssertionError('Frozen production, test or analysis source changed')
+    return actual
+
+
+def main():
+    manifest_path = ROOT/'analysis/geometric_native_contact_event_validation/release_gates_01/sources_after.json'
+    reference = read(manifest_path)
+    before = checked_source_snapshot(reference)
+    report_path = DIRECTORY/'report.json'
+    report = read(report_path)
+    for name, expected in report['artifacts_sha256'].items():
+        if Path(name).name != name or sha(DIRECTORY/name) != expected:
+            raise AssertionError('Frozen event artifact digest differs')
+    probe_path = DIRECTORY/'source_force_candidate_refusal_probe.json'
+    inputs_path = DIRECTORY/'actual_native_arc_inputs.json'
+    queries_path = DIRECTORY/'material_ratio_events.json'
+    probe, inputs, queries = read(probe_path), read(inputs_path), read(queries_path)
+    if sha(probe_path) != report['source_probe_sha256']:
+        raise AssertionError('Physical source candidate bytes differ')
+    candidates = [row for row in queries if row['material_class'] == 'exit_and_reentry']
+    if len(candidates) != 1:
+        raise ValueError('Exactly one frozen exit/re-entry material query is required')
+    query = candidates[0]
+    events = [event for event in query['events'] if rational(event['time_fraction']['lower']) > 0]
+    if len(events) != 2 or [event['kind'] for event in events] != ['exit', 'entry']:
+        raise ValueError('Exactly two distinct interior queried events are required')
+    with localcontext() as context:
+        context.prec = 530
+        ratio_exact = rational(query['homogeneous_arc_ratio'])
+        ratio = decimal(ratio_exact)
+        first_raw = trajectory_from_actual_probe(probe, 'start')
+        last_raw = trajectory_from_actual_probe(probe, 'end')
+        if (first_raw['receiver_omega_rad_per_myr'] != inputs['receiver_omega_rad_per_myr']
+                or first_raw['donor_omega_rad_per_myr'] != inputs['donor_omega_rad_per_myr']
+                or first_raw['receiver_pullback_history'] != inputs['receiver_pullback_history']
+                or first_raw['receiver_ray'] != inputs['receiver_arc']['start']
+                or last_raw['receiver_ray'] != inputs['receiver_arc']['end']
+                or first_raw['dt_myr'] != inputs['dt_myr']):
+            raise AssertionError('Independent trajectory must preserve the complete saved original arc')
+        first, last = IndependentTrajectory(first_raw), IndependentTrajectory(last_raw)
+        duration_exact = Fraction.from_float(first_raw['dt_myr'])
+
+        def mixed_values(fraction):
+            a, a_prime = first.derivatives(fraction, 1)
+            b, b_prime = last.derivatives(fraction, 1)
+            return ratio*a+b, ratio*a_prime+b_prime
+
+        checked = []
+        previous_high = Decimal(0)
+        for event in events:
+            low_exact = rational(event['time_fraction']['lower'])
+            high_exact = rational(event['time_fraction']['upper'])
+            if (rational(event['time_myr']['lower']) != low_exact*duration_exact
+                    or rational(event['time_myr']['upper']) != high_exact*duration_exact):
+                raise AssertionError('Saved physical event times differ from exact fractional times')
+            low, high = decimal(low_exact), decimal(high_exact)
+            if not previous_high < low < high < 1:
+                raise AssertionError('Independent query brackets must be strict, internal and disjoint')
+            low_gap, low_derivative = mixed_values(low)
+            high_gap, high_derivative = mixed_values(high)
+            if event['kind'] == 'exit':
+                if not low_gap > 0 > high_gap or not low_derivative < 0 or not high_derivative < 0:
+                    raise AssertionError('Exact same-ratio exit enclosure fails independent strict signs')
+            else:
+                if not low_gap < 0 < high_gap or not low_derivative > 0 or not high_derivative > 0:
+                    raise AssertionError('Exact same-ratio entry enclosure fails independent strict signs')
+            root = bisect_scalar_root(lambda fraction: mixed_values(fraction)[0], low, high, digits=430)
+            root_gap, root_derivative = mixed_values(root)
+            if abs(root_gap) >= Decimal('1e-480') or not low <= root <= high:
+                raise AssertionError('Independent same-query numerical root has excessive residual')
+            checked.append(dict(kind=event['kind'],
+                exact_fraction_enclosure=event['time_fraction'], exact_time_myr_enclosure=event['time_myr'],
+                lower_gap=str(low_gap), upper_gap=str(high_gap),
+                lower_derivative_per_fraction=str(low_derivative), upper_derivative_per_fraction=str(high_derivative),
+                independent_numeric_root_fraction=str(root), independent_numeric_root_time_myr=str(root*first.duration),
+                numeric_root_gap_residual=str(root_gap), numeric_root_derivative_per_fraction=str(root_derivative),
+                strict_opposite_gap_signs=True, independent_root_inside_certified_enclosure=True))
+            previous_high = high
+        a_prime = first.derivatives(Decimal(0), 1)[1]
+        b_prime = last.derivatives(Decimal(0), 1)[1]
+        initial_ratio_limit = -b_prime/a_prime
+        if ratio <= initial_ratio_limit:
+            raise AssertionError('Saved exact queried ratio is not inside from the initial instant')
+        exact_query_minus_initial_limit = ratio-initial_ratio_limit
+    after = checked_source_snapshot(reference)
+    if before != after:
+        raise AssertionError('Independent audit changed a source')
+    source_bytes = Path(__file__).read_bytes()
+    with SOURCE_COPY.open('xb') as stream:
+        stream.write(source_bytes)
+    receipt = dict(format='independent-exact-same-query-native-contact-event-audit-1', status='PASS',
+        precision_decimal_digits=500, working_decimal_digits=530,
+        computation='Standalone Decimal Taylor sin/cos and full-vector Rodrigues; no production imports',
+        query='Exactly the saved homogeneous_arc_ratio for material_class=exit_and_reentry; no midpoint substitution',
+        exact_query_ratio=query['homogeneous_arc_ratio'], exact_query_ratio_minus_initial_limit=str(exact_query_minus_initial_limit),
+        full_original_start_trajectory=first_raw, full_original_end_trajectory=last_raw,
+        strict_bracket_count=2, same_query_events=checked,
+        binding_sha256=dict(source_force_candidate=sha(probe_path), actual_native_arc_inputs=sha(inputs_path),
+            material_ratio_events=sha(queries_path), material_ratio_events_replayed=sha(DIRECTORY/'material_ratio_events_replayed.json'),
+            event_certificate=sha(DIRECTORY/'event_certificate.json'), event_control_report=sha(report_path),
+            frozen_oracle_module=sha(ROOT/'analysis/geometric_native_contact_event_validation/independent_event_oracle.py'),
+            source_manifest=sha(manifest_path), independent_audit_source=hashlib.sha256(source_bytes).hexdigest()),
+        preserved_audit_source=str(SOURCE_COPY.relative_to(ROOT)), checked_frozen_artifacts=len(report['artifacts_sha256']),
+        checked_source_count=len(reference), source_snapshot_unchanged=True,
+        accepted_loaded_native_intervals=0, admission_authorized=False,
+        limitation='Independent strict sign brackets and numerical roots corroborate the saved geometric query; they do not advance force, pressure, slip or burial.')
+    receipt['receipt_sha256'] = hashlib.sha256(encoded(receipt)).hexdigest()
+    with OUT.open('xb') as stream:
+        stream.write(encoded(receipt)+b'\n')
+    print(json.dumps(dict(status=receipt['status'], strict_bracket_count=2,
+        output=str(OUT), receipt_sha256=receipt['receipt_sha256']), sort_keys=True))
+
+
+if __name__ == '__main__':
+    main()

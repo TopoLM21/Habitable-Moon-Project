@@ -1,0 +1,40 @@
+"""Capture real subprocess exits and executing sources without modifying physics."""
+import argparse, hashlib, json, subprocess, time
+from pathlib import Path
+ROOT=Path('/workspace/Habitable-Moon-Project')
+SOURCES=('tectonics/geometric_native_common_preparation_feasibility.py',
+ 'tests/test_geometric_native_common_preparation_feasibility.py',
+ 'tectonics/geometric_native_common_basal_work_bound.py',
+ 'tests/test_geometric_native_common_basal_work_bound.py',
+ 'analysis/geometric_native_common_preparation_feasibility_validation/native_control.txt')
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def enc(x):return json.dumps(x,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()+b'\n'
+parser=argparse.ArgumentParser()
+parser.add_argument('--directory',required=True)
+parser.add_argument('command',nargs=argparse.REMAINDER)
+args=parser.parse_args()
+directory=Path(args.directory)
+directory.mkdir(parents=True,exist_ok=False)
+before={s:sha(ROOT/s) for s in SOURCES}
+snapshots={}
+for source in SOURCES:
+ target=directory/('source_'+source.replace('/','__')+'.txt')
+ target.write_bytes((ROOT/source).read_bytes())
+ snapshots[source]=str(target)
+command=args.command
+if command and command[0]=='--':command=command[1:]
+started=time.monotonic()
+with (directory/'console.log').open('xb') as out,(directory/'stderr.log').open('xb') as err:
+ child=subprocess.run(command,cwd=ROOT,stdout=out,stderr=err)
+facts=dict(format='joint-preparation-actual-subprocess-facts-1',command=command,
+ actual_exit_code=child.returncode,actual_child_exit_code=child.returncode,
+ actual_seconds=time.monotonic()-started,source_before_sha256=before,
+ source_after_sha256={s:sha(ROOT/s) for s in SOURCES},source_snapshots=snapshots,
+ actual_stdout_raw_sha256=sha(directory/'console.log'),
+ actual_stderr_raw_sha256=sha(directory/'stderr.log'),
+ actual_stderr_bytes=(directory/'stderr.log').stat().st_size,
+ executed_capture_source_path=str(Path(__file__).resolve()),executed_capture_source_raw_sha256=sha(__file__))
+facts['sha256']=hashlib.sha256(enc(facts).rstrip(b'\n')).hexdigest()
+(directory/'execution_facts.json').write_bytes(enc(facts))
+print(json.dumps({k:v for k,v in facts.items() if k not in ('source_before_sha256','source_after_sha256','source_snapshots')},sort_keys=True))
+raise SystemExit(child.returncode)

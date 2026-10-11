@@ -1,0 +1,119 @@
+"""Stdlib immutable847 ancestry and additive-source audit for contact forces.
+
+The 847 native/packet JSON bodies are not parsed again. Streamed byte identity
+to the independently verified raw hashes preserves their recorded selfseals.
+All older source maps/artifact manifests and small report selfseals are replayed.
+No project module, test, tensor/face quadrature or constitutive update is run.
+"""
+import argparse, hashlib, json, sys, time, types
+from pathlib import Path
+
+ROOT=Path('/workspace/Habitable-Moon-Project')
+BASE=ROOT/'analysis/geometric_native_common_contact_validation'
+MAP_SHA='a14c79ddf7e0146ba6b5c335c800e03e442651b8a08fccc855a6ac920ca34a1c'
+MAP_RAW='22bb02607b88935e8c93764813c2721dad0c9c72a241ffb67c2e602b8fee9779'
+WRAPPER_RAW='e8ffabb1a29c1fb021e94fe53e815b6ad8d16ea14e9103a30b9f7428ac9ab847'
+WRAPPER_SEAL='19bd6b63478c6da22d48b5606311c0473ae8d3df732753f6150051d8345f51cd'
+NATIVE_RAW='66968aeb22a287eac8bdfd795cc916dded5bc3db55bed47da52f4f35d86a5dd8'
+NATIVE_SEAL='c509af97f5443518996aeafe3f4e1238241fc49b5486fb82739ee18344b527d9'
+PACKET_RAW='8fa086a0d42b1cb2b81c30d01c61369d13e294d4edf6c10f7d3b8a9a3dc99308'
+PACKET_SEAL='bb5d78d3f88c99e821a20cd83dd3bee15890c0942136c9c646319f688c356ba2'
+AUDIT_RAW='65969e55b900d695af52025bc48718cad83bdec189fb9aab2fb5301d29be3658'
+AUDIT_SEAL='1336d6e45f6172bd7dd2c759ba79ba834ec992b38aca21241f3b63485e9c65e2'
+AUDITOR_RAW='31b7a3535b564482f163dbc73321477d15379e7e6961b56e139d952e91df8586'
+AFFINE_HELPER_RAW='7f481c533996070db320b03bb1bcca71487e06361209c74859b3f29f0a2a556c'
+OUTPUTS={'pytest.log','control_console.log','native_control/report.json','native_control/source_packet.json'}
+GENERATIONS=(
+ ('geometric_native_affine_body_validation',826,'a5ed86778a9388a56df2c89d758d17795c861c118bd4de66c6be0b5400b084db',6,39),
+ ('geometric_native_cold_body_validation',833,'a0843a4f9d886e61125eae0bda9c4964b60d54736b539776b1d32d46d8e56a67',7,20),
+ ('geometric_native_common_reference_validation',841,'9898f31f796006a7791140bf1c290c0e1605555a12e476e1585ce3f5992a743f',8,36),
+ ('geometric_native_common_contact_validation',847,WRAPPER_RAW,6,25))
+STANDALONE={
+ 'baseline_841_audit.json':'20f89fcd71b459dedd4b78b41b314749811c5a99e5ca4ad163beb7586a2fd0f6',
+ 'baseline_841_audit_source.txt':'f3d55b7c1541567a59c013a38f7f89bc949436afaca64ca56d629f3e34a7fdca',
+ 'source_geometry_peer.json':'569093c5d72177a1a4914a73ce92863088cd41d4a3d49e1e08b0383a00e2609a',
+ 'source_geometry_peer_source.txt':'0d885b3ab8a9ee9e46be02b5641d9bca0ddb641b98a10222b0aa0e9c39e492ce',
+ 'contact_energy_decomposition_audit.json':'b164936ac0217e4c8c4feaebc8d7495731edd218e4da93db36e1d2660a3815b0',
+ 'contact_energy_decomposition_audit_source.txt':'150892ef900d14bb36160af5b492d755700e071d3c2e845f18adc4b9ac7037a2',
+ 'contact_force_contract.txt':'51f20ac273143c1184ae2ad3256ba0b938d793ea8b539a739dadedb7f54f04da',
+ 'contact_force_contract.json':'b288a411e53ec56b2511d4c3e51a79f676c6fd6473dc6273f8c9b3466f4901fb',
+ 'independent_audit.json':AUDIT_RAW,'independent_audit_source.txt':AUDITOR_RAW}
+
+def encoded(x):return json.dumps(x,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+def value_digest(x):return hashlib.sha256(encoded(x)).hexdigest()
+def digest(path):
+ h=hashlib.sha256()
+ with Path(path).open('rb') as stream:
+  for chunk in iter(lambda:stream.read(1<<20),b''):h.update(chunk)
+ return h.hexdigest()
+def read(path):return json.loads(Path(path).read_bytes())
+def sealed(path,key):
+ value=read(path);body=dict(value);assert body.pop(key)==value_digest(body),str(path);return value
+def output_closure(directory,report):
+ assert set(report['outputs'])==OUTPUTS
+ for name,row in report['outputs'].items():
+  p=directory/name;assert p.stat().st_size==row['bytes'] and digest(p)==row['sha256'],name
+ assert {str(p.relative_to(directory)) for p in directory.rglob('*') if p.is_file()}==OUTPUTS|{'report.json'}
+def source_map():return {str(p.relative_to(ROOT)):digest(p) for folder in ('tectonics','tests','scripts','analysis') for p in sorted((ROOT/folder).rglob('*.py'))}
+
+def verify_847():
+ helper=ROOT/'analysis/geometric_native_affine_body_validation/independent_audit_source.txt';assert digest(helper)==AFFINE_HELPER_RAW
+ module=types.ModuleType('contact_force_stdlib_ancestry');module.__file__=str(helper);sys.modules[module.__name__]=module
+ exec(compile(helper.read_bytes(),str(helper),'exec'),module.__dict__)
+ # The same pure hash contract, streamed to avoid allocating giant raw blobs.
+ module.digest=digest
+ sources=module.historical_sources();assert len(sources)==820
+ reports={}
+ for name,count,sha,added,tests in GENERATIONS:
+  directory=ROOT/'analysis'/name/'release_validation_01';path=directory/'report.json'
+  assert digest(path)==sha;report=sealed(path,'report_sha256');reports[count]=report
+  assert report['status']==report['regression_validation_status']=='PASS' and report['source_count']==count
+  assert report['pytest_counts']=={'passed':tests} and report['changed_python_paths']==[]
+  assert len(report['added_python_sources'])==added and not set(sources)&set(report['added_python_sources'])
+  sources.update(report['added_python_sources']);assert len(sources)==count
+  assert value_digest(sources)==report['source_map_before_sha256']==report['source_map_after_sha256']
+  assert report['prior_artifacts_and_python_sources_preserved_after'] is True
+  output_closure(directory,report)
+  assert report['accepted_original_native_intervals']==1 and report['accepted_new_native_intervals']==0
+ assert value_digest(sources)==MAP_SHA
+ p=BASE/'frozen_source_map_847.json';assert digest(p)==MAP_RAW and read(p)==sources
+ for name,sha in STANDALONE.items():assert digest(BASE/name)==sha,name
+ audit=sealed(BASE/'independent_audit.json','audit_packet_sha256')
+ assert audit['audit_packet_sha256']==AUDIT_SEAL and audit['status']=='PASS'
+ assert audit['auditor_script_sha256']==AUDITOR_RAW and audit['final_python_sources']==847 and audit['unchanged_prior_python_sources']==841
+ assert audit['source_map_canonical_sha256']==MAP_SHA and audit['fresh_tests']==25 and audit['output_closure_count']==4
+ assert (audit['wrapper_raw_sha256'],audit['native_raw_sha256'],audit['source_packet_raw_sha256'])==(WRAPPER_RAW,NATIVE_RAW,PACKET_RAW)
+ assert (audit['wrapper_seal'],audit['native_seal'],audit['source_packet_seal'])==(WRAPPER_SEAL,NATIVE_SEAL,PACKET_SEAL)
+ assert audit['second_certified_tensor_quadrature_performed'] is False and audit['material_admission_authorized'] is False
+ assert reports[847]['report_sha256']==WRAPPER_SEAL and reports[847]['physical_candidate_status']=='COMMON_CONTACT_GEOMETRY_FIELD_COMPONENT_ONLY'
+ assert reports[847]['outputs']['native_control/report.json']['sha256']==NATIVE_RAW
+ assert reports[847]['outputs']['native_control/source_packet.json']['sha256']==PACKET_RAW
+ for name,sha in sources.items():assert digest(ROOT/name)==sha,name
+ current=source_map();assert all(current.get(name)==sha for name,sha in sources.items())
+ return sources,current,reports,audit
+
+def run(args):
+ start=time.perf_counter();sources,current,reports,audit=verify_847();added=set(current)-set(sources)
+ if args.expected_added_path:assert added==set(args.expected_added_path)
+ if args.expected_source_map:assert value_digest(current)==args.expected_source_map
+ if args.baseline_map_output:Path(args.baseline_map_output).write_bytes((BASE/'frozen_source_map_847.json').read_bytes())
+ report=dict(status='PASS_BASELINE847_AND_ADDITIVE_SOURCE_AUTHENTICATION_ONLY',scope='IMMUTABLE_COMPLETED847_ANCESTRY_ONLY',
+  old847_python_sources_unchanged=True,baseline_source_count=847,baseline_source_map_sha256=MAP_SHA,baseline_source_map_raw_sha256=MAP_RAW,
+  previous820_and1633_artifact_chain_verified=True,previous826_833_841_release_outputs_verified=True,
+  completed847_release_output_closure_count=4,completed847_fresh_tests=25,completed847_wrapper_raw_sha256=WRAPPER_RAW,
+  completed847_native_raw_sha256=NATIVE_RAW,completed847_packet_raw_sha256=PACKET_RAW,
+  completed847_native_selfseal=NATIVE_SEAL,completed847_packet_selfseal=PACKET_SEAL,
+  native_packet_selfseals_preserved_by_byte_identity_to_prior_independent_audit=True,
+  completed847_independent_audit_raw_sha256=AUDIT_RAW,completed847_independent_audit_selfseal=AUDIT_SEAL,
+  current_python_source_count=len(current),current_python_source_map_sha256=value_digest(current),
+  new_python_sources={name:current[name] for name in sorted(added)},new_paths_are_additions_not_old_source_changes=True,
+  giant847_native_or_packet_json_parsed=False,tests_or_quadratures_reexecuted=False,
+  new_source_rest_observation_or_force_component_certified=False,new_face_memory_or_area_assignment_certified=False,
+  old_rod_energy_or_prestress_transfer_certified=False,force_equilibrium_certified=False,material_admission_authorized=False,
+  accepted_original_native_intervals=1,accepted_new_native_intervals=0,original_point_1_remaining_work_blocks=1,
+  remaining_physical_condition_count=3,auditor_source_sha256=digest(__file__),seconds=time.perf_counter()-start)
+ assert source_map()==current
+ report['audit_sha256']=value_digest(report);Path(args.result).write_bytes(encoded(report)+b'\n');print(encoded(report).decode())
+
+if __name__=='__main__':
+ p=argparse.ArgumentParser();p.add_argument('--result',required=True);p.add_argument('--baseline-map-output');p.add_argument('--expected-added-path',action='append');p.add_argument('--expected-source-map');run(p.parse_args())

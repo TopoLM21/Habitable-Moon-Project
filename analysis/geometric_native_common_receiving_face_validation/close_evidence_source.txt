@@ -1,0 +1,72 @@
+"""Prepare final913 evidence closure and seal actual final reader captures."""
+from pathlib import Path
+import argparse,hashlib,json,subprocess,types,time
+ROOT=Path('/workspace/Habitable-Moon-Project')
+P=ROOT/'analysis/geometric_native_common_receiving_face_validation'
+F=ROOT/'analysis/geometric_native_common_receiving_face_final_readback'
+def enc(x):return json.dumps(x,sort_keys=True,separators=(',',':'),ensure_ascii=False).encode()
+def sha(x):return hashlib.sha256(x).hexdigest()
+def digest(p):return sha(Path(p).read_bytes())
+def seal(p,k):
+ x=json.loads(Path(p).read_bytes());assert sha(enc({a:b for a,b in x.items() if a!=k}))==x[k];return x
+def meaningful(p):return {str(x.relative_to(p)) for x in p.rglob('*') if x.is_file() and '__pycache__' not in x.parts and x.suffix!='.pyc'}
+def prepare():
+ started=time.perf_counter()
+ assert not (P/'artifact_manifest.json').exists() and not F.exists()
+ (P/'close_evidence_source.txt').write_bytes(Path(__file__).read_bytes())
+ template=Path('/workspace/receiving_face_readback_template_20261008.txt')
+ (P/'readback_template.txt').write_bytes(template.read_bytes())
+ for source,name in [(Path('/workspace/receiving_face_gate_actual_console.log'),'gate_actual_console.log'),
+                     (Path('/workspace/receiving_face_gate_actual_stderr.log'),'gate_actual_stderr.log')]:
+  (P/name).write_bytes(source.read_bytes())
+ gate=seal(P/'report.json','gate_sha256');audit=seal(P/'audit_report.json','audit_sha256')
+ assert (P/'gate_actual_console.log').read_bytes()==(P/'report.json').read_bytes()
+ assert (P/'gate_actual_stderr.log').stat().st_size==0
+ assert (P/'audit_actual_console.log').read_bytes()==(P/'audit_report.json').read_bytes()
+ assert (P/'audit_actual_stderr.log').stat().st_size==0
+ helper=P/'preservation_source.txt';m=types.ModuleType('_closure913_guard');m.__file__=str(helper)
+ exec(compile(helper.read_bytes(),str(helper),'exec'),m.__dict__)
+ m.run(json.loads((P/'additive_source_map.json').read_bytes()),P/'before_closure_preservation.json')
+ for name,pin in json.loads((P/'document_facts.json').read_bytes())['document_raw_sha256'].items():assert digest(name)==pin
+ files={}
+ for relative in sorted(meaningful(P)):
+  path=P/relative;files[str(path.relative_to(ROOT))]=dict(sha256=digest(path),bytes=path.stat().st_size)
+ for name,pin in json.loads((P/'additive_source_map.json').read_bytes()).items():
+  path=ROOT/name;assert digest(path)==pin;files[name]=dict(sha256=pin,bytes=path.stat().st_size)
+ manifest=dict(format='native-complete-curved-receiving-face-manifest-1',source_count=913,files=files)
+ manifest['manifest_sha256']=sha(enc(manifest))
+ with (P/'artifact_manifest.json').open('xb') as f:f.write(enc(manifest)+b'\n')
+ F.mkdir()
+ with (F/'readback_source.txt').open('xb') as f:f.write(template.read_bytes())
+ result=dict(status='PASS_PREPARED913_CLOSURE',manifest_file_count=len(files),
+  manifest_raw_sha256=digest(P/'artifact_manifest.json'),executing_reader_raw_sha256=digest(F/'readback_source.txt'),seconds=time.perf_counter()-started)
+ print(enc(result).decode())
+def close(stderr,execution_facts):
+ started=time.perf_counter();assert meaningful(F)=={'readback_source.txt','readback.json','console.log'}
+ assert Path(stderr).stat().st_size==0
+ facts=json.loads(Path(execution_facts).read_bytes());assert facts['actual_exit_code']==0 and facts['stderr_bytes']==0
+ report=seal(F/'readback.json','audit_sha256');manifest=seal(P/'artifact_manifest.json','manifest_sha256')
+ assert (F/'readback.json').read_bytes()==(F/'console.log').read_bytes()
+ assert report['status']=='PASS_FINAL913_EVIDENCE_READBACK_ONLY'
+ assert digest(P/'artifact_manifest.json')==report['manifest_raw_sha256']
+ assert digest(F/'readback_source.txt')==report['executing_reader_raw_sha256']
+ expected=set()
+ for name,row in manifest['files'].items():
+  path=ROOT/name;assert digest(path)==row['sha256'] and path.stat().st_size==row['bytes']
+  if path.is_relative_to(P):expected.add(str(path.relative_to(P)))
+ assert meaningful(P)==expected|{'artifact_manifest.json'}
+ for name,pin in report['document_raw_sha256'].items():assert digest(name)==pin
+ archive=dict(status='PASS_FINAL913_READBACK_ARCHIVE_CLOSED',files={name:dict(sha256=digest(F/name),bytes=(F/name).stat().st_size) for name in sorted(meaningful(F))},
+  manifest_raw_sha256=digest(P/'artifact_manifest.json'),readback_selfseal=report['audit_sha256'],
+  actual_reader_exit_code=0,actual_stderr_bytes=0,actual_execution_facts=facts,
+  strict_final_file_count=4,old909_and_ancestry_preserved=True)
+ archive['archive_sha256']=sha(enc(archive))
+ with (F/'archive.json').open('xb') as f:f.write(enc(archive)+b'\n')
+ assert meaningful(F)=={'archive.json','readback_source.txt','readback.json','console.log'}
+ print(enc(dict(status='PASS_COMPLETE913_COMPONENT_AND_FINAL_CLOSURE',manifest_file_count=len(manifest['files']),
+  archive_raw_sha256=digest(F/'archive.json'),archive_sha256=archive['archive_sha256'],seconds=time.perf_counter()-started)).decode())
+if __name__=='__main__':
+ parser=argparse.ArgumentParser();parser.add_argument('--phase',choices=('prepare','close'),required=True)
+ parser.add_argument('--stderr');parser.add_argument('--execution-facts');args=parser.parse_args()
+ if args.phase=='prepare':prepare()
+ else:close(args.stderr,args.execution_facts)

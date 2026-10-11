@@ -1,0 +1,132 @@
+"""New943 authenticated accepted-source initialization/handover controls.
+
+Only the two new943 modules are executed. Frozen full packets are read as
+authorities; no historical test, force, tensor or audit main is replayed.
+Virtual increments are formal work probes, not a physical loading interval.
+"""
+from pathlib import Path
+from fractions import Fraction as F
+import argparse,gc,hashlib,json,sys,time
+
+ROOT=Path('/workspace/Habitable-Moon-Project')
+sys.path.insert(0,str(ROOT))
+SOURCES={
+ 'source935':'analysis/geometric_native_common_general_force_validation/development_native03/native_control.json',
+ 'source867':'analysis/geometric_native_common_source_carrier_validation/release_validation_02/native_control/source_packet.json',
+ 'source907':'analysis/geometric_native_common_mixed_force_validation/release_validation_01/native_control/source_packet.json',
+ 'source895':'analysis/geometric_native_common_cold_material_carrier_validation/release_validation_02/native_control/source_packet.json',
+}
+EXPECTED_RAW={
+ 'source935':'a4f14ce71ecef16959685091a0c0b15d2a2e5c134a8023e9d3f98b8f8a7f0c0e',
+ 'source867':'265206430b4c864db32bce1be0a9a75b71fa180158f3d81e4f52131bebdf320c',
+ 'source907':'5e5555712e57fd69156ee475fe5feb161baef3cb96dd911a443228d160f53005',
+ 'source895':'fbafd092a4eb98472e60f79665e1e0fe8e9e1c2c2b9d3679344a32e59593cc89',
+}
+def encoded(x):return json.dumps(x,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+def digest(path):
+ h=hashlib.sha256()
+ with Path(path).open('rb') as stream:
+  for block in iter(lambda:stream.read(1<<20),b''):h.update(block)
+ return h.hexdigest()
+def pair(x):return [x.numerator,x.denominator]
+
+def run(output,progress=None):
+ from tectonics.geometric_native_common_initialization_source import (
+  bind_native_common_initialization_source,
+  native_common_initialization_source_evidence,
+  native_common_initialization_source_to_dict,
+  native_common_initialization_source_from_dict,
+ )
+ from tectonics.geometric_native_common_initialization_handover import (
+  bind_native_common_initialization_handover,
+  evaluate_native_common_initialization_handover,
+  native_common_initialization_handover_to_dict,
+  native_common_initialization_handover_from_dict,
+  native_common_initialization_handover_response_to_dict,
+  native_common_initialization_handover_response_from_dict,
+  native_common_initialization_handover_receipt,
+ )
+ started=time.monotonic();output=Path(output).resolve()
+ assert output.is_relative_to('/workspace') and not output.is_relative_to(ROOT) and not output.exists()
+ if progress is not None:
+  progress=Path(progress).resolve()
+  assert progress.is_relative_to('/workspace') and not progress.is_relative_to(ROOT) and not progress.exists()
+ def phase(label,**extra):
+  if progress is not None:
+   with progress.open('a') as stream:stream.write(encoded(dict(phase=label,seconds=time.monotonic()-started,**extra)).decode()+'\n')
+ phase('started')
+ authorities={name:digest(ROOT/path) for name,path in SOURCES.items()}
+ for name,raw in EXPECTED_RAW.items():assert authorities[name]==raw,(name,'original raw authority')
+ phase('authorities_hashed')
+ packets=[json.loads((ROOT/SOURCES[name]).read_bytes()) for name in ('source935','source867','source907','source895')]
+ phase('full_packets_loaded')
+ context=bind_native_common_initialization_source(*packets,provenance='NEW943 full accepted-source provenance and frozen whole Cartesian references')
+ cdto=native_common_initialization_source_to_dict(context)
+ restored_context=native_common_initialization_source_from_dict(cdto,*packets)
+ assert native_common_initialization_source_to_dict(restored_context)==cdto
+ evidence=native_common_initialization_source_evidence(context)
+ assert evidence['physical_initialization_ready'] is False
+ phase('context_authenticated_and_restarted')
+ del packets;gc.collect()
+ system=bind_native_common_initialization_handover(context,provenance='NEW943 exact source/target geometry, work and initialization residuals without physical admission')
+ sdto=native_common_initialization_handover_to_dict(system)
+ restored_system=native_common_initialization_handover_from_dict(sdto,context=restored_context)
+ assert native_common_initialization_handover_to_dict(restored_system)==sdto
+ phase('system_restarted')
+ queries=[]
+ for label,increment in (
+  ('formal_material_e1',(F(1),F(0),F(0))),
+  ('formal_material_e2',(F(0),F(1),F(0))),
+  ('formal_material_e3',(F(0),F(0),F(1))),
+  ('formal_material_mixed',(F(1,2),F(-2),F(3,7))),
+ ):
+  response=evaluate_native_common_initialization_handover(system,virtual_material_increment_m=increment)
+  dto=native_common_initialization_handover_response_to_dict(response)
+  restored=native_common_initialization_handover_response_from_dict(dto,system=restored_system,expected_virtual_material_increment_m=increment)
+  assert native_common_initialization_handover_response_to_dict(restored)==dto
+  receipt=native_common_initialization_handover_receipt(response)
+  assert len(receipt['side_geometry_receipts'])==32
+  assert len(receipt['contact_force_work_receipts'])==16
+  assert len(receipt['beam_energy_receipts'])==8
+  assert response.cartesian_bridge_diagrams_verified is True
+  assert response.covector_virtual_work_diagrams_verified is True
+  assert response.received_material_embedding_preserved is False
+  assert response.accepted_mechanical_initialization_compatible is False
+  queries.append(dict(label=label,virtual_material_increment_m=[pair(x) for x in increment],
+                      response=dto,receipt=receipt,complete_response_restart_equal=True))
+  phase('query_completed',query_label=label)
+ assert authorities=={name:digest(ROOT/path) for name,path in SOURCES.items()}
+ closed939=json.loads((ROOT/'analysis/geometric_native_common_preparation_feasibility_validation/report.json').read_bytes())
+ required=('general_finite_owner_state_chart_defined','full_mixed_force_and_tangent_certified',
+ 'reference_preparation_work_paid','full_system_preparation_work_certified',
+ 'historical_archived_three_dimensional_prestress_recovered','new_mixed_force_equilibrium_certified',
+ 'whole_clock_all_pair_admission_authorized','physical_material_admission_authorized',
+ 'full_system_temporal_path_work_certified','clocks_advanced','source_geometry_elapsed_time_s',
+ 'contact_geometry_elapsed_time_s','memory_elapsed_time_s','material_geometry_elapsed_time_s',
+ 'accepted_original_native_intervals','accepted_new_native_intervals','original_point_1_completed',
+ 'original_point_1_remaining_work_blocks','previous_tensor_quadrature_reexecuted',
+ 'historical_force_solve_reexecuted','remaining_physical_conditions')
+ packet={name:closed939[name] for name in required}
+ packet.update(format='native-common-initialization-handover-control-1',
+  status='PASS_NATIVE943_AUTHENTICATED_INITIALIZATION_HANDOVER_DIAGNOSTICS',source_count=943,
+  source_authority_raw_sha256={SOURCES[name]:raw for name,raw in authorities.items()},
+  source_context=cdto,handover_system=sdto,queries=queries,
+  complete_source_context_restart_equal=True,complete_handover_system_restart_equal=True,
+  complete_all_response_restarts_equal=True,original_contact_count=16,original_contact_side_count=32,
+  original_internal_element_count=8,formal_work_probe_count=4,
+  accepted_source_provenance_authenticated=True,
+  old_producer_archival_exact_and_current_objective_bases_kept_separate=True,
+  physical_initialization_ready=False,new_physical_path_or_equilibrium_computed=False,
+  formal_virtual_work_is_physical_temporal_path_work=False,
+  unknown_historical_body_fields_replaced_by_zero=False,
+  reference935_zero_state_promoted_to_accepted_initialization=False,
+  additional_preparation_lambda_actuator_included=False,
+  old_force_quadrature_test_audit_mains_executed=False,
+  seconds=time.monotonic()-started)
+ packet['sha256']=hashlib.sha256(encoded(packet)).hexdigest()
+ with output.open('xb') as stream:stream.write(encoded(packet)+b'\n')
+ print(encoded(packet).decode());phase('completed',status=packet['status'])
+
+if __name__=='__main__':
+ parser=argparse.ArgumentParser();parser.add_argument('--output',required=True);parser.add_argument('--progress')
+ args=parser.parse_args();run(args.output,args.progress)

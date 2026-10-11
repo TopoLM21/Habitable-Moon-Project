@@ -1,0 +1,95 @@
+"""Execute only selected pure AST math; preserve actual source maps and output.
+
+No project package, controller, solver, quadrature or historical test is
+imported or executed. Selected old interval primitives are AST math inputs.
+"""
+import ast, contextlib, hashlib, io, json, sys, time, types
+from pathlib import Path
+from dataclasses import dataclass
+from fractions import Fraction
+from functools import lru_cache
+
+ROOT = Path(__file__).resolve().parents[2]
+PARENT = Path(__file__).resolve().parent
+INPUTS = ('tectonics/geometric_native_pose.py',
+    'tectonics/geometric_native_common_source_carrier.py',
+    'tectonics/geometric_native_common_local_source_work.py',
+    'tests/test_geometric_native_common_local_source_work.py')
+
+def sha(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+def digest(value):
+    return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(',', ':'),
+        ensure_ascii=False, allow_nan=False).encode()).hexdigest()
+
+def source_map():
+    return {str(path.relative_to(ROOT)): sha(path)
+        for directory in ('tectonics', 'tests', 'scripts', 'analysis')
+        for path in sorted((ROOT/directory).rglob('*.py'))}
+
+before = source_map()
+input_pins = {path: sha(ROOT/path) for path in INPUTS}
+n = {'__name__': 'standalone_new_local_source_work_math', 'Fraction': Fraction,
+    'F': Fraction, 'dataclass': dataclass, 'lru_cache': lru_cache}
+sys.modules[n['__name__']] = types.ModuleType(n['__name__'])
+
+def load(path, names):
+    tree = ast.parse((ROOT/path).read_text())
+    nodes = [node for node in tree.body if isinstance(node, (ast.FunctionDef, ast.ClassDef))
+        and node.name in names]
+    assert {node.name for node in nodes} == set(names), (path, set(names)-{node.name for node in nodes})
+    exec(compile(ast.Module(body=nodes, type_ignores=[]), path, 'exec'), n)
+
+stdout = io.StringIO()
+start = time.perf_counter()
+with contextlib.redirect_stdout(stdout):
+    load(INPUTS[0], ['_fraction', 'FractionInterval', 'singleton', '_precision',
+        '_precision_bits', '_power_two', '_floor_log_two', '_rounded_interval'])
+    n['I'] = n['FractionInterval']
+    n['_ZERO'] = (n['I'](0),)*3
+    load(INPUTS[1], ['_round', '_dot', '_cross', '_map'])
+    pure = ['_precision', '_ivector', '_imatrix', '_vadd', '_vsub', '_vneg', '_outer',
+        '_contract', '_square', '_axis', '_second_spin', '_side_source_jet',
+        '_local_source_jet', '_atom_algebra']
+    load(INPUTS[2], pure)
+    api = types.SimpleNamespace(**{name: n[name] for name in pure})
+    tree = ast.parse((ROOT/INPUTS[3]).read_text())
+    stop = next(node.lineno for node in tree.body if isinstance(node, ast.FunctionDef)
+        and node.name == '_carrier')
+    selected = [node for node in tree.body if isinstance(node, ast.FunctionDef)
+        and node.lineno < stop and node.name not in ('_api', '_native')]
+    exec(compile(ast.Module(body=selected, type_ignores=[]), 'standalone_new_test_math', 'exec'), n)
+    n['_api'] = lambda: api
+    names = [node.name for node in selected if node.name.startswith('test_')]
+    assert len(names) == 3, names
+    for name in names:
+        n[name]()
+        print('PASS', name)
+    print('PURE_AST_GUARD_PASS: 3 mathematical tests; no package, controller, solver, quadrature or historical test import')
+elapsed = time.perf_counter()-start
+after = source_map()
+assert before == after, 'Actual full source map changed during pure AST math'
+assert input_pins == {path: sha(ROOT/path) for path in INPUTS}, 'Selected AST input bytes changed'
+console_path = PARENT/'test_pure_math_guard_console.txt'
+console_path.write_text(stdout.getvalue())
+before_path = PARENT/'test_pure_math_guard_sources_before.json'
+after_path = PARENT/'test_pure_math_guard_sources_after.json'
+before_path.write_text(json.dumps(before, sort_keys=True, separators=(',', ':'))+'\n')
+after_path.write_text(json.dumps(after, sort_keys=True, separators=(',', ':'))+'\n')
+report = dict(format='native-common-local-source-work-pure-math-guard-1',
+    status='PASS', pure_tests=names, pure_test_count=3,
+    actual_measured_seconds=elapsed, producer_sha256=sha(Path(__file__)),
+    actual_console_sha256=sha(console_path), ast_input_raw_sha256=input_pins,
+    actual_python_source_count_before=len(before), actual_python_source_count_after=len(after),
+    actual_complete_source_maps_before_after_identical=True,
+    source_map_canonical_sha256=digest(before), sources_before_raw_sha256=sha(before_path),
+    sources_after_raw_sha256=sha(after_path), project_package_imported=False,
+    native_controller_executed=False, old_solver_or_quadrature_executed=False,
+    historical_test_imported_or_executed=False, fresh_pytest_claimed=False,
+    selected_old_interval_and_vector_primitives_executed_by_ast_only=True)
+report['receipt_sha256'] = digest(report)
+(PARENT/'test_pure_math_guard.json').write_text(json.dumps(report, sort_keys=True, separators=(',', ':'))+'\n')
+print(stdout.getvalue(), end='')
+print(json.dumps({key: report[key] for key in ('status', 'pure_test_count',
+    'actual_measured_seconds', 'actual_python_source_count_before', 'receipt_sha256')}, sort_keys=True))

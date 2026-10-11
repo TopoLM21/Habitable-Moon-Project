@@ -1,0 +1,121 @@
+"""AST-only pure Fraction verification of the corrected projection contractor.
+
+No project imports, full project-module execution, source packets, registry,
+solver, quadrature, pytest, real-data or integration runs. Independent exact
+polynomial expansion is selected from the NEW test source. Native interval
+arithmetic/rounding and the NEW production helper are selected by AST only.
+"""
+import ast
+from dataclasses import dataclass
+from decimal import Decimal as D, localcontext
+from fractions import Fraction as F
+from math import isqrt
+from pathlib import Path
+from types import SimpleNamespace
+import hashlib
+import json
+import re
+import sys
+import time
+
+ROOT = Path('/workspace/Habitable-Moon-Project')
+CORE = ROOT/'tectonics/geometric_native_common_strain_projection.py'
+TEST = ROOT/'tests/test_geometric_native_common_strain_projection.py'
+POSE = ROOT/'tectonics/geometric_native_pose.py'
+OUT = Path('/tmp/native_common_strain_projection_cauchy_pure_guard_20261006.json')
+
+
+class ExpectedError:
+    def __init__(self, kind, match):
+        self.kind, self.match = kind, match
+    def __enter__(self):
+        return self
+    def __exit__(self, kind, value, trace):
+        assert kind is not None and issubclass(kind, self.kind)
+        assert re.search(self.match, str(value))
+        return True
+
+
+def select(path, names, namespace):
+    data = path.read_bytes()
+    parsed = ast.parse(data)
+    nodes = [node for node in parsed.body
+             if isinstance(node, (ast.FunctionDef, ast.ClassDef)) and node.name in names]
+    assert {node.name for node in nodes} == names
+    exec(compile(ast.Module(body=nodes, type_ignores=[]), str(path), 'exec'), namespace)
+    return hashlib.sha256(data).hexdigest()
+
+
+started = time.monotonic()
+namespace = dict(F=F, Fraction=F, dataclass=dataclass, isqrt=isqrt, D=D,
+    localcontext=localcontext, SimpleNamespace=SimpleNamespace, DIM=7, ZERO=(0,)*7,
+    pytest=SimpleNamespace(raises=lambda kind, match: ExpectedError(kind, match)))
+pose_pin = select(POSE, {'_fraction', 'FractionInterval', 'singleton', '_precision',
+    '_precision_bits', '_power_two', '_floor_log_two', '_rounded_interval'}, namespace)
+namespace['I'] = namespace['FractionInterval']
+namespace['_round'] = lambda value, precision: namespace['_rounded_interval'](
+    value if type(value) is namespace['I'] else namespace['I'](value), precision+16)
+test_names = {'_encloses', '_independent_cauchy_quotient', 'poly_constant',
+    'poly_variable', 'poly_add', 'poly_scale', 'poly_multiply', 'poly_derivative',
+    'poly_value', 'poly_jet', 'strain_polynomial_model', 'projection_polynomials',
+    'exact_projection_receipt', 'inverse_tip_twojet', '_decimal_polynomial',
+    '_directional_polynomial',
+    'test_independent_strain_polynomial_expansion_checks_projection_and_complete_chain'}
+test_pin = select(TEST, test_names, namespace)
+core_pin = select(CORE, {'_square', '_contains_zero', '_projection_cauchy_cap',
+    '_projection_algebra', '_global_chain'}, namespace)
+namespace['_api'] = lambda: SimpleNamespace(_projection_algebra=namespace['_projection_algebra'],
+    _global_chain=namespace['_global_chain'])
+namespace['test_independent_strain_polynomial_expansion_checks_projection_and_complete_chain']()
+
+# Independently certify upward and minimal dyadic square-root bounds over
+# exact irrational, perfect-square, zero, tiny and large arguments.
+I = namespace['I']
+ratios = (F(0), F(1, 4), F(1), F(2), F(1, 3), F(7, 13),
+          F(10**20, 3), F(1, 10**200))
+cap_checks = 0
+for precision in (64, 96, 128, 512):
+    bits = (3322*(precision+16)+999)//1000+8
+    step = F(1, 1 << bits)
+    for ratio in ratios:
+        cap = namespace['_projection_cauchy_cap'](I(1), I(ratio), precision)
+        assert type(cap) is F and cap >= 0 and cap*cap >= ratio
+        assert cap == 0 or (cap-step)*(cap-step) < ratio
+        assert cap*step.denominator == int(cap*step.denominator)
+        cap_checks += 1
+
+# The cap bounds the unchanged quotient, never its derivatives.
+zero = (F(0),)*7
+zi = (I(0),)*7
+zh = tuple(zi for _ in range(7))
+contracted = namespace['_projection_algebra'](I(1, 4), I(-3, 3), zi, zh,
+    I(0, 1), zi, zh, zero, 128)
+assert contracted['projection_quotient_bounds_m'] == I(-1, 1)
+assert contracted['projection_quotient_cauchy_absolute_upper_bound_m'] == F(1)
+assert contracted['projection_gradient_bounds'] == (I(1),)+(I(0),)*6
+assert all(value == I(0) for row in contracted['projection_hessian_bounds'] for value in row)
+assert not any(name == 'tectonics' or name.startswith('tectonics.')
+               or name == 'tests' or name.startswith('tests.') for name in sys.modules)
+for path, pin in ((CORE, core_pin), (TEST, test_pin), (POSE, pose_pin)):
+    assert hashlib.sha256(path.read_bytes()).hexdigest() == pin
+
+report = dict(status='PASS', format='pure-fraction-cauchy-projection-guard-1',
+    seconds=time.monotonic()-started, core_raw_sha256=core_pin,
+    test_raw_sha256=test_pin, selected_interval_arithmetic_source_sha256=pose_pin,
+    producer_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+    independent_polynomial_component_count=3, independent_polynomial_coordinate_count=7,
+    independent_full_jet_probe_count=3, independent_mixed_quadratic_coefficients=28,
+    independent_decimal_first_directional_checks=3,
+    independent_decimal_second_directional_checks=3,
+    production_full_chain_dimension=92, upward_minimal_dyadic_sqrt_checks=cap_checks,
+    quotient_only_contraction_and_unchanged_derivative_regression=True,
+    incompatible_cauchy_or_negative_norm_rejected=True,
+    missing_inverse_prestress_curvature='11/2', project_modules_imported=False,
+    project_modules_executed=False, source_packet_reads=0, real_data_reads=0,
+    registry_binders_executed=0, pytest_executed=False,
+    old_force_solve_or_quadratures_executed=False)
+encoded = lambda value: json.dumps(value, sort_keys=True, separators=(',', ':'),
+    ensure_ascii=False, allow_nan=False).encode()
+report['guard_sha256'] = hashlib.sha256(encoded(report)).hexdigest()
+OUT.write_bytes(encoded(report)+b'\n')
+print(encoded(report).decode())

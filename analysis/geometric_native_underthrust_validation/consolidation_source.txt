@@ -1,0 +1,144 @@
+from datetime import datetime, timezone
+from pathlib import Path
+import hashlib
+import json
+import subprocess
+import sys
+
+ROOT = Path('/workspace/Habitable-Moon-Project')
+sys.path.insert(0, str(ROOT))
+from scripts.cloud_handoff import verify
+
+BASE = ROOT/'analysis/geometric_native_underthrust_validation'
+GATE = BASE/'release_gates_02'
+CONTROL = BASE/'force_control_release_02'
+
+
+def sha(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def read(path):
+    return json.loads(path.read_text())
+
+
+def bound(path):
+    return dict(path=str(path.relative_to(ROOT)),sha256=sha(path))
+
+
+def changed(snapshot):
+    return sorted(p for p,h in snapshot.items() if not (ROOT/p).is_file() or sha(ROOT/p)!=h)
+
+
+def exclusive(path, raw):
+    with path.open('x') as stream:
+        json.dump(raw,stream,sort_keys=True,indent=2,allow_nan=False)
+        stream.write('\n')
+
+
+gate, control = read(GATE/'receipt.json'), read(CONTROL/'report.json')
+assert gate['status']=='passed' and gate['exit_code']==0 and not gate['changed_paths']
+assert gate['counts']=={'passed':317} and not gate['is_full_profile_execution']
+assert control['status']=='passed' and control['final_eligible'] and control['code_unchanged']
+assert control['accepted_loaded_native_intervals']==control['accepted_native_receipt_count']==0
+assert control['accepted_source_work_j']==0.
+assert control['direct_resumed_full_candidate_refusal_equal']
+for folder, before_name, after_name in (
+    (GATE,'sources_before.json','sources_after.json'),
+    (CONTROL,'code_before.json','code_after.json')):
+    before, after = read(folder/before_name),read(folder/after_name)
+    assert before==after and not changed(after)
+assert gate['runner_sha256']==sha(BASE/'run_release_gates.py')
+assert gate['log_sha256']==sha(GATE/'pytest.log')
+assert gate['before_sha256']==sha(GATE/'sources_before.json')
+assert gate['after_sha256']==sha(GATE/'sources_after.json')
+assert control['runner_sha256']==sha(BASE/'run_native_underthrust_control.py')
+assert control['code_before_sha256']==sha(CONTROL/'code_before.json')
+assert control['code_after_sha256']==sha(CONTROL/'code_after.json')
+probe=CONTROL/control['force_candidate_refusal_probe']
+assert control['force_candidate_refusal_probe_sha256']==sha(probe)
+direct,resumed=read(probe),read(CONTROL/'resumed_force_candidate_refusal_probe.json')
+assert direct==resumed and direct['input_unchanged'] and direct['accepted_loaded_native_intervals']==0
+assert direct['accepted_material_ledger']['maximum_relative_residual']==0.
+assert direct['independent_candidate_source_work_relative_error']<3e-14
+assert direct['independent_candidate_basal_dissipation_relative_error']<3e-14
+oracle=read(CONTROL/'independent_refusal_receipt.json')
+assert oracle['status']=='PASS' and oracle['admission_authorized'] is False
+assert oracle['probe_sha256']==sha(probe)
+assert oracle['oracle_sha256']==sha(BASE/'independent_refusal_audit.py')
+pairs=control['joint_initial_checkpoint_byte_pairs']
+assert len(pairs)==3
+for pair in pairs:
+    left,right=CONTROL/pair['left'],CONTROL/pair['right']
+    assert pair['byte_equal'] and left.read_bytes()==right.read_bytes()
+    assert sha(left)==sha(right)==pair['sha256'] and left.stat().st_size==pair['bytes']
+
+baselines={}
+for name,relative,expected in (
+ ('old_full_417','analysis/geometric_underthrust_validation/parallel_portable_final/code_and_tests_after.json',[]),
+ ('old_supplemental_278','analysis/geometric_underthrust_validation/parallel_portable_final/supplemental_runtime_after.json',[]),
+ ('old_common_421','analysis/geometric_intrinsic_validation/release_gates/focused_code_and_tests_after.json',[]),
+ ('previous_native_427','analysis/geometric_native_validation/release_gates/focused_code_and_tests_after.json',
+  ['tectonics/geometric_native_polygons.py'])):
+    path=ROOT/relative
+    snapshot=read(path)
+    actual=changed(snapshot)
+    assert actual==expected
+    baselines[name]=dict(**bound(path),path_count=len(snapshot),changed_paths=actual)
+
+source=verify(ROOT)
+assert source==dict(files=9,source_bytes=2110696,verified=True)
+code=read(GATE/'sources_after.json')
+paths=[BASE/'run_release_gates.py',BASE/'run_native_underthrust_control.py',
+       BASE/'independent_refusal_audit.py']
+paths+=sorted((ROOT/'tectonics').glob('geometric_native_*.py'))
+paths+=sorted((ROOT/'tests').glob('test_geometric_native_*.py'))
+source_manifest={str(p.relative_to(ROOT)):sha(p) for p in paths}
+artifacts=sorted(GATE.iterdir())+sorted(CONTROL.iterdir())
+manifest={str(p.relative_to(ROOT)):dict(bytes=p.stat().st_size,sha256=sha(p))
+          for p in artifacts if p.is_file()}
+exclusive(BASE/'artifact_manifest.json',manifest)
+summary=dict(status='PASS',checked_utc=datetime.now(timezone.utc).isoformat(),
+ git_head=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
+ branch=subprocess.check_output(['git','branch','--show-current'],cwd=ROOT,text=True).strip(),
+ restored_sources=source,focused_gate=dict(**bound(GATE/'receipt.json'),tests_passed=317,
+  seconds=gate['seconds'],unchanged_runtime_sources=len(code),is_full_profile_execution=False),
+ control=dict(**bound(CONTROL/'report.json'),seconds=control['wall_seconds'],
+  accepted_native_loaded_intervals=0,attempts=control['attempted_loaded_native_intervals'],
+  unchanged_runtime_sources=control['code_files'],joint_initial_byte_pairs=pairs,
+  direct_resumed_force_candidate_and_refusal_identical=True),
+ independent_refusal=dict(**bound(CONTROL/'independent_refusal_receipt.json'),decimal_digits=500,
+  positive_opening_signal_km_per_myr=oracle['positive_opening_endpoint_signal_km_per_myr'],
+  admission_authorized=False,continuous_event_schedule_certified=False),
+ candidate=dict(source_work_j=direct['candidate_source_work_j'],
+  basal_dissipation_j=direct['candidate_basal_dissipation_j'],
+  independent_source_work_relative_error=direct['independent_candidate_source_work_relative_error'],
+  independent_basal_dissipation_relative_error=direct['independent_candidate_basal_dissipation_relative_error'],
+  physical_diagnostics=direct['candidate']['diagnostics']),
+ accepted_state=dict(material_budget_relative_residual=0.,source_work_j=0.,receipts=0,
+  surface_archive_histories_memory_and_clocks_unchanged=True),
+ historical_baselines=baselines,source_manifest=source_manifest,
+ artifact_manifest=dict(**bound(BASE/'artifact_manifest.json'),file_count=len(manifest)),
+ historical_full_profile=dict(cases_passed=1284,current_execution=False,
+  **bound(ROOT/'analysis/geometric_underthrust_validation/cloud_test_receipt.json')),
+ original_six_point_plan=[dict(point=n,status='partial' if n==1 else 'pending') for n in range(1,7)],
+ completed_within_point_1=['native physical source assembly on trusted footprint/cell intersections',
+  'native original material live/buried partition and bounded continuous live-clamp support',
+  'native spatial field replay and genuine receiver-arc loss attachment',
+  'objective force/native integration with immutable unaccepted candidate evidence',
+  'joint initial native checkpoint and exact direct/resumed force refusal'],
+ next_within_point_1=['certified swept-plane contact entry and recrossing at finite interval times',
+  'continuous compressed/down-dip constitutive support at actual contact times',
+  'positive loaded native interval and joint checkpoint',
+  'physical law for new material pairs on already declared weak planes'],
+ declared_limits=['original prepared epoch with empty legacy burial',
+  'live clamp proof only for original orthogonal quarter arcs and width/radius <= 1/4',
+  'no accepted native loaded differential step or loaded current joint restart yet',
+  'independent sampled sweep is numerical evidence, not a continuous event certificate',
+  'original points 2-6 remain pending'],
+ consolidation_source_sha256=sha(Path(__file__)))
+exclusive(BASE/'validation_summary.json',summary)
+with (BASE/'consolidation_source.txt').open('xb') as stream:
+    stream.write(Path(__file__).read_bytes())
+print(json.dumps(dict(status=summary['status'],tests_passed=317,accepted_native_loaded_intervals=0,
+ artifact_count=len(manifest),runtime_sources_unchanged=len(code),summary_sha256=sha(BASE/'validation_summary.json'))))

@@ -1,0 +1,283 @@
+"""Close NEW931 byte evidence from actual captured validation; no physics replay.
+See /workspace/basal_material_load_931_contract.txt for the normalized input schema.
+"""
+from pathlib import Path
+import argparse, hashlib, json, re
+ROOT = Path('/workspace/Habitable-Moon-Project')
+P = ROOT/'analysis/geometric_native_common_basal_loading_validation'
+F = ROOT/'analysis/geometric_native_common_basal_loading_final_readback'
+OLD_P = ROOT/'analysis/geometric_native_common_preparation_balance_validation'
+OLD_F = ROOT/'analysis/geometric_native_common_preparation_balance_final_readback'
+OLD_MANIFEST_RAW = 'c80fdf9e00f37c89b0fc920bbd3762153182dd5580f4f025d87661cd286c77ee'
+NEW = (
+    'tectonics/geometric_native_common_basal_trace.py',
+    'tests/test_geometric_native_common_basal_trace.py',
+    'tectonics/geometric_native_common_basal_loading.py',
+    'tests/test_geometric_native_common_basal_loading.py',
+)
+def enc(x):
+    return json.dumps(x,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+def digest(p):
+    h=hashlib.sha256()
+    with Path(p).open('rb') as f:
+        for b in iter(lambda:f.read(1024*1024),b''):h.update(b)
+    return h.hexdigest()
+def load(p):return json.loads(Path(p).read_bytes())
+def sealed(p):
+    x=load(p);key='report_sha256' if 'report_sha256' in x else 'sha256'
+    assert x[key]==hashlib.sha256(enc({k:v for k,v in x.items() if k!=key})).hexdigest(),p
+    return x,key
+
+def meaningful(p):
+    return {str(x.relative_to(p)) for x in p.rglob('*') if x.is_file() and '__pycache__' not in x.parts and x.suffix!='.pyc'}
+def row(p):return dict(sha256=digest(p),bytes=Path(p).stat().st_size)
+def write_new(p,x):
+    with Path(p).open('xb') as f:f.write(enc(x)+b'\n')
+def pfile(name):
+    p=(P/name).resolve();assert p.is_relative_to(P) and p.is_file(),name;return p
+
+def verify_old():
+    assert digest(OLD_P/'artifact_manifest.json')==OLD_MANIFEST_RAW
+    assert digest(OLD_F/'archive.json')=='8c224bb43837da221e3ffe0d1cae22f724185ea5131ad443cb9392178b33be68'
+    m,_=sealed(OLD_P/'artifact_manifest.json');assert len(m['files'])==169
+    names=set()
+    for name,entry in m['files'].items():
+        path=ROOT/name;assert row(path)==entry,(name,'old manifest')
+        if path.is_relative_to(OLD_P):names.add(str(path.relative_to(OLD_P)))
+    assert meaningful(OLD_P)==names|{'artifact_manifest.json'}
+    a,_=sealed(OLD_F/'archive.json')
+    assert a['status']=='PASS_FINAL927_READBACK_ARCHIVE_CLOSED'
+    assert a['manifest_raw_sha256']==OLD_MANIFEST_RAW
+    assert a['actual_reader_exit_code']==0 and a['actual_reader_stderr_bytes']==0
+    assert a['actual_reader_stdout_equals_report'] is True
+    assert a['reader_execution_facts']['actual_exit_code']==0
+    assert a['reader_execution_facts']['actual_stderr_bytes']==0
+    assert meaningful(OLD_F)=={'readback_source.txt','readback.json','console.log','archive.json'}
+    for name,entry in a['files'].items():assert row(OLD_F/name)==entry
+    old=load(OLD_P/'frozen_source_map_927.json');assert len(old)==927
+    return old
+
+def actual_sources():
+    return {str(p.relative_to(ROOT)):digest(p) for d in ('tectonics','tests','scripts','analysis') for p in (ROOT/d).rglob('*.py')}
+
+def guard_receipt(item,count):
+    x,key=sealed(pfile(item['report']))
+    assert x['status']=='PASS_CLOSED927_AND_ANCESTRY_PRESERVED' and x['source_count']==count
+    assert x['prior_source_count']==927 and x['dependency_count']==2160
+    assert len(x['dependency_raw_sha256'])==2160 and x['old_math_executed'] is False
+    assert len(x['source_sha256'])==count
+    console=load(pfile(item['console']))
+    assert console=={k:v for k,v in x.items() if k not in ('dependency_raw_sha256','source_sha256')}
+    for name,pin in x['dependency_raw_sha256'].items():assert digest(name)==pin,name
+    return x,key
+
+def validate_executing_sources(name,item,facts):
+    """Keep current repo pins mandatory; replay outside watches from exact copies."""
+    if 'executed_source_after_raw_sha256' in facts:
+        assert facts['executed_source_after_raw_sha256']==facts['executed_source_raw_sha256'],(name,'executed helper source changed')
+    watched=item.get('watched_source_snapshots',{})
+    assert isinstance(watched,dict)
+    if 'source_before_sha256' in facts:
+        before=facts['source_before_sha256']
+        assert isinstance(before,dict) and before==facts['source_after_sha256'],(name,'executing sources changed')
+        assert set(watched).issubset(before),(name,'uncaptured watched source')
+        for source,pin in before.items():
+            current=(ROOT/source).resolve()
+            if current.is_relative_to(ROOT):
+                assert source not in watched,(name,'repo source cannot be replaced by a snapshot',source)
+                assert digest(current)==pin,(name,source)
+            elif source in watched:
+                assert Path(source).is_absolute() and current.is_relative_to('/workspace'),(name,'outside watched source path',source)
+                assert digest(pfile(watched[source]))==pin,(name,'outside watched source snapshot',source)
+                if current.exists():assert digest(current)==pin,(name,'existing outside watched source changed',source)
+            else:
+                assert digest(current)==pin,(name,source)
+    else:
+        assert not watched,(name,'watched snapshots require captured before/after maps')
+    for field in ('source_sha256','executed_core_source_sha256'):
+        if isinstance(facts.get(field),dict):
+            for source,pin in facts[field].items():assert digest(ROOT/source)==pin,(name,field,source)
+    if 'executed_source_snapshot' in item:
+        assert 'executed_source_raw_sha256' in facts,(name,'executed source pin missing')
+        snapshot=pfile(item['executed_source_snapshot'])
+        assert digest(snapshot)==facts['executed_source_raw_sha256'],(name,'executed source snapshot')
+    elif 'executed_source_raw_sha256' in facts and 'executed_source_path' in facts:
+        assert digest(facts['executed_source_path'])==facts['executed_source_raw_sha256'],(name,'executed source')
+
+def validation_receipt(name,item):
+    assert item['kind'] in ('tests','native','audit','before','after')
+    console=pfile(item['console']);stderr=pfile(item['stderr']);facts_path=pfile(item['execution_facts'])
+    facts=load(facts_path)
+    if 'sha256' in facts or 'report_sha256' in facts:sealed(facts_path)
+    validate_executing_sources(name,item,facts)
+    for field,path in (('console_sha256',console),('stderr_sha256',stderr),
+            ('stdout_sha256',console),
+            ('actual_stdout_raw_sha256',console),('actual_stderr_raw_sha256',stderr),
+            ('actual_stdout_sha256',console),('actual_stderr_sha256',stderr)):
+        if field in facts:assert facts[field]==digest(path),(name,field)
+    for field in ('actual_stderr_bytes','stderr_bytes'):
+        if field in facts:assert facts[field]==0,(name,field)
+    assert item['exit_code_key'] in ('actual_exit_code','actual_child_exit_code','actual_tool_exit_code','actual_reader_exit_code')
+    assert type(facts[item['exit_code_key']]) is int and facts[item['exit_code_key']]==0,(name,'actual exit')
+    assert stderr.stat().st_size==0,(name,'stderr')
+    # Exit evidence remains verbatim in the retained facts file; no inferred exit code.
+    if item['kind']=='tests':
+        count=item['tests_passed'];assert isinstance(count,int) and count>0
+        text=console.read_text();assert re.search(r'\b'+str(count)+r' passed\b',text),(name,'pytest summary')
+        assert not re.search(r'\b[1-9][0-9]* (?:failed|error|errors)\b',text),(name,'pytest failure')
+        extra={}
+        if 'report' in item:
+            x,key=sealed(pfile(item['report']))
+            assert x['status']==item['expected_status'] and x['tests_passed']==count
+            if 'execution_facts_sha256' in x:assert x['execution_facts_sha256']==digest(facts_path)
+            extra=dict(status=x['status'],report_self_sha256=x[key],report_raw_sha256=digest(pfile(item['report'])))
+        return dict(kind='tests',tests_passed=count,actual_exit_code=0,
+            execution_facts_raw_sha256=digest(facts_path),stdout_raw_sha256=digest(console),stderr_bytes=0,**extra)
+    if item['kind'] in ('before','after'):
+        x,key=guard_receipt(item,927 if item['kind']=='before' else 931)
+    else:
+        x,key=sealed(pfile(item['report']))
+        assert console.read_bytes()==pfile(item['report']).read_bytes(),(name,'stdout equals report')
+        assert x['status']==item['expected_status'],(name,x['status'])
+    return dict(kind=item['kind'],status=x['status'],report_self_sha256=x[key],
+        report_raw_sha256=digest(pfile(item['report'])),actual_exit_code=0,
+        execution_facts_raw_sha256=digest(facts_path),stdout_raw_sha256=digest(console),stderr_bytes=0)
+
+# Mapping is supplied before closure so the actual native JSON need not be rewritten.
+# These normalized claims are the byte gate's partial-scope contract, not calculations.
+# Root must add direct basal scope assertions after the actual receipt schema settles.
+# The invariant physical admission/time claims below cannot be promoted by this gate.
+REQUIRED_SCIENCE = {
+    'full_mixed_force_and_tangent_certified': False,
+    'reference_preparation_work_paid': False,
+    'full_system_preparation_work_certified': False,
+    'historical_archived_three_dimensional_prestress_recovered': False,
+    'new_mixed_force_equilibrium_certified': False,
+    'whole_clock_all_pair_admission_authorized': False,
+    'physical_material_admission_authorized': False,
+    'full_system_temporal_path_work_certified': False,
+    'clocks_advanced': False,
+    'source_geometry_elapsed_time_s': 0,
+    'contact_geometry_elapsed_time_s': 2000000,
+    'memory_elapsed_time_s': 1000000,
+    'material_geometry_elapsed_time_s': 1000000,
+    'accepted_original_native_intervals': 1,
+    'accepted_new_native_intervals': 0,
+    'original_point_1_completed': False,
+    'original_point_1_remaining_work_blocks': 1,
+    'previous_tensor_quadrature_reexecuted': False,
+    'historical_force_solve_reexecuted': False,
+}
+
+def claim_at(native, path):
+    assert isinstance(path, str) and path
+    value = native
+    for part in path.split('.'):
+        value = value[int(part)] if isinstance(value, list) else value[part]
+    return value
+
+def extract_science(native, config):
+    mapping = config.get('native_claims_keys', {})
+    assert set(mapping).issubset(set(REQUIRED_SCIENCE) | {'remaining_physical_conditions'})
+    result = {}
+    for name, expected in REQUIRED_SCIENCE.items():
+        value = claim_at(native, mapping.get(name, name))
+        assert type(value) is type(expected) and value == expected, (name, value, expected)
+        result[name] = value
+    conditions = claim_at(native, mapping.get('remaining_physical_conditions', 'remaining_physical_conditions'))
+    assert isinstance(conditions, list) and len(conditions) == 3
+    assert all(isinstance(v, str) and v.strip() for v in conditions)
+    result['remaining_physical_conditions'] = conditions
+    assertions = config.get('native_assertions', {})
+    assert isinstance(assertions, dict)
+    for path, expected in assertions.items():
+        value = claim_at(native, path)
+        assert type(value) is type(expected) and value == expected, (path, value, expected)
+    result['additional_actual_native_assertions'] = assertions
+    return result
+
+def close(config_path):
+    for name in ('artifact_manifest.json','report.json','document_facts.json','frozen_source_map_931.json'):
+        assert not (P/name).exists(),('A closure artifact already exists',name)
+    config_path=Path(config_path).resolve();assert config_path.is_relative_to(P)
+    config=load(config_path)
+    assert config['format']=='native-common-basal-material-load-closure-facts-1'
+    assert set(config['new_sources'])==set(NEW)
+    old=verify_old();sources=actual_sources()
+    assert len(sources)==931 and set(sources)-set(old)==set(NEW)
+    assert all(sources[k]==v for k,v in old.items())
+    assert set(config['source_snapshots'])==set(NEW)
+    for name,snapshot in config['source_snapshots'].items():assert digest(pfile(snapshot))==sources[name],(name,'executed source snapshot')
+    validations={name:validation_receipt(name,item) for name,item in config['validations'].items()}
+    kinds=[r['kind'] for r in validations.values()]
+    assert kinds.count('native')==1 and kinds.count('audit')>=1 and kinds.count('tests')>=1
+    assert kinds.count('before')==1 and kinds.count('after')==1
+    before_name=next(n for n,r in validations.items() if r['kind']=='before')
+    after_name=next(n for n,r in validations.items() if r['kind']=='after')
+    before,_=sealed(pfile(config['validations'][before_name]['report']))
+    after,_=sealed(pfile(config['validations'][after_name]['report']))
+    assert before['source_sha256']==old and after['source_sha256']==sources
+    assert before['dependency_raw_sha256']==after['dependency_raw_sha256']
+    native_name=next(n for n,r in validations.items() if r['kind']=='native')
+    native,_=sealed(pfile(config['validations'][native_name]['report']))
+    science = extract_science(native, config)
+    associations=load(P/'baseline_associations.json');assert len(associations)==12
+    for target,entry in associations.items():
+        t=Path(target);copy=(ROOT/entry['copy']).resolve()
+        assert t.is_relative_to('/workspace') and not t.is_relative_to(ROOT)
+        assert copy.is_relative_to(P/'baseline927') and digest(copy)==entry['sha256']
+        assert t.exists() and digest(t)==entry['sha256'],target
+    historical=P/'baseline927/historical927_handoff.txt'
+    assert (ROOT/'CLOUD_HANDOFF.md').read_bytes().endswith(historical.read_bytes())
+    docs={str((ROOT/name).resolve()):digest(ROOT/name) for name in config['document_paths']}
+    assert str(ROOT/'CLOUD_HANDOFF.md') in docs
+    for name in docs:assert Path(name).is_relative_to(ROOT)
+    restoration=P/'baseline_restore_source.txt';assert restoration.is_file()
+    inherited=OLD_P/'baseline_restore_source.txt'
+    report=dict(status='PASS_FROZEN931_BASAL_MATERIAL_LOAD_GATE',
+        source_count=931,new_source_sha256={n:sources[n] for n in NEW},
+        tests_passed=sum(r.get('tests_passed',0) for r in validations.values()),
+        validation_receipts=validations,old927_sources_and_ancestry_preserved=True,
+        old_dependency_count=2160,
+        inherited927_restorer_raw_sha256=digest(inherited),required_baseline_target_count=113,
+        **science)
+    report['sha256']=hashlib.sha256(enc(report)).hexdigest()
+    document_facts=dict(document_raw_sha256=docs,
+        historical927_handoff_raw_sha256=digest(historical),documents_finalized_before_readback=True)
+    write_new(P/'report.json',report);write_new(P/'document_facts.json',document_facts)
+    write_new(P/'frozen_source_map_931.json',sources)
+    rows={str(f.relative_to(ROOT)):row(f) for f in P.rglob('*') if f.is_file() and '__pycache__' not in f.parts and f.suffix!='.pyc'}
+    assert 'analysis/geometric_native_common_basal_loading_validation/artifact_manifest.json' not in rows
+    for name in NEW:rows[name]=row(ROOT/name)
+    manifest=dict(source_count=931,files=rows,old927_manifest_raw_sha256=OLD_MANIFEST_RAW,
+        inherited927_restorer_raw_sha256=digest(inherited),required_baseline_target_count=113)
+    manifest['sha256']=hashlib.sha256(enc(manifest)).hexdigest()
+    write_new(P/'artifact_manifest.json',manifest)
+    print(enc(dict(status='PASS_PREPARED931_CLOSURE',manifest_file_count=len(rows),
+        manifest_raw_sha256=digest(P/'artifact_manifest.json'),tests_passed=report['tests_passed'],
+        source_count=931)).decode())
+
+def seal_final(facts_path):
+    facts,_=sealed(facts_path);assert facts['actual_exit_code']==0
+    assert facts['actual_stderr_bytes']==0
+    report_path=Path(facts['report_path']);stdout=Path(facts['actual_stdout_path']);stderr=Path(facts['actual_stderr_path'])
+    assert stderr.stat().st_size==0 and report_path.read_bytes()==stdout.read_bytes()
+    result,_=sealed(report_path);assert result['status']=='PASS_FINAL931_EVIDENCE_READBACK_ONLY'
+    assert result['manifest_raw_sha256']==digest(P/'artifact_manifest.json')
+    assert meaningful(F)=={'readback_source.txt','readback.json','console.log'}
+    assert (F/'readback.json').read_bytes()==report_path.read_bytes() and (F/'console.log').read_bytes()==stdout.read_bytes()
+    if 'executed_source_raw_sha256' in facts:assert digest(F/'readback_source.txt')==facts['executed_source_raw_sha256']
+    archive=dict(status='PASS_FINAL931_READBACK_ARCHIVE_CLOSED',source_count=931,
+        files={n:row(F/n) for n in ('readback_source.txt','readback.json','console.log')},
+        manifest_raw_sha256=digest(P/'artifact_manifest.json'),actual_reader_exit_code=0,
+        actual_reader_stderr_bytes=0,actual_reader_stdout_equals_report=True,
+        reader_execution_facts_raw_sha256=digest(facts_path),reader_execution_facts=facts,point_1_completed=False)
+    archive['sha256']=hashlib.sha256(enc(archive)).hexdigest();write_new(F/'archive.json',archive)
+    assert meaningful(F)=={'readback_source.txt','readback.json','console.log','archive.json'}
+    print(enc(dict(status='PASS_CLOSED931_FOUR_FILE_ARCHIVE',archive_raw_sha256=digest(F/'archive.json'))).decode())
+
+if __name__=='__main__':
+    p=argparse.ArgumentParser();g=p.add_mutually_exclusive_group(required=True)
+    g.add_argument('--config');g.add_argument('--seal-final');a=p.parse_args()
+    if a.config:close(a.config)
+    else:seal_final(a.seal_final)

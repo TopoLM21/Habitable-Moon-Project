@@ -1,0 +1,67 @@
+from datetime import datetime, timezone
+import hashlib
+import importlib.util
+import json
+from pathlib import Path
+import re
+import subprocess
+import sys
+import time
+
+ROOT = Path('/workspace/Habitable-Moon-Project')
+OUT = ROOT/'analysis/geometric_intrinsic_validation'
+spec = importlib.util.spec_from_file_location('profile_receipt', ROOT/'analysis/geometric_underthrust_validation/run_portable_checks.py')
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+
+def sha(path):
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+def write(path, data):
+    with path.open('x', encoding='utf-8') as stream:
+        json.dump(data, stream, indent=2, sort_keys=True, allow_nan=False)
+        stream.write('\n')
+
+mode = sys.argv[1]
+if mode == 'focused':
+    command = ['.venv/bin/python', '-m', 'pytest', '-q',
+        'tests/test_geometric_intrinsic_geometry.py', 'tests/test_geometric_intrinsic_surface.py',
+        'tests/test_geometric_precision.py', 'tests/test_geometric_surface.py',
+        'tests/test_spherical_polygons.py', 'tests/test_cloud_handoff.py']
+elif mode == 'control':
+    command = ['.venv/bin/python', 'analysis/geometric_intrinsic_validation/run_intrinsic_control.py',
+               '--out', 'analysis/geometric_intrinsic_validation/final_common_motion_control']
+elif mode == 'collection':
+    command = ['.venv/bin/python', 'scripts/run_cloud_tests.py', '--collect-only', '-q']
+else:
+    raise ValueError(mode)
+before = module.hashes()
+extra = {p.relative_to(ROOT).as_posix(): sha(p) for p in sorted((OUT).glob('*.py'))}
+write(OUT/f'{mode}_code_and_tests_before.json', before)
+write(OUT/f'{mode}_validation_sources_before.json', extra)
+started = datetime.now(timezone.utc).isoformat()
+start = time.perf_counter()
+log_path = OUT/f'{mode}.log'
+with log_path.open('x', encoding='utf-8') as log:
+    result = subprocess.run(command, cwd=ROOT, stdout=log, stderr=subprocess.STDOUT)
+seconds = time.perf_counter()-start
+after = module.hashes()
+extra_after = {p.relative_to(ROOT).as_posix(): sha(p) for p in sorted((OUT).glob('*.py'))}
+write(OUT/f'{mode}_code_and_tests_after.json', after)
+write(OUT/f'{mode}_validation_sources_after.json', extra_after)
+changed = sorted(name for name in before.keys() | after.keys() if before.get(name) != after.get(name))
+extra_changed = sorted(name for name in extra.keys() | extra_after.keys() if extra.get(name) != extra_after.get(name))
+text = log_path.read_text(encoding='utf-8')
+summaries = [line.strip() for line in text.splitlines() if re.search(r'\b\d+ (?:passed|failed|error|errors|collected|tests collected)\b', line) and ' in ' in line]
+summary = summaries[-1] if summaries else None
+counts = {name: int(count) for count, name in re.findall(r'\b(\d+) (passed|failed|error|errors|skipped|collected|tests collected)\b', summary or '')}
+report = dict(status='passed' if result.returncode == 0 and not changed and not extra_changed else 'failed',
+    command=command, cwd=str(ROOT), started_utc=started, finished_utc=datetime.now(timezone.utc).isoformat(),
+    seconds=seconds, exit_code=result.returncode, pytest_summary=summary, counts=counts,
+    core_path_count=len(before), core_changed_paths=changed, validation_source_changed_paths=extra_changed,
+    log=log_path.relative_to(ROOT).as_posix(), log_sha256=sha(log_path),
+    source_runner_sha256=sha(Path(__file__)), source_runner_file='/tmp/run_moon_intrinsic_gate.py',
+    is_full_profile_execution=False, is_collection_only=(mode == 'collection'))
+write(OUT/f'{mode}_receipt.json', report)
+print(json.dumps(report, indent=2))
+raise SystemExit(0 if report['status'] == 'passed' else 1)

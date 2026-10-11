@@ -1,0 +1,250 @@
+"""Read-only release evidence audit; writes new consolidation artifacts only."""
+from pathlib import Path
+from fractions import Fraction
+from decimal import Decimal
+from datetime import datetime, timezone
+import hashlib
+import json
+import subprocess
+
+ROOT = Path('/workspace/Habitable-Moon-Project')
+OUT = ROOT / 'analysis/geometric_native_contact_event_validation'
+
+def encoded(value):
+    return json.dumps(value, sort_keys=True, separators=(',', ':'), allow_nan=False).encode()
+
+def sha(path):
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+def read(path):
+    return json.loads((ROOT / path).read_text())
+
+def write(path, value):
+    target = OUT / path
+    if target.exists():
+        raise RuntimeError(f'Preserve existing evidence: {target}')
+    target.write_text(json.dumps(value, sort_keys=True, indent=2, allow_nan=False)+'\n')
+
+def seal_valid(raw, key):
+    body = {k:v for k,v in raw.items() if k != key}
+    assert hashlib.sha256(encoded(body)).hexdigest() == raw[key], key
+
+def manifest_audit(path):
+    saved = read(path)
+    changed = [name for name, expected in saved.items() if sha(ROOT/name) != expected]
+    return dict(path=path, sha256=sha(ROOT/path), path_count=len(saved), changed_paths=changed)
+
+def scalar_interval(raw):
+    return (Fraction(raw['lower']['numerator'],raw['lower']['denominator']),
+            Fraction(raw['upper']['numerator'],raw['upper']['denominator']))
+
+base = 'analysis/geometric_native_contact_event_validation/'
+gate_path = base+'release_gates_01/receipt.json'
+event_path = base+'event_control_release_01/report.json'
+time_path = base+'time_support_release_01/report.json'
+oracle_path = base+'event_control_release_01/independent_event_receipt.json'
+same_path = base+'event_control_release_01/same_query_event_receipt.json'
+gate,event,time,oracle,same = map(read,[gate_path,event_path,time_path,oracle_path,same_path])
+assert gate['status']=='PASS' and gate['exit_code']==0 and gate['counts']=={'passed':175}
+assert gate['changed_paths']==[] and gate['is_full_profile_execution'] is False
+assert gate['source_count']==624
+assert gate['sources_before_sha256']==gate['sources_after_sha256']
+assert gate['runner_sha256']==sha(OUT/'run_release_gates.py')
+assert gate['log_sha256']==sha(OUT/'release_gates_01/pytest.log')
+for name,key in [('sources_before.json','sources_before_sha256'),('sources_after.json','sources_after_sha256')]:
+    assert sha(OUT/'release_gates_01'/name)==gate[key]
+
+assert event['status']=='PASS' and event['admission_authorized'] is False
+assert event['source_input_unchanged'] and event['sources_unchanged']
+assert event['accepted_loaded_native_intervals']==0
+seal_valid(event,'report_sha256')
+for name, expected in event['artifacts_sha256'].items():
+    assert sha(OUT/'event_control_release_01'/name)==expected
+event_pairs=[]
+for pair in event['byte_pairs']:
+    first=OUT/'event_control_release_01'/pair['first']
+    second=OUT/'event_control_release_01'/pair['second']
+    assert first.read_bytes()==second.read_bytes() and pair['byte_exact'] is True
+    assert sha(first)==pair['sha256']
+    event_pairs.append(dict(**pair, scope='event_diagnostic_not_accepted_force_checkpoint'))
+assert len(event_pairs)==3
+assert scalar_interval(event['recrossing_ratio_width'])[0]>0
+assert event['topology']=='initial_exit_later_entry_positive_material_band'
+
+assert time['status']=='declared_constitutive_time_support_verified_without_adoption'
+assert time['input_unchanged'] and time['source_code_unchanged']
+assert time['accepted_loaded_native_intervals']==0 and time['accepted_source_work_j']==0
+assert time['candidate_memory_adopted'] is False and time['geometry_permission'] is False
+assert time['physical_law']['viscosity_pa_s_m']==0
+assert time['original_trace_count']==4 and time['prepared_checkpoint_byte_identical']
+for name, facts in time['artifacts'].items():
+    path=OUT/'time_support_release_01'/name
+    assert sha(path)==facts['sha256'] and path.stat().st_size==facts['bytes']
+first=OUT/'time_support_release_01/initial.json'
+after=OUT/'time_support_release_01/after_refusal.json'
+assert first.read_bytes()==after.read_bytes()
+assert sha(first)==time['prepared_checkpoint_sha256']
+
+probe_path=event['source_probe']
+probe=read(probe_path)
+assert sha(ROOT/probe_path)==event['source_probe_sha256']
+assert (ROOT/probe_path).read_bytes()==(OUT/'event_control_release_01/source_force_candidate_refusal_probe.json').read_bytes()
+candidate=read(base+'time_support_release_01/force_candidate.json')
+assert len(probe['candidate'])==12
+assert all(candidate[k]==v for k,v in probe['candidate'].items())
+assert candidate['admission']==probe['admission'] and candidate['unresolved']==probe['unresolved']
+omega=dict(candidate['omega_rad_per_myr'])
+assert {str(k):v for k,v in omega.items()}==probe['omega']
+assert hashlib.sha256(encoded(candidate)).hexdigest()==time['candidate_sha256']
+assert candidate['diagnostics']['source_work_j']==probe['candidate_source_work_j']==time['unaccepted_candidate_work_j']
+inputs=read(base+'event_control_release_01/actual_native_arc_inputs.json')
+assert inputs['input_unchanged'] and inputs['accepted_loaded_native_intervals']==0
+assert omega[inputs['donor_owner']]==inputs['donor_omega_rad_per_myr']
+assert omega[inputs['receiver_owner']]==inputs['receiver_omega_rad_per_myr']
+assert candidate['dt_s']==probe['candidate']['dt_s']
+
+support=read(base+'time_support_release_01/constitutive_time_support.json')
+assert support['candidate_sha256']==time['candidate_sha256']
+assert support['path_sha256']==time['path_sha256']
+assert support['geometry_permission'] is False and support['candidate_memory_adopted'] is False
+certificates=support['certificates']
+assert len(certificates)==4 and len({c['trace_id'] for c in certificates})==4
+for cert in certificates:
+    assert cert['status']=='inviscid_contact_time_constitutive_admissible' and cert['admissible']
+    assert cert['time_fraction_bounds']==[[0,1],[1,1]]
+    assert Fraction(*cert['pressure_bounds_pa']['lo'])>0
+    assert Fraction(*cert['plastic_rate_bounds_m_s']['hi'])<0
+    assert cert['path_sha256']==time['path_sha256']
+assert inputs['original_physical_trace_id'] in {c['trace_id'] for c in certificates}
+
+assert oracle['status']=='PASS' and oracle['admission_authorized'] is False
+assert oracle['accepted_loaded_native_intervals']==0 and oracle['precision_decimal_digits']==500
+seal_valid(oracle,'receipt_sha256')
+assert oracle['report_sha256']==sha(ROOT/event_path)
+assert oracle['source_probe_sha256']==sha(ROOT/probe_path)
+assert oracle['oracle_sha256']==sha(OUT/'independent_event_oracle.py')
+assert len(oracle['certified_interval_comparisons'])==5
+assert all(c['interval_contains_independent_value'] for c in oracle['certified_interval_comparisons'])
+assert oracle['event_certificate_sha256']==sha(OUT/'event_control_release_01/event_certificate.json')
+
+assert same['status']=='PASS' and same['strict_bracket_count']==2
+assert same['admission_authorized'] is False and same['accepted_loaded_native_intervals']==0
+assert same['source_snapshot_unchanged'] and same['checked_source_count']==624
+seal_valid(same,'receipt_sha256')
+binding_paths={
+    'actual_native_arc_inputs':base+'event_control_release_01/actual_native_arc_inputs.json',
+    'event_certificate':base+'event_control_release_01/event_certificate.json',
+    'event_control_report':event_path,
+    'frozen_oracle_module':base+'independent_event_oracle.py',
+    'independent_audit_source':base+'independent_same_query_event_audit_source.txt',
+    'material_ratio_events':base+'event_control_release_01/material_ratio_events.json',
+    'material_ratio_events_replayed':base+'event_control_release_01/material_ratio_events_replayed.json',
+    'source_force_candidate':probe_path,
+    'source_manifest':base+'release_gates_01/sources_after.json',
+}
+assert same['binding_sha256']=={k:sha(ROOT/p) for k,p in binding_paths.items()}
+query=next(c for c in read(base+'event_control_release_01/material_ratio_events.json') if c['material_class']=='exit_and_reentry')
+assert same['exact_query_ratio']==query['homogeneous_arc_ratio']
+actual_events=[e for e in query['events'] if scalar_interval(e['time_fraction'])[0]>0]
+assert len(actual_events)==2
+for cert, independent in zip(actual_events,same['same_query_events']):
+    assert cert['kind']==independent['kind']
+    assert cert['time_fraction']==independent['exact_fraction_enclosure']
+    assert cert['time_myr']==independent['exact_time_myr_enclosure']
+    assert independent['strict_opposite_gap_signs'] and independent['independent_root_inside_certified_enclosure']
+    left,right=map(Decimal,[independent['lower_gap'],independent['upper_gap']])
+    assert (left>0 and right<0) if cert['kind']=='exit' else (left<0 and right>0)
+
+audit_names={
+    'current_gate':base+'release_gates_01/sources_after.json',
+    'current_time':base+'time_support_release_01/sources_after.json',
+    'current_events':base+'event_control_release_01/code_after.json',
+    'previous_force_615':'analysis/geometric_native_underthrust_validation/release_gates_02/sources_after.json',
+    'old_full_417':'analysis/geometric_underthrust_validation/parallel_portable_final/code_and_tests_after.json',
+    'old_supplemental_278':'analysis/geometric_underthrust_validation/parallel_portable_final/supplemental_runtime_after.json',
+    'common_intrinsic_421':'analysis/geometric_intrinsic_validation/release_gates/focused_code_and_tests_after.json',
+    'previous_native_427':'analysis/geometric_native_validation/release_gates/focused_code_and_tests_after.json',
+}
+audits={k:manifest_audit(p) for k,p in audit_names.items()}
+for name,facts in audits.items():
+    expected=['tectonics/geometric_native_polygons.py'] if name=='previous_native_427' else []
+    assert facts['changed_paths']==expected,(name,facts['changed_paths'])
+for directory,first_name,after_name in [
+    ('release_gates_01','sources_before.json','sources_after.json'),
+    ('time_support_release_01','sources_before.json','sources_after.json'),
+    ('event_control_release_01','code_before.json','code_after.json')]:
+    assert (OUT/directory/first_name).read_bytes()==(OUT/directory/after_name).read_bytes()
+current=read(base+'release_gates_01/sources_after.json')
+previous=read(audit_names['previous_force_615'])
+new_sources={name:expected for name,expected in current.items() if name not in previous}
+assert len(new_sources)==9 and set(previous)<=set(current)
+assert all(previous[name]==current[name] for name in previous)
+verified=json.loads(subprocess.check_output([str(ROOT/'.venv/bin/python'),'scripts/cloud_handoff.py','verify'],cwd=ROOT,text=True))
+assert verified==dict(files=9,source_bytes=2110696,verified=True)
+write('restored_source_receipt.json',verified)
+(OUT/'consolidation_source.txt').write_bytes(Path(__file__).read_bytes())
+
+artifacts={}
+for directory in ['release_gates_01','event_control_release_01','time_support_release_01']:
+    for path in sorted((OUT/directory).iterdir()):
+        assert path.is_file()
+        artifacts[str(path.relative_to(ROOT))]=dict(sha256=sha(path),bytes=path.stat().st_size)
+for path in [OUT/'independent_same_query_event_audit_source.txt',OUT/'consolidation_source.txt',
+             OUT/'restored_source_receipt.json',ROOT/probe_path,
+             ROOT/'analysis/geometric_native_underthrust_validation/validation_summary.json']:
+    artifacts[str(path.relative_to(ROOT))]=dict(sha256=sha(path),bytes=path.stat().st_size)
+manifest=dict(format='native-contact-event-release-artifact-manifest-1',artifacts=artifacts,
+              count=len(artifacts),accepted_loaded_native_intervals=0)
+manifest['manifest_sha256']=hashlib.sha256(encoded(manifest)).hexdigest()
+write('artifact_manifest.json',manifest)
+
+same_carrier=oracle['independently_computed_evidence']['complete_actual_arc_carrier'] if 'complete_actual_arc_carrier' in oracle['independently_computed_evidence'] else None
+summary=dict(
+    format='native-continuous-contact-event-release-validation-1',status='PASS',
+    checked_at_utc=datetime.now(timezone.utc).isoformat(),
+    branch=subprocess.check_output(['git','branch','--show-current'],cwd=ROOT,text=True).strip(),
+    head=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
+    gate=dict(path=gate_path,sha256=sha(ROOT/gate_path),cases_passed=175,new_cases_passed=89,
+              seconds=gate['seconds'],pytest_seconds=284.05,source_count=624,changed_paths=[],full_profile_execution=False),
+    event_control=dict(path=event_path,sha256=sha(ROOT/event_path),seconds=event['duration_s'],source_count=441,
+        receiver_arc='complete selected actual octant:2/6 receiver arc',
+        topology=event['topology'],recrossing_ratio_width=event['recrossing_ratio_width'],
+        width_units='dimensionless homogeneous-coordinate ratio, not area or volume',
+        complete_event_certificate=True,complete_2d_material_history_adoption=False,
+        event_diagnostic_byte_pairs=event_pairs),
+    actual_time_constitutive_control=dict(path=time_path,sha256=sha(ROOT/time_path),seconds=time['elapsed_seconds'],
+        source_count=624,full_original_traces=4,full_time_fraction_domain=[0,1],
+        model=time['path_model'],coordinate_model=support['coordinate_model'],physical_law=time['physical_law'],
+        pressure_lower_pa=time['pressure_minimum_lower_bound_pa'],
+        plastic_rate_upper_m_s=time['maximum_plastic_rate_upper_bound_m_s'],
+        viscous_continuous_ode_admission=False,geometry_permission=False,candidate_memory_adopted=False,
+        prepared_checkpoint_bytes=first.stat().st_size,prepared_checkpoint_sha256=sha(first),
+        prepared_checkpoint_byte_exact=True,accepted_loaded_checkpoint_demonstrated=False),
+    cross_control_binding=dict(source_probe_path=probe_path,source_probe_sha256=sha(ROOT/probe_path),
+        all_12_historical_candidate_fields_identical=True,admission_and_unresolved_identical=True,
+        full_original_omega_identical=True,candidate_sha256=time['candidate_sha256'],
+        original_source_preserved=True,unaccepted_candidate_source_work_j=time['unaccepted_candidate_work_j']),
+    independent_interval_audit=dict(path=oracle_path,sha256=sha(ROOT/oracle_path),decimal_digits=500,
+        contained_quantities=5,physical_admission_authorized=False),
+    independent_same_query_audit=dict(path=same_path,sha256=sha(ROOT/same_path),
+        exact_saved_material_ratio=True,strict_brackets=2,events=[dict(kind=e['kind'],
+        time_myr=e['independent_numeric_root_time_myr'],lower_gap=e['lower_gap'],upper_gap=e['upper_gap'])
+        for e in same['same_query_events']],physical_admission_authorized=False),
+    accepted_loaded_native_intervals=0,accepted_source_work_j=0,geometry_admission_authorized=False,
+    original_six_point_plan=[dict(point=k,status='partial' if k==1 else 'pending') for k in range(1,7)],
+    next_within_point_1=[
+        'bind certified swept arc events to true 2d material domains and conserved transient ancestry',
+        'transfer material and archive history through entry exit reentry without resetting memory or work',
+        'positive loaded native interval and joint restart',
+        'physical law for new material pairs on already declared weak planes'],
+    restored_sources=verified,baseline_source_audits=audits,new_source_manifest=new_sources,
+    historical_previous_force_gate=dict(cases_passed=317,current_execution=False,source_files_unchanged=615),
+    historical_full_profile=dict(cases_passed=1284,current_execution=False),
+    artifact_manifest=dict(path=base+'artifact_manifest.json',sha256=sha(OUT/'artifact_manifest.json'),count=len(artifacts)),
+)
+assert summary['branch']=='fix/genesis-mantle-convection'
+summary['summary_sha256']=hashlib.sha256(encoded(summary)).hexdigest()
+write('validation_summary.json',summary)
+print(json.dumps(dict(status='PASS',artifacts=len(artifacts),current_sources=624,
+    unchanged_previous_sources=615,new_sources=9,passed=175,accepted_loaded_native_intervals=0,
+    summary_sha256=summary['summary_sha256'])))

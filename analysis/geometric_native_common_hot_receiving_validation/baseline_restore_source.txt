@@ -1,0 +1,37 @@
+"""Restore54 authorized baseline paths from closed909 copies; no physical maths."""
+from pathlib import Path
+import argparse,hashlib,json,subprocess,sys
+ROOT=Path('/workspace/Habitable-Moon-Project');P=ROOT/'analysis/geometric_native_common_hot_receiving_validation'
+F=ROOT/'analysis/geometric_native_common_hot_receiving_final_readback';STAGE=Path('/workspace/hot_receiving_baseline_20261007')
+def enc(x):return json.dumps(x,sort_keys=True,separators=(',',':'),ensure_ascii=False).encode()
+def digest(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def sealed(p,k):
+ x=json.loads(Path(p).read_bytes());assert hashlib.sha256(enc({a:b for a,b in x.items() if a!=k})).hexdigest()==x[k];return x
+def run(output):
+ archive=sealed(F/'archive.json','archive_sha256');assert archive['status']=='PASS_FINAL909_READBACK_ARCHIVE_CLOSED'
+ manifest=sealed(P/'artifact_manifest.json','manifest_sha256');readback=sealed(F/'readback.json','audit_sha256')
+ assert digest(P/'artifact_manifest.json')==readback['manifest_raw_sha256'] and archive['readback_sha256']==readback['audit_sha256']
+ for name,row in archive['files'].items():assert digest(F/name)==row['sha256']
+ for name,row in manifest['files'].items():assert digest(ROOT/name)==row['sha256']
+ old=ROOT/'analysis/geometric_native_common_mixed_force_validation/baseline_restore_source.txt'
+ assert digest(old)=='df2cc66f3099cb88c46f4085271b4dc191ab41a6cbba8040aae4f100f1f2aba5'
+ # The authorized old restorer is stdlib byte restoration, not an old math,
+ # evidence-reader, solver or preservation main.
+ process=subprocess.run([sys.executable,str(old),'--restore'],capture_output=True,check=True)
+ assert process.stderr==b'';inherited=json.loads(process.stdout);assert inherited['complete_required_target_count']==50
+ restored=[]
+ for name in ('fresh907_readback.json','fresh907_actual_console.log','fresh907_actual_stderr.log','fresh907_executed_source.txt'):
+  source=P/name;target=STAGE/name;pin=manifest['files'][str(source.relative_to(ROOT))]['sha256'];assert digest(source)==pin
+  if target.exists():assert digest(target)==pin
+  else:
+   target.parent.mkdir(parents=True,exist_ok=True)
+   with target.open('xb') as f:f.write(source.read_bytes())
+   restored.append(str(target))
+ result=dict(status='PASS_AUTHENTICATED909_BASELINES_RESTORED',required_target_count=54,
+  inherited907_stdlib_byte_restorer_executed=True,restored_new_baseline_paths=restored,
+  repository_files_written=False,old_math_or_tests_or_reader_or_solver_or_preservation_main_executed=False)
+ result['restoration_sha256']=hashlib.sha256(enc(result)).hexdigest()
+ with Path(output).open('xb') as f:f.write(enc(result)+b'\n')
+ print(enc(result).decode())
+if __name__=='__main__':
+ parser=argparse.ArgumentParser();parser.add_argument('--output',required=True);run(parser.parse_args().output)

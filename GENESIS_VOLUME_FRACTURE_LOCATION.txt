@@ -1,0 +1,99 @@
+ПОЛНОЕ ЛОКАЛЬНОЕ ПОЛЕ И МАТЕРИАЛЬНЫЕ СЕЧЕНИЯ GENESIS
+10.10.2026; fix/genesis-mantle-convection; автоматическая цель выключена.
+
+РЕЗУЛЬТАТ
+Рассчитанные напряжения Genesis теперь доступны в произвольных материальных
+точках живых когорт. Явно заданная мировая плоскость пересекает материал внутри
+граней с учётом всех шести амплитуд A/P и сохраняет исходные cohort/owner/material
+IDs и координаты массы q. До физического выбора и освобождения разлома ещё
+нужен закон рождения поверхности. Вычислительные сечения этот закон не заменяют.
+
+НАСТОЯЩИЙ ИСТОЧНИК
+Тот же принятый Genesis: 0.8684000000000005 Myr / 800 когорт / 4 интервала.
+Parent raw SHA 62579a0bad128830a66e2f44579cf2b1f5d3835b691225b8d431102f3e4486d7
+Parent self SHA 5d282ceeccc8d76acc38427d08a7e65575fddb509fc4b93115cbe6d318e91349
+Formation SHA cd79ee2a5139c4b91abdb1b4714a761c9153cc9f4490f5aa63fa2facba458c89
+Окончательный control восстанавливает полный источник один раз. Новых принятых
+интервалов, births, release или списания энергии рождения: 0.
+Parent before/after полностью byte-identical; история формирования из расплава
+не переинициализирована. Раннюю неизвестную полную 3D историю не достраивали.
+Actual active planes=0; max damage=0.039591572199468364 при пороге .65.
+В source никогда не рассчитывались уникальные nucleation offset, физический dip,
+длина зародыша и source Gc. Это отсутствие закона, не ошибка сохранения/переноса.
+
+ЧТО ДОБАВЛЕНО И ПОЧЕМУ ЭТО НЕ ПОВТОР
+1. Source-bound observer реконструирует полную шестикомпонентную память:
+   w(N)=N inverse(ANGULAR_BARYCENTRIC), e(N,lambda)=w e0+w e1/lambda.
+   sigma_local=C(damage) e; sigma_world=Q sigma_local Q^T в унаследованном
+   фиксированном ортонормальном frame. Это существующее small-strain поле,
+   не новая finite-deformation pushforward и не interval-average birth traction.
+   Абсолютные displacement не добавляются к уже рассчитанной e0/e1 ещё раз.
+2. Полное текущее положение:
+   x(N,lambda)=N [lambda (X+P)+(A-P)].
+   В каждой точке удерживаются настоящие cohort ID, face, owner/material и q.
+   q не приравнивается геометрической глубине, а переводится через исходный
+   mass-exact conical chart; буквальные endpoints сохраняются.
+3. Для рассчитанной source orientation доступно всё семейство offsets.
+   Минимум и максимум n*x точно находятся по 6 угловым/радиальным вершинам
+   каждой когорты. Центр или ближайшее mesh edge автоматически не выбираются.
+   На actual source событие отсутствует и семейство пусто.
+4. Explicit world-plane geometry работает внутри грани:
+   phi(N,lambda)=N [lambda n*(X+P)+n*(A-P)]-d.
+   Аналитические lambda roots разделяют смену пересекаемых рёбер; line cuts
+   сохраняют N/q и полное current x. Constant-lambda полный треугольник,
+   boundary touch, coincident edges, plane miss учитываются отдельно.
+   Неразрешимые арифметикой сечения получают typed refusal.
+   Area/volume quadrature, material split, новые DOF и release здесь не заявлены.
+Прежние edge-only banks, reaction replacement и prestress/Gc kernel сохранены
+без переделки. Они не умели задавать внутрилицевое сечение; их нельзя напрямую
+выдавать за physical cut новой произвольной поверхности.
+
+ПРОВЕРКИ ОКОНЧАТЕЛЬНОЙ ВЕРСИИ
+153 новых тестов PASS; real capture 196.477610 s.
+Actual control PASS; 321.241521 s.
+Producer-free independent audit PASS; 12.837770 s.
+3 intended-physics resealed negative controls PASS; 23.232084 s.
+Все 4 официальных запуска exit=0/stderr=0 и source_before=source_after.
+Control: 81 исходная точка, 9 когорт на трёх гранях, 3 вычислительные плоскости,
+30 поддержанных когорт, по две контрольные точки каждого lambda piece.
+Максимальная потеря положения при ошибочном radial top copy:
+0.00266268044463 m.
+Независимое поле: 800 когорт / 4800 угловых/радиальных точек;
+maximum angular variation 292541.430071 Pa;
+maximum radial variation 31.1662699253 Pa.
+Подмены full A/P -> radial top copy, pointwise memory -> face mean и explicit
+probe -> actual Gamma отвергнуты по соответствующей физической/source величине
+после пересчёта nested/top seals, не только по зависимой metadata.
+Имеющиеся source observer fields, IDs, damage и все accepted memories сверены
+с полным родителем. Оpaque producer geometry hash связан между случаями, но
+не объявляется независимо реконструированным; геометрия проверена численно.
+Прежние 10 accepted packages / 13635 members / 1237600610 bytes, 341 source
+pins и 6 native pins сохранены. Прежние отдельные 810 тестов не повторялись.
+Control SHA ec80d6144c3edc2f9ff6dc75b872b492d5af6311ef4e8032d8f4da7ca777e3b6
+Independent SHA cb958639fa7df9f1d913219ef9a8a1ca1049d6e91f53e7e45d50ae6517924d26
+Negative SHA 1810e39393df6abb0be3dbbbb725e0a740156167137b8875fa74b7ff5700c2c9
+
+СОХРАНЁННАЯ ПЕРВАЯ ПРОВЕРКА И КОРРЕКЦИЯ
+Первый общий запуск: 151 PASS / 1 FAIL, горизонтальная внутренняя граница.
+offset=10*b -> offset/10=b+1 ULP создавал ложный machine-thin interval.
+Корень согласуется с буквальным b/a только при <=4 ULP и нулевом existing
+signed endpoint predicate той же вершины. Физический допуск не добавлен.
+Первый тестовый capture и первый successful actual control сохранены отдельно;
+после узкой producer-коррекции общий suite и полный actual control повторены
+на окончательной source version. Результаты первой версии не выданы за новые.
+
+ОСТАТОК ПУНКТА 1 — ТЕ ЖЕ ТРИ УСЛОВИЯ
+1. Физическое рождение Gamma: перспективный source закон nucleation/location,
+   through-depth dip/propagation, toughness/funding, затем physical insertion/
+   release с сохранением prestress и through-depth force/work.
+   Полное локальное поле и внутрилицевые сечения теперь готовы внутри этого
+   условия. Для insertion нужен embedded/subdomain trace или constrained
+   subdivision; дополнительные mesh DOFs нельзя освобождать одной subdivision.
+2. All-pair full-time contact/underthrust admission, включая reverse C5->C1.
+3. Настоящее active fault/contact/underthrust continuation с independent
+   work/balances/restart. Вычислительный пример не является active Genesis.
+Пункт 1 остаётся открыт; до его закрытия существенная работа. Пункты 2–6 открыты.
+Следующая часть первого условия — явный перспективный закон рождения
+поверхности на текущем настоящем материале и insertion operator; принятую
+историю Genesis не переинициализировать и неизвестную toughness не выдавать
+за восстановленную из прежних сохранений.

@@ -1,2 +1,8 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Frozen evidence and its source snapshots are authenticated as exact bytes.
+# In particular, captured CSV files must retain their original CRLF endings.
+analysis/** -text
+GENESIS_*.txt -text
+artifact_checkpoints/** -text

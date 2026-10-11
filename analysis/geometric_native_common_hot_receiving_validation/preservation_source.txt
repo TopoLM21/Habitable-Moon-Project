@@ -1,0 +1,52 @@
+"""Stdlib preservation of complete907 and its immutable ancestry, no old mains."""
+from pathlib import Path
+import hashlib,json,sys,time,types
+ROOT=Path('/workspace/Habitable-Moon-Project')
+STAGE=Path('/workspace/hot_receiving_baseline_20261007')
+P=ROOT/'analysis/geometric_native_common_mixed_force_validation'
+F=ROOT/'analysis/geometric_native_common_mixed_force_final_readback'
+ADDED={'tectonics/geometric_native_common_hot_receiving.py','tests/test_geometric_native_common_hot_receiving.py'}
+
+def encoded(x):return json.dumps(x,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+def digest(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def seal(p,key):
+ x=json.loads(Path(p).read_bytes());assert hashlib.sha256(encoded({k:v for k,v in x.items() if k!=key})).hexdigest()==x[key];return x
+def meaningful(p):return {str(x.relative_to(p)) for x in p.rglob('*') if x.is_file() and '__pycache__' not in x.parts and x.suffix!='.pyc'}
+def modules():return {k:v for k,v in sys.modules.items() if k in ('tectonics','analysis','tests','scripts') or k.startswith(('tectonics.','analysis.','tests.','scripts.'))}
+def inputs():
+ helper=P/'baseline_903_preservation_source.txt'
+ assert digest(helper)=='c1c0a17fa3afaa8bcd9aed1195d2beb1fbd6321c219ed90c16923ec2ad384e24'
+ m=types.ModuleType('_private_new_receiving_ancestry');m.__file__=str(helper)
+ exec(compile(helper.read_bytes(),str(helper),'exec'),m.__dict__)
+ old,b=m.primitives();prior,baseline,pins=m.preserved_inputs(old,b)
+ for path,pin in ((P/'artifact_manifest.json','3353ab60474679367f5844b82a5d54b2e0a7266cd30a2a95ce1b96f2d54c19c5'),(F/'archive.json','12d616d28fdcaa4361981a2028ee1fe7019ab88cc2fe88a6f49c02fc0cfd827a'),(STAGE/'fresh907_readback.json','7550fb894fdc4db5e29f636247d2466ecd0c4634328aeb684311b9f0179a4f31'),(STAGE/'fresh907_actual_console.log','7550fb894fdc4db5e29f636247d2466ecd0c4634328aeb684311b9f0179a4f31'),(STAGE/'fresh907_actual_stderr.log',hashlib.sha256(b'').hexdigest()),(STAGE/'fresh907_executed_source.txt','bdc53ad9331813022a71722331533c9472c62434eea4d1e728a1a7a4923e18da')):
+  assert digest(path)==pin;pins[str(path)]=pin
+ manifest=seal(P/'artifact_manifest.json','manifest_sha256');assert len(manifest['files'])==135 and manifest['source_count']==907
+ expected=set()
+ for name,row in manifest['files'].items():
+  path=ROOT/name;assert path.resolve()==path and path.stat().st_size==row['bytes'] and digest(path)==row['sha256'];pins[str(path)]=row['sha256']
+  if path.is_relative_to(P):expected.add(str(path.relative_to(P)))
+ assert meaningful(P)==expected|{'artifact_manifest.json'}
+ archive=seal(F/'archive.json','archive_sha256');assert meaningful(F)=={'archive.json','readback_source.txt','readback.json','console.log'}
+ for name,row in archive['files'].items():
+  path=F/name;assert path.stat().st_size==row['bytes'] and digest(path)==row['sha256'];pins[str(path)]=row['sha256']
+ readback=seal(F/'readback.json','audit_sha256');assert archive['readback_selfseal']==readback['audit_sha256'] and (F/'readback.json').read_bytes()==(F/'console.log').read_bytes()
+ fresh=seal(STAGE/'fresh907_readback.json','audit_sha256');assert fresh['status']=='PASS_FINAL907_EVIDENCE_READBACK_ONLY' and fresh['source_count']==907
+ frozen=json.loads((P/'release_validation_01_frozen_source_map_907.json').read_bytes());assert len(frozen)==907
+ assert all(frozen[k]==v for k,v in prior.items())
+ for name,pin in frozen.items():assert digest(ROOT/name)==pin;pins[str(ROOT/name)]=pin
+ return frozen,pins
+def run(additions,output):
+ t=time.perf_counter();beforemodules=modules();assert type(additions) is dict and (not additions or set(additions)==ADDED)
+ frozen,pins=inputs();expected=frozen|additions
+ actual={str(p.relative_to(ROOT)):digest(p) for d in ('tectonics','tests','scripts','analysis') for p in (ROOT/d).rglob('*.py')}
+ assert actual==expected
+ for name,pin in additions.items():assert name not in frozen and digest(ROOT/name)==pin;pins[str(ROOT/name)]=pin
+ producer=Path(__file__).resolve();pins[str(producer)]=digest(producer)
+ afterfrozen,afterpins=inputs();assert afterfrozen==frozen
+ for name,pin in pins.items():assert digest(name)==pin
+ assert modules().keys()==beforemodules.keys() and all(modules()[k] is v for k,v in beforemodules.items())
+ result=dict(status='PASS_IMMUTABLE907_AND_ANCESTRY',source_count=len(expected),prior_source_count=907,source_sha256=expected,dependency_raw_sha256=pins,prior907_manifest_file_count=135,prior907_final_archive_file_count=4,project_modules_changed=False,old_main_or_math_or_tests_executed=False,executing_source_raw_sha256=digest(producer),seconds=time.perf_counter()-t)
+ result['preservation_sha256']=hashlib.sha256(encoded(result)).hexdigest()
+ with Path(output).open('xb') as stream:stream.write(encoded(result)+b'\n')
+ return result

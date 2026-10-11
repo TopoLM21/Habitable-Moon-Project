@@ -1,0 +1,62 @@
+"""New physical preparation map evaluated on the frozen genuine913 material trace."""
+from pathlib import Path
+from fractions import Fraction as F
+from dataclasses import fields
+import hashlib,json,sys,time,argparse
+ROOT=Path(__file__).resolve().parents[2];sys.path.insert(0,str(ROOT))
+from tectonics import geometric_native_common_cold_depth_preparation as api
+SOURCE=ROOT/'analysis/geometric_native_common_receiving_face_validation/native_control.json'
+PIN='a1d0a1f7a4e765c015980fdc4536842a44a085fbc0b6d9c96ec2105d202d8dc9'
+def enc(x):return json.dumps(x,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+def digest(p):
+ h=hashlib.sha256()
+ with p.open('rb') as f:
+  for b in iter(lambda:f.read(1024*1024),b''):h.update(b)
+ return h.hexdigest()
+def parse(x):
+ if type(x) is dict and set(x)=={'lo','hi'}:return api.I(F(*x['lo']),F(*x['hi']))
+ if type(x) is list:
+  if len(x)==2 and all(type(v) is int for v in x):return F(*x)
+  return tuple(parse(v) for v in x)
+ return x
+def payload(x):
+ if type(x) is F:return [x.numerator,x.denominator]
+ if type(x) is api.I:return {'lo':payload(x.lo),'hi':payload(x.hi)}
+ if hasattr(type(x),'__dataclass_fields__'):return {f.name:payload(getattr(x,f.name)) for f in fields(x)}
+ if isinstance(x,(tuple,list)):return [payload(v) for v in x]
+ if isinstance(x,dict):return {k:payload(v) for k,v in x.items()}
+ return x
+def first_point():
+ decoder=json.JSONDecoder();token='"point_queries":['
+ with SOURCE.open() as stream:
+  text=''
+  while token not in text:
+   block=stream.read(1024*1024);assert block;text=text[-len(token):]+block
+  text=text[text.index(token)+len(token):]
+  while True:
+   try:return decoder.raw_decode(text)[0]
+   except json.JSONDecodeError:
+    block=stream.read(8*1024*1024);assert block;text+=block
+
+def main(output):
+ t=time.perf_counter();assert digest(SOURCE)==PIN
+ row=first_point();point=row['response'];assert row['label']=='start' and point['hot_query_label']=='genuine_zero_hot_source'
+ assert all(F(*v)==0 for v in point['cold_coordinates_m'])
+ cold=json.loads(point['cold_field_json']);bank=json.loads(cold['source_bank_json']);hot=json.loads(point['hot_body_json'])
+ R=parse(hot['radius_m']);s=parse(cold['fixed_radial_scale']);omega=parse(hot['angular_rate_per_physical_volume_depth_m'])
+ assert R==parse(bank['radius_m']) and omega==parse(bank['angular_rate_per_physical_volume_depth_m'])
+ declaration=api.DeclaredColdDepthPreparation(R,s,omega,'New physically moving whole-owner COMMON depth flow using authentic915/913 parameters; no stressfree-reference substitution or work adoption')
+ x=parse(cold['position_bounds_m']);A=parse(cold['original_cartesian_gradient_bounds'])
+ modes=parse(cold['mode_displacement_columns']);gradients=parse(cold['mode_original_gradient_columns_per_m'])
+ hotx=parse(point['hot_spatial_values'][:3]);normal=parse(point['current_receiver_unit_normal_bounds'])
+ rows=[]
+ for lam in (F(0),F(1,2),F(1)):
+  field=api.evaluate_declared_cold_depth_preparation(declaration,x,preparation_fraction=lam,original_gradient_bounds=A,mode_displacement_columns=modes,mode_original_gradient_columns_per_m=gradients,precision=128,order=40)
+  gap=sum(((h-c)*n for h,c,n in zip(hotx,field.position_bounds_m,normal)),api.I(0))
+  rows.append(dict(preparation_fraction=payload(lam),field=payload(field),gap_bounds_m=payload(gap)))
+ result=dict(status='PASS_NEW_COLD_DEPTH_PREPARATION_SOURCE_TRACE_CONTROL',source_raw_sha256=PIN,source_point_binding_sha256=point['binding_sha256'],source_locator=dict(array='point_queries',index=0,label='start',hot_query_label='genuine_zero_hot_source'),input=payload(dict(declaration=declaration,position_bounds_m=x,original_gradient_bounds=A,mode_displacement_columns=modes,mode_original_gradient_columns_per_m=gradients,hot_position_bounds_m=hotx,current_receiver_unit_normal_bounds=normal,old_gap_bounds_m=parse(point['gap_bounds_m']))),queries=rows,query_count=3,old_material_or_root_midpoint_used=False,declared_physical_path_only=True,whole_source_preparation_work_paid=False,all_pair_material_admission_certified=False,new_mixed_equilibrium_certified=False,clocks_advanced=False,accepted_new_intervals=0,seconds=time.perf_counter()-t)
+ result['sha256']=hashlib.sha256(enc(result)).hexdigest()
+ with Path(output).open('xb') as f:f.write(enc(result)+b'\n')
+ print(enc({k:v for k,v in result.items() if k not in ('input','queries')}).decode())
+if __name__=='__main__':
+ p=argparse.ArgumentParser();p.add_argument('--output',required=True);main(p.parse_args().output)

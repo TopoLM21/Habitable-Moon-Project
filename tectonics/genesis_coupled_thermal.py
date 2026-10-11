@@ -51,6 +51,10 @@ class ThermalLoading:
     surface_temperature_k: float
     ocean_fraction: float
     tidal_parameters: TidalParameters
+    # Present only for a producer with a calculated material birth path.
+    # Mechanical fixtures retain the explicitly declared depth-average law.
+    cohort_loading: object | None = None
+    bulk_birth_history: object | None = None
 
 
 def _array(value, shape, name, *, positive=False, fraction=False):
@@ -67,7 +71,8 @@ def _array(value, shape, name, *, positive=False, fraction=False):
 def advance_thermal_loading(source_model, *, mesh, radius_km, layer_mass_kg,
                             column_enthalpy, elastic_strain, damage, water_access,
                             boundary_energy_j, thermal_state, orbit, target_myr,
-                            max_step_myr=.01):
+                            max_step_myr=.01, bulk_birth_history=None,
+                            cohort_mechanics=None):
     """Advance an already load-bearing shell, without mutating any input.
 
     ``mesh`` may have disconnected banks and incomplete spherical coverage.
@@ -129,6 +134,30 @@ def advance_thermal_loading(source_model, *, mesh, radius_km, layer_mass_kg,
     thermal_strain = retained*b*p.linear_expansion_per_k*delta_temperature
     memory = (retained*r)[:, None]*elastic
     memory[:, :2] -= thermal_strain[:, None]
+    cohort_loading = next_birth = None
+    if bulk_birth_history is not None:
+        if cohort_mechanics is None:
+            raise ValueError("Calculated bulk birth source has no cohort constitutive memory; replay molten Genesis")
+        from .genesis_bulk_birth import advance_bulk_birth
+        from .genesis_cohort_mechanics import prepare_cohort_loading
+        next_birth = advance_bulk_birth(bulk_birth_history,
+            before_front_fraction=old_fraction, after_front_fraction=fraction,
+            before_time_myr=thermal_state.time_myr, after_time_myr=next_global.time_myr,
+            mesh=mesh, radius_km=radius_km, solidus_k=source_model.thermal.solidus_k)
+        cohort_loading = prepare_cohort_loading(cohort_mechanics,
+            bulk_birth_history, next_birth,
+            before_column_temperature=old_temperature, after_column_temperature=temperature,
+            before_surface_temperature_k=ts0, after_surface_temperature_k=ts1,
+            before_mantle_temperature_k=tm0, after_mantle_temperature_k=tm1,
+            before_established=True, after_established=True, parameters=p,
+            activation_mesh=mesh, activation_radius_km=radius_km,
+            before_damage=damage)
+        # Parallel layers share one geometric strain. Equal face elasticity
+        # makes these volume means the exact assembled stress and tangent.
+        memory = cohort_loading.mean_memory
+        effective_b = cohort_loading.effective_b
+    elif cohort_mechanics is not None:
+        raise ValueError("Cohort constitutive memory cannot exist without its material birth source")
     damage0 = damage*retained
     liquid = float(rows[-1]["ocean_fraction"])
     next_water = update_water_access(water, damage0, retained, active, ts1, liquid,
@@ -140,7 +169,7 @@ def advance_thermal_loading(source_model, *, mesh, radius_km, layer_mass_kg,
         heating*dt*SECONDS_PER_MYR*source_model.thermal.area_m2,
         fraction, column_depth, depth, mean, temperature, retained, eta, r, b,
         effective_b, thermal_strain, memory, damage0, next_water, active, ts1,
-        liquid, tides)
+        liquid, tides, cohort_loading, next_birth)
 
 
 def evolve_coupled_damage(source_model, loading, mesh, radius_km, stress_pa):

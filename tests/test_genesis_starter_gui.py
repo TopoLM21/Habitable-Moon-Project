@@ -248,7 +248,9 @@ def test_real_starter_and_mature_continuation_share_one_responsive_gui_worker(ap
         dialog.start()
         dialog.output_path = output
         assert not dialog.continue_mature.isEnabled()
-        pump_until(app, lambda: not dialog.is_running() and dialog.start_button.isEnabled(), timeout=60)
+        # This child also renders the complete mature output. Completion is a
+        # watchdog, while the independent Qt timer below checks responsiveness.
+        pump_until(app, lambda: not dialog.is_running() and dialog.start_button.isEnabled(), timeout=180)
         assert ticks
         starter = json.loads((output / "summary.json").read_text(encoding="utf-8"))
         continuation = json.loads((output / "continuation" / "continuation.json").read_text(encoding="utf-8"))

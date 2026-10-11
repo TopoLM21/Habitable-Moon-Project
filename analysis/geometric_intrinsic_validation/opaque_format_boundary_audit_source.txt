@@ -1,0 +1,61 @@
+import sys,json,tempfile
+from pathlib import Path
+from dataclasses import is_dataclass,asdict,replace
+sys.path.insert(0,'/workspace/Habitable-Moon-Project')
+from tectonics.geometric_intrinsic_surface import (
+    load_intrinsic_checkpoint,save_intrinsic_checkpoint,intrinsic_surface_to_dict,
+    intrinsic_surface_from_dict,advance_intrinsic_surface,IntrinsicSurfaceState)
+from tectonics.geometric_surface import save_geometric_checkpoint
+ROOT=Path('/workspace/Habitable-Moon-Project')
+source=ROOT/'analysis/geometric_intrinsic_validation/verified_common_motion_control/direct_final.json'
+state,provenance=load_intrinsic_checkpoint(source)
+assert type(state) is IntrinsicSurfaceState and not is_dataclass(state)
+raw=intrinsic_surface_to_dict(state)
+assert state==intrinsic_surface_from_dict(raw)
+assert state != object()
+checks=[]
+with tempfile.TemporaryDirectory(prefix='intrinsic-opaque-audit-',dir='/tmp') as folder:
+    work=Path(folder)
+    for name in ('reference_surface','rotations','version','_fragments','_time_myr'):
+        try:setattr(state,name,getattr(state,name))
+        except AttributeError: checks.append('immutable_'+name)
+        else:raise AssertionError('mutable '+name)
+        try:delattr(state,name)
+        except AttributeError:checks.append('cannot_delete_'+name)
+        else:raise AssertionError('deletable '+name)
+    legacy_path=work/'never_created'/'legacy.json'
+    try:save_geometric_checkpoint(legacy_path,state)
+    except TypeError: pass
+    else:raise AssertionError('Legacy dataclass writer accepted native state')
+    assert not legacy_path.exists() and not legacy_path.parent.exists()
+    checks.append('legacy_writer_rejected_before_path_creation')
+    existing=work/'existing.json';existing.write_bytes(b'unchanged')
+    try:save_geometric_checkpoint(existing,state)
+    except TypeError: pass
+    else:raise AssertionError('Legacy writer accepted native state')
+    assert existing.read_bytes()==b'unchanged'
+    checks.append('legacy_writer_existing_destination_unchanged')
+    for corruption in ('derived_time','derived_fragments','version'):
+        forged=intrinsic_surface_from_dict(raw)
+        if corruption=='derived_time':object.__setattr__(forged,'_time_myr',forged.time_myr+1)
+        elif corruption=='derived_fragments':object.__setattr__(forged,'_fragments',forged.fragments[::-1])
+        else:object.__setattr__(forged,'version','unsupported-intrinsic-format')
+        assert forged!=state
+        destination=work/('invalid_'+corruption)/'native.json'
+        try:save_intrinsic_checkpoint(destination,forged)
+        except ValueError: pass
+        else:raise AssertionError('native save accepted forged '+corruption)
+        assert not destination.exists() and not destination.parent.exists()
+        checks.append('save_rejects_forged_'+corruption+'_before_path_creation')
+        mapping={f.parcel.plate:(.1,.2,.3) for f in state.fragments}
+        try:advance_intrinsic_surface(forged,mapping,.1)
+        except ValueError:checks.append('advance_rejects_forged_'+corruption)
+        else:raise AssertionError('advance accepted forged '+corruption)
+    moved=advance_intrinsic_surface(state,{f.parcel.plate:(.1,.2,.3) for f in state.fragments},.1)
+    assert len(moved.rotations)==len(state.rotations)+1
+    assert moved!=state and intrinsic_surface_to_dict(state)==raw
+    output=work/'native.json'; save_intrinsic_checkpoint(output,moved,provenance=provenance)
+    restored,rprovenance=load_intrinsic_checkpoint(output)
+    assert restored==moved and rprovenance==provenance
+    checks.append('advance_and_native_restart_exact')
+print(json.dumps({'status':'passed_opaque_native_format_boundary_audit','checks':checks,'count':len(checks)},indent=2))

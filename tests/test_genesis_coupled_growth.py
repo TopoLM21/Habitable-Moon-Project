@@ -17,7 +17,7 @@ from test_genesis_contact import _source_bytes
 
 @pytest.fixture(scope="module")
 def partial_source(tmp_path_factory):
-    """Conserved linear geotherm with a genuine half-solid material column."""
+    """Prescribed half-solid geotherm with conserved heat and unavailable birth history."""
     path = tmp_path_factory.mktemp("coupled_growth_source")
     _, source, (state, thermal, orbit), _ = _source_bytes(path)
     ts, tm = source.thermal.solidus_k-400., source.thermal.solidus_k+400.
@@ -27,7 +27,8 @@ def partial_source(tmp_path_factory):
     thermal = replace(thermal, energy=energy)
     z = (np.arange(source.p.column_layers)+.5)/source.p.column_layers
     h = np.broadcast_to(rock_enthalpy(ts+(tm-ts)*z, source.thermal), state.column_enthalpy.shape).copy()
-    state = replace(state, column_enthalpy=h,
+    # The geotherm is a mechanical control, not a calculated material birth path.
+    state = replace(state, column_enthalpy=h, bulk_birth_history=None, cohort_mechanics=None,
                     boundary_energy_j=float(np.sum(state.layer_mass_kg*h))-state.initial_column_energy_j)
     target = path/"partial_fault.npz"
     save_fault_checkpoint(target, source, state, thermal, orbit, {}, {"test": "partial growth source"})
@@ -258,7 +259,7 @@ def test_real_thermal_mechanical_step_activates_growth_and_preserves_budgets(par
     layer = np.flatnonzero(temperature[0] > model.source_model.thermal.solidus_k)[1]
     temperature[:, layer] -= 20.
     h = rock_enthalpy(temperature, model.source_model.thermal)
-    state = replace(state, column_enthalpy=h,
+    state = replace(state, column_enthalpy=h, bulk_birth_history=None, cohort_mechanics=None,
                     boundary_energy_j=float(np.sum(model.layer_mass_kg*h))-state.initial_column_energy_j)
     initial = deepcopy(state)
     following, thermal, orbit, rows = model.step(state, model.source.thermal_state,

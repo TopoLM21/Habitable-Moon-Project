@@ -28,7 +28,16 @@ def save_coupled_checkpoint(path, model, state, thermal, orbit):
     arrays = {f.name: getattr(state, f.name) for f in fields(state)
               if isinstance(getattr(state, f.name), np.ndarray)}
     scalars = {f.name: getattr(state, f.name) for f in fields(state)
-               if f.name not in arrays and f.name not in {"contact", "cohorts"}}
+               if f.name not in arrays and f.name not in {"contact", "cohorts", "bulk_birth_history", "cohort_mechanics"}}
+    from .genesis_bulk_birth import bulk_birth_to_dict
+    _, _, fraction, _, _, _ = model._phase_fields(state, thermal)
+    model._validate_bulk_birth(state, fraction)
+    model._validate_cohort_mechanics(state, thermal)
+    scalars["bulk_birth_history"] = (None if state.bulk_birth_history is None
+        else bulk_birth_to_dict(state.bulk_birth_history))
+    from .genesis_cohort_mechanics import cohort_mechanics_to_dict
+    scalars["cohort_mechanics"] = (None if state.cohort_mechanics is None
+        else cohort_mechanics_to_dict(state.cohort_mechanics))
     contact_arrays = {f.name: getattr(state.contact, f.name) for f in fields(state.contact)
                       if isinstance(getattr(state.contact, f.name), np.ndarray)}
     contact_scalars = {f.name: getattr(state.contact, f.name) for f in fields(state.contact)
@@ -60,6 +69,10 @@ def load_coupled_checkpoint(path):
             if meta["format"] == "genesis-coupled-0.1":
                 raise ValueError("Coupled 0.1 checkpoints have no independent contact growth histories; "
                                  "restart from the original fault checkpoint instead of inventing material history")
+            if meta["format"] == "genesis-coupled-0.2":
+                raise ValueError("Coupled 0.2 has no bulk birth history; replay Genesis from molten formation")
+            if meta["format"] == "genesis-coupled-0.3":
+                raise ValueError("Coupled 0.3 has no cohort constitutive memory; replay Genesis from molten formation")
             parameters, source = meta["parameters"], data["source_checkpoint"]
             if (meta["format"] != COUPLED_VERSION or source.dtype != np.uint8 or source.ndim != 1
                     or hashlib.sha256(source.tobytes()).hexdigest() != meta["source_hash"]
@@ -80,7 +93,13 @@ def load_coupled_checkpoint(path):
                 raise ValueError("Coupled checkpoint is missing required state history")
             contact = ContactState(**meta["contact_state"], **contact_arrays)
             cohorts = CohortState(**cohort_arrays)
-            state = CoupledState(**meta["state"], contact=contact, cohorts=cohorts, **state_arrays)
+            from .genesis_mobile import _decoded_bulk_birth
+            scalars = dict(meta["state"])
+            scalars["bulk_birth_history"] = _decoded_bulk_birth(scalars)
+            from .genesis_cohort_mechanics import cohort_mechanics_from_dict
+            scalars["cohort_mechanics"] = (None if scalars["cohort_mechanics"] is None
+                else cohort_mechanics_from_dict(scalars["cohort_mechanics"]))
+            state = CoupledState(**scalars, contact=contact, cohorts=cohorts, **state_arrays)
         thermal, orbit = GenesisState(**meta["thermal_state"]), TidalOrbitState(**meta["orbit"])
         _validate_coupled(model, state, thermal, orbit)
         if meta["source_time_myr"] != model.source_time_myr:
@@ -109,7 +128,7 @@ def _validate_coupled(model, state, thermal, orbit):
             if (not isinstance(value, np.ndarray) or value.dtype.kind not in "bifu"
                     or value.shape != shapes.get(f.name, (n,)) or not np.isfinite(value).all()):
                 raise ValueError(f"Invalid coupled field {f.name}")
-        elif f.name not in {"contact", "cohorts", "stopped_reason"}:
+        elif f.name not in {"contact", "cohorts", "stopped_reason", "bulk_birth_history", "cohort_mechanics"}:
             if isinstance(value, bool) or not isinstance(value, Real) or not np.isfinite(value):
                 raise ValueError(f"Invalid coupled scalar {f.name}")
     if (state.time_myr != thermal.time_myr or state.time_myr != orbit.time_myr or state.time_myr < model.source_time_myr
@@ -158,6 +177,8 @@ def _validate_coupled(model, state, thermal, orbit):
             or abs(report["orbit_heat_transfer_relative_residual"]) > 1e-8):
         raise ValueError("Coupled heat ledgers are inconsistent")
     _, _, fraction, _, _, depth = model._phase_fields(state, thermal)
+    model._validate_bulk_birth(state, fraction)
+    model._validate_cohort_mechanics(state, thermal)
     if np.any(fraction*depth < .25*model.source_model.p.min_load_bearing_thickness_km):
         raise ValueError("Coupled checkpoint has lost load-bearing support")
     front = model._reference_front(geometry, fraction)

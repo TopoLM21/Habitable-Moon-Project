@@ -1,0 +1,75 @@
+"""Retain genuinely completed fresh939 baseline and BEFORE before new943 writes.
+Explicit root authorization; exact copies only, no scientific execution.
+"""
+from pathlib import Path
+import argparse,hashlib,json,shutil
+ROOT=Path('/workspace/Habitable-Moon-Project');P=ROOT/'analysis/geometric_native_common_initialization_handover_validation';OUT=Path('/workspace');PREFIX='handover943_20261009'
+NEW=['tectonics/geometric_native_common_initialization_source.py','tests/test_geometric_native_common_initialization_source.py','tectonics/geometric_native_common_initialization_handover.py','tests/test_geometric_native_common_initialization_handover.py']
+def enc(d):return json.dumps(d,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+def sha(p):
+ h=hashlib.sha256()
+ with Path(p).open('rb') as f:
+  for b in iter(lambda:f.read(1<<20),b''):h.update(b)
+ return h.hexdigest()
+def sealed(p):
+ d=json.loads(Path(p).read_bytes());key='report_sha256' if 'report_sha256' in d else 'sha256';assert d[key]==hashlib.sha256(enc({k:v for k,v in d.items() if k!=key})).hexdigest(),p;return d
+
+def copy(src,dst):
+ src=Path(src);assert src.is_file() and not src.is_symlink();dst.parent.mkdir(parents=True,exist_ok=True)
+ with src.open('rb') as a,dst.open('xb') as b:shutil.copyfileobj(a,b,1<<20)
+ assert sha(src)==sha(dst)
+
+def captured(directory,report):
+ directory=Path(directory).resolve();report=Path(report).resolve();facts=sealed(directory/'execution_facts.json');data=sealed(report)
+ assert type(facts['actual_exit_code']) is int and facts['actual_exit_code']==0
+ assert type(facts['actual_stderr_bytes']) is int and facts['actual_stderr_bytes']==0 and (directory/'stderr.log').stat().st_size==0
+ assert sha(directory/'console.log')==facts['actual_stdout_raw_sha256'] and sha(directory/'stderr.log')==facts['actual_stderr_raw_sha256']
+ assert facts['report_path']==str(report) and sha(report)==facts['report_raw_sha256']
+ assert sha(directory/'executed_source_snapshot.txt')==facts['executed_source_raw_sha256']==facts['executed_source_after_raw_sha256']==sha(facts['executed_source_path'])
+ wrapper=Path(facts['executed_capture_source_path']);assert sha(wrapper)==facts['executed_capture_source_raw_sha256']
+ return facts,data,wrapper
+
+def run(args):
+ assert args.authorize_root_stage, 'Root authorization required'
+ beforefacts,before,wrapper=captured(args.before_capture,args.before_report)
+ assert before['status']=='PASS_CLOSED939_AND_ANCESTRY_PRESERVED' and before['source_count']==939 and before['dependency_count']==2708 and before['old_math_executed'] is False
+ assert len(before['source_sha256'])==939 and len(before['dependency_raw_sha256'])==2708
+ assert before['source_sha256']==json.loads((ROOT/'analysis/geometric_native_common_preparation_feasibility_validation/frozen_source_map_939.json').read_bytes())
+ assert json.loads((Path(args.before_capture)/'console.log').read_bytes())=={k:v for k,v in before.items() if k not in ['dependency_raw_sha256','source_sha256']}
+ checks=[]
+ for kind in ['restore','readback']:
+  report=OUT/(PREFIX+'_baseline939_'+kind+'.json');directory=OUT/(PREFIX+'_baseline939_'+kind+'_capture')
+  facts,data,wrap=captured(directory,report)
+  assert facts['actual_stdout_equals_report'] is True and (directory/'console.log').read_bytes()==report.read_bytes()
+  if kind=='restore':assert data['status']=='PASS_AUTHENTICATED939_BASELINES_RESTORED' and data['required_target_count']==140 and data['old_physical_math_executed'] is False
+  else:assert data['status']=='PASS_FINAL939_EVIDENCE_READBACK_ONLY' and data['source_count']==939 and data['old_dependency_count']==2577 and data['required_baseline_target_count']==140 and data['closed_final_archive_verified'] is True and data['old_physical_math_executed'] is False
+  checks.append((kind,report,directory,facts,wrap))
+ # No repository write occurs before all three actual captured receipts pass.
+ P.mkdir(exist_ok=True);assert not (P/'artifact_manifest.json').exists()
+ for name in ['preservation_source','close_evidence_source','baseline_restore_source','byte_capture_source','capture_source']:
+  copy(OUT/(PREFIX+'_'+name+'.txt'),P/(name+'.txt'))
+ for name,target in [('finish_source','closure_orchestration_source.txt'),('final_stage_source','final_capture_staging_source.txt')]:copy(OUT/(PREFIX+'_'+name+'.txt'),P/target)
+ copy(ROOT/'CLOUD_HANDOFF.md',P/'baseline939/historical939_handoff.txt');copy(ROOT/'GEOMETRIC_NATIVE_COMMON_PREPARATION_FEASIBILITY_IMPLEMENTATION.md',P/'baseline939/historical939_report.txt')
+ rows={}
+ for kind,report,directory,facts,wrap in checks:
+  for file in directory.iterdir():assert file.is_file() and not file.is_symlink();copy(file,P/'baseline939_execution'/kind/file.name)
+  copy(wrap,P/'baseline939_execution'/kind/'executed_capture_source_snapshot.txt')
+  reports=[report]+(sorted(OUT.glob(report.name+'.inherited*.json')) if kind=='restore' else [Path(str(report)+'.ancestry.json')])
+  for src in reports:
+   target=P/'baseline939'/src.name;copy(src,target);rows[str(src.resolve())]=dict(copy=str(target.relative_to(ROOT)),sha256=sha(src))
+  for name in ['console.log','stderr.log']:
+   src=directory/name;target=P/'baseline939'/(kind+'_'+name);copy(src,target);rows[str(src.resolve())]=dict(copy=str(target.relative_to(ROOT)),sha256=sha(src))
+ assert len(rows)==15,rows.keys()
+ with (P/'baseline_associations.json').open('xb') as f:f.write(enc(rows)+b'\n')
+ with (P/'new_source_budget.json').open('xb') as f:f.write(enc(dict(prior_source_count=939,source_count=943,new_sources=NEW))+b'\n')
+ for src,target in [(Path(args.before_report),'before_preservation.json'),(Path(args.before_capture)/'console.log','before_console.log'),(Path(args.before_capture)/'stderr.log','before_stderr.log'),(Path(args.before_capture)/'execution_facts.json','before_execution_facts.json'),(Path(args.before_capture)/'executed_source_snapshot.txt','before_capture/executed_source_snapshot.txt'),(wrapper,'before_capture/executed_capture_source_snapshot.txt')]:copy(src,P/target)
+ template=dict(format='native-common-initialization-handover-closure-facts-1',_template_pending='Set actual final native/audit statuses and typed assertions from genuine science captures; no pending template is a validation receipt',new_sources=NEW,source_snapshots={},native_claims_keys={},native_assertions={},document_paths=['CLOUD_HANDOFF.md','GEOMETRIC_NATIVE_COMMON_INITIALIZATION_HANDOVER_IMPLEMENTATION.md'],baseline_readback_path=str(OUT/(PREFIX+'_baseline939_readback.json')),baseline_readback_console_path=str(OUT/(PREFIX+'_baseline939_readback_capture/console.log')),baseline_readback_stderr_path=str(OUT/(PREFIX+'_baseline939_readback_capture/stderr.log')),validations=dict(before=dict(kind='before',report='before_preservation.json',console='before_console.log',stderr='before_stderr.log',execution_facts='before_execution_facts.json',exit_code_key='actual_exit_code',executed_source_snapshot='preservation_source.txt',executed_capture_source_snapshot='before_capture/executed_capture_source_snapshot.txt'),after=dict(kind='after',report='after_preservation.json',console='after_console.log',stderr='after_stderr.log',execution_facts='after_execution_facts.json',exit_code_key='actual_exit_code',executed_source_snapshot='preservation_source.txt'),native=dict(kind='native',expected_status='PENDING_REAL943_NATIVE_STATUS'),tests=dict(kind='tests'),audit=dict(kind='audit',expected_status='PENDING_REAL943_AUDIT_STATUS',report_assertions={})))
+ with (P/'closure_facts.template.json').open('x') as f:json.dump(template,f,sort_keys=True,indent=2,ensure_ascii=False);f.write('\n')
+ copy(Path(__file__),P/'baseline_retention_source.txt')
+ result=dict(status='PASS_RETAINED_GENUINE939_BASELINE_AND_BEFORE_FOR943',source_count_before=939,dependency_count=2708,baseline_association_count=15,required_baseline_target_count=155,new_python_files_written=False,old_physical_math_executed=False,historical939_handoff_raw_sha256=sha(P/'baseline939/historical939_handoff.txt'),historical939_report_raw_sha256=sha(P/'baseline939/historical939_report.txt'))
+ result['sha256']=hashlib.sha256(enc(result)).hexdigest()
+ if args.output:
+  with Path(args.output).open('xb') as f:f.write(enc(result)+b'\n')
+ print(enc(result).decode())
+if __name__=='__main__':
+ parser=argparse.ArgumentParser();parser.add_argument('--authorize-root-stage',action='store_true');parser.add_argument('--before-report',required=True);parser.add_argument('--before-capture',required=True);parser.add_argument('--output');run(parser.parse_args())

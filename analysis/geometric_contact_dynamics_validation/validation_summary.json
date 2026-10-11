@@ -1,0 +1,67 @@
+{
+  "format": "geometric-frozen-euler-contact-cloud-validation-1",
+  "status": "complete",
+  "date": "2026-10-01",
+  "branch": "fix/genesis-mantle-convection",
+  "base_commit": "224a07ac1b981b95163cdf6633f424af1599b2f2",
+  "cloud_sources": {
+    "files": 9,
+    "source_bytes": 2110696,
+    "verified": true,
+    "archive_sha256": {
+      "cloud_sources.zip": "6418f8e711bd36e72b2c01b55c30e57c64f644fdc6cd9de863b0d32785d7d14f",
+      "cloud_sources_manifest.json": "30c5bceb3643175e9824c96e802268504f002818b16fddecb095eee3899db3b2"
+    }
+  },
+  "checks": {
+    "global_contact_core": {
+      "passed": 13,
+      "seconds": 12.19
+    },
+    "basal_adapter": {
+      "passed": 26,
+      "seconds": 11.44
+    },
+    "contacts_and_global_invariants": {
+      "passed": 29,
+      "seconds": 9.95
+    },
+    "legacy_basal_fractional_and_contact_dependencies": {
+      "passed": 124,
+      "seconds": 12.58
+    },
+    "focused_cloud_profile": {
+      "passed": 535,
+      "seconds": 373.94,
+      "log": "analysis/geometric_contact_dynamics_validation/final_cloud_tests.log"
+    }
+  },
+  "control": {
+    "report": "analysis/geometric_contact_dynamics_validation/cloud_control/report.json",
+    "elapsed_seconds": 16.74144793999949,
+    "maximum_resultant_torque_relative_residual": 7.884357182700686e-16,
+    "maximum_incremental_work_relative_residual": 4.464129080266087e-14,
+    "sliding_contact_steps": 19,
+    "independent_locked_relative_error": 4.755383304804932e-16,
+    "time_step_sensitivity": {
+      "comparison_step_duration_s": 50000000000.0,
+      "final_small_rotation_difference_rad": 7.039478156382726e-07,
+      "final_small_rotation_relative_difference": 0.013330519507919882,
+      "interpretation": "backward-Euler timestep sensitivity, not an assertion of convergence"
+    },
+    "restart_exact": true,
+    "checkpoint_bytes_identical": true,
+    "source_surface_preserved": true,
+    "passive_material_archive_preserved": true,
+    "code_hashes_match_current_files": true
+  },
+  "corrected_regressions": [
+    "Geometry-only contact extraction previously allocated max(owner)+1 velocity rows; ID 10^12 now uses zero relative velocity directly.",
+    "Independent source-work T dot q and initial preparation-work replay prevent balanced ledger tampering."
+  ],
+  "scope": "Frozen surface; explicit thermal lid, source, dipping planes and preload; arc-mean contact law; no material transfer, bending, slab pull, cooling or GUI integration.",
+  "notes": [
+    "Targeted geometric tests overlap focused profile; counts should not be summed.",
+    "The saved50 rejection receipt remains the prior local-stage result; this global experiment does not fabricate its missing inputs."
+  ]
+}

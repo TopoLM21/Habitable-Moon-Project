@@ -1,0 +1,51 @@
+{
+  "status": "known_original_head_failure_reproduced_identically",
+  "base_commit": "224a07ac1b981b95163cdf6633f424af1599b2f2",
+  "isolated_checkout": "/tmp/moon-slab-constraint-baseline-f2elyflx",
+  "source_identity_matches": true,
+  "source_sha256": {
+    "tectonics/young_slab_constraints.py": {
+      "working_tree": "2aaef4aa9e75492d66c76e272fae0f44e8e1ceb01a1a53a437e384068f8a14f9",
+      "original_head": "2aaef4aa9e75492d66c76e272fae0f44e8e1ceb01a1a53a437e384068f8a14f9"
+    },
+    "tests/test_young_slab_constraints.py": {
+      "working_tree": "1484245a50f43ebf86577f58d555a5f9ad987401335c68834898db981b7f65ac",
+      "original_head": "1484245a50f43ebf86577f58d555a5f9ad987401335c68834898db981b7f65ac"
+    },
+    "tests/fixtures/young_slab_constraint_noisy_support.json": {
+      "working_tree": "43d75e4e8af792c6300172368301ffa4e26fc9ce47980a90b2d0d1c2ae5d3b22",
+      "original_head": "43d75e4e8af792c6300172368301ffa4e26fc9ce47980a90b2d0d1c2ae5d3b22"
+    }
+  },
+  "baseline_test_log": "legacy_slab_constraint_baseline.log",
+  "expanded_working_tree_log": "dependency_tests.log",
+  "test": "tests/test_young_slab_constraints.py::test_actual_rank_deficient_trench_problem_matches_independent_primal_qp[young_slab_constraint_noisy_support.json]",
+  "primal_relative_violation": 2.5054326766449742e-11,
+  "test_primal_tolerance": 2e-11,
+  "production_primal_tolerance": 2e-08,
+  "complementarity_relative_error": 1.1957898326485923e-11,
+  "relative_residual": 8.343585403339059e-17,
+  "reaction_work_w": 0.01221708461392268,
+  "independent_primal_oracle_success": true,
+  "maximum_oracle_coordinate_error": 1.2318647837905594e-11,
+  "normalized_feed_singular_values": [
+    5.23736256765368,
+    5.111707578187533,
+    4.174473916200486,
+    3.8929498934131854,
+    2.672788966211486,
+    2.5914063290951512,
+    1.0506962547059345e-15,
+    5.528203406053359e-16,
+    4.553068252127097e-16,
+    3.832647080085061e-16,
+    3.3166304490059455e-16,
+    2.7929247542155755e-16
+  ],
+  "runtime": {
+    "python": "3.12.14",
+    "numpy": "2.5.3",
+    "scipy": "1.18.1"
+  },
+  "interpretation": "The unchanged rank-deficient legacy solve passes its production KKT gate and independent primal oracle comparison, but exceeds its tighter regression primal tolerance on this runtime; the identical result occurs before finite fault transport changes."
+}

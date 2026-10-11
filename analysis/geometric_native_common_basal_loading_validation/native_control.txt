@@ -1,0 +1,163 @@
+"""Source-bound NEW reference-measure basal trace/law controls; no old physics main."""
+from pathlib import Path
+from fractions import Fraction as F
+import argparse, hashlib, json, sys, time
+
+ROOT=Path(__file__).resolve().parents[2]
+sys.path.insert(0,str(ROOT))
+P=ROOT/'analysis/geometric_native_common_basal_loading_validation'
+NEW=('tectonics/geometric_native_common_basal_trace.py',
+     'tests/test_geometric_native_common_basal_trace.py',
+     'tectonics/geometric_native_common_basal_loading.py',
+     'tests/test_geometric_native_common_basal_loading.py')
+CURRENT907=ROOT/'analysis/geometric_native_common_mixed_force_validation/release_validation_01/native_control/source_packet.json'
+PIN907='5e5555712e57fd69156ee475fe5feb161baef3cb96dd911a443228d160f53005'
+REMAINING=[
+ 'Physical material/force/prestress/work handover, full preparation and load work, general-state mixed operator and NEW equilibrium',
+ 'Whole-clock all-pair admission, including reverse C5 to C1',
+ 'Accepted continuation with independent temporal path work, balances and restart']
+
+def encoded(value):
+    return json.dumps(value,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+
+def digest(value):
+    return hashlib.sha256(encoded(value)).hexdigest()
+
+def context():
+    key=tuple(hashlib.sha256((ROOT/name).read_bytes()).hexdigest() for name in NEW)
+    key+=(hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),)
+    cache=getattr(sys,'_habitable_moon_basal_context_931',{})
+    if key in cache:return cache[key]
+    from analysis.geometric_native_common_mixed_force_validation import native_control as saved
+    from analysis.geometric_native_common_hot_mean_validation import native_control as hot_saved
+    from tectonics.geometric_native_common_reference import bind_native_common_reference
+    from tectonics.geometric_native_common_cold_depth_preparation import bind_native_common_cold_depth_preparation
+    from tectonics.geometric_native_common_basal_trace import bind_native_common_basal_trace
+    from tectonics.geometric_native_common_basal_loading import bind_native_common_basal_loading
+    started=time.monotonic()
+    source903=saved.source_packets()[0]
+    source895=saved.geometry_packets()[0]
+    raw=CURRENT907.read_bytes()
+    if hashlib.sha256(raw).hexdigest()!=PIN907:raise ValueError('Whole immutable907 authority changed')
+    source907=json.loads(raw)
+    cold=saved.cold_carrier()
+    hot=hot_saved.system()
+    reference=bind_native_common_reference()
+    preparations=tuple(bind_native_common_cold_depth_preparation(reference,cold,owner,
+       provenance='Whole-source NEW radial twist on unchanged frozen895 cold prepared reference') for owner in (0,1))
+    trace=bind_native_common_basal_trace(source903,source895,source907,
+       cold_carrier=cold,hot_system=hot,preparations=preparations,
+       provenance='NEW declared fixed reference source-cell material basal trace lift; continuum and full bottom support unproved',precision=96)
+    loading=bind_native_common_basal_loading(trace)
+    result=dict(trace_system=trace,loading_system=loading,source903=source903,source895=source895,
+        source907=source907,cold_carrier=cold,hot_system=hot,preparations=preparations,reference=reference,
+        timings=dict(source_geometry_trace_binding_seconds=time.monotonic()-started))
+    cache[key]=result;sys._habitable_moon_basal_context_931=cache
+    return result
+
+def run(output):
+    from tectonics import geometric_native_common_basal_trace as trace_api
+    from tectonics import geometric_native_common_basal_loading as load_api
+    from tectonics.geometric_native_pose import FractionInterval as I
+    started=time.monotonic();ctx=context()
+    trace,loading=ctx['trace_system'],ctx['loading_system']
+    tdto=trace_api.native_common_basal_trace_to_dict(trace)
+    ldto=load_api.native_common_basal_loading_to_dict(loading)
+    tr=trace_api.native_common_basal_trace_from_dict(tdto,ctx['source903'],ctx['source895'],ctx['source907'],
+        cold_carrier=ctx['cold_carrier'],hot_system=ctx['hot_system'],preparations=ctx['preparations'])
+    lr=load_api.native_common_basal_loading_from_dict(ldto,tr)
+    assert trace_api.native_common_basal_trace_to_dict(tr)==tdto
+    assert load_api.native_common_basal_loading_to_dict(lr)==ldto
+    hotprobe=tuple(F(*v) for v in ctx['source903']['evaluation_queries'][1]['response']['coordinate_increments'])
+    coldprobe=tuple(v/4 for v in ctx['cold_carrier'].bound_coordinate_increments)
+    internal=tuple(F((-1 if i%2 else 1)*(i+1),1000000) for i in range(8))
+    mid=(F(0),)*6+hotprobe+coldprobe+internal+(F(1,2),)
+    end=(F(0),)*36+coldprobe+tuple(-v for v in internal)+(F(1),)
+    rates=tuple(F((-1 if i%2 else 1)*(i+1),10**16) for i in range(6))
+    rates+=tuple(F((-1 if i%2 else 1)*(i+1),10**15) for i in range(94))+(F(2,10**12),)
+    specs=[('zero_source_zero_rates',(F(0),)*101,(F(0),)*101),
+           ('half_preparation_full_body_rates',mid,rates),
+           ('same_state_opposite_rates',mid,tuple(-v for v in rates)),
+           ('full_preparation_cold_body_rates',end,rates)]
+    queries=[];query_start=time.monotonic()
+    for label,coords,velocity in specs:
+        qstart=time.monotonic()
+        te=trace_api.evaluate_native_common_basal_trace(trace,coords,precision=96)
+        le=load_api.evaluate_native_common_basal_loading(loading,te,coordinate_rates=velocity,precision=96)
+        tedto=trace_api.native_common_basal_trace_response_to_dict(te)
+        ledto=load_api.native_common_basal_loading_response_to_dict(le)
+        ter=trace_api.native_common_basal_trace_response_from_dict(tedto,system=tr,
+            expected_coordinates101=coords,precision=96)
+        ler=load_api.native_common_basal_loading_response_from_dict(ledto,system=lr,
+            trace_evaluation=ter,expected_coordinate_rates=velocity,precision=96)
+        assert trace_api.native_common_basal_trace_response_to_dict(ter)==tedto
+        assert load_api.native_common_basal_loading_response_to_dict(ler)==ledto
+        assert len(le.prescribed_generalized_force_bounds)==101
+        assert all(len(row)==101 for row in le.drag_bounds+le.state_tangent_bounds)
+        assert len(te.trace_records_json)==68
+        assert te.original_live_material_trace_count==59 and te.hot_birth_material_trace_count==9
+        assert le.drag_dissipation_bounds_w.lo>=0
+        assert all(le.residual_bounds[i]==I(0) for i in range(92,100))
+        assert all(le.drag_bounds[i][j]==I(0) for i in range(92,100) for j in range(101))
+        active_body=tuple(i for i in range(6,92) if le.drag_bounds[i][i].lo>0)
+        possible_body=tuple(i for i in range(6,92) if le.drag_bounds[i][i].hi>0)
+        antisymmetric=tuple((i,j) for i in range(101) for j in range(i)
+            if (le.state_tangent_bounds[i][j]-le.state_tangent_bounds[j][i]).lo>0
+            or (le.state_tangent_bounds[i][j]-le.state_tangent_bounds[j][i]).hi<0)
+        queries.append(dict(label=label,coordinate_values=[[v.numerator,v.denominator] for v in coords],
+            coordinate_rates=[[v.numerator,v.denominator] for v in velocity],
+            trace_response=tedto,loading_response=ledto,
+            complete_trace_response_restart_equal=True,complete_loading_response_restart_equal=True,
+            source_material_cell_weights_used_once=68,positive_weight_drag_body_coordinate_indices=active_body,
+            possibly_nonzero_drag_body_coordinate_indices=possible_body,
+            positive_drag_diagonal_lower_bounds_used=True,
+            strictly_antisymmetric_state_tangent_entry_count=len(antisymmetric),
+            seconds=time.monotonic()-qstart))
+    plus,minus=queries[1]['loading_response'],queries[2]['loading_response']
+    assert plus['prescribed_generalized_force_bounds']==minus['prescribed_generalized_force_bounds']
+    assert plus['drag_bounds']==minus['drag_bounds']
+    assert plus['drag_dissipation_bounds_w']==minus['drag_dissipation_bounds_w']
+    try:
+        bad=list(mid);bad[0]=F(1,10**12)
+        trace_api.evaluate_native_common_basal_trace(trace,tuple(bad))
+    except ValueError as exc:
+        finite_owner_rejection=str(exc)
+    else:raise AssertionError('A zero-owner slice must not authorize finite owner state')
+    try:
+        load_api.evaluate_native_common_basal_loading(loading,te,coordinate_rates=None)
+    except ValueError as exc:
+        implicit_rate_rejection=str(exc)
+    else:raise AssertionError('Physical rates must not be inferred from calibration')
+    result=dict(format='native-common-material-basal-loading-control-1',
+        status='PASS_NATIVE931_DECLARED_MATERIAL_BASAL_TRACE_LOADING',
+        trace_system=tdto,loading_system=ldto,queries=queries,
+        complete_trace_restart_equal=True,complete_loading_restart_equal=True,
+        finite_owner_rejection=finite_owner_rejection,implicit_rate_rejection=implicit_rate_rejection,
+        coordinate_count=101,body_modal_coordinate_count=86,positive_source_material_cell_row_count=68,
+        original_live_material_trace_count=59,hot_birth_material_trace_count=9,
+        paired_correction_metadata_count=1,paired_correction_added_again=False,aggregate_owner6_load_reused=False,
+        internal_contact_arm_only_basal_columns_exact_zero=True,
+        complete_declared_discrete_basal_operator_computed=True,
+        spatial_and_generalized_power_enclosures_overlap=True,
+        owner_rotation_query_is_zero_slice=True,general_finite_owner_state_chart_defined=False,
+        full_mixed_force_and_tangent_certified=False,reference_preparation_work_paid=False,
+        full_system_preparation_work_certified=False,historical_archived_three_dimensional_prestress_recovered=False,
+        new_preparation_path_constitutive_admissibility_certified=False,
+        continuum_whole_base_quadrature_certified=False,complete_actual_bottom_support_certified=False,
+        new_mixed_force_equilibrium_certified=False,whole_clock_all_pair_admission_authorized=False,
+        physical_material_admission_authorized=False,full_system_temporal_path_work_certified=False,
+        clocks_advanced=False,source_geometry_elapsed_time_s=0,contact_geometry_elapsed_time_s=2000000,
+        memory_elapsed_time_s=1000000,material_geometry_elapsed_time_s=1000000,
+        accepted_original_native_intervals=1,accepted_new_native_intervals=0,
+        original_point_1_completed=False,original_point_1_remaining_work_blocks=1,
+        previous_tensor_quadrature_reexecuted=False,historical_force_solve_reexecuted=False,
+        remaining_physical_conditions=REMAINING,
+        timings=dict(ctx['timings'],query_seconds=time.monotonic()-query_start,total_seconds=time.monotonic()-started))
+    result['sha256']=digest(result)
+    output=Path(output)
+    with output.open('xb') as stream:stream.write(encoded(result)+b'\n')
+    print(encoded(result).decode())
+
+if __name__=='__main__':
+    parser=argparse.ArgumentParser();parser.add_argument('--output',required=True)
+    run(parser.parse_args().output)

@@ -1,0 +1,105 @@
+"""Final935 evidence-only readback: immutable bytes, actual receipts and full ancestry.
+Root must substitute the unique MANIFEST_RAW placeholder after closing P.
+Run with a fresh outside-repository --output; F remains exactly four files.
+"""
+from pathlib import Path
+import argparse, hashlib, json, runpy, subprocess, sys, time
+ROOT=Path('/workspace/Habitable-Moon-Project')
+P=ROOT/'analysis/geometric_native_common_general_force_validation'
+F=ROOT/'analysis/geometric_native_common_general_force_final_readback'
+MANIFEST_RAW='c1400d9adf926eeb1316883ecf362ec0010fb9f7096e759ab36a65238238f089'
+def enc(x):return json.dumps(x,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+def digest(p):
+    h=hashlib.sha256()
+    with Path(p).open('rb') as f:
+        for b in iter(lambda:f.read(1024*1024),b''):h.update(b)
+    return h.hexdigest()
+def load(p):return json.loads(Path(p).read_bytes())
+def sealed(p):
+    x=load(p);key='report_sha256' if 'report_sha256' in x else 'sha256'
+    assert x[key]==hashlib.sha256(enc({k:v for k,v in x.items() if k!=key})).hexdigest(),p
+    return x,key
+
+def meaningful(p):return {str(x.relative_to(p)) for x in p.rglob('*') if x.is_file() and '__pycache__' not in x.parts and x.suffix!='.pyc'}
+def check_manifest():
+    assert len(MANIFEST_RAW)==64 and digest(P/'artifact_manifest.json')==MANIFEST_RAW
+    manifest,_=sealed(P/'artifact_manifest.json');assert manifest['source_count']==935
+    names=set()
+    for name,row in manifest['files'].items():
+        path=ROOT/name;assert digest(path)==row['sha256'] and path.stat().st_size==row['bytes'],name
+        if path.is_relative_to(P):names.add(str(path.relative_to(P)))
+    assert meaningful(P)==names|{'artifact_manifest.json'}
+    return manifest
+
+def check_archive_if_closed():
+    if not (F/'archive.json').exists():return False
+    archive,_=sealed(F/'archive.json')
+    assert archive['status']=='PASS_FINAL935_READBACK_ARCHIVE_CLOSED'
+    assert archive['manifest_raw_sha256']==MANIFEST_RAW and archive['source_count']==935
+    assert archive['actual_reader_exit_code']==0 and archive['actual_reader_stderr_bytes']==0
+    assert archive['actual_reader_stdout_equals_report'] is True
+    assert archive['reader_execution_facts']['actual_exit_code']==0
+    assert archive['reader_execution_facts']['actual_stderr_bytes']==0
+    assert meaningful(F)=={'readback_source.txt','readback.json','console.log','archive.json'}
+    for name,row in archive['files'].items():
+        path=F/name;assert digest(path)==row['sha256'] and path.stat().st_size==row['bytes']
+    assert (F/'readback.json').read_bytes()==(F/'console.log').read_bytes()
+    return True
+
+def run(output):
+    start=time.perf_counter();output=Path(output).resolve()
+    assert output.is_relative_to('/workspace') and not output.is_relative_to(ROOT)
+    assert not output.exists();manifest=check_manifest();closed=check_archive_if_closed()
+    # The pinned closure helper exposes byte-only validators; no tests, tensor integrals,
+    # force solve or scientific module import is executed by this readback.
+    helper=runpy.run_path(str(P/'close_evidence_source.txt'))
+    old=helper['verify_old']();sources=helper['actual_sources']()
+    assert sources==load(P/'frozen_source_map_935.json') and len(sources)==935
+    assert set(sources)-set(old)==set(helper['NEW']) and all(sources[k]==v for k,v in old.items())
+    config=load(P/'closure_facts.json')
+    actual={name:helper['validation_receipt'](name,item) for name,item in config['validations'].items()}
+    report,_=sealed(P/'report.json')
+    assert report['status']=='PASS_FROZEN935_GENERAL_FORCE_GATE'
+    assert report['validation_receipts']==actual and report['source_count']==935
+    assert report['tests_passed']==sum(x.get('tests_passed',0) for x in actual.values())
+    native_name = next(n for n, r in actual.items() if r['kind'] == 'native')
+    native, _ = sealed(P / config['validations'][native_name]['report'])
+    science = helper['extract_science'](native, config)
+    assert {k: report[k] for k in science} == science
+    docs=load(P/'document_facts.json')
+    assert docs['documents_finalized_before_readback'] is True
+    for name,pin in docs['document_raw_sha256'].items():assert digest(name)==pin,name
+    historical=P/'baseline931/historical931_handoff.txt'
+    assert digest(historical)==docs['historical931_handoff_raw_sha256']
+    assert (ROOT/'CLOUD_HANDOFF.md').read_bytes().endswith(historical.read_bytes())
+    associations=load(P/'baseline_associations.json');assert len(associations)==13
+    for target,row in associations.items():
+        assert digest(ROOT/row['copy'])==row['sha256'] and digest(target)==row['sha256'],target
+    inherited=ROOT/'analysis/geometric_native_common_basal_loading_validation/baseline_restore_source.txt'
+    assert digest(inherited)==manifest['inherited931_restorer_raw_sha256']==report['inherited931_restorer_raw_sha256']
+    assert report['required_baseline_target_count']==manifest['required_baseline_target_count']==126
+    guard_output=Path(str(output)+'.ancestry.json');assert not guard_output.exists()
+    child=subprocess.run([sys.executable,str(P/'preservation_source.txt'),'--new-config',str(P/'closure_facts.json'),'--baseline',config['baseline_readback_path'],'--baseline-console',config['baseline_readback_console_path'],'--baseline-stderr',config['baseline_readback_stderr_path'],'--output',str(guard_output)],capture_output=True)
+    assert child.returncode==0 and child.stderr==b'',(child.returncode,child.stderr)
+    guard,_=sealed(guard_output)
+    assert guard['status']=='PASS_CLOSED931_AND_ANCESTRY_PRESERVED'
+    assert guard['source_count']==935 and guard['dependency_count']==2322
+    assert guard['old_math_executed'] is False and guard['source_sha256']==sources
+    assert json.loads(child.stdout)=={k:v for k,v in guard.items() if k not in ('dependency_raw_sha256','source_sha256')}
+    check_manifest();check_archive_if_closed()
+    for name,pin in docs['document_raw_sha256'].items():assert digest(name)==pin
+    result=dict(status='PASS_FINAL935_EVIDENCE_READBACK_ONLY',manifest_raw_sha256=MANIFEST_RAW,
+        manifest_file_count=len(manifest['files']),source_count=935,tests_passed=report['tests_passed'],
+        old931_and_ancestry_preserved=True,old_dependency_count=2322,required_baseline_target_count=126,
+        guard_actual_exit_code=child.returncode,guard_stderr_bytes=len(child.stderr),
+        guard_stdout_matches_condensed_receipt=True,guard_receipt_raw_sha256=digest(guard_output),
+        closed_final_archive_verified=closed,document_raw_sha256=docs['document_raw_sha256'],
+        historical931_handoff_preserved=True,old_physical_math_executed=False,
+        **science,
+        seconds=time.perf_counter()-start)
+    result['sha256']=hashlib.sha256(enc(result)).hexdigest()
+    with output.open('xb') as f:f.write(enc(result)+b'\n')
+    print(enc(result).decode())
+
+if __name__=='__main__':
+    p=argparse.ArgumentParser();p.add_argument('--output',required=True);run(p.parse_args().output)

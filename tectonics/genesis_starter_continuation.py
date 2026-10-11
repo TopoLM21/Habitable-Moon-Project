@@ -26,6 +26,9 @@ from .genesis_mature import (build_experimental_genesis_mature_import,
 from .genesis_shell import ShellParameters
 from .genesis_long_term_support import begin_mechanical_transition, mechanical_sample, refresh_matched_mechanics
 from .genesis_starter import StarterModel, StarterParameters
+from .genesis_solidification import (FORMAT as SOLIDIFICATION_FORMAT,
+    advance_solidification_history, validate_solidification_history,
+    solidification_history_to_dict)
 from .genesis_starter_fracture import YoungShellFracture
 from .genesis_starter_material import (primary_material_inventory, independent_mantle_omega,
     independent_mantle_source_omega, mantle_source_parameters)
@@ -199,6 +202,8 @@ def build_starter_continuation(model, state, mature_config):
         "slab_activation": "convergence_integrated_length", "max_fractures_per_step": 1,
         "mechanics_model_version": MECHANICS_MODEL_VERSION, **young_options,
         "origin_time_myr": float(state.time_myr)}
+    cfg["young_shell"].update(solidification_model_version=SOLIDIFICATION_FORMAT,
+        primary_material_age="retained_mass_weighted_solidification_age")
     new_mechanics = corrected_mechanics(cfg)
     if new_mechanics:
         cfg["young_shell"].update(basal_source=mantle_source_parameters(model).metadata(),
@@ -239,7 +244,9 @@ def build_starter_continuation(model, state, mature_config):
     sample = model.loading.sample(state.thermal_context)
     density = model.shell.density_kg_m3*3e-5*max(material.mantle_temperature_k-sample.mean_lid_temperature_k, 0.)
     bundle = build_experimental_genesis_mature_import(model.mesh, radius_km=p.radius_km,
-        system=state.system, crust_age_myr=np.zeros(n), crust_thickness_km=material.primary_thickness_km,
+        system=state.system,
+        crust_age_myr=np.full(n, state.solidification_history.mean_age_myr),
+        crust_thickness_km=material.primary_thickness_km,
         tidal_damage=state.damage, mantle_lithosphere_thickness_km=h,
         mantle_lithosphere_density_anomaly_kg_m3=np.full(n, density), thermal=thermal,
         elevation_m=np.zeros(n), water_volume_km3=cfg["hydrosphere"]["water_volume_km3"],
@@ -249,7 +256,8 @@ def build_starter_continuation(model, state, mature_config):
         next_plume_birth_time_myr=state.time_myr+float(cfg.get("mantle_plumes", {}).get("mean_birth_interval_myr", 160.)),
         source_metadata={"kind": FORMAT, "physical_handoff_certified": False,
             "primary_material": "solid part of the existing global surface reservoir, assumed mafic",
-            "chemical_age": "zero elapsed time since entry; solidification-age distribution unavailable",
+            "chemical_age": "retained-mass-weighted age since actual surface-reservoir solidification",
+            "solidification_history": solidification_history_to_dict(state.solidification_history),
             "young_thermal_owner": "Genesis; mature ThermalState is a projection only",
             "starter_fingerprint": model.fingerprint},
         topology_parameters=PlateTopologyParameters(**cfg["plate_topology"]))
@@ -269,6 +277,9 @@ def build_starter_continuation(model, state, mature_config):
         "initial_mechanical_lid_thickness_km": material.mechanical_lid_thickness_km,
         "initial_liquid_water_volume_km3": cfg["hydrosphere"]["water_volume_km3"],
         "initial_starter_fit_residual": state.kinematic_fit_relative_residual,
+        "initial_primary_mean_birth_time_myr": state.solidification_history.mean_birth_time_myr,
+        "initial_primary_mean_age_myr": state.solidification_history.mean_age_myr,
+        "solidification_model_version": SOLIDIFICATION_FORMAT,
         "material_closure": "existing surface reservoir assumed primary mafic, not mechanical lid",
         "initial_material_mass_relative_residual": material.silicate_mass_relative_residual,
         "initial_energy_partition_relative_residual": material.thermal_energy_relative_residual}
@@ -277,6 +288,7 @@ def build_starter_continuation(model, state, mature_config):
 
 class YoungWorldCoupling:
     def __init__(self, model, source_state, cfg, initial_checkpoint, history=None, fracture=None):
+        model._validate(source_state)
         self.model, self.source_state, self.cfg = model, deepcopy(source_state), cfg
         self.new_mechanics = corrected_mechanics(cfg)
         if self.new_mechanics:
@@ -368,27 +380,39 @@ class YoungWorldCoupling:
         if any(s.thermal["surface_melt_fraction"] > 1e-12 for s in samples):
             raise ValueError("Surface remelting is not supported by mature material transport")
         support_samples = []
+        proposed_solidification = self.source_state.solidification_history
+        previous_thermal = self.model.loading.sample(self.source_state.thermal_context).thermal
         for sample in samples:
+            proposed_solidification = advance_solidification_history(
+                proposed_solidification, previous_thermal, sample.thermal, self.model.thermal)
+            previous_thermal = sample.thermal
             if transition is None and sample.column_depth_limit_reached:
                 transition = begin_mechanical_transition(sample, self.model,
                     self.cfg.get("mechanical_lithosphere", {}))
             support_samples.append(mechanical_sample(sample, transition))
+        validate_solidification_history(proposed_solidification, self.model.thermal,
+            self.model.loading.sample(context).thermal)
         # Publish both clocks only after the entire proposed thermal interval
         # and its mechanical samples have succeeded. The source topology stays
         # an archive of the first partition; live fracture memory is separate.
         proposed_fracture = deepcopy(self.fracture)
         proposed_fracture.advance(mechanical_sample(
             self.model.loading.sample(self.source_state.thermal_context), transition), support_samples)
-        self.fracture = proposed_fracture
-        self.previous_mechanical_sample = mechanical_sample(
+        proposed_source = replace(self.source_state, thermal_context=context,
+            solidification_history=proposed_solidification,
+            thermal_samples=self.source_state.thermal_samples+len(samples))
+        self.model._validate(proposed_source)
+        projected = project_thermal(self.model, proposed_source, self.thermal_parameters,
+            self.reference_flux, transition)
+        previous_mechanical_sample = mechanical_sample(
             self.model.loading.sample(self.source_state.thermal_context), transition)
+        self.fracture = proposed_fracture
+        self.previous_mechanical_sample = previous_mechanical_sample
         if transition is not None:
             self.cfg.setdefault("young_shell", {})["mechanical_transition"] = transition
         self.before_orbit = proposed_before_orbit
-        self.source_state.thermal_context = context
-        self.source_state.thermal_samples += len(samples)
-        return project_thermal(self.model, self.source_state, self.thermal_parameters,
-            self.reference_flux, transition)
+        self.source_state = proposed_source
+        return projected
 
     def mechanical_fields(self, state, *args, **kwargs):
         # Retain the depth-resolved young thermal owner instead of replacing it
@@ -834,6 +858,8 @@ def run_starter_continuation(source, output, duration_myr=10., step_myr=1., resu
         "final_mean_surface_speed_km_myr": float(model.areas@speed/model.areas.sum()),
         "final_max_surface_speed_km_myr": float(speed.max()),
         "ocean_fraction": sample.thermal["ocean_fraction"],
+        "primary_solidification_history": solidification_history_to_dict(
+            coupling.source_state.solidification_history),
         "limitations": mechanics_limitations(cfg),
         "mechanical_transition": cfg.get("young_shell", {}).get("mechanical_transition"),
         "mesh_history": mesh_history,

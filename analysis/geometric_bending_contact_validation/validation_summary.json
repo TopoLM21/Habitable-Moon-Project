@@ -1,0 +1,201 @@
+{
+  "format": "geometric-bending-contact-cloud-validation-1",
+  "status": "complete",
+  "date": "2026-10-01",
+  "branch": "fix/genesis-mantle-convection",
+  "base_commit": "224a07ac1b981b95163cdf6633f424af1599b2f2",
+  "runtime": {
+    "python": "3.12.14",
+    "platform": "Linux-6.18.44-x86_64-with-glibc2.41",
+    "packages": {
+      "numpy": "2.5.3",
+      "scipy": "1.18.1",
+      "PyYAML": "6.0.3",
+      "pytest": "9.1.1"
+    }
+  },
+  "cloud_sources": {
+    "files": 9,
+    "source_bytes": 2110696,
+    "verified": true,
+    "archive_sha256": {
+      "cloud_sources.zip": "6418f8e711bd36e72b2c01b55c30e57c64f644fdc6cd9de863b0d32785d7d14f",
+      "cloud_sources_manifest.json": "30c5bceb3643175e9824c96e802268504f002818b16fddecb095eee3899db3b2"
+    }
+  },
+  "checks": {
+    "focused_cloud_profile": {
+      "passed": 721,
+      "seconds": 545.41,
+      "log": "analysis/geometric_bending_contact_validation/final_cloud_tests.log"
+    },
+    "legacy_basal_fractional_contact_flexure_and_slab_dependencies": {
+      "passed": 177,
+      "seconds": 18.89,
+      "log": "analysis/geometric_bending_contact_validation/dependency_tests.log"
+    },
+    "new_targeted_tests_included_in_profile": 98,
+    "git_diff_check": "passed"
+  },
+  "control": {
+    "report": "analysis/geometric_bending_contact_validation/cloud_control/report.json",
+    "elapsed_seconds": 45.27972649200092,
+    "point_count": 16,
+    "mixed_branch_trace_steps": 8,
+    "sliding_point_steps": 113,
+    "maximum_resultant_torque_relative_residual": 3.3619715310365658e-15,
+    "maximum_incremental_work_relative_residual": 4.004217443159816e-15,
+    "maximum_generalized_force_relative_residual": 1.0270035322408743e-15,
+    "maximum_transverse_force_relative_residual": 4.3655040676957575e-15,
+    "maximum_physical_contact_virtual_work_relative_error": 4.7264527797834644e-14,
+    "maximum_tip_displacement_m": 15.262290843836999,
+    "maximum_bank_slope": 0.0009157374506302199,
+    "maximum_bank_fibre_strain": 0.0001465179921008352,
+    "final_bending_energy_j": 7034232052103739.0,
+    "spatial_sensitivity": {
+      "layouts": [
+        {
+          "panel_count": 2,
+          "gauss_order": 4,
+          "points": 32,
+          "rotation_difference_from_previous_layout_rad": 1.5859646299684175e-09,
+          "rotation_relative_difference_from_previous_layout": 8.747997476882813e-05,
+          "transverse_displacement_difference_from_previous_layout_m": 0.0012640542956656856,
+          "transverse_displacement_relative_difference_from_previous_layout": 3.885335808418464e-05,
+          "full_coordinates_relative_difference_from_previous_layout": 3.909731940379927e-05
+        },
+        {
+          "panel_count": 4,
+          "gauss_order": 4,
+          "points": 64,
+          "rotation_difference_from_previous_layout_rad": 4.232404402248806e-10,
+          "rotation_relative_difference_from_previous_layout": 2.3345595242284168e-05,
+          "transverse_displacement_difference_from_previous_layout_m": 0.00045504096877243427,
+          "transverse_displacement_relative_difference_from_previous_layout": 1.3986508524410574e-05,
+          "full_coordinates_relative_difference_from_previous_layout": 1.4025119712475735e-05
+        }
+      ],
+      "interpretation": "Separate fresh histories on finer fixed physical grids; nonlinear spatial sensitivity, not interpolation of evolved histories or a convergence claim"
+    },
+    "time_step_sensitivity": {
+      "comparison_step_duration_s": 5000000000.0,
+      "final_full_coordinates_relative_difference": 0.0002665799939881243,
+      "interpretation": "Backward-Euler timestep sensitivity, not an assertion of convergence"
+    },
+    "source_surface_preserved": true,
+    "main_passive_archive_preserved": true,
+    "transferred_material_during_mechanical_steps_km2": 0.0,
+    "new_slab_cohorts_during_mechanical_steps": 0,
+    "restart_exact": true,
+    "checkpoint_bytes_identical": true,
+    "independent_continuum_elastic_quadrature_cases": [
+      {
+        "panel_count": 1,
+        "gauss_order": 2,
+        "points": 8,
+        "all_coordinates_relative_error": 6.372828442394823e-06,
+        "rotation_relative_error": 0.0002861258919758115,
+        "transverse_displacement_relative_error": 5.752588730607842e-06,
+        "bending_energy_relative_error": 9.005592908017591e-07
+      },
+      {
+        "panel_count": 1,
+        "gauss_order": 4,
+        "points": 16,
+        "all_coordinates_relative_error": 7.453104258357778e-10,
+        "rotation_relative_error": 7.194245970088122e-08,
+        "transverse_displacement_relative_error": 2.8256738356203054e-10,
+        "bending_energy_relative_error": 2.467886736858182e-11
+      },
+      {
+        "panel_count": 2,
+        "gauss_order": 4,
+        "points": 32,
+        "all_coordinates_relative_error": 2.1631640691768987e-12,
+        "rotation_relative_error": 2.079477519574303e-10,
+        "transverse_displacement_relative_error": 8.398576171411766e-13,
+        "bending_energy_relative_error": 8.098350711451827e-14
+      },
+      {
+        "panel_count": 1,
+        "gauss_order": 8,
+        "points": 32,
+        "all_coordinates_relative_error": 2.8900911805503478e-15,
+        "rotation_relative_error": 3.448506553912342e-16,
+        "transverse_displacement_relative_error": 2.8902220991544167e-15,
+        "bending_energy_relative_error": 0.0
+      }
+    ],
+    "nonempty_archive_subdivision": {
+      "cohort_count": 2,
+      "surface_fragments_before": 10,
+      "surface_fragments_after": 11,
+      "original_contact_count": 4,
+      "new_contact_count": 5,
+      "physical_point_count": 16,
+      "physical_histories_unchanged_at_rebind": true,
+      "bending_parameters_unchanged_at_rebind": true,
+      "transverse_displacements_and_bending_ledgers_unchanged_at_rebind": true,
+      "retained_polarity_support_count": 2,
+      "original_acceptance_transactions_preserved": true,
+      "cohort_payloads_preserved": true,
+      "surface_extensive_residual": {
+        "area_km2": 0.0,
+        "oceanic_volume_km3": 0.0,
+        "cold_mantle_volume_km3": 0.0,
+        "density_excess_mass_kg": 0.0
+      },
+      "cut_vs_uncut_full_coordinates_relative_difference": 5.891089330497272e-17,
+      "restart_exact": true,
+      "checkpoint_bytes_identical": true,
+      "note": "Pure material subdivision preserves physical strips and their history, remaps passive support without accepting mass, and advances neither mechanical nor surface time"
+    },
+    "code_hashes_match_current_files": true
+  },
+  "compatibility_replays": {
+    "mean": {
+      "report": "analysis/geometric_bending_contact_validation/mean_compatibility/report.json",
+      "elapsed_seconds": 39.3296289600039,
+      "maximum_resultant_torque_relative_residual": 7.884357182700686e-16,
+      "maximum_incremental_work_relative_residual": 4.464129080266087e-14,
+      "restart_exact": true,
+      "checkpoint_bytes_identical": true,
+      "code_hashes_match_current_files": true
+    },
+    "distributed": {
+      "report": "analysis/geometric_bending_contact_validation/distributed_compatibility/report.json",
+      "elapsed_seconds": 28.140408867999213,
+      "maximum_resultant_torque_relative_residual": 7.599399065267362e-16,
+      "maximum_incremental_work_relative_residual": 3.0295730022433386e-14,
+      "restart_exact": true,
+      "checkpoint_bytes_identical": true,
+      "code_hashes_match_current_files": true
+    }
+  },
+  "legacy_roundoff_test_correction": {
+    "receipt": "analysis/geometric_bending_contact_validation/legacy_roundoff_receipt.json",
+    "original_head_test_log": "analysis/geometric_bending_contact_validation/legacy_baseline_roundoff.log",
+    "head_with_preexisting_portable_mesh_log": "analysis/geometric_bending_contact_validation/legacy_portable_mesh_roundoff.log",
+    "initial_dependency_run": "analysis/geometric_bending_contact_validation/dependency_tests_initial.log",
+    "explanation": "Preexisting portable mesh normalization causes a near-cancelled Cartesian component to exceed the old componentwise scaling tolerance; physical vector scaling is accurate to 2.82e-16. Test now checks the vector norm at the original 1e-14 tolerance without a dimensional floor. Slab force law unchanged."
+  },
+  "scope": "Declared radial uniform-trace tip DOFs and locally planar elastic cantilevers; fixed physical dipping arcs and quadrature, exact continuous normal-gap envelope, Euler and radial virtual-work balance; material subdivision preserves mechanics and passive archive. No finite fault advection, along-strike bending, thermal feedback, material acceptance, slab pull or automatically selected elastic thickness/clamp distance",
+  "limitations": [
+    "Independent locally planar cantilevers have one radial tip mode per bank per trace; no along-strike curvature, torsion or spherical membrane coupling.",
+    "Elastic thickness, clamp distance and modulus are explicit boundary data, not inferred from missing source fields or fragment size.",
+    "Physical fault geometry, quadrature, small-rotation reference and material footprints remain frozen; no finite fault transport or material acceptance.",
+    "Closed continuous support, deformation bounds and an all-branch uniqueness certificate are mandatory; an unsupported trial commits no history.",
+    "Initial radial tips are held at zero during preparation then released; preload relaxation draws on stored preparation energy, not an added transverse source.",
+    "Bending is conservative; backward-Euler bending remainder is numerical dissipation, not added slab viscosity or foundation drag.",
+    "Endpoint restart certifies source work, preparation, anchors and total energy; an independent repartition audit of historical basal/bending dissipation needs per-step records.",
+    "Spatial/timestep sensitivity of fresh nonlinear histories is measured; nonlinear continuum convergence and historical quadrature migration are not claimed.",
+    "The unchanged work certificate may conservatively reject subdivision of a nearly cancelled basal source. No past ledger adjustment is made."
+  ],
+  "next_step": "Finite transport of oriented physical fault geometry in consistent material coordinates, then spatial underthrust admission and conservative material events.",
+  "notes": [
+    "New targeted tests overlap the focused profile; counts are not summed.",
+    "Historic mean/distributed reports remain unchanged; compatibility reruns are archived separately.",
+    "Saved50 missing inputs are not fabricated; new physics validation is synthetic.",
+    "Changes remain local in the requested branch; no commit or push performed."
+  ]
+}

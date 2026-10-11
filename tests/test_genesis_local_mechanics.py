@@ -115,13 +115,13 @@ def test_material_adapter_is_explicit_and_legacy_retains_global_fields(real_sour
     model, young, checkpoint, cfg = real_source
     model, state, sample, origin = late_state(real_source)
     state.crust_age_myr[0] = 0.
-    monkeypatch.setattr(model.loading,"sample",lambda context: sample)
     legacy_cfg=deepcopy(cfg)
     legacy_cfg["young_shell"].pop("mechanics_model_version")
     legacy=YoungWorldCoupling(model,young,legacy_cfg,deepcopy(checkpoint))
+    modern=YoungWorldCoupling(model,young,deepcopy(cfg),deepcopy(checkpoint))
+    monkeypatch.setattr(model.loading,"sample",lambda context: sample)
     legacy.mechanical_fields(state,0.)
     assert state.mantle_lithosphere_thickness_km[0] == state.mantle_lithosphere_thickness_km[1]
-    modern=YoungWorldCoupling(model,young,deepcopy(cfg),deepcopy(checkpoint))
     modern.mechanical_fields(state,0.)
     assert state.mantle_lithosphere_thickness_km[0] == 0.
     assert state.mantle_lithosphere_thickness_km[1] > 0.

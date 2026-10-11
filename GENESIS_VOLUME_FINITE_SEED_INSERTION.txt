@@ -1,0 +1,237 @@
+КОНЕЧНЫЙ МАТЕРИАЛЬНЫЙ ЗАРОДЫШ И CONSTRAINED BULK INSERTION GENESIS
+10.10.2026; fix/genesis-mantle-convection; автоматическая цель выключена.
+
+РЕЗУЛЬТАТ
+Конечная поверхность теперь вычисляется как literal world plane intersect
+sphere intersect original live cohort. Рассчитаны положительная конечная
+площадь, reference/current метрики, полный original A/P trace и frozen material
+follow. Повторно использованы прежние локальные поля и inherited prestress;
+история появления материала из расплава не заменена новой инициализацией.
+Добавлены compact bulk enrichment, cross/enriched stiffness/mass, source-bound
+constrained insertion и отдельный расчёт elastic endpoint constraint reaction.
+Физический release, финансирование и новая enriched strain memory не выполнены.
+
+ПРОИСХОЖДЕНИЕ ПРИНЯТОГО СОСТОЯНИЯ
+Тот же Genesis: 0.8684000000000005 Myr / 800 когорт / 4 принятых интервала.
+Parent raw SHA 62579a0bad128830a66e2f44579cf2b1f5d3835b691225b8d431102f3e4486d7
+Parent self SHA 5d282ceeccc8d76acc38427d08a7e65575fddb509fc4b93115cbe6d318e91349
+Formation self SHA cd79ee2a5139c4b91abdb1b4714a761c9153cc9f4490f5aa63fa2facba458c89
+Окончательный Actual control один раз восстановил полный parent от formation checkpoint.
+Parent before/after и оригинал byte-identical. Новых принятых шагов,
+новорождённых когорт, physical Gamma, released DOFs и creation debit: 0.
+Прежний damage/persistence gate сохранён: actual activation event отсутствует.
+Law=None и explicit prospective example R=100 m оба возвращают noevent.
+Gc, radius и cohesive inputs — явные перспективные вычислительные входы,
+не восстановленная физика прошлого и не калибровка настоящей планеты.
+
+КОНЕЧНЫЙ SEED И МАТЕРИАЛЬНЫЕ МЕТРИКИ
+Clipping сделан внутри исходной когорты по frozen birth geometry; хранится
+literal plane normal/offset, sphere center/radius и immutable material IDs.
+Обе площади/нормали и полный original 18-column A/P trace сохранены.
+Для движения после birth фиксируются N/lambda; material points следуют
+x_ref+T*U, без нового пересечения неподвижной мировой plane/sphere.
+Полный 3D current placement включает A и P; initial traction/seed используют
+reference work measure и прежнюю память без повторного absolute-strain update.
+Finite surface quadrature approximate: положительная площадь не объявляет
+точным аналитическим интеграл или достаточным физический bulk release.
+
+COMPACT BULK ENRICHMENT И TIED СОХРАНЕНИЕ
+Field: u=T*q + H(phi_birth)*w_birth*T*a, H=+1/2 или -1/2 на двух сторонах
+literal world plane. Внутри sphere r<R:
+w=(1-r^2/R^2)^2 * 27*N0*N1*N2 * 4*t*(1-t),
+t=(lambda-lambda_inner)/(lambda_outer-lambda_inner); вне sphere w=0.
+Bubble равен нулю на seed front и всех границах original cohort. Surrounding
+ligament остаётся целым; целая когорта не превращается в две disconnected banks.
+Градиент считается относительно reference material chart с полным 3D frozen
+birth inverse/Jacobian. Bulk интегрирует регулярные one-sided gradients;
+distributional interface delta не включена в elastic bulk energy.
+Compact surface jump=w*T*a. Сохраняются все original A/P components и их
+сопряжённые discrete force/work. Added 18 amplitudes constrained к нулю;
+nonzero a в проверках — исключительно computational virtual pose/work probe.
+При a=0: R^T*K_aug*R=K_parent, R^T*M_aug*R=M_parent,
+R^T*D_aug*R=D_parent, R^T*F_aug=F_parent и J*R=0 точно сохраняют
+прежний оператор, внешние силы, parent strain memory и endpoint response.
+Это 18 формальных columns; resolved numerical rank/conditioning сообщаются
+явно. Полная inverse и независимый full-rank release solver не заявлены.
+volume_rank_not_surface_opening=True: full volume trace rank не равен рангу
+surface jump на Gamma. В compact basis есть как минимум три аналитических
+моды с zero crack jump на Gamma, но nonzero displacement внутри объёма:
+scalar phi_birth=(n dot x_birth-d), умноженный на каждую world axis.
+Без w и H этот scalar представим original A/P trace; после enrichment w*H
+обнуляет его jump на Gamma, сохраняя regular объёмное поле вдали от Gamma.
+Все 18 amplitudes сейчас constrained=0, поэтому tied insertion сохраняет
+исходный оператор. Свободный выпуск Gamma-null modes без cohesive work мог бы
+снижать bulk energy лишь за счёт изменения численного пространства и ложно
+финансировать fracture. До physical release эти моды должны оставаться tied
+либо отдельно пройти допуск refinement с правильной работой. Объёмный rank18
+не свидетельствует о 18 независимых физических opening modes.
+Basal drag переносится в старый parent block; отдельное физическое вязкое/
+drag evolution enriched modes пока не добавлено.
+
+РЕАКЦИЯ И РАБОТА — СОХРАНЁННОЕ РАЗЛИЧИЕ
+Added endpoint elastic force получается из исходной stress memory и regular
+enrichment gradient; constraint reaction — его отрицание при tied a=0.
+Reference-area prestress traction отдельно интегрируется через compact jump.
+Constraint-minus-surface-force хранится как вычисленное отличие: finite front,
+bulk divergence и quadrature terms не стираются ради равенства.
+Это elastic endpoint reaction, НЕ full accepted dynamic birth reaction:
+inertia, viscosity/drag и finite-time accepted reaction здесь не восстановлены.
+Surface traction не заменяет полную bulk constraint reaction. Creation Gc cost
+вычисляется перспективно; available work/funding и Genesis debit из неё не следуют.
+Прошлая damage/slip dissipation не объявляется источником рождения поверхности.
+Nonzero enriched strain пока не переносится в новую физическую историю памяти.
+
+ОФИЦИАЛЬНЫЕ ПРОВЕРКИ И ГРАНИЦЫ ТОЧНОСТИ
+149 новых тестов PASS; actual control, независимый audit и 3 resealed negatives PASS.
+tests: exit=0, real seconds=466.315063429, stderr bytes=0; facts SHA=570d7c503d70a81aa5fd73d04a689a9b09109f74318453cd42d02c1e8a93766e
+actual: exit=0, real seconds=1099.766194330, stderr bytes=0; facts SHA=4cde71e106834c0720147f89d74cfaa83664eb01e2bcfc688fa9498679475ca9
+independent: exit=0, real seconds=151.427364617, stderr bytes=0; facts SHA=c77e5c9419676ca4388821b1d73540e7a8dc50239a99b95359be18bf68963ee4
+negative: exit=0, real seconds=152.389664677, stderr bytes=0; facts SHA=6e4baa37112db7522943ce3ee819d1c6c837cd9219ad0789131c681f71eba9ac
+Во всех четырёх captures source_before=source_after; added/changed sources=0.
+Public OPENBLAS/OMP/MKL thread controls=1. Проверки не заменены метаданными.
+Actual cases используют явный computational radius R=.12*current band thickness
+нескольких метров. Ball целиком внутри original cohort; интеграция bulk напрямую
+по contained sphere и frozen inverse chart, не coarse whole-cohort mask.
+Orders 4/8/12 проверяют surface/bulk trace, A/P forces и отдельные
+AA/AP/PA/PP stiffness/mass blocks. Observed relative agreement 8->12 <=2e-6
+для заявленных actual cases; это наблюдённая сходимость, не rigorous error bound.
+face0 / cohort1: R=4.02421551022 m; surface nodes=64, volume nodes=2048; A_ref=50.8772199614 m2, A_birth=50.8759268072 m2; resolved trace rank=18.
+face40 / cohort41: R=4.02481758991 m; surface nodes=64, volume nodes=2048; A_ref=50.8918547465 m2, A_birth=50.8911514627 m2; resolved trace rank=18.
+face79 / cohort80: R=4.04961865605 m; surface nodes=64, volume nodes=2048; A_ref=51.5219667777 m2, A_birth=51.5202699316 m2; resolved trace rank=18.
+Отдельные R=100 m probes рассчитывают clipped finite SURFACE ONLY в тех же
+исходных thin cohorts. Их bulk convergence и physical release не сертифицированы.
+Их нельзя подменять маленькими contained probes при допуске physical candidate.
+Независимый producer-free audit восстанавливает исходные material поля,
+finite clipping/quadrature, old K/M/D/F, enriched regular gradients,
+reaction difference, source gate и force/work. Отдельный immutable external
+strict companion проверяет initial elastic energy и old external-force prefix
+всех трёх case точно, относительно literal independently-audited parent snapshot,
+без допуска численной погрешности. Strict companion не меняет формулы numerical oracle; отдельная precision
+correction описана ниже.
+Raw pin исполняемого companion совпадает до/после; path/pin связаны с фактической
+командой independent capture и архивируются вместе с report. Это добавление
+проверки, не новый replay или пересоздание истинного состояния Genesis.
+Numerical geometry проверяется отдельно от opaque integrity links, которые
+не объявляются реконструкцией producer.
+3 correctly resealed full-fixture negatives отвергаются по intended math reason:
+подмена sphere без новой quadrature; удаление P из compact jump/force;
+подмена constraint reaction surface traction с искусственным zero mismatch.
+Control SHA 3937864397aad48b3dd5f1c17d1c020cc355f997355ed4cc9d31aaa79821ee5e
+Independent SHA 48177500b185a01226d3384cd20e61f6769e61e2ae16c30d5be82c7f99878d02
+Negative SHA 1e6fc80e68c32e4e0259305b9c40e32b705cb67f9fe58c5dd97fd77738d8a932
+
+ПРЕДВАРИТЕЛЬНЫЕ ЗАПУСКИ И СОХРАНЁННЫЙ ОСТАНОВЛЕННЫЙ КОНТРОЛЬ
+tests01: exit=0, real seconds=447.535930323; stderr bytes=0, stderr raw SHA=e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855; facts SHA=bbb9611cdf4cd0447e96b46a69fafa5bbf34b68174484a3ca036fca5fa6c9cd2. 135 tests PASS; в окончательное число новых тестов не прибавлены.
+actual01: exit=-15, real seconds=644.510555667; stderr bytes=0, stderr raw SHA=e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855; facts SHA=d6aff448c702e8ee4bf0c92d8ca5cc79af34ac95956c95cebe40e70a079ca01c. Контроль намеренно остановлен после статического обнаружения отсутствующего parent_checkpoint_sha256 в whole-fixture oracle context; математического verdict этот запуск не дал. В новой oracle context добавлено исходное поле provenance, затем окончательные проверки выполнены заново.
+tests02: exit=0, real seconds=399.822361191; stderr bytes=0, stderr raw SHA=e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855; facts SHA=1fecf16f6fbda57f19e381dcc6bee63bab29dcfc5eec5b7c4f7e145aee980363. 135 tests PASS; в окончательное число новых тестов не прибавлены.
+actual02: exit=1, real seconds=668.163410294; stderr bytes=1018, stderr raw SHA=89317b33bed3f8d4d9475c10da98d1fc42fb8b25504a373158aeb3b2de5fba59; facts SHA=ab9b55332e2cfac6ea6ff3a285b898fff58382f10ad32efbb7fd5239813979ac. Реальный control отказал на требуемой 8->12 сходимости первого case при неизменном пороге 2e-6. Его exit/stderr сохранены отдельно; подробный максимум по массивам в этом исходном запуске не архивировался и не объявляется восстановленным. Это математический отказ по численному критерию, отдельно от намеренной остановки actual01. Причина/коррекция: Локальная диагностика выявила near-cancelling signed mass_cross.AA и потерю малых delta при округлении world coordinates; отдельный precision prototype и новая producer/oracle correction проверены свежими final captures при прежнем пороге2e-6. Точный исходный actual02 maximum не архивировался.
+tests03: exit=0, real seconds=490.150741999; stderr bytes=0, stderr raw SHA=e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855; facts SHA=e390069ee307f4509d1555f1c68164bf853e3adc651771f1b849c33a92609626. 138 tests PASS; в окончательное число новых тестов не прибавлены.
+actual03: exit=1, real seconds=871.991886553; stderr bytes=1212, stderr raw SHA=518d69e39851cbe08aa2b7eef9b6b76e3969e9e65bbdc9407aff4cc2e93b30e9; facts SHA=961b3070de823cd4841bca085a5ea22f7b77c3c4b734693d66d96f142c3b7ebe. Реальный control прошёл bulk convergence первых двух case, затем отказал на source-bound current-position guard третьего case. Полный verdict не PASS; capture и partial artifacts сохранены отдельно. Численная причина/коррекция задаются только после отдельной диагностики, без выдуманного coordinate mismatch. Причина/коррекция: Третий case face79 отказал на source-bound position guard при bit-identical lambda: локально currentz discrepancy2.065121407e-10m превышала старый output-scaled bound7.501196823e-12m; summation/association cancellation. Guard сохраняет multiplier128eps, но componentwise scale теперь строится по absolute source operations с отдельным lambda guard/delta-lambda propagation; exact source rebuild и physical thresholds unchanged. Пояснение01labels уточнено во втором diagnostic; оба отчёта сохранены.
+tests04: exit=0, real seconds=566.800870028; stderr bytes=0, stderr raw SHA=e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855; facts SHA=5e4e3e1bc40ed18c00927bbaf88f05e20c36eb1298ff31738bf02624e2d50a88. 142 tests PASS; в окончательное число новых тестов не прибавлены.
+tests05: exit=-15, real seconds=361.068383922; stderr bytes=0, stderr raw SHA=e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855; facts SHA=1c1e9f00dffad211a88a96e27a16e23ec9b3b55ae2e8a228d471be750b02dc5f. Предварительный suite не завершён полным PASS; фактический nonzero exit и исходные logs сохранены отдельно. В окончательный test count он не входит и не объявляется итоговым результатом проверки. Причина/коррекция: Root намеренно послал SIGTERM child97970 после official independent02 center-residual отказа. Это не тестовое assertion failure; suite остановлен для завершения audit-only represented-plane metadata correction до окончательной проверки. Capture завершён до любого редактирования oracle; source before/after совпадают, exit=-15. Полный verdict отсутствует и PASS/count этого partial suite не заявляется.
+independent02: exit=1, real seconds=85.495205596; stderr bytes=2118, stderr raw SHA=8b656715fb79d14a902d3055682a6c4c9cfed768b8452761afafc6998d747b16; facts SHA=9f3c77d9e3c0af3d1ef6a213b0fa05440d8df31917c4275b95457befce9e01d9. Предварительный реальный запуск завершился ошибкой; его отказ и точный stderr сохранены. Это отдельный результат, который не подменяется окончательным PASS. Причина/коррекция: Реальный audit впервые отказал на literal plane center residual второго case face40; прежняя догадка о третьем case уточнена отдельным diagnostic. Producer и independent normalizations дают различающиеся floating-point coefficients/offsets, проявляющиеся при cancellation dot residual; face79 тоже affected. Producer/actual04 не менялись. Oracle проверяет exact saved residual по archival normalized n/d, matching independent coefficients сохраняет bound64eps, residual reconstruction propagates измеренные coefficient differences. Неуспешный capture02 и center diagnostic сохранены, его PASS не заявляется; physical thresholds/history не изменены.
+independent01: exit=1, real seconds=37.061530191; stderr bytes=2049, stderr raw SHA=667ffe5d1674bff3f06982a875835e9768cd9be1627467735d77cc816fd2c4fb; facts SHA=36b4d091641b369f23fcb4d4ed16d1e0ce8b60f61f4ae84ec66a718f63c16abf. Предварительный реальный запуск завершился ошибкой; его отказ и точный stderr сохранены. Это отдельный результат, который не подменяется окончательным PASS. Причина/коррекция: Реальный независимый audit отказал на near-cancelling endpoint reaction minus surface force после actual04 PASS. Исправлен только oracle: прежние строгие сравнения обоих operands сохранены, exact stored identities проверяются буквально, а independent residual использует propagation измеренных operand errors. Producer и все50 literal actual-entry dependencies unchanged; actual04 fixtures/facts/source snapshots сохранены без повторного planetary replay. Свежий independent03 запущен root отдельно и только ожидается этим workflow.
+Начальные captures/partial tree хранятся как preliminary extras; их source pins
+не подменяют окончательные captures и не входят в current-source union.
+
+ЛОКАЛЬНАЯ ДИАГНОСТИКА И КОРРЕКЦИЯ ЧИСЛЕННОЙ ТОЧНОСТИ
+После настоящего convergence FAIL actual02 отдельные локальные diagnostics
+без нового full public Genesis replay выделили near-cancelling signed
+mass_cross.AA: relative comparison8->12 порядка 1e-5. В этих diagnostics
+surface metrics расходились примерно на 4.8e-11, K/F и остальные M blocks —
+порядка 1e-10. Это локальные диагностические значения, не сохранённый exact
+максимум первоначального actual02 и не PASS настоящего actual control.
+Причина — потеря малых текущих относительных координат при сложении с крупными
+world coordinates и последующее cancellation при signed mass integration.
+Precision prototype формирует local delta до округления world coordinates,
+использует longdouble Newton/chart/Jacobians/bubble и signed mass accumulation.
+В отдельном prototype сравнения8->12/16 достигли порядка 1.9e-11 при прежнем
+пороге2e-6. Prototype script/report — diagnostic extras, не physical admission.
+Коррекция переносит устойчивое вычисление малых delta и внутренних сумм в
+новый producer и независимый oracle; их окончательная проверка — только
+свежие official captures выше. Конечные DTO сохраняют ordinary numeric fields.
+Порог сходимости, physical law, исходная история и accepted parent не изменены.
+Предварительные tests01/tests02 не суммируются с окончательным suite.
+
+ОТКАЗ POSITION GUARD И УЗКАЯ КОРРЕКЦИЯ ROUND-OFF BOUND
+Actual03 прошёл required bulk convergence двух case, затем отказал на source-
+bound position comparison третьего case face79. Это не итоговый PASS.
+Локальные диагностики установили: lambda->q->lambda bit-identical во всех
+64 points; currentz maximum difference2.065121407e-10 m при прежнем bound
+7.501196823e-12 m (примерно27.53 раза). Referencez maximum difference
+1.664943738e-10 m при прежнем bound около7.61e-12 m.
+Причина — matrix-dot/einsum summation и association lambda terms при cancellation;
+геометрия и material coordinates не менялись. Старый bound, масштабированный
+маленьким результатом world component, не учитывал absolute input operations.
+Новый guard сохраняет тот же multiplier128*machine_epsilon, но использует
+componentwise absolute operation sums source X,A,P с weighted abs(N), отдельно
+проверяет lambda и учитывает propagation delta-lambda. Global-norm floor,
+ослабление physical thresholds или замена history не вводятся. Exact source
+reconstruction/canonical binding прежние. Малые numerical bounds относятся
+к округлению представлений, не к разрешённому физическому разрыву материала.
+Diagnostic01 верно измеряет расхождения; обозначения ассоциаций lambda уточнены
+во втором diagnostic02. Оба script/report сохранены. Review notes и отдельный
+third-case local preflight тоже архивированы; local PASS не заявляет full
+source binding, source_geometry_bound=False, не выполняет public checkpoint
+restore и не заменяет fresh actual04/independent verdict.
+Первый finish workflow остановился на actual03 gate до всех dependent steps;
+его исходник/FAIL report сохранены. Свежий workflow использует final captures.
+
+ОТКАЗ AUDIT И ЧЕСТНЫЕ ВЕРСИИ ИСХОДНИКОВ ПО CAPTURE
+Первый official independent audit отказал на near-cancelling difference
+endpoint bulk reaction minus surface force. Actual04 уже имел PASS; producer
+и его все50 literal actual-entry import dependencies после этого не менялись.
+Исправлен только независимый oracle: оба operands проверяются прежними
+строгими критериями; сохранённый mismatch точно равен stored reaction minus
+stored surface force; независимый residual проверяется с propagated operand
+error bounds, без деления только на маленькую difference. Это коррекция audit,
+не новое механическое состояние или изменение physical law/funding.
+Неуспешный audit01 и failed workflow02 сохранены отдельно. Следующий audit02
+также отказал, теперь на literal plane center residual второго case face40: producer
+и independent reconstruction использовали разные floating-point normalization
+coefficients, что проявилось при cancellation в dot residual. Исправление
+oracle проверяет exact self-consistency residual с архивированными normalized n/d;
+independent coefficients сравниваются прежним normal/offset bound64eps, а
+residual reconstruction учитывает propagation измеренных coefficient differences.
+Это operation-resolution correction, не ослабление physical criteria.
+Локальный center diagnostic отдельно сохраняет также affected face79;
+первое место отказа audit02 — face40, прежняя догадка о третьем case уточнена.
+Оба отказа сохранены; окончательный свежий audit использует те же immutable
+actual04 fixtures без нового planetary replay. Producer не изменялся.
+Original actual04 capture facts и все source snapshots не переписаны.
+В его broad declared inventory остаётся старая версия НЕИМПОРТИРОВАННОГО
+analysis/genesis_volume_seed_validation/independent_audit.py. В archived actual-
+entry AST closure этого файла нет, все50 raw source pins/current bytes совпадают;
+explicit __import__/import_module/exec/eval/spec/exec_module/runpy calls отсутствуют.
+Все прочие actual04 captured/current source bytes по-прежнему совпадают.
+Fresh tests, independent и negatives каждый подтверждают current audit SHA.
+Package содержит per_capture_source_sha256 и отдельный current-validated union:
+его captured_source_sha256 alias не выдаётся за single-version historical union.
+Narrow historical inventory exception и closure proof записаны явно; это
+static literal import proof, не dynamic execution trace. Historical bytes
+остаются в исходном capture; final metadata reader перепроверяет все версии.
+
+СОХРАНЕНИЕ ПРЕЖНЕЙ РАБОТЫ
+База для отдельной literal preservation проверки: 12 sealed packages,
+18002 members / 1558237767 bytes, 361 прежний Python source pin и 6 native pins.
+Этот writer не запускает preservation audit, producer, pytest или replay.
+Полный прежний handoff сохранён literal suffix; architecture сохраняет title
+и весь прежний body; предыдущий nucleation report остаётся byte-identical.
+Новый package и его final metadata readback выполняются отдельно после writer.
+
+ОСТАТОК ПУНКТА 1 — ТЕ ЖЕ ТРИ УСЛОВИЯ
+Пункт 1 открыт по тем же трём условиям:
+1. Физическое рождение/insertion/release: новый закон памяти для enriched strain,
+   полная физическая реакция и её согласованная замена, рассчитанный источник
+   работы/funding и точность source-selected clipped bulk. До оплачиваемого
+   release нужны также корректная обработка surface-jump-null modes: сохранять
+   их tied либо отдельно допускать изменение объёмного пространства с правильной
+   работой. Вычислительные constrained modes и малый contained seed этих условий
+   не закрывают.
+2. All-pair full-time contact/underthrust admission, включая reverse C5->C1.
+3. Настоящее active Genesis fault/contact/underthrust continuation с independent
+   work/balances/restart.
+До полного закрытия пункта 1 остаётся существенная работа. Пункты 2–6 открыты.
+Следующая часть условия 1 — новая enriched material memory и полная реакция,
+точность bulk для физически выбранного clipped seed и корректный допуск
+Gamma-null modes, затем funded release.

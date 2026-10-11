@@ -1,0 +1,41 @@
+from pathlib import Path
+import hashlib, json, sys, time, traceback
+ROOT = Path('/workspace/Habitable-Moon-Project')
+sys.path.insert(0, str(ROOT))
+PARENT = ROOT / 'analysis/geometric_native_common_material_surface_transport_validation'
+paths = ('tectonics/geometric_native_common_material_surface_transport.py',
+         'analysis/geometric_native_common_material_surface_transport_validation/native_control.py')
+def pins():
+    return {p: hashlib.sha256((ROOT/p).read_bytes()).hexdigest() for p in paths}
+def encoded(x):
+    return json.dumps(x, sort_keys=True, separators=(',', ':')).encode()
+report = {'scope': 'THREE_LOCAL_QUERIES_ONLY_NOT_RELEASE_GATE', 'before': pins(), 'queries': []}
+start = time.perf_counter()
+try:
+    from fractions import Fraction as F
+    from analysis.geometric_native_common_material_surface_transport_validation.native_control import surface_case, original_case, material_system
+    for nonzero in (False, True):
+        response = surface_case(0, nonzero)[1]
+        report['queries'].append({'kind': 'surface', 'index': 0, 'nonzero': nonzero, 'response_binding_sha256': response.binding_sha256})
+        print('surface', nonzero, 'PASS', flush=True)
+    index = next(i for i, a in enumerate(material_system().attachments) if a.archived)
+    response = original_case(index, F(1, 2))
+    report['queries'].append({'kind': 'original_archived_material', 'index': index, 'depth_fraction': [1, 2], 'response_binding_sha256': response.binding_sha256})
+    print('archived original', index, 'PASS', flush=True)
+    report['status'] = 'PASS_THREE_LOCAL_QUERIES_ONLY'
+except BaseException as exc:
+    report['status'] = 'FAIL_THREE_LOCAL_QUERIES_ONLY'
+    report['error'] = repr(exc)
+    report['traceback'] = traceback.format_exc()
+    traceback.print_exc()
+finally:
+    report['after'] = pins()
+    report['seconds'] = time.perf_counter()-start
+    if report['before'] != report['after']:
+        report['status'] = 'FAIL_SOURCE_CHANGED'
+    report['report_sha256'] = hashlib.sha256(encoded(report)).hexdigest()
+    target = PARENT / 'smoke01.json'
+    with target.open('xb') as stream:
+        stream.write(encoded(report)+b'\n')
+    print(json.dumps(report, sort_keys=True), flush=True)
+sys.exit(0 if report['status'] == 'PASS_THREE_LOCAL_QUERIES_ONLY' else 1)

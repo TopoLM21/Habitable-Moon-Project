@@ -1,0 +1,136 @@
+"""Final887 evidence readback only; no project imports or physics execution."""
+from pathlib import Path
+from contextlib import redirect_stdout
+import argparse
+import hashlib
+import io
+import json
+import sys
+import time
+import types
+
+ROOT = Path('/workspace/Habitable-Moon-Project')
+PARENT = ROOT / 'analysis/geometric_native_archive_material_carrier_validation'
+FINAL = ROOT / 'analysis/geometric_native_archive_material_carrier_final_readback'
+PRESERVATION_RAW = '46c0eb5bed666be67edd4b23a9f41332bad139b19b90d71d838756f114936515'
+SCOPE = 'DECLARED_GLOBAL_PAIRED_THREE_DIMENSIONAL_ARCHIVE_CARRIER_ONLY'
+
+def encoded(value):
+    return json.dumps(value,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+
+def digest(path):
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+def seal(path,key):
+    value=json.loads(Path(path).read_bytes())
+    assert value[key]==hashlib.sha256(encoded({k:v for k,v in value.items() if k!=key})).hexdigest(),str(path)
+    return value
+
+def source_map():
+    return {str(path.relative_to(ROOT)):digest(path)
+            for folder in ('tectonics','tests','analysis','scripts')
+            for path in sorted((ROOT/folder).rglob('*.py'))}
+
+def run(output_path):
+    started=time.perf_counter()
+    reader_source_raw=digest(__file__)
+    requested=Path(output_path)
+    output=requested.resolve()
+    assert requested.is_absolute() and requested==output and not output.is_symlink()
+    assert not output.exists() and output.parent.is_dir()
+    if output.is_relative_to(ROOT):
+        assert output==FINAL/'readback.json' and not (FINAL/'archive.json').exists()
+        assert {str(p.relative_to(FINAL)) for p in FINAL.rglob('*') if p.is_file()}=={'readback_source.txt','console.log'}
+    docs={str(ROOT/name):digest(ROOT/name) for name in ('CLOUD_HANDOFF.md','GEOMETRIC_NATIVE_ARCHIVE_MATERIAL_CARRIER_IMPLEMENTATION.md')}
+    manifest=seal(PARENT/'artifact_manifest.json','manifest_sha256')
+    assert manifest['format']=='native-archive-material-carrier-component-manifest-1'
+    assert manifest['status']=='PASS_COMPONENT_ARTIFACTS_CLOSED'
+    assert manifest['source_count']==887 and manifest['physical_scope']==SCOPE
+    pins={str(PARENT/'artifact_manifest.json'):digest(PARENT/'artifact_manifest.json')}
+    names=set()
+    for name,row in manifest['files'].items():
+        path=ROOT/name
+        assert path.is_file() and path.stat().st_size==row['bytes'] and digest(path)==row['sha256'],name
+        pins[str(path)]=row['sha256']
+        if path.is_relative_to(PARENT):names.add(str(path.relative_to(PARENT)))
+    actual={str(p.relative_to(PARENT)) for p in PARENT.rglob('*')
+            if p.is_file() and '__pycache__' not in p.parts and p.suffix!='.pyc'}
+    assert actual==names|{'artifact_manifest.json'}
+    assert len(manifest['files'])==manifest['closed_component_file_count']
+    release=PARENT/manifest['current_release']
+    gate=seal(release/'report.json','report_sha256')
+    assert gate['status']=='PASS' and gate['source_count']==887
+    assert manifest['gate_report_selfseal']==gate['report_sha256']
+    assert gate['tests_exit_code']==0 and gate['tests_collected']==gate['tests_passed']>0
+    assert gate['tests_failed']==gate['tests_skipped']==0
+    assert gate['native_control_succeeded'] and gate['current_physical_scope']==SCOPE
+    assert {str(p.relative_to(release)) for p in release.rglob('*') if p.is_file()}=={
+        'report.json','pytest.log','control_console.log','native_control/report.json','native_control/source_packet.json'}
+    for name,pin in gate['output_raw_sha256'].items():assert digest(release/name)==pin
+    assert set(gate['output_raw_sha256'])=={'pytest.log','control_console.log','native_control/source_packet.json'}
+    frozen=json.loads((ROOT/gate['frozen_source_map_path']).read_bytes())
+    assert source_map()==frozen and len(frozen)==887
+    assert hashlib.sha256(encoded(frozen)).hexdigest()==gate['frozen_source_map_sha256']
+    assert digest(ROOT/gate['frozen_source_map_path'])==gate['frozen_source_map_raw_sha256']
+    for name,pin in gate['executing_source_snapshots'].items():assert digest(ROOT/name)==pin
+    expected_snapshots={str(PARENT.relative_to(ROOT)/Path('source_snapshots')/manifest['current_release']/(name.replace('/','__')+'.txt')):pin for name,pin in gate['additional_source_sha256'].items()}
+    assert gate['executing_source_snapshots']==expected_snapshots
+    control=seal(release/'native_control/report.json','report_sha256')
+    assert gate['native_control_report_sha256']==control['report_sha256']
+    packet=seal(release/'native_control/source_packet.json','packet_sha256')
+    assert control['status']=='PASS' and control['physical_candidate_status']==SCOPE
+    assert packet['physical_candidate_status']==SCOPE
+    assert control['packet_sha256']==packet['packet_sha256']
+    assert control['packet_raw_sha256']==digest(release/'native_control/source_packet.json')
+    assert packet['complete_model_and_point_restart_verified']
+    assert len(packet['original_point_queries'])==control['original_point_query_count']
+    assert control['archived_original_parents_exercised']==['octant:5','octant:6','octant:7']
+    assert control['accepted_original_native_intervals']==1 and control['accepted_new_native_intervals']==0
+    assert not control['original_point_1_completed'] and control['original_point_1_remaining_work_blocks']==1
+    assert len(control['remaining_physical_conditions'])==3
+    audit=seal(PARENT/'independent_audit/report.json','audit_sha256')
+    assert manifest['independent_audit_selfseal']==audit['audit_sha256']
+    assert audit['status']=='PASS' and audit['source_packet_raw_sha256']==digest(release/'native_control/source_packet.json')
+    assert digest(PARENT/'independent_audit/audit_source.txt')==audit['executing_source_raw_sha256']
+    helper=PARENT/'baseline_883_preservation_source.txt'
+    assert digest(helper)==PRESERVATION_RAW
+    module=types.ModuleType('_private_final887_preservation')
+    module.__file__=str(helper)
+    exec(compile(helper.read_bytes(),str(helper),'exec'),module.__dict__)
+    unique=hashlib.sha256(str(output).encode()).hexdigest()[:20]
+    preserved_output=Path('/workspace/native_archive_material_carrier_baseline_20261007')/('final887_preservation_'+unique+'.json')
+    with redirect_stdout(io.StringIO()):
+        prior=module.run(gate['additional_source_sha256'],output_path=preserved_output)
+    assert prior['current_python_source_count']==887 and prior['preserved_prior_raw_dependency_pin_count']==341
+    assert prior['all883_python_sources_unchanged']
+    for name,pin in pins.items():assert digest(name)==pin
+    assert source_map()==frozen
+    for name,pin in docs.items():assert digest(name)==pin
+    assert digest(__file__)==reader_source_raw
+    result=dict(format='native-archive-material-carrier-final-readback-1',
+        status='PASS_FINAL887_EVIDENCE_READBACK_ONLY',
+        physical_scope=SCOPE,source_count=887,prior_883_sources_unchanged=True,
+        current_manifest_raw_sha256=digest(PARENT/'artifact_manifest.json'),
+        current_manifest_selfseal=manifest['manifest_sha256'],
+        current_manifest_file_count=manifest['closed_component_file_count'],
+        current_release=manifest['current_release'],tests_passed=gate['tests_passed'],
+        gate_seconds=gate['elapsed_seconds'],native_control_query_count=control['original_point_query_count'],
+        independent_audit_selfseal=audit['audit_sha256'],
+        prior_883_preservation_path=str(preserved_output),
+        prior_883_preservation_raw_sha256=digest(preserved_output),
+        prior_883_preservation_selfseal=prior['preservation_sha256'],
+        prior_883_dependency_pin_count=341,temporary_alias_count=15,strict_ancestry_closure_count=11,
+        current_dependency_raw_sha256=pins,document_raw_sha256=docs,
+        accepted_original_native_intervals=1,accepted_new_native_intervals=0,
+        original_point_1_remaining_work_blocks=1,original_point_1_completed=False,
+        remaining_physical_conditions=control['remaining_physical_conditions'],
+        project_imports=False,math_or_tests_or_solver_or_quadrature_reexecuted=False,
+        executing_readback_source_raw_sha256=reader_source_raw,seconds=time.perf_counter()-started)
+    result['audit_sha256']=hashlib.sha256(encoded(result)).hexdigest()
+    with output.open('xb') as stream:stream.write(encoded(result)+b'\n')
+    print(encoded(result).decode())
+    return result
+
+if __name__=='__main__':
+    parser=argparse.ArgumentParser();parser.add_argument('--output',required=True)
+    run(parser.parse_args().output)

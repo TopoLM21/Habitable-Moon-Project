@@ -1,0 +1,168 @@
+from datetime import datetime, timezone
+import hashlib
+import json
+from pathlib import Path
+import re
+import subprocess
+
+ROOT = Path('/workspace/Habitable-Moon-Project')
+OUT = ROOT / 'analysis/geometric_native_validation'
+
+
+def sha(path):
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
+def read(name):
+    return json.loads((ROOT / name).read_text())
+
+
+def current(snapshot):
+    changed = [name for name, digest in snapshot.items()
+               if not (ROOT / name).is_file() or sha(ROOT / name) != digest]
+    assert not changed, changed
+
+
+def write(path, value):
+    with path.open('x', encoding='utf-8') as stream:
+        json.dump(value, stream, indent=2, sort_keys=True, allow_nan=False)
+        stream.write('\n')
+
+
+baseline_names = {
+    'prior_common_421': 'analysis/geometric_intrinsic_validation/release_gates/focused_code_and_tests_after.json',
+    'original_full_417': 'analysis/geometric_underthrust_validation/parallel_portable_final/code_and_tests_after.json',
+    'original_full_278_supplemental': 'analysis/geometric_underthrust_validation/parallel_portable_final/supplemental_runtime_after.json',
+}
+baseline = {}
+for label, name in baseline_names.items():
+    snapshot = read(name)
+    current(snapshot)
+    baseline[label] = dict(manifest=name, manifest_sha256=sha(ROOT / name),
+                          path_count=len(snapshot), changed_paths=[])
+
+receipts = {}
+for mode in ('focused', 'collection', 'sources'):
+    name = f'analysis/geometric_native_validation/release_gates/{mode}_receipt.json'
+    receipt = read(name)
+    assert receipt['status'] == 'passed' and receipt['exit_code'] == 0
+    assert receipt['core_changed_paths'] == receipt['validation_source_changed_paths'] == []
+    assert sha(ROOT / receipt['log']) == receipt['log_sha256']
+    assert sha(OUT / 'run_native_checks.py') == receipt['gate_source_sha256']
+    for scope in ('code_and_tests', 'validation_sources'):
+        before = read(f'analysis/geometric_native_validation/release_gates/{mode}_{scope}_before.json')
+        after = read(f'analysis/geometric_native_validation/release_gates/{mode}_{scope}_after.json')
+        assert before == after
+        current(after)
+    receipts[mode] = dict(receipt=name, receipt_sha256=sha(ROOT / name),
+        seconds=receipt['seconds'], counts=receipt['counts'],
+        is_full_profile_execution=receipt['is_full_profile_execution'],
+        core_path_count=receipt['core_path_count'])
+assert receipts['focused']['counts'] == {'passed': 208}
+collection_log = (OUT / 'release_gates/collection.log').read_text()
+file_counts = {name: int(count) for name, count in re.findall(
+    r'^(tests/[^\n]+\.py): (\d+)$', collection_log, re.M)}
+assert sum(file_counts.values()) == 1386 and len(file_counts) == 65
+sources_log = json.loads((OUT / 'release_gates/sources.log').read_text())
+assert sources_log == {'files': 9, 'source_bytes': 2110696, 'verified': True}
+
+control_dir = OUT / 'native_control_release_01'
+control = json.loads((control_dir / 'report.json').read_text())
+assert control['status'] == 'passed' and control['final_eligible'] and control['code_unchanged']
+assert control['loaded_underthrust_steps'] == 0
+assert sha(OUT / 'run_native_control.py') == control['runner_sha256']
+before = json.loads((control_dir / 'code_before.json').read_text())
+after = json.loads((control_dir / 'code_after.json').read_text())
+assert before == after and len(before) == control['code_files'] == 423
+current(after)
+assert sha(control_dir / 'code_before.json') == control['code_before_sha256']
+assert sha(control_dir / 'code_after.json') == control['code_after_sha256']
+manifest = json.loads((control_dir / 'artifact_manifest.json').read_text())
+inventory = {p.relative_to(control_dir).as_posix() for p in control_dir.rglob('*')
+             if p.is_file() and p.name != 'artifact_manifest.json'}
+assert inventory == set(manifest) and len(manifest) == 33
+for name, digest in manifest.items():
+    assert sha(control_dir / name) == digest
+cases = []
+for case in control['cases']:
+    directory = control_dir / case['mode']
+    assert case['loaded_underthrust_steps'] == 0
+    assert sha(directory / 'initial.json') == case['initial_checkpoint_sha256']
+    assert sha(directory / 'direct_final.json') == case['final_checkpoint_sha256']
+    for row in case['checkpoint_byte_pairs']:
+        assert row['byte_equal']
+        left, right = directory / row['left'], directory / row['right']
+        assert left.read_bytes() == right.read_bytes() and sha(left) == row['sha256']
+    cases.append({name: case[name] for name in ('mode', 'accepted_geometric_steps',
+        'final_fragments', 'total_loss_cohorts', 'total_hot_births', 'native_contact_counts',
+        'step_material_errors', 'default_policy_next_interval_refusal')})
+assert [case['accepted_geometric_steps'] for case in cases] == [1, 4, 4]
+assert sum(len(case['checkpoint_byte_pairs']) for case in control['cases']) == 9
+
+audit_name = 'analysis/geometric_native_validation/release_independent_geometry_receipt.json'
+audit = read(audit_name)
+assert audit['status'] == 'passed'
+current(audit['source_sha256'])
+assert len(audit['checkpoints']) == 18 and len(audit['step_records']) == 9
+for row in (*audit['checkpoints'], *audit['step_records']):
+    assert sha(row['path']) == row['sha256']
+probes = {}
+for kind in ('boundary', 'math'):
+    name = f'analysis/geometric_native_validation/independent_boundary_and_math/{kind}_receipt.json'
+    receipt = read(name)
+    assert receipt['status'] == 'passed' and receipt['sources_unchanged']
+    assert receipt['source_before'] == receipt['source_after']
+    current(receipt['source_after'])
+    probe = OUT / f'independent_boundary_and_math/independent_{kind}_probe_source.txt'
+    assert sha(probe) == receipt['probe_source_sha256']
+    probes[kind] = dict(receipt=name, sha256=sha(ROOT / name))
+epoch_name = 'analysis/geometric_native_validation/literal_saved_epoch_audit/receipt.json'
+epoch = read(epoch_name)
+assert epoch['checked_pairs'] == 120 and epoch['exact_positive_intersections'] == 10
+assert sha(ROOT / epoch['source']) == epoch['source_sha256']
+current(epoch['persisted_source_sha256'])
+
+source_copy = OUT / 'consolidation_source.txt'
+with source_copy.open('xb') as stream:
+    stream.write(Path(__file__).read_bytes())
+summary = dict(status='passed', checked_utc=datetime.now(timezone.utc).isoformat(),
+    branch=subprocess.check_output(['git', 'branch', '--show-current'], cwd=ROOT, text=True).strip(),
+    git_head=subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
+    original_six_point_plan=[dict(point=number, status='partial' if number == 1 else 'pending')
+                             for number in range(1, 7)],
+    completed_within_point_1=['native certified intersection/subtraction preserving inherited edge planes',
+        'four repeated full-vector differential geometry transactions retaining original cold children',
+        'complete positive sphere coverage and per-origin four-reservoir audits',
+        'nine exact canonical checkpoint restart byte pairs'],
+    next_within_point_1=['replay the first loaded interval using native geometry and preserve native surface/buried-loss supports in the joint checkpoint',
+        'constitutive continuity or creation of material pairs on already declared weak planes',
+        'positive subsequent loaded differential interval preserving inherited mechanics and geometry'],
+    new_loaded_underthrust_steps=0, fresh_gates=receipts,
+    new_test_cases=66, current_profile_collection_only=dict(case_count=sum(file_counts.values()),
+        file_count=len(file_counts), file_case_counts=file_counts, is_full_execution=False),
+    unchanged_historical_baselines=baseline,
+    historical_full_profile=dict(cases_passed=1284, current_execution=False,
+        receipt='analysis/geometric_underthrust_validation/cloud_test_receipt.json',
+        receipt_sha256=sha(ROOT / 'analysis/geometric_underthrust_validation/cloud_test_receipt.json')),
+    restored_sources=sources_log,
+    native_control=dict(report='analysis/geometric_native_validation/native_control_release_01/report.json',
+        report_sha256=sha(control_dir / 'report.json'), seconds=control['wall_seconds'],
+        source_file_count=423, artifact_count=33, checkpoint_byte_pair_count=9, cases=cases),
+    independent_geometry_audit=dict(receipt=audit_name, sha256=sha(ROOT / audit_name),
+        decimal_precision=audit['decimal_precision'], checkpoints=18, step_records=9,
+        fragment_geometries=audit['fragment_geometries'],
+        max_material_area_relative_error=audit['max_material_area_relative_error']),
+    independent_probes=probes,
+    literal_legacy_epoch=dict(receipt=epoch_name, sha256=sha(ROOT / epoch_name),
+        legacy_contract_unchanged=True, direct_native_import_requires_support_lineage_replay=True,
+        checked_pairs=120, positive_saved_ray_intersections=10),
+    declared_native_domain=dict(maximum_increment_angle_radians=.25,
+        adaptive_decimal_precisions=[64,128,256,512,1024],
+        uncertified_geometry_policy='atomic refusal; no snapping or positive area deletion',
+        native_contact_policy='geometric adjacency only; mechanical loss support unresolved'),
+    consolidation_source_sha256=sha(source_copy))
+assert summary['branch'] == 'fix/genesis-mantle-convection'
+write(OUT / 'validation_summary.json', summary)
+print(json.dumps(dict(status=summary['status'], target_tests=208,
+    accepted_geometry_steps=9, loaded_steps=0, checkpoint_byte_pairs=9,
+    summary_sha256=sha(OUT / 'validation_summary.json')), indent=2))

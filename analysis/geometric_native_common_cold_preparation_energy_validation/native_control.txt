@@ -1,0 +1,138 @@
+"""Whole-source NEW cold preparation controls; no historical physics replay."""
+from fractions import Fraction as F
+from functools import lru_cache
+import hashlib
+import json
+from pathlib import Path
+import sys
+import time
+
+ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT))
+SOURCE899 = ROOT / "analysis/geometric_native_common_cold_continuum_energy_validation/release_validation_01/native_control/source_packet.json"
+SOURCE899_RAW = "4a5c059176cef063bf12ff7bd98df830395504d6c12051f269a177fcbc375fec"
+OPTIONS = dict(precision=96, theta_cell_count=4, beta_cell_count=1,
+    depth_cell_count=1, max_cells=4096)
+REMAINING_CONDITIONS = (
+    "Whole-source physical material/force/prestress/work handover, full preparation work, loads/drag, precise general-state mixed operator and NEW equilibrium",
+    "Whole-clock all-pair admission including reverse C5 to C1",
+    "Accepted continuation with independent temporal path work, balances and joint restart",
+)
+
+def encoded(value):
+    return json.dumps(value, sort_keys=True, separators=(",", ":"),
+        ensure_ascii=False, allow_nan=False).encode()
+
+def digest(value):
+    return hashlib.sha256(encoded(value)).hexdigest()
+
+@lru_cache(maxsize=1)
+def context():
+    from analysis.geometric_native_common_cold_continuum_energy_validation import native_control as saved
+    from tectonics.geometric_native_common_cold_variational_work import bind_native_cold_variational_source
+    from tectonics.geometric_native_common_reference import bind_native_common_reference
+    from tectonics.geometric_native_common_cold_depth_preparation import bind_native_common_cold_depth_preparation
+    from tectonics.geometric_native_common_cold_preparation_integrals import integrate_native_common_cold_preparation_moments
+    timings = {}
+    started = time.monotonic()
+    raw = SOURCE899.read_bytes()
+    if hashlib.sha256(raw).hexdigest() != SOURCE899_RAW:
+        raise ValueError("The complete899 source authority changed")
+    source = bind_native_cold_variational_source(json.loads(raw))
+    timings["complete899_source_authentication_seconds"] = time.monotonic()-started
+    del raw
+    started = time.monotonic()
+    cold = saved.cold_carrier()
+    continuum = saved.system()
+    reference = bind_native_common_reference()
+    preparations = tuple(bind_native_common_cold_depth_preparation(reference, cold, owner,
+        provenance="Whole-source NEW radial twist on unchanged frozen895 cold prepared reference")
+        for owner in (0, 1))
+    timings["complete_geometry_restoration_and_binding_seconds"] = time.monotonic()-started
+    started = time.monotonic()
+    integral = integrate_native_common_cold_preparation_moments(source, cold, continuum,
+        preparations, **OPTIONS)
+    timings["new_whole_source_19_channel_integration_seconds"] = time.monotonic()-started
+    return dict(source=source, integral=integral, cold_system=cold,
+        continuum_system=continuum, reference=reference, preparations=preparations,
+        timings=timings)
+
+def run(output):
+    from tectonics.geometric_native_pose import FractionInterval as I
+    from tectonics.geometric_native_common_cold_variational_work import _payload
+    from tectonics import geometric_native_common_cold_preparation_integrals as integration
+    from tectonics import geometric_native_common_cold_preparation_energy as energy_api
+    started = time.monotonic()
+    ctx = context()
+    source, integral = ctx["source"], ctx["integral"]
+    bound = energy_api.bind_native_common_cold_preparation_energy(source, integral, precision=96)
+    integral_dto = integration.native_common_cold_preparation_integral_to_dict(source, integral)
+    energy_dto = energy_api.native_common_cold_preparation_energy_to_dict(bound)
+    queries = []
+    for parameter in (F(0), F(1,4), F(1,2), F(3,4), F(1), I(F(1,2),F(1))):
+        response = energy_api.evaluate_native_common_cold_preparation_work(bound, parameter, precision=96)
+        dto = energy_api.native_common_cold_preparation_work_to_dict(response)
+        restored = energy_api.native_common_cold_preparation_work_from_dict(dto, energy=bound,
+            expected_lambda_fraction=parameter, precision=96)
+        if energy_api.native_common_cold_preparation_work_to_dict(restored) != dto:
+            raise ValueError("The whole preparation work restart changed its response")
+        queries.append(dict(parameter=_payload(parameter), response=dto,
+            complete_restart_equal=True))
+    paths = []
+    for before, after in ((F(0),F(1)), (F(1),F(0)), (F(0),F(1,2)),
+            (F(1,2),F(1)), (F(1,2),F(1,2)), (F(1,4),F(3,4))):
+        dto = energy_api.compare_native_common_cold_preparation_path_work(bound, before, after,
+            precision=96)
+        restored = energy_api.native_common_cold_preparation_path_work_from_dict(dto,
+            energy=bound, expected_before_fraction=before, expected_after_fraction=after,
+            precision=96)
+        if restored != dto:
+            raise ValueError("The signed constitutive path restart changed its endpoints")
+        paths.append(dto)
+    restored_integral = integration.native_common_cold_preparation_integral_from_dict(integral_dto,
+        source=source, cold_system=ctx["cold_system"], continuum_system=ctx["continuum_system"],
+        preparations=ctx["preparations"], **OPTIONS)
+    restored_energy = energy_api.native_common_cold_preparation_energy_from_dict(energy_dto,
+        source=source, integral=restored_integral, precision=96)
+    if energy_api.native_common_cold_preparation_energy_to_dict(restored_energy) != energy_dto:
+        raise ValueError("The complete whole-source constitutive preparation operator changed")
+    result = dict(format="native-common-cold-preparation-energy-control-1",
+        status="PASS_NEW_WHOLE_COLD_CONSTITUTIVE_PREPARATION_WORK",
+        source_context=dict(source_binding_sha256=source.binding_sha256,
+            source_raw_sha256=source.source_raw_sha256,
+            source_packet_sha256=source.source_packet_sha256,
+            tip_coordinate_indices=_payload(source.tip_coordinate_indices),
+            literal_reference_energies_j=_payload(source.literal_reference_energies_j),
+            literal_reference_forces_n=_payload(source.literal_reference_forces_n),
+            tip_stiffnesses_n_m=_payload(source.tip_stiffnesses_n_m),
+            gram_bounds_n_m=_payload(source.gram_bounds_n_m),
+            inverse_gram_bounds_m_n=_payload(source.inverse_gram_bounds_m_n)),
+        integral=integral_dto, energy=energy_dto, work_queries=queries,
+        path_differences=paths, complete_integral_restart_equal=True,
+        complete_energy_restart_equal=True, integration_options=OPTIONS,
+        cold_constitutive_preparation_work_computed=True,
+        reference_preparation_work_paid=False, full_system_preparation_work_certified=False,
+        historical_archived_three_dimensional_prestress_recovered=False,
+        new_mixed_force_equilibrium_certified=False,
+        whole_clock_all_pair_admission_authorized=False, physical_material_admission_authorized=False,
+        full_system_temporal_path_work_certified=False, clocks_advanced=False,
+        source_geometry_elapsed_time_s=0, contact_geometry_elapsed_time_s=2000000,
+        memory_elapsed_time_s=1000000, material_geometry_elapsed_time_s=1000000,
+        accepted_original_native_intervals=1, accepted_new_native_intervals=0,
+        original_point_1_completed=False, original_point_1_remaining_work_blocks=1,
+        remaining_physical_conditions=list(REMAINING_CONDITIONS),
+        previous_tensor_quadrature_reexecuted=False, historical_force_solve_reexecuted=False,
+        timings=ctx["timings"], elapsed_seconds=time.monotonic()-started)
+    result["sha256"] = digest(result)
+    target = Path(output).resolve()
+    if target.exists():
+        raise FileExistsError(target)
+    target.write_bytes(encoded(result)+b"\n")
+    print(encoded(result).decode())
+    return result
+
+if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--output", required=True)
+    run(parser.parse_args().output)

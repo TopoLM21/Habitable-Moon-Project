@@ -1,0 +1,261 @@
+from pathlib import Path
+import hashlib, json, os, shutil, sys, time
+STARTED=time.perf_counter()
+STARTED_UTC=time.strftime("%Y-%m-%d %H:%M:%S UTC", time.gmtime())
+
+ROOT = Path('/workspace/Habitable-Moon-Project')
+PARENT = ROOT/'analysis/geometric_native_common_material_surface_transport_validation'
+OLD = ROOT/'analysis/geometric_native_common_strain_projection_validation'
+MANIFEST_RAW = '1347310d09095ce8e3dff7db970262524c323a5542861fa2402bb1431c7f7e4b'
+MANIFEST_SEAL = '651f204118935dadff0a6326b5534772e30a7e2af9374c41ba5ac099641cde66'
+AUDITOR_RAW = 'c38dd9f2e9d0efeac42b64d50c15601d40fb1f56232edafcf34de19f47c11502'
+OLD_BASELINE_RAW = 'b048664d22012a46ca95715e60586424568995c37f4637b18e7b51aa40cd685d'
+OLD_MANIFEST_RAW = '035c7eeae472676924792d07e1d05b8e3660a4a9d0fa9d8cfe8f55df71862412'
+OLD_MANIFEST_SEAL = '519d42468d7291b2af3db6894943a2ec91e2c12f490643e2d18f4b16d63777a2'
+
+def enc(value):
+    return json.dumps(value, sort_keys=True, separators=(',', ':'), ensure_ascii=False, allow_nan=False).encode()
+
+def vd(value):
+    return hashlib.sha256(enc(value)).hexdigest()
+
+def exact(actual, expected, label):
+    assert type(actual) is type(expected) and actual == expected, label
+    if type(actual) in (dict, list, tuple):
+        assert enc(actual) == enc(expected), label + ': literal nested kinds'
+
+def raw(path):
+    result = hashlib.sha256()
+    with Path(path).open('rb') as stream:
+        for block in iter(lambda: stream.read(1 << 20), b''):
+            result.update(block)
+    return result.hexdigest()
+
+def sealed(path, key, expected_raw=None, expected_seal=None):
+    if expected_raw is not None:
+        exact(raw(path), expected_raw, 'closed raw bytes: '+str(path))
+    result = json.loads(Path(path).read_bytes())
+    assert type(result) is dict and key in result, str(path)
+    body = dict(result); seal = body.pop(key)
+    exact(seal, vd(body), 'closed selfseal: '+str(path))
+    if expected_seal is not None:
+        exact(seal, expected_seal, 'pinned selfseal: '+str(path))
+    return result
+
+for pin in (MANIFEST_RAW, MANIFEST_SEAL):
+    assert len(pin) == 64 and all(c in '0123456789abcdef' for c in pin), 'Fixed final879 manifest pins must be complete'
+assert Path.cwd().resolve() == ROOT and ROOT.resolve() == ROOT
+manifest_path = PARENT/'artifact_manifest.json'
+manifest = sealed(manifest_path, 'manifest_sha256', MANIFEST_RAW, MANIFEST_SEAL)
+exact(manifest['status'], 'PASS_COMPONENT_EVIDENCE_CLOSED', 'closed component manifest')
+exact(manifest['source_count'], 879, 'manifest879')
+exact(manifest['source_map_canonical_sha256'], '4a75d4bc7d404fc11d5d252302fe6b6d961797b4a637f921c38acb679485b79c', 'closed final879 source epoch')
+exact(manifest['source_map_raw_sha256'], '1b948eace979f3125756f6f0dea803fb55d0d2e87650890a2236c07502b0c336', 'closed final879 raw map')
+exact(manifest['exact_independent_producer_raw_sha256'], AUDITOR_RAW, 'closed manifest exact executed auditor')
+exact(manifest['closed_component_file_count'], 83, 'completed explicit83 closure')
+exact(len(manifest['files']), 83, 'explicit83 manifest files')
+old_manifest_path = OLD/'artifact_manifest.json'
+old_manifest = sealed(old_manifest_path, 'manifest_sha256', OLD_MANIFEST_RAW, OLD_MANIFEST_SEAL)
+exact(len(old_manifest['files']), 73, 'immutable old73 manifest')
+
+def closed_file(path, pin):
+    assert path.resolve() == path and path.is_file() and not path.is_symlink(), 'canonical closed file: '+str(path)
+    name = str(path.relative_to(ROOT))
+    rows = old_manifest['files'] if path.is_relative_to(OLD) else manifest['files']
+    row = rows[name]
+    exact(row['sha256'], pin, 'manifest permanent raw pin: '+name)
+    exact(path.stat().st_size, row['bytes'], 'manifest permanent byte count: '+name)
+    exact(raw(path), pin, 'verified permanent raw bytes: '+name)
+
+wrapper_path = PARENT/'release_validation_02/report.json'
+audit_path = PARENT/'independent_audit.json'
+for path in (wrapper_path, audit_path):
+    closed_file(path, manifest['files'][str(path.relative_to(ROOT))]['sha256'])
+wrapper = sealed(wrapper_path, 'report_sha256', expected_seal=manifest['wrapper_selfseal'])
+audit = sealed(audit_path, 'audit_packet_sha256', expected_seal=manifest['independent_audit_selfseal'])
+exact(wrapper['status'], 'PASS', 'CURRENT gate02 PASS')
+exact(wrapper['source_count'], 879, 'CURRENT gate879')
+exact(wrapper['pytest_counts'], {'passed':14}, 'CURRENT completed14 tests')
+exact(wrapper['changed_python_paths'], [], 'CURRENT frozen source execution')
+exact(wrapper['source_map_before_sha256'], manifest['source_map_canonical_sha256'], 'CURRENT gate before source epoch')
+exact(wrapper['source_map_after_sha256'], manifest['source_map_canonical_sha256'], 'CURRENT gate after source epoch')
+exact(audit['status'], 'PASS', 'CURRENT independent audit PASS')
+exact(audit['auditor_script_sha256'], AUDITOR_RAW, 'CURRENT executed scratch auditor pin')
+exact(audit['source_map_canonical_sha256'], manifest['source_map_canonical_sha256'], 'CURRENT audit source epoch')
+exact(audit['wrapper_raw_sha256'], manifest['files'][str(wrapper_path.relative_to(ROOT))]['sha256'], 'CURRENT audit gate raw association')
+exact(audit['wrapper_selfseal'], wrapper['report_sha256'], 'CURRENT audit gate selfseal association')
+exact(audit['output_manifest'], wrapper['outputs'], 'CURRENT audit same gate output closure')
+expected = {}
+
+def association(temporary, permanent, pin):
+    temporary = Path(temporary)
+    assert temporary.is_absolute() and temporary.parent == Path('/tmp') and temporary.resolve(strict=False) == temporary, 'direct canonical CURRENT TMP path'
+    assert str(temporary) not in expected, 'each CURRENT temporary target appears exactly once'
+    closed_file(permanent, pin)
+    expected[str(temporary)] = dict(permanent_copy=str(permanent), sha256=pin)
+
+for when, basename in (('before', 'baseline_before_gate'), ('after', 'baseline_after_gate')):
+    path = PARENT/(basename+'.json')
+    receipt = sealed(path, 'audit_sha256', wrapper['prior_baseline_'+when+'_raw_sha256'], wrapper['prior_baseline_'+when+'_selfseal'])
+    exact(wrapper['prior_baseline_'+when], receipt, 'CURRENT gate embedded '+when+' receipt')
+    association(wrapper['prior_baseline_'+when+'_path'], path, wrapper['prior_baseline_'+when+'_raw_sha256'])
+    projected_path = PARENT/(basename+'_projection.json')
+    sealed(projected_path, 'audit_sha256', receipt['projected_reader_report_raw_sha256'], receipt['projected_reader_selfseal'])
+    association(receipt['projected_reader_report_path'], projected_path, receipt['projected_reader_report_raw_sha256'])
+gate_tmp_paths = set(expected)
+path = PARENT/'baseline_before_independent_audit.json'
+receipt = sealed(path, 'audit_sha256', audit['baseline875_readback_raw_sha256'], audit['baseline875_readback_selfseal'])
+association(audit['baseline875_readback_path'], path, audit['baseline875_readback_raw_sha256'])
+projected_path = PARENT/'baseline_before_independent_audit_projection.json'
+exact(audit['baseline875_projected_reader_report_path'], receipt['projected_reader_report_path'], 'CURRENT audit projected TMP path')
+exact(audit['baseline875_projected_reader_report_raw_sha256'], receipt['projected_reader_report_raw_sha256'], 'CURRENT audit projected raw association')
+sealed(projected_path, 'audit_sha256', audit['baseline875_projected_reader_report_raw_sha256'], audit['baseline875_projected_reader_selfseal'])
+association(audit['baseline875_projected_reader_report_path'], projected_path, audit['baseline875_projected_reader_report_raw_sha256'])
+association('/tmp/native_common_material_surface_transport_independent_audit_20261006.py', PARENT/'independent_audit_source.txt', AUDITOR_RAW)
+association('/tmp/native_common_strain_projection_final_independent_audit_20261006_baseline871_readback.json', OLD/'baseline_before_independent_audit.json', OLD_BASELINE_RAW)
+exact(len(expected), 8, 'exact8 CURRENT dependencies')
+audit_temporary_pins = {name: pin for name, pin in audit['dependency_raw_sha256'].items() if Path(name).is_relative_to(Path('/tmp'))}
+exact(audit_temporary_pins, {name: row['sha256'] for name, row in expected.items() if name not in gate_tmp_paths}, 'ALL four audit-recorded CURRENT TMP dependencies plus four CURRENT gate receipt dependencies')
+
+# ADDITIVE RECOVERY AUDIT: this new stdlib script does NOT execute any old reader.
+CURRENT = ROOT/'analysis/geometric_native_common_local_source_work_validation'
+SELF = CURRENT/'recover_current879_tmp_after_restart_source.txt'
+RECEIPT_PATH = CURRENT/'recover_current879_tmp_after_restart.json'
+CONSOLE_PATH = CURRENT/'recover_current879_tmp_after_restart_console.log'
+DOCUMENT_PATH = ROOT/'GEOMETRIC_NATIVE_COMMON_MATERIAL_SURFACE_TRANSPORT_IMPLEMENTATION.md'
+DOCUMENT_RAW = '600a6d5cc11085290029939b80f52930147599d3141864d7bf28b247f948d838'
+BOOTSTRAP_RAW = 'cd9654ddb97418eb5fede3c445730dee88cfeee2eaeca09d56d2ec3a03e549a9'
+BOOTSTRAP_SEAL = 'd5c033e61f88792b2539410bfbf26a64eb28e9836fa6344dfcdc58627e75a3a7'
+FROZEN_MAP_RAW = '1638c727bea07487d9f9c734e0aa5469bde0e79032221b3d1f4134379905a360'
+FROZEN_MAP_CANONICAL = '5ec421080c7450b362ae5a5b3d02e1b3f82ecf67ee514034a56e60b4a86d4c51'
+FROZEN_SEAL = '13f56e1afe8678f1c555e7e859c0af3c25a89163423164c5f632cd443f741367'
+ARCHIVE = ROOT/'analysis/geometric_native_common_material_surface_transport_final_readback'
+ARCHIVE_PINS = {
+ 'archive.json':'915950634fd8a6d30204c834b60a7fec100243522668b1190f33c4837871c397',
+ 'console.log':'32f60449b0a22bf3d102ba5603061abfd08bd5906f515cf79f92da7cc4e1a052',
+ 'manifest_console.log':'cd38fe6f227a3e701ebd2b6b383b16328c47d074c1ef66e72108e90e9608c037',
+ 'manifest_producer_source.txt':'e55afa87cf8bc7d94241ab436b14f85e74d73d5ddea36d89018a0e9bd3f31c6d',
+ 'readback.json':'32f60449b0a22bf3d102ba5603061abfd08bd5906f515cf79f92da7cc4e1a052',
+ 'readback_source.txt':'f23843c4065d8d8bd4095a9f0b1ecbf948386e92ea1047506f09104bbf7a66f1',
+}
+for output in (RECEIPT_PATH,CONSOLE_PATH):
+    assert not os.path.lexists(output), 'New recovery receipt/console must be absent: '+str(output)
+exact(raw(DOCUMENT_PATH),DOCUMENT_RAW,'The read-only published recovery recipe source pin')
+executed_source_raw_before=raw(SELF)
+bootstrap=sealed(CURRENT/'baseline_879_bootstrap.json','audit_sha256',BOOTSTRAP_RAW,BOOTSTRAP_SEAL)
+exact(bootstrap['temporary_dependency_exact_closed_copy_associations'],expected,'Independent published recipe vs pinned bootstrap exact closed OLD8 mapping')
+exact(len(bootstrap['dependency_raw_sha256']),271,'OLD879 exact271 dependency pins')
+exact({name:pin for name,pin in bootstrap['dependency_raw_sha256'].items() if Path(name).is_relative_to(Path('/tmp'))},
+      {name:row['sha256'] for name,row in expected.items()},'Entire pinned dependency TMP subset is exact OLD8')
+exact({str(p.relative_to(ARCHIVE)) for p in ARCHIVE.rglob('*') if p.is_file()},set(ARCHIVE_PINS),'Immutable final879 exact six-file archive closure')
+for name,pin in ARCHIVE_PINS.items():exact(raw(ARCHIVE/name),pin,'Final879 pinned six raw bytes preflight '+name)
+sealed(ARCHIVE/'archive.json','archive_sha256',ARCHIVE_PINS['archive.json'],'5dddf3bd8cdffab69cebdefe8c49ebbb61b516ce11519d719be080393885a401')
+sealed(ARCHIVE/'readback.json','audit_sha256',ARCHIVE_PINS['readback.json'],'731c273265c8a01cd8593e8413cd59924d60b29cc81038305c5e596b554214ff')
+preserved=dict(bootstrap['dependency_raw_sha256'])
+for name,pin in ARCHIVE_PINS.items():
+    path=str(ARCHIVE/name);assert path not in preserved,'Six-file archive disjoint from271'
+    preserved[path]=pin
+exact(len(preserved),277,'OLD271+6 exact277 raw pin closure')
+# Missing old TMP aliases are checked through their authenticated permanent copy;
+# they are genuinely absent before recovery, not claimed unchanged existing files.
+persistent_before={}
+missing_before=[]
+for name,pin in sorted(preserved.items()):
+    p=Path(name)
+    if str(p) in expected and not os.path.lexists(name):
+        missing_before.append(name)
+        exact(raw(expected[name]['permanent_copy']),pin,'Missing OLD TMP authenticated recovery source '+name)
+    else:
+        assert p.is_file() and not p.is_symlink() and p.resolve()==p,'Canonical old pinned file '+name
+        exact(raw(p),pin,'Old existing277 dependency raw bytes preflight '+name)
+        persistent_before[name]=pin
+old_manifest_rows={}
+for entries in (manifest['files'],old_manifest['files']):
+    for name,row in entries.items():
+        p=ROOT/name
+        assert p.is_file() and not p.is_symlink() and p.resolve()==p,'Canonical immutable manifest file '+name
+        exact(p.stat().st_size,row['bytes'],'Manifest unchanged bytes preflight '+name)
+        exact(raw(p),row['sha256'],'Manifest unchanged raw preflight '+name)
+        if name in old_manifest_rows:exact(old_manifest_rows[name],row['sha256'],'Common OLD manifest raw pin '+name)
+        old_manifest_rows[name]=row['sha256']
+
+def actual_sources():
+    return {str(p.relative_to(ROOT)):raw(p) for directory in ('tectonics','tests','scripts','analysis')
+            for p in sorted((ROOT/directory).rglob('*.py'))}
+freeze=sealed(CURRENT/'source_freeze_883.json','freeze_sha256',expected_seal=FROZEN_SEAL)
+exact(raw(CURRENT/'frozen_source_map_883.json'),FROZEN_MAP_RAW,'Full frozen883 map raw pin')
+frozen=json.loads((CURRENT/'frozen_source_map_883.json').read_bytes())
+exact(vd(frozen),FROZEN_MAP_CANONICAL,'Full frozen883 map canonical pin')
+exact(freeze['source_map_canonical_sha256'],FROZEN_MAP_CANONICAL,'Frozen source epoch')
+exact(freeze['source_map_raw_sha256'],FROZEN_MAP_RAW,'Frozen source map bytes association')
+before_sources=actual_sources()
+exact(before_sources,frozen,'ACTUAL all883 sources equal frozen before any TMP writes')
+exact(len(before_sources),883,'ACTUAL883 count before recovery')
+old879=json.loads((PARENT/'frozen_source_map_879.json').read_bytes())
+exact(len(old879),879,'OLD879 source map count')
+exact({name:before_sources[name] for name in old879},old879,'All old879 source raw bytes before recovery')
+exact(set(before_sources)-set(old879),set(freeze['added_source_paths']),'Exact four additions only')
+exact({name:before_sources[name] for name in freeze['added_source_paths']},freeze['added_source_raw_sha256'],'All frozen4 source raw bytes before recovery')
+
+# Preflight every existing target before creating any missing target.
+missing = []
+for name, row in sorted(expected.items()):
+    target = Path(name)
+    if os.path.lexists(name):
+        assert target.is_file() and not target.is_symlink(), 'wrong existing CURRENT TMP target: '+name
+        exact(raw(target), row['sha256'], 'wrong existing CURRENT TMP bytes: FAIL, never overwrite '+name)
+    else:
+        missing.append(name)
+for name in missing:
+    row = expected[name]
+    with Path(row['permanent_copy']).open('rb') as source, Path(name).open('xb') as target:
+        shutil.copyfileobj(source, target, 1 << 20)
+for name, row in expected.items():
+    exact(raw(name), row['sha256'], 'CURRENT restored/already-present TMP bytes: '+name)
+    closed_file(Path(row['permanent_copy']), row['sha256'])
+exact(raw(manifest_path), MANIFEST_RAW, 'closed manifest unchanged after recovery')
+exact(raw(old_manifest_path), OLD_MANIFEST_RAW, 'old73 manifest unchanged after recovery')
+for path in (wrapper_path, audit_path):
+    closed_file(path, manifest['files'][str(path.relative_to(ROOT))]['sha256'])
+assert all(not (name == 'tectonics' or name.startswith('tectonics.') or name == 'tests' or name.startswith('tests.')) for name in sys.modules), 'no project/test imports'
+# ADDITIVE POSTFLIGHT: hash all frozen sources and old raw bytes, not old readers.
+exact(sorted(missing),sorted(missing_before),'The preflighted missing OLD8 are the only restored aliases')
+after_sources=actual_sources()
+exact(after_sources,before_sources,'ACTUAL full883 source map unchanged after recovery')
+for name,pin in preserved.items():exact(raw(name),pin,'Complete OLD277 raw pin map after restoration '+name)
+for name,pin in persistent_before.items():exact(raw(name),pin,'Every preexisting persistent dependency unchanged '+name)
+for name,pin in old_manifest_rows.items():exact(raw(ROOT/name),pin,'Old83/73 manifest file unchanged '+name)
+exact({str(p.relative_to(ARCHIVE)) for p in ARCHIVE.rglob('*') if p.is_file()},set(ARCHIVE_PINS),'Exact old final six closure unchanged')
+exact(raw(SELF),executed_source_raw_before,'Exact new recovery source unchanged before/after execution')
+result=dict(format='native-common-local-source-work-old879-current-tmp-recovery-1',
+ status='RESTORED_ONLY_MISSING_CURRENT879_TEMP_CLOSED_COPIES',started_utc=STARTED_UTC,
+ actual_measured_seconds=time.perf_counter()-STARTED,executed_source_path=str(SELF),
+ executed_source_raw_sha256=executed_source_raw_before,executed_source_checked_before_after=True,
+ published_recipe_path=str(DOCUMENT_PATH),published_recipe_raw_sha256=DOCUMENT_RAW,
+ source_count_before=883,source_count_after=883,source_map_before_after_identical=True,
+ full883_source_map_matches_frozen_before_after=True,source_map_canonical_sha256=FROZEN_MAP_CANONICAL,
+ all_old879_source_raw_sha256_unchanged=True,exact_four_source_additions=True,
+ frozen_four_source_raw_sha256_unchanged=True,frozen_four_source_raw_sha256=freeze['added_source_raw_sha256'],
+ current_temp_dependency_count=8,restored=missing,already_valid=sorted(set(expected)-set(missing)),
+ temporary_dependency_exact_closed_copy_associations=expected,
+ restored_aliases_match_pinned_raw_bytes=True,all_targets_preflighted_before_any_copy=True,
+ copies_created_exclusively_with_xb=True,existing_wrong_targets_fail_without_overwrite=True,
+ preserved_old_raw_dependency_count=277,dependency_raw_sha256=preserved,
+ existing_persistent_dependency_count_before=len(persistent_before),
+ all_existing_persistent_raw_dependency_bytes_unchanged_before_after=True,
+ missing_tmp_before_recovery=missing_before,
+ missing_aliases_checked_against_authenticated_permanent_bytes_before_recovery=True,
+ entire_old277_raw_pin_map_verified_after_recovery=True,
+ old83_manifest_raw_sha256=MANIFEST_RAW,old73_manifest_raw_sha256=OLD_MANIFEST_RAW,
+ old83_and_old73_all_listed_raw_files_unchanged=True,old_final879_exact_six_file_archive_unchanged=True,
+ failed_gate_historical_tmp_paths_restored=False,lost_current883_gate01_before_receipts_regenerated=False,
+ lost_current883_gate01_stdout_recreated=False,recovery_is_new_current_evidence_not_a_historical_gate_receipt=True,
+ old_reader_or_main_reexecuted=False,baseline_reexecuted=False,math_reexecuted=False,
+ tests_reexecuted=False,helper_reexecuted=False,solver_reexecuted=False,quadrature_reexecuted=False,
+ regenerated_baseline_or_physics_or_tests=False,project_imports=False,accepted_checkpoint_changed=False)
+result['recovery_sha256']=vd(result)
+encoded=enc(result)+b'\n'
+with RECEIPT_PATH.open('xb') as stream:stream.write(encoded)
+with CONSOLE_PATH.open('xb') as stream:stream.write(encoded)
+print(encoded.decode(),end='')
+

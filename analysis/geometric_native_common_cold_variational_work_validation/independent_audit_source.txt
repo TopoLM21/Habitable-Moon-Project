@@ -1,0 +1,463 @@
+#!/usr/bin/env python3
+"""Independent exact polynomial oracle; imports no project mathematics.
+
+Source899 receipts are read as immutable data. Exact rational centers used
+for algebra diagnostics are explicitly not substituted for material labels,
+the certified Gram, a chronology root, or a physical state. Interval checks
+are separate from those diagnostics. The source Green polynomial law is an
+inherited declaration; this audit does not replay source quadrature.
+"""
+from fractions import Fraction as F
+from pathlib import Path
+import argparse
+import hashlib
+import json
+import time
+
+ROOT = Path('/workspace/Habitable-Moon-Project')
+SOURCE = ROOT/'analysis/geometric_native_common_cold_continuum_energy_validation/release_validation_01/native_control/source_packet.json'
+SOURCE_RAW_SHA = '4a5c059176cef063bf12ff7bd98df830395504d6c12051f269a177fcbc375fec'
+SOURCE_SEAL = 'c863be05c9d641025666a1a4c3929701c7d472f9d574085926d64a2d08b4c439'
+
+
+def encode(value):
+    return json.dumps(value,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+
+
+def sha(path):
+    h=hashlib.sha256()
+    with open(path,'rb') as f:
+        while chunk:=f.read(1<<20): h.update(chunk)
+    return h.hexdigest()
+
+
+def fraction(raw):
+    if type(raw) is int: return F(raw)
+    if type(raw) is not list or len(raw)!=2 or any(type(v) is not int for v in raw):
+        raise ValueError('Exact scalar requires literal rational pair')
+    if raw[1]<=0: raise ValueError('Rational denominator must be positive')
+    return F(*raw)
+
+
+class Interval:
+    __slots__=('lo','hi')
+    def __init__(self,lo,hi=None):
+        self.lo=F(lo);self.hi=self.lo if hi is None else F(hi)
+        if self.lo>self.hi: raise ValueError('Reversed interval')
+    def other(self,x): return x if isinstance(x,Interval) else Interval(x)
+    def __add__(self,x):
+        x=self.other(x);return Interval(self.lo+x.lo,self.hi+x.hi)
+    __radd__=__add__
+    def __neg__(self): return Interval(-self.hi,-self.lo)
+    def __sub__(self,x): return self+-self.other(x)
+    def __rsub__(self,x): return self.other(x)+-self
+    def __mul__(self,x):
+        x=self.other(x);cs=(self.lo*x.lo,self.lo*x.hi,self.hi*x.lo,self.hi*x.hi)
+        return Interval(min(cs),max(cs))
+    __rmul__=__mul__
+    def __truediv__(self,x):
+        x=self.other(x)
+        if x.lo<=0<=x.hi: raise ZeroDivisionError('Interval divisor contains zero')
+        return self*Interval(1/x.hi,1/x.lo)
+    def center(self): return (self.lo+self.hi)/2
+
+
+def interval(raw):
+    if type(raw) is dict and set(raw)=={'lo','hi'}:
+        return Interval(fraction(raw['lo']),fraction(raw['hi']))
+    return Interval(fraction(raw))
+
+
+def center(raw): return interval(raw).center()
+
+
+def nested(raw,fn):
+    if isinstance(raw,dict) and set(raw)=={'lo','hi'}: return fn(raw)
+    if isinstance(raw,list) and len(raw)==2 and all(type(x) is int for x in raw): return fn(raw)
+    if isinstance(raw,list): return tuple(nested(x,fn) for x in raw)
+    return fn(raw)
+
+
+class Polynomial2:
+    """Exact truncated multivariate polynomial in monomials of degree<=2.
+
+    Diagonal quadratic coefficients are Hessian/2; off diagonal coefficients
+    are the full Hessian entry. Multiplication is ordinary polynomial
+    convolution, independent of the production variational formula.
+    """
+    __slots__=('n','coefficients')
+    def __init__(self,n,coefficients):
+        self.n=n;self.coefficients={k:F(v) for k,v in coefficients.items() if v}
+    @classmethod
+    def jet(cls,value,gradient,hessian):
+        n=len(gradient)
+        coefficients={():F(value)}
+        for i,x in enumerate(gradient): coefficients[(i,)]=F(x)
+        for i in range(n):
+            for j in range(i,n): coefficients[(i,j)]=F(hessian[i][j])/(2 if i==j else 1)
+        return cls(n,coefficients)
+    def other(self,x):
+        return x if isinstance(x,Polynomial2) else Polynomial2(self.n,{():F(x)})
+    def __add__(self,x):
+        x=self.other(x)
+        if x.n!=self.n: raise ValueError('Polynomial dimensions differ')
+        out=dict(self.coefficients)
+        for k,v in x.coefficients.items(): out[k]=out.get(k,F(0))+v
+        return Polynomial2(self.n,out)
+    __radd__=__add__
+    def __neg__(self): return Polynomial2(self.n,{k:-v for k,v in self.coefficients.items()})
+    def __sub__(self,x): return self+-self.other(x)
+    def __rsub__(self,x): return self.other(x)+-self
+    def __mul__(self,x):
+        x=self.other(x);out={}
+        left0=self.coefficients.get((),F(0));right0=x.coefficients.get((),F(0))
+        for k,v in self.coefficients.items(): out[k]=v*right0
+        for k,v in x.coefficients.items():
+            if k: out[k]=out.get(k,F(0))+left0*v
+        left1=[(k[0],v) for k,v in self.coefficients.items() if len(k)==1]
+        right1=[(k[0],v) for k,v in x.coefficients.items() if len(k)==1]
+        for i,v in left1:
+            for j,w in right1:
+                k=(min(i,j),max(i,j));out[k]=out.get(k,F(0))+v*w
+        return Polynomial2(self.n,out)
+    __rmul__=__mul__
+    def __truediv__(self,x):
+        return self*F(1,F(x))
+    def value(self): return self.coefficients.get((),F(0))
+    def gradient(self): return tuple(self.coefficients.get((i,),F(0)) for i in range(self.n))
+    def hessian(self):
+        return tuple(tuple(self.coefficients.get(tuple(sorted((i,j))),F(0))*(2 if i==j else 1)
+            for j in range(self.n)) for i in range(self.n))
+
+
+def scalar_potential(A,energies,forces,stiffness,tip,remainder,half_norm):
+    p=[tip[i]+sum((A[i][j]*remainder[j] for j in range(8)),0) for i in range(8)]
+    value=half_norm+sum(energies)
+    for i in range(8):
+        value=value+forces[i]*p[i]+stiffness[i]*p[i]*p[i]/2
+        for j in range(8): value=value-remainder[i]*A[i][j]*remainder[j]/2
+    return value
+
+
+def source_polynomial(source,row):
+    s=source['cold_continuum_energy_system']; response=row['response'];raw=response['integrals']
+    banks=s['banks'];n=56;coords=tuple(map(fraction,response['coordinate_increments']))
+    tip=[]
+    for bank in banks:
+        i=bank['tip_coordinate_index']
+        tip.append(Polynomial2(n,{():coords[i],(i,):F(1)}))
+    remainder=[]
+    for k in range(8):
+        remainder.append(Polynomial2.jet(center(raw['projection_remainder_n'][k]),
+            tuple(map(center,raw['projection_remainder_gradient_n_m'][k])),
+            tuple(tuple(map(center,r)) for r in raw['projection_hessian_n_m2'][k])))
+    norm=Polynomial2.jet(center(raw['remainder_strain_inner_product_j'])/2,
+        tuple(map(center,raw['remainder_local_gradient_n'])),
+        tuple(tuple(map(center,r)) for r in raw['remainder_local_hessian_n_m']))
+    A=tuple(tuple(map(center,r)) for r in response['gram_inverse_certificate']['inverse_gram_bounds_m_n'])
+    return scalar_potential(A,tuple(fraction(b['source_reference_energy_j']) for b in banks),
+        tuple(fraction(b['source_reference_force_n']) for b in banks),
+        tuple(fraction(b['source_old_tip_stiffness_n_m']) for b in banks),tip,remainder,norm)
+
+
+def compare(value,raw,label,counts):
+    enclosure=interval(raw)
+    if not enclosure.lo<=value<=enclosure.hi:
+        raise AssertionError('Independent exact polynomial scalar outside '+label)
+    counts['exact_polynomial_scalar_containment_checks']+=1
+
+
+def compare_operator(poly,response,label,counts):
+    compare(poly.value(),response['energy_j'],label+'.energy',counts)
+    gradient=poly.gradient();hessian=poly.hessian()
+    rg=response.get('gradient',response.get('gradient_n'))
+    rh=response.get('hessian',response.get('hessian_n_m'))
+    if len(rg)!=poly.n or len(rh)!=poly.n:
+        raise AssertionError('Incomplete global derivative arrays')
+    for i in range(poly.n):
+        compare(gradient[i],rg[i],label+'.G'+str(i),counts)
+        if len(rh[i])!=poly.n: raise AssertionError('Incomplete Hessian row')
+        for j in range(poly.n):
+            compare(hessian[i][j],rh[i][j],label+'.H'+str(i)+','+str(j),counts)
+
+
+def uni_multiply(first,second):
+    out=[F(0)]*(len(first)+len(second)-1)
+    for i,x in enumerate(first):
+        for j,y in enumerate(second): out[i+j]+=x*y
+    return out
+
+
+def uni_add(first,second):
+    out=[F(0)]*max(len(first),len(second))
+    for i,x in enumerate(first): out[i]+=x
+    for i,x in enumerate(second): out[i]+=x
+    return out
+
+
+def uni_scale(first,scalar): return [F(scalar)*x for x in first]
+
+
+def uni_value(coefficients,x):
+    out=F(0)
+    for c in reversed(coefficients): out=out*x+c
+    return out
+
+
+def uni_derivative(coefficients): return [i*x for i,x in enumerate(coefficients)][1:]
+
+
+def uni_energy(A,energies,forces,stiffness,tip_coefficients,r_coefficients,s_coefficients):
+    p=[uni_add(tip_coefficients[i],
+        [sum((A[i][j]*r_coefficients[j][k] for j in range(8)),F(0)) for k in range(3)]) for i in range(8)]
+    out=uni_add([sum(energies)],s_coefficients)
+    for i in range(8):
+        out=uni_add(out,uni_scale(p[i],forces[i]))
+        out=uni_add(out,uni_scale(uni_multiply(p[i],p[i]),stiffness[i]/2))
+        for j in range(8):
+            out=uni_add(out,uni_scale(uni_multiply(r_coefficients[i],r_coefficients[j]),-A[i][j]/2))
+    return out
+
+
+def overlap(first,second,label,counts):
+    if max(first.lo,second.lo)>min(first.hi,second.hi):
+        raise AssertionError('Independent exact intervals conflict: '+label)
+    counts['independent_source_interval_overlap_checks']+=1
+
+
+def source_path_coefficients(source):
+    rows={row['label']:row['response'] for row in source['evaluation_queries']}
+    endpoint=rows['registered_cold_endpoint'];zero=rows['prepared_zero_cold_reference']
+    a=tuple(map(fraction,endpoint['coordinate_increments']))
+    e=endpoint['integrals'];z=zero['integrals']
+    d=lambda gradient:sum((ai*interval(x) for ai,x in zip(a,gradient)),Interval(0))
+    dd=lambda h:sum((a[i]*a[j]*interval(h[i][j]) for i in range(56) for j in range(56)),Interval(0))
+    re=tuple(map(interval,e['projection_remainder_n']))
+    dre=tuple(d(row) for row in e['projection_remainder_gradient_n_m'])
+    r1=tuple(2*x-y for x,y in zip(re,dre));r2=tuple(y-x for x,y in zip(re,dre))
+    s=interval(e['remainder_strain_inner_product_j'])/2
+    ds=d(e['remainder_local_gradient_n']);dds=dd(e['remainder_local_hessian_n_m'])
+    ddzero=dd(z['remainder_local_hessian_n_m'])
+    s2=ddzero/2;s3=4*s-ds-2*s2;s4=ds-3*s+s2
+    consistency=dds-ddzero+12*s-6*ds
+    if not consistency.lo<=0<=consistency.hi:
+        raise AssertionError('Saved moments contradict genuine Green quartic path')
+    return a,r1,r2,(Interval(0),Interval(0),s2,s3,s4),consistency
+
+
+def declared_moment_polynomial(source,moments,*,linearize_projected_moments=False):
+    s=source['cold_continuum_energy_system'];banks=s['banks'];n=len(moments['coordinate_order'])
+    rz=((F(0),)*n,)*n
+    tip=[];remainder=[]
+    for k in range(8):
+        tip.append(Polynomial2.jet(center(moments['tip_coefficients_m'][k]),
+            tuple(map(center,moments['tip_first'][k])),
+            rz if linearize_projected_moments else tuple(tuple(map(center,row)) for row in moments['tip_second'][k])))
+        remainder.append(Polynomial2.jet(center(moments['remainder_projection_n'][k]),
+            tuple(map(center,moments['remainder_projection_first'][k])),
+            rz if linearize_projected_moments else tuple(tuple(map(center,row)) for row in moments['remainder_projection_second'][k])))
+    norm=Polynomial2.jet(center(moments['half_remainder_norm_j']),
+        tuple(map(center,moments['half_remainder_norm_first'])),
+        tuple(tuple(map(center,row)) for row in moments['half_remainder_norm_second']))
+    A=tuple(tuple(map(center,row)) for row in source['evaluation_queries'][0]['response']['gram_inverse_certificate']['inverse_gram_bounds_m_n'])
+    return scalar_potential(A,tuple(fraction(b['source_reference_energy_j']) for b in banks),
+        tuple(fraction(b['source_reference_force_n']) for b in banks),
+        tuple(fraction(b['source_old_tip_stiffness_n_m']) for b in banks),tip,remainder,norm)
+
+
+def compare_curvature(source,moments,response,label,counts,full_polynomial=None):
+    full=(declared_moment_polynomial(source,moments) if full_polynomial is None else full_polynomial).hessian()
+    linear=declared_moment_polynomial(source,moments,linearize_projected_moments=True).hessian()
+    for i in range(len(full)):
+        for j in range(len(full)):
+            compare(full[i][j]-linear[i][j],response['global_projection_curvature_hessian'][i][j],
+                label+'.global_curvature'+str(i)+','+str(j),counts)
+
+
+def source_quartic_center(source):
+    """Differentiate/recover from original saved source moments, never nativecoeffs."""
+    rows={row['label']:row['response'] for row in source['evaluation_queries']}
+    e=rows['registered_cold_endpoint'];raw=e['integrals'];banks=source['cold_continuum_energy_system']['banks']
+    a=tuple(map(fraction,e['coordinate_increments']))
+    directional=lambda gradient:sum((ai*center(x) for ai,x in zip(a,gradient)),F(0))
+    second=lambda h:sum((a[i]*a[j]*center(h[i][j]) for i in range(56) for j in range(56)),F(0))
+    rvalue=tuple(map(center,raw['projection_remainder_n']))
+    rderivative=tuple(directional(row) for row in raw['projection_remainder_gradient_n_m'])
+    r=[[F(0),2*v-d,d-v] for v,d in zip(rvalue,rderivative)]
+    s=center(raw['remainder_strain_inner_product_j'])/2
+    ds=directional(raw['remainder_local_gradient_n']);dds=second(raw['remainder_local_hessian_n_m'])
+    # Solve interpolation equations by Gaussian elimination. This is a
+    # distinct derivation from the production closed coefficient formula.
+    equations=[[F(1),F(1),F(1),s],[F(2),F(3),F(4),ds],[F(2),F(6),F(12),dds]]
+    for i in range(3):
+        pivot=equations[i][i];equations[i]=[x/pivot for x in equations[i]]
+        for j in range(3):
+            if i==j: continue
+            coefficient=equations[j][i]
+            equations[j]=[x-coefficient*y for x,y in zip(equations[j],equations[i])]
+    scoeff=[F(0),F(0)]+[row[3] for row in equations]
+    A=tuple(tuple(map(center,row)) for row in e['gram_inverse_certificate']['inverse_gram_bounds_m_n'])
+    t=[[F(0),a[b['tip_coordinate_index']]] for b in banks]
+    energies=tuple(fraction(b['source_reference_energy_j']) for b in banks)
+    forces=tuple(fraction(b['source_reference_force_n']) for b in banks)
+    stiffness=tuple(fraction(b['source_old_tip_stiffness_n_m']) for b in banks)
+    coefficients=uni_energy(A,energies,forces,stiffness,t,r,scoeff)
+    return coefficients,r,scoeff
+
+
+def saved_moments_expected(source,row):
+    s=source['cold_continuum_energy_system'];raw=row['response']['integrals']
+    coords=row['response']['coordinate_increments'];n=56;banks=s['banks']
+    zero=[[[0,1] for _ in range(n)] for _ in range(n)]
+    return {
+        'coordinate_order':s['coordinate_order'],
+        'tip_coefficients_m':[coords[b['tip_coordinate_index']] for b in banks],
+        'tip_first':[[[int(i==b['tip_coordinate_index']),1] for i in range(n)] for b in banks],
+        'tip_second':[zero for _ in range(8)],
+        'remainder_projection_n':raw['projection_remainder_n'],
+        'remainder_projection_first':raw['projection_remainder_gradient_n_m'],
+        'remainder_projection_second':raw['projection_hessian_n_m2'],
+        'half_remainder_norm_first':raw['remainder_local_gradient_n'],
+        'half_remainder_norm_second':raw['remainder_local_hessian_n_m'],
+    }
+
+
+def assure_unaccepted(value,label):
+    for key in ('clocks_advanced','reference_preparation_work_paid','historical_three_dimensional_prestress_recovered',
+            'whole_clock_all_pair_admission_authorized','physical_temporal_path_admission_certified'):
+        if key in value and value[key] is not False:
+            raise AssertionError('Uncertified physical state advanced in '+label+':'+key)
+    if 'accepted_new_native_intervals' in value and value['accepted_new_native_intervals']!=0:
+        raise AssertionError('A new physical interval was accepted')
+
+
+def run(native_path,output):
+    started=time.monotonic();source_before=sha(SOURCE);native_path=Path(native_path).resolve()
+    if source_before!=SOURCE_RAW_SHA: raise AssertionError('Immutable source899 raw pin changed')
+    source=json.load(open(SOURCE));native_before=sha(native_path);native=json.load(open(native_path))
+    if native.get('sha256')!=hashlib.sha256(encode({k:v for k,v in native.items() if k!='sha256'})).hexdigest():
+        raise AssertionError('Complete new native packet canonical seal changed')
+    if source['packet_sha256']!=SOURCE_SEAL: raise AssertionError('Source899 seal differs')
+    if hashlib.sha256(encode({k:v for k,v in source.items() if k!='packet_sha256'})).hexdigest()!=SOURCE_SEAL:
+        raise AssertionError('Complete source899 canonical seal differs')
+    counts={'exact_polynomial_scalar_containment_checks':0,'independent_source_interval_overlap_checks':0,
+        'exact_algebraic_identities':0,'source_moment_fields_verified':0}
+    s=source['cold_continuum_energy_system'];banks=s['banks'];cert=source['evaluation_queries'][0]['response']['gram_inverse_certificate']
+    context=native['source_context']
+    expected_context={
+        'source_raw_sha256':SOURCE_RAW_SHA,'source_packet_sha256':SOURCE_SEAL,
+        'literal_reference_energies_j':[b['source_reference_energy_j'] for b in banks],
+        'literal_reference_forces_n':[b['source_reference_force_n'] for b in banks],
+        'tip_stiffnesses_n_m':[b['source_old_tip_stiffness_n_m'] for b in banks],
+        'gram_bounds_n_m':cert['gram_bounds_n_m'],'inverse_gram_bounds_m_n':cert['inverse_gram_bounds_m_n'],
+        'tip_coordinate_indices':[b['tip_coordinate_index'] for b in banks],
+    }
+    for key,value in expected_context.items():
+        if context[key]!=value: raise AssertionError('Native source authority changed '+key)
+        counts['source_moment_fields_verified']+=1
+    source_rows={row['label']:row for row in source['evaluation_queries']}
+    if {row['label'] for row in native['saved_cases']}!=set(source_rows):
+        raise AssertionError('Both complete genuine saved899 states required')
+    for row in native['saved_cases']:
+        label=row['label'];moments=row['moments'];response=row['response'];saved=source_rows[label]
+        if moments['source_binding_sha256']!=context['binding_sha256'] or response['source_binding_sha256']!=context['binding_sha256']:
+            raise AssertionError('Moment/operator source binding differs')
+        for key,value in saved_moments_expected(source,saved).items():
+            if moments[key]!=value: raise AssertionError('Genuine rawmoment changed: '+label+':'+key)
+            counts['source_moment_fields_verified']+=1
+        half=interval(saved['response']['integrals']['remainder_strain_inner_product_j'])/2
+        mh=interval(moments['half_remainder_norm_j'])
+        if (half.lo,half.hi)!=(mh.lo,mh.hi): raise AssertionError('Whole half norm altered')
+        if moments['whole_original_integral_certified'] is not True or response['whole_original_integral_certified'] is not True:
+            raise AssertionError('Saved moment authority was lost')
+        if moments['authentic_saved_label']!=label or response['authentic_saved_label']!=label:
+            raise AssertionError('Saved label correspondence changed')
+        assure_unaccepted(response,label)
+        polynomial=source_polynomial(source,saved)
+        compare_operator(polynomial,response,label,counts)
+        compare_curvature(source,moments,response,label,counts,polynomial)
+    declared_dimensions=[]
+    for row in native['declared_cases']:
+        label=row['label'];moments=row['moments'];response=row['response'];n=len(moments['coordinate_order'])
+        declared_dimensions.append(n)
+        if moments['whole_original_integral_certified'] is not False or response['whole_original_integral_certified'] is not False:
+            raise AssertionError('Declared moment fixture claimed whole genuine coverage')
+        assure_unaccepted(response,label)
+        polynomial=declared_moment_polynomial(source,moments)
+        compare_operator(polynomial,response,label,counts)
+        compare_curvature(source,moments,response,label,counts,polynomial)
+    if 100 not in declared_dimensions: raise AssertionError('Complete100-mode declared curvature control required')
+    polynomial,rcoefficient,scoefficient=source_quartic_center(source)
+    reconstructed=source_polynomial(source,source_rows['registered_cold_endpoint']).value()
+    if uni_value(polynomial,F(1))!=reconstructed:
+        raise AssertionError('Exact quartic path endpoint differs from independent source potential')
+    counts['exact_algebraic_identities']+=1
+    if uni_value(polynomial,F(0))!=sum(fraction(b['source_reference_energy_j']) for b in banks):
+        raise AssertionError('Preparedzero literal beam energy lost')
+    counts['exact_algebraic_identities']+=1
+    derivative=uni_derivative(polynomial);second=uni_derivative(derivative)
+    integrated=[F(0)]+[x/F(i+1) for i,x in enumerate(derivative)]
+    if integrated!=[F(0)]+polynomial[1:]: raise AssertionError('Exact work integration failed')
+    counts['exact_algebraic_identities']+=1
+    a,interval_r1,interval_r2,interval_s,consistency=source_path_coefficients(source)
+    A=tuple(tuple(map(center,row)) for row in cert['inverse_gram_bounds_m_n'])
+    p1=[a[banks[k]['tip_coordinate_index']]+sum((A[k][j]*rcoefficient[j][1] for j in range(8)),F(0)) for k in range(8)]
+    p2=[sum((A[k][j]*rcoefficient[j][2] for j in range(8)),F(0)) for k in range(8)]
+    expected_lambdas=(F(0),F(1,4),F(1,2),F(3,4),F(1))
+    if tuple(fraction(row['lambda_fraction']) for row in native['affine_path'])!=expected_lambdas:
+        raise AssertionError('Five genuine affine path states missing')
+    for row in native['affine_path']:
+        lam=fraction(row['lambda_fraction']);label='affine_lambda_'+str(lam)
+        assure_unaccepted(row,label)
+        for key in ('all_eight_original_parents_and_three_archive_cohorts_covered','fixed895_coordinate_envelope_preserved',
+                'source_beams_included_once','whole_original_integral_certified'):
+            if row[key] is not True: raise AssertionError('True source modal path coverage lost '+key)
+        for i,c in enumerate(polynomial): compare(c,row['energy_polynomial_coefficients_j'][i],label+'.ucoefficient'+str(i),counts)
+        for i in range(8):
+            compare(rcoefficient[i][1],row['remainder_projection_linear_n'][i],label+'.r1_'+str(i),counts)
+            compare(rcoefficient[i][2],row['remainder_projection_quadratic_n'][i],label+'.r2_'+str(i),counts)
+            overlap(interval_r1[i],interval(row['remainder_projection_linear_n'][i]),label+'.source_r1_'+str(i),counts)
+            overlap(interval_r2[i],interval(row['remainder_projection_quadratic_n'][i]),label+'.source_r2_'+str(i),counts)
+            compare(p1[i],row['tip_projection_linear_m'][i],label+'.p1_'+str(i),counts)
+            compare(p2[i],row['tip_projection_quadratic_m'][i],label+'.p2_'+str(i),counts)
+        for i in range(3):
+            compare(scoefficient[i+2],row['half_remainder_norm_coefficients_j'][i],label+'.Scoefficient'+str(i+2),counts)
+            overlap(interval_s[i+2],interval(row['half_remainder_norm_coefficients_j'][i]),label+'.source_Scoefficient'+str(i+2),counts)
+        work=uni_value(integrated,lam)
+        compare(uni_value(polynomial,lam),row['energy_j'],label+'.energy',counts)
+        compare(work,row['potential_path_work_j'],label+'.integral_work',counts)
+        compare(-work,row['physical_reaction_path_work_j'],label+'.reaction_work',counts)
+        compare(uni_value(derivative,lam),row['potential_path_power_j'],label+'.power',counts)
+        compare(uni_value(second,lam),row['potential_path_second_derivative_j'],label+'.second',counts)
+    work=uni_value(integrated,F(1))
+    compare(work,native['saved_state_work']['potential_energy_change_j'],'saved_work.forward',counts)
+    compare(-work,native['reversed_state_work']['potential_energy_change_j'],'saved_work.reverse',counts)
+    compare(-work,native['saved_state_work']['physical_reaction_work_j'],'saved_work.reaction',counts)
+    for name in ('saved_state_work','reversed_state_work'):
+        assure_unaccepted(native[name],name)
+        if native[name]['temporal_path_certified'] is not False: raise AssertionError('State difference became admitted path')
+    if native['moments_restart_verified'] is not True: raise AssertionError('Native restart control missing')
+    if sha(SOURCE)!=source_before or sha(native_path)!=native_before: raise AssertionError('Audit altered input sources')
+    report={'format':'native-cold-variational-work-independent-audit-1','status':'PASS',
+        'source_raw_sha256':source_before,'native_packet_raw_sha256':native_before,'audit_source_raw_sha256':sha(__file__),
+        'counts':counts,'complete_saved_operator_count':len(native['saved_cases']),
+        'saved_operator_dimensions':[56 for _ in native['saved_cases']],
+        'explicitly_declared_operator_dimensions':declared_dimensions,'genuine_affine_modal_path_query_count':5,
+        'whole_source_green_quartic_consistency_contains_zero':True,
+        'exact_fraction_polynomial_differentiation_used':True,'independent_potential_work_integral_used':True,
+        'source_midpoint_values_are_algebra_diagnostics_only':True,
+        'material_labels_or_roots_midpoint_substituted':False,'old_quadrature_reexecuted':False,'project_modules_imported':False,
+        'source_interval_integral_certification_inherited':True,'reference_preparation_work_certified':False,
+        'reference_gap_resolved':False,'new_mixed_equilibrium_certified':False,'clocks_advanced':False,
+        'accepted_new_native_intervals':0,'elapsed_seconds':time.monotonic()-started}
+    report['report_sha256']=hashlib.sha256(encode(report)).hexdigest()
+    output=Path(output).resolve()
+    with output.open('xb') as f: f.write(encode(report)+b'\n')
+    print(encode(report).decode())
+
+
+if __name__=='__main__':
+    parser=argparse.ArgumentParser()
+    parser.add_argument('--native',required=True);parser.add_argument('--output',required=True)
+    args=parser.parse_args();run(args.native,args.output)
+

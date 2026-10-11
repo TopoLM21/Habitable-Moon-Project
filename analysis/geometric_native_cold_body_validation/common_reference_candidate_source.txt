@@ -1,0 +1,169 @@
+"""A source-bound NEW common reference candidate, without material admission.
+
+The historical saved128 five-group declaration is preserved verbatim.  The
+candidate is a reference reinterpretation, not elapsed-time physical motion.
+No source partition, all-pair or whole-clock certificate is asserted here.
+"""
+from fractions import Fraction as F
+from functools import lru_cache
+from pathlib import Path
+import hashlib
+import json
+
+from tectonics.geometric_native_normal_support import load_native_normal_support_source, _payload
+from tectonics.geometric_native_pose import FractionInterval as I, interval_sqrt, certify_rotation_history
+from tectonics.geometric_intrinsic_geometry import rotation_increment_from_dict
+from tectonics.geometric_native_spherical_solid import interval_cbrt
+from tectonics.geometric_native_joint_spherical_field import rotate_joint_physical_depth
+
+
+def dot(a,b):
+    return sum((x*y for x,y in zip(a,b)),I(0))
+
+
+def encoded(value):
+    return json.dumps(value,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+
+
+@lru_cache(maxsize=16)
+def source_inner_radius(cube):
+    return interval_cbrt(I(cube),192)
+
+
+source=load_native_normal_support_source()
+dto=dict(source.complete_source_dto_json)
+before=json.loads(dto['before'])
+epoch=before['snapshot']['current_material_epoch']
+material=epoch['source_material_state']
+historical=json.loads(source.saved_field_json)
+families=tuple(f for f in source.families if f.family_id in ('born-shared-0','born-shared-3'))
+assert len(families)==2 and len(source.families)==2
+active_A=families[0].shared_depth_axis_per_m
+assert any(active_A) and all(f.shared_depth_axis_per_m==active_A for f in families)
+assert len(source.banks)==13
+assert sum(b.material_kind=='original_live' for b in source.banks)==8
+assert sum(b.material_kind=='hot_birth' for b in source.banks)==5
+assert len({b.component_id for b in source.banks})==13
+assert {b.component_id for b in source.banks}=={b['component_id'] for b in epoch['components']}
+assert {b.component_id for b in source.banks}=={identity for g in historical['groups'] for identity in g['component_ids']}
+assert len(historical['groups'])==5 and source.saved_field_declaration_precision==128
+
+R=source.radius_m
+groups={identity:g for g in historical['groups'] for identity in g['component_ids']}
+norm_squared=sum((x*x for x in active_A),F(0))
+bank_rows=[]
+for index,bank in enumerate(sorted(source.banks,key=lambda x:x.component_id)):
+    top=R+bank.roof_radial_displacement_m
+    cube=top**3-3*R**2*bank.areal_material_thickness_m
+    assert cube>0
+    base=source_inner_radius(cube)
+    depth=I((R**3-top**3)/(3*R**2),(R**3-cube)/(3*R**2))
+    assert norm_squared*max(abs(depth.lo),abs(depth.hi))**2<F(1,16)
+    bank_rows.append(dict(component_id=bank.component_id,alias='C'+str(index),material_id=bank.material_id,
+        original_parent_id=bank.original_parent_id,owner=bank.owner,material_kind=bank.material_kind,
+        complete_actual_source_mask=json.loads(bank.complete_mask_source_json),
+        source_roof_radial_displacement_m=_payload(bank.roof_radial_displacement_m),
+        source_areal_material_thickness_m=_payload(bank.areal_material_thickness_m),
+        source_outer_radius_m=_payload(top),source_inner_radius_bounds_m=_payload(base),
+        common_physical_volume_depth_bounds_m=_payload(depth),
+        source_material_depth_range_m=_payload(I(0,bank.areal_material_thickness_m)),
+        historical_group=groups[bank.component_id],
+        new_common_angular_rate_per_m=_payload(active_A),
+        historical_saved128_group_rewritten=False,
+        mask_proxy_promoted_to_material=False,
+        positive_physical_radial_domain_verified=True))
+
+journal=material['journal']
+motions=dict(journal['omega_rad_per_myr'])
+extras=dict(epoch['additional_owner_histories'])
+owner_histories={owner:[dict(omega_rad_per_myr=motions[owner],dt_myr=journal['dt_myr'])]+extras[owner]
+    for owner in motions}
+owner_matrices={owner:certify_rotation_history(tuple(rotation_increment_from_dict(row) for row in history),192).intervals
+    for owner,history in owner_histories.items()}
+box=(I(-57050,-56950),I(75950,76050),I(1850,1950))
+radius=interval_sqrt(dot(box,box),192)
+tau=(I(R**3)-radius*radius*radius)/(3*R**2)
+unit=tuple(x/radius for x in box)
+common_pulled=rotate_joint_physical_depth(unit,tuple(-x for x in active_A),tau,precision=192,order=28)
+O=owner_matrices[0]
+original_pulled=tuple(dot(tuple(O[j][i] for j in range(3)),common_pulled) for i in range(3))
+parents={p['fragment_id']:p for p in material['journal']['source_surface']['fragments']}
+allocations={p['fragment_id']:p for p in material['parent_allocations']}
+witness_rows=[]
+for parent_id in ('octant:2','octant:3'):
+    bank=next(b for b in source.banks if b.original_parent_id==parent_id and b.material_kind=='original_live')
+    parent=parents[parent_id]
+    assert bank.owner==0 and not parent['geometry']['pose']
+    assert allocations[parent_id]['archived_area_bounds_sr']=={'lo':[0,1],'hi':[0,1]}
+    supports=tuple((tuple(F(x) for x in p['normal']),dot(tuple(F(x) for x in p['normal']),original_pulled))
+        for p in parent['geometry']['supports'])
+    if parent_id=='octant:2':
+        assert all(value.lo>0 for _,value in supports)
+    else:
+        assert any(value.hi<0 for _,value in supports)
+    witness_rows.append(dict(component_id=bank.component_id,original_parent_id=parent_id,owner=bank.owner,
+        complete_source_parent=parent,source_parent_allocation=allocations[parent_id],
+        inverse_original_material_direction_bounds=_payload(original_pulled),
+        support_bounds=[dict(normal=_payload(normal),bounds=_payload(bounds)) for normal,bounds in supports],
+        common_cube_strictly_inside_this_actual_bank=parent_id=='octant:2',
+        common_cube_strictly_outside_this_actual_bank=parent_id=='octant:3'))
+
+proof=dict(reference_map='Phi(X)=exp([A_star]_cross*tau(|X|))*X',
+    radial_clock='tau(r)=(R^3-r^3)/(3*R^2)',
+    global_inverse='Phi_inverse(Y)=exp(-[A_star]_cross*tau(|Y|))*Y',
+    differential='D_Phi=Q*(I-(r^3/R^2)*(A_star cross u) tensor u), u=X/r',
+    determinant_identity='det(Q)=1 and u dot (A_star cross u)=0 imply det(D_Phi)=1 by the rank-one determinant lemma',
+    exact_determinant=1,radius_preserved_exactly=True,source_sphere_r_equals_R_fixed_pointwise=True,
+    reference_volume_preserved_exactly=True,passively_transported_mass_preserved_exactly=True,
+    individual_global_map_injective_for_positive_radius=True,
+    disjointness_implication='If the preflow actual source solid domains are disjoint, their images under this one injective Phi are disjoint. The premise is not separately certified by this candidate.',
+    existing_group_dto_or_rate_mutated=False,
+    elapsed_physical_time_added=False,physical_interval_or_evolution_accepted=False)
+
+partition=dict(authenticated_epoch_phase=epoch['phase'],
+    authenticated_epoch_partition_identity=epoch['exact_material_partition'],
+    historical_material_endpoint_coverage=material['endpoint_coverage'],
+    historical_material_vacancy_identity=material['actual_material_vacancy_measure_identity'],
+    historical_partition_recipe_authority_preserved=True,
+    separate_all13_geometric_partition_proof_performed=False,
+    available_source_apis=[
+        'tectonics/geometric_native_first_entry_material.py:595 validate_native_first_entry_material',
+        'tectonics/geometric_native_first_entry_material.py:628 native_first_entry_material_to_dict',
+        'tectonics/geometric_native_implicit_material_epoch.py:247 validate_native_implicit_material_epoch',
+        'tectonics/geometric_native_implicit_material_epoch.py:275 native_implicit_material_epoch_from_dict',
+        'tectonics/geometric_native_polygons.py:441 native_intersection',
+        'tectonics/geometric_native_implicit_epoch_admission.py:219 first-continuation initial-partition checks; no complete all-pair certificate'],
+    needed_next_evidence='Authenticate/replay the exact first-entry partition and empty/common additional histories, prove actual implicit live/vacancy set separation (including the paired curved subset), then lift that premise to the full source radial domains and the common injective map. Independently check source clamp and active face compatibility.')
+
+report=dict(format='native-common-reference-candidate-1',status='PROPOSED_COMMON_REFERENCE_NOT_ADMITTED',
+    scope='NEW_REFERENCE_CANDIDATE_ONLY',source_snapshot_sha256=source.source_snapshot_sha256,
+    source_support_sha256=source.source_support_sha256,source_epoch_sha256=source.source_epoch_sha256,
+    source_curved_packet_raw_sha256=source.curved_packet_raw_sha256,
+    source_joint_packet_raw_sha256=source.joint_packet_raw_sha256,
+    source_radius_m=_payload(R),complete_historical_saved128_reference=historical,
+    complete_authenticated_source_dto_json=list(source.complete_source_dto_json),
+    source_dto_raw_sha256={name:hashlib.sha256(value.encode()).hexdigest() for name,value in source.complete_source_dto_json},
+    original_accepted_native_interval_invalidated=False,
+    source_elapsed_time_s=before['snapshot']['elapsed_time_s'],source_owner_histories=owner_histories,
+    source_owner_rotation_matrix_bounds={str(owner):_payload(matrix) for owner,matrix in owner_matrices.items()},
+    new_reference=dict(literal_common_A_per_m=_payload(active_A),family_ids=[f.family_id for f in families],
+        all_13_components_use_one_common_rate=True,historical_five_groups_kept_verbatim=True,
+        rate_selected_from_both_authentic_born_face_constraints=True,
+        interpretation='An explicit NEW common reference embedding, not an inferred historical full3D deformation and not an elapsed-time motion.'),
+    analytic_common_map_proof=proof,all_13_bank_source_bindings=bank_rows,
+    old_overlap_witness_recheck=dict(world_box_bounds_m=_payload(box),radius_bounds_m=_payload(radius),
+        physical_volume_depth_bounds_m=_payload(tau),source_parent_rows=witness_rows,
+        old_C8_C11_cube_witness_removed=True,any_other_pair_or_point_exclusion_inferred=False),
+    authentic_partition_evidence_available=partition,
+    original_history_state_or_source_masks_modified=False,
+    source_face_or_clamp_compatibility_certified=False,
+    source_initial_all_pairs_noninterpenetration_certified=False,
+    whole_clock_all_pairs_admission_certified=False,force_equilibrium_certified=False,
+    source_script_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest())
+report['candidate_packet_sha256']=hashlib.sha256(encoded(report)).hexdigest()
+path=Path('/tmp/native_common_reference_candidate_20261005.json')
+path.write_text(json.dumps(report,sort_keys=True,indent=2))
+print('all13_checked',len(bank_rows),'families',[f.family_id for f in families],flush=True)
+for row in witness_rows:
+    print(row['original_parent_id'],[(v['normal'],float(F(*v['bounds']['lo'])),float(F(*v['bounds']['hi']))) for v in row['support_bounds']],flush=True)
+print('candidate',path,'rawsha',hashlib.sha256(path.read_bytes()).hexdigest(),'seal',report['candidate_packet_sha256'],flush=True)

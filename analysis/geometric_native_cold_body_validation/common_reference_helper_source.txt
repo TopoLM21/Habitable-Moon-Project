@@ -1,0 +1,854 @@
+"""Standalone stdlib audit of the source-preserving cold tensor release.
+
+This audits source identities and exact receipt arithmetic independently of
+the production geometry/integrator/constitutive modules. It does not perform
+a second certified tensor quadrature, solve mixed forces or admit motion.
+"""
+from __future__ import annotations
+import argparse
+import ast
+from dataclasses import dataclass
+from fractions import Fraction
+from functools import lru_cache
+import hashlib
+import json
+from math import isqrt
+from pathlib import Path
+import re
+import time
+from types import SimpleNamespace
+ROOT=Path('/workspace/Habitable-Moon-Project')
+AFFINE=ROOT/'analysis/geometric_native_affine_body_validation/release_validation_01'
+PRIOR_MAP='a0343749b87411fff19fb966a8ab5771d8115ec2a4e4477b774649a05b3d2d95'
+PRIOR_RAW={
+ 'report.json':('a5ed86778a9388a56df2c89d758d17795c861c118bd4de66c6be0b5400b084db','report_sha256','6e6f0e87f0cd823caea1ebb383ffcb716fa539560024cd24c859b4d35903cf7d'),
+ 'native_control/report.json':('a0af761764d8c9283982fecffeeb3e12726538b647d76df08bbef704e72b72de','report_sha256','bfcfb2a94109f6478a7672c6d38403f4a3f9b47fe7be276a30e3b23c8365d2de'),
+ 'native_control/source_packet.json':('ccd511b2b82e66ba103d0d900b993a18d02953288f447c71ac9e589dc70c7d1e','packet_sha256','afbc10eb17cdc173177a32507be37f77f936827fe83e64764165ae702f892697')}
+PRIOR_AUDITOR='7f481c533996070db320b03bb1bcca71487e06361209c74859b3f29f0a2a556c'
+PRIOR_AUDIT='89ce99a0f12e4f2933465754eeca12bffdebb3d0e1d8c6fcfa5c7b5ded550c4a'
+ADDITIONS={
+ 'tectonics/geometric_native_cold_body.py','tectonics/geometric_native_cold_tensor_integration.py',
+ 'tectonics/geometric_native_cold_strain_energy.py','tests/test_geometric_native_cold_body.py',
+ 'tests/test_geometric_native_cold_strain_energy.py','analysis/geometric_native_cold_body_validation/validate.py',
+ 'analysis/geometric_native_cold_body_validation/native_control.py'}
+FALSE_SCOPE=('original_point_1_completed','whole_clock_material_admission_authorized',
+ 'complete_three_dimensional_strain_energy_certified','global_physical_solid_noninterpenetration_certified',
+ 'all_42_surface_pairs_reexecuted','new_native_curved_force_equilibrium_certified',
+ 'full_genuine_source_reconstructed','inherited_force_certificate_for_placement','material_admission_authorized')
+SOURCE_FIELDS=('before','current_load','original_unaccepted_trial_birth_support',
+ 'full_reference_face_birth_support','saved_joint_reference_field')
+
+def encoded(value):return json.dumps(value,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+def value_digest(value):return hashlib.sha256(encoded(value)).hexdigest()
+def digest(path):return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+def read(path):return json.loads(Path(path).read_bytes())
+def sealed(path,key):
+ value=read(path);body=dict(value);assert body.pop(key)==value_digest(body),('selfseal',str(path));return value
+
+def _literal_fraction(value):
+ assert type(value) is list and len(value)==2 and all(type(x) is int for x in value) and value[1]>0
+ return Fraction(*value)
+def _interval(value):
+ assert type(value) is dict and set(value)=={'lo','hi'}
+ low,high=_literal_fraction(value['lo']),_literal_fraction(value['hi']);assert low<=high;return low,high
+
+
+def _bounds(value):
+    return _interval(value)
+
+def _point(value):
+    value = Fraction(value)
+    return (value, value)
+
+def _plus(first, second):
+    return (first[0] + second[0], first[1] + second[1])
+
+def _minus(first, second):
+    return (first[0] - second[1], first[1] - second[0])
+
+def _times(first, second):
+    values = tuple((a * b for a in first for b in second))
+    return (min(values), max(values))
+
+def _scale(value, scalar):
+    return _times(value, _point(scalar))
+
+def _divide(first, second):
+    if second[0] <= 0 <= second[1]:
+        raise ValueError('A calibrated tensor divisor contains zero')
+    return _times(first, (1 / second[1], 1 / second[0]))
+
+def _sum(values):
+    total = _point(0)
+    for value in values:
+        total = _plus(total, value)
+    return total
+
+def _square(value):
+    lo, hi = value
+    return (Fraction(0) if lo <= 0 <= hi else min(lo * lo, hi * hi), max(lo * lo, hi * hi))
+
+def _rounded(value, precision):
+    """Replay the declared relative binary export grid with rational integers."""
+    if type(precision) is not int or precision < 1:
+        raise ValueError('A tensor receipt requires its literal precision budget')
+    maximum = max(abs(value[0]), abs(value[1]))
+    if not maximum:
+        return _point(0)
+    exponent = maximum.numerator.bit_length() - maximum.denominator.bit_length()
+    below = maximum.numerator < maximum.denominator << exponent if exponent >= 0 else maximum.numerator << -exponent < maximum.denominator
+    exponent -= int(below)
+    shift = (3322 * precision + 999) // 1000 + 8 - exponent
+    factor = Fraction(1 << shift) if shift >= 0 else Fraction(1, 1 << -shift)
+    low, high = (value[0] * factor, value[1] * factor)
+    return (Fraction(low.numerator // low.denominator) / factor, Fraction(-(-high.numerator // high.denominator)) / factor)
+
+def _same_bounds(value, expected, label):
+    if _bounds(value) != expected:
+        raise ValueError('Independent interval replay differs: ' + label)
+
+def _vector(value, count, label):
+    if type(value) is not list or len(value) != count:
+        raise ValueError('A complete interval vector is required: ' + label)
+    return tuple((_bounds(item) for item in value))
+
+def _matrix(value, count, label):
+    if type(value) is not list or len(value) != count:
+        raise ValueError('A complete interval matrix is required: ' + label)
+    return tuple((_vector(row, count, label) for row in value))
+
+def _symmetric(values):
+    if len(values) != 28:
+        raise ValueError('All twenty-eight independent seven-mode coefficients are required')
+    matrix = [[None] * 7 for _ in range(7)]
+    index = 0
+    for i in range(7):
+        for j in range(i, 7):
+            matrix[i][j] = matrix[j][i] = values[index]
+            index += 1
+    return tuple((tuple(row) for row in matrix))
+
+def _snapshot(value, name):
+    body = dict(value)
+    actual = body.pop(name)
+    if not isinstance(actual, str) or value_digest(body) != actual:
+        raise ValueError('An exported complete component snapshot differs: ' + name)
+    return actual
+
+def _check_cold_body(body, component, packet, source):
+    """Match every body source to immutable accepted DTOs, without building it."""
+    _snapshot(body, 'geometry_source_sha256')
+    before = packet['before']
+    epoch = before['snapshot']['current_material_epoch']
+    material = epoch['source_material_state']
+    mechanics = material['original_mechanics_payload']
+    identity, parent_id = (component['component_id'], component['original_parent_id'])
+    bank = next((row for row in source.banks if row.component_id == identity))
+    parents = [row for row in material['journal']['source_surface']['fragments'] if row['fragment_id'] == parent_id]
+    allocations = [row for row in material['parent_allocations'] if row['fragment_id'] == parent_id]
+    bindings = [row for row in material['trace_bindings'] if parent_id in (row['donor_fragment_id'], row['receiver_fragment_id'])]
+    if len(parents) != 1 or len(allocations) != 1 or len(bindings) != 1:
+        raise ValueError('A cold body lacks one complete original material/trace source')
+    binding = bindings[0]
+    role = 'sub' if binding['donor_fragment_id'] == parent_id else 'over'
+    traces = mechanics['fault_traces']['traces']
+    trace_index = next((i for i, row in enumerate(traces) if row['trace_id'] == binding['trace_id']))
+    trace = traces[trace_index]
+    parameters = next((row[role] for row in mechanics['bending_parameters'] if row['trace_id'] == trace['trace_id']))
+    tip_row = next((row for row in before['snapshot']['transverse_displacement_m'] if row[0] == trace['trace_id']))
+    radius = Fraction.from_float(material['journal']['source_surface']['radius_km']) * 1000
+    thickness = sum((Fraction.from_float(value) for value in parents[0]['parcel']['specific_properties'][:2]), Fraction(0)) * 1000
+    old_index = 3 * len(mechanics['plate_ids']) + 2 * trace_index + int(role == 'over')
+    stiffness_row = before['original_physical_history']['original_reference']['stiffness'][old_index]
+    old_k = Fraction.from_float(stiffness_row[old_index]) / radius ** 2
+    accepted_tip = Fraction.from_float(tip_row[1 if role == 'sub' else 2])
+    young, poisson, elastic_h, width = tuple((Fraction.from_float(parameters[name]) for name in ('young_modulus_pa', 'poisson_ratio', 'elastic_thickness_m', 'width_m')))
+    roof = bank.roof_radial_displacement_m
+    elastic_depth = ((radius + roof) ** 3 - (radius + roof - elastic_h) ** 3) / (3 * radius ** 2)
+    if old_k <= 0 or any((Fraction.from_float(value) for i, value in enumerate(stiffness_row) if i != old_index)) or roof != accepted_tip or (not 0 < elastic_depth < thickness):
+        raise ValueError('The original accepted cold elastic reference differs')
+    for name, expected in (('component_id', identity), ('material_id', component['material_id']), ('original_parent_id', parent_id), ('owner', component['owner']), ('trace_id', trace['trace_id']), ('source_bank', role), ('old_absolute_coordinate_index', old_index), ('bank_alias', 'C' + str(sorted((row.component_id for row in source.banks)).index(identity))), ('source_snapshot_sha256', source.source_snapshot_sha256), ('source_support_sha256', source.source_support_sha256), ('source_epoch_sha256', source.source_epoch_sha256), ('source_packet_raw_sha256', source.curved_packet_raw_sha256), ('saved_field_declaration_precision', 128), ('coordinate_order', ['old_tip_increment', 'xx', 'yy', 'zz', 'xy', 'xz', 'yz'])):
+        if body.get(name) != expected:
+            raise ValueError('A cold body source identity differs: ' + name)
+    for name, expected in (('radius_m', radius), ('areal_material_thickness_m', thickness), ('roof_radial_displacement_m', roof), ('accepted_tip_displacement_m', accepted_tip), ('source_old_tip_stiffness_n_m', old_k), ('young_modulus_pa', young), ('poisson_ratio', poisson), ('elastic_thickness_m', elastic_h), ('width_m', width), ('beta_cut_radians', width / radius), ('elastic_layer_areal_depth_m', elastic_depth)):
+        if _literal_fraction(body.get(name)) != expected:
+            raise ValueError('A cold body substituted a literal source scalar: ' + name)
+    area = _bounds(component['area_bounds_sr'])
+    _same_bounds(body['actual_area_bounds_sr'], area, 'actual complete cold mask area')
+    _same_bounds(body['reference_volume_bounds_m3'], _scale(area, radius ** 2 * thickness), 'actual complete cold mask volume')
+    corrections = [row for row in epoch['paired_corrections'] if row['negative_component_id'] == identity]
+    domains = [row for row in material['sweep_certificate']['donor_domains'] if row['fragment_id'] == parent_id]
+    if len(domains) > 1:
+        raise ValueError('A complete cold source must retain a unique once-only archive')
+    domain = domains[0] if domains else None
+    support = before['temporal_admission']['original_bank_support']
+    clamp = next((row for row in support['live_clamps'] if row['trace_id'] == trace['trace_id'] and row['bank'] == role))
+    if support['live_original_clamp_support_certified'] is not True or support['complete_original_bank_support_certified'] is not True or clamp['archived_material_supplies_clamp'] is not False or (clamp['newborn_material_supplies_clamp'] is not False) or (_literal_fraction(clamp['width_m']) != width) or (clamp['owner'] != component['owner']):
+        raise ValueError('The new field lost its authentic complete original clamp support')
+    for name, value in (('complete_mask_source_json', component), ('complete_parent_source_json', parents[0]), ('complete_parent_allocation_json', allocations[0]), ('complete_source_trace_json', trace), ('complete_source_bending_parameters_json', parameters), ('complete_source_sweep_certificate_json', material['sweep_certificate']), ('complete_source_clamp_support_json', support), ('source_clamp_row_json', clamp), ('saved_field_json', packet['saved_joint_reference_field'])):
+        if type(body.get(name)) is not str or encoded(json.loads(body[name])) != encoded(value):
+            raise ValueError('A complete cold source payload differs: ' + name)
+    if body['complete_donor_domain_json'] != ('' if domain is None else encoded(domain).decode()):
+        raise ValueError('A cold field changed its exact endpoint archive domain')
+    if body['paired_corrections_source_json'] != [encoded(row).decode() for row in corrections]:
+        raise ValueError('The entire negative curved source correction was not retained')
+    _same_bounds(body['archive_area_bounds_sr'], _bounds(allocations[0]['archived_area_bounds_sr']), 'source total archive')
+    _same_bounds(body['endpoint_archive_area_bounds_sr'], _point(0) if domain is None else _bounds(domain['endpoint_area_bounds_sr']), 'source endpoint archive')
+    if _vector(body['paired_curved_removed_area_bounds_sr'], len(corrections), 'negative curved areas') != tuple((_bounds(row['area_bounds_sr']) for row in corrections)):
+        raise ValueError('A negative curved correction was replaced by an area alias')
+    start = tuple((Fraction.from_float(value) for value in trace['start']))
+    end = tuple((Fraction.from_float(value) for value in trace['end']))
+    cross = (start[1] * end[2] - start[2] * end[1], start[2] * end[0] - start[0] * end[2], start[0] * end[1] - start[1] * end[0])
+    inward = tuple(((-1 if role == 'sub' else 1) * value for value in cross))
+    for name, expected in (('original_quarter_start', start), ('original_quarter_end', end), ('original_quarter_inward', inward)):
+        if tuple((_literal_fraction(value) for value in body[name])) != expected:
+            raise ValueError('The supported cold field changed the source quarter frame')
+    journal = material['journal']
+    histories = [dict(omega_rad_per_myr=dict(journal['omega_rad_per_myr'])[component['owner']], dt_myr=journal['dt_myr'])]
+    histories.extend(dict(epoch['additional_owner_histories'])[component['owner']])
+    if encoded(json.loads(body['source_owner_history_json'])) != encoded(histories):
+        raise ValueError('The cold modal reference omitted the accepted owner history')
+    geometry_precision = body['geometry_enclosure_precision']
+    if type(geometry_precision) is not int or not 64 <= geometry_precision <= 512:
+        raise ValueError('The accepted cold reference requires its literal geometry precision')
+    rotation = certify_rotation_history(tuple((rotation_increment_from_dict(row) for row in histories)), geometry_precision).intervals
+    expected_rotation = tuple((tuple(((value.lo, value.hi) for value in row)) for row in rotation))
+    if _matrix(body['owner_rotation_matrix_bounds'], 3, 'accepted owner rotation') != expected_rotation:
+        raise ValueError('The source owner frame was not replayed from its literal history')
+    for name, vector in (('current_quarter_start_bounds', start), ('current_quarter_tangent_bounds', end), ('current_quarter_inward_bounds', inward)):
+        expected = tuple((_sum((_scale(entry, value) for entry, value in zip(row, vector))) for row in expected_rotation))
+        if _vector(body[name], 3, name) != expected:
+            raise ValueError('A cold modal frame differs from accepted source motion')
+    groups = [row for row in packet['saved_joint_reference_field']['groups'] if identity in row['component_ids']]
+    if len(groups) != 1:
+        raise ValueError('The actual cold bank lacks one saved joint field group')
+    axes = [row.shared_depth_axis_per_m for row in source.families if row.family_id in groups[0]['family_ids']]
+    axis = axes[0] if axes else (Fraction(0),) * 3
+    if any((value != axis for value in axes)) or tuple((_literal_fraction(value) for value in body['angular_rate_per_physical_volume_depth_m'])) != axis:
+        raise ValueError('The cold field substituted a saved128 angular alias midpoint')
+    if any((not bounds[0] <= value <= bounds[1] for value, bounds in zip(axis, _vector(groups[0]['angular_rate_per_physical_volume_depth_m'], 3, 'saved128 depth axis')))):
+        raise ValueError('The literal cold depth axis is outside its saved128 declaration')
+    if domain is None or domain['endpoint_domain'] is None:
+        if body['endpoint_plane_source_json'] != '' or body['endpoint_plane_coefficients_in_quarter'] != []:
+            raise ValueError('An unremoved cold bank invented an endpoint source plane')
+    else:
+        planes = [row for row in domain['endpoint_domain']['supports'] if row['rotations']]
+        if len(planes) != 1 or encoded(json.loads(body['endpoint_plane_source_json'])) != encoded(planes[0]):
+            raise ValueError('The source endpoint removed strip lost its unique foreign support')
+        plane = _plane_values(native_plane_from_dict(planes[0]), max(geometry_precision, 256))[1]
+        expected = tuple((_sum((_scale((value.lo, value.hi), scalar) for value, scalar in zip(plane, frame))) for frame in (start, end, inward)))
+        if _vector(body['endpoint_plane_coefficients_in_quarter'], 3, 'endpoint source plane') != expected or expected[2][1] >= 0:
+            raise ValueError('The endpoint strip coefficients differ from their authentic source plane')
+    curved_cap, curved_beta = (_point(0), _point(0))
+    if corrections:
+        sweep = material['sweep_certificate']
+        if parent_id != sweep['extra_endpoint_fixed_parent_id'] or domain is None or domain['domain_case'] != 'endpoint_plus_curved_swept_extra' or ((start, end, inward) != ((Fraction(0), Fraction(-1), Fraction(0)), (Fraction(0), Fraction(0), Fraction(1)), (Fraction(1), Fraction(0), Fraction(0)))) or any((_bounds(sweep['proof_bounds'][name])[0] <= 0 for name in ('c_positive', 'y_over_u_positive', 'b_derivative_numerator_positive'))):
+            raise ValueError('The curved cold removal lost its authentic whole-time source branch')
+        ratio = _bounds(sweep['envelope']['maximum_ratio_bounds'])
+        plane_coefficients = _vector(body['endpoint_plane_coefficients_in_quarter'], 3, 'source terminal plane')
+        terminal = _divide(_scale(plane_coefficients[1], -1), plane_coefficients[2])
+        cap_value = interval_atan(FractionInterval(*ratio), max(geometry_precision, 256))
+        beta_value = interval_atan(FractionInterval(*terminal), max(geometry_precision, 256))
+        curved_cap, curved_beta = ((cap_value.lo, cap_value.hi), (beta_value.lo, beta_value.hi))
+    _same_bounds(body['paired_curved_cap_theta_width_bounds_radians'], curved_cap, 'true whole-clock swept theta cap')
+    _same_bounds(body['paired_curved_beta_upper_bounds_radians'], curved_beta, 'true whole-clock swept beta extent')
+    if not body['modal_reference_provenance'].strip() or not body['provenance'].strip():
+        raise ValueError('A new cold modal reference needs explicit model provenance')
+    return (radius, thickness, old_k, accepted_tip, young, poisson, elastic_depth)
+
+def _check_cold_material(material, body, source, young, poisson):
+    fields = ('component_id', 'body_snapshot_sha256', 'source_snapshot_sha256', 'source_support_sha256', 'upper_young_modulus_pa', 'upper_poisson_ratio', 'lower_young_modulus_pa', 'lower_shear_modulus_pa', 'source_lower_tensor_template_json', 'material_model', 'initial_strain_model', 'lower_layer_extension_provenance', 'calibration_provenance')
+    if set(material) != set(fields) | {'material_snapshot_sha256'}:
+        raise ValueError('The full explicit layered cold material declaration is required')
+    if value_digest([material[name] for name in fields]) != material['material_snapshot_sha256']:
+        raise ValueError('The complete cold material snapshot differs')
+    templates, coefficients = ([], [])
+    for family in source.families:
+        columns = json.loads(family.complete_carrier_source_json)['declaration']['parameters']['columns']
+        templates.append([family.family_id, columns])
+        for role in ('sub', 'over'):
+            coefficients.append((Fraction.from_float(columns[role + '_normal_modulus_pa']), Fraction.from_float(columns[role + '_shear_modulus_pa'])))
+    if not coefficients or len(set(coefficients)) != 1:
+        raise ValueError('The lower tensor template is not one authentic uniform source declaration')
+    lower_young, lower_shear = coefficients[0]
+    for name, expected in (('component_id', body['component_id']), ('body_snapshot_sha256', body['geometry_source_sha256']), ('source_snapshot_sha256', source.source_snapshot_sha256), ('source_support_sha256', source.source_support_sha256), ('material_model', 'new_layered_tensor_with_positive_nonlocal_old_tip_calibration'), ('initial_strain_model', 'new_initial_strain_w_ref_times_complete_symmetric_tip_gradient')):
+        if material[name] != expected:
+            raise ValueError('The explicit cold constitutive scope differs: ' + name)
+    for name, expected in (('upper_young_modulus_pa', young), ('upper_poisson_ratio', poisson), ('lower_young_modulus_pa', lower_young), ('lower_shear_modulus_pa', lower_shear)):
+        if _literal_fraction(material[name]) != expected:
+            raise ValueError('An authentic cold tensor modulus differs: ' + name)
+    if encoded(json.loads(material['source_lower_tensor_template_json'])) != encoded(templates) or not material['lower_layer_extension_provenance'].strip() or (not material['calibration_provenance'].strip()):
+        raise ValueError('The lower tensor must retain its exact source and explicit new model provenance')
+    lower_poisson = lower_young / (2 * lower_shear) - 1
+    if young <= 0 or lower_young <= 0 or lower_shear <= 0 or (not -1 < poisson < Fraction(1, 2)) or (not -1 < lower_poisson < Fraction(1, 2)):
+        raise ValueError('Each declared full layer tensor must be positive definite')
+    return {'upper': (young * poisson / ((1 + poisson) * (1 - 2 * poisson)), young / (2 * (1 + poisson))), 'lower': (2 * lower_shear * lower_poisson / (1 - 2 * lower_poisson), lower_shear)}
+
+def _check_raw_tensor_projection(raw, body, material, coordinates):
+    """Replay the 73 primary strain integrals without the production assembler."""
+    _snapshot(raw, 'integral_snapshot_sha256')
+    if raw['component_id'] != body['component_id'] or raw['body_snapshot_sha256'] != body['geometry_source_sha256'] or raw['material_snapshot_sha256'] != material['material_snapshot_sha256'] or (tuple((_literal_fraction(value) for value in raw['coordinates_m'])) != coordinates) or (raw['primary_integrals_use_symbolic_tip_remainder'] is not True) or (raw['complete_mixed_force_equilibrium_certified'] is not False) or (raw['physical_material_admission_authorized'] is not False) or (type(raw['taylor_order']) is not int) or (not 0 <= raw['taylor_order'] <= 12):
+        raise ValueError('The raw supported tensor integral changed its field or physical scope')
+    precision = raw['precision']
+    if type(precision) is not int or not 64 <= precision <= 512:
+        raise ValueError('The raw cold integration precision is outside its literal budget')
+    quarter = _vector(raw['quarter_integral_bounds'], 73, 'quarter tensor integrals')
+    removal = _vector(raw['removed_material_correction_bounds'], 73, 'actual removed tensor integrals')
+    actual = tuple((_rounded(_minus(a, b), precision) for a, b in zip(quarter, removal)))
+    if _vector(raw['actual_material_integral_bounds'], 73, 'actual tensor integrals') != actual:
+        raise ValueError('A complete actual cold mask integral differs from its signed corrections')
+    _same_bounds(raw['reference_tip_strain_stiffness_unintersected_n_m'], actual[0], 'unrefined actual tip norm')
+    lower_proof = _check_tip_norm_lower_proof(raw['reference_tip_strain_stiffness_lower_bound_proof'], body, material, precision)
+    if actual[0][1] < lower_proof:
+        raise ValueError('The whole tensor integral contradicts its independent supported norm lower proof')
+    k = (max(actual[0][0], lower_proof), actual[0][1])
+    prem, prem_first, second = (actual[1], actual[2:9], _symmetric(actual[9:37]))
+    rem_norm, rem_first, rem_second = (actual[37], actual[38:45], _symmetric(actual[45:73]))
+    if k[0] <= 0:
+        raise ValueError('The actual supported tip tensor norm needs strict positive proof')
+    q0 = coordinates[0]
+    projection = _plus(_scale(k, q0), prem)
+    projection_first = tuple((_plus(k if i == 0 else _point(0), prem_first[i]) for i in range(7)))
+    norm = _plus(_plus(_scale(k, q0 * q0), _scale(prem, 2 * q0)), rem_norm)
+    first = tuple((_plus(_plus(_plus(_scale(k, q0), prem) if i == 0 else _point(0), _scale(prem_first[i], q0)), rem_first[i]) for i in range(7)))
+    hessian = tuple((tuple((_sum((k if i == j == 0 else _point(0), prem_first[j] if i == 0 else _point(0), prem_first[i] if j == 0 else _point(0), rem_second[i][j], _scale(second[i][j], q0))) for j in range(7))) for i in range(7)))
+    for name, expected in (('reference_tip_strain_stiffness_n_m', k), ('projection_n', projection), ('incremental_strain_inner_product_j', norm), ('projection_remainder_n', prem), ('remainder_strain_inner_product_j', rem_norm)):
+        _same_bounds(raw[name], expected, name)
+    for name, expected in (('projection_gradient_n_m', projection_first), ('incremental_local_gradient_n', first), ('projection_remainder_gradient_n_m', prem_first), ('remainder_local_gradient_n', rem_first)):
+        if _vector(raw[name], 7, name) != expected:
+            raise ValueError('A full raw tensor gradient differs: ' + name)
+    for name, expected in (('projection_hessian_n_m2', second), ('incremental_local_hessian_n_m', hessian), ('remainder_local_hessian_n_m', rem_second)):
+        if _matrix(raw[name], 7, name) != expected:
+            raise ValueError('A full raw tensor Hessian differs: ' + name)
+    return (k, prem, prem_first, second, rem_norm, rem_first, rem_second, norm)
+
+def _check_tip_norm_lower_proof(proof, body, material, precision):
+    """Derive the complete actual-mask tip norm coercivity from exact moments."""
+    beta, radius = (_literal_fraction(body['beta_cut_radians']), _literal_fraction(body['radius_m']))
+    young, poisson = (_literal_fraction(material['upper_young_modulus_pa']), _literal_fraction(material['upper_poisson_ratio']))
+    lower_young, lower_shear = (_literal_fraction(material['lower_young_modulus_pa']), _literal_fraction(material['lower_shear_modulus_pa']))
+    upper_shear = young / (2 * (1 + poisson))
+    upper_lame = young * poisson / ((1 + poisson) * (1 - 2 * poisson))
+    lower_poisson = lower_young / (2 * lower_shear) - 1
+    lower_lame = 2 * lower_shear * lower_poisson / (1 - 2 * lower_poisson)
+    if min(upper_lame, lower_lame) < 0 or not 0 < beta < 1:
+        raise ValueError('The genuine tip coercivity proof requires nonnegative full layer Lamé coefficients')
+    pi_value = interval_pi(precision)
+    pi = (pi_value.lo, pi_value.hi)
+    shape_moment, slope_moment = (Fraction(33, 140) * beta, Fraction(6, 5) / beta)
+    maximum = 4 + Fraction(9, 4) / (beta * beta)
+    archive = _bounds(body['archive_area_bounds_sr'])
+    curved = tuple((_bounds(value) for value in body['paired_curved_removed_area_bounds_sr']))
+    removed = archive[1] + sum((value[1] for value in curved), Fraction(0))
+    angular = pi[0] / 2 * (1 - beta * beta / 2) * (4 * shape_moment + slope_moment) - maximum * removed
+    top = radius + _literal_fraction(body['roof_radial_displacement_m'])
+    thickness = _literal_fraction(body['areal_material_thickness_m'])
+    bottom_value = interval_cbrt(FractionInterval(top ** 3 - 3 * radius ** 2 * thickness), precision)
+    bottom = (bottom_value.lo, bottom_value.hi)
+    upper_height = _literal_fraction(body['elastic_thickness_m'])
+    lower_height = (top - upper_height - bottom[1], top - upper_height - bottom[0])
+    if angular <= 0 or lower_height[0] <= 0:
+        raise ValueError('The authentic retained cold material has no positive tip norm coercivity')
+    lower = angular * (upper_shear * upper_height + lower_shear * lower_height[0])
+    for name, expected in (('beta_cut_radians', beta), ('transverse_shape_squared_integral_radians', shape_moment), ('transverse_slope_squared_integral_per_radian', slope_moment), ('maximum_removed_angular_strain_factor', maximum), ('angular_integral_lower_bound', angular), ('upper_layer_shear_pa', upper_shear), ('lower_layer_shear_pa', lower_shear), ('physical_upper_layer_height_m', upper_height), ('stiffness_lower_bound_n_m', lower)):
+        if _literal_fraction(proof[name]) != expected:
+            raise ValueError('An independent actual-mask tip coercivity coefficient differs: ' + name)
+    for name, expected in (('pi_bounds', pi), ('source_archive_area_bounds_sr', archive), ('physical_lower_layer_height_bounds_m', lower_height), ('physical_material_bottom_radius_bounds_m', bottom)):
+        _same_bounds(proof[name], expected, name)
+    if _vector(proof['paired_curved_removed_area_bounds_sr'], len(curved), 'coercivity curved removal') != curved or proof['positive_lame_coefficients_retained'] is not True or proof['strain_quadratic_form_lower_bound_includes_depth_shear'] is not True:
+        raise ValueError('The analytic tip norm lower proof omitted genuine removed material or depth shear')
+    return lower
+
+def _check_calibrated_response(response, body, material, old_k, accepted_tip):
+    """Differentiate the explicit positive rank-one calibration independently."""
+    if encoded(response.get('body')) != encoded(body) or encoded(response.get('material')) != encoded(material):
+        raise ValueError('The energy response substituted its complete field or material declaration')
+    coordinates = tuple((_literal_fraction(value) for value in response['coordinates_m']))
+    if len(coordinates) != 7 or not all(coordinates):
+        raise ValueError('The cold diagnostic must exercise every supported physical mode')
+    for name in ('nonlocal_constitutive_calibration_declared', 'accepted_global_beam_reference_energy_preserved', 'accepted_global_beam_reference_tip_force_preserved'):
+        if response.get(name) is not True:
+            raise ValueError('The explicitly new calibrated cold source reference was not preserved')
+    for name in ('old_beam_stiffness_added_as_second_energy', 'historical_full_three_dimensional_prestress_recovered', 'historical_archived_strain_energy_density_recovered', 'complete_three_dimensional_strain_energy_certified', 'mixed_force_equilibrium_certified', 'material_admission_authorized', 'original_point_1_completed'):
+        if response.get(name) is not False:
+            raise ValueError('The cold component response exceeded its declared limited physical scope')
+    raw = response['raw_integrals']
+    k, prem, prem_gradient, second, rem_norm, rem_gradient, rem_hessian, full_norm = _check_raw_tensor_projection(raw, body, material, coordinates)
+    reference_energy, reference_force = (old_k * accepted_tip * accepted_tip / 2, old_k * accepted_tip)
+    if _literal_fraction(response['reference_energy_j']) != reference_energy or _literal_fraction(response['reference_tip_force_n']) != reference_force:
+        raise ValueError('The authentic old global beam energy or tip force was reset')
+    projection_increment = _plus(_point(coordinates[0]), _divide(prem, k))
+    total = _plus(_point(accepted_tip), projection_increment)
+    derivatives = tuple((_plus(_point(int(i == 0)), _divide(prem_gradient[i], k)) for i in range(7)))
+    residual = _minus(_scale(rem_norm, Fraction(1, 2)), _divide(_square(prem), _scale(k, 2)))
+    if residual[1] < 0:
+        raise ValueError('The positive tensor orthogonal-complement proof is inconsistent')
+    residual = (max(Fraction(0), residual[0]), residual[1])
+    energy = _plus(_scale(_square(total), old_k / 2), residual)
+    gradient = tuple((_minus(_plus(_scale(_times(total, derivatives[i]), old_k), rem_gradient[i]), _times(_divide(prem, k), prem_gradient[i])) for i in range(7)))
+    hessian = tuple((tuple((_plus(_minus(_plus(_scale(_times(derivatives[i], derivatives[j]), old_k), rem_hessian[i][j]), _divide(_times(prem_gradient[i], prem_gradient[j]), k)), _times(_divide(_minus(_scale(total, old_k), prem), k), second[i][j])) for j in range(7))) for i in range(7)))
+    _same_bounds(response['energy_bounds_j'], energy, 'new calibrated cold energy')
+    _same_bounds(response['raw_green_energy_bounds_j'], _scale(full_norm, Fraction(1, 2)), 'complete raw Green energy')
+    _same_bounds(response['projection_increment_m'], projection_increment, 'correlated source tip increment')
+    _same_bounds(response['total_old_tip_strain_projection_m'], total, 'nonzero accepted tip strain')
+    if _vector(response['generalized_gradient_bounds_n'], 7, 'calibrated seven-mode forces') != gradient or _matrix(response['generalized_hessian_bounds_n_m'], 7, 'calibrated seven-mode Hessian') != hessian:
+        raise ValueError('Independent full calibrated virtual-work derivatives differ')
+    if hessian != tuple(zip(*hessian)):
+        raise ValueError('The independent calibrated Hessian is not symmetric')
+    if energy[0] < 0:
+        raise ValueError('The explicitly positive calibrated cold potential lost its bound')
+    return (coordinates, reference_energy)
+
+def _check_strain_support(support, body, coordinates, precision):
+    """Replay the local metric proof; grant no global embedding or admission."""
+    radius = _literal_fraction(body['radius_m'])
+    top = radius + _literal_fraction(body['roof_radial_displacement_m'])
+    thickness = _literal_fraction(body['areal_material_thickness_m'])
+    cube = top ** 3 - 3 * radius ** 2 * thickness
+    if cube <= 0:
+        raise ValueError('The complete actual cold body reaches a nonpositive radius')
+    lower = interval_cbrt(FractionInterval(cube), precision).lo
+    axis = tuple((_literal_fraction(value) for value in body['angular_rate_per_physical_volume_depth_m']))
+    rate = interval_sqrt(FractionInterval(sum((value * value for value in axis), Fraction(0))), precision).hi
+    beta = _literal_fraction(body['beta_cut_radians'])
+    if not 0 < beta <= Fraction(1, 4):
+        raise ValueError('The whole clamped field needs its bounded authentic source angle')
+    beta_gradient = 1 / lower + top ** 2 / radius ** 2 * rate / (1 - beta * beta / 2)
+    tip_norm = 1 / lower + Fraction(3, 2) / beta * beta_gradient
+    enrichment_norm = 1 / radius + Fraction(3, 2) / beta * (top / radius) * beta_gradient
+    initial_norm = 2 * abs(_literal_fraction(body['accepted_tip_displacement_m'])) * tip_norm
+    increment_norm = abs(coordinates[0]) * tip_norm + sum((abs(value) * enrichment_norm for value in coordinates[1:]), Fraction(0))
+    if initial_norm >= 1 or increment_norm >= 1:
+        raise ValueError('The complete cold modal increment lost the certified metric domain')
+    if support['body_snapshot_sha256'] != body['geometry_source_sha256'] or tuple((_literal_fraction(value) for value in support['coordinates_m'])) != coordinates:
+        raise ValueError('The local whole-mask support proof belongs to another field')
+    for name, expected in (('reference_tip_gradient_norm_upper_per_m', tip_norm), ('enrichment_gradient_norm_upper_per_m', enrichment_norm), ('incremental_gradient_norm_upper', increment_norm)):
+        if _literal_fraction(support[name]) != expected:
+            raise ValueError('A complete cold gradient bound differs from its source formula')
+    expected = {'reference_radius_bounds_m': (lower, top), 'initial_metric_eigenvalue_bounds': (1 - initial_norm, 1 + initial_norm), 'incremental_jacobian_bounds': ((1 - increment_norm) ** 3, (1 + increment_norm) ** 3), 'total_elastic_metric_eigenvalue_bounds': ((1 - increment_norm) ** 2 - initial_norm, (1 + increment_norm) ** 2 + initial_norm)}
+    for name, value in expected.items():
+        _same_bounds(support[name], value, name)
+        if value[0] <= 0:
+            raise ValueError('The independent local cold metric/J bound is not positive')
+
+def _check_tensor_cells(raw, body, coefficients):
+    """Check complete cell coverage and signed receipt arithmetic, not re-integrate."""
+    cells = raw['cell_receipts']
+    precision = raw['precision']
+    if type(cells) is not list or not cells or raw['integration_cell_count'] != len(cells):
+        raise ValueError('The complete cold tensor cell proof was truncated')
+    beta_end = _literal_fraction(body['beta_cut_radians'])
+    elastic_depth = _literal_fraction(body['elastic_layer_areal_depth_m'])
+    thickness = _literal_fraction(body['areal_material_thickness_m'])
+    layer_ranges = {'upper': (Fraction(0), elastic_depth), 'lower': (elastic_depth, thickness)}
+    quarter, tails = ([_point(0)] * 73, [Fraction(0)] * 73)
+    for layer, (z0, z1) in layer_ranges.items():
+        selected = [cell for cell in cells if cell['layer'] == layer]
+        if not selected:
+            raise ValueError('Both physical cold tensor layers must be integrated')
+        beta_intervals = sorted({_bounds(cell['beta_bounds_radians']) for cell in selected})
+        depth_intervals = sorted({_bounds(cell['areal_material_depth_bounds_m']) for cell in selected})
+        for intervals, lo, hi in ((beta_intervals, Fraction(0), beta_end), (depth_intervals, z0, z1)):
+            if intervals[0][0] != lo or intervals[-1][1] != hi or any((a >= b for a, b in intervals)) or any((first[1] != second[0] for first, second in zip(intervals, intervals[1:]))):
+                raise ValueError('The tensor cells do not cover the entire clamped quarter/depth')
+        if len(selected) != len(beta_intervals) * len(depth_intervals) or {(_bounds(cell['beta_bounds_radians']), _bounds(cell['areal_material_depth_bounds_m'])) for cell in selected} != {(beta, depth) for beta in beta_intervals for depth in depth_intervals}:
+            raise ValueError('The complete quarter tensor partition contains gaps or duplicates')
+    for cell in cells:
+        layer = cell['layer']
+        if layer not in coefficients or tuple((_literal_fraction(cell[name]) for name in ('lame_pa', 'shear_pa'))) != coefficients[layer]:
+            raise ValueError('A cold tensor integration cell substituted its physical layer tensor')
+        polynomial = _vector(cell['polynomial_integral_bounds'], 73, 'whole cell polynomial integral')
+        remainder = tuple((_literal_fraction(value) for value in cell['remainder_absolute_upper_bounds']))
+        if len(remainder) != 73 or any((value < 0 for value in remainder)):
+            raise ValueError('All complete tensor derivative remainders must be nonnegative')
+        bounds = tuple((_rounded(_plus(value, (-tail, tail)), precision) for value, tail in zip(polynomial, remainder)))
+        if _vector(cell['integral_bounds'], 73, 'certified cell integral') != bounds:
+            raise ValueError('A complete tensor cell lost its outward derivative tail')
+        for index, value in enumerate(bounds):
+            quarter[index] = _rounded(_plus(quarter[index], value), precision)
+            tails[index] += remainder[index]
+    if tuple(quarter) != _vector(raw['quarter_integral_bounds'], 73, 'summed quarter integral') or tuple(tails) != tuple((_literal_fraction(value) for value in raw['maximum_taylor_remainder_absolute_upper_bounds'])):
+        raise ValueError('The complete quarter integral or derivative-tail sum differs')
+
+def _check_tensor_corrections(raw, body):
+    """Replay source endpoint-cap partition and every signed correction receipt."""
+    precision = raw['precision']
+    radius = _literal_fraction(body['radius_m'])
+    elastic = _literal_fraction(body['elastic_layer_areal_depth_m'])
+    thickness = _literal_fraction(body['areal_material_thickness_m'])
+    layer_ranges = {'upper': (Fraction(0), elastic), 'lower': (elastic, thickness)}
+    endpoint = _bounds(body['endpoint_archive_area_bounds_sr'])
+    curved = tuple((_bounds(value) for value in body['paired_curved_removed_area_bounds_sr']))
+    receipts = raw['correction_receipts']
+    expected_count = 2 * (int(endpoint != _point(0)) + sum((value != _point(0) for value in curved)))
+    if type(receipts) is not list or len(receipts) != expected_count:
+        raise ValueError('Every nonzero endpoint and paired curved removal needs both layer receipts')
+    parameters = None
+    if endpoint != _point(0):
+        a, b, c = _vector(body['endpoint_plane_coefficients_in_quarter'], 3, 'true endpoint plane')
+        if c[1] >= 0:
+            raise ValueError('The genuine endpoint source plane lacks inward-negative proof')
+        d = _rounded(_divide(_scale(a, -1), c), precision + 16)
+        e = _rounded(_divide(_scale(b, -1), c), precision + 16)
+
+        def cap_atan(value):
+            if value[0] < 0 or value[1] > Fraction(1, 10):
+                raise ValueError('A native removed cap exceeded its certified small-angle range')
+            return _rounded((max(Fraction(0), value[0] - value[1] ** 3 / 3), value[1]), precision + 16)
+        if d[0] >= 0 and e[0] >= 0:
+            case, cap, maximum = ('whole_quarter', _point(0), d[1] + e[1])
+        elif d[0] > 0 and e[1] < 0:
+            case, cap, maximum = ('quarter_minus_terminal_cap', cap_atan(_divide(_scale(e, -1), d)), d[1])
+        elif d[1] < 0 and e[0] > 0:
+            case, cap, maximum = ('terminal_cap_only', cap_atan(_divide(e, _scale(d, -1))), e[1])
+        else:
+            raise ValueError('The endpoint source signs require a separately certified partition')
+        if maximum > _literal_fraction(body['beta_cut_radians']):
+            raise ValueError('The complete endpoint removal reaches beyond the physical supported collar')
+        parameters = (d, e, case, cap, maximum)
+    total = [_point(0)] * 73
+    seen = {layer: [] for layer in layer_ranges}
+    for receipt in receipts:
+        layer = receipt['layer']
+        if layer not in layer_ranges or _bounds(receipt['areal_material_depth_bounds_m']) != layer_ranges[layer]:
+            raise ValueError('A removed material receipt changed its physical layer depth')
+        kind = receipt['correction_kind']
+        area = _bounds(receipt['removed_area_bounds_sr'])
+        scalar_bounds = _vector(receipt['complete_supported_quarter_scalar_bounds'], 73, 'removed-mask scalar bounds')
+        if kind == 'endpoint_archive_exact_theta_strip':
+            if parameters is None or area != endpoint:
+                raise ValueError('An endpoint correction substituted another actual archive measure')
+            d, e, case, cap, maximum = parameters
+            for name, expected in (('plane_cos_coefficient_bounds', d), ('plane_sin_coefficient_bounds', e), ('endpoint_cap_width_bounds_radians', cap)):
+                _same_bounds(receipt[name], expected, name)
+            if receipt['positive_theta_case'] != case or _literal_fraction(receipt['maximum_positive_delta_upper_bound']) != maximum:
+                raise ValueError('The source endpoint correction changed its true theta strip')
+            polynomial = _vector(receipt['polynomial_integral_bounds'], 73, 'removed-strip polynomial')
+            depth_tails = tuple((_literal_fraction(value) for value in receipt['depth_remainder_absolute_upper_bounds']))
+            transverse_tails = tuple((_literal_fraction(value) for value in receipt['transverse_and_atan_remainder_absolute_upper_bounds']))
+            if len(depth_tails) != 73 or len(transverse_tails) != 73 or any((value < 0 for value in depth_tails + transverse_tails)):
+                raise ValueError('The removed strip must preserve both complete depth and transverse tails')
+            expected = tuple((_rounded(_plus(_rounded(_plus(value, (-depth, depth)), precision), (-transverse, transverse)), precision) for value, depth, transverse in zip(polynomial, depth_tails, transverse_tails)))
+        elif kind == 'paired_curved_removed':
+            if area not in curved or area == _point(0):
+                raise ValueError('A curved correction substituted an unauthenticated source measure')
+            z0, z1 = layer_ranges[layer]
+            _same_bounds(receipt['theta_terminal_cap_width_bounds_radians'], _bounds(body['paired_curved_cap_theta_width_bounds_radians']), 'authentic whole-sweep curved theta localization')
+            beta = _bounds(body['paired_curved_beta_upper_bounds_radians'])
+            _same_bounds(receipt['beta_bounds_radians'], (Fraction(0), beta[1]), 'authentic whole-sweep curved beta localization')
+            multiplier = _scale(area, radius ** 2 * (z1 - z0))
+            expected = tuple((_rounded(_times(value, multiplier), precision) for value in scalar_bounds))
+        else:
+            raise ValueError('An unbound material removal law appeared in cold tensor evidence')
+        seen[layer].append((kind, area))
+        if _vector(receipt['correction_integral_bounds'], 73, 'actual source removed integral') != expected:
+            raise ValueError('A complete removed-mask tensor correction differs from its source receipt')
+        for index, value in enumerate(expected):
+            total[index] = _rounded(_plus(total[index], value), precision)
+    expected_removals = ([] if endpoint == _point(0) else [('endpoint_archive_exact_theta_strip', endpoint)]) + [('paired_curved_removed', area) for area in curved if area != _point(0)]
+    if any((sorted(values) != sorted(expected_removals) for values in seen.values())):
+        raise ValueError('Endpoint and curved removed masks were omitted or counted twice')
+    if tuple(total) != _vector(raw['removed_material_correction_bounds'], 73, 'complete signed removal sum'):
+        raise ValueError('The complete actual cold removed-material tensor sum differs')
+
+def _check_cold_component_evidence(native, packet):
+    """Bind whole source masks and independently replay tensor/projection data."""
+    rows = native.get('cold_components')
+    if type(rows) is not list or len(rows) != 8 or encoded(rows) != encoded(packet.get('cold_components')):
+        raise ValueError('All eight identical complete cold proofs are required in both outputs')
+    source = load_native_normal_support_source()
+    epoch = packet['before']['snapshot']['current_material_epoch']
+    components = {row['component_id']: row for row in epoch['components'] if row['material_kind'] == 'original_live'}
+    if len(components) != 8 or {row.get('component_id') for row in rows} != set(components):
+        raise ValueError('The cold body proof substituted or omitted an authentic complete component')
+    reference_total = Fraction(0)
+    for row in rows:
+        identity = row['component_id']
+        body, material, response = (row['body'], row['material'], row['diagnostic_response'])
+        radius, thickness, old_k, accepted_tip, young, poisson, elastic_depth = _check_cold_body(body, components[identity], packet, source)
+        coefficients = _check_cold_material(material, body, source, young, poisson)
+        coordinates, reference_energy = _check_calibrated_response(response, body, material, old_k, accepted_tip)
+        raw = response['raw_integrals']
+        _check_strain_support(response['support'], body, coordinates, max(raw['precision'], 160))
+        _check_tensor_cells(raw, body, coefficients)
+        _check_tensor_corrections(raw, body)
+        if row.get('probe_is_new_mixed_force_solution') is not False or row.get('accepted_reference_energy_and_tip_force_preserved') is not True:
+            raise ValueError('A cold diagnostic claimed a new physical force solution')
+        reference_total += reference_energy
+    for payload in (native, packet):
+        if _literal_fraction(payload['accepted_reference_total_beam_energy_j']) != reference_total:
+            raise ValueError('The eight authentic accepted cold beam energies were not conserved')
+    if native.get('actual_cold_supported_body_component_count') != 8 or native.get('accepted_reference_energy_preserved') is not True or native.get('accepted_reference_tip_forces_preserved') is not True or (native.get('explicit_initial_strain_declared') is not True) or (native.get('explicit_new_nonlocal_calibrated_tensor_extension') is not True) or any((native.get(name) is not False for name in ('historical_per_material_strain_distribution_recovered', 'old_beam_stiffness_added_again', 'source_material_floor_used', 'source_area_midpoints_substituted', 'source_normal_column_lengths_used_as_geometry'))):
+        raise ValueError('The cold component reference, provenance or scope differs')
+    return dict(actual_cold_supported_body_component_count=8, independent_cold_source_mask_reference_bindings_verified=8, independent_cold_calibrated_energy_force_hessian_replays_verified=8, independent_raw_tensor_primary_scalar_count_per_component=73, complete_tensor_cell_coverage_and_receipt_arithmetic_verified=True, independent_second_certified_tensor_quadrature_performed=False, accepted_reference_energy_preserved=True, accepted_reference_tip_forces_preserved=True, explicit_new_nonlocal_calibrated_tensor_extension=True, historical_per_material_strain_distribution_recovered=False, old_beam_stiffness_added_again=False, accepted_reference_total_beam_energy_j=[reference_total.numerator, reference_total.denominator])
+
+
+@dataclass(frozen=True)
+class FractionInterval:
+ lo: Fraction
+ hi: Fraction|None=None
+ def __post_init__(self):
+  object.__setattr__(self,'lo',Fraction(self.lo));object.__setattr__(self,'hi',Fraction(self.lo if self.hi is None else self.hi));assert self.lo<=self.hi
+ def __add__(self,other):return _fi(_plus(_fp(self),_fp(other)))
+ __radd__=__add__
+ def __neg__(self):return FractionInterval(-self.hi,-self.lo)
+ def __sub__(self,other):return self+-_fi(_fp(other))
+ def __rsub__(self,other):return _fi(_fp(other))+-self
+ def __mul__(self,other):return _fi(_times(_fp(self),_fp(other)))
+ __rmul__=__mul__
+ def __truediv__(self,other):return _fi(_divide(_fp(self),_fp(other)))
+ def __rtruediv__(self,other):return _fi(_divide(_fp(other),_fp(self)))
+
+def _fp(value):return (value.lo,value.hi) if isinstance(value,FractionInterval) else value if isinstance(value,tuple) and len(value)==2 else (Fraction(value),Fraction(value))
+def _fi(value):return FractionInterval(*value)
+def _log2(value):
+ e=value.numerator.bit_length()-value.denominator.bit_length();below=(value.numerator<value.denominator<<e if e>=0 else value.numerator<<-e<value.denominator);return e-int(below)
+def _bits(p):return (3322*p+999)//1000+8
+def _power2(e):return Fraction(1<<e) if e>=0 else Fraction(1,1<<-e)
+def _root_point(value,p,n):
+ assert value>=0
+ if not value:return _point(0)
+ root=lambda x:isqrt(x) if n==2 else _integer_cbrt(x)
+ a,b=root(value.numerator),root(value.denominator)
+ if a**n==value.numerator and b**n==value.denominator:return _point(Fraction(a,b))
+ factor=_power2(_bits(p)-_log2(value)//n);scaled=value*factor**n;r=root(scaled.numerator//scaled.denominator)
+ return Fraction(r)/factor,Fraction(r+1)/factor
+
+def _integer_cbrt(value):
+ if value<8:return int(value>0)
+ current=1<<((value.bit_length()+2)//3)
+ while True:
+  following=(2*current+value//(current*current))//3
+  if following>=current:break
+  current=following
+ while (current+1)**3<=value:current+=1
+ while current**3>value:current-=1
+ return current
+
+def interval_sqrt(value,p):
+ low,high=_fp(value);assert low>=0;return FractionInterval(_root_point(low,p,2)[0],_root_point(high,p,2)[1])
+def interval_cbrt(value,p):
+ low,high=_fp(value);assert low>=0;return FractionInterval(_root_point(low,p,3)[0],_root_point(high,p,3)[1])
+def _atan_point(value,p):
+ if not value:return _point(0)
+ threshold=value/10**p;partial=term=value;index=0
+ while True:
+  following=-term*value*value*(2*index+1)/(2*index+3);new=partial+following
+  if abs(following)<=threshold:return min(partial,new),max(partial,new)
+  partial,term,index=new,following,index+1
+
+def interval_atan(value,p):
+ reduced=_fp(value);assert reduced[0]>=0;multiple=1
+ while reduced[1]>Fraction(1,8):
+  reduced=_divide(reduced,_plus(_point(1),_fp(interval_sqrt(_plus(_point(1),_times(reduced,reduced)),p+8))))
+  reduced=_rounded(reduced,p+8);multiple*=2
+ low,high=_atan_point(reduced[0],p+8),_atan_point(reduced[1],p+8)
+ return _fi(_rounded((multiple*low[0],multiple*high[1]),p))
+
+@lru_cache(maxsize=32)
+def interval_pi(p):
+ # Independent direct rational Machin series avoids nonrational half-angle denominators.
+ first,second=_atan_point(Fraction(1,5),p+32),_atan_point(Fraction(1,239),p+32)
+ return _fi(_rounded(_minus(_scale(first,16),_scale(second,4)),p))
+
+def _rounded_midpoint(value,p):
+ middle=(value.lo+value.hi)/2
+ if not middle:return Fraction(0)
+ factor=_power2(_bits(p)-_log2(abs(middle)));scaled=middle*factor;lo=scaled.numerator//scaled.denominator;rem=scaled-lo
+ return Fraction(lo+int(rem>Fraction(1,2) or rem==Fraction(1,2) and lo%2))/factor
+
+def _alternating(u,p,sinc):
+ partial=term=Fraction(1);index=0
+ while True:
+  denominator=(2*index+2)*(2*index+3) if sinc else (2*index+1)*(2*index+2)
+  following=-term*u/denominator;new=partial+following
+  if abs(following)<=Fraction(1,10**p):return FractionInterval(min(partial,new),max(partial,new))
+  partial,term,index=new,following,index+1
+
+def _quaternion(q):
+ w,x,y,z=q;norm=w*w+x*x+y*y+z*z
+ return (((w*w+x*x-y*y-z*z)/norm,2*(x*y-w*z)/norm,2*(x*z+w*y)/norm),
+  (2*(x*y+w*z)/norm,(w*w-x*x+y*y-z*z)/norm,2*(y*z-w*x)/norm),
+  (2*(x*z-w*y)/norm,2*(y*z+w*x)/norm,(w*w-x*x-y*y+z*z)/norm))
+def _mm(first,second):return tuple(tuple(sum((first[i][k]*second[k][j] for k in range(3)),0) for j in range(3)) for i in range(3))
+def rotation_increment_from_dict(row):return SimpleNamespace(omega_rad_per_myr=tuple(row['omega_rad_per_myr']),dt_myr=row['dt_myr'])
+def certify_rotation_history(rows,p):
+ matrix=tuple(tuple(Fraction(i==j) for j in range(3)) for i in range(3));intervals=tuple(tuple(FractionInterval(i==j) for j in range(3)) for i in range(3))
+ for row in rows:
+  half=tuple(Fraction.from_float(float(w))*Fraction.from_float(float(row.dt_myr))/2 for w in row.omega_rad_per_myr);u=sum((x*x for x in half),Fraction(0));assert u<=Fraction(1,64)
+  if not u:continue
+  c,s=_alternating(u,p+8,False),_alternating(u,p+8,True);q=(c,)+tuple(x*s for x in half)
+  center=_quaternion(tuple(_rounded_midpoint(x,p+8) for x in q));raw=_quaternion(q)
+  box=tuple(tuple(_fi(_rounded((min(raw[i][j].lo,center[i][j]),max(raw[i][j].hi,center[i][j])),p+8)) for j in range(3)) for i in range(3))
+  matrix=_mm(center,matrix);product=_mm(box,intervals)
+  intervals=tuple(tuple(_fi(_rounded((min(product[i][j].lo,matrix[i][j]),max(product[i][j].hi,matrix[i][j])),p+8)) for j in range(3)) for i in range(3))
+ return SimpleNamespace(matrix=matrix,intervals=intervals)
+
+def native_plane_from_dict(row):return row
+
+def _plane_values(row,p):
+ effective=[]
+ for raw in row['rotations']:
+  step=rotation_increment_from_dict(raw)
+  if not any(step.omega_rad_per_myr):continue
+  if effective and step.dt_myr==effective[-1].dt_myr and step.omega_rad_per_myr==tuple(-x for x in effective[-1].omega_rad_per_myr):effective.pop()
+  else:effective.append(step)
+ cert=certify_rotation_history(tuple(effective),p);maximum=max(abs(x) for x in row['normal']);vector=tuple(Fraction(x,maximum) for x in row['normal'])
+ return tuple(sum((x*y for x,y in zip(r,vector)),0) for r in cert.matrix),tuple(sum((x*y for x,y in zip(r,vector)),0) for r in cert.intervals)
+
+
+
+def authenticate_826():
+ text=AFFINE.parent/'independent_audit_source.txt';assert digest(text)==PRIOR_AUDITOR
+ namespace={'__name__':'sealed_pure_stdlib_ancestry'};exec(compile(text.read_bytes(),str(text),'exec'),namespace)
+ sources=namespace['historical_sources']();assert len(sources)==820
+ values={}
+ for name,(raw,key,seal) in PRIOR_RAW.items():
+  path=AFFINE/name;assert digest(path)==raw;values[name]=sealed(path,key);assert values[name][key]==seal
+ wrapper,native,packet=(values[k] for k in ('report.json','native_control/report.json','native_control/source_packet.json'))
+ assert wrapper['status']==wrapper['regression_validation_status']=='PASS' and wrapper['source_count']==826 and wrapper['pytest_counts']=={'passed':39}
+ assert wrapper['source_map_before_sha256']==wrapper['source_map_after_sha256']==PRIOR_MAP and wrapper['changed_python_paths']==[]
+ assert wrapper['prior_artifacts_and_python_sources_preserved_after'] is True
+ assert set(wrapper['added_python_sources'])==namespace['ADDITIONS'] and not set(sources)&set(wrapper['added_python_sources'])
+ sources.update(wrapper['added_python_sources']);assert len(sources)==826 and value_digest(sources)==PRIOR_MAP
+ for name,sha in sources.items():assert digest(ROOT/name)==sha,name
+ namespace['outputs'](AFFINE,wrapper,4)
+ assert {str(p.relative_to(AFFINE)) for p in AFFINE.rglob('*') if p.is_file()}==set(wrapper['outputs'])|{'report.json'}
+ for scope in (wrapper,native):
+  assert scope['physical_candidate_status']=='COMPONENT_AFFINE_BODY_ONLY'
+  assert scope['accepted_original_native_intervals']==1 and scope['accepted_new_native_intervals']==0
+  for key in FALSE_SCOPE:assert scope[key] is False,key
+ audit_path=AFFINE.parent/'independent_audit.json';assert digest(audit_path)==PRIOR_AUDIT
+ audit=sealed(audit_path,'report_sha256');assert audit['status']=='PASS' and audit['fresh_tests']==39 and audit['final_python_sources']==826
+ assert audit['source_map_canonical_sha256']==PRIOR_MAP and audit['auditor_script_sha256']==PRIOR_AUDITOR
+ normal=sealed(ROOT/'analysis/geometric_native_normal_support_validation/release_validation_01/native_control/source_packet.json','packet_sha256')
+ for key in SOURCE_FIELDS:assert packet[key]==normal[key]
+ for key in ('coordinates_decimal','literal_owner_axes'):assert packet[key]==normal[key]
+ return sources,packet,namespace
+
+_AUTHENTIC_SOURCE=None
+
+def load_native_normal_support_source():
+ assert _AUTHENTIC_SOURCE is not None;return _AUTHENTIC_SOURCE
+
+def source_from_prior(prior):
+ epoch=prior['before']['snapshot']['current_material_epoch'];reference=prior['saved_joint_reference_field']
+ roofs=dict(reference['top_radial_displacements_m']);groups=reference['groups']
+ domains={row['component_id']:row['domain'] for row in prior['affine_body_components']}
+ def axis_for(group):
+  candidates={tuple(_literal_fraction(x) for x in domains[k]['angular_rate_per_physical_volume_depth_m']) for k in group['component_ids'] if k in domains}
+  if not candidates:
+   assert not group['family_ids'];return (Fraction(0),)*3
+  assert len(candidates)==1;return next(iter(candidates))
+ family_axes={family:axis_for(group) for group in groups for family in group['family_ids']}
+ banks=[]
+ for row in epoch['components']:
+  lo,hi=_bounds(roofs[row['component_id']]);assert lo==hi
+  banks.append(SimpleNamespace(component_id=row['component_id'],material_kind=row['material_kind'],roof_radial_displacement_m=lo))
+ families=[]
+ for row in prior['full_reference_face_birth_support']['interface_carriers']:
+  identity=row['declaration']['family_id'];assert identity in family_axes
+  families.append(SimpleNamespace(family_id=identity,shared_depth_axis_per_m=family_axes[identity],complete_carrier_source_json=encoded(row).decode()))
+ return SimpleNamespace(banks=tuple(banks),families=tuple(families),source_snapshot_sha256=prior['source_snapshot_sha256'],
+  source_support_sha256=prior['full_reference_face_birth_support']['support_sha256'],source_epoch_sha256=epoch['epoch_sha256'],
+  curved_packet_raw_sha256='0e3554a55a8c93eb8ecbdae8351f3280a2ae4bd8596254950afef7f77b98d2cb')
+
+def run(options):
+ global _AUTHENTIC_SOURCE
+ started=time.perf_counter();sources,prior,ancestry=authenticate_826()
+ directory=Path(options.out).resolve();native_path=directory/'native_control/report.json';packet_path=directory/'native_control/source_packet.json'
+ native=sealed(native_path,'report_sha256');packet=sealed(packet_path,'packet_sha256')
+ assert native['status']==native['regression_validation_status']=='PASS' and native['physical_candidate_status']=='COLD_TENSOR_COMPONENT_ONLY'
+ assert native['source_packet_sha256']==packet['packet_sha256']
+ assert native['accepted_original_native_intervals']==1 and native['accepted_new_native_intervals']==0
+ assert native['accepted_input_complete_typed_state_unchanged'] is True and native['original_point_1_remaining_work_blocks']==1
+ assert len(native['remaining_physical_conditions'])==3
+ for key in FALSE_SCOPE:assert native[key] is False,key
+ assert packet['authenticated_affine_source_packet_raw_sha256']==PRIOR_RAW['native_control/source_packet.json'][0]
+ assert packet['authenticated_affine_source_packet_seal']==prior['packet_sha256']
+ for key in ('accepted_input_unchanged',):assert packet[key] is True
+ for key in ('material_admission_authorized','full_genuine_source_reconstructed','inherited_force_certificate_for_placement'):assert packet[key] is False
+ for key in SOURCE_FIELDS:assert packet[key]==prior[key],key
+ for key in ('coordinates_decimal','literal_owner_axes'):assert packet[key]==prior[key]
+ _AUTHENTIC_SOURCE=source_from_prior(prior)
+ evidence=_check_cold_component_evidence(native,packet)
+ controller_tree=ast.parse((ROOT/'analysis/geometric_native_cold_body_validation/native_control.py').read_text())
+ controller_calls=[]
+ for node in ast.walk(controller_tree):
+  if isinstance(node,ast.Call):
+   budget={keyword.arg:keyword.value.value for keyword in node.keywords if keyword.arg in ('precision','taylor_order','beta_cell_count','depth_cell_count') and isinstance(keyword.value,ast.Constant)}
+   if len(budget)==4:controller_calls.append(budget)
+ assert len(controller_calls)==1, 'Frozen controller tensor declaration differs'
+ controller_budget=controller_calls[0]
+ assert 64<=controller_budget['precision']<=512 and 0<=controller_budget['taylor_order']<=12
+ for row in native['cold_components']:
+  raw=row['diagnostic_response']['raw_integrals']
+  assert (raw['precision'],raw['taylor_order'],raw['integration_cell_count'])==(controller_budget['precision'],controller_budget['taylor_order'],2*controller_budget['beta_cell_count']*controller_budget['depth_cell_count']), 'Controller response budget is not source bound'
+ current={str(p.relative_to(ROOT)):digest(p) for subdir in ('tectonics','tests','scripts','analysis') for p in sorted((ROOT/subdir).rglob('*.py'))}
+ assert all(current.get(k)==v for k,v in sources.items()) and set(current)-set(sources)==ADDITIONS and len(current)==833
+ source_sha=value_digest(current)
+ test_tree=ast.parse((ROOT/'tests/test_geometric_native_cold_strain_energy.py').read_text())
+ test_budget=dict(precision=64,taylor_order=1,beta_cell_count=1,depth_cell_count=1)
+ assert any(all(any(keyword.arg==key and isinstance(keyword.value,ast.Constant) and keyword.value.value==expected for keyword in node.keywords) for key,expected in test_budget.items()) for node in ast.walk(test_tree) if isinstance(node,ast.Call)), 'Frozen test tensor budget differs'
+ if options.expected_source_map:assert source_sha==options.expected_source_map
+ tests=None;wrapper_raw=None;wrapper_seal=None
+ if not options.native_only:
+  path=directory/'report.json';wrapper=sealed(path,'report_sha256');wrapper_raw=digest(path);wrapper_seal=wrapper['report_sha256']
+  assert wrapper['status']==wrapper['regression_validation_status']=='PASS' and wrapper['source_count']==833
+  assert wrapper['accepted_original_native_intervals']==1 and wrapper['accepted_new_native_intervals']==0
+  assert wrapper['accepted_input_complete_typed_state_unchanged'] is True and wrapper['original_point_1_remaining_work_blocks']==1
+  assert wrapper['pytest_exit_code']==0 and wrapper['execution_mode']=='same_python_process' and wrapper['pytest_import_mode']=='importlib'
+  assert wrapper['test_paths']==['tests/test_geometric_native_cold_body.py','tests/test_geometric_native_cold_strain_energy.py']
+  assert wrapper['control']=='analysis.geometric_native_cold_body_validation.native_control:run'
+  for key in ('historical_tests_reexecuted','preloaded_genuine_case_used','whole_native_interval_admitted_by_test_gate'):assert wrapper[key] is False,key
+  assert wrapper['physical_candidate_status']=='COLD_TENSOR_COMPONENT_ONLY' and wrapper['prior_source_map_sha256']==PRIOR_MAP
+  assert wrapper['source_map_before_sha256']==wrapper['source_map_after_sha256']==source_sha
+  assert wrapper['changed_python_paths']==[] and wrapper['prior_artifacts_and_python_sources_preserved_after'] is True
+  assert set(wrapper['added_python_sources'])==ADDITIONS and not set(sources)&ADDITIONS
+  sources.update(wrapper['added_python_sources']);assert sources==current
+  for key in FALSE_SCOPE:assert wrapper[key] is False,key
+  assert wrapper['pytest_counts']=={'passed':20}
+  counts=None
+  for line in reversed((directory/'pytest.log').read_text().splitlines()):
+   values={kind:int(n) for n,kind in re.findall(r'\b(\d+) (passed|failed|skipped|xfailed|xpassed|errors?)\b',line)}
+   if values:counts=values;break
+  assert counts==wrapper['pytest_counts'];tests=counts['passed']
+  assert wrapper['native_control_report_raw_sha256']==digest(native_path) and wrapper['native_control_source_packet_raw_sha256']==digest(packet_path)
+  ancestry['outputs'](directory,wrapper,4)
+  assert set(wrapper['outputs'])=={'pytest.log','control_console.log','native_control/report.json','native_control/source_packet.json'}
+  assert {str(p.relative_to(directory)) for p in directory.rglob('*') if p.is_file()}==set(wrapper['outputs'])|{'report.json'}
+ after={str(p.relative_to(ROOT)):digest(p) for subdir in ('tectonics','tests','scripts','analysis') for p in sorted((ROOT/subdir).rglob('*.py'))};assert after==current
+ result=dict(status='PASS',independent_stdlib_only=True,project_python_modules_imported=False,
+  second_certified_tensor_quadrature_performed=False,production_tensor_quadrature_reexecuted=False,
+  original_regressions_reexecuted=False,full_genuine_source_reconstructed=False,
+  physical_candidate_status='COLD_TENSOR_COMPONENT_ONLY',native_only_development_check=options.native_only,
+  preserved_original_python_sources=826,preserved_original_artifacts=1633,
+  preserved_affine_outputs=4,preserved_affine_standalone_audit_raw_sha256=PRIOR_AUDIT,
+  preserved_affine_standalone_auditor_raw_sha256=PRIOR_AUDITOR,
+  final_python_sources=833,source_map_canonical_sha256=source_sha,
+  source_bodies_before_and_after_equal=True,fresh_tests=tests,
+  wrapper_raw_sha256=wrapper_raw,wrapper_seal=wrapper_seal,native_raw_sha256=digest(native_path),
+  native_seal=native['report_sha256'],source_packet_raw_sha256=digest(packet_path),source_packet_seal=packet['packet_sha256'],
+  cold_tensor_raw_source_bindings=8,cold_tensor_calibrated_energy_force_hessian_replays=8,
+  supported_local_metric_and_jacobian_source_formulas_replayed=True,
+  raw_tensor_integral_scalar_count_per_component=73,analytic_tip_norm_lower_proofs_replayed=8,
+  actual_tensor_removed_masks_endpoint_and_curved_debited_once=True,
+  tip_norm_lower_proof_uses_conservative_complete_archive_plus_extra_curved_debit=True,
+  controller_tensor_literal_source_budget=controller_budget,controller_tensor_budget_literal_source_calls_verified=True,
+  controller_tensor_budgets=[dict(component_id=row['component_id'],precision=row['diagnostic_response']['raw_integrals']['precision'],taylor_order=row['diagnostic_response']['raw_integrals']['taylor_order'],integration_cell_count=row['diagnostic_response']['raw_integrals']['integration_cell_count']) for row in native['cold_components']],
+  fresh_test_tensor_budgets_recorded_from_frozen_source=test_budget,
+  fresh_test_tensor_budget_literal_source_calls_verified=True,
+  certified_cell_coverage_and_receipt_arithmetic_replayed=True,
+  accepted_original_native_intervals=1,accepted_new_native_intervals=0,
+  original_point_1_completed=False,material_admission_authorized=False,
+  whole_clock_material_admission_authorized=False,complete_three_dimensional_strain_energy_certified=False,
+  new_native_curved_force_equilibrium_certified=False,inherited_force_certificate_for_placement=False,
+  original_point_1_remaining_work_blocks=1,remaining_physical_conditions=native['remaining_physical_conditions'],
+  auditor_script_sha256=digest(__file__),seconds=time.perf_counter()-started,component_evidence=evidence)
+ if options.result:Path(options.result).write_bytes(encoded(result)+b'\n')
+ print(encoded(result).decode(),flush=True)
+ return result
+
+if __name__=='__main__':
+ parser=argparse.ArgumentParser();parser.add_argument('--out',required=True);parser.add_argument('--result');parser.add_argument('--native-only',action='store_true');parser.add_argument('--expected-source-map',default='2b322df2d2c426976ee886374517c2e0130acb5a5acfcaf4bb07a6e4c3331e05')
+ run(parser.parse_args())

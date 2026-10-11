@@ -1,0 +1,61 @@
+Independent read-only analytic review of the C6 terminal cut criterion
+2026-10-05; no project imports, source rerun, quadrature or repository edit.
+
+The reviewed criterion is correct under the authenticated complete envelope
+premises already independently proved in native_curved_partition_peer_20261005:
+Source proof report: /tmp/native_curved_partition_peer_20261005.json
+raw SHA256 d07f10dbf7c50a1d454db18d194ff4999889aadd56f27b7a178b30e2d679a259.
+Independent proof source: /tmp/native_curved_partition_peer_20261005.py
+SHA256 c5607c1128356ef315ba6597973c80f724892748399bee5c56519d809e83a2dc.
+That proof is bound to the unchanged source curved packet raw SHA256
+0e3554a55a8c93eb8ecbdae8351f3280a2ae4bd8596254950afef7f77b98d2cb.
+
+C>0, a'=A1/C^2>0, b'=B1/C^2>0, q=b/a has its unique maximum at u_m,
+k=b'/a'=B1/A1, k'=curvature_numerator/A1^2<0 for u>=u_m, k(1)>0, and all
+positive contacts before u_m are dominated by the contact at u_m.
+
+Let p=(x,y,z) be a nonzero source P5 point on the terminal receiver plane.
+Then z>0: if z=0, P5 gives x>=0,y<=0 while x=a1*y+b1*z gives x<=0,
+so x=y=0 and the direction would vanish. Define t=-y/z and
+f(u,t)=b(u)-a(u)*t. The terminal plane is x/z=f(1,t).
+The earlier receiver predicate has the sign of f(u,t)-f(1,t).
+
+If t<=k1, then f'(u,t)=a'(u)(k(u)-t)>=0 on [u_m,1]. Thus
+f(u,t)<=f(1,t) there. The early-branch dominance extends the same inequality
+to u<u_m whenever its contact is positive. Since f(1,t)=x/z>=0, a nonpositive
+early value cannot create entry either. There is no earlier strict entry.
+At t=k1, this remains true; equality at the endpoint is retained separately
+as the actual geometric support boundary, not a finite new material atom.
+
+If t>k1, f'(1,t)=a'(1)(k1-t)<0. Consequently f(u,t)>f(1,t) for u<1
+sufficiently close to 1. The strict earlier receiver predicate is positive:
+the source point is in the once-only first-entry archive and is absent from
+the retained donor cut. No global curved-mask polygon substitution is used.
+
+Therefore the actual retained terminal branch obeys y+k1*z>=0 exactly.
+On z=1 with P5 support, the archived terminal segment is
+    -q1 <= y < -k1,
+including its source-edge endpoint x=0,y=-q1. If the archive/boundary DTO
+uses separate zero-area boundary records, keep that endpoint in that explicit
+classification; do not silently omit it from the geometric receipt.
+
+For a positively oriented native great-circle arc of length strictly below pi,
+its rays are positive linear combinations of its endpoint rays. A homogeneous
+linear functional with both endpoint margins positive stays positive throughout.
+Opposite strict endpoint signs imply exactly one zero: such a sinusoidal linear
+functional has zeros spaced pi apart, and the intermediate-value theorem supplies
+one zero on this shorter arc. Thus the reported C6/C7 signs (+,-) prove one
+implicit trim; the C6/C11 signs (+,+) prove the entire tiny cross arc is live.
+
+Implementation requirements confirmed by the parent's scratch correction:
+1. Before declaring 'crosses', assert actual opposite strict endpoint signs.
+   An unresolved interval merely straddling zero is not a crossing certificate.
+2. Explicitly assert 0<arc_angle.lo<=arc_angle.hi<pi for the uniqueness premise.
+3. Keep k1 as the exact analytic B1(1)/A1(1) symbol with its source enclosure;
+   an interval midpoint is not an authenticated trimming plane.
+4. Preserve the y=-q1 source boundary endpoint explicitly.
+
+This review verifies only the unchanged source terminal-cut restriction.
+It does not certify a constitutive rest gap, replacement of old receiver axes,
+memory/measure transport, force equilibrium or future whole-clock admission.
+It does not invalidate the accepted old native interval.

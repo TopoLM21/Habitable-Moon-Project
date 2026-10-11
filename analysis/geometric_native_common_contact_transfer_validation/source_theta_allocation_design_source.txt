@@ -1,0 +1,113 @@
+"""Independent source-axis/ray design replay; no project imports or quadrature.
+
+This certifies a once-only angular allocation for the five current cold cuts.
+The conditional depth density is an explicit proposed NEW model, not adoption.
+"""
+from fractions import Fraction as F
+from pathlib import Path
+import hashlib,json,sys,time,types
+
+ROOT=Path('/workspace/Habitable-Moon-Project')
+SOURCE=ROOT/'analysis/geometric_native_affine_body_validation/release_validation_01/native_control/source_packet.json'
+SOURCE_RAW='ccd511b2b82e66ba103d0d900b993a18d02953288f447c71ac9e589dc70c7d1e'
+AUDIT=ROOT/'analysis/geometric_native_common_reference_validation/retained_original_contact_cut_audit.json'
+AUDIT_RAW='7ac3cd74013a20d7a06e95eccec4e6ceb3db412fb197ec3ed559c5af43108200'
+HELPER=ROOT/'analysis/geometric_native_cold_body_validation/independent_audit_source.txt'
+HELPER_RAW='ee031938177a3497aa7821c883650a89397a9942f6b177e48b9a655153297f6e'
+OUT=Path('/tmp/native_common_contact_source_theta_allocation_design_20261005.json')
+
+def enc(v):return json.dumps(v,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def vd(v):return hashlib.sha256(enc(v)).hexdigest()
+def load(p,raw,key):
+ assert sha(p)==raw
+ v=json.loads(p.read_bytes());d=dict(v);assert d.pop(key)==vd(d);return v
+
+def reduced_rotations(rows):
+ # Adjacent exact inverse exponentials cancel; no commutation is assumed.
+ stack=[]
+ for row in rows:
+  x=(tuple(F.from_float(float(w)) for w in row['omega_rad_per_myr']),F.from_float(float(row['dt_myr'])))
+  if stack and x[1]==stack[-1][1] and x[0]==tuple(-w for w in stack[-1][0]):stack.pop()
+  else:stack.append(x)
+ return tuple(stack)
+def oriented_vector(v):
+ q=tuple(F(x) for x in v);lead=next(x for x in q if x);sign=1 if lead>0 else -1
+ return tuple(x/lead for x in q),sign
+def plane_key(v):
+ q,sign=oriented_vector(v['normal'])
+ return (q,reduced_rotations(v['rotations'])),sign
+def ray_key(v):
+ rotation=reduced_rotations(v['rotations']);sign=v['sign']
+ if v['kind']=='seed':
+  q,s=oriented_vector(v['reference']);return ('seed',q,rotation,sign*s)
+ assert v['kind']=='cross' and len(v['planes'])==2
+ p,ps=plane_key(v['planes'][0]);q,qs=plane_key(v['planes'][1]);sign*=ps*qs
+ if repr(p)>repr(q):p,q,sign=q,p,-sign
+ assert p!=q
+ return ('cross',p,q,rotation,sign)
+def reference_seed(direction,rows):
+ return ray_key({'kind':'seed','reference':direction,'rotations':rows,'sign':1,'planes':[]})
+
+def main():
+ start=time.perf_counter();source=load(SOURCE,SOURCE_RAW,'packet_sha256');audit=load(AUDIT,AUDIT_RAW,'audit_sha256')
+ assert sha(HELPER)==HELPER_RAW
+ h=types.ModuleType('source_theta_stdlib_interval');h.__file__=str(HELPER);sys.modules[h.__name__]=h
+ exec(compile(HELPER.read_bytes(),str(HELPER),'exec'),h.__dict__)
+ I=h.FractionInterval
+ readi=lambda v:I(F(*v['lo']),F(*v['hi']))
+ dot=lambda a,b:sum((x*y for x,y in zip(a,b)),I(0))
+ before=source['before'];snap=before['snapshot'];material=snap['current_material_epoch']['source_material_state'];histories=dict(snap['owner_histories'])
+ rows={(r['donor_parent'],r['receiver_parent']):r for r in audit['true_source_endpoint_cold_boundary_arcs']}
+ assert set(rows)=={('octant:5','octant:1'),('octant:5','octant:3'),('octant:6','octant:2'),('octant:7','octant:2'),('octant:7','octant:3')}
+ traces={t['trace_id']:t for t in material['original_mechanics_payload']['fault_traces']['traces']}
+ bindings={x['receiver_fragment_id']:x for x in material['trace_bindings']}
+ Q={o:h.certify_rotation_history(tuple(h.rotation_increment_from_dict(x) for x in hist),160).intervals for o,hist in histories.items()}
+ inv=lambda o,v:tuple(dot(tuple(Q[o][j][i] for j in range(3)),v) for i in range(3))
+ local=lambda row,key:inv(0,tuple(readi(x) for x in row[key]))
+ receipt=[]
+ for pair,row in rows.items():
+  trace=traces[bindings[pair[1]]['trace_id']];S,T=tuple(F.from_float(x) for x in trace['start']),tuple(F.from_float(x) for x in trace['end'])
+  assert sum(x*x for x in S)==sum(x*x for x in T)==1 and sum(x*y for x,y in zip(S,T))==0
+  cross=(S[1]*T[2]-S[2]*T[1],S[2]*T[0]-S[0]*T[2],S[0]*T[1]-S[1]*T[0]);assert cross==(-1,0,0)
+  assert plane_key(row['native_arc']['plane'])==(((F(1),F(0),F(0)),reduced_rotations(histories[0])),1)
+  # The saved independent frame has the positive plane orientation.
+  n=tuple(readi(x) for x in row['unit_normal_bounds']);owner0x=tuple(Q[0][i][0] for i in range(3));assert dot(n,owner0x).lo>0
+  receipt.append({'donor_parent':pair[0],'receiver_parent':pair[1],'receiving_trace_id':trace['trace_id'],'receiver_original_axes_start':list(trace['start']),'receiver_original_axes_end':list(trace['end']),'plane_reduces_exactly_to_original_receiver_owner0_x_plane':True,'native_theta_derivative_per_cut_parameter_exact':-1,'computational_theta_derivative_expression':'-literal_extent/(analytic_pi/2)','complete_native_arc_source_sha256':vd(row['native_arc'])})
+ a8,b8=rows['octant:6','octant:2'],rows['octant:7','octant:2']
+ a11,b11=rows['octant:7','octant:3'],rows['octant:5','octant:3']
+ assert ray_key(a8['native_arc']['end'])==ray_key(b8['native_arc']['start'])
+ assert ray_key(a11['native_arc']['end'])==ray_key(b11['native_arc']['start'])
+ assert ray_key(b8['native_arc']['end'])==reference_seed((0,1,0),histories[0])
+ assert ray_key(a11['native_arc']['start'])==reference_seed((0,1,0),histories[0])
+ assert ray_key(b11['native_arc']['end'])==reference_seed((0,0,1),histories[0])
+ for row,key in ((a8,'raw_start_direction_bounds'),(a8,'raw_end_direction_bounds')):
+  q=local(row,key);assert q[1].lo>0 and q[2].hi<0
+ q=local(a11,'raw_end_direction_bounds');assert q[1].lo>0 and q[2].lo>0
+ c7=rows['octant:5','octant:1'];assert ray_key(c7['native_arc']['start'])==reference_seed((0,0,1),histories[0])
+ env=material['sweep_certificate']['envelope'];k1=readi(env['terminal_slope_bounds']);h1=readi(env['terminal_height_bounds'])
+ original=(h1,-k1,I(1));world=tuple(dot(row,original) for row in Q[1]);trim=inv(0,world)
+ assert trim[1].hi<0 and trim[2].lo>0
+ # The original source audit independently proves this exact endpoint trims
+ # the arc strictly; no uncertain numerical endpoint is selected.
+ assert c7['C6_terminal_live_cut_endpoint_margins'][0]['lo'][0]>0
+ assert c7['C6_terminal_live_cut_endpoint_margins'][1]['hi'][0]<0
+ source_path=before['original_physical_history']['contact_time_path']['step'];memory=source_path['memory']
+ assert memory==snap['spatial_memory']
+ extents={x['trace_id']:F.from_float(float(x['extent_radians'])) for x in memory['traces']}
+ measures=[]
+ history=before['original_physical_history'];R=F.from_float(history['origin_surface']['radius_km'])*1000
+ for parent,binding in bindings.items():
+  tid=binding['trace_id'];atoms=[x for x in history['quadrature_histories'] if x['trace_id']==tid];assert len(atoms)==4
+  height=F.from_float(atoms[0]['original_material']['contact_height_m']);sine=F.from_float(atoms[0]['original_frame'][0]);assert height==1000 and sine>0
+  C=R*height/sine
+  measures.append({'receiver_parent':parent,'trace_id':tid,'source_density_m2_per_computational_radian':[C.numerator,C.denominator],'source_extent_radians':[extents[tid].numerator,extents[tid].denominator],'source_area_m2':[(C*extents[tid]).numerator,(C*extents[tid]).denominator],'old_gauss_atoms_separate':True})
+ allocation=[
+ {'receiver_parent':'octant:2','active_cells':[{'cut':'octant:7->octant:2','theta_image':'[0,sigma8]'}, {'cut':'octant:6->octant:2','theta_image':'[sigma8,alpha8]'}],'inactive_residual_theta_image':'[alpha8,Gamma8]','strict_order':'0<sigma8<alpha8<Gamma8','sigma8_source':'shared projective ray: long.end=tiny.start','alpha8_source':'long.start: exact owner1-x/owner0-x cross ray'},
+ {'receiver_parent':'octant:3','active_cells':[{'cut':'octant:5->octant:3','theta_image':'[0,sigma11]'}, {'cut':'octant:7->octant:3','theta_image':'[sigma11,Gamma11]'}],'inactive_residual_theta_image':'empty','strict_order':'0<sigma11<Gamma11','sigma11_source':'shared projective ray: long.end=tiny.start'},
+ {'receiver_parent':'octant:1','active_cells':[{'cut':'octant:5->octant:1','theta_image':'[gamma7,Gamma7]'}],'inactive_residual_theta_image':'[0,gamma7]','strict_order':'0<gamma7<Gamma7','gamma7_source':'exact terminal u=1 envelope q=(h1,-k1,1), mapped owner1->owner0'},
+ {'receiver_parent':'octant:0','active_cells':[],'inactive_residual_theta_image':'[0,Gamma0]','archive_or_HOT_law_adoption_implied':False}]
+ report={'status':'PASS_EXACT_SOURCE_ANGULAR_ALLOCATION_DESIGN_ONLY','source_packet_raw_sha256':SOURCE_RAW,'source_cut_audit_raw_sha256':AUDIT_RAW,'stdlib_interval_helper_sha256':HELPER_RAW,'source_snapshot_sha256':source['source_snapshot_sha256'] if 'source_snapshot_sha256' in source else before['source_snapshot_sha256'],'cut_plane_and_orientation_receipts':receipt,'both_two_cut_receivers_share_exact_projective_endpoint':True,'positive_measure_duplicate_theta_interiors':False,'closed_seams_count_as_zero_measure_but_retain_both_expressions':True,'receiver_allocation':allocation,'source_measures':measures,'actual_current_memory_full_json_sha256':vd(memory),'source_parameter_measure':'C_f*dtheta_computational','true_common_cut_coarea':'J_tau ds dtau; J_tau=|U_s| R^2/r sqrt(1+(r^3/R^2 A dot T)^2)','proposed_new_reference_volume_depth_density':'C_f*|theta_comp_prime|/(tau_hi-tau_lo) ds dtau','proposed_radon_nikodym_derivative_vs_actual_area':'C_f*|theta_comp_prime|/((tau_hi-tau_lo)*J_tau)','depth_profile_recovered_from_original_source':False,'implemented_or_adopted_depth_profile':False,'inactive_residual_promoted_to_HOT_or_archived_bulk_energy':False,'old16_atom_energy_or_rod_prestress_transferred':False,'new_mixed_force_or_material_admission_certified':False,'quadrature_or_pytest_or_project_imports':False,'source_script_sha256':sha(Path(__file__)),'seconds':time.perf_counter()-start}
+ report['audit_sha256']=vd(report);OUT.write_bytes(enc(report)+b'\n');print(enc(report).decode())
+
+if __name__=='__main__':main()

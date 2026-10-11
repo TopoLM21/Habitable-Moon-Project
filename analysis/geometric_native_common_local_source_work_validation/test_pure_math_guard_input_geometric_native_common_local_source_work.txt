@@ -1,0 +1,1076 @@
+"""Local material-attached source work with declared internal residuals.
+
+This component replaces the sixteen atom terms of the bankwise source
+projection.  Its thirty-two original material labels drive real local cold
+fields, a convected internal attachment vector, and the archival receiver
+microdirectors.  Eight separately named internal radial residuals remain;
+their necessity, a physical archived body, a current-face force transition,
+HOT mechanics, equilibrium and temporal admission are not inferred here.
+
+The one potential retains the eight authenticated beam projections and their
+orthogonal bulk remainder exactly once.  Source states, work lineages, literal
+reference energies and the distinct material/mechanical clocks never advance.
+"""
+from __future__ import annotations
+
+from dataclasses import dataclass, fields, is_dataclass, replace
+from fractions import Fraction as F
+import hashlib
+
+from .geometric_native_pose import FractionInterval as I
+from .geometric_native_common_contact_ports import _encoded, _payload, _read_fraction
+from .geometric_native_common_source_carrier import (
+    BRANCHES, _round, _dot, _cross, _map, _source_jet,
+    validate_native_common_source_carrier_system,
+)
+from .geometric_native_common_material_transfer import (
+    NativeCommonMaterialTransferSystem, validate_native_common_material_transfer_system,
+    _DEPENDENCIES as _TRANSFER_DEPENDENCIES,
+)
+from .geometric_native_common_strain_projection import (
+    NativeCommonStrainProjectionSystem, validate_native_common_strain_projection_system,
+    _DEPENDENCIES as _PROJECTION_DEPENDENCIES, _content_types,
+)
+from .geometric_native_common_material_surface_transport import (
+    NativeCommonOriginalMaterialTransportResponse, NativeCommonSurfaceTransportResponse,
+    validate_native_common_original_material_transport_response,
+    validate_native_common_surface_transport_response,
+    _DEPENDENCIES as _SURFACE_DEPENDENCIES, _declared_types,
+    _typed_material_system, _typed_vector, _typed_matrix,
+)
+from .geometric_native_common_reference import validate_native_common_reference
+
+
+FORMAT = "native-common-local-source-work-system-1"
+RESPONSE_FORMAT = "native-common-local-source-work-response-1"
+REFERENCE_FORMAT = "native-common-local-source-original14-certificate-1"
+SCOPE = "LOCAL_SOURCE_FORCE_WORK_WITH_DECLARED_INTERNAL_RESIDUAL_COMPONENT_ONLY"
+MOTION_LAW = "FRESH_OWNER_OF_ARCHIVAL_P0_PLUS_RV_PLUS_LOCAL_U_PLUS_F_MINUS_I_TIMES_L_PLUS_RV"
+DIRECTOR_LAW = "FRESH_RECEIVER_OWNER_ROTATION_OF_LITERAL_ARCHIVAL_MECHANICAL_MICRODIRECTORS"
+ENERGY_OWNERSHIP = "LOCAL16_REPLACE_PROJECTED16_WITH_SOURCE_BEAM8_AND_ORTHOGONAL_REMAINDER8_ONCE"
+_ZERO = (I(0),)*3
+_IDENTITY = tuple(tuple(I(int(i == j)) for j in range(3)) for i in range(3))
+_REGISTRY, _DEPENDENCIES, _GUARDS = {}, {}, {}
+_BIND_CACHE, _QUERY_CACHE, _REFERENCE_CACHE = {}, {}, {}
+_FLAGS = dict(
+    local_material_source_gradient_and_prestress_hessian_defined=True,
+    old_sixteen_projected_atom_terms_replaced=True,
+    eight_genuine_internal_material_residuals_retained=True,
+    all_hundred_coordinates_necessary_proved=False,
+    ninety_two_coordinate_reduction_impossible_proved=False,
+    source_literal_area_energy_state_work_and_clocks_preserved=True,
+    old_mechanical_directors_replaced_by_nanson_normals=False,
+    source_state_or_work_advanced=False,
+    continuous_face_energy_energized=False,
+    original875_nonzero_atom_operator_identity_claimed=False,
+    zero_bulk_quadrature_or_zero_bulk_hessian_invented=False,
+    physical_archived_three_dimensional_handover_certified=False,
+    current_common_face_force_transition_certified=False,
+    hot_receiving_law_certified=False,
+    new_mixed_equilibrium_certified=False,
+    whole_clock_all_pair_admission_authorized=False,
+    physical_material_admission_authorized=False,
+    accepted_new_native_intervals=0,
+    original_point_1_completed=False,
+)
+
+
+def _precision(value):
+    if type(value) is not int or not 96 <= value <= 512:
+        raise ValueError("Local source work precision must be an integer from96 to512")
+    return value
+
+
+def _digest(value):
+    return hashlib.sha256(_encoded(value)).hexdigest()
+
+
+def _guard(value):
+    return _digest(value), _content_types(value)
+
+
+def _seal(value):
+    return _digest({f.name: getattr(value, f.name) for f in fields(value)
+                    if f.name != "binding_sha256"})
+
+
+def _remember(value, dependencies):
+    value = replace(value, binding_sha256=_seal(value))
+    key = type(value), value.binding_sha256
+    _REGISTRY[key] = (_encoded(value), _content_types(value))
+    _DEPENDENCIES[key], _GUARDS[key] = dependencies, _guard(dependencies)
+    return value
+
+
+def _registered(value, kind):
+    _declared_types(value)
+    if (type(value) is not kind or value.binding_sha256 != _seal(value)
+            or _REGISTRY.get((kind, value.binding_sha256))
+            != (_encoded(value), _content_types(value))):
+        raise ValueError("Altered or resealed local source work lacks complete typed replay")
+    key = kind, value.binding_sha256
+    dependencies = _DEPENDENCIES[key]
+    if _guard(dependencies) != _GUARDS[key]:
+        raise ValueError("A retained typed local source dependency changed after binding")
+    return dependencies
+
+
+def _ivector(value):
+    if type(value) is not tuple or len(value) != 3 or any(type(x) not in (F, I) for x in value):
+        raise ValueError("A local source vector needs three exact Fractions or intervals")
+    return tuple(x if type(x) is I else I(x) for x in value)
+
+
+def _imatrix(value):
+    if type(value) is not tuple or len(value) != 3:
+        raise ValueError("A local source gradient needs its complete three by three tuple")
+    return tuple(_ivector(row) for row in value)
+
+
+def _vadd(a, b):
+    return tuple(x+y for x, y in zip(a, b))
+
+
+def _vsub(a, b):
+    return tuple(x-y for x, y in zip(a, b))
+
+
+def _vneg(a):
+    return tuple(-x for x in a)
+
+
+def _outer(a, b):
+    return tuple(tuple(x*y for y in b) for x in a)
+
+
+def _contract(A, B):
+    return sum((A[i][j]*B[i][j] for i in range(3) for j in range(3)), I(0))
+
+
+def _square(x):
+    return I(0 if x.lo <= 0 <= x.hi else min(x.lo*x.lo, x.hi*x.hi),
+             max(x.lo*x.lo, x.hi*x.hi))
+
+
+def _axis(index):
+    return tuple(F(int(i == index)) for i in range(3))
+
+
+def _second_spin(a, b, vector):
+    return tuple((x+y)/2 for x, y in zip(
+        _cross(a, _cross(b, vector)), _cross(b, _cross(a, vector))))
+
+
+def _side_source_jet(archival_position, material_reference_position,
+        virtual_radial_direction, mode_displacement_columns,
+        mode_spatial_gradient_columns_per_m, coordinates_m, residual_increment_m,
+        owner_coordinate_indices, body_coordinate_indices, residual_coordinate_index, *, precision=96):
+    """Pure sparse vector twojet, with one shared local body/residual law.
+
+    y=p0+r*v+u+(F-I)(l+r*v), l=p0-Xref. F already includes identity.
+    D_a y=Psi_a+G_a(l+r*v), D_r y=Fv and D_a D_r y=G_a v.
+    Fresh owner increments are zero at evaluation, but all owner first and
+    second variations, including mixed variations, are part of the twojet.
+    """
+    precision = _precision(precision)
+    p0, X, v = map(_ivector, (archival_position, material_reference_position, virtual_radial_direction))
+    if (type(coordinates_m) is not tuple or any(type(x) is not F for x in coordinates_m)
+            or type(residual_increment_m) is not F
+            or type(owner_coordinate_indices) is not tuple or len(owner_coordinate_indices) != 3
+            or type(body_coordinate_indices) is not tuple
+            or len(body_coordinate_indices) != len(coordinates_m)
+            or type(mode_displacement_columns) is not tuple
+            or type(mode_spatial_gradient_columns_per_m) is not tuple
+            or len(mode_displacement_columns) != len(coordinates_m)
+            or len(mode_spatial_gradient_columns_per_m) != len(coordinates_m)
+            or any(type(x) is not int for x in owner_coordinate_indices+body_coordinate_indices+(residual_coordinate_index,))):
+        raise ValueError("A sparse material source jet requires every exact driver and coordinate index")
+    indices = owner_coordinate_indices+body_coordinate_indices+(residual_coordinate_index,)
+    if len(set(indices)) != len(indices):
+        raise ValueError("One material source side cannot alias its owner/body/internal coordinates")
+    psi, modes = tuple(map(_ivector, mode_displacement_columns)), tuple(map(_imatrix, mode_spatial_gradient_columns_per_m))
+    u = tuple(_round(sum((a*q[i] for a, q in zip(coordinates_m, psi)), I(0)), precision) for i in range(3))
+    D = tuple(tuple(_round(sum((a*g[i][j] for a, g in zip(coordinates_m, modes)), I(0)), precision)
+                    for j in range(3)) for i in range(3))
+    Fbody = tuple(tuple(_round(I(int(i == j))+D[i][j], precision) for j in range(3)) for i in range(3))
+    arm0 = _vsub(p0, X)
+    arm = _vadd(arm0, tuple(residual_increment_m*x for x in v))
+    delta_y = tuple(_round(residual_increment_m*v[i]+u[i]+_map(D, arm)[i], precision) for i in range(3))
+    y, x = tuple(_round(a+b, precision) for a, b in zip(p0, delta_y)), tuple(_round(a+b, precision) for a, b in zip(X, u))
+    Farm = tuple(_round(z, precision) for z in _map(Fbody, arm))
+    radial = tuple(_round(z, precision) for z in _map(Fbody, v))
+    body_drivers = tuple(tuple(_round(a+b, precision) for a, b in zip(q, _map(g, arm)))
+                         for q, g in zip(psi, modes))
+    first = {index: tuple(_round(z, precision) for z in _cross(_axis(i), y))
+             for i, index in enumerate(owner_coordinate_indices)}
+    first.update(zip(body_coordinate_indices, body_drivers))
+    first[residual_coordinate_index] = radial
+    second = {}
+    for a, ia in enumerate(owner_coordinate_indices):
+        for b, ib in enumerate(owner_coordinate_indices):
+            second[ia, ib] = tuple(_round(z, precision) for z in _second_spin(_axis(a), _axis(b), y))
+        for index in body_coordinate_indices+(residual_coordinate_index,):
+            value = tuple(_round(z, precision) for z in _cross(_axis(a), first[index]))
+            second[ia, index] = second[index, ia] = value
+    for index, g in zip(body_coordinate_indices, modes):
+        value = tuple(_round(z, precision) for z in _map(g, v))
+        second[index, residual_coordinate_index] = second[residual_coordinate_index, index] = value
+    return dict(x=x, y=y, delta_y=delta_y, arm0=arm0, arm=arm, Farm=Farm,
+        F=Fbody, u=u, virtual_radial_driver=radial, body_drivers=body_drivers,
+        first=first, second=second, owner_indices=owner_coordinate_indices,
+        body_indices=body_coordinate_indices, residual_index=residual_coordinate_index,
+        mode_displacement_columns=psi, mode_spatial_gradient_columns_per_m=modes)
+
+
+def _local_source_jet(sub_side, over_side, receiver_directors, receiver_owner_indices, *, precision=96):
+    """Pure full scalar twojet, including the receiver microdirector spin."""
+    precision = _precision(precision)
+    if type(receiver_directors) is not tuple or len(receiver_directors) != 2 or type(receiver_owner_indices) is not tuple or len(receiver_owner_indices) != 3:
+        raise ValueError("A local atom needs both literal receiver mechanical directors and their owner chart")
+    frames = tuple(map(_ivector, receiver_directors))
+    active = tuple(sorted(set(sub_side["first"])|set(over_side["first"])))
+    D = _vsub(over_side["y"], sub_side["y"])
+    delta = _vsub(over_side["delta_y"], sub_side["delta_y"])
+    first_d = {i: _vsub(over_side["first"].get(i, _ZERO), sub_side["first"].get(i, _ZERO)) for i in active}
+    second_d = {(i, j): _vsub(over_side["second"].get((i, j), _ZERO), sub_side["second"].get((i, j), _ZERO)) for i in active for j in active}
+    B, H = [], []
+    same_owner = sub_side["owner_indices"] == over_side["owner_indices"]
+    for e in frames:
+        fi = {i: _cross(_axis(receiver_owner_indices.index(i)), e) if i in receiver_owner_indices else _ZERO for i in active}
+        b = []
+        for i in active:
+            if i in sub_side["owner_indices"] or i in over_side["owner_indices"]:
+                if same_owner:
+                    value = I(0)
+                else:
+                    owner = sub_side["owner_indices"] if i in sub_side["owner_indices"] else over_side["owner_indices"]
+                    value = _cross(sub_side["y"], e)[owner.index(i)]
+                    if i in sub_side["owner_indices"]:
+                        value = -value
+            else:
+                value = _dot(e, first_d[i])
+            b.append(_round(value, precision))
+        h = []
+        for i in active:
+            row = []
+            for j in active:
+                fij = (_second_spin(_axis(receiver_owner_indices.index(i)), _axis(receiver_owner_indices.index(j)), e)
+                    if i in receiver_owner_indices and j in receiver_owner_indices else _ZERO)
+                value = _dot(e, second_d[i, j])+_dot(fi[i], first_d[j])+_dot(fi[j], first_d[i])+_dot(fij, D)
+                # The over-side point and its mechanical directors share
+                # precisely the same fresh owner rotation. Their scalar
+                # product is owner-independent, including every local body
+                # and internal residual variation of that over-side point.
+                over_material = over_side["body_indices"]+(over_side["residual_index"],)
+                if (i in receiver_owner_indices and j in over_material
+                        or j in receiver_owner_indices and i in over_material):
+                    value = I(0)
+                if same_owner and (i in receiver_owner_indices or j in receiver_owner_indices):
+                    value = I(0)
+                row.append(_round(value, precision))
+            h.append(tuple(row))
+        B.append(tuple(b)); H.append(tuple(h))
+    return dict(active_coordinate_indices=active,
+        scalar_increment_bounds_m=tuple(_round(_dot(e, delta), precision) for e in frames),
+        projected_geometry_bounds_m=tuple(_round(_dot(e, D), precision) for e in frames),
+        scalar_first_derivative_bounds=tuple(B), scalar_second_derivative_bounds=tuple(H))
+
+
+def _atom_algebra(area, tractions, stiffness, reference_energy, jet, *, precision=96):
+    """Pure one-potential atom algebra with its complete prestress curvature."""
+    precision = _precision(precision)
+    if type(area) is not F or area <= 0 or type(reference_energy) is not F or type(tractions) is not tuple or type(stiffness) is not tuple or len(tractions) != 2 or len(stiffness) != 2 or any(type(x) is not F for x in tractions+stiffness) or any(x < 0 for x in stiffness):
+        raise ValueError("A literal source atom requires its positive area, energy offset, tractions and exact series stiffnesses")
+    eta, B, H = (jet[name] for name in ("scalar_increment_bounds_m", "scalar_first_derivative_bounds", "scalar_second_derivative_bounds"))
+    tau = tuple(_round(I(t)+k*q, precision) for t, k, q in zip(tractions, stiffness, eta))
+    if tau[0].hi >= 0:
+        raise ValueError("The complete local atom interval leaves its strict compressed source branch")
+    n = len(jet["active_coordinate_indices"])
+    energy = _round(I(reference_energy)+area*sum((t*q+k*_square(q)/2 for t, k, q in zip(tractions, stiffness, eta)), I(0)), precision)
+    gradient = tuple(_round(area*sum((tau[a]*B[a][i] for a in range(2)), I(0)), precision) for i in range(n))
+    curvature = tuple(tuple(_round(area*sum((tau[a]*H[a][i][j] for a in range(2)), I(0)), precision) for j in range(n)) for i in range(n))
+    hessian = tuple(tuple(_round(area*sum((stiffness[a]*B[a][i]*B[a][j]+tau[a]*H[a][i][j] for a in range(2)), I(0)), precision) for j in range(n)) for i in range(n))
+    return dict(**jet, traction_bounds_pa=tau, potential_bounds_j=energy,
+        potential_gradient_bounds=gradient, potential_hessian_bounds=hessian,
+        prestress_curvature_hessian_bounds=curvature)
+
+
+@dataclass(frozen=True, slots=True)
+class NativeCommonLocalSourcePointField:
+    point_id: str
+    trace_id: str
+    side: str
+    original_parent_id: str
+    original_material_id: str
+    owner: int
+    original_label_membership: str
+    archive_cohort_id: str | None
+    component_id: str
+    material_response_binding_sha256: str
+    body_snapshot_sha256: str
+    coordinate_order: tuple
+    coordinates_m: tuple
+    body_coordinate_indices: tuple
+    owner_coordinate_indices: tuple
+    residual_coordinate_index: int
+    material_reference_position_bounds_m: tuple
+    source_reference_position_bounds_m: tuple
+    source_virtual_radial_direction_bounds: tuple
+    mode_displacement_columns: tuple
+    mode_spatial_gradient_columns_per_m: tuple
+    material_depth_bounds_m: I
+    source_material_parent_json: str
+    source_material_allocation_json: str
+    source_archive_cohort_json: str | None
+
+
+@dataclass(frozen=True, slots=True)
+class NativeCommonLocalSourceSideResponse:
+    field: NativeCommonLocalSourcePointField
+    residual_increment_m: F
+    actual_material_position_bounds_m: tuple
+    virtual_source_position_bounds_m: tuple
+    virtual_source_displacement_bounds_m: tuple
+    reference_internal_arm_bounds_m: tuple
+    internal_arm_bounds_m: tuple
+    convected_internal_arm_bounds_m: tuple
+    deformation_gradient_bounds: tuple
+    virtual_radial_driver_bounds: tuple
+    body_driver_columns: tuple
+
+
+@dataclass(frozen=True, slots=True)
+class NativeCommonLocalSourceAtomResponse:
+    point_id: str
+    trace_id: str
+    source_accounting_bucket: str
+    original_area_m2: F
+    sub: NativeCommonLocalSourceSideResponse
+    over: NativeCommonLocalSourceSideResponse
+    active_coordinate_indices: tuple
+    receiver_director_bounds: tuple
+    scalar_increment_bounds_m: tuple
+    scalar_free_anchor_bounds_m: tuple
+    scalar_first_derivative_bounds: tuple
+    scalar_second_derivative_bounds: tuple
+    traction_bounds_pa: tuple
+    effective_tangent_stiffness_pa_m: tuple
+    potential_bounds_j: I
+    potential_gradient_bounds: tuple
+    potential_hessian_bounds: tuple
+    prestress_curvature_hessian_bounds: tuple
+    force_on_sub_n: tuple
+    force_on_over_n: tuple
+    sub_material_hyperstress_bounds_nm: tuple
+    over_material_hyperstress_bounds_nm: tuple
+    force_attachment_torque_on_sub_nm: tuple
+    force_attachment_torque_on_over_nm: tuple
+    lever_couple_on_sub_nm: tuple
+    lever_couple_on_over_nm: tuple
+    receiver_carrier_couple_on_over_nm: tuple
+    complete_attachment_torque_on_sub_nm: tuple
+    complete_attachment_torque_on_over_nm: tuple
+    action_reaction_residual_bounds_n: tuple
+    world_moment_residual_bounds_nm: tuple
+    virtual_work_residual_bounds: tuple
+    proposed_plastic_increment_bounds_m: I
+    stored_source_energy_components_j: tuple
+    original_source_state_json: str
+    source_work_lineage_id: tuple
+    archival_literal_world_reactions_json: str
+    archival_mathematical_minus_literal_reaction_bounds: tuple
+    series_stiffness_binary64_pa_m: tuple
+    traction_rounding_residual_pa: tuple
+    source_energy_rounding_residual_j: F
+
+
+@dataclass(frozen=True, slots=True)
+class NativeCommonLocalSourceBeamResponse:
+    trace_id: str
+    side: str
+    source_coordinate_index: int
+    active_coordinate_indices: tuple
+    projected_body_increment_bounds_m: I
+    residual_increment_m: F
+    driver_increment_bounds_m: I
+    potential_increment_bounds_j: I
+    potential_gradient_bounds: tuple
+    potential_hessian_bounds: tuple
+    stiffness_exact_n_m: F
+    reference_force_exact_n: F
+    reference_energy_exact_j: F
+
+
+@dataclass(frozen=True, slots=True)
+class NativeCommonLocalSourceReferenceCertificate:
+    system_binding_sha256: str
+    source_coordinate_order: tuple
+    source_coordinate_increments: tuple
+    source_to_global_injection: tuple
+    branch: str
+    potential_bounds_j: I
+    gradient_bounds: tuple
+    hessian_bounds: tuple
+    old_source_potential_bounds_j: I
+    old_source_gradient_bounds: tuple
+    old_source_hessian_bounds: tuple
+    source_energy_identity_residual_bounds_j: I
+    source_first_variation_residual_bounds: tuple
+    source_second_variation_residual_bounds: tuple
+    atom_scalar_first_identity_residual_bounds: tuple
+    atom_scalar_second_identity_residual_bounds: tuple
+    atom_scalar_increment_identity_residual_bounds: tuple
+    precision: int
+    binding_sha256: str
+    cold_body_zero_is_a_symbolic_restriction_not_a_bulk_query: bool = True
+    source_atoms_and_beams_only: bool = True
+    zero_bulk_hessian_claimed: bool = False
+    original875_nonzero_anchor_operator_identity_claimed: bool = False
+    full_registered_nonzero_bulk_work_identified_with_old_source: bool = False
+
+
+@dataclass(frozen=True, slots=True)
+class NativeCommonLocalSourceWorkSystem:
+    projection_system_binding_sha256: str
+    material_system_binding_sha256: str
+    carrier_system_binding_sha256: str
+    source_snapshot_sha256: str
+    reference_snapshot_sha256: str
+    material_reference_snapshot_sha256: str
+    coordinate_order: tuple
+    source_coordinate_order: tuple
+    source_to_global_injection: tuple
+    bound_coordinate_increments: tuple
+    material_point_fields: tuple
+    projection_blocks: tuple
+    genuine_surface_response_binding_sha256: tuple
+    hot_zero_coordinate_indices: tuple
+    original_source_work_lineages: tuple
+    complete_original_source_material_state_json: str
+    complete_current_source_states_json: str
+    complete_current_source_memory_json: str
+    complete_before_work_ledgers_json: str
+    complete_unaccepted_candidate_work_ledgers_json: str
+    source_serial_reference_energy_j: F
+    source_beam_literal_reference_energy_j: F
+    source_beam_energy_rounding_residual_j: F
+    source_contact_elapsed_time_s: F
+    source_contact_step_count: int
+    source_memory_elapsed_time_s: F
+    source_geometry_elapsed_time_s: F
+    material_geometry_elapsed_time_s: F
+    provenance: str
+    precision: int
+    binding_sha256: str
+    scope: str = SCOPE
+    local_source_attachment_law: str = MOTION_LAW
+    receiver_mechanical_director_law: str = DIRECTOR_LAW
+    energetic_owner: str = ENERGY_OWNERSHIP
+    source_internal_coordinate_count: int = 8
+    source_state_or_work_advanced: bool = False
+    source_force_basis: str = "archival_old_reference"
+
+    @property
+    def sides(self):
+        return self.material_point_fields
+
+    @property
+    def reference_source_14(self):
+        return evaluate_native_common_local_source_reference_certificate(self)
+
+    @property
+    def source_support_indices(self):
+        return tuple(range(6))+tuple(range(92, 100))
+
+
+@dataclass(frozen=True, slots=True)
+class NativeCommonLocalSourceWorkResponse:
+    system_binding_sha256: str
+    coordinate_order: tuple
+    coordinate_increments: tuple
+    branch: str
+    source_atom_responses: tuple
+    source_beam_responses: tuple
+    source_potential_bounds_j: I
+    source_gradient_bounds: tuple
+    source_hessian_bounds: tuple
+    orthogonal_energy_bounds_j: I
+    orthogonal_gradient_bounds: tuple
+    orthogonal_hessian_bounds: tuple
+    potential_bounds_j: I
+    potential_gradient_bounds: tuple
+    potential_hessian_bounds: tuple
+    hot_zero_coordinate_indices: tuple
+    original_source_work_lineages: tuple
+    genuine_surface_response_binding_sha256: tuple
+    source_contact_elapsed_time_s: F
+    source_memory_elapsed_time_s: F
+    source_geometry_elapsed_time_s: F
+    material_geometry_elapsed_time_s: F
+    precision: int
+    binding_sha256: str
+    scope: str = SCOPE
+    energetic_owner: str = ENERGY_OWNERSHIP
+    source_state_or_work_advanced: bool = False
+    source_internal_coordinate_count: int = 8
+    hot_thirty_source_coupling_exact_zero: bool = True
+
+
+def _typed_projection(value):
+    if type(value) is not NativeCommonStrainProjectionSystem:
+        raise ValueError("Local source work needs its exact registered projection system")
+    _declared_types(value)
+    _typed_vector(value.bound_coordinate_increments, F, 92)
+    if type(value.projection_blocks) is not tuple or len(value.projection_blocks) != 8:
+        raise ValueError("Local source work retains all eight authenticated projection and bulk blocks")
+    for b in value.projection_blocks:
+        _typed_vector(b.coordinates_m, F, 7)
+        for name in ("projection_gradient_bounds", "orthogonal_gradient_bounds_n"):
+            _typed_vector(getattr(b, name), I, 7)
+        for name in ("projection_hessian_bounds", "orthogonal_hessian_bounds_n_m"):
+            matrix = getattr(b, name)
+            if type(matrix) is not tuple or len(matrix) != 7:
+                raise ValueError("Every beam/bulk block needs its full typed seven by seven Hessian")
+            for row in matrix:
+                _typed_vector(row, I, 7)
+
+
+def _typed_material_response(value):
+    if type(value) is not NativeCommonOriginalMaterialTransportResponse:
+        raise ValueError("A local atom needs an authentic original-material finite field response")
+    _declared_types(value)
+    _typed_vector(value.coordinates_m, F, 7)
+    for name in ("reference_position_bounds_m", "displacement_increment_bounds_m", "current_position_bounds_m"):
+        _typed_vector(getattr(value, name))
+    _typed_matrix(value.incremental_gradient_bounds)
+    if type(value.mode_displacement_columns) is not tuple or len(value.mode_displacement_columns) != 7 or type(value.mode_spatial_gradient_columns_per_m) is not tuple or len(value.mode_spatial_gradient_columns_per_m) != 7:
+        raise ValueError("An original source field needs all seven typed local mode columns")
+    for v in value.mode_displacement_columns:
+        _typed_vector(v)
+    for g in value.mode_spatial_gradient_columns_per_m:
+        _typed_matrix(g)
+
+
+def _physical_reference(reference):
+    """Same physical inputs across independently registered precision receipts.
+
+    Precision and derived reference IDs are numerical receipt metadata. All
+    source declarations, partition proofs, masks, owners and material inputs
+    remain in this complete comparison.
+    """
+    result = {f.name: getattr(reference, f.name) for f in fields(reference)
+              if f.name not in ("reference_snapshot_sha256", "geometry_enclosure_precision", "banks")}
+    result["banks"] = tuple({f.name: getattr(b, f.name) for f in fields(b)
+        if f.name not in ("reference_snapshot_sha256", "bank_snapshot_sha256")} for b in reference.banks)
+    return result
+
+
+def _same_source_material(actual, transfer):
+    _typed_material_system(actual)
+    validate_native_common_material_transfer_system(actual)
+    if type(actual) is not NativeCommonMaterialTransferSystem:
+        raise ValueError("An original local field has a different material-system type")
+    names = ("source_snapshot_sha256", "source_history_binding_sha256", "source_epoch_sha256",
+        "force_basis", "coordinate_order", "source_coordinate_order", "original_source_work_lineages",
+        "complete_original_material_state_json", "complete_current_source_states_json",
+        "complete_current_source_memory_json", "complete_before_work_ledgers_json",
+        "complete_unaccepted_candidate_work_ledgers_json", "source_contact_elapsed_time_s",
+        "source_memory_elapsed_time_s", "source_geometry_elapsed_time_s", "material_geometry_elapsed_time_s")
+    if any(_guard(getattr(actual, n)) != _guard(getattr(transfer, n)) for n in names):
+        raise ValueError("Local source fields differ from the complete original material, states, clocks or work owner")
+    _, ra = _TRANSFER_DEPENDENCIES[type(actual), actual.binding_sha256]
+    _, rt = _TRANSFER_DEPENDENCIES[type(transfer), transfer.binding_sha256]
+    _declared_types(ra); _declared_types(rt)
+    validate_native_common_reference(ra); validate_native_common_reference(rt)
+    if _guard(_physical_reference(ra)) != _guard(_physical_reference(rt)):
+        raise ValueError("Original local fields have another complete physical COMMON reference")
+
+
+def _typed_upstream(projection, originals, surfaces):
+    _typed_projection(projection)
+    validate_native_common_strain_projection_system(projection)
+    transfer, cold = _PROJECTION_DEPENDENCIES[type(projection), projection.binding_sha256]
+    _typed_material_system(transfer)
+    validate_native_common_material_transfer_system(transfer)
+    source, reference = _TRANSFER_DEPENDENCIES[type(transfer), transfer.binding_sha256]
+    _declared_types(source); _declared_types(reference)
+    validate_native_common_source_carrier_system(source, reference=reference)
+    for carrier in source.carriers:
+        for name in ("stored_free_anchors_m", "literal_source_tractions_pa", "series_stiffness_exact_pa_m"):
+            _typed_vector(getattr(carrier, name), F, 2)
+        basis = carrier.archival_old_reference
+        for name in ("sub_position_bounds_m", "over_position_bounds_m", "sub_direction_bounds", "over_direction_bounds"):
+            _typed_vector(getattr(basis, name))
+        if type(basis.receiver_director_bounds) is not tuple or len(basis.receiver_director_bounds) != 2:
+            raise ValueError("Every archival source needs both exact typed mechanical director vectors")
+        for e in basis.receiver_director_bounds:
+            _typed_vector(e)
+    for body, material, raw in cold:
+        _declared_types(body); _declared_types(material); _declared_types(raw)
+        _typed_vector(raw.coordinates_m, F, 7)
+        for name in ("projection_gradient_n_m", "incremental_local_gradient_n",
+                     "projection_remainder_gradient_n_m", "remainder_local_gradient_n"):
+            _typed_vector(getattr(raw, name), I, 7)
+        for name in ("projection_hessian_n_m2", "incremental_local_hessian_n_m", "remainder_local_hessian_n_m"):
+            for row in getattr(raw, name):
+                _typed_vector(row, I, 7)
+        for name in ("quarter_integral_bounds", "removed_material_correction_bounds", "actual_material_integral_bounds"):
+            sequence = getattr(raw, name)
+            _typed_vector(sequence, I, len(sequence))
+    if type(originals) is not tuple or len(originals) != 32 or type(surfaces) is not tuple or len(surfaces) not in (0, 5):
+        raise ValueError("A complete local source binds32 original fields and optionally all5 genuine cold surfaces")
+    material_system = None
+    cold_bodies = {b.component_id: b for b, _, _ in cold}
+    for response in originals:
+        _typed_material_response(response)
+        validate_native_common_original_material_transport_response(response)
+        actual, point, body = _SURFACE_DEPENDENCIES[type(response), response.binding_sha256]
+        _declared_types(point); _declared_types(body)
+        _same_source_material(actual, transfer)
+        projected_body = cold_bodies.get(response.geometry_field_component_id)
+        if projected_body is None:
+            raise ValueError("An original local source field has no genuine projected cold body")
+        # Both original-body objects were independently authenticated. These
+        # six fields alone are precision-dependent numerical receipts; every
+        # other source scalar, declaration, mask, material and saved history
+        # is compared in full rather than inferred from a snapshot ID.
+        excluded = {"geometry_enclosure_precision", "geometry_source_sha256",
+            "owner_rotation_matrix_bounds", "current_quarter_start_bounds",
+            "current_quarter_tangent_bounds", "current_quarter_inward_bounds"}
+        physical_body = lambda b: {f.name: getattr(b.original_body, f.name)
+            for f in fields(b.original_body) if f.name not in excluded}
+        if (_guard(physical_body(projected_body)) != _guard(physical_body(body))
+                or _guard(_physical_reference(
+                    _TRANSFER_DEPENDENCIES[type(actual), actual.binding_sha256][1]))
+                   != _guard(_physical_reference(reference))):
+            raise ValueError("An original local field differs from the full authenticated projected body physics")
+        if material_system is None:
+            material_system = actual
+        elif _guard(actual) != _guard(material_system):
+            raise ValueError("All32 original fields must belong to one complete typed material system")
+    for response in surfaces:
+        if type(response) is not NativeCommonSurfaceTransportResponse:
+            raise ValueError("Local material measure receipts need their exact genuine surface type")
+        _declared_types(response)
+        for side in (response.donor, response.receiver):
+            _typed_vector(side.coordinates_m, F, 7)
+            _typed_matrix(side.incremental_gradient_bounds)
+        validate_native_common_surface_transport_response(response)
+    return transfer, source, reference, material_system
+
+
+def bind_native_common_local_source_work(projection, *, original_material_responses,
+        surface_responses=(), provenance, precision=96):
+    """Bind actual local cold fields and a single source-energy owner."""
+    precision = _precision(precision)
+    if type(provenance) is not str or not provenance.strip():
+        raise ValueError("Declare the convected internal attachment and archival microdirector law")
+    transfer, source, reference, material_system = _typed_upstream(
+        projection, original_material_responses, surface_responses)
+    key = _guard((projection, original_material_responses, surface_responses, provenance, precision))
+    if key in _BIND_CACHE:
+        return validate_native_common_local_source_work_system(_BIND_CACHE[key])
+    if projection.coordinate_order != transfer.coordinate_order[:92] or len(transfer.coordinate_order) != 100:
+        raise ValueError("The source uses exactly the authentic owner6/body86/internal8 coordinate catalogue")
+    order = transfer.coordinate_order
+    blocks = {b.component_id: b for b in projection.projection_blocks}
+    original = {(r.point_id, r.side): r for r in original_material_responses}
+    attachments = {(a.point_id, a.side): a for a in material_system.attachments}
+    expected = {(c.point_id, side) for c in source.carriers for side in ("sub", "over")}
+    if len(original) != 32 or set(original) != expected or set(attachments) != expected:
+        raise ValueError("Every one of the16 original atoms must have its own two material-field attachments")
+    points = []
+    for carrier in source.carriers:
+        if carrier.literal_source_tractions_pa[1] != 0:
+            raise ValueError("The retained relaxed branch needs the actual zero-strength source shear traction")
+        basis = carrier.archival_old_reference
+        for side in ("sub", "over"):
+            response, attachment = original[carrier.point_id, side], attachments[carrier.point_id, side]
+            block = blocks.get(response.geometry_field_component_id)
+            if block is None or response.material_depth_bounds_m != I(0) or response.coordinates_m != block.coordinates_m or response.coordinates_m == (F(0),)*7:
+                raise ValueError("The local source needs every authentic original top-depth NONZERO bank field at the registered projection coordinates")
+            owner = carrier.sub_owner if side == "sub" else carrier.over_owner
+            parent = carrier.donor_original_parent_id if side == "sub" else carrier.receiver_original_parent_id
+            if (response.trace_id != carrier.trace_id or response.owner != owner
+                    or response.original_parent_id != parent
+                    or response.original_material_id != attachment.original_material_id
+                    or response.original_label_membership != attachment.original_label_membership
+                    or response.archive_cohort_id != attachment.archive_cohort_id
+                    or response.geometry_field_component_id != attachment.geometry_field_component_id
+                    or response.source_snapshot_sha256 != projection.source_snapshot_sha256
+                    or response.coordinate_order != tuple(order[i][2] for i in block.global_coordinate_indices)):
+                raise ValueError("A source field differs from its own trace, parent, material, owner, cohort or complete coordinate context")
+            owner_indices = tuple(order.index(("owner", owner, axis)) for axis in "xyz")
+            internal = order.index(("source_internal", carrier.trace_id, side))
+            p0 = basis.sub_position_bounds_m if side == "sub" else basis.over_position_bounds_m
+            direction = basis.sub_direction_bounds if side == "sub" else basis.over_direction_bounds
+            points.append(NativeCommonLocalSourcePointField(carrier.point_id, carrier.trace_id,
+                side, parent, response.original_material_id, owner, response.original_label_membership,
+                response.archive_cohort_id, response.geometry_field_component_id,
+                response.binding_sha256, response.body_snapshot_sha256, response.coordinate_order,
+                response.coordinates_m, block.global_coordinate_indices, owner_indices, internal,
+                response.reference_position_bounds_m, p0, direction, response.mode_displacement_columns,
+                response.mode_spatial_gradient_columns_per_m, response.material_depth_bounds_m,
+                response.complete_original_parent_json, response.complete_parent_allocation_json,
+                response.complete_archive_cohort_json))
+    if surface_responses:
+        if len({r.receiving_cell_id for r in surface_responses}) != 5:
+            raise ValueError("All five genuine cold-cut material measure receipts must remain distinct")
+        for response in surface_responses:
+            if response.source_snapshot_sha256 != projection.source_snapshot_sha256:
+                raise ValueError("A genuine cut receipt belongs to another original source")
+            for side in (response.donor, response.receiver):
+                block = blocks.get(side.component_id)
+                if block is None or side.material_kind != "original_live" or side.coordinates_m != block.coordinates_m or side.coordinate_order != tuple(order[i][2] for i in block.global_coordinate_indices):
+                    raise ValueError("The genuine surfaces must use the same complete NONZERO cold coordinates as the local atom potential")
+    value = NativeCommonLocalSourceWorkSystem(projection.binding_sha256, material_system.binding_sha256,
+        source.binding_sha256, projection.source_snapshot_sha256, projection.reference_snapshot_sha256,
+        material_system.reference_snapshot_sha256, order, transfer.source_coordinate_order,
+        transfer.source_to_global_injection, projection.bound_coordinate_increments+(F(0),)*8,
+        tuple(points), projection.projection_blocks, tuple(r.binding_sha256 for r in surface_responses),
+        projection.hot_zero_coordinate_indices, projection.original_source_work_lineages,
+        projection.complete_original_source_material_state_json, projection.complete_current_source_states_json,
+        projection.complete_current_source_memory_json, projection.complete_before_work_ledgers_json,
+        projection.complete_unaccepted_candidate_work_ledgers_json, projection.source_serial_reference_energy_j,
+        projection.source_beam_literal_reference_energy_j, projection.source_beam_energy_rounding_residual_j,
+        projection.source_contact_elapsed_time_s, projection.source_contact_step_count,
+        projection.source_memory_elapsed_time_s, projection.source_geometry_elapsed_time_s,
+        projection.material_geometry_elapsed_time_s, provenance, precision, "")
+    result = _remember(value, (projection, original_material_responses, surface_responses,
+        transfer, source, reference, material_system))
+    _BIND_CACHE[key] = result
+    return result
+
+
+def validate_native_common_local_source_work_system(value, *, projection=None,
+        original_material_responses=None, surface_responses=None):
+    actual, original, surface, _, _, _, _ = _registered(value, NativeCommonLocalSourceWorkSystem)
+    _typed_vector(value.bound_coordinate_increments, F, 100)
+    _typed_upstream(actual, original, surface)
+    for supplied, expected in ((projection, actual), (original_material_responses, original),
+                                (surface_responses, surface)):
+        if supplied is not None and _guard(supplied) != _guard(expected):
+            raise ValueError("Local source work belongs to another complete typed binding context")
+    return value
+
+
+def validate_native_common_local_source_work_energy_assembly(system, *,
+        parallel_old_projected_source_energized=False, separate_source_beam_energized=False,
+        full_common_calibrated_cold_energy_energized=False, continuous_source_measure_energized=False):
+    validate_native_common_local_source_work_system(system)
+    values = (parallel_old_projected_source_energized, separate_source_beam_energized,
+              full_common_calibrated_cold_energy_energized, continuous_source_measure_energized)
+    if any(type(x) is not bool or x for x in values):
+        raise ValueError("Local16 replace oldprojected16; beam8, orthogonal8 and literal reference energy cannot be energized twice")
+    return ENERGY_OWNERSHIP
+
+
+def _side_response(field, coordinates, precision):
+    r = coordinates[field.residual_coordinate_index]
+    a = tuple(coordinates[i] for i in field.body_coordinate_indices)
+    jet = _side_source_jet(field.source_reference_position_bounds_m,
+        field.material_reference_position_bounds_m, field.source_virtual_radial_direction_bounds,
+        field.mode_displacement_columns, field.mode_spatial_gradient_columns_per_m,
+        a, r, field.owner_coordinate_indices, field.body_coordinate_indices,
+        field.residual_coordinate_index, precision=precision)
+    response = NativeCommonLocalSourceSideResponse(field, r, jet["x"], jet["y"],
+        jet["delta_y"], jet["arm0"], jet["arm"], jet["Farm"], jet["F"],
+        jet["virtual_radial_driver"], jet["body_drivers"])
+    return response, jet
+
+
+def _atom_response(carrier, sub_field, over_field, coordinates, branch, precision):
+    sub, sj = _side_response(sub_field, coordinates, precision)
+    over, oj = _side_response(over_field, coordinates, precision)
+    frames = carrier.archival_old_reference.receiver_director_bounds
+    jet = _local_source_jet(sj, oj, frames, over_field.owner_coordinate_indices, precision=precision)
+    K = carrier.series_stiffness_exact_pa_m[0], F(0) if branch == BRANCHES[0] else carrier.series_stiffness_exact_pa_m[1]
+    values = _atom_algebra(carrier.original_area_m2, carrier.literal_source_tractions_pa,
+        K, sum(carrier.stored_source_energy_components_j, F(0)), jet, precision=precision)
+    force = tuple(_round(carrier.original_area_m2*sum((values["traction_bounds_pa"][a]*frames[a][j]
+                    for a in range(2)), I(0)), precision) for j in range(3))
+    opposite = _vneg(force)
+    Ps, Po = _outer(force, sub.internal_arm_bounds_m), _outer(opposite, over.internal_arm_bounds_m)
+    ts, to = _cross(sub.actual_material_position_bounds_m, force), _cross(over.actual_material_position_bounds_m, opposite)
+    cs, co = _cross(sub.convected_internal_arm_bounds_m, force), _cross(over.convected_internal_arm_bounds_m, opposite)
+    director_couple = _cross(_vsub(over.virtual_source_position_bounds_m, sub.virtual_source_position_bounds_m), force)
+    total_s, total_o = _vadd(ts, cs), _vadd(_vadd(to, co), director_couple)
+    moment = tuple(_round(x, precision) for x in _vadd(total_s, total_o))
+    power = []
+    for i in values["active_coordinate_indices"]:
+        term = I(0)
+        for side, side_jet, f, P, torque in ((sub, sj, force, Ps, total_s), (over, oj, opposite, Po, total_o)):
+            field = side.field
+            if i in field.owner_coordinate_indices:
+                term += torque[field.owner_coordinate_indices.index(i)]
+            elif i in field.body_coordinate_indices:
+                local = field.body_coordinate_indices.index(i)
+                term += _dot(f, field.mode_displacement_columns[local])+_contract(P, field.mode_spatial_gradient_columns_per_m[local])
+            elif i == field.residual_coordinate_index:
+                term += _dot(f, side.virtual_radial_driver_bounds)
+        power.append(_round(term, precision))
+    virtual_residual = tuple(_round(g+w, precision) for g, w in zip(values["potential_gradient_bounds"], power))
+    if any(not x.lo <= 0 <= x.hi for x in moment+virtual_residual):
+        raise ValueError("The local point force, convected-vector work and microdirector couple fail complete virtual-work closure")
+    eta = values["scalar_increment_bounds_m"]
+    return NativeCommonLocalSourceAtomResponse(carrier.point_id, carrier.trace_id,
+        carrier.source_accounting_bucket, carrier.original_area_m2, sub, over,
+        values["active_coordinate_indices"], frames, eta,
+        tuple(_round(I(f)+q, precision) for f, q in zip(carrier.stored_free_anchors_m, eta)),
+        values["scalar_first_derivative_bounds"], values["scalar_second_derivative_bounds"],
+        values["traction_bounds_pa"], K, values["potential_bounds_j"],
+        values["potential_gradient_bounds"], values["potential_hessian_bounds"],
+        values["prestress_curvature_hessian_bounds"], force, opposite, Ps, Po,
+        ts, to, cs, co, director_couple, total_s, total_o,
+        tuple(_round(x, precision) for x in _vadd(force, opposite)), moment, virtual_residual,
+        eta[1] if branch == BRANCHES[0] else I(0), carrier.stored_source_energy_components_j,
+        carrier.source_local_state_json, carrier.original_source_work_lineage_id,
+        carrier.archival_literal_world_reactions_json,
+        carrier.archival_mathematical_minus_literal_reaction_bounds,
+        carrier.series_stiffness_binary64_pa_m, carrier.traction_rounding_residual_pa,
+        carrier.energy_rounding_residual_j)
+
+
+def _beam_response(system, block, beam, coordinates, precision):
+    internal = system.coordinate_order.index(("source_internal", beam.trace_id, beam.side))
+    r = coordinates[internal]
+    driver = _round(block.projection_increment_bounds_m+r, precision)
+    first = block.projection_gradient_bounds+(I(1),)
+    second = tuple(tuple(block.projection_hessian_bounds[i][j] if i < 7 and j < 7 else I(0)
+                         for j in range(8)) for i in range(8))
+    traction = beam.stiffness_exact_n_m*(I(beam.reference_displacement_m)+driver)
+    gradient = tuple(_round(traction*x, precision) for x in first)
+    hessian = tuple(tuple(_round(beam.stiffness_exact_n_m*first[i]*first[j]+traction*second[i][j], precision)
+                         for j in range(8)) for i in range(8))
+    E = _round(beam.stiffness_exact_n_m*(beam.reference_displacement_m*driver+_square(driver)/2), precision)
+    return NativeCommonLocalSourceBeamResponse(beam.trace_id, beam.side, beam.source_coordinate_index,
+        block.global_coordinate_indices+(internal,), block.projection_increment_bounds_m,
+        r, driver, E, gradient, hessian, beam.stiffness_exact_n_m,
+        beam.reference_force_exact_n, beam.reference_energy_exact_j)
+
+
+def _scatter(G, H, indices, gradient, hessian):
+    for a, i in enumerate(indices):
+        G[i] += gradient[a]
+        for b, j in enumerate(indices):
+            H[i][j] += hessian[a][b]
+
+
+def evaluate_native_common_local_source_work(system, *, coordinate_increments=None,
+        branch=BRANCHES[0], precision=96, parallel_old_projected_source_energized=False,
+        separate_source_beam_energized=False, full_common_calibrated_cold_energy_energized=False,
+        continuous_source_measure_energized=False):
+    """Differentiate the single local source/beam/remainder potential on100 coordinates.
+
+    The first92 values must remain the authentic NONZERO material/integral
+    packet. Fresh owner values are zero; their full differential columns are
+    retained. Eight exact internal residuals can vary without replacing a
+    field receipt or advancing its source state.
+    """
+    validate_native_common_local_source_work_system(system)
+    if any(type(x) is not bool or x for x in (
+            parallel_old_projected_source_energized, separate_source_beam_energized,
+            full_common_calibrated_cold_energy_energized, continuous_source_measure_energized)):
+        raise ValueError("The single local source potential rejects parallel atoms, calibrated beams, fullcold energy and continuous-face energy")
+    precision = _precision(precision)
+    q = system.bound_coordinate_increments if coordinate_increments is None else coordinate_increments
+    _typed_vector(q, F, 100)
+    if q[:92] != system.bound_coordinate_increments[:92] or q[:6] != (F(0),)*6 or branch not in BRANCHES:
+        raise ValueError("A local source query needs the complete fixed registered92 values and a declared branch")
+    key = system.binding_sha256, q, branch, precision
+    if key in _QUERY_CACHE:
+        return validate_native_common_local_source_work_response(_QUERY_CACHE[key], system=system)
+    _, _, _, transfer, source, _, _ = _DEPENDENCIES[type(system), system.binding_sha256]
+    if any(source.source_radius_m+r <= 0 for r in q[92:]):
+        raise ValueError("Internal source residuals must preserve positive original virtual radial support")
+    points = {(p.point_id, p.side): p for p in system.material_point_fields}
+    atoms = tuple(_atom_response(c, points[c.point_id, "sub"], points[c.point_id, "over"],
+                    q, branch, precision) for c in source.carriers)
+    blocks = {b.source_coordinate_index: b for b in system.projection_blocks}
+    beams = tuple(_beam_response(system, blocks[b.source_coordinate_index], b, q, precision) for b in transfer.beams)
+    G, H = [I(0)]*100, [[I(0) for _ in range(100)] for _ in range(100)]
+    for atom in atoms:
+        _scatter(G, H, atom.active_coordinate_indices, atom.potential_gradient_bounds, atom.potential_hessian_bounds)
+    for beam in beams:
+        _scatter(G, H, beam.active_coordinate_indices, beam.potential_gradient_bounds, beam.potential_hessian_bounds)
+    sourceE = _round(I(system.source_beam_literal_reference_energy_j)
+        +sum((a.potential_bounds_j for a in atoms), I(0))
+        +sum((b.potential_increment_bounds_j for b in beams), I(0)), precision)
+    sourceG = tuple(_round(x, precision) for x in G)
+    sourceH = tuple(tuple(_round(x, precision) for x in row) for row in H)
+    GR, HR = [I(0)]*100, [[I(0) for _ in range(100)] for _ in range(100)]
+    for b in system.projection_blocks:
+        _scatter(GR, HR, b.global_coordinate_indices, b.orthogonal_gradient_bounds_n, b.orthogonal_hessian_bounds_n_m)
+    R = _round(sum((b.orthogonal_energy_bounds_j for b in system.projection_blocks), I(0)), precision)
+    GR = tuple(_round(x, precision) for x in GR)
+    HR = tuple(tuple(_round(x, precision) for x in row) for row in HR)
+    totalG = tuple(_round(a+b, precision) for a, b in zip(sourceG, GR))
+    totalH = tuple(tuple(_round(a+b, precision) for a, b in zip(sa, ra)) for sa, ra in zip(sourceH, HR))
+    if any(totalG[i] != I(0) or any(totalH[i][j] != I(0) or totalH[j][i] != I(0) for j in range(100)) for i in system.hot_zero_coordinate_indices):
+        raise ValueError("No source or bulk law was declared for the authentic thirty HOT coordinates")
+    result = NativeCommonLocalSourceWorkResponse(system.binding_sha256, system.coordinate_order,
+        q, branch, atoms, beams, sourceE, sourceG, sourceH, R, GR, HR,
+        _round(sourceE+R, precision), totalG, totalH, system.hot_zero_coordinate_indices,
+        system.original_source_work_lineages, system.genuine_surface_response_binding_sha256,
+        system.source_contact_elapsed_time_s, system.source_memory_elapsed_time_s,
+        system.source_geometry_elapsed_time_s, system.material_geometry_elapsed_time_s, precision, "")
+    result = _remember(result, (system,))
+    _QUERY_CACHE[key] = result
+    return result
+
+
+def validate_native_common_local_source_work_response(value, *, system=None):
+    actual, = _registered(value, NativeCommonLocalSourceWorkResponse)
+    validate_native_common_local_source_work_system(actual)
+    if system is not None and _guard(actual) != _guard(system):
+        raise ValueError("A local force/work response belongs to another complete typed system")
+    return value
+
+
+def evaluate_native_common_local_source_reference_certificate(system, *,
+        source_coordinate_increments=None, branch=BRANCHES[0], precision=96):
+    """Restricted old14 source identity, with cold=0 as an algebraic restriction.
+
+    Authenticated local mode coefficients remain available, but their cold
+    amplitudes are set to zero inside this pure source comparison. No zero
+    integral receipt, bulk energy, bulk gradient or bulk Hessian is invented.
+    The independent internal variables reproduce every old radial source
+    direction, even though the registered NONZERO local operator differs
+    from the former875 bankwise atom embedding.
+    """
+    validate_native_common_local_source_work_system(system)
+    precision = _precision(precision)
+    z = (F(0),)*14 if source_coordinate_increments is None else source_coordinate_increments
+    _typed_vector(z, F, 14)
+    if z[:6] != (F(0),)*6 or branch not in BRANCHES:
+        raise ValueError("The old14 reference certificate retains zero fresh owners and its declared literal radial source variables")
+    key = system.binding_sha256, z, branch, precision
+    if key in _REFERENCE_CACHE:
+        return validate_native_common_local_source_reference_certificate(_REFERENCE_CACHE[key], system=system)
+    _, _, _, transfer, source, _, _ = _DEPENDENCIES[type(system), system.binding_sha256]
+    if any(source.source_radius_m+r <= 0 for r in z[6:]):
+        raise ValueError("The reference source radial variables leave their genuine positive support")
+    q = tuple(sum((system.source_to_global_injection[i][j]*z[j] for j in range(14)), F(0)) for i in range(100))
+    points = {(p.point_id, p.side): p for p in system.material_point_fields}
+    atoms = tuple(_atom_response(c, points[c.point_id, "sub"], points[c.point_id, "over"],
+                q, branch, precision) for c in source.carriers)
+    support = system.source_support_indices
+    G, H, Go, Ho = [I(0)]*14, [[I(0) for _ in range(14)] for _ in range(14)], [I(0)]*14, [[I(0) for _ in range(14)] for _ in range(14)]
+    E, Eo = I(system.source_beam_literal_reference_energy_j), I(system.source_beam_literal_reference_energy_j)
+    Bres, Hres, qres = [], [], []
+    for carrier, atom in zip(source.carriers, atoms):
+        basis = carrier.archival_old_reference
+        ds = z[system.source_coordinate_order.index(("radial", carrier.trace_id, "sub"))]
+        do = z[system.source_coordinate_order.index(("radial", carrier.trace_id, "over"))]
+        ps, po = tuple(p+ds*v for p, v in zip(basis.sub_position_bounds_m, basis.sub_direction_bounds)), tuple(p+do*v for p, v in zip(basis.over_position_bounds_m, basis.over_direction_bounds))
+        _, B0, H0 = _source_jet(system.source_coordinate_order, carrier.sub_owner, carrier.over_owner,
+            carrier.trace_id, (ps, po), (basis.sub_direction_bounds, basis.over_direction_bounds), basis.receiver_director_bounds, precision)
+        eta0 = tuple(_round(_dot(e, tuple(do*o-ds*s for s, o in zip(basis.sub_direction_bounds, basis.over_direction_bounds))), precision) for e in basis.receiver_director_bounds)
+        local_index = {i: j for j, i in enumerate(atom.active_coordinate_indices)}
+        B = tuple(tuple(atom.scalar_first_derivative_bounds[a][local_index[i]] if i in local_index else I(0) for i in support) for a in range(2))
+        HH = tuple(tuple(tuple(atom.scalar_second_derivative_bounds[a][local_index[i]][local_index[j]] if i in local_index and j in local_index else I(0) for j in support) for i in support) for a in range(2))
+        Bdelta = tuple(tuple(_round(B[a][i]-B0[a][i], precision) for i in range(14)) for a in range(2))
+        Hdelta = tuple(tuple(tuple(_round(HH[a][i][j]-H0[a][i][j], precision) for j in range(14)) for i in range(14)) for a in range(2))
+        delta = tuple(_round(a-b, precision) for a, b in zip(atom.scalar_increment_bounds_m, eta0))
+        if any(not x.lo <= 0 <= x.hi for row in Bdelta for x in row) or any(not x.lo <= 0 <= x.hi for matrix in Hdelta for row in matrix for x in row) or any(not x.lo <= 0 <= x.hi for x in delta):
+            raise ValueError("The local internal source restriction fails an original14 scalar first/second identity")
+        Bres.append((carrier.point_id, Bdelta)); Hres.append((carrier.point_id, Hdelta)); qres.append((carrier.point_id, delta))
+        old = _atom_algebra(carrier.original_area_m2, carrier.literal_source_tractions_pa,
+            atom.effective_tangent_stiffness_pa_m, sum(carrier.stored_source_energy_components_j, F(0)),
+            dict(active_coordinate_indices=tuple(range(14)), scalar_increment_bounds_m=eta0,
+                scalar_first_derivative_bounds=B0, scalar_second_derivative_bounds=H0), precision=precision)
+        E += atom.potential_bounds_j; Eo += old["potential_bounds_j"]
+        for i, gi in enumerate(support):
+            if gi in local_index:
+                G[i] += atom.potential_gradient_bounds[local_index[gi]]
+            Go[i] += old["potential_gradient_bounds"][i]
+            for j, gj in enumerate(support):
+                if gi in local_index and gj in local_index:
+                    H[i][j] += atom.potential_hessian_bounds[local_index[gi]][local_index[gj]]
+                Ho[i][j] += old["potential_hessian_bounds"][i][j]
+    for b in transfer.beams:
+        i, r, k, w = b.source_coordinate_index, z[b.source_coordinate_index], b.stiffness_exact_n_m, b.reference_displacement_m
+        increment = k*(w*r+r*r/2)
+        E += increment; Eo += increment
+        G[i] += k*(w+r); Go[i] += k*(w+r)
+        H[i][i] += k; Ho[i][i] += k
+    E, Eo = _round(E, precision), _round(Eo, precision)
+    G, Go = tuple(_round(x, precision) for x in G), tuple(_round(x, precision) for x in Go)
+    H, Ho = tuple(tuple(_round(x, precision) for x in row) for row in H), tuple(tuple(_round(x, precision) for x in row) for row in Ho)
+    energy_delta = _round(E-Eo, precision)
+    gradient_delta = tuple(_round(a-b, precision) for a, b in zip(G, Go))
+    hessian_delta = tuple(tuple(_round(a-b, precision) for a, b in zip(ra, rb)) for ra, rb in zip(H, Ho))
+    if any(not x.lo <= 0 <= x.hi for x in (energy_delta,)+gradient_delta) or any(not x.lo <= 0 <= x.hi for row in hessian_delta for x in row):
+        raise ValueError("The single original14 source/beam restriction fails its energy and virtual-work identities")
+    result = NativeCommonLocalSourceReferenceCertificate(system.binding_sha256,
+        system.source_coordinate_order, z, system.source_to_global_injection, branch,
+        E, G, H, Eo, Go, Ho, energy_delta, gradient_delta, hessian_delta,
+        tuple(Bres), tuple(Hres), tuple(qres), precision, "")
+    result = _remember(result, (system,))
+    _REFERENCE_CACHE[key] = result
+    return result
+
+
+def validate_native_common_local_source_reference_certificate(value, *, system=None):
+    actual, = _registered(value, NativeCommonLocalSourceReferenceCertificate)
+    validate_native_common_local_source_work_system(actual)
+    if system is not None and _guard(actual) != _guard(system):
+        raise ValueError("An old14 identity certificate belongs to another complete typed local source system")
+    return value
+
+
+def _export(value, format_name):
+    result = _payload(value)
+    result.update(format=format_name, scope=SCOPE, **_FLAGS)
+    return result
+
+
+def native_common_local_source_work_system_to_dict(value):
+    validate_native_common_local_source_work_system(value)
+    return _export(value, FORMAT)
+
+
+def native_common_local_source_work_system_from_dict(raw, *, projection,
+        original_material_responses, surface_responses=()):
+    if type(raw) is not dict:
+        raise ValueError("The local source system requires its literal complete object DTO")
+    actual = bind_native_common_local_source_work(projection,
+        original_material_responses=original_material_responses, surface_responses=surface_responses,
+        provenance=raw.get("provenance"), precision=raw.get("precision"))
+    if _encoded(raw) != _encoded(native_common_local_source_work_system_to_dict(actual)):
+        raise ValueError("Local system DTO differs from complete externally authenticated material, source and projection replay")
+    return actual
+
+
+def native_common_local_source_work_response_to_dict(value):
+    validate_native_common_local_source_work_response(value)
+    return _export(value, RESPONSE_FORMAT)
+
+
+def native_common_local_source_work_response_from_dict(raw, *, system,
+        expected_coordinate_increments, expected_branch, expected_precision=96):
+    if type(raw) is not dict:
+        raise ValueError("The local source response requires its complete object DTO")
+    result = evaluate_native_common_local_source_work(system,
+        coordinate_increments=expected_coordinate_increments, branch=expected_branch,
+        precision=expected_precision)
+    if _encoded(raw) != _encoded(native_common_local_source_work_response_to_dict(result)):
+        raise ValueError("A local source response differs from its independent full query and typed source replay")
+    return result
+
+
+def native_common_local_source_reference_certificate_to_dict(value):
+    validate_native_common_local_source_reference_certificate(value)
+    return _export(value, REFERENCE_FORMAT)
+
+
+def native_common_local_source_reference_certificate_from_dict(raw, *, system,
+        expected_source_coordinate_increments, expected_branch, expected_precision=96):
+    if type(raw) is not dict:
+        raise ValueError("An original14 source certificate requires its complete object DTO")
+    result = evaluate_native_common_local_source_reference_certificate(system,
+        source_coordinate_increments=expected_source_coordinate_increments,
+        branch=expected_branch, precision=expected_precision)
+    if _encoded(raw) != _encoded(native_common_local_source_reference_certificate_to_dict(result)):
+        raise ValueError("The original14 source identity differs from its external source coordinates and full replay")
+    return result

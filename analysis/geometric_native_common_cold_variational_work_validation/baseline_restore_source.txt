@@ -1,0 +1,40 @@
+"""Byte-only recovery of authenticated919 baseline associations plus915 ancestry."""
+from pathlib import Path
+import argparse,hashlib,json,subprocess,sys
+ROOT=Path(__file__).resolve().parents[2]
+P=ROOT/'analysis/geometric_native_common_cold_variational_work_validation'
+F=ROOT/'analysis/geometric_native_common_cold_variational_work_final_readback'
+def enc(x):return json.dumps(x,sort_keys=True,separators=(',',':'),ensure_ascii=False).encode()
+def digest(p):
+ h=hashlib.sha256()
+ with Path(p).open('rb') as f:
+  for b in iter(lambda:f.read(1024*1024),b''):h.update(b)
+ return h.hexdigest()
+def run(output):
+ output=Path(output);assert not output.exists()
+ archive=json.loads((F/'archive.json').read_bytes());assert archive['status']=='PASS_FINAL919_READBACK_ARCHIVE_CLOSED'
+ assert archive['sha256']==hashlib.sha256(enc({k:v for k,v in archive.items() if k!='sha256'})).hexdigest()
+ assert digest(P/'artifact_manifest.json')==archive['manifest_raw_sha256']
+ manifest=json.loads((P/'artifact_manifest.json').read_bytes())
+ for name,row in manifest['files'].items():assert digest(ROOT/name)==row['sha256']
+ for name,row in archive['files'].items():assert digest(F/name)==row['sha256']
+ old=ROOT/'analysis/geometric_native_reference_density_transport_validation/baseline_restore_source.txt'
+ assert digest(old)==manifest['inherited915_restorer_raw_sha256']
+ inherited=Path(str(output)+'.inherited915.json')
+ child=subprocess.run([sys.executable,str(old),'--output',str(inherited)],capture_output=True,check=True)
+ assert child.stderr==b'' and child.stdout==inherited.read_bytes()
+ assert json.loads(child.stdout)['required_target_count']==71
+ rows=json.loads((P/'baseline_associations.json').read_bytes());restored=[]
+ for target,row in rows.items():
+  source=ROOT/row['copy'];assert digest(source)==row['sha256'];target=Path(target)
+  assert target.is_relative_to('/workspace') and not target.is_relative_to(ROOT)
+  if target.exists():assert digest(target)==row['sha256']
+  else:
+   with target.open('xb') as f:f.write(source.read_bytes())
+   restored.append(str(target))
+ result=dict(status='PASS_AUTHENTICATED919_BASELINES_RESTORED',required_target_count=71+len(rows),restored_new=restored,repository_files_written=False,old_physical_math_executed=False)
+ result['sha256']=hashlib.sha256(enc(result)).hexdigest()
+ with output.open('xb') as f:f.write(enc(result)+b'\n')
+ print(enc(result).decode())
+if __name__=='__main__':
+ p=argparse.ArgumentParser();p.add_argument('--output',required=True);run(p.parse_args().output)

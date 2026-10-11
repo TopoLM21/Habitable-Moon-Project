@@ -1,0 +1,243 @@
+"""Read-only actual source cut audit; no force solve, evolution or quadrature.
+
+Replay from repository root:
+  PYTHONPATH=. python /tmp/native_retained_original_contact_cut_audit_20261005.py
+Only /tmp output is written. Endpoint native polygon arcs are explicitly
+distinguished from the true C6 curved archive and from constitutive contact.
+"""
+from fractions import Fraction as F
+from pathlib import Path
+import hashlib, json
+
+from tectonics.geometric_native_polygons import (
+    native_polygon_from_dict, native_shared_boundary_arcs, native_arc_to_dict,
+    _ray_values, _plane_values,
+    rotation_increment_from_dict,
+)
+from tectonics.geometric_native_first_entry_domains import _normal_series, _composites
+from tectonics.geometric_native_common_reference import _arc_frame
+from tectonics.geometric_native_pose import FractionInterval as I
+from tectonics.geometric_native_pose import certify_rotation_history
+
+ROOT = Path('/workspace/Habitable-Moon-Project')
+CANDIDATE = ROOT/'analysis/geometric_native_cold_body_validation/common_reference_candidate.json'
+SOURCE = ROOT/'analysis/geometric_native_affine_body_validation/release_validation_01/native_control/source_packet.json'
+CURVED_PEER = ROOT/'analysis/geometric_native_cold_body_validation/common_reference_curved_partition_peer.json'
+OUTPUT = Path('/tmp/native_retained_original_contact_cut_audit_20261005.json')
+EXPECTED_CANDIDATE = '50af6b71758feaaed531651b231b50fe5e45228cfa4efa808b26c5a2070d86f4'
+EXPECTED_SOURCE = 'ccd511b2b82e66ba103d0d900b993a18d02953288f447c71ac9e589dc70c7d1e'
+EXPECTED_CURVED_PEER = 'd07f10dbf7c50a1d454db18d194ff4999889aadd56f27b7a178b30e2d679a259'
+
+def enc(x): return json.dumps(x,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+def sha(x): return hashlib.sha256(x).hexdigest()
+def load(path, expected):
+    raw=path.read_bytes(); assert sha(raw)==expected
+    return json.loads(raw)
+def fr(x): return [x.numerator,x.denominator]
+def ib(x): return {'lo':fr(x.lo),'hi':fr(x.hi)}
+def fv(x): return [ib(i) for i in x]
+def readi(x): return I(F(*x['lo']),F(*x['hi']))
+def dot(a,b): return sum((x*y for x,y in zip(a,b)),I(0))
+
+def main():
+    candidate=load(CANDIDATE,EXPECTED_CANDIDATE)
+    source=load(SOURCE,EXPECTED_SOURCE)
+    curved_peer=load(CURVED_PEER,EXPECTED_CURVED_PEER)
+    unsealed=dict(source); seal=unsealed.pop('packet_sha256'); assert sha(enc(unsealed))==seal
+    dto=dict(candidate['complete_authenticated_source_dto_json'])
+    for name,value in dto.items():
+        assert source[name]==json.loads(value)
+        assert sha(value.encode())==candidate['source_dto_raw_sha256'][name]
+    before=json.loads(dto['before']); epoch=before['snapshot']['current_material_epoch']
+    material=epoch['source_material_state']; journal=material['journal']
+    history=before['original_physical_history']; sweep=material['sweep_certificate']
+    components={c['component_id']:c for c in epoch['components']}
+    cold={c['original_parent_id']:c for c in components.values() if c['material_kind']=='original_live'}
+    hot=[c for c in components.values() if c['material_kind']=='hot_birth']
+    assert len(cold)==8 and len(hot)==5
+    assert dict(epoch['additional_owner_histories'])=={0:[],1:[]}
+    owners=dict(journal['omega_rad_per_myr'])
+    assert before['snapshot']['owner_histories']==[[o,[{'omega_rad_per_myr':owners[o],'dt_myr':journal['dt_myr']}]] for o in (0,1)]
+    polygons={pid:tuple(native_polygon_from_dict(p) for p in c['proxy_geometries']) for pid,c in cold.items()}
+    correction=epoch['paired_corrections'][0]
+    assert len(epoch['paired_corrections'])==1 and cold['octant:5']['component_id']==correction['negative_component_id']
+    curved_hot=components[correction['positive_component_id']]
+    assert curved_hot['original_parent_id']=='octant:5' and curved_hot['owner']==1
+    assert curved_peer['negative_component_id']==correction['negative_component_id']
+    assert curved_peer['positive_component_id']==correction['positive_component_id']
+    assert curved_peer['source_epoch_sha256']==epoch['epoch_sha256']
+    assert curved_peer['true_curved_extra_area_bounds_sr']==correction['area_bounds_sr']
+    bindings=material['trace_bindings']; assert len(bindings)==4
+    original_pairs={(b['donor_fragment_id'],b['receiver_fragment_id']):b['trace_id'] for b in bindings}
+    parents={p['fragment_id']:p for p in journal['source_surface']['fragments']}
+    R=F.from_float(journal['source_surface']['radius_km'])*1000
+    saved_roofs={cid:readi(w) for cid,w in source['saved_joint_reference_field']['top_radial_displacements_m']}
+    source_radial={}
+    for pid,c in cold.items():
+        H=1000*sum((F.from_float(x) for x in parents[pid]['parcel']['specific_properties'][:2]),F(0))
+        w=saved_roofs[c['component_id']]; assert w.lo==w.hi
+        top=R+w.lo; low=top**3-3*R**2*H
+        assert H==10000 and 0<low<top**3
+        source_radial[pid]=(low,top**3,w.lo,H)
+
+    # Enumerate literal native edge intersections, not approximate endpoints.
+    arcs=[]
+    for d in range(4,8):
+        for r in range(4):
+            dp,rp=f'octant:{d}',f'octant:{r}'
+            for di,a in enumerate(polygons[dp]):
+                for ri,b in enumerate(polygons[rp]):
+                    for arc in native_shared_boundary_arcs(a,b):
+                        start,tangent,normal,angle=_arc_frame(arc,256)
+                        _,raw_start=_ray_values(arc.start,256); _,raw_end=_ray_values(arc.end,256)
+                        _,plane=_plane_values(arc.plane,256)
+                        row={'donor_parent':dp,'receiver_parent':rp,
+                            'donor_component_id':cold[dp]['component_id'],
+                            'receiver_component_id':cold[rp]['component_id'],
+                            'donor_piece':di,'receiver_piece':ri,
+                            'original_trace_id_if_same_pair':original_pairs.get((dp,rp)),
+                            'native_arc':native_arc_to_dict(arc),
+                            'unit_start_bounds':fv(start),'unit_tangent_bounds':fv(tangent),
+                            'unit_normal_bounds':fv(normal),'native_angle_bounds_radians':ib(angle),
+                            'endpoint_length_radians_diagnostic_float':arc.length_radians,
+                            'raw_start_direction_bounds':fv(raw_start),'raw_end_direction_bounds':fv(raw_end),
+                            'source_receiver_boundary_plane_bounds':fv(plane),
+                            'true_live_shared_cut_without_curved_restriction':dp!='octant:5',
+                            'constitutive_reference_attached':False}
+                        low=max(source_radial[dp][0],source_radial[rp][0])
+                        high=min(source_radial[dp][1],source_radial[rp][1])
+                        assert 0<low<high
+                        row['actual_common_physical_radius_cubed_bounds_m3']=ib(I(low,high))
+                        row['actual_local_material_depth_bounds_m']={
+                            pid:ib(I((source_radial[pid][1]-high)/(3*R**2),
+                                     (source_radial[pid][1]-low)/(3*R**2))) for pid in (dp,rp)}
+                        assert all(0<=readi(z).lo<readi(z).hi<=10000 for z in row['actual_local_material_depth_bounds_m'].values())
+                        arcs.append(row)
+
+    # Replay full literal normal series and all composites, preserving tails.
+    C,Y,Z,_=_normal_series(owners[1],owners[0],journal['dt_myr'],sweep['order'],sweep['precision'])
+    A1,B1,curvature,height=_composites(C,Y,Z)
+    named=(('C',C),('Y',Y),('Z',Z),('A1',A1),('B1',B1),('curvature_numerator',curvature),
+           ('height_numerator',height),('area_integrand_numerator',-height*curvature))
+    for row,(name,poly) in zip(sweep['analytic_polynomials'],named):
+        assert row['name']==name
+        assert tuple(F(*x) for x in row['coefficients'])==poly.coefficients
+        assert tuple(F(*x) for x in row['derivative_tails'])==poly.tails
+    whole=I(0,1); end=I(1)
+    assert C.bounds(whole).lo>0 and A1.bounds(whole).lo>0 and B1.bounds(whole).lo>0
+    # k'=(b''a'-b'a'')/(a')²; source curvature derivative controls k monotonicity
+    # after maximum q. Saved theorem gives the full continuous envelope, not proxy.
+    assert curvature.bounds(whole,1).hi<0
+    env=sweep['envelope']; k1=readi(env['terminal_slope_bounds']); q1=readi(env['terminal_ratio_bounds']); qmax=readi(env['maximum_ratio_bounds'])
+    root=readi(env['maximum_ratio_time_fraction'])
+    assert 0<root.lo<=root.hi<1
+    assert curvature.bounds(I(root.lo)).hi<0
+    assert curvature.bounds(I(root.lo,1)).hi<0
+    h1=readi(env['terminal_height_bounds'])
+    assert 0<k1.lo<=k1.hi<q1.lo<=q1.hi<qmax.lo
+    assert h1.lo>0
+    ce,ye,ze=C.bounds(end),Y.bounds(end),Z.bounds(end)
+    a1,b1=ye/ce,ze/ce
+    assert (b1-a1*k1).lo>0
+    poses={o:certify_rotation_history(tuple(rotation_increment_from_dict(s) for s in hist),256).intervals
+           for o,hist in before['snapshot']['owner_histories']}
+    for row in arcs:
+        if row['donor_parent']!='octant:5':
+            continue
+        local=[]
+        for raw in (row['raw_start_direction_bounds'],row['raw_end_direction_bounds']):
+            world=tuple(readi(x) for x in raw)
+            q=tuple(sum((poses[1][j][i]*world[j] for j in range(3)),I(0)) for i in range(3))
+            assert q[2].lo>0
+            local.append(q)
+        margins=[q[1]+k1*q[2] for q in local]
+        if all(x.hi<0 for x in margins):
+            status='entire_positive_length_endpoint_arc_is_earlier_archived_not_live_cold_contact'
+        elif all(x.lo>=0 for x in margins):
+            status='entire_endpoint_arc_is_terminal_live_cut'
+        else:
+            assert ((margins[0].lo>0 and margins[1].hi<0) or
+                    (margins[0].hi<0 and margins[1].lo>0))
+            assert readi(row['native_angle_bounds_radians']).hi<F(1)
+            status='endpoint_arc_crosses_true_envelope_join_requires_exact_implicit_trim'
+        row['C6_terminal_live_cut_halfspace_expression']='y+k(1)z>=0 in donor original coordinates'
+        row['C6_endpoint_original_label_bounds']= [fv(q) for q in local]
+        row['C6_terminal_live_cut_endpoint_margins']= [ib(x) for x in margins]
+        row['C6_exact_live_cut_status']=status
+    true_c6={'actual_parent_id':'octant:5','negative_component_id':correction['negative_component_id'],
+        'positive_hot_component_id':correction['positive_component_id'],
+        'actual_mask_expression':'R1(P5 minus S), S={q in P5: exists 0<u<=1, -C(u)x+Y(u)y+Z(u)z>0}',
+        'source_continuous_envelope':env,
+        'endpoint_cut_expression':'in P5, z=1: x=b(1)+a(1)y; y>=-k(1) is the live terminal supporting branch',
+        'earlier_archived_endpoint_cut_expression':'-q(1)<=y<-k(1): terminal endpoint line, including x=0 endpoint, is below strict earlier-entry envelope',
+        'curved_live_boundary_expression':'(x,y,z)=(b(u)-a(u)k(u),-k(u),1), u_m<=u<=1',
+        'curved_other_side_true_bank':correction['positive_component_id'],
+        'curved_other_side_is_cold_receiver':False,
+        'terminal_a_bounds':ib(a1),'terminal_b_bounds':ib(b1),
+        'terminal_slope_bounds':ib(k1),'terminal_ratio_bounds':ib(q1),'maximum_ratio_bounds':ib(qmax),
+        'terminal_height_bounds':ib(h1),'positive_curve_area_bounds_sr':correction['area_bounds_sr'],
+        'endpoint_proxy_arc_is_whole_true_cold_cut':False}
+    # Original trace membership and all sixteen work lineage identities survive.
+    nodes=history['quadrature_histories']; assert len(nodes)==16
+    states=before['snapshot']['states']; assert len(states)==16
+    assert {p[0] for p in states}=={n['point_id'] for n in nodes}
+    trace_rows=[]
+    for binding in bindings:
+        nn=[n for n in nodes if n['trace_id']==binding['trace_id']]; assert len(nn)==4
+        matches=[row for row in arcs if row['original_trace_id_if_same_pair']==binding['trace_id']]
+        trace_rows.append({'binding':binding,'source_node_count':len(nn),
+            'source_node_ids':[n['point_id'] for n in nn],
+            'old_initial_gap_m':[n['original_material']['initial_gap_m'] for n in nn],
+            'old_initial_jump_m':[n['original_material']['initial_jump_m'] for n in nn],
+            'original_frame_literal':[n['original_frame'] for n in nn],
+            'original_reference_sheets_coincident_after_distinct_owner_pose':False,
+            'candidate_current_same_pair_endpoint_arc_count':len(matches),
+            'candidate_current_same_pair_endpoint_arc_lengths_radians_float':[r['endpoint_length_radians_diagnostic_float'] for r in matches],
+            'same_pair_is_complete_current_geometric_adjacency':(
+                binding['donor_fragment_id']!='octant:5' and bool(matches) and
+                all(row['receiver_parent']==binding['receiver_fragment_id'] for row in arcs
+                    if row['donor_parent']==binding['donor_fragment_id'])),
+            'old_initial_gap_is_geometric_distance':False,
+            'old_source_histories_automatically_define_new_depth_cut_law':False})
+    out={'format':'native-retained-original-contact-cut-readonly-audit-1',
+        'scope':'AUTHENTIC_ENDPOINT_SOURCE_CUTS_AND_REFERENCE_GAPS_READONLY_NOT_FORCE_ADMISSION',
+        'source_script_sha256':sha(Path(__file__).read_bytes()),
+        'dependencies':[{'path':str(CANDIDATE),'raw_sha256':EXPECTED_CANDIDATE},{'path':str(SOURCE),'raw_sha256':EXPECTED_SOURCE},
+            {'path':str(CURVED_PEER),'raw_sha256':EXPECTED_CURVED_PEER}],
+        'code_dependencies_sha256':{name:sha((ROOT/name).read_bytes()) for name in (
+            'tectonics/geometric_native_polygons.py','tectonics/geometric_native_pose.py',
+            'tectonics/geometric_native_first_entry_domains.py','tectonics/geometric_native_spherical_solid.py',
+            'tectonics/geometric_native_common_reference.py')},
+        'source_snapshot_sha256':source['source_snapshot_sha256'],'source_epoch_sha256':epoch['epoch_sha256'],
+        'complete_source_dto_sha256':{k:sha(v.encode()) for k,v in dto.items()},
+        'original_history_sha256':sha(enc(history)),
+        'whole_original16_mechanical_history_ids':[n['point_id'] for n in nodes],
+        'original_reference_sha256':sha(enc(history['original_reference'])),
+        'true_source_endpoint_cold_boundary_arcs':arcs,
+        'actual_curved_restriction':true_c6,'original_trace_rows':trace_rows,
+        'source_contact_reference_contract':{
+            'law_and_preload_available':'4 original receiver fields and16 complete original Gauss histories; normal/tangential stiffness1e6Pa/m, g0=-0.1m, dip literalpi/6, contactheight1000m, original interface measures and complete freeanchor/plastic/work histories.',
+            'existing_zero_work_operator':'geometric_native_contact_reference_transport.py:451 transport_contact_reference; :481 evaluate_contact_reference_free_anchors; :676/:695 symbolic equivalent. free_new=free_source+(h_current-h_reference).',
+            'geometry_input_requires_independent_authority':'Source transport explicitly preserves receiver axes/parameters/original interface measure; its context is a declaration rather than a geometric proof (module lines3-11).',
+            'restgap_is_not_face_distance':'Original reference offsets(-0.1,0) are separate from physical_pair_time reference_gap=(w_over_before-w_sub_before)n.point; no identity to new current physical cut.',
+            'source_measure_is_not_actual_full_depth_area':'Source contact density R*contactheight/sin(literal dip) per original computational angle, not whole10km body face coarea. No source density/memory distribution over new physical depth is supplied.',
+            'source_frame_is_not_new_geometric_cut_normal':'Literal original inclined normal/down-dip frame, carried by receiver pose, is retained. Actual common map cut normal varies with angle and radius; constant source dip is not established on it.',
+            'source_original_column_energy_is_separate':'Source columns are1-D1000m rods per inclined-interface area. They cannot automatically be added to the new actual body tensor energy or used as its admitted compliance.'},
+        'narrow_next_implementation_contract':{
+            'geometry_receipts':'Bind all5 true current cold/cold angular cuts:4 exact complete endpoint arcs plus the C6/C7 implicitterminaltrim. Keep C6/HOTC1 true curved boundary separate. Bind source component IDs/complete masks/ownerjournal and derive commonphysicalradius domain and Phi tangent/normal/J.',
+            'field_association':'Associate each cut with its authentic receiver continuous trace coordinate; cross-pair cuts use receiver field and own incoming donor chart via declared firstentry correspondence, retaining16old work lineages once, not creating new atoms from16coarea branches.',
+            'reference_law_choice_required_before_force':'A NEW explicit receiver-attached3D reference/measure/frame-depth interpretation must be declared and verified against actual fields. Preserve g0 and old local states as preload/memory, do not substitute geometriczero or reset source state.',
+            'not_done_by_this_audit':'No new constitutive depth extension, normalframe replacement, source work transfer, assembled force, finitepose wholeclock contact or force acceptance.'},
+        'physical_radius_gluing_expression':'For angular shared U and common r, X=Phi(rU); z_i=((R+w_i)^3-r^3)/(3R^2); no equality of local z or roof is assumed.',
+        'boundary_geometry_supplies_rest_gap':False,
+        'old16_gauss_histories_are_coarea16':False,
+        'global_force_or_wholeclock_admission':False,
+        'repository_modified':False,'full_tensor_quadrature_run':False}
+    out['audit_sha256']=sha(enc(out)); OUTPUT.write_bytes(enc(out)+b'\n')
+    print(json.dumps({'output':str(OUTPUT),'raw_sha256':sha(OUTPUT.read_bytes()),
+        'seal_sha256':out['audit_sha256'],'arc_count':len(arcs),
+        'arcs':[(r['donor_parent'],r['receiver_parent'],r['endpoint_length_radians_diagnostic_float']) for r in arcs],
+        'c6_k1':float(k1.midpoint),'c6_q1':float(q1.midpoint), 'c6_qmax':float(qmax.midpoint),
+        'c6_arc_status':[(r['receiver_parent'],r.get('C6_exact_live_cut_status')) for r in arcs if r['donor_parent']=='octant:5']}))
+
+if __name__=='__main__': main()

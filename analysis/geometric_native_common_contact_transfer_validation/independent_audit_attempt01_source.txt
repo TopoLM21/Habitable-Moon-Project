@@ -1,0 +1,182 @@
+"""Independent stdlib sealed859 component audit; no project imports or physics run.
+
+Replays immutable source ancestry/output closures and complete current memory,
+then exact material/reference-density and reduced series f/H expressions.
+Physical face transfer, old atom/world-force equivalence and admission remain
+false.  Source scalar history is preserved; this is an explicit new model.
+"""
+import argparse
+from contextlib import redirect_stdout
+from fractions import Fraction as F
+import hashlib,io,json,re,sys,time,types
+from pathlib import Path
+
+ROOT=Path('/workspace/Habitable-Moon-Project')
+PARENT=ROOT/'analysis/geometric_native_common_contact_transfer_validation'
+OLD=ROOT/'analysis/geometric_native_common_contact_force_validation'
+BASELINE_SOURCE_SHA='c92d970886f7bccdb0b570e605424c1eab5435638c8737525c360ac35b0bd748'
+BASELINE_JSON_SHA='c6d9702e0684e48d88d30b3361d942116ad484f1211aed4f0bf9f32cfcdf9750'
+OLD_PRODUCER_SHA='8d755b719156876a87cb6f51b60221159d8d96e3dd92688e0b696f4bc12ea9e8'
+OLD_FORMULA_SHA='061505c158ae8026549788c242fbda541c0718526d61c452f07e9f32d24d50cd'
+OLD_MAP='9d4a7a71f81b8093b09d26c74f742909839496fe18dd1429875e3a6d54c05c21'
+OLD_MAP_RAW='f9fafa4aedce0265147d44f9338cfcbc8b49518f66dfa5a4ce0a4a0ee968420e'
+OLD_WRAPPER_RAW='1d7a6ac8113a408aab6764f1c4a9fccb09f8d48184f5118434fc685574504313'
+OLD_PACKET_RAW='fe06614b05591969e99364ffc81299ac4115e3a9e6586ced18647bbe85baa0c9'
+OLD_AUDIT_RAW='e4c2cb68ed6a9f102b5ec2628f7c38966e90a067df8c80d2fd055dccec87fc92'
+NEW_MAP='88f0d2e78a81712458beb61f21bbdfe0b7222467a0e3241e23757e3fac6bda7d'
+NEW_MAP_RAW='7351d27e3fe0bb198978badec9f173766f8522940073b057c0b9584c75392ce5'
+THETA_SOURCE_SHA='374f620725cd2b396c2c9fd981e5477b14bdc4470633820760c06481561616f9'
+THETA_JSON_SHA='0eb62b8a9bd6b24a154b1764f61f78492364b682e9b1f1ba5b3dc247f1645396'
+THETA_SEAL='f6ec092d848efa7cd5752f2e9d29891b0d6817ea520bd78b1d8bafecd6eac155'
+HELPER_SHA='3abd9850ab677ae52a2a16074092b121ca660bdadb59ed363420507cab589b93'
+ADDED={
+ 'tectonics/geometric_native_common_contact_measure.py',
+ 'tectonics/geometric_native_common_contact_series.py',
+ 'tests/test_geometric_native_common_contact_measure.py',
+ 'tests/test_geometric_native_common_contact_series.py',
+ 'analysis/geometric_native_common_contact_transfer_validation/native_control.py',
+ 'analysis/geometric_native_common_contact_transfer_validation/validate.py'}
+SCOPE='COMMON_REFERENCE_AREA_SERIAL_CARRIER_COMPONENT_ONLY'
+FALSE=(
+ 'new_mixed_force_equilibrium_certified','whole_clock_material_admission_authorized','physical_material_admission_authorized','original_point_1_completed',
+ 'face_depth_memory_or_measure_transfer_certified','old_rod_prestrain_or_energy_transferred','old_node_states_assigned_to_new_cuts','source_history_advanced',
+ 'hot_curve_contact_law_inferred','finite_owner_whole_clock_motion_certified','full_genuine_source_reconstructed','inherited_force_certificate_for_placement',
+ 'contact_energy_adopted_on_new_face','complete_three_dimensional_strain_energy_certified','old_world_force_pullback_preserved',
+ 'all_original_source_measure_allocated_once','source_atomic_and_continuous_measures_equated','spatial_column_endpoints_authenticated')
+TRUE=(
+ 'complete_sixteen_source_states_areas_work_and_clocks_preserved','variable_contact_subrod_overrod_energies_included',
+ 'complete_series_compliance_not_parallel_energy_used','source_continuous_reference_measure_kept_separate_from_sixteen_atom_weights')
+
+def enc(x):return json.dumps(x,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+def vd(x):return hashlib.sha256(enc(x)).hexdigest()
+def digest(path):
+ h=hashlib.sha256()
+ with Path(path).open('rb') as stream:
+  for b in iter(lambda:stream.read(1<<20),b''):h.update(b)
+ return h.hexdigest()
+def read(path):return json.loads(Path(path).read_bytes())
+def sealed(path,key):
+ x=read(path);body=dict(x);assert body.pop(key)==vd(body),str(path);return x
+def module(path,name,sha,*,adapt_source96=False):
+ assert digest(path)==sha,str(path)
+ source=Path(path).read_text()
+ if adapt_source96:
+  needle="state['precision']==160"
+  assert source.count(needle)==1
+  source=source.replace(needle,"state['precision']==96")
+ m=types.ModuleType(name);m.__file__=str(path);sys.modules[name]=m
+ exec(compile(source,str(path),'exec'),m.__dict__);return m
+def output_closure(release,wrapper):
+ expected={'pytest.log','control_console.log','native_control/report.json','native_control/source_packet.json'}
+ assert set(wrapper['outputs'])==expected
+ assert {str(p.relative_to(release)) for p in release.rglob('*') if p.is_file()}==expected|{'report.json'}
+ for name,row in wrapper['outputs'].items():
+  path=release/name;assert digest(path)==row['sha256'] and path.stat().st_size==row['bytes'],name
+ return len(expected)
+def check_scope(raw):
+ assert raw['physical_candidate_status']==SCOPE
+ assert all(raw.get(k) is False for k in FALSE)
+ assert all(raw.get(k) is True for k in TRUE)
+ assert raw['accepted_original_native_intervals']==1 and raw['accepted_new_native_intervals']==0
+ assert raw['original_point_1_remaining_work_blocks']==1
+ if 'remaining_physical_conditions' in raw:assert len(raw['remaining_physical_conditions'])==3
+
+def run(args):
+ started=time.perf_counter()
+ # Archived baseline authenticates old826/833/841/847/853 Python and sealed output ancestry.
+ assert digest(PARENT/'baseline_853_audit.json')==BASELINE_JSON_SHA
+ archived_baseline=sealed(PARENT/'baseline_853_audit.json','audit_sha256')
+ assert archived_baseline['status']=='PASS_IMMUTABLE853_BASELINE_READBACK_ONLY'
+ assert archived_baseline['audit_sha256']=='f450a191fe864ea36628846eeaa3d10cd4e46181d68511d325d599abbcab7081'
+ baseline=module(PARENT/'baseline_853_audit_source.txt','transfer859_stdlib_baseline',BASELINE_SOURCE_SHA)
+ with redirect_stdout(io.StringIO()):baseline.run()
+ replay=sealed('/tmp/native_common_contact_measure_baseline_853_audit_20261005.json','audit_sha256')
+ assert replay['old853_python_sources_unchanged'] is True and replay['baseline_source_count']==853
+ assert set(replay['future_added_python_paths'])==ADDED and replay['current_python_source_count']==859
+ assert replay['preserved_old1633_artifact_chain'] is True and replay['preserved826_833_841_847_and853_output_closures'] is True
+ old_map=read(OLD/'frozen_source_map_853.json');assert len(old_map)==853 and vd(old_map)==OLD_MAP and digest(OLD/'frozen_source_map_853.json')==OLD_MAP_RAW
+ assert digest(OLD/'release_validation_02/report.json')==OLD_WRAPPER_RAW
+ assert digest(OLD/'release_validation_02/native_control/source_packet.json')==OLD_PACKET_RAW
+ assert digest(OLD/'independent_audit.json')==OLD_AUDIT_RAW
+ old_producer=module(OLD/'independent_audit_source.txt','transfer859_source_observation_replay',OLD_PRODUCER_SHA,adapt_source96=True)
+ old_baseline=old_producer.module(OLD/'baseline_847_audit_source.txt','transfer859_source_map_stdlib',old_producer.BASELINE_SOURCE_SHA)
+ current=old_baseline.source_map();assert len(current)==859 and set(current)-set(old_map)==ADDED
+ assert all(current[k]==sha for k,sha in old_map.items())
+ assert vd(current)==NEW_MAP and digest(PARENT/'frozen_source_map_859.json')==NEW_MAP_RAW
+ assert read(PARENT/'frozen_source_map_859.json')==current
+ before=dict(current)
+ release=Path(args.release).resolve();wrapper=sealed(release/'report.json','report_sha256')
+ assert wrapper['status']=='PASS' and wrapper['source_count']==859 and wrapper['verified_prior_python_sources']==853
+ assert wrapper['verified_prior_artifacts']==1633 and wrapper['prior_source_map_sha256']==OLD_MAP
+ assert wrapper['source_map_before_sha256']==wrapper['source_map_after_sha256']==vd(current)
+ assert wrapper['changed_python_paths']==[] and wrapper['prior_artifacts_and_python_sources_preserved_after'] is True
+ assert set(wrapper['added_python_sources'])==ADDED and wrapper['added_python_sources']=={k:current[k] for k in ADDED}
+ assert wrapper['execution_mode']=='same_python_process' and wrapper['pytest_import_mode']=='importlib' and wrapper['historical_tests_reexecuted'] is False
+ assert set(wrapper['test_paths'])=={k for k in ADDED if k.startswith('tests/')} and len(wrapper['test_paths'])==2
+ assert wrapper['control']=='analysis.geometric_native_common_contact_transfer_validation.native_control:run'
+ assert wrapper['pytest_counts']=={'passed':21} and wrapper['pytest_exit_code']==0
+ assert re.search(r'\b21 passed\b',(release/'pytest.log').read_text())
+ assert wrapper['verified_prior_evidence']=={
+  'frozen_source_map_853.json':OLD_MAP_RAW,'independent_audit.json':OLD_AUDIT_RAW,'independent_audit_source.txt':OLD_PRODUCER_SHA,'independent_force_formula_helper_source.txt':OLD_FORMULA_SHA}
+ assert wrapper['verified_current_baseline_evidence']=={'baseline_853_audit.json':BASELINE_JSON_SHA,'baseline_853_audit_source.txt':BASELINE_SOURCE_SHA}
+ output_count=output_closure(release,wrapper)
+ packet=sealed(release/'native_control/source_packet.json','packet_sha256');native=sealed(release/'native_control/report.json','report_sha256')
+ assert native['status']=='PASS' and native['source_packet_sha256']==packet['packet_sha256']
+ assert native['contact_query_rows_sha256']==vd(packet['contact_query_rows'])
+ assert packet['format']=='native-common-reference-area-serial-carrier-source-packet-1'
+ assert native['format']=='native-common-reference-area-serial-carrier-control-1'
+ assert packet['prior_853_wrapper_raw_sha256']==OLD_WRAPPER_RAW
+ assert native['source_snapshot_sha256']==packet['source_snapshot_sha256']
+ for raw in (wrapper,native,packet):check_scope(raw)
+ assert native['remaining_physical_conditions']==packet['remaining_physical_conditions'] and len(packet['remaining_physical_conditions'])==3
+ for key,expected in (
+  ('actual_cold_contact_cut_count',5),('retained_true_hot_curve_count',1),('current_state_query_case_count',20),
+  ('reference_area_density_case_count',20),('serial_force_density_case_count',40),('reference_weighted_integrand_case_count',40),
+  ('local_coordinate_count',20),('exact_symmetric_hessian_entry_replay_count',16000),('declared_normalized_depth_profile_count',2)):
+  assert all(raw[key]==expected for raw in (wrapper,native,packet)),key
+ assert packet['hot_source_law_rejection'] and 'HOT' in packet['hot_source_law_rejection']
+ base=module(OLD/'independent_force_formula_helper_source.txt','transfer859_objective_kinematics_stdlib',OLD_FORMULA_SHA)
+ # This adapter only selects the authenticated new96 query precision and leaves
+ # prior source coefficients/current closed-piece observation formulas intact.
+ source_packet=dict(packet);source_packet['contact_query_rows']=[dict(row,cases={label:dict(case,responses={}) for label,case in row['cases'].items()}) for row in packet['contact_query_rows']]
+ observed=old_producer.source_observations(source_packet,base)
+ # Pin independently derived exact original receiver-plane/orientation proof.
+ theta_source=PARENT/'source_theta_allocation_design_source.txt'
+ theta_json=PARENT/'source_theta_allocation_design.json'
+ assert digest(theta_source)==THETA_SOURCE_SHA and digest(theta_json)==THETA_JSON_SHA
+ theta=sealed(theta_json,'audit_sha256');assert theta['audit_sha256']==THETA_SEAL and theta['source_script_sha256']==THETA_SOURCE_SHA
+ assert theta['status']=='PASS_EXACT_SOURCE_ANGULAR_ALLOCATION_DESIGN_ONLY' and theta['source_snapshot_sha256']==packet['source_snapshot_sha256']
+ assert theta['positive_measure_duplicate_theta_interiors'] is False and theta['both_two_cut_receivers_share_exact_projective_endpoint'] is True
+ assert theta['quadrature_or_pytest_or_project_imports'] is False and theta['old16_atom_energy_or_rod_prestress_transferred'] is False
+ helperpath=Path(args.helper);helper=module(helperpath,'transfer859_series_measure_stdlib',HELPER_SHA)
+ formulas=helper.audit_packet(packet,base)
+ after=old_baseline.source_map();assert after==before
+ for name,sha in before.items():assert digest(ROOT/name)==sha,name
+ report=dict(
+  status='PASS',audit_scope=SCOPE,final_python_sources=859,unchanged_prior_python_sources=853,added_python_source_count=6,
+  added_python_sources={k:before[k] for k in sorted(ADDED)},source_map_canonical_sha256=vd(before),frozen_source_map_raw_sha256=NEW_MAP_RAW,source_map_before_after_identical=True,
+  preserved_old1633_artifact_chain=True,preserved826_833_841_847_and853_output_closures=True,
+  baseline853_archived_producer_sha256=BASELINE_SOURCE_SHA,baseline853_archived_json_sha256=BASELINE_JSON_SHA,
+  baseline853_readback_selfseal=replay['audit_sha256'],prior_wrapper_raw_sha256=OLD_WRAPPER_RAW,prior_packet_raw_sha256=OLD_PACKET_RAW,prior_independent_audit_raw_sha256=OLD_AUDIT_RAW,
+  wrapper_raw_sha256=digest(release/'report.json'),native_raw_sha256=digest(release/'native_control/report.json'),source_packet_raw_sha256=digest(release/'native_control/source_packet.json'),
+  wrapper_selfseal=wrapper['report_sha256'],native_selfseal=native['report_sha256'],source_packet_selfseal=packet['packet_sha256'],
+  fresh_tests=21,new_test_module_count=2,output_closure_count=output_count,output_manifest=wrapper['outputs'],
+  original_objective_kinematics_helper_sha256=OLD_FORMULA_SHA,independent_formula_helper_source_sha256=HELPER_SHA,
+  exact_source_theta_proof_producer_sha256=THETA_SOURCE_SHA,exact_source_theta_proof_json_sha256=THETA_JSON_SHA,
+  current_source_observation_adapter='pinned853 stdlib observer, declared queryprecision96, zero-series assertions replayed independently',
+  normalized_depth_profile_is_explicit_new_model=True,exact_literal_original_frame_C_used=True,genuine_common_coarea_preserved=True,
+  full_series_energy_condensed_not_added_to853_contact=True,three_variable_mechanical_energy_carriers_replayed=True,
+  source_atomic_and_continuous_measures_equated=False,all_original_source_measure_allocated_once=False,
+  old_world_force_pullback_preserved=False,spatial_column_endpoints_authenticated=False,
+  old_rod_prestrain_or_energy_transferred=False,face_depth_memory_or_measure_transfer_certified=False,
+  physical_material_admission_authorized=False,new_mixed_force_equilibrium_certified=False,
+  accepted_original_native_intervals=1,accepted_new_native_intervals=0,original_point_1_remaining_work_blocks=1,
+  remaining_physical_condition_count=3,project_imports=False,pytest_reexecuted=False,source_history_advanced=False,
+  second_certified_tensor_quadrature_performed=False,second_certified_whole_boundary_quadrature_performed=False,
+  auditor_script_sha256=digest(__file__),seconds=time.perf_counter()-started,**observed,**formulas)
+ report['audit_packet_sha256']=vd(report);Path(args.out).write_bytes(enc(report)+b'\n');print(enc(report).decode())
+ return report
+
+if __name__=='__main__':
+ p=argparse.ArgumentParser();p.add_argument('--release',required=True);p.add_argument('--helper',default=str(PARENT/'independent_formula_helper_source.txt'));p.add_argument('--out',default='/tmp/native_common_contact_transfer_independent_audit_20261005.json')
+ run(p.parse_args())

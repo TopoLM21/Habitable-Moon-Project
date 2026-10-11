@@ -1,0 +1,51 @@
+"""Authorized stdlib baseline byte recovery; corrected inherited --output."""
+from pathlib import Path
+import argparse,hashlib,json,subprocess,sys
+ROOT=Path('/workspace/Habitable-Moon-Project')
+P=ROOT/'analysis/geometric_native_common_receiving_face_validation'
+F=ROOT/'analysis/geometric_native_common_receiving_face_final_readback'
+def enc(x):return json.dumps(x,sort_keys=True,separators=(',',':'),ensure_ascii=False).encode()
+def digest(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def seal(p,k):
+ x=json.loads(Path(p).read_bytes());assert hashlib.sha256(enc({a:b for a,b in x.items() if a!=k})).hexdigest()==x[k];return x
+def run(output):
+ output=Path(output);assert not output.exists()
+ archive=seal(F/'archive.json','archive_sha256');assert archive['status']=='PASS_FINAL913_READBACK_ARCHIVE_CLOSED'
+ manifest=seal(P/'artifact_manifest.json','manifest_sha256')
+ assert digest(P/'artifact_manifest.json')==archive['manifest_raw_sha256']
+ for name,row in manifest['files'].items():assert digest(ROOT/name)==row['sha256']
+ for name,row in archive['files'].items():assert digest(F/name)==row['sha256']
+ old=ROOT/'analysis/geometric_native_common_mixed_force_validation/baseline_restore_source.txt'
+ assert digest(old)=='df2cc66f3099cb88c46f4085271b4dc191ab41a6cbba8040aae4f100f1f2aba5'
+ inherited=Path(str(output)+'.inherited907.json')
+ process=subprocess.run([sys.executable,str(old),'--restore','--output',str(inherited)],capture_output=True,check=True)
+ assert process.stderr==b'' and inherited.read_bytes()==process.stdout
+ receipt=json.loads(process.stdout);assert receipt['complete_required_target_count']==50
+ restored=[];verified=50
+ # These are exact closed copies; only their original outside paths may be written.
+ hotP=ROOT/'analysis/geometric_native_common_hot_receiving_validation'
+ for name in ('fresh907_readback.json','fresh907_actual_console.log','fresh907_actual_stderr.log','fresh907_executed_source.txt'):
+  source=hotP/name;target=Path('/workspace/hot_receiving_baseline_20261007')/name
+  if target.exists():assert digest(target)==digest(source)
+  else:
+   target.parent.mkdir(parents=True,exist_ok=True)
+   with target.open('xb') as f:f.write(source.read_bytes())
+   restored.append(str(target))
+  verified+=1
+ for source in sorted((P/'baseline909').iterdir()):
+  target=Path('/workspace/receiving_face_baseline_20261008')/source.name
+  if target.exists():assert digest(target)==digest(source)
+  else:
+   target.parent.mkdir(parents=True,exist_ok=True)
+   with target.open('xb') as f:f.write(source.read_bytes())
+   restored.append(str(target))
+  verified+=1
+ result=dict(status='PASS_AUTHENTICATED913_BASELINES_RESTORED',required_target_count=verified,
+  inherited907_byte_restorer_executed=True,inherited_output_argument_corrected=True,
+  restored_new_baseline_paths=restored,repository_files_written=False,
+  old_physical_math_or_solver_or_reader_or_guard_mains_executed=False)
+ result['restoration_sha256']=hashlib.sha256(enc(result)).hexdigest()
+ with output.open('xb') as f:f.write(enc(result)+b'\n')
+ print(enc(result).decode())
+if __name__=='__main__':
+ parser=argparse.ArgumentParser();parser.add_argument('--output',required=True);run(parser.parse_args().output)

@@ -1,0 +1,47 @@
+{
+  "after_manifest_sha256": "5d46976c1818b616c347e3ba5434064b9bfb673f62fbc0d7308e235ada568fc2",
+  "after_sha256_manifest": "analysis/geometric_underthrust_validation/pre_boundary_fix_code_and_tests_after.json",
+  "before_manifest_sha256": "289b0fcd321d16d899d2616fa2e3559526a916d9479c8ba46f58f4020f7e9db8",
+  "before_sha256_manifest": "analysis/geometric_underthrust_validation/pre_boundary_fix_code_and_tests_before.json",
+  "changed_code_or_test_paths": [
+    "tectonics/geometric_boundary.py",
+    "tests/test_geometric_arc_incidence.py"
+  ],
+  "code_and_tests_unchanged": false,
+  "code_tests_and_scripts_file_count": 417,
+  "command": [
+    ".venv/bin/python",
+    "scripts/run_cloud_tests.py"
+  ],
+  "counts": {
+    "passed": 288
+  },
+  "cwd": "/workspace/Habitable-Moon-Project",
+  "exit_code": 2,
+  "failed_test_summaries": [],
+  "final_eligible": false,
+  "finished_utc": "2026-10-01T18:44:24.695477+00:00",
+  "git_branch": "fix/genesis-mantle-convection",
+  "git_head": "224a07ac1b981b95163cdf6633f424af1599b2f2",
+  "interruption_reason": "Stopped by the root agent after an independently diagnosed geometric boundary construction-incidence regression required a production fix and adversarial tests. Partial results do not certify the full profile.",
+  "interruption_signal": "SIGINT to portable pytest process only",
+  "log": "analysis/geometric_underthrust_validation/pre_boundary_fix_interrupted_cloud_tests.log",
+  "log_sha256": "3564ed7ce962189ddf5b9cc610df0958a005374d2db557d889851ca4c00ca860",
+  "manifest_exclusions": [
+    "__pycache__",
+    ".pytest_cache",
+    "*.pyc",
+    "*.pyo"
+  ],
+  "manifest_scope": [
+    "tectonics/**/*",
+    "tests/**/*",
+    "scripts/**/*",
+    "analysis/geometric_underthrust_validation/run_portable_checks.py",
+    "analysis/geometric_underthrust_validation/underthrust_case.py"
+  ],
+  "pytest_summary": "288 passed in 180.31s (0:03:00)",
+  "seconds": 180.8272026689956,
+  "started_utc": "2026-10-01T18:41:23.718477+00:00",
+  "status": "interrupted"
+}

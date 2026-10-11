@@ -1,0 +1,889 @@
+"""Independent local surface transport and original-material field checks.
+
+The new native controller owns genuine cached source queries.  No historical
+test function, solver or quadrature is imported or executed by this file.
+"""
+from copy import deepcopy
+from dataclasses import fields, make_dataclass, replace
+from decimal import Decimal as D, localcontext
+from fractions import Fraction as F
+from functools import lru_cache
+import json
+
+import pytest
+
+from tectonics.geometric_native_pose import FractionInterval as I
+
+
+@lru_cache(maxsize=1)
+def _api():
+    from tectonics import geometric_native_common_material_surface_transport as api
+    return api
+
+
+@lru_cache(maxsize=1)
+def _native():
+    from analysis.geometric_native_common_material_surface_transport_validation import native_control
+    return native_control
+
+
+def _context():
+    return _native().reference_context()
+
+
+def _surface_cases():
+    return tuple(_native().surface_case(i, nonzero) for i in range(5) for nonzero in (False, True))
+
+
+def _original_cases():
+    return tuple(_native().original_case(i, depth) for i in range(32) for depth in (F(0), F(1, 2)))
+
+
+def _dot(a, b):
+    return sum((x*y for x, y in zip(a, b)), 0)
+
+
+def _cross(a, b):
+    return (a[1]*b[2]-a[2]*b[1], a[2]*b[0]-a[0]*b[2], a[0]*b[1]-a[1]*b[0])
+
+
+def _add(a, b):
+    return tuple(x+y for x, y in zip(a, b))
+
+
+def _scale(a, factor):
+    return tuple(factor*x for x in a)
+
+
+def _column(matrix, index):
+    return tuple(row[index] for row in matrix)
+
+
+def _transpose(matrix):
+    return tuple(tuple(row[i] for row in matrix) for i in range(len(matrix[0])))
+
+
+def _mv(matrix, vector):
+    return tuple(_dot(row, vector) for row in matrix)
+
+
+def _mm(a, b):
+    return tuple(tuple(_dot(row, column) for column in _transpose(b)) for row in a)
+
+
+def _matrix_add(a, b):
+    return tuple(_add(x, y) for x, y in zip(a, b))
+
+
+def _matrix_scale(a, factor):
+    return tuple(_scale(row, factor) for row in a)
+
+
+def _as_intervals(value):
+    if type(value) in (tuple, list):
+        return tuple(_as_intervals(x) for x in value)
+    return value if type(value) is I else I(F(value))
+
+
+def _encloses(bounds, expected):
+    if type(bounds) is I:
+        expected = expected if type(expected) is I else I(expected)
+        assert bounds.lo <= expected.lo <= expected.hi <= bounds.hi, (bounds, expected)
+    else:
+        assert len(bounds) == len(expected)
+        for a, b in zip(bounds, expected):
+            _encloses(a, b)
+
+
+def _overlaps(bounds, expected):
+    if type(bounds) is I:
+        expected = expected if type(expected) is I else I(expected)
+        assert max(bounds.lo, expected.lo) <= min(bounds.hi, expected.hi), (bounds, expected)
+    else:
+        assert len(bounds) == len(expected)
+        for a, b in zip(bounds, expected):
+            _overlaps(a, b)
+
+
+def _cofactor_columns(matrix):
+    a, b, c = (_column(matrix, i) for i in range(3))
+    return _transpose((_cross(b, c), _cross(c, a), _cross(a, b)))
+
+
+def _cofactor_first(matrix, direction):
+    f = tuple(_column(matrix, i) for i in range(3))
+    g = tuple(_column(direction, i) for i in range(3))
+    return _transpose(tuple(_add(_cross(g[a], f[b]), _cross(f[a], g[b]))
+        for a, b in ((1, 2), (2, 0), (0, 1))))
+
+
+def _cofactor_second(a, b):
+    g = tuple(_column(a, i) for i in range(3))
+    h = tuple(_column(b, i) for i in range(3))
+    return _transpose(tuple(_add(_cross(g[i], h[j]), _cross(h[i], g[j]))
+        for i, j in ((1, 2), (2, 0), (0, 1))))
+
+
+def _determinant(matrix):
+    return _dot(_column(matrix, 0), _cross(_column(matrix, 1), _column(matrix, 2)))
+
+
+def _toy():
+    # A fully three-dimensional cofactor normal with an EXACT norm of13.
+    # Cross of the first two columns gives(3,4,12), determinant12.
+    matrix = tuple(tuple(F(x) for x in row) for row in ((4, 0, 0), (0, 3, 0), (-1, -1, 1)))
+    modes = tuple(tuple(tuple(F(((7*a+3*i+5*j)%11)-5, 13+a)
+        for j in range(3)) for i in range(3)) for a in range(7))
+    return matrix, modes, (F(0), F(0), F(1)), F(5, 7), F(11, 13)
+
+
+def _nanson_exact(matrix, modes, normal, area, measure, stretch):
+    cof = _cofactor_columns(matrix)
+    cf = tuple(_cofactor_first(matrix, g) for g in modes)
+    cs = tuple(tuple(_cofactor_second(a, b) for b in modes) for a in modes)
+    vector = _mv(cof, normal)
+    vf = tuple(_mv(c, normal) for c in cf)
+    vs = tuple(tuple(_mv(c, normal) for c in row) for row in cs)
+    assert _dot(vector, vector) == stretch*stretch
+    gradient = tuple(_dot(vector, v)/stretch for v in vf)
+    hessian = tuple(tuple((_dot(vf[a], vf[b])+_dot(vector, vs[a][b]))/stretch
+        -_dot(vector, vf[a])*_dot(vector, vf[b])/stretch**3 for b in range(len(modes)))
+        for a in range(len(modes)))
+    unit = _scale(vector, 1/stretch)
+    uf = tuple(_add(_scale(vf[a], 1/stretch), _scale(vector, -gradient[a]/stretch**2))
+        for a in range(len(modes)))
+    us = tuple(tuple(tuple(vs[a][b][i]/stretch
+        -(vf[a][i]*gradient[b]+vf[b][i]*gradient[a]+vector[i]*hessian[a][b])/stretch**2
+        +2*vector[i]*gradient[a]*gradient[b]/stretch**3 for i in range(3))
+        for b in range(len(modes))) for a in range(len(modes)))
+    density = measure/(area*stretch)
+    df = tuple(-density*g/stretch for g in gradient)
+    ds = tuple(tuple(density*(2*gradient[a]*gradient[b]/stretch**2-hessian[a][b]/stretch)
+        for b in range(len(modes))) for a in range(len(modes)))
+    return dict(cofactor_bounds=cof, cofactor_first_derivative_bounds=cf,
+        cofactor_second_derivative_bounds=cs, determinant_bounds=_determinant(matrix),
+        cofactor_normal_bounds=vector, cofactor_normal_first_derivative_bounds=vf,
+        cofactor_normal_second_derivative_bounds=vs, surface_stretch_bounds=stretch,
+        surface_stretch_gradient_bounds=gradient, surface_stretch_hessian_bounds=hessian,
+        current_unit_normal_bounds=unit, current_normal_first_derivative_bounds=uf,
+        current_normal_second_derivative_bounds=us, current_area_density_bounds=area*stretch,
+        current_area_density_gradient_bounds=tuple(area*g for g in gradient),
+        current_area_density_hessian_bounds=tuple(tuple(area*h for h in row) for row in hessian),
+        current_measure_density_bounds=density,
+        current_measure_density_gradient_bounds=df,
+        current_measure_density_hessian_bounds=ds)
+
+
+def _d(value):
+    return D(value.numerator)/D(value.denominator) if type(value) is F else D(value)
+
+
+def _decimal_vector(value):
+    return tuple(_d(x) for x in value)
+
+
+def _norm_polynomial(vector, first, second):
+    # v(t)=v+t*v'+t²*v''/2.  Its squared norm is an independent quartic.
+    return (_dot(vector, vector), 2*_dot(vector, first),
+        _dot(first, first)+_dot(vector, second), _dot(first, second), _dot(second, second)/4)
+
+
+def _norm_fd_bounds(coefficients, vector, first, second, step):
+    # Triangle inequality gives a strict lower norm throughout[-h,h].
+    low = F(13)-step*sum(map(abs, first))-step**2*sum(map(abs, second))/2
+    assert low > 0
+    derivatives = []
+    for k in range(1, 5):
+        value = F(0)
+        for n in range(k, 5):
+            factor = 1
+            for j in range(k):
+                factor *= n-j
+            value += abs(coefficients[n])*factor*step**(n-k)
+        derivatives.append(value)
+    d1, d2, d3, d4 = derivatives
+    third = d3/(2*low)+3*d1*d2/(4*low**3)+3*d1**3/(8*low**5)
+    fourth = d4/(2*low)+(d1*d3+F(3, 4)*d2*d2)/low**3
+    fourth += F(9, 4)*d1*d1*d2/low**5+F(15, 16)*d1**4/low**7
+    return step**2*third/6, step**2*fourth/12
+
+
+def _production_surface(matrix, modes, normal, area, measure):
+    return _api()._surface_transport_algebra(_as_intervals(matrix), _as_intervals(modes),
+        _as_intervals(normal), I(area), I(measure), 96)
+
+
+def _sin_cos(value):
+    sine, cosine, a, b = value, D(1), value, D(1)
+    for n in range(1, 180):
+        a *= -value*value/D(2*n*(2*n+1))
+        b *= -value*value/D((2*n-1)*2*n)
+        sine += a
+        cosine += b
+    return sine, cosine
+
+
+def _rotate(vector, angle):
+    norm = _dot(angle, angle).sqrt()
+    if not norm:
+        return vector
+    assert norm < 1, 'The explicit 180-term Taylor error bound requires the authenticated small-angle source'
+    sine, cosine = _sin_cos(norm)
+    a, b = _cross(angle, vector), _cross(angle, _cross(angle, vector))
+    return tuple(vector[i]+sine/norm*a[i]+(1-cosine)/(norm*norm)*b[i] for i in range(3))
+
+
+def _atan(value):
+    multiplier = 1
+    while abs(value) > D(1)/8:
+        value = value/(1+(1+value*value).sqrt())
+        multiplier *= 2
+    assert multiplier <= 1024
+    result, term = value, value
+    for n in range(1, 180):
+        term *= -value*value
+        result += term/D(2*n+1)
+    return multiplier*result
+
+
+def _owner_inverse(body, vector):
+    for step in reversed(json.loads(body.original_body.source_owner_history_json)):
+        angle = tuple(-_d(F.from_float(x))*_d(F.from_float(step['dt_myr']))
+            for x in step['omega_rad_per_myr'])
+        vector = _rotate(vector, angle)
+    return vector
+
+
+def _world_field_oracle(body, world):
+    # Reverse the full depth flow and owner pose from Cartesian worldinput;
+    # differentiate the reverse-map matrix, rather than copying port ∇beta.
+    radius = _dot(world, world).sqrt()
+    R = _d(body.radius_m)
+    e = tuple(x/radius for x in world)
+    rate = _decimal_vector(body.angular_rate_per_physical_volume_depth_m)
+    tau = (R**3-radius**3)/(3*R*R)
+    q = _rotate(e, tuple(-a*tau for a in rate))
+    original = _owner_inverse(body, q)
+    axes = tuple(_decimal_vector(a) for a in
+        (body.original_quarter_start, body.original_quarter_end, body.original_quarter_inward))
+    labels = tuple(_dot(a, original) for a in axes)
+    horizontal = (labels[0]**2+labels[1]**2).sqrt()
+    beta = _atan(labels[2]/horizontal)
+    b = _d(body.beta_cut_radians)
+    if beta >= b:
+        return ((D(0),)*3,)*7, (((D(0),)*3,)*3,)*7
+    z = beta/b
+    chi = (1-z)**2*(z+2)/2
+    slope = -3*(1-z)*(1+z)/(2*b)
+    inverse_columns = []
+    for j in range(3):
+        tangent = tuple((D(int(i == j))-e[i]*e[j])/radius
+            +radius**2/R**2*_cross(rate, e)[i]*e[j] for i in range(3))
+        inverse_columns.append(_owner_inverse(body, _rotate(tangent, tuple(-a*tau for a in rate))))
+    grad_beta = tuple(_dot(tuple((axes[2][i]-original[i]*labels[2])/horizontal
+        for i in range(3)), column) for column in inverse_columns)
+    modes = [tuple(chi*x for x in e)]
+    gradients = [tuple(tuple(chi/radius*(D(int(i == j))-e[i]*e[j])
+        +slope*e[i]*grad_beta[j] for j in range(3)) for i in range(3))]
+    for a, bb in ((0, 0), (1, 1), (2, 2), (0, 1), (0, 2), (1, 2)):
+        generator = tuple(tuple(D(int((i == a and j == bb) or (i == bb and j == a)))
+            for j in range(3)) for i in range(3))
+        direction = tuple(x/R for x in _mv(generator, world))
+        modes.append(tuple(chi*x for x in direction))
+        gradients.append(tuple(tuple(chi/R*generator[i][j]+slope*direction[i]*grad_beta[j]
+            for j in range(3)) for i in range(3)))
+    return tuple(modes), tuple(gradients)
+
+
+def _owner_forward(body, vector):
+    for step in json.loads(body.original_body.source_owner_history_json):
+        angle = tuple(_d(F.from_float(x))*_d(F.from_float(step['dt_myr']))
+            for x in step['omega_rad_per_myr'])
+        vector = _rotate(vector, angle)
+    return vector
+
+
+def _original_decimal_oracle(response, body):
+    # The original literal ray and literal depth determine the point. Neither
+    # an interval midpoint nor an existing COMMON live-mask chooses a label.
+    assert response.material_depth_bounds_m.lo == response.material_depth_bounds_m.hi
+    R = _d(body.radius_m)
+    cube = (R+_d(response.roof_radial_displacement_m))**3
+    cube -= 3*R*R*_d(response.material_depth_bounds_m.lo)
+    radius = R
+    for _ in range(30):
+        radius = (2*radius+cube/(radius*radius))/3
+    literal = _decimal_vector(response.original_direction_literal)
+    norm = _dot(literal, literal).sqrt()
+    ray = tuple(x/norm for x in literal)
+    posed = _owner_forward(body, ray)
+    tau = (R**3-cube)/(3*R*R)
+    angle = tuple(_d(a)*tau for a in body.angular_rate_per_physical_volume_depth_m)
+    world = _scale(_rotate(posed, angle), radius)
+    modes, gradients = _world_field_oracle(body, world)
+    coordinates = _decimal_vector(response.coordinates_m)
+    displacement = tuple(sum((a*v[i] for a, v in zip(coordinates, modes)), D(0)) for i in range(3))
+    gradient = tuple(tuple(D(int(i == j))+sum((a*g[i][j] for a, g in zip(coordinates, gradients)), D(0))
+        for j in range(3)) for i in range(3))
+    rotation = _transpose(tuple(_rotate(tuple(D(int(i == j)) for i in range(3)), angle) for j in range(3)))
+    rate = _decimal_vector(body.angular_rate_per_physical_volume_depth_m)
+    shear = _cross(rate, posed)
+    reference_gradient = _mm(rotation, tuple(tuple(D(int(i == j))-cube/(R*R)*shear[i]*posed[j]
+        for j in range(3)) for i in range(3)))
+    owner = _transpose(tuple(_owner_forward(body, tuple(D(int(i == j)) for i in range(3))) for j in range(3)))
+    return dict(world=world, modes=modes, gradients=gradients, displacement=displacement,
+        current=_add(world, displacement), gradient=gradient, reference_gradient=reference_gradient,
+        total=_mm(gradient, reference_gradient), original_total=_mm(_mm(gradient, reference_gradient), owner))
+
+
+def _decimal_enclosure(bounds, expected, error):
+    if type(bounds) is I:
+        _overlaps(bounds, I(F(expected)-error, F(expected)+error))
+    else:
+        assert len(bounds) == len(expected)
+        for a, b in zip(bounds, expected):
+            _decimal_enclosure(a, b, error)
+
+
+def _decimal_error(body, response):
+    # A forward-rounding allowance: 150 decimal digits, fewer than 200000
+    # elementary operations, with forty spare digits and explicit physical
+    # scaling and beta-chart denominators. The Taylor tails are below this:
+    # |owner/depth angle|<1, atan argument after halving<=1/8, 180 terms.
+    scale = 1+abs(body.radius_m)+sum(map(abs, response.coordinates_m))
+    scale += 1/abs(body.beta_cut_radians)
+    ray = response.original_direction_literal
+    s = _dot(body.original_quarter_start, ray)
+    t = _dot(body.original_quarter_end, ray)
+    horizontal_squared = (s*s+t*t)/_dot(ray, ray)
+    assert horizontal_squared > 0
+    scale += 1/horizontal_squared
+    return F(200000)*scale**4/F(10**110)
+
+
+def _json_seal(raw, kind):
+    raw['binding_sha256'] = _native().digest({f.name: raw[f.name] for f in fields(kind)
+        if f.name != 'binding_sha256'})
+
+
+def _shift_json_interval(value):
+    for endpoint in ('lo', 'hi'):
+        number = F(*value[endpoint])+1
+        value[endpoint] = [number.numerator, number.denominator]
+
+
+def _packet():
+    from tectonics.geometric_native_common_contact_ports import native_common_contact_port_response_to_dict
+    from tectonics.geometric_native_common_reference import native_common_reference_to_dict
+    from tectonics.geometric_native_common_source_allocation import native_common_source_allocation_to_dict
+    from tectonics.geometric_native_common_material_transfer import native_common_material_transfer_to_dict
+    from tectonics.geometric_native_common_cold import native_common_cold_body_to_dict
+    native, api = _native(), _api()
+    _, reference, _, allocation, _ = _context()
+    value = dict(format=native.PACKET_FORMAT, prior_875_packet_raw_sha256=native.PRIOR_875_PACKET_RAW,
+        prior_875_packet_selfseal=native.PRIOR_875_PACKET_SEAL, **native.summary(),
+        common_reference=native_common_reference_to_dict(reference),
+        allocation=native_common_source_allocation_to_dict(allocation),
+        material_transfer=native_common_material_transfer_to_dict(native.material_system()),
+        original_cold_body_contexts=[native_common_cold_body_to_dict(native.cold_body(cid))
+            for cid in sorted(native.bound_coordinates())],
+        surface_queries=[dict(arguments=native.payload(native.surface_arguments(i, nz)),
+            port_response=native_common_contact_port_response_to_dict(port),
+            response=api.native_common_surface_transport_to_dict(response))
+            for i in range(5) for nz in (False, True)
+            for port, response in (native.surface_case(i, nz),)],
+        original_material_queries=[dict(arguments=native.payload(native.original_arguments(i, depth)),
+            response=api.native_common_original_material_transport_to_dict(native.original_case(i, depth)))
+            for i in range(32) for depth in (F(0), F(1, 2))])
+    value['packet_sha256'] = native.digest(value)
+    return value
+
+
+def test_genuine_cut_and_original_material_catalogues_retain_saved_nonzero_source_scope():
+    native = _native()
+    coordinate_map = native.bound_coordinates()
+    assert len(coordinate_map) == 8
+    assert sum(len(values) for values in coordinate_map.values()) == 56
+    assert all(type(a) is F and a for values in coordinate_map.values() for a in values)
+    ports = native.cold_ports()
+    assert len(ports) == len({p.cut.cut_id for p in ports}) == 5
+    assert all(p.cut.receiver_material_kind == 'original_live' and p.cut.receiving_trace_id for p in ports)
+    attachments = native.material_system().attachments
+    assert len(attachments) == len({(a.point_id, a.side) for a in attachments}) == 32
+    assert sum(a.original_label_membership == 'ARCHIVED_ORIGINAL_MATERIAL' for a in attachments) == 8
+    summary = native.summary()
+    assert summary['accepted_original_native_intervals'] == 1
+    assert summary['accepted_new_native_intervals'] == 0
+    assert summary['original_point_1_remaining_work_blocks'] == 1
+    assert len(summary['remaining_physical_conditions']) == 3
+    for flag in ('physical_source_material_handover_certified', 'whole_face_measure_or_memory_integral_certified',
+                 'current_donor_receiver_sheets_assumed_glued', 'old_source_mechanical_potential_modified',
+                 'new_mixed_force_equilibrium_certified', 'original_point_1_completed'):
+        assert summary[flag] is False
+
+
+def test_all_ten_surface_queries_use_the_complete_finite_body_gradient_and_distinct_sides():
+    nontrivial = set()
+    for port, response in _surface_cases():
+        assert response.port_response_binding_sha256 == port.binding_sha256
+        assert response.parameter_bounds == port.geometry.parameter_bounds
+        assert response.physical_radius_cubed_bounds_m3 == port.geometry.common_physical_radius_cubed_bounds_m3
+        for side, field in ((response.donor, port.donor_fields), (response.receiver, port.receiver_fields)):
+            assert side.coordinates_m == field.coordinates_m
+            assert side.coordinate_order == field.coordinate_order
+            assert len(side.coordinates_m) == len(side.mode_spatial_gradient_columns_per_m) == 7
+            assert side.incremental_gradient_bounds == field.incremental_gradient_bounds
+            assert side.current_position_bounds_m == field.displaced_point_bounds_m
+            assert side.reference_position_bounds_m == port.geometry.world_position_bounds_m
+            independent_u = tuple(sum((a*v[i] for a, v in zip(side.coordinates_m, side.mode_displacement_columns)), I(0))
+                for i in range(3))
+            independent_F = tuple(tuple(I(int(i == j))+sum((a*g[i][j] for a, g in
+                zip(side.coordinates_m, side.mode_spatial_gradient_columns_per_m)), I(0)) for j in range(3))
+                for i in range(3))
+            _overlaps(side.displacement_increment_bounds_m, independent_u)
+            _overlaps(side.current_position_bounds_m, _add(side.reference_position_bounds_m, independent_u))
+            _overlaps(side.incremental_gradient_bounds, independent_F)
+            assert side.determinant_bounds.lo > 0
+            if any(side.coordinates_m) and any(x.lo > 0 or x.hi < 0 for x in side.displacement_increment_bounds_m):
+                nontrivial.add(side.component_id)
+            if not any(side.coordinates_m):
+                assert side.incremental_gradient_bounds == _as_intervals(((1, 0, 0), (0, 1, 0), (0, 0, 1)))
+                assert side.displacement_increment_bounds_m == (I(0),)*3
+        assert response.donor.reference_normal_bounds == tuple(-x for x in response.receiver.reference_normal_bounds)
+        assert response.current_normals_used_as_constitutive_directors is False
+        assert response.new_energy_or_force_law_added is False
+    assert nontrivial
+
+
+def test_nanson_normal_and_current_area_match_independently_deformed_material_tangents():
+    for port, response in _surface_cases():
+        geometry = port.geometry
+        for side, sign in ((response.donor, -geometry.cut.receiving_normal_orientation),
+                           (response.receiver, geometry.cut.receiving_normal_orientation)):
+            tangent = _mv(side.incremental_gradient_bounds, geometry.parameter_tangent_bounds_m)
+            depth = _mv(side.incremental_gradient_bounds, geometry.material_depth_tangent_bounds)
+            oriented_area = _scale(_cross(tangent, depth), sign)
+            _overlaps(oriented_area, _scale(side.cofactor_normal_bounds, side.reference_area_density_bounds))
+            _overlaps(_dot(oriented_area, oriented_area), side.current_area_density_bounds*side.current_area_density_bounds)
+            _overlaps(_scale(side.current_unit_normal_bounds, side.current_area_density_bounds), oriented_area)
+            if not any(side.coordinates_m):
+                assert side.surface_stretch_bounds == I(1)
+                assert side.current_area_density_bounds == side.reference_area_density_bounds
+                assert side.current_unit_normal_bounds == side.reference_normal_bounds
+
+
+def test_dense_three_dimensional_cofactor_and_determinant_polynomial_twojets_are_exact():
+    matrix, modes, _, _, _ = _toy()
+    response = _api()._cofactor_twojet(_as_intervals(matrix), _as_intervals(modes))
+    _encloses(response['cofactor_bounds'], _cofactor_columns(matrix))
+    _encloses(response['determinant_bounds'], F(12))
+    for a, ga in enumerate(modes):
+        first = _cofactor_first(matrix, ga)
+        _encloses(response['cofactor_first_derivative_bounds'][a], first)
+        cols = tuple(_column(matrix, j) for j in range(3))
+        dcols = tuple(_column(ga, j) for j in range(3))
+        dg = sum(_dot(dcols[0] if j == 0 else cols[0],
+            _cross(dcols[1] if j == 1 else cols[1], dcols[2] if j == 2 else cols[2])) for j in range(3))
+        _encloses(response['determinant_gradient_bounds'][a], dg)
+        for b, gb in enumerate(modes):
+            second = _cofactor_second(ga, gb)
+            _encloses(response['cofactor_second_derivative_bounds'][a][b], second)
+            dh = F(0)
+            for j in range(3):
+                for k in range(3):
+                    if j == k:
+                        continue
+                    replaced = tuple(_column(ga, i) if i == j else _column(gb, i) if i == k else cols[i]
+                        for i in range(3))
+                    dh += _dot(replaced[0], _cross(replaced[1], replaced[2]))
+            _encloses(response['determinant_hessian_bounds'][a][b], dh)
+        step = F(3, 7)
+        trial = _matrix_add(matrix, _matrix_scale(ga, step))
+        prediction = _matrix_add(_matrix_add(_cofactor_columns(matrix), _matrix_scale(first, step)),
+            _matrix_scale(_cofactor_second(ga, ga), step*step/2))
+        assert _cofactor_columns(trial) == prediction
+        hessian = response['determinant_hessian_bounds'][a][a]
+        _encloses(I(_determinant(trial)), I(12)+step*I(dg)+step*step*hessian/2+step**3*I(_determinant(ga)))
+
+
+def test_nanson_sqrt_normal_area_and_density_twojets_match_fraction_oracles_and_decimal_differences():
+    matrix, modes, normal, area, measure = _toy()
+    actual = _production_surface(matrix, modes, normal, area, measure)
+    expected = _nanson_exact(matrix, modes, normal, area, measure, F(13))
+    for name, value in expected.items():
+        _encloses(actual[name], value)
+    directions = ((F(1),)+(F(0),)*6, tuple(F((-1)**i, i+1) for i in range(7)),
+                  (F(0), F(1), F(-2), F(3), F(1), F(-1), F(2)))
+    vector = expected['cofactor_normal_bounds']
+    for direction in directions:
+        mode = tuple(tuple(sum(direction[a]*modes[a][i][j] for a in range(7)) for j in range(3)) for i in range(3))
+        first = _mv(_cofactor_first(matrix, mode), normal)
+        second = _mv(_cofactor_second(mode, mode), normal)
+        polynomial = _norm_polynomial(vector, first, second)
+        step = F(1, 10**9)
+        first_bias, second_bias = _norm_fd_bounds(polynomial, vector, first, second, step)
+        with localcontext() as context:
+            context.prec = 110
+            h = _d(step)
+            norms = []
+            for t in (-h, D(0), h):
+                square = _d(polynomial[-1])
+                for coefficient in reversed(polynomial[:-1]):
+                    square = square*t+_d(coefficient)
+                norms.append(square.sqrt())
+            fd_first = F((norms[2]-norms[0])/(2*h))
+            fd_second = F((norms[2]-2*norms[1]+norms[0])/(h*h))
+        # <200 rounded Decimal operations on |squared norm|<1000. Central
+        # differences amplify absolute error by1/h or4/h²; no output-relative
+        # epsilon is used for nearly cancelling derivative components.
+        arithmetic = F(200)*F(1000)/F(10**105)
+        fd_first_bounds = I(fd_first-first_bias-arithmetic/step, fd_first+first_bias+arithmetic/step)
+        fd_second_bounds = I(fd_second-second_bias-4*arithmetic/step**2,
+            fd_second+second_bias+4*arithmetic/step**2)
+        exact_first = _dot(expected['surface_stretch_gradient_bounds'], direction)
+        exact_second = _dot(direction, _mv(expected['surface_stretch_hessian_bounds'], direction))
+        _encloses(fd_first_bounds, exact_first)
+        _encloses(fd_second_bounds, exact_second)
+        _encloses(_dot(actual['surface_stretch_gradient_bounds'], direction), exact_first)
+        _encloses(_dot(direction, _mv(actual['surface_stretch_hessian_bounds'], direction)), exact_second)
+
+
+def test_current_radon_nikodym_density_conserves_the_allocated_material_measure_and_its_twojets():
+    for _, response in _surface_cases():
+        side = response.receiver
+        rho, J = response.receiver_current_measure_density_bounds, side.current_area_density_bounds
+        mu = response.reference_measure_density_bounds
+        _overlaps(rho*J, mu)
+        _encloses(response.receiver_measure_conservation_residual_bounds, F(0))
+        _encloses(_dot(side.current_unit_normal_bounds, side.current_unit_normal_bounds), F(1))
+        for a in range(7):
+            drho, dJ = response.receiver_current_measure_density_gradient_bounds[a], side.current_area_density_gradient_bounds[a]
+            _encloses(drho*J+rho*dJ, F(0))
+            for b in range(7):
+                d2rho = response.receiver_current_measure_density_hessian_bounds[a][b]
+                d2J = side.current_area_density_hessian_bounds[a][b]
+                residual = d2rho*J+drho*side.current_area_density_gradient_bounds[b]
+                residual += response.receiver_current_measure_density_gradient_bounds[b]*dJ+rho*d2J
+                _encloses(residual, F(0))
+        if not any(side.coordinates_m):
+            assert rho == mu/J
+        assert response.material_measure_pullback_identity_exact
+        assert response.owner_scalar_measure_first_and_second_derivatives_exact_zero
+
+
+def test_literal_current_memory_pieces_and_all_clocks_advect_at_the_same_material_label():
+    factorial361 = 1
+    for n in range(1, 362):
+        factorial361 *= n
+    sine_tail = F(4**361, factorial361)
+    cosine_tail = F(4**360, factorial361//361)
+    before = json.loads(dict(_context()[4].complete_source_dto_json)['before'])
+    path = before['original_physical_history']['contact_time_path']
+    memory = path['step']['memory']
+    for _, response in _surface_cases():
+        current = next(t for t in memory['traces'] if t['trace_id'] == response.receiving_trace_id)
+        assert json.loads(response.source_current_memory_trace_json) == current
+        assert response.source_current_memory_sha256 == _native().digest(memory)
+        assert response.source_current_atom_states_sha256 == _native().digest(before['snapshot']['states'])
+        angle = response.receiving_computational_angle_bounds_radians
+        expected_indices = {i for i, piece in enumerate(current['pieces'])
+            if max(angle.lo, F.from_float(piece['low_radians'])) <= min(angle.hi, F.from_float(piece['high_radians']))}
+        assert {piece.piece_index for piece in response.memory_piece_intersections} == expected_indices
+        for piece in response.memory_piece_intersections:
+            original = current['pieces'][piece.piece_index]
+            assert json.loads(piece.original_piece_json) == original
+            for name, bounds in (('plastic_slip', piece.plastic_slip_bounds_m),
+                                 ('cumulative_slip', piece.cumulative_slip_bounds_m)):
+                coefficients = tuple(F.from_float(a) for a in original[name]['coefficients'])
+                interval = piece.computational_angle_bounds
+                for theta in (interval.lo, (interval.lo+interval.hi)/2, interval.hi):
+                    assert 0 <= theta <= 2
+                    if not any(coefficients[1:]):
+                        _encloses(bounds, coefficients[0])
+                        continue
+                    with localcontext() as context:
+                        context.prec = 150
+                        angle = _d(theta)
+                        sine, cosine = _sin_cos(angle)
+                        sine2, cosine2 = _sin_cos(2*angle)
+                        values = tuple(_d(a) for a in coefficients)
+                        value = values[0]+values[1]*cosine+values[2]*sine
+                        value += values[3]*cosine2+values[4]*sine2
+                    # CURRENT five-coefficient fields are harmonic. Actual
+                    # source labels lie in[0,pi/2]; theta<=2 proves both Taylor
+                    # arguments<=4. The next alternating terms bound the180
+                    # retained sine/cosine terms at degrees361 and360.
+                    tail = (abs(coefficients[1])+abs(coefficients[3]))*cosine_tail
+                    tail += (abs(coefficients[2])+abs(coefficients[4]))*sine_tail
+                    # At150 digits, <10000 operations of magnitude<=1000*M
+                    # contribute at most10000*1000*M*10^-149, M=1+sum|a_i|.
+                    # The recurrence partials are bounded bycosh(4)+sinh(4)<55;
+                    # this also covers intermediate products and converting
+                    # theta, using|sin'|,|cos'|<=1. This absolute forward-error
+                    # envelope remains valid when the final p/c nearly cancel.
+                    rounding = F(10000)*1000*(1+sum(map(abs, coefficients)))/10**149
+                    error = tail+rounding
+                    _overlaps(bounds, I(F(value)-error, F(value)+error))
+        assert response.plastic_slip_bounds_m == I(min(p.plastic_slip_bounds_m.lo for p in response.memory_piece_intersections),
+            max(p.plastic_slip_bounds_m.hi for p in response.memory_piece_intersections))
+        assert response.cumulative_slip_bounds_m == I(min(p.cumulative_slip_bounds_m.lo for p in response.memory_piece_intersections),
+            max(p.cumulative_slip_bounds_m.hi for p in response.memory_piece_intersections))
+        assert response.source_memory_elapsed_time_s == F.from_float(memory['elapsed_time_s'])
+        assert response.source_memory_stage_count == memory['stage_count']
+        assert response.source_native_elapsed_time_s == F.from_float(before['snapshot']['elapsed_time_s'])
+        states = [state for pid, state in before['snapshot']['states'] if pid.startswith(response.receiving_trace_id+':')]
+        assert len(states) == 4
+        assert {F.from_float(s['elapsed_time_s']) for s in states} == {response.source_contact_elapsed_time_s}
+        assert {s['step_count'] for s in states} == {response.source_contact_step_count}
+        assert response.material_memory_scalars_unchanged and not response.source_state_or_work_advanced
+
+
+def test_fresh_rigid_owner_rotation_covariance_preserves_scalar_measure_and_rotates_all_surface_vectors():
+    matrix, modes, normal, area, measure = _toy()
+    rotation = ((F(0), F(-1), F(0)), (F(1), F(0), F(0)), (F(0), F(0), F(1)))
+    rotated_matrix = _mm(_mm(rotation, matrix), _transpose(rotation))
+    rotated_modes = tuple(_mm(_mm(rotation, g), _transpose(rotation)) for g in modes)
+    initial = _production_surface(matrix, modes, normal, area, measure)
+    rotated = _production_surface(rotated_matrix, rotated_modes, _mv(rotation, normal), area, measure)
+    for name in ('determinant_bounds', 'determinant_gradient_bounds', 'determinant_hessian_bounds',
+                 'surface_stretch_bounds', 'surface_stretch_gradient_bounds', 'surface_stretch_hessian_bounds',
+                 'current_area_density_bounds', 'current_area_density_gradient_bounds', 'current_area_density_hessian_bounds',
+                 'current_measure_density_bounds', 'current_measure_density_gradient_bounds', 'current_measure_density_hessian_bounds'):
+        _overlaps(rotated[name], initial[name])
+    for name in ('cofactor_normal_bounds', 'current_unit_normal_bounds'):
+        _overlaps(rotated[name], _mv(rotation, initial[name]))
+    for name in ('cofactor_normal_first_derivative_bounds', 'current_normal_first_derivative_bounds'):
+        for a in range(7):
+            _overlaps(rotated[name][a], _mv(rotation, initial[name][a]))
+    for name in ('cofactor_normal_second_derivative_bounds', 'current_normal_second_derivative_bounds'):
+        for a in range(7):
+            for b in range(7):
+                _overlaps(rotated[name][a][b], _mv(rotation, initial[name][a][b]))
+    _overlaps(rotated['cofactor_bounds'], _mm(_mm(rotation, initial['cofactor_bounds']), _transpose(rotation)))
+
+
+def test_original_material_points_retain_all_thirty_two_labels_and_eight_archived_cohorts_at_both_depths():
+    system = _native().material_system()
+    assert len(_original_cases()) == 64
+    archived = set()
+    for i, attachment in enumerate(system.attachments):
+        for depth in (F(0), F(1, 2)):
+            response = _native().original_case(i, depth)
+            for name in ('point_id', 'trace_id', 'side', 'owner', 'original_parent_id', 'original_material_id',
+                         'original_label_membership', 'archive_cohort_id', 'geometry_field_component_id',
+                         'original_direction_literal', 'complete_original_parent_json', 'complete_parent_allocation_json',
+                         'complete_archive_cohort_json', 'areal_material_thickness_m', 'roof_radial_displacement_m',
+                         'material_owner_pose_bounds', 'normalized_material_ray_bounds', 'current_world_material_ray_bounds'):
+                assert getattr(response, name) == getattr(attachment, name)
+            assert response.material_depth_bounds_m == I(attachment.areal_material_thickness_m*depth)
+            assert response.coordinates_m == _native().bound_coordinates()[attachment.geometry_field_component_id]
+            assert response.original_material_membership_authenticated
+            assert response.same_parent_original_quarter_field_extension_declared
+            assert not response.current_live_mask_membership_authenticated
+            assert not response.current_contact_cut_membership_claimed
+            assert not response.deformed_source_rod_endpoint_equivalence_certified
+            assert not response.local_archive_force_or_work_handover_certified
+            assert not response.source_state_or_work_advanced
+            assert response.source_contact_elapsed_time_s == system.source_contact_elapsed_time_s
+            assert response.source_memory_elapsed_time_s == system.source_memory_elapsed_time_s
+            assert response.source_geometry_elapsed_time_s == system.source_geometry_elapsed_time_s
+            if response.archived:
+                archived.add((response.point_id, response.side))
+                assert response.side == 'sub' and response.archive_cohort_id
+                assert response.complete_archive_cohort_json is not None
+    assert len(archived) == 8
+
+
+def test_original_full_depth_finite_field_matches_independent_decimal_inverse_flow_and_owner_pose():
+    nonzero_live, nonzero_archived = set(), set()
+    with localcontext() as context:
+        context.prec = 150
+        for response in _original_cases():
+            body = _native().cold_body(response.geometry_field_component_id)
+            oracle = _original_decimal_oracle(response, body)
+            allowance = _decimal_error(body, response)
+            for name, expected in (('reference_position_bounds_m', oracle['world']),
+                    ('mode_displacement_columns', oracle['modes']),
+                    ('mode_spatial_gradient_columns_per_m', oracle['gradients']),
+                    ('displacement_increment_bounds_m', oracle['displacement']),
+                    ('current_position_bounds_m', oracle['current']),
+                    ('incremental_gradient_bounds', oracle['gradient'])):
+                _decimal_enclosure(getattr(response, name), expected, allowance)
+            if any(abs(F(x)) > allowance for x in oracle['displacement']):
+                (nonzero_archived if response.archived else nonzero_live).add((response.point_id, response.side))
+            else:
+                assert not response.field_active_inside_material_clamp or response.source_shape_bounds.lo <= allowance
+            assert response.determinant_bounds.lo > 0
+    # The archive extension supplies actual three-dimensional motion rather
+    # than merely extending the dimension with eight zero columns.
+    assert nonzero_live and nonzero_archived
+
+
+def test_original_world_material_chain_and_green_strain_keep_owner_and_depth_jacobians_separate():
+    with localcontext() as context:
+        context.prec = 150
+        for response in _original_cases():
+            body = _native().cold_body(response.geometry_field_component_id)
+            oracle = _original_decimal_oracle(response, body)
+            allowance = _decimal_error(body, response)
+            _decimal_enclosure(response.reference_gradient_bounds, oracle['reference_gradient'], allowance)
+            _decimal_enclosure(response.total_material_gradient_bounds, oracle['total'], allowance)
+            _decimal_enclosure(response.total_original_cartesian_gradient_bounds, oracle['original_total'], allowance)
+            green = _mm(_transpose(oracle['gradient']), oracle['gradient'])
+            green = tuple(tuple((green[i][j]-D(int(i == j)))/2 for j in range(3)) for i in range(3))
+            _decimal_enclosure(response.incremental_green_strain_bounds, green, allowance)
+            _decimal_enclosure(response.determinant_bounds, _determinant(oracle['gradient']), allowance)
+            _decimal_enclosure(response.cofactor_bounds, _cofactor_columns(oracle['gradient']), allowance)
+            _overlaps(_determinant(response.total_material_gradient_bounds), response.determinant_bounds)
+            _overlaps(_determinant(response.total_original_cartesian_gradient_bounds), response.determinant_bounds)
+            assert response.reference_gradient_input_frame == 'OWNER_CURRENT_CARTESIAN_INPUT_TO_COMMON_PHI'
+            assert response.total_original_gradient_input_frame == 'ORIGINAL_MATERIAL_CARTESIAN_BEFORE_OWNER_POSE'
+            if not response.field_active_inside_material_clamp:
+                assert response.displacement_increment_bounds_m == (I(0),)*3
+                assert response.incremental_green_strain_bounds == ((I(0),)*3,)*3
+
+
+def test_unresolved_hot_singular_negative_orientation_and_invalid_original_queries_are_rejected():
+    api = _api()
+    matrix, modes, normal, area, measure = _toy()
+    singular = ((F(0), F(0), F(0)), (F(0), F(1), F(0)), (F(0), F(0), F(1)))
+    reversed_orientation = ((F(-1), F(0), F(0)), (F(0), F(1), F(0)), (F(0), F(0), F(1)))
+    for invalid in (singular, reversed_orientation):
+        with pytest.raises(ValueError):
+            _production_surface(invalid, modes, normal, area, measure)
+    for n, j, mu in (((F(0),)*3, area, measure), ((F(0), F(0), F(2)), area, measure),
+                     ((I(-1, 1),)*3, area, measure), (normal, F(0), measure), (normal, area, F(-1))):
+        with pytest.raises(ValueError):
+            _production_surface(matrix, modes, n, j, mu)
+    _, reference, _, allocation, _ = _context()
+    hot = _native().hot_case()
+    assert hot.port.cut.receiver_material_kind == 'hot_birth'
+    with pytest.raises(ValueError):
+        api.evaluate_native_common_surface_transport(reference, hot, allocation)
+    arguments = _native().original_arguments(0)
+    system = _native().material_system()
+    for changes in ({'material_depth_bounds_m': I(-1)},
+                    {'material_depth_bounds_m': I(system.attachments[0].areal_material_thickness_m+1)},
+                    {'coordinates_m': list(arguments['coordinates_m'])}, {'coordinates_m': (F(0),)*6},
+                    {'point_id': 'unauthenticated-material-label'}, {'side': 'HOT'}, {'precision': True}):
+        with pytest.raises(ValueError):
+            api.evaluate_native_common_original_material_transport(system, **dict(arguments, **changes))
+
+
+def test_semantic_serde_full_typed_dependencies_and_initial_query_aliases_reject_tampering():
+    api, native = _api(), _native()
+    _, reference, _, allocation, _ = _context()
+    port, response = native.surface_case(0, True)
+    raw = api.native_common_surface_transport_to_dict(response)
+    assert api.native_common_surface_transport_to_dict(api.native_common_surface_transport_from_dict(raw,
+        reference=reference, port_response=port, allocation=allocation)) == raw
+    original = native.original_case(0)
+    original_raw = api.native_common_original_material_transport_to_dict(original)
+    system = native.material_system()
+    assert api.native_common_original_material_transport_to_dict(api.native_common_original_material_transport_from_dict(
+        original_raw, material_system=system)) == original_raw
+    for change in (lambda value: _shift_json_interval(value['plastic_slip_bounds_m']),
+                   lambda value: value['receiver'].__setitem__('current_area_density_bounds', {'lo': [1, 1], 'hi': [1, 1]}),
+                   lambda value: value.__setitem__('source_contact_elapsed_time_s', [0, 1]),
+                   lambda value: value.__setitem__('whole_face_measure_integral_certified', True)):
+        forged = deepcopy(raw)
+        change(forged)
+        _json_seal(forged, type(response))
+        with pytest.raises(ValueError):
+            api.native_common_surface_transport_from_dict(forged, reference=reference, port_response=port, allocation=allocation)
+    for change in (lambda value: value.__setitem__('original_material_id', 'another-original-material'),
+                   lambda value: value.__setitem__('complete_original_parent_json', '{}'),
+                   lambda value: value.__setitem__('total_original_gradient_input_frame', 'OWNER_CURRENT_CARTESIAN_INPUT_TO_COMMON_PHI'),
+                   lambda value: value.__setitem__('local_archive_force_or_work_handover_certified', True)):
+        forged = deepcopy(original_raw)
+        change(forged)
+        _json_seal(forged, type(original))
+        with pytest.raises(ValueError):
+            api.native_common_original_material_transport_from_dict(forged, material_system=system)
+    counterfeit_type = make_dataclass('CounterfeitSurfaceQuery', [(f.name, f.type) for f in fields(port)], frozen=True, slots=True)
+    counterfeit = counterfeit_type(**{f.name: getattr(port, f.name) for f in fields(port)})
+    assert native.payload(counterfeit) == native.payload(port)
+    with pytest.raises(ValueError):
+        api.validate_native_common_surface_transport_response(response, port_response=counterfeit)
+    aliased_side = replace(response.receiver, coordinates_m=list(response.receiver.coordinates_m))
+    alias = replace(response, receiver=aliased_side)
+    assert native.payload(alias) == native.payload(response)
+    with pytest.raises(ValueError):
+        api.validate_native_common_surface_transport_response(alias)
+    # Exercise FIRST-query type checks. Canonical JSON erases these type
+    # differences, so historical canonical-only validators alone cannot reject
+    # them. Remove only the corresponding NEW cache entry and restore every
+    # frozen input and cache value, even when a rejection assertion fails.
+    surface_key = reference.reference_snapshot_sha256, port.binding_sha256, allocation.binding_sha256, 96
+    saved_surface = api._SURFACE_CACHE.pop(surface_key)
+    field = port.receiver_fields
+    saved_coordinates = field.coordinates_m
+    try:
+        first = saved_coordinates[0]
+        aliases = (list(saved_coordinates), ([first.numerator, first.denominator],)+saved_coordinates[1:])
+        for changed in aliases:
+            object.__setattr__(field, 'coordinates_m', changed)
+            assert native.payload(changed) == native.payload(saved_coordinates)
+            with pytest.raises(ValueError):
+                api.evaluate_native_common_surface_transport(reference, port, allocation)
+            object.__setattr__(field, 'coordinates_m', saved_coordinates)
+    finally:
+        object.__setattr__(field, 'coordinates_m', saved_coordinates)
+        api._SURFACE_CACHE[surface_key] = saved_surface
+    attachment = next(a for a in system.attachments if (a.point_id, a.side) == (original.point_id, original.side))
+    original_key = system.binding_sha256, original.point_id, original.side, original.material_depth_bounds_m, original.coordinates_m, 96
+    saved_original = api._ORIGINAL_CACHE.pop(original_key)
+    try:
+        for target, name, changed in ((attachment, 'original_direction_literal', list(attachment.original_direction_literal)),
+                (attachment, 'material_owner_pose_bounds', list(attachment.material_owner_pose_bounds)),
+                (system, 'source_contact_elapsed_time_s', [system.source_contact_elapsed_time_s.numerator,
+                                                           system.source_contact_elapsed_time_s.denominator])):
+            previous = getattr(target, name)
+            try:
+                object.__setattr__(target, name, changed)
+                assert native.payload(changed) == native.payload(previous)
+                with pytest.raises(ValueError):
+                    api.evaluate_native_common_original_material_transport(system, **native.original_arguments(0))
+            finally:
+                object.__setattr__(target, name, previous)
+    finally:
+        api._ORIGINAL_CACHE[original_key] = saved_original
+    # Cached replay also needs to notice a genuine mutable physical dependency,
+    # even if its stored binding hash itself has not been updated.
+    state = api._DEPENDENCIES[type(response), response.binding_sha256][-1]
+    old_plastic = state.plastic_slip_bounds_m
+    try:
+        object.__setattr__(state, 'plastic_slip_bounds_m', old_plastic+1)
+        with pytest.raises(ValueError):
+            api.validate_native_common_surface_transport_response(response)
+        with pytest.raises(ValueError):
+            api.evaluate_native_common_surface_transport(reference, port, allocation)
+    finally:
+        object.__setattr__(state, 'plastic_slip_bounds_m', old_plastic)
+    assert api.validate_native_common_surface_transport_response(response) is response
+    assert api.validate_native_common_original_material_transport_response(original) is original
+
+
+def test_full_packet_replay_rejects_valid_surface_and_original_depth_or_side_transplants():
+    native = _native()
+    packet = _packet()
+    assert len(packet['surface_queries']) == 10
+    assert len(packet['original_material_queries']) == 64
+    assert len(packet['original_cold_body_contexts']) == 8
+    assert native.replay_packet(packet) == native.summary()
+    for rows, a, b, names in (('surface_queries', 0, 1, ('response',)),
+                            ('surface_queries', 0, 2, ('port_response', 'response')),
+                            ('original_material_queries', 0, 1, ('response',)),
+                            ('original_material_queries', 0, 2, ('response',))):
+        forged = deepcopy(packet)
+        for name in names:
+            forged[rows][a][name], forged[rows][b][name] = forged[rows][b][name], forged[rows][a][name]
+        forged['packet_sha256'] = native.digest({k: v for k, v in forged.items() if k != 'packet_sha256'})
+        with pytest.raises(ValueError):
+            native.replay_packet(forged)
+    forged = deepcopy(packet)
+    contexts = forged['original_cold_body_contexts']
+    contexts[0], contexts[1] = contexts[1], contexts[0]
+    forged['packet_sha256'] = native.digest({k: v for k, v in forged.items() if k != 'packet_sha256'})
+    with pytest.raises(ValueError):
+        native.replay_packet(forged)

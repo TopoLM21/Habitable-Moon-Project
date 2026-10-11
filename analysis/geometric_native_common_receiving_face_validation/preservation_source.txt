@@ -1,0 +1,51 @@
+"""Preserve closed909 plus all inherited907/903 ancestry; stdlib only."""
+from pathlib import Path
+import hashlib,json,types,sys,time
+ROOT=Path('/workspace/Habitable-Moon-Project')
+P=ROOT/'analysis/geometric_native_common_hot_receiving_validation'
+F=ROOT/'analysis/geometric_native_common_hot_receiving_final_readback'
+STAGE=Path('/workspace/receiving_face_baseline_20261008')
+ADDED={'tectonics/geometric_native_common_cold_cut_fields.py','tectonics/geometric_native_common_receiving_face.py','tests/test_geometric_native_common_receiving_face.py','analysis/geometric_native_common_receiving_face_validation/native_control.py'}
+def encoded(x):return json.dumps(x,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+def digest(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def sealed(p,k):
+ x=json.loads(Path(p).read_bytes());assert hashlib.sha256(encoded({a:b for a,b in x.items() if a!=k})).hexdigest()==x[k];return x
+def meaningful(p):return {str(x.relative_to(p)) for x in p.rglob('*') if x.is_file() and '__pycache__' not in x.parts and x.suffix!='.pyc'}
+def modules():return {k:v for k,v in sys.modules.items() if k in ('tectonics','analysis','tests','scripts') or k.startswith(('tectonics.','analysis.','tests.','scripts.'))}
+def inputs():
+ helper=P/'preservation_source.txt';assert digest(helper)=='33cb3857e322bb805b254f9557d80a94c2ce5409825f671b2420ac27a78b5e79'
+ m=types.ModuleType('_receiving_face_prior_definitions');m.__file__=str(helper);exec(compile(helper.read_bytes(),str(helper),'exec'),m.__dict__)
+ prior,pins=m.inputs()
+ manifest=sealed(P/'artifact_manifest.json','manifest_sha256');assert digest(P/'artifact_manifest.json')=='37044e0c29450db2903ba6bc75bc60b062e4cf8d98f3270f83a06a64c1966267'
+ assert len(manifest['files'])==39
+ expected=set()
+ for name,row in manifest['files'].items():
+  path=ROOT/name;assert digest(path)==row['sha256'] and path.stat().st_size==row['bytes'];pins[str(path)]=row['sha256']
+  if path.is_relative_to(P):expected.add(str(path.relative_to(P)))
+ assert meaningful(P)==expected|{'artifact_manifest.json'}
+ archive=sealed(F/'archive.json','archive_sha256');assert digest(F/'archive.json')=='1c539569bd527c5e6c74ce43e0b2b235fb75635cc8ae661b124f263b12df6944'
+ assert meaningful(F)=={'archive.json','readback_source.txt','readback.json','console.log'}
+ for name,row in archive['files'].items():
+  path=F/name;assert digest(path)==row['sha256'] and path.stat().st_size==row['bytes'];pins[str(path)]=row['sha256']
+ assert (F/'readback.json').read_bytes()==(F/'console.log').read_bytes()
+ frozen=json.loads((P/'frozen_source_map_909.json').read_bytes());assert len(frozen)==909 and all(frozen[k]==v for k,v in prior.items())
+ for name,pin in frozen.items():assert digest(ROOT/name)==pin;pins[str(ROOT/name)]=pin
+ for path in (P/'artifact_manifest.json',F/'archive.json'):
+  pins[str(path)]=digest(path)
+ for path in STAGE.iterdir():
+  if path.is_file():pins[str(path)]=digest(path)
+ assert (STAGE/'fresh909_console.log').read_bytes()==(STAGE/'fresh909_readback.json').read_bytes()
+ assert json.loads((STAGE/'fresh909_readback.json').read_bytes())['status']=='PASS_FINAL909_EVIDENCE_READBACK_ONLY'
+ return frozen,pins
+def run(additions,output):
+ t=time.perf_counter();before=modules();old,pins=inputs()
+ assert type(additions) is dict and set(additions)==ADDED
+ actual={str(p.relative_to(ROOT)):digest(p) for d in ('tectonics','tests','scripts','analysis') for p in (ROOT/d).rglob('*.py')}
+ assert actual==old|additions
+ for name,pin in additions.items():assert name not in old and digest(ROOT/name)==pin;pins[str(ROOT/name)]=pin
+ for name,pin in pins.items():assert digest(name)==pin
+ assert modules().keys()==before.keys() and all(modules()[k] is v for k,v in before.items())
+ result=dict(status='PASS_CLOSED909_AND_ALL_ANCESTRY_PRESERVED',source_count=len(actual),dependency_raw_sha256=pins,source_sha256=actual,prior_source_count=909,project_modules_changed=False,old_main_or_math_or_tests_executed=False,seconds=time.perf_counter()-t)
+ result['preservation_sha256']=hashlib.sha256(encoded(result)).hexdigest()
+ with Path(output).open('xb') as f:f.write(encoded(result)+b'\n')
+ return result

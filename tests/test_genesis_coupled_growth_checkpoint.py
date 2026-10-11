@@ -29,7 +29,8 @@ def grown(tmp_path_factory):
     # A resolved surface-to-hot-column gradient places the solidification
     # front inside the column. The cold contact fixture alone is fully solid.
     h = np.full_like(state.column_enthalpy, rock_enthalpy(1600., source.thermal))
-    state = replace(state, column_enthalpy=h,
+    # This prescribed gradient has no calculated material birth path.
+    state = replace(state, column_enthalpy=h, bulk_birth_history=None, cohort_mechanics=None,
         boundary_energy_j=float(np.sum(state.layer_mass_kg*h))-state.initial_column_energy_j)
     save_fault_checkpoint(path, source, state, thermal, orbit, {}, {"test": "contact growth restart"})
     model = CoupledModel(path.read_bytes(), CoupledParameters(growth_layer_m=.001))
@@ -47,7 +48,7 @@ def test_grown_contact_roundtrip_and_continuation_are_exact(tmp_path, grown):
     restored_model, restored, restored_thermal, restored_orbit = load_coupled_checkpoint(path)
     with np.load(path, allow_pickle=False) as data:
         meta = json.loads(str(data["metadata"]))
-        assert meta["format"] == COUPLED_VERSION == "genesis-coupled-0.2"
+        assert meta["format"] == COUPLED_VERSION == "genesis-coupled-0.4"
         assert {"cohort__birth_time_myr", "cohort__bonded", "interface_depth_ref_m"} <= set(data.files)
         assert "cohorts" not in meta["state"]
     for original, loaded in zip((state, thermal, orbit), (restored, restored_thermal, restored_orbit)):

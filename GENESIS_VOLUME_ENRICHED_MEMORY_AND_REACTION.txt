@@ -1,0 +1,147 @@
+ПАМЯТЬ ПОЛНОГО ОБЪЁМНОГО ПОЛЯ И РЕАКЦИЯ ПРИНЯТОГО ИНТЕРВАЛА GENESIS
+10.10.2026 19:47 UTC; fix/genesis-mantle-convection; автоматическая цель выключена.
+
+РЕЗУЛЬТАТ
+Добавлены genesis_volume_enriched_memory.py, genesis_volume_seed_reaction.py и
+genesis_volume_seed_memory.py. Они продолжают рассчитанную память Genesis и
+используют существующий закон Maxwell. История материала из расплава сохранена.
+Новые компоненты не заменяют старые e0/e1; абсолютные A/P при рождении определяют
+геометрию и не добавляются к упругой памяти повторно.
+
+ПРОИСХОЖДЕНИЕ И ПРИНЯТОЕ СОСТОЯНИЕ
+Тот же настоящий Genesis: 0.8684000000000005 Myr, 800 когорт, 4 принятых интервала.
+Parent raw SHA 62579a0bad128830a66e2f44579cf2b1f5d3835b691225b8d431102f3e4486d7
+Parent self SHA 5d282ceeccc8d76acc38427d08a7e65575fddb509fc4b93115cbe6d318e91349
+Formation self SHA cd79ee2a5139c4b91abdb1b4714a761c9153cc9f4490f5aa63fa2facba458c89
+Actual control выполнил ровно одно публичное восстановление от formation.
+Оригинал, parent_before и parent_after byte-identical. Новых принятых шагов,
+новорождённых когорт, physical Gamma, раскрытия и creation debit нет.
+Прежние damage/persistence gate не обходились. Ненулевые новые перемещения
+использованы только в явно отдельной частной конститутивной пробе.
+
+ПАМЯТЬ И РАБОТА
+Поле упругой памяти: e=e_old(e0,e1)+G_birth*z. Новые a[18] (перемещение) и
+z[18] (упругая память) при вставке точно нулевые. Прежний typed parent mechanics,
+все 800 записей и энергетические ledgers сохраняются буквально.
+На фиксированном live cohort/chart при равномерном для каждой когорты Maxwell
+отношении x=dt*E/eta: z_end=exp(-x)*z_old+beta*Delta_a,
+z_mean=beta*z_old+theta*Delta_a; beta=(1-exp(-x))/x, theta=(1-beta)/x.
+Пределы x->0 и устойчивые малые x проверяются отдельно.
+Энергия, механическая работа и вязкие потери вычисляются для полного поля:
+старый аналитический объём + перекрёстные члены + квадратичный новый вклад.
+Знаковые перекрёстные поправки сохраняются, не обрезаются и не объявляются
+самостоятельным неотрицательным источником fracture funding.
+Малые cross/self и новые parent-force contributions проверяются отдельно,
+чтобы большая унаследованная энергия/сила не скрывала ошибку нового поля.
+Полная диссипация неотрицательна; full-field work/energy/dissipation balance
+и duality средней силы с приращением проверены в двух private шагах на каждом
+из трёх прежних вычислительных зародышей.
+Температура, масса, границы когорт и упругость в этой ветви фиксированы.
+Несовместимые remelt, thermal, damage или material changes отклоняются.
+Это пока не расширение принятого thermal/fault цикла с ненулевыми a.
+
+ТОЧНЫЕ СОХРАНЕНИЯ И ОКРУГЛЕНИЕ
+Сохранение содержит исходную привязку и журнал частных приращений и времени.
+Восстановление повторяет каждый шаг от доверенного исходного Genesis, заново
+получая viscosity/Maxwell factors из исходных параметров и температур.
+Старые IDs, e0/e1, clock, параметры и повреждение не подменяются подписью DTO.
+Перезапуск после первого шага и продолжение второго совпадают полностью.
+Старая энергия по двум эквивалентным свёрткам отличается на 4096 J (один ULP)
+при около3.44416071573364e19 J. Literal saved scalar сохраняется; разница
+записана как inherited arithmetic reduction difference, не physical work.
+В энергию рождения разлома или доступную работу она не переносится.
+
+ПОЛНАЯ РЕАКЦИЯ
+Реакция вычислена из последнего настоящего принятого интервала: исходных dt,
+Delta_q, v0, mean0/mean1, after-mass и saved start comoving velocity.
+Для новых tied a=v_a=z=0: residual_a = 2*Mqa^T*(Delta_q-dt*v0)/dt^2
+ + integral(G_birth^T*C*e_accepted_mean)dV; reaction_a=-residual_a.
+Bubble равен нулю на исходных границах, поэтому added basal drag и external
+force нулевые. Малая инерция проверяется отдельно по A/P, без масштаба большой
+упругой силы. Старые K/M/D/F и ненулевой остаток старого momentum equation
+сохраняются точно; новые закреплённые моды имеют точную нулевую работу.
+Эта реакция отличается от static endpoint elastic reaction и surface traction.
+Основа seed заморожена в принятом endpoint и гипотетически продлена на saved
+интервал для tied virtual-space extension; это не утверждение, что такой
+разлом существовал в прошлом. Замена полной реакции поверхностной тягой,
+физическое раскрытие и оплачиваемое рождение ещё не выполнены.
+Сохраняются все 18 объёмных мод, в том числе surface-jump-null modes;
+объёмный ранг не объявляется числом физических opening modes.
+
+ПРОВЕРКИ
+Предварительные captures01 намеренно остановлены SIGTERM (exit=-15) до полных
+verdicts; они не считаются успешными проверками. Причина — обнаруженный review
+пропуск сравнения T вручную re-sealed typed private state с неизменным authentic
+birth T: factory мог получить иную Arrhenius viscosity. DTO restart уже отклонял
+такую подмену; реальные исходные controls не меняли T. Добавлены точный birth-T
+guard и regression +25 K в одной когорте. Успешный actual02 использует исправленную
+замороженную версию; его 337 broad source pins остаются буквально текущими. Прежние raw logs, facts и source snapshots сохранены
+отдельными interrupted extra-trees; partial actual01 output был пустым.
+Interrupted closure note SHA ce530d52b800477e155587914dfddca6c584714efd6ab49ef3f8edf81037f16e; он не является PASS verdict.
+
+Independent02 завершился FAIL до численного анализа: он сравнил typed seed.binding
+с canonical seal архивного finite-seed DTO. Эти подписи относятся к разным
+hash domains. Исходный oracle сохранён byte-identical; отдельный independent_audit_v2
+проверяет literal constructor/source поля, архивные seals и согласованность opaque
+binding в новой реакции. Binding не объявляется независимо восстановленной
+подписью дескриптора. Все прежние численные функции и literal imports сохранены
+AST-identical. Failed02 facts, traceback, workflow logs и executing helper copies
+архивируются буквально и не считаются PASS. Superseded tests02=157 PASS сохранены.
+Actual02 повторно не рассчитывается: его полная source inventory текущая, а
+отдельная 45-source AST dependency proof actual entry не содержит старый или новый
+memory audit. Новые файлы расширяют source union без исторических исключений.
+Финальная схема: actual02 + tests03=165 + independent03(v2) + negative03.
+Revision closure note SHA 02d11bcbdb2f1f68883bfc2e8acb7bf62475dedda83c9b27f8363eebced7624e; он описывает историю проверки,
+не является положительным численным verdict и не меняет принятый Genesis.
+
+165 тестов PASS; actual control, producer-free independent audit,
+3 correctly resealed negatives PASS. Во всех captures исходники до/после
+совпадают; OPENBLAS_NUM_THREADS=OMP_NUM_THREADS=MKL_NUM_THREADS=1.
+tests: exit=0, real seconds=675.305195906, stderr=0; facts SHA=6dc1a18817df3d7e01a203409985378d99cbe98029dcfb76577065d69c6d3b8b
+actual: exit=0, real seconds=2644.444593709, stderr=0; facts SHA=13c622c0ee07c88e66edc64cb45409cc4be6d427a99e514aca46b9f5aad83ae3
+independent: exit=0, real seconds=188.215638242, stderr=0; facts SHA=993719cfb66de7057d4c060a783d2305deab63b947c3f9b5ded0edded6c3309e
+negative: exit=0, real seconds=271.347561865, stderr=0; facts SHA=757888ef971d854338f18ee27eb482b73d754cc7f1dff7f7b80567d00202eb5d
+Independent заново считает материал, старые коэффициенты, compact operators,
+Maxwell history, cross/self ledgers, силы и accepted-interval reaction.
+Сравнение orders8->12 для инерции и average-force A/P <=2e-6 является observed
+agreement вычислительных contained seed, не строгой границей ошибки.
+Три подделки: обнуление рассчитанной z, подмена accepted mean endpoint памятью,
+удаление малой инерции с сохранением формальных tied identities — отклонены
+по математической причине после корректного пересчёта content seals.
+Control fixture SHA 2ba89795666f61987e513fa78971b9605db0d08bd6d83406eb9ebbe6295587c3
+Control report SHA 7908a2d668a927d2243f2885f8df6caaf85e6ec48d00f7015f1f285a608b6152
+Independent report SHA 0aa373a36dc1639f90f45177d0c65ae278962305b3f3888ba89a4f4356149f39
+Negative report SHA 026a207d34d336eeb2889753deaed8fdb5c8b1098bd4d756e019fcb8eddd5faf
+
+finite_computational_seed_cohort_1_face_0: cohort=1; energy reduction gap=4096 J; added inertia A/P=[3.776605378831082e-19, 5.1897471920180214e-20]; dynamic-minus-static reaction norm=874821.0559701519 N
+  private step 1: max|z|=9.820969027788533e-05 m; E(old,cross,self)=[3.251190961024519e+19, -23.651869925124565, 1.6247659400020935]; W=[0.0, -24.322029440648084, 1.6552420527538014]; D=[1.9296975470912128e+18, -0.670159515522526, 0.0304761127516845]; full balance residual=2560 J; work dual relative error=2.46e-14; restart exact
+  private step 2: max|z|=0.0001033682599341878 m; E(old,cross,self)=[3.1225916304772506e+19, -2007.8444421982397, 32.949105237602424]; W=[2361989891.0562997, -2024.3070819711022, 31.758893485238637]; D=[1.2859933078346665e+18, -40.11450969798716, 0.4345541876390708]; full balance residual=-5376 J; work dual relative error=0; restart exact
+finite_computational_seed_cohort_41_face_40: cohort=41; energy reduction gap=4096 J; added inertia A/P=[1.9870988245165977e-19, 5.77366068914946e-20]; dynamic-minus-static reaction norm=657157.2292054368 N
+  private step 1: max|z|=9.820968973377802e-05 m; E(old,cross,self)=[3.251190961024519e+19, -647.0221069932404, 1.5236618126199823]; W=[0.0, -665.3550421191464, 1.552241503198039]; D=[1.9296975470912128e+18, -18.332935125907085, 0.028579690578078666]; full balance residual=3328 J; work dual relative error=6.85e-16; restart exact
+  private step 2: max|z|=0.0001033682588048411 m; E(old,cross,self)=[3.1225916304772506e+19, -1689.9225659825995, 30.8829825032532]; W=[2361989891.0562997, -1088.8093567196993, 29.76654563259499]; D=[1.2859933078346665e+18, -45.90889773033814, 0.40722494196273945]; full balance residual=-6400 J; work dual relative error=2.02e-16; restart exact
+finite_computational_seed_cohort_80_face_79: cohort=80; energy reduction gap=4096 J; added inertia A/P=[2.8840487632836557e-19, 7.146665890080618e-21]; dynamic-minus-static reaction norm=2117214.539356146 N
+  private step 1: max|z|=9.820969779752259e-05 m; E(old,cross,self)=[3.251190961024519e+19, -109.29661795453337, 1.6629113911777336]; W=[0.0, -112.3934453844466, 1.6941028340825617]; D=[1.9296975470912128e+18, -3.096827429912875, 0.031191442904819112]; full balance residual=2560 J; work dual relative error=1.41e-15; restart exact
+  private step 2: max|z|=0.0001033682755419129 m; E(old,cross,self)=[3.1225916304772506e+19, -1446.419986342994, 33.61523812501654]; W=[2361989891.0562997, -1367.8079437060792, 32.395465297979506]; D=[1.2859933078346665e+18, -30.684575317618645, 0.4431385641410919]; full balance residual=-6144 J; work dual relative error=0; restart exact
+
+СОХРАННОСТЬ
+13 прежних пакетов: 22825 members /1915020638 bytes, 371 Python pins и6 native pins
+сохранены в frozen baseline. Прежние документы сохранены буквально; старый
+handoff — целый suffix, architecture — title и целый прежний body.
+Этот writer использует реальные сохранённые verdicts; финальная проверка
+сохранности, сборка нового пакета и его readback выполняются отдельными tools.
+
+ОСТАТОК ПУНКТА 1
+Пункт 1 открыт по тем же трём условиям:
+1. Физическое рождение, вставка и раскрытие: рассчитанный источник работы,
+   согласованная замена полной реакции, точность объёмного интегрирования для
+   физически выбранного clipped seed и допуск Gamma-null modes. Память полного
+   поля и полная реакция теперь реализованы для проверенного фиксированного
+   материального пространства; при изменении его границ ещё нужен перенос с
+   учётом массы, тепла и работы, прежде чем принимать такой физический шаг.
+2. Контакт и поддвиг всех пар на всём интервале, включая reverse C5->C1.
+3. Настоящее продолжение Genesis с действующими разломами, контактом и поддвигом,
+   независимыми проверками работы, баланса и перезапуска.
+До полного закрытия пункта 1 остаётся существенная работа. Пункты 2–6 открыты.
+Следующий шаг внутри условия 1 — согласовать допустимые подвижные моды и полную
+реакцию с источником работы, не выдавая освобождение численных Gamma-null modes
+за оплату рождения поверхности. Точность physical clipped bulk проверять отдельно.

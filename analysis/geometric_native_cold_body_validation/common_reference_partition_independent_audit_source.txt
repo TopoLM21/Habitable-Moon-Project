@@ -1,0 +1,255 @@
+"""Independent stdlib replay of initial source partition evidence.
+
+Recomputes actual owner normals by interval quaternion series, certifies every
+strict rational cell witness, and replays source Boolean masks on the complete
+nine-plane arrangement. Curved first-entry set proof is a pinned, reviewed
+separate dependency; no second envelope quadrature or physical admission.
+"""
+import hashlib, importlib.util, json, sys, time
+from fractions import Fraction as F
+from itertools import combinations, product
+from pathlib import Path
+
+ROOT=Path('/workspace/Habitable-Moon-Project')
+PROOF=Path('/tmp/native_common_reference_source_partition_20261005.json')
+PROOF_SHA='038b774e15eba4d8dcdb26ef0d65778218cdea0090a71bc956f331637330a840'
+PRODUCER=PROOF.with_suffix('.py')
+PRODUCER_SHA='65eab6420dad10310bc34a18a21fd9286193d61108a56e57a6e49cb212d89449'
+CANDIDATE=Path('/tmp/native_common_reference_candidate_20261005.json')
+CANDIDATE_SHA='50af6b71758feaaed531651b231b50fe5e45228cfa4efa808b26c5a2070d86f4'
+CURVED_PEER=Path('/tmp/native_curved_partition_peer_20261005.json')
+CURVED_PEER_SHA='d07f10dbf7c50a1d454db18d194ff4999889aadd56f27b7a178b30e2d679a259'
+CURVED_SCRIPT_SHA='c5607c1128356ef315ba6597973c80f724892748399bee5c56519d809e83a2dc'
+COMMON_PEER=Path('/tmp/native_common_reference_independent_audit_20261005.json')
+COMMON_PEER_SHA='4a1c3af2fa0345c950d7e9dfd10bf5480dfed89b2b5f7bf49a7aeaa792b70054'
+HELPER=Path('/tmp/native_cold_body_independent_audit.py')
+HELPER_SHA='ee031938177a3497aa7821c883650a89397a9942f6b177e48b9a655153297f6e'
+MAP=Path('/tmp/point1_cold_833_frozen_source_map_20261005.json')
+MAP_SHA='2b322df2d2c426976ee886374517c2e0130acb5a5acfcaf4bb07a6e4c3331e05'
+OUT=Path('/tmp/native_common_reference_partition_independent_audit_20261005.json')
+
+def raw(path):return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+def encoded(value):return json.dumps(value,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+def vd(value):return hashlib.sha256(encoded(value)).hexdigest()
+def read(path,digest):assert raw(path)==digest;return json.loads(Path(path).read_bytes())
+def sealed(value,key):body=dict(value);assert body.pop(key)==vd(body);return value
+def literal(value):return F(*value)
+def payload(value):
+ if isinstance(value,F):return [value.numerator,value.denominator]
+ if isinstance(value,I):return {'lo':payload(value.lo),'hi':payload(value.hi)}
+ if isinstance(value,(tuple,list)):return [payload(x) for x in value]
+ if isinstance(value,dict):return {k:payload(v) for k,v in value.items()}
+ return value
+
+assert raw(HELPER)==HELPER_SHA
+spec=importlib.util.spec_from_file_location('partition_stdlib_helpers',HELPER)
+h=importlib.util.module_from_spec(spec);sys.modules[spec.name]=h;spec.loader.exec_module(h)
+I=h.FractionInterval
+def boxed(value):return I(literal(value['lo']),literal(value['hi']))
+def dot(a,b):return sum((x*y for x,y in zip(a,b)),I(0))
+def cross(a,b):return (a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0])
+
+def literal_word(rows):
+ word=[]
+ for row in rows:
+  assert set(row)=={'omega_rad_per_myr','dt_myr'}
+  angle=tuple(F.from_float(float(x))*F.from_float(float(row['dt_myr'])) for x in row['omega_rad_per_myr'])
+  if not any(angle):continue
+  if word and word[-1]==tuple(-x for x in angle):word.pop()
+  else:word.append(angle)
+ return tuple(word)
+
+def supports(poly,histories):
+ assert poly['version']=='geometric-native-polygons-1'
+ result=[]
+ for plane in poly['supports']:
+  normal=plane['normal'];assert len(normal)==3
+  nonzero=[i for i,x in enumerate(normal) if x];assert len(nonzero)==1
+  axis=nonzero[0];assert abs(normal[axis])==1
+  word=literal_word(plane['rotations']+poly['pose'])
+  if not word:index=axis
+  else:
+   matches=[owner for owner,rows in histories.items() if literal_word(rows)==word]
+   assert len(matches)==1;index=3+3*matches[0]+axis
+  result.append((index,1 if normal[axis]>0 else -1))
+ return tuple(result)
+
+def one_piece(signs,planes):return all(signs[index]==sign for index,sign in planes)
+def piece_count(signs,pieces):return sum(one_piece(signs,planes) for planes in pieces)
+
+started=time.perf_counter()
+proof=sealed(read(PROOF,PROOF_SHA),'proof_packet_sha256')
+assert raw(PRODUCER)==PRODUCER_SHA==proof['source_script_sha256']
+candidate=sealed(read(CANDIDATE,CANDIDATE_SHA),'candidate_packet_sha256')
+peer=read(CURVED_PEER,CURVED_PEER_SHA)
+assert raw(CURVED_PEER.with_suffix('.py'))==CURVED_SCRIPT_SHA==peer['source_script_sha256']
+common_peer=sealed(read(COMMON_PEER,COMMON_PEER_SHA),'independent_audit_sha256')
+assert common_peer['all_four_complete_source_dtos_authenticated']
+assert common_peer['historical_saved128_five_groups_unchanged']
+source=h.sealed(h.AFFINE/'native_control/source_packet.json','packet_sha256')
+assert raw(h.AFFINE/'native_control/source_packet.json')=='ccd511b2b82e66ba103d0d900b993a18d02953288f447c71ac9e589dc70c7d1e'
+source_map=json.loads(MAP.read_bytes());assert len(source_map)==833 and vd(source_map)==MAP_SHA
+assert all(raw(ROOT/path)==digest for path,digest in source_map.items())
+for name,text in candidate['complete_authenticated_source_dto_json']:
+ assert source[name]==json.loads(text) and hashlib.sha256(text.encode()).hexdigest()==candidate['source_dto_raw_sha256'][name]
+snapshot=source['before']['snapshot'];epoch=snapshot['current_material_epoch'];material=epoch['source_material_state'];journal=material['journal']
+assert proof['source_snapshot_sha256']==source['source_snapshot_sha256']
+assert proof['source_epoch_sha256']==epoch['epoch_sha256']==peer['source_epoch_sha256']
+assert proof['source_material_state_sha256']==material['state_sha256']==peer['source_material_state_sha256']
+assert proof['complete_source_dto_raw_sha256']==candidate['source_dto_raw_sha256']
+assert proof['pinned_curved_peer_raw_sha256']==CURVED_PEER_SHA
+assert proof['pinned_curved_peer_script_sha256']==CURVED_SCRIPT_SHA
+assert dict(epoch['additional_owner_histories'])=={0:[],1:[]}
+assert epoch['phase']=='partition'
+histories={owner:[{'omega_rad_per_myr':omega,'dt_myr':journal['dt_myr']}] for owner,omega in journal['omega_rad_per_myr']}
+assert set(histories)=={0,1} and snapshot['owner_histories']==[[owner,histories[owner]] for owner in (0,1)]
+assert proof['complete_original_owner_histories']=={str(owner):rows for owner,rows in histories.items()}
+clock=F.from_float(float(journal['source_surface']['time_myr']))+F.from_float(float(journal['dt_myr']))
+assert literal(material['endpoint_time_myr'])==literal(epoch['time_myr'])==clock
+
+# Independent normal construction uses quaternion sine/cosine series instead
+# of the producer's repeated cross-product matrix exponential.
+normal_precision=192
+normals=[tuple(I(int(i==axis)) for i in range(3)) for axis in range(3)]
+for owner in (0,1):
+ rotation=h.certify_rotation_history(tuple(h.rotation_increment_from_dict(row) for row in histories[owner]),normal_precision)
+ normals.extend(tuple(rotation.intervals[i][axis] for i in range(3)) for axis in range(3))
+arrangement=proof['spherical_arrangement']
+assert arrangement['plane_count']==9 and arrangement['cell_count']==74
+assert arrangement['plane_labels']==['fixed_x','fixed_y','fixed_z','R0_x','R0_y','R0_z','R1_x','R1_y','R1_z']
+determinants={tuple(row['plane_indices']):row for row in arrangement['all_84_strict_triple_determinants']}
+assert set(determinants)==set(combinations(range(9),3))
+for indices,row in determinants.items():
+ value=dot(cross(normals[indices[0]],normals[indices[1]]),normals[indices[2]])
+ assert row['sign'] in (-1,1) and (row['sign']*value).lo>0
+ saved=boxed(row['determinant_bounds']);assert (row['sign']*saved).lo>0
+cells=arrangement['all_74_whole_cell_membership_receipts']
+patterns={tuple(row['signs']) for row in cells}
+assert len(cells)==len(patterns)==74 and all(len(row)==9 and set(row)<={-1,1} for row in patterns)
+for row in cells:
+ point=tuple(literal(x) for x in row['independently_certified_strict_rational_witness']['exact_rational_direction'])
+ assert len(point)==3 and any(point)
+ for sign,normal in zip(row['signs'],normals):assert (sign*dot(normal,point)).lo>0
+# Each strict sign cone is connected. At most n²−n+2 spherical regions occur
+# for n homogeneous planes; these74 distinct feasible profiles attain that
+# bound. All supports below are these same9 planes, so all open cells covered.
+assert 74==9*9-9+2
+
+parents={row['fragment_id']:row for row in journal['source_surface']['fragments']}
+allocations={row['fragment_id']:row for row in material['parent_allocations']}
+components={row['component_id']:row for row in epoch['components']}
+banks={row['component_id']:row for row in candidate['all_13_bank_source_bindings']}
+assert len(parents)==8 and len(components)==len(banks)==13 and set(components)==set(banks)
+fixed={pid:supports(parent['geometry'],histories) for pid,parent in parents.items()}
+assert {tuple(next(sign for axis,sign in planes if axis==i) for i in range(3)) for planes in fixed.values()}==set(product((-1,1),repeat=3))
+moved={row['fragment_id']:row for row in journal['moved_fragments']}
+endpoint={}
+for pid,parent in parents.items():
+ owner=parent['parcel']['plate'];assert owner==allocations[pid]['owner']
+ assert moved[pid]['geometry']==dict(parent['geometry'],pose=histories[owner])
+ endpoint[pid]=supports(moved[pid]['geometry'],histories)
+component_pieces={cid:tuple(supports(poly,histories) for poly in c['proxy_geometries']) for cid,c in components.items()}
+cold={c['original_parent_id']:cid for cid,c in components.items() if c['material_kind']=='original_live'}
+hot={c['original_parent_id']:cid for cid,c in components.items() if c['material_kind']=='hot_birth'}
+assert len(cold)==8 and len(hot)==5
+raw_gaps={pid:[row for row in journal['raw_vacancies'] if row['fixed_original_parent_id']==pid] for pid in parents}
+raw_pieces={pid:tuple(supports(row['geometry'],histories) for row in rows) for pid,rows in raw_gaps.items()}
+vacancies={row['fixed_original_parent_id']:row for row in material['endpoint_vacancies']}
+domains={row['fragment_id']:row for row in material['sweep_certificate']['donor_domains']}
+binding_rows={row['component']['component_id']:row for row in proof['complete_all13_true_mask_source_bindings']}
+assert set(binding_rows)==set(components)
+for cid,c in components.items():
+ pid=c['original_parent_id'];row=binding_rows[cid]
+ assert row['component']==c and banks[cid]['complete_actual_source_mask']==c
+ if c['material_kind']=='original_live':
+  assert row['parent']==parents[pid] and row['complete_actual_parent_allocation']==allocations[pid]
+  assert row['complete_first_entry_donor_domain']==domains.get(pid)
+  assert allocations[pid]['live_domain_id']==cid
+ else:
+  assert row['fixed_parent']==parents[pid] and row['complete_actual_vacancy']==vacancies[pid]
+  assert row['complete_raw_vacancy_polygons']==raw_gaps[pid]
+  assert vacancies[pid]['newborn']['vacancy_domain_id']==cid and literal(vacancies[pid]['newborn']['birth_time_myr'])==clock
+  assert sorted(encoded(poly) for poly in c['proxy_geometries'])==sorted(encoded(v['geometry']) for v in raw_gaps[pid])
+
+for row in cells:
+ signs=tuple(row['signs']);inside={pid:one_piece(signs,planes) for pid,planes in endpoint.items()}
+ receiver=any(inside[pid] for pid in parents if allocations[pid]['owner']==0)
+ cold_ids=[];hot_ids=[]
+ for pid,cid in cold.items():
+  expected=inside[pid] and (allocations[pid]['owner']==0 or not receiver)
+  count=piece_count(signs,component_pieces[cid]);assert count in (0,1) and bool(count)==expected
+  if expected:cold_ids.append(cid)
+ assert len(cold_ids)<=1 and bool(cold_ids)==any(inside.values())
+ for pid in parents:
+  expected=one_piece(signs,fixed[pid]) and not any(inside.values())
+  count=piece_count(signs,raw_pieces[pid]);assert count in (0,1) and bool(count)==expected
+  if pid in hot:
+   assert bool(piece_count(signs,component_pieces[hot[pid]]))==expected
+   if expected:hot_ids.append(hot[pid])
+  else:assert not expected
+ assert len(cold_ids)+len(hot_ids)==1
+ assert set(row['endpoint_cold_ids'])==set(cold_ids) and set(row['raw_hot_ids'])==set(hot_ids)
+ assert row['unique_endpoint_component_id']==(cold_ids+hot_ids)[0]
+
+# Endpoint arrangements do not describe E. Source full sweep and the pinned
+# analytic peer establish its exact set identity, then difference/union of
+# the SAME R1E preserves a partition. No containing chart is promoted.
+assert len(epoch['paired_corrections'])==1
+correction=epoch['paired_corrections'][0]
+assert correction['negative_component_id']==cold['octant:5']==peer['negative_component_id']
+assert correction['positive_component_id']==hot['octant:5']==peer['positive_component_id']
+assert correction['owner']==components[cold['octant:5']]['owner']==components[hot['octant:5']]['owner']==1
+assert correction['area_bounds_sr']==domains['octant:5']['extra_swept_area_bounds_sr']==peer['true_curved_extra_area_bounds_sr']
+assert boxed(correction['area_bounds_sr']).lo>0
+assert proof['actual_curved_set_transfer']['complete_authentic_paired_correction']==correction
+assert proof['actual_curved_set_transfer']['independent_curved_peer_proof']==peer
+assert peer['source_additional_owner_histories']==epoch['additional_owner_histories']
+assert peer['all_five_hot_birth_clocks_equal_source_endpoint']
+assert not peer['containing_hull_is_material_mask'] and not peer['full_first_entry_quadrature_replayed']
+for key,value in peer['proof_flags'].items():assert value is (False if key=='whole_all13_partition_certified' else True)
+assert vacancies['octant:5']['curved_extra_donor_ids']==['octant:5']
+assert all(not row['curved_extra_donor_ids'] for pid,row in vacancies.items() if pid!='octant:5')
+
+R=F.from_float(float(journal['source_surface']['radius_km']))*1000
+assert R==literal(candidate['source_radius_m'])>0
+roofs=dict(source['saved_joint_reference_field']['top_radial_displacements_m'])
+radial={row['component_id']:row for row in proof['all_13_actual_solid_radial_bindings']}
+assert set(radial)==set(components)
+for cid,c in components.items():
+ if c['material_kind']=='original_live':specific=tuple(F.from_float(float(x)) for x in parents[c['original_parent_id']]['parcel']['specific_properties'][:2])
+ else:specific=tuple(literal(x) for x in vacancies[c['original_parent_id']]['newborn']['specific_properties'][:2])
+ H=1000*sum(specific,F(0));roof=boxed(roofs[cid]);assert roof.lo==roof.hi;w=roof.lo
+ row=radial[cid];top=R+w;bottom_cube=top**3-3*R*R*H
+ assert literal(row['source_roof_m'])==w and literal(row['source_areal_material_H_m'])==H
+ assert literal(row['source_outer_radius_m'])==top and literal(row['exact_inner_radius_cube_m3'])==bottom_cube>0
+ base=boxed(row['authentic_inner_radius_bounds_m']);assert 0<base.lo and base.lo**3<=bottom_cube<=base.hi**3
+ assert row['authentic_inner_radius_bounds_m']==banks[cid]['source_inner_radius_bounds_m']
+
+assert proof['actual_angular_partition_proved'] and proof['all_78_initial_actual_source_pair_positive_volume_exclusions_proved']
+assert proof['proposed_common_reference_initial_all13_positive_volume_exclusion_proved']
+for key in ('common_reference_implementation_or_physical_admission_authorized','active_face_and_source_clamp_compatibility_certified','whole_clock_all_pairs_admission_certified','force_equilibrium_certified','original_accepted_native_interval_invalidated','historical_five_saved128_reference_groups_rewritten','repository_or_frozen833_gate_mutated'):assert proof[key] is False
+assert all(raw(ROOT/path)==digest for path,digest in source_map.items())
+result=dict(status='PASS_INITIAL_PARTITION_PEER_REPLAY_ONLY',independent_stdlib_only=True,project_modules_imported=False,
+ proof_raw_sha256=PROOF_SHA,proof_seal=proof['proof_packet_sha256'],proof_source_raw_sha256=PRODUCER_SHA,
+ candidate_raw_sha256=CANDIDATE_SHA,pinned_curved_set_peer_raw_sha256=CURVED_PEER_SHA,
+ pinned_common_map_peer_raw_sha256=COMMON_PEER_SHA,helper_raw_sha256=HELPER_SHA,
+ source_count=833,source_map_canonical_sha256=MAP_SHA,source_bodies_preserved=True,
+ owner_normal_method='Independent interval quaternion sine/cosine series',owner_normal_decimal_precision=normal_precision,
+ strict_triple_determinants_independently_replayed=84,strict_distinct_sign_profiles_independently_replayed=74,
+ complete_open_spherical_arrangement_coverage_proved=True,authentic_raw_gap_boolean_source_predicates_replayed=True,
+ all13_authentic_mask_parent_allocation_vacancy_bindings_replayed=True,
+ exact_curved_set_transfer_source_identity_replayed=True,curved_envelope_set_proof_pinned_and_reviewed=True,
+ second_curved_set_envelope_or_quadrature_recomputed=False,
+ all13_radius_roof_thickness_positive_radial_lifts_recomputed_from_raw_sources=True,
+ radial_lift_scope='Explicit NEW3D candidate solids, not recovery of historical full3D geometry',
+ uniform_three_dimensional_shell_coverage_proved=False,
+ cold_to_hot_curved_transfer_mass_identity_claimed=False,
+ common_map_mass_and_volume_preservation_scope='Separately per declared source solid under the common injective map',
+ initial_all78_positive_volume_pair_exclusions_proved=True,
+ proposed_common_reference_initial_positive_volume_exclusion_proved=True,
+ active_face_and_source_clamp_compatibility_certified=False,whole_clock_all_pairs_admission_certified=False,
+ force_equilibrium_certified=False,common_reference_adopted=False,original_accepted_native_interval_invalidated=False,
+ accepted_original_native_intervals=1,accepted_new_native_intervals=0,original_point_1_completed=False,
+ source_script_sha256=raw(__file__),seconds=time.perf_counter()-started)
+result['audit_packet_sha256']=vd(result);OUT.write_bytes(encoded(result)+b'\n')
+print(encoded(result).decode(),flush=True);print('AUDIT_RAW',raw(OUT),'SCRIPT_RAW',raw(__file__),flush=True)

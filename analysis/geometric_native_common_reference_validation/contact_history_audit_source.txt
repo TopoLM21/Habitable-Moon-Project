@@ -1,0 +1,107 @@
+"""Read-only old-contact correspondence audit; no project imports/builds."""
+from pathlib import Path
+from fractions import Fraction as F
+import hashlib,json,importlib.util,sys,time
+
+ROOT=Path('/workspace/Habitable-Moon-Project')
+HELPER=Path('/tmp/native_curved_partition_peer_20261005.py')
+assert hashlib.sha256(HELPER.read_bytes()).hexdigest()=='c5607c1128356ef315ba6597973c80f724892748399bee5c56519d809e83a2dc'
+spec=importlib.util.spec_from_file_location('independent_curve_history_helper',HELPER);h=importlib.util.module_from_spec(spec);sys.modules[spec.name]=h;spec.loader.exec_module(h)
+OUT=Path('/tmp/native_common_contact_history_audit_20261005.json')
+
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def main():
+    start=time.monotonic();raw=h.CURVED.read_bytes();assert hashlib.sha256(raw).hexdigest()==h.EXPECTED_CURVED
+    b=json.loads(raw)['before'];history=b['original_physical_history'];snap=b['snapshot'];epoch=snap['current_material_epoch'];material=epoch['source_material_state'];s=material['sweep_certificate'];j=material['journal']
+    motions=dict(j['omega_rad_per_myr']);dt=F.from_float(j['dt_myr']);axes={o:tuple(F.from_float(x)*dt for x in v) for o,v in motions.items()}
+    co=h.normal_coefficients(axes[1],axes[0],s['order']);rate=sum(map(abs,axes[1]),F(0))+sum(map(abs,axes[0]),F(0));n=s['order']
+    tails=tuple(rate**(n+1)/h.factorial(n+1-d)/(1-rate/F(n+2-d)) for d in range(7))
+    C=h.Poly(tuple(-v[0] for v in co),tails,s['precision'],n);Y=h.Poly(tuple(v[1] for v in co),tails,s['precision'],n);Z=h.Poly(tuple(v[2] for v in co),tails,s['precision'],n)
+    fy=h.factored_bounds(tuple(x[1] for x in co[1:]),h.I(0,1),rate)
+    fz=h.factored_bounds(tuple(x[2] for x in co[1:]),h.I(0,1),rate)
+    normal=(-C.bounds(h.I(1)),Y.bounds(h.I(1)),Z.bounds(h.I(1)))
+    traces={x['trace_id']:x for x in material['trace_bindings']};states=dict(snap['states']);oldref=history['original_reference'];nodes=history['quadrature_histories']
+    assert len(nodes)==len(states)==16 and all(states[x['point_id']]==x['unaccepted_candidate_state'] for x in nodes)
+    path_step=history['contact_time_path']['step']
+    assert snap['spatial_memory']==path_step['memory']
+    assert all(a[0]==bb[0] and a[1]==bb[1]['coefficients'] and a[2]==bb[2]['coefficients'] for a,bb in zip(snap['free_anchor_fields'],path_step['anchor_fields']))
+    before_tips={x[0]:tuple(F.from_float(v) for v in x[1:]) for x in history['accepted_before']['snapshot']['transverse_displacement_m']}
+    membership=[];archived=live=0
+    for i,node in enumerate(nodes):
+        q=tuple(F.from_float(x) for x in node['original_point']['position']);assert q[0]==0
+        trace=traces[node['trace_id']];g1=sum((normal[k]*q[k] for k in range(3)),h.I(0));g_over_u=fy*q[1]+fz*q[2]
+        if g_over_u.lo>0:
+            status='ARCHIVED_ORIGINAL_DONOR_LABEL_ABSENT_FROM_RETAINED_COLD_MASK';archived+=1;assert g1.lo>0 and trace['donor_fragment_id'] in ('octant:6','octant:7')
+        else:
+            status='ORIGINAL_DONOR_LABEL_RETAINED';live+=1;assert g_over_u.hi<0 and g1.hi<0 and trace['donor_fragment_id'] in ('octant:4','octant:5')
+        oldtip=before_tips[node['trace_id']]
+        geometric_reference_gap=(oldtip[1]-oldtip[0])*sum((F.from_float(x)*y for x,y in zip(node['original_point']['normal'],q)),F(0))
+        assert geometric_reference_gap==0 and node['prepared_state']['gap_free_m']==-.1
+        assert oldref['offsets'][i]==[-.1,0.] and oldref['points'][i]==node['original_point']
+        membership.append({'point_id':node['point_id'],'trace_id':node['trace_id'],'donor_original_parent_id':trace['donor_fragment_id'],'receiver_original_parent_id':trace['receiver_fragment_id'],'source_endpoint_receiver_predicate_bounds':g1.dto(),'whole_original_clock_receiver_predicate_divided_by_u_bounds':g_over_u.dto(),'membership_status':status,'original_label_was_normalized':False,'prepared_geometric_tip_reference_gap_m':h.fr(geometric_reference_gap),'prepared_constitutive_free_anchor_gap_m':node['prepared_state']['gap_free_m'],'prepared_relaxed_contact_gap_m':node['prepared_state']['gap_m'],'current_literal_state_elapsed_time_s':states[node['point_id']]['elapsed_time_s'],'current_literal_state_step_count':states[node['point_id']]['step_count']})
+    assert archived==live==8
+    interface_measures=[]
+    for trace_id in traces:
+        atoms=[x for x in nodes if x['trace_id']==trace_id];source=atoms[0]['original_material']
+        height=F.from_float(source['contact_height_m']);sine,cosine=map(F.from_float,atoms[0]['original_frame']);R=F.from_float(history['origin_surface']['radius_km'])*1000
+        density=R*height/sine;extent=F.from_float(next(x['extent_radians'] for x in snap['spatial_memory']['traces'] if x['trace_id']==trace_id))
+        assert height==1000 and all(x['original_frame']==atoms[0]['original_frame'] for x in atoms)
+        interface_measures.append({'trace_id':trace_id,'source_contact_height_m':h.fr(height),'source_literal_sine_cosine':list(map(h.fr,(sine,cosine))),'source_declared_dip_radians':source['dip_radians'],'fixed_receiver_interface_density_m2_per_computational_radian':h.fr(density),'density_formula':'R*1000m/source_literal_sin(dip)','source_computational_extent_radians':h.fr(extent),'continuous_source_interface_area_m2':h.fr(density*extent),'literal_old_quadrature_area_total_m2':h.fr(sum((F.from_float(x['original_area_m2']) for x in atoms),F(0))),'different_continuous_and_nodal_totals_silently_aliased':False})
+    source_paths=[
+      'tectonics/geometric_native_contact_reference_transport.py',
+      'tectonics/geometric_native_first_entry_contact_handover.py',
+      'tectonics/geometric_native_first_entry_contact_domain_handover.py',
+      'tectonics/geometric_native_first_entry_interface_integral.py',
+      'tectonics/geometric_native_physical_pair_time.py',
+      'tectonics/geometric_native_physical_history.py',
+      'tectonics/geometric_native_contact_field_history.py',
+      'tectonics/geometric_distributed_contact_dynamics.py',
+      'tectonics/geometric_native_curved_equilibrium.py']
+    report={
+      'format':'native-common-reference-old-contact-correspondence-audit-1',
+      'status':'OLD_HISTORY_AUTHENTIC_BUT_CURRENT_RETAINED_CUT_CORRESPONDENCE_MISSING',
+      'source_curved_packet_raw_sha256':hashlib.sha256(raw).hexdigest(),'source_original_history_binding_sha256':history['binding_sha256'],'source_epoch_sha256':epoch['epoch_sha256'],'source_script_sha256':sha(Path(__file__)),
+      'read_only_source_file_hashes':{x:sha(ROOT/x) for x in source_paths},'project_modules_imported':False,'expensive_build_or_quadrature_run':False,
+      'authenticated_current_states':{'original_atom_count':16,'four_atoms_per_each_of_four_original_trace_ids':True,'all_current_native_snapshot_states_equal_complete_original_unaccepted_candidate_records':True,'all_current_native_continuous_memory_and_anchor_fields_equal_source_path_step_endpoint':True,'old_node_states_preserved_once':True,'current_native_elapsed_time_s':snap['elapsed_time_s'],'current_contact_state_elapsed_time_s':list(sorted({x['elapsed_time_s'] for x in states.values()})),'prepared_clock_s':list(sorted({x['prepared_state']['elapsed_time_s'] for x in nodes})),'accepted_original_native_interval_count':snap['accepted_loaded_native_intervals'],'current_free_gap_range_m':[min(x['gap_free_m'] for x in states.values()),max(x['gap_free_m'] for x in states.values())],'appropriate_original_nodal_transport_epoch_for_this_adopted_native_snapshot':'unaccepted_candidate (literal historical DTO name); using before would select older prepared/previous states and reset the adopted contact configuration'},
+      'independent_all16_source_label_membership':membership,'original_donor_atom_labels_now_archived_count':archived,'original_donor_atom_labels_still_live_count':live,
+      'geometric_obstruction':'Eight old Gauss donor labels from oct6/oct7 are archived under the exact first-entry law, so they are not points of the retained donor bulk. The new common Phi is injective and cannot turn these removed labels into retained-cut material points. The other eight donor labels being live does not supply opposite retained-face pairing or a normal/gap law.',
+      'offset_obstruction':'All prepared old tip geometric reference gaps are exactly zero because both prepared radial coordinates are zero. Their constitutive free-gap offsets are -0.1 and relaxed spring contact gaps are approximately -0.0333333333. Thus the saved -0.1 is preload/eigen-offset of the virtual series configuration, not an authenticated material-face separation.',
+      'three_distinct_source_measures_and_populations':[
+        {'population':'16 authentic old mechanical Gauss atom histories','meaning':'four original literal quadrature spring/work stores on each of four traces','measure':'individual original_area_m2 fixed by source Gauss quadrature; local energy/work/plastic/clock state owned once'},
+        {'population':'four continuous receiver field families','meaning':'full original theta/time p,c and anchor field, evaluated from polynomial memory without nodal interpolation','measure':'original receiver interface-line density R*contact_height/sin(dip) dtheta_comp'},
+        {'population':'16 causal first-entry donor/receiver branches','meaning':'4 by 4 material first-event masks referring to those four receiver families, no additional finite springs','measure':'swept original material coarea R^2 |J_event| dtheta du; distinct from contact-line measure and old nodal atom areas'}],
+      'four_actual_old_fixed_interface_measures':interface_measures,
+      'old_frame_versus_actual_new_cut':{
+        'old_source_inclined_directors':'normal_old=sin(dip)*horizontal_receiver+cos(dip)*radial_receiver, down_old=cos(dip)*horizontal_receiver-sin(dip)*radial_receiver; both literal directors transported only by original receiver SO3, with binary64 norm defect retained',
+        'actual_new_common_reference_face_normal':'For the actual source cut arc U, T=dU/dtheta, N_cut=U cross T, unit_normal_new=Q[N_cut-(r^3/R^2)(A_star dot T)U]/sqrt(1+(r^3/R^2)^2(A_star dot T)^2)',
+        'missing_equality_or_declared_material_frame_transfer':'The old dip=pi/6 and old receiver directors do not certify equality with this actual cut normal. The latter generally depends on source arc tangent, physical radius and common A. Existing transport law expressly keeps the original receiver material frame; replacing it requires a separately declared and authenticated correspondence/reference law.',
+        'full_depth_extension_missing':'All old p(theta,u), c(theta,u), free anchors and16 atom labels are trace fields/nodes at the old interface. Source contact_height is1000m and old interface measure is already integrated over its declared inclined height. No API supplies a new depth coordinate tau, memory distribution across the full true cut depth, or its pushforward to J(theta,tau)dtheta dtau. Uniform replication in depth would be a new constitutive assumption, with energy/measure transfer still to prove.'},
+      'available_API_and_line_evidence':[
+        {'path':source_paths[0],'lines':[3,11,211,218,235,243,429,499],'finding':'Zero-work reference law preserves the full local state, original receiver material frame, original columns/contact law/water and original nodal area. Geometry contexts are caller declarations, explicitly not geometry certificates; a separate material-port binding must prove coordinates and receiver axes. Free anchors become old_free+h_current-h_reference and identical expressions cancel symbolically.'},
+        {'path':source_paths[0],'lines':[647,655,695,738],'finding':'Symbol family observes the unchanged source theta/u fields. It supplies no finite area/work store and no source memory interpolation; its same-clock identity alone is not future stepping at a frozen event clock.'},
+        {'path':source_paths[1],'lines':[191,209,218,228,242,284],'finding':'Actual implicit first-event handover freezes original_receiver_field(theta*,u*) and its incoming own-beam/first-receiver reference. Receiver normal/down are the OLD literal inclined directors rotated by original receiver motion. Positions use old own-beam radial tips. This is an old source first-entry correspondence; no common Phi retained-cut source point/face normal appears.'},
+        {'path':source_paths[2],'lines':[3,11,266,296,386,403],'finding':'Four receiving families and sixteen causal branches; sixteen atom lineages preserved separately. Zero transfer balances follow from the identical old field expression and unchanged original receiver interface measure. Receiving-pair weighted contact integrals are not numerically enclosed; no archived-bulk energy/work density or force admission is declared.'},
+        {'path':source_paths[3],'lines':[3,14,414,441],'finding':'First-event chart q=Qd(u)^T Qr(u)c(theta) and its material coarea do not convert original one-dimensional interface or old Gauss measure to an energy density on a current retained cut; continuum equals literal nodal quadrature total is explicitly not asserted.'},
+        {'path':source_paths[4],'lines':[1,12,271,326,370,372],'finding':'Original_pair_tip_maps rotates literal original tip labels by their original owners and old frame by the receiver, with diagnostic affine radial history. It does not replace free anchors, hand over material or supply physical admission. Geometric reference_gap at line312 is computed independently from radial_before and literal point/frame.'},
+        {'path':source_paths[5],'lines':[490,496,505,554],'finding':'Original queries retain authentic theta and polynomial p/c, separate old/current node work, and series compliance; their geometric tip map is only the original diagnostic geometry. No old nodal history may be allocated to a new point.'},
+        {'path':source_paths[6],'lines':[282,340],'finding':'Continuous pressure/contact/bulk strains use the retained OLD binary64 series-compliance family with 1000m columns; this is not a contact law derived from newly integrated 3D bulk response.'},
+        {'path':source_paths[7],'lines':[88,108],'finding':'_point_network explicitly inserts trace.initial_gap_m into free-anchor offsets independently of point positions. It therefore provides no geometric rest-gap certificate.'},
+        {'path':source_paths[8],'lines':[302,310,344,354,455,458],'finding':'Existing curved endpoint equilibrium keeps all16 old affine anchor operators and current old free-anchor states, then advances the old histories once. It does not replace those virtual ports with actual common-map retained-cut normals/gaps.'}],
+      'minimum_missing_material_port_correspondence':[
+        'Identify the actual two retained material faces for each active cut, their true supported common-reference (theta,tau) sets, source material labels, owner histories and complete actual masks. Prove both face images/correspondence, rather than using old trace name or old Gauss coordinate alone.',
+        'Current retained-cut topology can include cross pairs and cuts whose live material was not archived at an old first event. The16 causal archive branch masks cannot be assumed to be the current cut partition. Bind and classify current-cut ancestry independently before using a first-event source family.',
+        'Declare which unchanged old atom lineage or continuous receiver family is attached to each retained cut, where it was transported at the first event, and which labels are archived/inactive. Preserve all16 histories once even when their old original donor labels are absent from retained material; do not copy one node state to a nearby cut point.',
+        'Specify and prove the reference receiver-frame/director rule relating old literal inclined axes to the actual new common-map unit normal/down direction. Existing zero-work law fixes the old receiver frame and does not infer this change from Phi or common A.',
+        'Build actual h_current and frozen h_reference from the same proved material face correspondence and common physical tau. Then express g_free_current=g_free_source+(h_current-h_reference). Keep preload -0.1 as constitutive eigen-offset unless a separate physical rest-gap/reference law proves its relation to the cut.',
+        'At the adoption clock, retain the CURRENT native16 state/continuous-memory/free-anchor endpoint. The initial offset -0.1 must not replace current gaps in [-0.01858532501162713,-0.009223489389366069]. A reference change is zero-duration and cannot advance or reset either native or local-contact clocks.',
+        'Declare the pushforward of the old receiver interface/nodal measure to the true current cut face area J dtheta dtau or pay/partition its energy transfer explicitly. The causal coarea factor cannot replace contact area. Preserve old energy, plastic memory, cumulative work and elapsed clocks once.',
+        'Partition the old series-column strain energy/compliance consistently with the new 3D bulk model and boundary spring law. Simply using the same old1000m column compliance in addition to new bulk response does not certify a physical contact law or prevent duplicated compliance/energy.'
+      ],
+      'new_common_map_physical_current_cut_gap_and_normal_law_already_defined':False,'existing_reference_transport_can_preserve_authenticated_history_if_independent_geometry_binding_supplied':True,
+      'sixteen_causal_branches_equal_sixteen_old_mechanical_atom_histories':False,'old_initial_gap_can_be_used_as_geometric_face_clearance_without_correspondence':False,'old_current_histories_may_be_reset':False,
+      'original_accepted_native_interval_invalidated':False,'scope':'missing reference and memory correspondence for the NEW common-map retained-cut law; unchanged accepted old native interval remains historical evidence',
+      'whole_clock_physical_admission_or_force_equilibrium_certified':False,'elapsed_s':time.monotonic()-start}
+    OUT.write_bytes(h.enc(report)+b'\n')
+    print(json.dumps({'status':report['status'],'report':str(OUT),'report_raw_sha256':sha(OUT),'script_sha256':sha(Path(__file__)),'archived_donor_atoms':archived,'live_donor_atoms':live,'elapsed_s':report['elapsed_s']}))
+
+if __name__=='__main__':main()

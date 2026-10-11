@@ -1,0 +1,280 @@
+"""New saved replay of the earlier inline proof, not its original source.
+
+Read-only inputs; stdlib exact fractions and outward dyadic intervals only.
+The proof uses the whole saved128 A interval, after checking that the literal
+A in the authenticated AFFINE packet and pinned main report lies inside it.
+"""
+import argparse
+from fractions import Fraction as F
+import hashlib
+import json
+from math import factorial, isqrt
+from pathlib import Path
+
+BITS = 256
+SCALE = 1 << BITS
+ORDER = 12
+AFFINE_RAW = 'ccd511b2b82e66ba103d0d900b993a18d02953288f447c71ac9e589dc70c7d1e'
+AFFINE_SEAL = 'afbc10eb17cdc173177a32507be37f77f936827fe83e64764165ae702f892697'
+INLINE_REPORT_RAW = '82d52357b2d16d2bb91cb2cb4e181a5c1a799eabb70e4522e156d2c3e980de52'
+MAIN_RAW = '5dcf4003be2a2cbe132f8950351242d1fbc8c1cf14b532ef232d43dbddb2601c'
+SOURCE_SNAPSHOT = '8fea47313ba8c5db3f26648b34a3bbb222201d432671a0d720324c0af9bf8710'
+
+
+def encoded(value):
+    return json.dumps(value, sort_keys=True, separators=(',', ':'), allow_nan=False).encode()
+
+
+def raw_read(path, digest):
+    raw = Path(path).read_bytes()
+    assert hashlib.sha256(raw).hexdigest() == digest, ('changed raw input', path)
+    return json.loads(raw)
+
+
+def pair(value):
+    return F(value[0], value[1])
+
+
+def dyadic_lower(value):
+    return F((value.numerator * SCALE) // value.denominator, SCALE)
+
+
+def dyadic_upper(value):
+    return F(-((-value.numerator * SCALE) // value.denominator), SCALE)
+
+
+class I:
+    def __init__(self, lo, hi=None):
+        if isinstance(lo, I):
+            self.lo, self.hi = lo.lo, lo.hi
+            return
+        self.lo, self.hi = F(lo), F(lo if hi is None else hi)
+        assert self.lo <= self.hi
+
+    @staticmethod
+    def rounded(lo, hi):
+        return I(dyadic_lower(lo), dyadic_upper(hi))
+
+    def __add__(self, other):
+        other = I(other)
+        return I.rounded(self.lo + other.lo, self.hi + other.hi)
+
+    __radd__ = __add__
+
+    def __neg__(self):
+        return I(-self.hi, -self.lo)
+
+    def __sub__(self, other):
+        return self + -I(other)
+
+    def __rsub__(self, other):
+        return I(other) + -self
+
+    def __mul__(self, other):
+        other = I(other)
+        products = (self.lo * other.lo, self.lo * other.hi,
+                    self.hi * other.lo, self.hi * other.hi)
+        return I.rounded(min(products), max(products))
+
+    __rmul__ = __mul__
+
+    def __truediv__(self, other):
+        other = I(other)
+        assert not other.lo <= 0 <= other.hi
+        return self * I.rounded(1 / other.hi, 1 / other.lo)
+
+    def payload(self):
+        return dict(lo=[self.lo.numerator, self.lo.denominator],
+                    hi=[self.hi.numerator, self.hi.denominator])
+
+    def abs_upper(self):
+        return max(abs(self.lo), abs(self.hi))
+
+
+def read_i(value):
+    return I(pair(value['lo']), pair(value['hi']))
+
+
+def sqrt_i(value):
+    assert value.lo >= 0
+    def floor_sqrt(x):
+        return isqrt((x.numerator << (2 * BITS)) // x.denominator)
+    low, high = floor_sqrt(value.lo), floor_sqrt(value.hi)
+    upper = high if F(high, SCALE) ** 2 == value.hi else high + 1
+    result = I(F(low, SCALE), F(upper, SCALE))
+    assert result.lo ** 2 <= value.lo and result.hi ** 2 >= value.hi
+    return result
+
+
+def dot(a, b):
+    return sum((x * y for x, y in zip(a, b)), I(0))
+
+
+def cross(a, b):
+    return (a[1] * b[2] - a[2] * b[1],
+            a[2] * b[0] - a[0] * b[2],
+            a[0] * b[1] - a[1] * b[0])
+
+
+def rotate_vector(vector, axis):
+    """exp([axis]_cross) vector, Taylor with an absolute matrix-norm tail."""
+    axis, vector = tuple(map(I, axis)), tuple(map(I, vector))
+    rho = sum(x.abs_upper() for x in axis)
+    maximum = max(x.abs_upper() for x in vector)
+    assert rho < 1
+    term = vector
+    result = vector
+    for n in range(1, ORDER + 1):
+        term = tuple(x / n for x in cross(axis, term))
+        result = tuple(x + y for x, y in zip(result, term))
+    tail = maximum * rho ** (ORDER + 1) / factorial(ORDER + 1)
+    tail /= 1 - rho / (ORDER + 2)
+    result = tuple(x + I(-tail, tail) for x in result)
+    return result, tail
+
+
+def exact_float(value):
+    return F.from_float(float(value))
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--source-packet', default='/workspace/Habitable-Moon-Project/analysis/geometric_native_affine_body_validation/release_validation_01/native_control/source_packet.json')
+    parser.add_argument('--independent-report', default='/tmp/native_cold_initial_overlap_stdlib_independent_20261005.json')
+    parser.add_argument('--main-report', default='/tmp/native_cold_initial_overlap_readonly_diagnostic_20261005.json')
+    parser.add_argument('--output', default='/tmp/native_cold_initial_overlap_stdlib_replay_inclusion_20261005.json')
+    args = parser.parse_args()
+    packet = raw_read(args.source_packet, AFFINE_RAW)
+    sealed = dict(packet)
+    assert sealed.pop('packet_sha256') == AFFINE_SEAL
+    assert hashlib.sha256(encoded(sealed)).hexdigest() == AFFINE_SEAL
+    old = raw_read(args.independent_report, INLINE_REPORT_RAW)
+    diagnosed = raw_read(args.main_report, MAIN_RAW)
+    old_sealed = dict(old)
+    old_seal = old_sealed.pop('audit_sha256')
+    assert hashlib.sha256(encoded(old_sealed)).hexdigest() == old_seal
+    assert old['source_snapshot_sha256'] == packet['source_snapshot_sha256'] == SOURCE_SNAPSHOT
+    assert old['project_imports_used'] is False
+    epoch = packet['before']['snapshot']['current_material_epoch']
+    material = epoch['source_material_state']
+    mechanics = material['original_mechanics_payload']
+    reference = packet['saved_joint_reference_field']
+    R = exact_float(material['journal']['source_surface']['radius_km']) * 1000
+    assert R == 100000
+    box = (I(-57050, -56950), I(75950, 76050), I(1850, 1950))
+    assert [x.payload() for x in box] == old['world_box_bounds_m']
+    radius = sqrt_i(dot(box, box))
+    radius3 = radius * radius * radius
+    unit = tuple(x / radius for x in box)
+    tau = (I(R ** 3) - radius3) / (3 * R ** 2)
+    rows = []
+    for parent_id in ('octant:2', 'octant:3'):
+        component = next(c for c in epoch['components'] if c['original_parent_id'] == parent_id)
+        component_id, owner = component['component_id'], component['owner']
+        assert owner == 0 and component['material_kind'] == 'original_live'
+        parent = next(p for p in material['journal']['source_surface']['fragments'] if p['fragment_id'] == parent_id)
+        allocation = next(a for a in material['parent_allocations'] if a['fragment_id'] == parent_id)
+        assert allocation['live_domain_id'] == component_id
+        assert allocation['owner'] == owner and allocation['material_id'] == component['material_id']
+        assert read_i(allocation['archived_area_bounds_sr']).lo == read_i(allocation['archived_area_bounds_sr']).hi == 0
+        assert not any(d['fragment_id'] == parent_id for d in material['sweep_certificate']['donor_domains'])
+        assert not any(c['negative_component_id'] == component_id for c in epoch['paired_corrections'])
+        assert not parent['geometry']['pose']
+        assert all(not s['rotations'] for s in parent['geometry']['supports'])
+        histories = [dict(omega_rad_per_myr=dict(material['journal']['omega_rad_per_myr'])[owner],
+                          dt_myr=material['journal']['dt_myr'])]
+        histories += dict(epoch['additional_owner_histories'])[owner]
+        assert len(component['proxy_geometries']) == 1
+        proxy = component['proxy_geometries'][0]
+        assert proxy['pose'] == histories
+        assert proxy['supports'] == parent['geometry']['supports']
+        assert proxy['vertices'] == parent['geometry']['vertices']
+        group = next(g for g in reference['groups'] if component_id in g['component_ids'])
+        aliases = tuple(read_i(a) for a in group['angular_rate_per_physical_volume_depth_m'])
+        old_row = next(b for b in old['banks'] if b['component_id'] == component_id)
+        assert [x.payload() for x in aliases] == old_row['saved_group_rate_bounds']
+        main_row = next(b for b in diagnosed['banks'] if b['component_id'] == component_id)
+        # The canonical literal A is directly present in authenticated AFFINE
+        # domains belonging to this same source continuity group, not inferred
+        # by taking any saved128 midpoint.
+        literal_sources = [(i, c) for i, c in enumerate(packet['affine_body_components'])
+                           if c['component_id'] in group['component_ids']]
+        if group['family_ids']:
+            assert literal_sources
+            literal = tuple(pair(v) for v in literal_sources[0][1]['domain']['angular_rate_per_physical_volume_depth_m'])
+            assert all(tuple(pair(v) for v in c['domain']['angular_rate_per_physical_volume_depth_m']) == literal
+                       for _, c in literal_sources)
+        else:
+            assert all(x.lo == x.hi == 0 for x in aliases)
+            literal = (F(0),) * 3
+        assert literal == tuple(pair(v) for v in main_row['literal_depth_rate_per_m'])
+        assert all(x.lo <= a <= x.hi for x, a in zip(aliases, literal))
+        pulled, joint_tail = rotate_vector(unit, tuple(-a * tau for a in aliases))
+        owner_tails = []
+        for history in reversed(histories):
+            axis = tuple(-exact_float(v) * exact_float(history['dt_myr']) for v in history['omega_rad_per_myr'])
+            pulled, tail = rotate_vector(pulled, axis)
+            owner_tails.append(tail)
+        supports = [(s['normal'], dot(tuple(map(F, s['normal'])), pulled))
+                    for s in parent['geometry']['supports']]
+        assert all(value.lo > 0 for _, value in supports)
+        binding = next(b for b in material['trace_bindings'] if b['receiver_fragment_id'] == parent_id)
+        trace_id = binding['trace_id']
+        trace = next(t for t in mechanics['fault_traces']['traces'] if t['trace_id'] == trace_id)
+        inward = cross(tuple(exact_float(x) for x in trace['start']), tuple(exact_float(x) for x in trace['end']))
+        width = exact_float(next(b for b in mechanics['bending_parameters'] if b['trace_id'] == trace_id)['over']['width_m'])
+        beta_cut = width / R
+        assert beta_cut == F(3, 20) == pair(old_row['physical_clamp_beta'])
+        sin_beta = dot(inward, pulled)
+        assert sin_beta.lo > beta_cut
+        tip_row = next(t for t in packet['before']['snapshot']['transverse_displacement_m'] if t[0] == trace_id)
+        wref = exact_float(tip_row[2])
+        roof = read_i(dict(reference['top_radial_displacements_m'])[component_id])
+        assert roof.lo == roof.hi == wref
+        H = sum(exact_float(x) for x in parent['parcel']['specific_properties'][:2]) * 1000
+        assert H == 10000 == pair(old_row['actual_material_H_m'])
+        depth = (I((R + wref) ** 3) - radius3) / (3 * R ** 2)
+        assert 0 < depth.lo < depth.hi < H
+        rows.append(dict(component_id=component_id, parent_id=parent_id, owner=owner,
+            whole_parent_unarchived_authenticated=True,
+            literal_A_from_affine_domain_paths=['affine_body_components/%d/domain/angular_rate_per_physical_volume_depth_m' % i for i, _ in literal_sources],
+            literal_A_per_m=[[a.numerator, a.denominator] for a in literal],
+            literal_A_equals_pinned_main_report=True,
+            literal_A_inside_authenticated_whole_saved128_aliases=True,
+            saved128_midpoint_used=False, entire_saved_A_interval_used=True,
+            source_owner_history=histories,
+            strict_parent_support_bounds=[dict(normal=n, bounds=v.payload()) for n, v in supports],
+            material_depth_bounds_m=depth.payload(), sin_beta_bounds=sin_beta.payload(),
+            physical_clamp_beta=[beta_cut.numerator, beta_cut.denominator],
+            joint_Taylor_tail=[joint_tail.numerator, joint_tail.denominator],
+            owner_Taylor_tails=[[t.numerator, t.denominator] for t in owner_tails],
+            seven_modal_displacements_and_gradients_zero=True))
+    report = dict(format='stdlib-independent-initial-overlap-replay-and-literal-A-inclusion-1',
+        replay_source_role='New persisted standalone replay; original proof source was an unsaved inline command',
+        replay_source_raw_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+        affine_packet_raw_sha256=AFFINE_RAW, affine_packet_seal_sha256=AFFINE_SEAL,
+        pinned_main_report_raw_sha256=MAIN_RAW, unchanged_inline_report_raw_sha256=INLINE_REPORT_RAW,
+        source_snapshot_sha256=SOURCE_SNAPSHOT,
+        project_imports_used=False, fractional_outward_rounding_bits=BITS,
+        SO3_matrix_exp_Taylor_order=ORDER, banks=rows,
+        world_box_bounds_m=[x.payload() for x in box], radius_bounds_m=radius.payload(),
+        physical_volume_depth_bounds_m=tau.payload(), common_open_box_volume_m3=100 ** 3,
+        proposed_saved_3D_reference_initial_overlap_proved=True,
+        old_accepted_native_interval_invalidated=False,
+        all_pair_or_whole_clock_admission_certified=False,
+        any_supported_cold_modal_amplitude_can_remove_this_box=False)
+    report['audit_sha256'] = hashlib.sha256(encoded(report)).hexdigest()
+    # A separate receipt is written. The earlier independent report is never mutated.
+    Path(args.output).write_text(json.dumps(report, sort_keys=True, indent=2) + '\n')
+    assert hashlib.sha256(Path(args.independent_report).read_bytes()).hexdigest() == INLINE_REPORT_RAW
+    print('replay_source_raw_sha256', report['replay_source_raw_sha256'])
+    print('receipt_raw_sha256', hashlib.sha256(Path(args.output).read_bytes()).hexdigest())
+    for row in rows:
+        print(row['parent_id'], 'support_lower', [float(pair(v['bounds']['lo'])) for v in row['strict_parent_support_bounds']],
+              'depth', [float(pair(row['material_depth_bounds_m'][k])) for k in ('lo', 'hi')],
+              'sin_beta_lower', float(pair(row['sin_beta_bounds']['lo'])))
+    print('receipt', args.output)
+
+
+if __name__ == '__main__':
+    main()

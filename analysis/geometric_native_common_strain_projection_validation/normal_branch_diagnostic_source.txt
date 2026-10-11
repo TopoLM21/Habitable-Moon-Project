@@ -1,0 +1,80 @@
+"""Read-only Fraction diagnostic of source-normal interval dependency.
+
+No project modules, quadrature, force solver, midpoint or typed registry are
+used. All input bytes are independently pinned completed source packets.
+"""
+from fractions import Fraction as F
+from pathlib import Path
+import hashlib,json,time
+ROOT=Path('/workspace/Habitable-Moon-Project')
+INPUTS=(
+('closed841','analysis/geometric_native_common_reference_validation/release_validation_01/native_control/source_packet.json','dc8f820dbd926c53223a5c141a10296d1c7135efc6bf1077763785866dda9275'),
+('carrier867','analysis/geometric_native_common_source_carrier_validation/release_validation_02/native_control/source_packet.json','265206430b4c864db32bce1be0a9a75b71fa180158f3d81e4f52131bebdf320c'),
+('transfer871','analysis/geometric_native_common_material_transfer_validation/release_validation_01/native_control/source_packet.json','a9fcc7874c0e68940e20ded658748300f55d9f1d296db5c9d67b59269ac8b3ed'))
+ENC=lambda x:json.dumps(x,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+SHA=lambda x:hashlib.sha256(x).hexdigest()
+def scalar(v):
+ assert type(v)is list and len(v)==2 and all(type(x)is int for x in v)
+ return F(*v)
+def interval(v):
+ return scalar(v['lo']),scalar(v['hi'])
+def add(a,b):return a[0]+b[0],a[1]+b[1]
+def neg(a):return -a[1],-a[0]
+def sub(a,b):return add(a,neg(b))
+def mul(a,b):
+ v=tuple(x*y for x in a for y in b);return min(v),max(v)
+def div(a,b):
+ assert not b[0]<=0<=b[1]
+ v=tuple(x/y for x in a for y in b);return min(v),max(v)
+def power_two(v):return F(1<<v)if v>=0 else F(1,1<<-v)
+def floor_log_two(v):
+ n,d=v.numerator,v.denominator;e=n.bit_length()-d.bit_length()
+ return e-int(n<(d<<e)if e>=0 else (n<<-e)<d)
+def rounded(v,precision=96):
+ maximum=max(map(abs,v))
+ if not maximum:return F(0),F(0)
+ bits=(3322*(precision+16)+999)//1000+8
+ scale=power_two(bits-floor_log_two(maximum));lo,hi=(x*scale for x in v)
+ return F(lo.numerator//lo.denominator)/scale,F(-((-hi.numerator)//hi.denominator))/scale
+def encode_scalar(v):return [v.numerator,v.denominator]
+def encode_interval(v):return dict(lo=encode_scalar(v[0]),hi=encode_scalar(v[1]))
+def show(v):return [float(v[0]),float(v[1])]
+def classify(v):
+ return 'STRICTLY_COMPRESSED'if v[1]<0 else 'STRICTLY_OPEN'if v[0]>0 else 'TOUCHES_OPEN_THRESHOLD'if v[0]==v[1]==0 else 'CROSSES_OPEN_THRESHOLD'
+def main():
+ started=time.perf_counter();packets={};dependencies=[]
+ for name,path,rawsha in INPUTS:
+  raw=(ROOT/path).read_bytes();assert SHA(raw)==rawsha
+  data=json.loads(raw);seal=data['packet_sha256'];assert SHA(ENC({k:v for k,v in data.items()if k!='packet_sha256'}))==seal
+  packets[name]=data;dependencies.append(dict(name=name,path=path,raw_sha256=rawsha,packet_sha256=seal,bytes=len(raw)))
+  print('AUTHENTIC_INPUT',name,'PASS',flush=True)
+ transfer=packets['transfer871']['material_transfer'];carrier=packets['carrier867']['carrier_system'];beams={x['component_id']:x for x in transfer['beams']}
+ projections={};projection_rows=[]
+ for row in packets['closed841']['cold_components']:
+  raw=row['diagnostic_response']['raw_integrals'];k=interval(raw['reference_tip_strain_stiffness_n_m']);p=interval(raw['projection_remainder_n']);assert k[0]>0
+  a=scalar(raw['coordinates_m'][0]);s=rounded(add((a,a),div(p,k)));beam=beams[row['component_id']];coordinate=(beam['trace_id'],beam['side']);assert coordinate not in projections;projections[coordinate]=s
+  projection_rows.append(dict(component_id=row['component_id'],trace_id=beam['trace_id'],side=beam['side'],projection_bounds_m=encode_interval(s),projection_decimal_m=show(s),reference_tip_tensor_stiffness_bounds_n_m=encode_interval(k),projection_remainder_bounds_n=encode_interval(p)))
+ rows=[]
+ for c in carrier['carriers']:
+  b=c['archival_old_reference'];ds=projections[c['trace_id'],'sub'];do=projections[c['trace_id'],'over'];vs=tuple(interval(x)for x in b['sub_direction_bounds']);vo=tuple(interval(x)for x in b['over_direction_bounds']);n=tuple(interval(x)for x in b['receiver_director_bounds'][0]);assert all(x[0]==x[1]for x in vs+vo+n)
+  expanded=rounded(sum_interval(mul(e,sub(mul(do,o),mul(ds,s)))for e,s,o in zip(n,vs,vo)))
+  ks=sum((e[0]*s[0]for e,s in zip(n,vs)),F(0));ko=sum((e[0]*o[0]for e,o in zip(n,vo)),F(0))
+  factored=rounded(mul(sub(do,ds),(ks,ks))if ks==ko else sub(mul(do,(ko,ko)),mul(ds,(ks,ks))))
+  kn=scalar(c['series_stiffness_exact_pa_m'][0]);tn=scalar(c['literal_source_tractions_pa'][0]);assert kn>0 and tn<0
+  expanded_t=rounded(add((tn,tn),mul((kn,kn),expanded)));factored_t=rounded(add((tn,tn),mul((kn,kn),factored)));opening=-tn/kn
+  item=dict(point_id=c['point_id'],trace_id=c['trace_id'],original_normal_traction_pa=encode_scalar(tn),normal_series_stiffness_pa_m=encode_scalar(kn),normal_opening_eta_m=encode_scalar(opening),normal_opening_eta_decimal_m=float(opening),sub_direction_equals_over_direction=vs==vo,all_source_direction_and_receiver_normal_bounds_singleton=True,
+   sub_normal_contraction_exact=encode_scalar(ks),over_normal_contraction_exact=encode_scalar(ko),expanded_production_eta_bounds_m=encode_interval(expanded),expanded_production_eta_decimal_m=show(expanded),expanded_production_traction_bounds_pa=encode_interval(expanded_t),expanded_production_traction_decimal_pa=show(expanded_t),expanded_classification=classify(expanded_t),
+   coefficient_factored_eta_bounds_m=encode_interval(factored),coefficient_factored_eta_decimal_m=show(factored),coefficient_factored_traction_bounds_pa=encode_interval(factored_t),coefficient_factored_traction_decimal_pa=show(factored_t),factored_classification=classify(factored_t))
+  assert expanded[0]<=factored[0]<=factored[1]<=expanded[1]
+  rows.append(item)
+  print(c['point_id'],'opening_eta',float(opening),'expanded_eta',show(expanded),'expanded_T',show(expanded_t),'factored_eta',show(factored),'factored_T',show(factored_t),classify(expanded_t),'->',classify(factored_t),flush=True)
+ counts=lambda key:{name:sum(row[key]==name for row in rows)for name in ('STRICTLY_COMPRESSED','STRICTLY_OPEN','TOUCHES_OPEN_THRESHOLD','CROSSES_OPEN_THRESHOLD')}
+ report=dict(format='common-cold-projection-normal-branch-exact-dependency-diagnostic-1',status='PASS_READ_ONLY_DIAGNOSTIC',seconds=time.perf_counter()-started,dependencies=dependencies,projection_count=len(projections),source_mechanism_count=len(rows),projection_rows=projection_rows,source_mechanisms=rows,expanded_classifications=counts('expanded_classification'),factored_classifications=counts('factored_classification'),
+ source_code_changed=False,fresh_tensor_quadrature_executed=False,old_force_solve_reexecuted=False,project_modules_imported=False,midpoint_selected=False,
+ conclusion='Coefficient contraction before multiplying repeated scalar interval variables preserves the exact same declared source-normal polynomial and avoids loss of radial/director correlation. It is a rigorous correlated enclosure, not a relaxed branch guard or a new physical input.')
+ report['diagnostic_sha256']=SHA(ENC(report));Path('/tmp/native_common_strain_projection_normal_branch_diagnostic_20261006.json').write_bytes(ENC(report)+b'\n');print('CLASSIFICATIONS',report['expanded_classifications'],report['factored_classifications'],flush=True)
+def sum_interval(values):
+ result=(F(0),F(0))
+ for value in values:result=add(result,value)
+ return result
+if __name__=='__main__':main()

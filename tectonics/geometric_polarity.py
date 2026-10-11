@@ -14,7 +14,7 @@ import numpy as np
 
 from .geometric_contacts import extract_contacts
 from .geometric_surface import rotations
-from .spherical_polygons import arc_length
+from .spherical_polygons import _shared_minor_arc, arc_length
 from .spherical_polygons import intersect_convex, rotate_polygon
 
 
@@ -77,35 +77,8 @@ def intersect_arcs(a0, a1, b0, b1):
     Plane coincidence is filtered at arithmetic precision. Point contact alone
     gives no support. No geographic nearest-neighbor or minimum length rule.
     """
-    a0, a1, b0, b1 = [np.asarray(point, dtype=float) for point in (a0, a1, b0, b1)]
-    length_a, length_b = arc_length(a0, a1), arc_length(b0, b1)
-    if not (0. < length_a < math.pi and 0. < length_b < math.pi):
-        return None
-    x, y = (a0, a1) if length_a >= length_b else (b0, b1)
-    normal = np.cross(x, y-x)
-    normal /= np.linalg.norm(normal)
-    probes = (b0, b1) if length_a >= length_b else (a0, a1)
-    if any(abs(float(np.dot(point, normal))) > 32.*np.finfo(float).eps*float(
-            np.sum(np.abs(point*normal))) for point in probes):
-        return None
-    tangent = np.cross(normal, a0)
-    if float(np.dot(tangent, a1)) < 0.:
-        tangent = -tangent
-    start, end = [math.atan2(float(np.dot(tangent, p)), float(np.dot(a0, p))) for p in (b0, b1)]
-    if end-start > math.pi:
-        end -= 2.*math.pi
-    elif end-start < -math.pi:
-        end += 2.*math.pi
-    for shift in (-2.*math.pi, 0., 2.*math.pi):
-        low, high = max(0., min(start, end)+shift), min(length_a, max(start, end)+shift)
-        if high <= low:
-            continue
-        candidates = ((0., a0), (length_a, a1), (start+shift, b0), (end+shift, b1))
-        first = min(candidates, key=lambda pair: abs(pair[0]-low))[1]
-        last = min(candidates, key=lambda pair: abs(pair[0]-high))[1]
-        if not np.array_equal(first, last):
-            return tuple(map(float, first)), tuple(map(float, last))
-    return None
+    shared = _shared_minor_arc(a0, a1, b0, b1)
+    return None if shared is None else tuple(tuple(map(float, point)) for point in shared)
 
 
 def contact_polarity_report(contacts, evidence):

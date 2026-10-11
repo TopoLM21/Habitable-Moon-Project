@@ -1,0 +1,98 @@
+"""Cheap stdlib source design replay; no quadrature or physical adoption."""
+import hashlib,json,math,time
+from fractions import Fraction as F
+from functools import reduce
+from pathlib import Path
+P=Path('/workspace/Habitable-Moon-Project/analysis/geometric_native_affine_body_validation/release_validation_01/native_control/source_packet.json')
+RAW='ccd511b2b82e66ba103d0d900b993a18d02953288f447c71ac9e589dc70c7d1e'
+OUT=Path('/tmp/native_common_reference_source_design_audit_20261005.json')
+def encode(x):return json.dumps(x,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+def digest(x):return hashlib.sha256(encode(x)).hexdigest()
+def f(x):return F(*x)
+def pl(x):
+ if isinstance(x,F):return [x.numerator,x.denominator]
+ if isinstance(x,dict):return {k:pl(v) for k,v in x.items()}
+ if isinstance(x,(list,tuple)):return [pl(v) for v in x]
+ return x
+def primitive(v):
+ lcm=math.lcm(*(x.denominator for x in v));ints=tuple(int(x*lcm) for x in v);g=reduce(math.gcd,(abs(x) for x in ints));assert g
+ return tuple(x//g for x in ints)
+def cross(a,b):return (a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0])
+def dot(a,b):return sum((x*y for x,y in zip(a,b)),F(0))
+t=time.perf_counter();raw=P.read_bytes();assert hashlib.sha256(raw).hexdigest()==RAW
+p=json.loads(raw);unsealed=dict(p);assert unsealed.pop('packet_sha256')==digest(unsealed)
+before=p['before'];snapshot=before['snapshot'];epoch=snapshot['current_material_epoch'];material=epoch['source_material_state'];journal=material['journal'];mechanics=material['original_mechanics_payload']
+support=before['temporal_admission']['original_bank_support'];R=F.from_float(journal['source_surface']['radius_km'])*1000
+axes={owner:tuple(f(x) for x in omega) for owner,omega in support['omega_records']}
+assert axes=={owner:tuple(F.from_float(x) for x in omega) for owner,omega in journal['omega_rad_per_myr']}
+dt=F.from_float(before['original_physical_history']['literal_dt_myr']);assert dt==F.from_float(journal['dt_myr'])
+rho=dt*sum((abs(x) for omega in axes.values() for x in omega),F(0));error=rho/(1-rho)
+assert 0<rho<F(1,4) and rho==f(support['rotation_path_l1_bound']) and error==f(support['normal_component_error_bound'])
+parents={row['fragment_id']:row for row in journal['source_surface']['fragments']}
+alloc={row['fragment_id']:row for row in material['parent_allocations']};domains={row['fragment_id']:row for row in material['sweep_certificate']['donor_domains']}
+traces={row['trace_id']:row for row in mechanics['fault_traces']['traces']}
+bindings={row['trace_id']:row for row in material['trace_bindings']}
+parameters={row['trace_id']:row for row in mechanics['bending_parameters']}
+assert len(traces)==len(bindings)==len(parameters)==4 and len(support['live_clamps'])==8
+clamps=[]
+for row in support['live_clamps']:
+ trace=traces[row['trace_id']];role=row['bank'];parameter=parameters[row['trace_id']][role];width=F.from_float(parameter['width_m']);b=width/R
+ assert b==f(row['exact_width_radians']) and width==f(row['width_m']) and 0<b<=F(1,4)
+ assert 1-3*b/(2*b)+b**3/(2*b**3)==0 and -3/(2*b)+3*b**2/(2*b**3)==0
+ S=tuple(F.from_float(x) for x in trace['start']);E=tuple(F.from_float(x) for x in trace['end']);normal=tuple((-1 if role=='sub' else 1)*x for x in cross(S,E))
+ assert dot(S,S)==dot(E,E)==dot(normal,normal)==1 and dot(S,E)==0
+ assert trace['subducting_plate' if role=='sub' else 'overriding_plate']==row['owner']
+ points=tuple(primitive(tuple(x+offset*n for x,n in zip(direction,normal))) for direction,offset in ((S,b/4),(E,b/4),(E,4*b),(S,4*b)))
+ actual=row['enclosing_geometry'];assert actual['pose']==[] and all(v['kind']=='seed' and not v['rotations'] and not v['planes'] for v in actual['vertices'])
+ actualpoints=tuple(tuple(v['reference']) for v in actual['vertices']);assert set(points)==set(actualpoints)
+ assert all(not plane['rotations'] for plane in actual['supports'])
+ assert all(dot(tuple(plane['normal']),point)>=0 for plane in actual['supports'] for point in points)
+ expected_planes={primitive(cross(a,b)) for a,b in zip(actualpoints,actualpoints[1:]+actualpoints[:1])}
+ assert expected_planes=={tuple(plane['normal']) for plane in actual['supports']}
+ owned={pid for pid,parent in parents.items() if parent['parcel']['plate']==row['owner']}
+ assert set(row['original_live_parent_ids'])==owned
+ parent_id=bindings[row['trace_id']]['donor_fragment_id' if role=='sub' else 'receiver_fragment_id'];assert parent_id in owned
+ margins=tuple(-F(v[0])+error*sum((abs(F(x)) for x in v),F(0)) for v in actualpoints) if role=='sub' else ()
+ assert tuple(f(x) for x in row['vertex_entry_depth_upper_bounds'])==margins
+ if role=='sub':assert all(x<0 for x in margins)
+ else:assert all(alloc[pid]['archived_area_bounds_sr']=={'lo':[0,1],'hi':[0,1]} and pid not in domains for pid in owned)
+ clamps.append(dict(trace_id=row['trace_id'],bank=role,owner=row['owner'],width_m=width,material_beta=b,
+  reconstructed_envelope_vertex_count=4,full_time_donor_vertex_entry_depth_upper=margins,
+  retained_original_parent_ids=sorted(owned),chi_and_first_derivative_at_beta_b_exactly_zero=True,
+  inverse_common_map_chain_rule_preserves_all_seven_zero_gradients=True))
+families=[]
+component={row['component_id']:row for row in epoch['components']};roof=dict(p['saved_joint_reference_field']['top_radial_displacements_m'])
+for carrier in p['full_reference_face_birth_support']['interface_carriers']:
+ d=carrier['declaration'];donor=component[d['donor_component_id']];receiver=component[d['receiver_component_id']]
+ for kind,c in (('donor',donor),('receiver',receiver)):
+  inherited=carrier[kind]
+  assert inherited['component_id']==c['component_id'] and inherited['parent_id']==c['original_parent_id']
+  assert inherited['material_id']==c['material_id'] and inherited['owner']==c['owner'] and inherited['material_kind']==c['material_kind']
+  assert inherited['domain_expression']==c['domain_expression']
+ assert d['birth_gap_free_m']==-0.01 and d['birth_jump_free_m']==0 and d['parameters']['law']['normal_stiffness_pa_m']==1e7
+ families.append(dict(family_id=d['family_id'],donor_component_id=donor['component_id'],receiver_component_id=receiver['component_id'],
+  donor_roof=roof[donor['component_id']],receiver_roof=roof[receiver['component_id']],source_g0_m=F.from_float(d['birth_gap_free_m']),
+  source_declared_dip_radians=F.from_float(d['dip_radians']),source_vertical_contact_height_m=F.from_float(d['vertical_contact_height_m']),
+  full_carrier_source_sha256=digest(carrier),shared_arc_source_sha256=digest(carrier['exact_initial_shared_arc']),
+  source_columns_used_as_geometry=False,source_mechanical_measure_is_mapped_spatial_measure=False,
+  whole_angle_constant_source_dip_inferred=False,geometric_normal_rest_surface_reconstructed=False))
+states=dict(snapshot['states']);reference=before['original_physical_history']['original_reference'];point_ids={row['point_id'] for row in reference['points']}
+assert len(states)==len(point_ids)==len(reference['materials'])==16 and set(states)==point_ids
+assert all(material['initial_gap_m']==-0.1 and material['law']['normal_stiffness_pa_m']==1e6 for material in reference['materials'])
+coarea=before['temporal_admission']['material_coarea'];assert len(coarea['carrier_masks'])==16 and len(coarea['original_interfaces'])==4
+assert len({(row['original_donor_fragment_id'],row['original_receiver_fragment_id']) for row in coarea['carrier_masks']})==16
+result=dict(status='PASS_SOURCE_BINDING_DESIGN_ONLY',source_packet_raw_sha256=RAW,source_packet_seal=p['packet_sha256'],
+ source_snapshot_sha256=p['source_snapshot_sha256'],source_epoch_sha256=epoch['epoch_sha256'],
+ authentic_live_clamp_majorant_rho=rho,authentic_live_clamp_component_error=error,all_eight_clamp_source_geometry_and_vertex_proofs_recomputed=True,
+ clamp_receipts=clamps,born_family_source_receipts=families,
+ carried_original_mechanical_history_count=16,carried_original_mechanical_history_point_ids=sorted(point_ids),
+ carried_original_state_source_sha256=digest(snapshot['states']),carried_original_spatial_memory_source_sha256=digest(snapshot['spatial_memory']),
+ carried_original_free_anchor_source_sha256=digest(snapshot['free_anchor_fields']),carried_original_contact_path_source_sha256=digest(before['original_physical_history']['contact_time_path']),
+ carried_original_reference_source_sha256=digest(reference),all_old_histories_geometric_rest_sheet_reconstructed=False,
+ original_contact_initial_gap_m=F.from_float(-0.1),born_contact_birth_gap_m=F.from_float(-0.01),
+ original_four_by_four_material_carrier_masks_are_same_as_sixteen_mechanical_nodes=False,
+ normal_rest_reference_created=False,force_equilibrium_certified=False,whole_clock_material_admission=False,
+ source_script_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),seconds=time.perf_counter()-t)
+result=pl(result);result['design_audit_sha256']=digest(result);OUT.write_bytes(encode(result)+b'\n')
+print(encode(dict(status=result['status'],clamps=len(clamps),born_families=len(families),original_states=len(states),seconds=result['seconds'],design_audit_sha256=result['design_audit_sha256'])).decode())
+print('RAW',hashlib.sha256(OUT.read_bytes()).hexdigest(),'SCRIPT',result['source_script_sha256'])

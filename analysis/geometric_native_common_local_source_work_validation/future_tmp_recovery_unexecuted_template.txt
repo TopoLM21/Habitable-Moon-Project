@@ -1,0 +1,352 @@
+"""NEW stdlib raw-copy recovery for the closed current883 temporary inputs.
+
+Fill exactly the three trusted pins copied from the final documentation into
+a disposable copy of this template. Do not edit the manifest-closed original.
+The current manifest and independently trusted reader bytes are checked first.
+All15 associations are derived from closed bootstrap/current gate/current audit
+receipts and compared to the saved final readback. No helper, producer, test,
+physics or baseline code is executed. Existing wrong files cause FAIL before
+any write; only missing direct /tmp destinations are created with exclusive xb.
+This is new source, not a reconstruction of lost recovery-template453 bytes.
+"""
+from pathlib import Path
+import hashlib
+import json
+import os
+import shutil
+import sys
+
+ROOT = Path('/workspace/Habitable-Moon-Project')
+PARENT = ROOT / 'analysis/geometric_native_common_local_source_work_validation'
+PRIOR = ROOT / 'analysis/geometric_native_common_material_surface_transport_validation'
+OLD875 = ROOT / 'analysis/geometric_native_common_strain_projection_validation'
+FINAL = ROOT / 'analysis/geometric_native_common_local_source_work_final_readback'
+MANIFEST_RAW = '<ROOT_FILLS_ACTUAL_FINAL_MANIFEST_RAW>'
+MANIFEST_SEAL = '<ROOT_FILLS_ACTUAL_FINAL_MANIFEST_SELFSEAL>'
+READER_SOURCE_RAW = '<ROOT_FILLS_FINAL_READER_SOURCE_RAW_BEFORE_DOCS>'
+MAP = '5ec421080c7450b362ae5a5b3d02e1b3f82ecf67ee514034a56e60b4a86d4c51'
+MAP_RAW = '1638c727bea07487d9f9c734e0aa5469bde0e79032221b3d1f4134379905a360'
+OLD_MAP = '4a75d4bc7d404fc11d5d252302fe6b6d961797b4a637f921c38acb679485b79c'
+AUDITOR_RAW = '8ae507a66b9087de086a7031d5f18e34336731792f6ef6f91f268fcd7096fc1f'
+SCOPE = 'LOCAL_SOURCE_FORCE_WORK_WITH_DECLARED_INTERNAL_RESIDUAL_COMPONENT_ONLY'
+FINAL_PAYLOADS = frozenset(('console.log', 'manifest_console.log',
+    'manifest_producer_source.txt', 'readback.json', 'readback_source.txt'))
+
+
+def encoded(value):
+    return json.dumps(value, sort_keys=True, separators=(',', ':'),
+        ensure_ascii=False, allow_nan=False).encode()
+
+
+def value_digest(value):
+    return hashlib.sha256(encoded(value)).hexdigest()
+
+
+def require(condition, label):
+    if not condition:
+        raise ValueError(label)
+
+
+def exact(actual, expected, label):
+    require(type(actual) is type(expected) and actual == expected, label)
+    if type(actual) in (dict, list, tuple):
+        require(encoded(actual) == encoded(expected), label + ': complete literal encoding')
+
+
+def valid_pin(pin):
+    return type(pin) is str and len(pin) == 64 and all(c in '0123456789abcdef' for c in pin)
+
+
+def regular(path):
+    path = Path(path)
+    require(path.is_absolute() and path.resolve() == path and path.is_file()
+            and not path.is_symlink(), 'Canonical regular permanent source: ' + str(path))
+    return path
+
+
+def raw(path):
+    result = hashlib.sha256()
+    with Path(path).open('rb') as stream:
+        for block in iter(lambda: stream.read(1 << 20), b''):
+            result.update(block)
+    return result.hexdigest()
+
+
+def sealed(path, key, *, raw_pin=None, selfseal=None):
+    path = regular(path)
+    if raw_pin is not None:
+        require(valid_pin(raw_pin), 'Literal raw pin: ' + str(path))
+        exact(raw(path), raw_pin, 'Trusted saved raw bytes: ' + str(path))
+    value = json.loads(path.read_bytes())
+    require(type(value) is dict and key in value, 'Complete saved sealed object: ' + str(path))
+    body = dict(value)
+    actual = body.pop(key)
+    exact(actual, value_digest(body), 'Complete saved selfseal: ' + str(path))
+    if selfseal is not None:
+        exact(actual, selfseal, 'Saved selfseal association: ' + str(path))
+    return value
+
+
+def console_json(path):
+    regular(path)
+    lines = Path(path).read_text().splitlines()
+    return json.loads(next(line for line in reversed(lines) if line.startswith('{')))
+
+
+def run():
+    for pin in (MANIFEST_RAW, MANIFEST_SEAL, READER_SOURCE_RAW):
+        require(valid_pin(pin), 'Fill the exact three trusted final pins before recovery')
+    require(ROOT.resolve() == ROOT, 'Canonical authorized project root')
+    require(Path.cwd().resolve() == ROOT, 'Run recovery from the exact authorized project root')
+    producer_path = regular(Path(__file__).resolve())
+    producer_before = raw(producer_path)
+    manifest_path = PARENT / 'artifact_manifest.json'
+    manifest = sealed(manifest_path, 'manifest_sha256', raw_pin=MANIFEST_RAW, selfseal=MANIFEST_SEAL)
+    for key, value in (('status', 'PASS_COMPONENT_EVIDENCE_CLOSED'), ('source_count', 883),
+        ('source_map_canonical_sha256', MAP), ('source_map_raw_sha256', MAP_RAW),
+        ('physical_candidate_status', SCOPE), ('closed_release_output_count', 4),
+        ('exact_independent_producer_raw_sha256', AUDITOR_RAW),
+        ('accepted_original_native_intervals', 1), ('accepted_new_native_intervals', 0),
+        ('original_point_1_remaining_work_blocks', 1), ('original_point_1_completed', False)):
+        exact(manifest[key], value, 'Trusted current manifest metadata: ' + key)
+    exact(manifest['closed_component_file_count'], len(manifest['files']), 'Complete current manifest count')
+    # The reader source is independently pinned before relying on any saved
+    # final-archive metadata. It is hashed only, never imported or executed.
+    reader_path = regular(FINAL / 'readback_source.txt')
+    exact(raw(reader_path), READER_SOURCE_RAW, 'Independently trusted final reader source bytes')
+    actual_final_files = {str(path.relative_to(FINAL)) for path in FINAL.rglob('*') if path.is_file()}
+    exact(actual_final_files, set(FINAL_PAYLOADS) | {'archive.json'}, 'Exact relative six-file final archive')
+    archive_path = FINAL / 'archive.json'
+    archive = sealed(archive_path, 'archive_sha256')
+    archive_before = raw(archive_path)
+    archive_keys = {'format', 'status', 'payload_file_count', 'total_closed_file_count',
+        'component_evidence_manifest_kept_separate', 'component_manifest_raw_sha256',
+        'component_manifest_selfseal', 'readback_raw_sha256', 'readback_selfseal',
+        'readback_seconds', 'document_raw_sha256', 'files', 'archive_sha256'}
+    exact(set(archive), archive_keys, 'Entire saved final-archive schema')
+    for key, value in (('format', 'native-common-local-source-work-final-readback-archive-1'),
+        ('status', 'PASS_FINAL883_READBACK_ARCHIVE_CLOSED'), ('payload_file_count', 5),
+        ('total_closed_file_count', 6), ('component_evidence_manifest_kept_separate', True),
+        ('component_manifest_raw_sha256', MANIFEST_RAW), ('component_manifest_selfseal', MANIFEST_SEAL)):
+        exact(archive[key], value, 'Final archive metadata association: ' + key)
+    exact(set(archive['files']), set(FINAL_PAYLOADS), 'Exact five final-archive payload rows')
+    for name, row in archive['files'].items():
+        exact(set(row), {'bytes', 'sha256', 'exact_copy_origin'}, 'Complete final-archive raw payload row')
+        require(type(row['exact_copy_origin']) is str and bool(row['exact_copy_origin']),
+                'Saved exact-copy origin is historical metadata, never a recovery input')
+        require(type(row['bytes']) is int and row['bytes'] >= 0 and valid_pin(row['sha256']),
+                'Literal final-archive payload size and raw pin')
+        path = regular(FINAL / name)
+        exact(path.stat().st_size, row['bytes'], 'Saved final-archive payload byte size: ' + name)
+        exact(raw(path), row['sha256'], 'Saved final-archive payload raw bytes: ' + name)
+    exact(archive['files']['readback_source.txt']['sha256'], READER_SOURCE_RAW,
+          'Trusted reader bytes equal final-archive payload pin')
+    readback_path = FINAL / 'readback.json'
+    readback = sealed(readback_path, 'audit_sha256', raw_pin=archive['readback_raw_sha256'],
+                      selfseal=archive['readback_selfseal'])
+    exact(archive['files']['readback.json']['sha256'], archive['readback_raw_sha256'], 'Readback archive raw-row association')
+    exact(archive['readback_seconds'], readback['seconds'], 'Saved actual final-reader duration')
+    exact(archive['document_raw_sha256'], readback['document_raw_sha256'], 'Saved final documentation snapshot association')
+    exact(console_json(FINAL / 'console.log'), readback, 'Saved actual reader stdout complete receipt association')
+    for key, value in (('status', 'PASS_FINAL883_EVIDENCE_READBACK_ONLY'), ('final_python_source_count', 883),
+        ('unchanged_prior_python_sources', 879), ('current_release', 'release_validation_02'),
+        ('source_map_canonical_sha256', MAP), ('frozen_source_map_raw_sha256', MAP_RAW),
+        ('current_manifest_raw_sha256', MANIFEST_RAW), ('current_manifest_selfseal', MANIFEST_SEAL),
+        ('auditor_source_sha256', READER_SOURCE_RAW), ('actual_independent_auditor_raw_sha256', AUDITOR_RAW),
+        ('all_current_temporary_dependencies_have_exact_closed_permanent_copies', True),
+        ('missing_or_wrong_temp_dependency_regenerated_or_restored', False),
+        ('current_reader_restored_inputs', False), ('project_imports', False),
+        ('baseline_reexecuted', False), ('math_or_solver_or_test_or_quadrature_reexecuted', False)):
+        exact(readback[key], value, 'Complete saved final-readback metadata: ' + key)
+    exact(readback['current_manifest_file_count'], len(manifest['files']), 'Readback current manifest full count')
+    for key in ('wrapper_selfseal', 'native_selfseal', 'packet_selfseal', 'independent_audit_selfseal'):
+        exact(readback[key], manifest[key], 'Readback/manifest current typed receipt association: ' + key)
+    manifest_console = console_json(FINAL / 'manifest_console.log')
+    for key, value in (('status', manifest['status']), ('file_count', len(manifest['files'])),
+        ('manifest_path', str(manifest_path)), ('manifest_raw_sha256', MANIFEST_RAW),
+        ('manifest_selfseal', MANIFEST_SEAL), ('source_map_canonical_sha256', MAP),
+        ('producer_raw_sha256', archive['files']['manifest_producer_source.txt']['sha256']),
+        ('project_imports', False), ('baseline_or_math_or_test_reexecuted', False)):
+        exact(manifest_console[key], value, 'Saved actual manifest protocol console association: ' + key)
+
+    def manifest_row(path):
+        name = str(path.relative_to(ROOT))
+        row = manifest['files'][name]
+        exact(set(row), {'bytes', 'sha256'}, 'Complete trusted current file row')
+        require(type(row['bytes']) is int and row['bytes'] >= 0 and valid_pin(row['sha256']), 'Trusted current row literal size/raw pin')
+        return row
+
+    def current_file(path):
+        path = regular(path)
+        require(path.is_relative_to(ROOT), 'Permanent current evidence is inside ROOT')
+        row = manifest_row(path)
+        exact(path.stat().st_size, row['bytes'], 'Trusted current permanent evidence size')
+        exact(raw(path), row['sha256'], 'Trusted current permanent evidence raw bytes')
+        return row
+
+    bootstrap_path = PARENT / 'baseline_879_bootstrap.json'
+    bootstrap_row = current_file(bootstrap_path)
+    bootstrap = sealed(bootstrap_path, 'audit_sha256', raw_pin=bootstrap_row['sha256'])
+    exact(bootstrap['status'], 'PASS_FINAL879_EVIDENCE_READBACK_ONLY', 'Trusted saved immutable879 bootstrap')
+    exact(bootstrap['final_python_source_count'], 879, 'Bootstrap epoch879')
+    exact(bootstrap['source_map_canonical_sha256'], OLD_MAP, 'Bootstrap authentic old879 source epoch')
+    exact(bootstrap['recorded_raw_dependency_pin_count'], 271, 'Trusted saved complete old271 raw pin map')
+    exact(len(bootstrap['dependency_raw_sha256']), 271, 'Trusted complete old271 raw dependency list')
+    old_manifest_path = PRIOR / 'artifact_manifest.json'
+    old_manifest = sealed(old_manifest_path, 'manifest_sha256', raw_pin=bootstrap['current_manifest_raw_sha256'],
+                          selfseal=bootstrap['current_manifest_selfseal'])
+    exact(bootstrap['dependency_raw_sha256'][str(old_manifest_path)], bootstrap['current_manifest_raw_sha256'], 'Bootstrap old83 manifest raw dependency association')
+    exact(len(old_manifest['files']), 83, 'Saved immutable old879 manifest83')
+    old875_manifest_path = OLD875 / 'artifact_manifest.json'
+    old875_manifest = sealed(old875_manifest_path, 'manifest_sha256',
+                             raw_pin=bootstrap['dependency_raw_sha256'][str(old875_manifest_path)])
+    exact(len(old875_manifest['files']), 73, 'Saved immutable old875 manifest73')
+
+    def permanent(path, pin):
+        path = regular(path)
+        require(path.is_relative_to(ROOT) and valid_pin(pin), 'Canonical permanent recovery source inside ROOT')
+        name = str(path.relative_to(ROOT))
+        matches = [catalogue['files'][name] for catalogue in (manifest, old_manifest, old875_manifest)
+                   if name in catalogue['files']]
+        require(bool(matches), 'Every permanent recovery source belongs to a trusted closed manifest')
+        for row in matches:
+            exact(set(row), {'bytes', 'sha256'}, 'Complete trusted recovery-source raw row')
+            exact(row['sha256'], pin, 'Trusted manifest recovery-source raw pin')
+            exact(path.stat().st_size, row['bytes'], 'Trusted manifest recovery-source byte size')
+        exact(raw(path), pin, 'Trusted permanent recovery-source raw bytes')
+
+    wrapper_path = PARENT / 'release_validation_02/report.json'
+    audit_path = PARENT / 'independent_audit.json'
+    wrapper_row, audit_row = current_file(wrapper_path), current_file(audit_path)
+    wrapper = sealed(wrapper_path, 'report_sha256', raw_pin=wrapper_row['sha256'], selfseal=manifest['wrapper_selfseal'])
+    audit = sealed(audit_path, 'audit_packet_sha256', raw_pin=audit_row['sha256'], selfseal=manifest['independent_audit_selfseal'])
+    for key, value in (('status', 'PASS'), ('source_count', 883), ('pytest_counts', {'passed': 14}),
+        ('pytest_exit_code', 0), ('changed_python_paths', []), ('source_map_before_sha256', MAP),
+        ('source_map_after_sha256', MAP), ('physical_candidate_status', SCOPE)):
+        exact(wrapper[key], value, 'Trusted current selected gate02 metadata: ' + key)
+    for key, value in (('status', 'PASS'), ('final_python_sources', 883), ('fresh_tests', 14),
+        ('audit_scope', SCOPE), ('source_map_canonical_sha256', MAP), ('frozen_source_map_raw_sha256', MAP_RAW),
+        ('auditor_script_sha256', AUDITOR_RAW), ('wrapper_raw_sha256', wrapper_row['sha256']),
+        ('wrapper_selfseal', wrapper['report_sha256'])):
+        exact(audit[key], value, 'Trusted current selected audit metadata: ' + key)
+    exact(len(audit), 119, 'Complete saved current audit119 field count')
+    exact(audit['output_manifest'], wrapper['outputs'], 'Current audit same actual gate output closure')
+    expected = {}
+
+    def association(temporary, copy, pin):
+        target = Path(temporary)
+        require(target.is_absolute() and target.parent == Path('/tmp')
+                and target.resolve(strict=False) == target, 'Direct canonical current /tmp destination')
+        permanent(copy, pin)
+        row = dict(permanent_copy=str(copy), sha256=pin)
+        require(str(target) not in expected, 'Every current temporary destination appears exactly once')
+        expected[str(target)] = row
+
+    inherited = bootstrap['temporary_dependency_exact_closed_copy_associations']
+    exact(len(inherited), 8, 'Exact eight inherited current879 aliases')
+    for temporary, row in inherited.items():
+        exact(set(row), {'permanent_copy', 'sha256'}, 'Complete inherited closed-copy association row')
+        exact(bootstrap['dependency_raw_sha256'][temporary], row['sha256'], 'Inherited current temporary raw pin')
+        exact(bootstrap['dependency_raw_sha256'][row['permanent_copy']], row['sha256'], 'Inherited permanent copy raw pin')
+        association(temporary, Path(row['permanent_copy']), row['sha256'])
+    inherited_temps = {name: pin for name, pin in bootstrap['dependency_raw_sha256'].items()
+                       if Path(name).is_relative_to(Path('/tmp'))}
+    exact(inherited_temps, {name: row['sha256'] for name, row in expected.items()}, 'ALL inherited TMP pins are exactly the current8')
+
+    def baseline(path, pin, seal):
+        receipt = sealed(path, 'audit_sha256', raw_pin=pin, selfseal=seal)
+        permanent(path, pin)
+        for key, value in (('status', 'PASS_IMMUTABLE879_WITH_DECLARED_SOURCE_ADDITIONS_ONLY'),
+            ('baseline_source_count', 879), ('current_python_source_count', 883),
+            ('current_python_source_map_sha256', MAP), ('all879_python_sources_unchanged', True),
+            ('recorded_raw_dependency_pin_count', 277), ('project_imports', False),
+            ('baseline1633_reexecuted', False), ('math_or_solver_or_test_or_quadrature_reexecuted', False)):
+            exact(receipt[key], value, 'Current saved baseline raw-copy metadata: ' + key)
+        exact(receipt['temporary_dependency_exact_closed_copy_associations'], inherited,
+              'Current baseline retains unchanged inherited current8 associations')
+        return receipt
+
+    for when in ('before', 'after'):
+        prefix = 'prior_baseline_' + when
+        path = PARENT / ('baseline_' + when + '_gate.json')
+        receipt = baseline(path, wrapper[prefix + '_raw_sha256'], wrapper[prefix + '_selfseal'])
+        exact(receipt, wrapper[prefix], 'Current gate complete embedded ' + when + ' receipt')
+        association(wrapper[prefix + '_path'], path, wrapper[prefix + '_raw_sha256'])
+        projected = PARENT / ('baseline_' + when + '_gate_projection.json')
+        sealed(projected, 'audit_sha256', raw_pin=receipt['projected_reader_report_raw_sha256'],
+               selfseal=receipt['projected_reader_selfseal'])
+        association(receipt['projected_reader_report_path'], projected, receipt['projected_reader_report_raw_sha256'])
+    gate_paths = set(expected) - set(inherited)
+    path = PARENT / 'baseline_before_independent_audit.json'
+    receipt = baseline(path, audit['baseline879_readback_raw_sha256'], audit['baseline879_readback_selfseal'])
+    association(audit['baseline879_readback_path'], path, audit['baseline879_readback_raw_sha256'])
+    projected = PARENT / 'baseline_before_independent_audit_projection.json'
+    exact(audit['baseline879_projected_reader_report_path'], receipt['projected_reader_report_path'], 'Current audit projection temporary path association')
+    exact(audit['baseline879_projected_reader_report_raw_sha256'], receipt['projected_reader_report_raw_sha256'], 'Current audit projection raw association')
+    exact(audit['baseline879_projected_reader_selfseal'], receipt['projected_reader_selfseal'], 'Current audit projection selfseal association')
+    sealed(projected, 'audit_sha256', raw_pin=audit['baseline879_projected_reader_report_raw_sha256'],
+           selfseal=audit['baseline879_projected_reader_selfseal'])
+    association(audit['baseline879_projected_reader_report_path'], projected, audit['baseline879_projected_reader_report_raw_sha256'])
+    executing = [name for name, pin in audit['dependency_raw_sha256'].items()
+                 if Path(name).is_relative_to(Path('/tmp')) and name.endswith('.py') and pin == AUDITOR_RAW]
+    exact(len(executing), 1, 'One actual executing current8ae scratch auditor')
+    association(executing[0], PARENT / 'independent_audit_release02_source.txt', AUDITOR_RAW)
+    exact(len(expected), 15, 'Exact inherited8 + current gate4 + current audit3 destinations')
+    audit_temps = {name: pin for name, pin in audit['dependency_raw_sha256'].items()
+                   if Path(name).is_relative_to(Path('/tmp'))}
+    exact(audit_temps, {name: row['sha256'] for name, row in expected.items() if name not in gate_paths},
+          'ALL current audit TMP pins are inherited8 plus current baseline2 and producer1')
+    exact(readback['temporary_dependency_exact_closed_copy_associations'], expected,
+          'Saved completed final readback map equals independently derived current15 map')
+    exact(readback['temporary_dependency_copy_association_count'], 15, 'Saved complete current15 association count')
+    report_temps = {name: pin for name, pin in readback['dependency_raw_sha256'].items()
+                    if Path(name).is_relative_to(Path('/tmp'))}
+    exact(report_temps, {name: row['sha256'] for name, row in expected.items()},
+          'EVERY saved final current TMP dependency is exactly one derived destination')
+
+    # Validate every existing destination and all permanent sources before any
+    # creation. Historical interrupted release01 paths are never iterated.
+    missing = []
+    for name, row in sorted(expected.items()):
+        permanent(Path(row['permanent_copy']), row['sha256'])
+        target = Path(name)
+        if os.path.lexists(name):
+            require(target.is_file() and not target.is_symlink(), 'Wrong existing current TMP kind; never overwrite: ' + name)
+            exact(raw(target), row['sha256'], 'Wrong existing current TMP bytes; FAIL before writes: ' + name)
+        else:
+            missing.append(name)
+    for name in missing:
+        with Path(expected[name]['permanent_copy']).open('rb') as source, Path(name).open('xb') as destination:
+            shutil.copyfileobj(source, destination, 1 << 20)
+    for name, row in expected.items():
+        require(Path(name).is_file() and not Path(name).is_symlink(), 'Restored current TMP is a regular file')
+        exact(raw(name), row['sha256'], 'All restored/already-valid current TMP bytes')
+        permanent(Path(row['permanent_copy']), row['sha256'])
+    exact(raw(manifest_path), MANIFEST_RAW, 'Trusted current manifest unchanged after raw-copy recovery')
+    exact(raw(reader_path), READER_SOURCE_RAW, 'Independently trusted reader bytes unchanged after recovery')
+    exact(raw(archive_path), archive_before, 'Saved final archive unchanged after recovery')
+    for name, row in archive['files'].items():
+        exact(raw(FINAL / name), row['sha256'], 'Saved final archive payload unchanged after recovery: ' + name)
+    current_file(bootstrap_path)
+    current_file(wrapper_path)
+    current_file(audit_path)
+    exact(raw(old_manifest_path), bootstrap['current_manifest_raw_sha256'], 'Trusted old879 manifest unchanged after recovery')
+    exact(raw(old875_manifest_path), bootstrap['dependency_raw_sha256'][str(old875_manifest_path)], 'Trusted old875 manifest unchanged after recovery')
+    exact(raw(producer_path), producer_before, 'Executed recovery source unchanged')
+    require(all(not (name in ('tectonics', 'tests', 'analysis')
+        or name.startswith(('tectonics.', 'tests.', 'analysis.'))) for name in sys.modules), 'No project/test/helper imports')
+    result = dict(status='RESTORED_ONLY_MISSING_CURRENT883_TEMP_CLOSED_COPIES',
+        current_temp_dependency_count=15, restored=missing, already_valid=sorted(set(expected) - set(missing)),
+        trusted_manifest_raw_sha256=MANIFEST_RAW, trusted_manifest_selfseal=MANIFEST_SEAL,
+        independently_trusted_reader_source_raw_sha256=READER_SOURCE_RAW,
+        final_archive_closed_file_count=6, saved_readback_map_equals_independently_derived_current_map=True,
+        interrupted_release01_historical_tmp_paths_restored=False, new_association_map_artifact_required=False,
+        project_imports=False, reader_or_baseline_or_auditor_or_native_or_tests_executed=False,
+        physics_or_solver_or_quadrature_reexecuted=False, executed_recovery_source_raw_sha256=producer_before)
+    result['recovery_sha256'] = value_digest(result)
+    print(encoded(result).decode(), flush=True)
+    return result
+
+
+if __name__ == '__main__':
+    run()

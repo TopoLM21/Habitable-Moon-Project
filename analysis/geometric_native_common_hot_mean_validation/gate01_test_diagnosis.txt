@@ -1,0 +1,10 @@
+{
+  "cause": "Final mean-only Newton uses certified global eigenvalue derivative bounds rather than the sharper full mean-jet derivative during iteration; synthetic large-amplitude oracle has R=100 m and b=(1,2,21,28,3) m.",
+  "exact_root_and_implicit_first_second_derivative_containment": "PASS before failing width assertion",
+  "failed_test": "test_finite_actual_radial_mean_root_and_all_implicit_derivatives_match_closed_form",
+  "failure": "Default 12 interval-Newton steps returned a valid root enclosure wider than the test-specific 1e-12 metre threshold.",
+  "pytest_summary": "1 failed, 15 passed in 59.23 s",
+  "recommendation": "After release01 is closed, give this analytic convergence check an explicit 24-iteration budget; retain real source controls at default12 and strict exact-root/J/H containment.",
+  "repository_files_edited": false,
+  "scope": "READ_ONLY_FROZEN_RELEASE_01_TEST_DIAGNOSIS"
+}

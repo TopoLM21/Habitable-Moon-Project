@@ -79,7 +79,10 @@ def _subdivide(vertices: Array, faces: Array) -> tuple[Array, Array]:
         if cached is not None:
             return cached
         midpoint = vertices[a] + vertices[b]
-        midpoint /= np.linalg.norm(midpoint)
+        # One-dimensional linalg.norm uses a platform-dependent BLAS dot.
+        # Keep this three-component reduction explicit so regenerated meshes
+        # retain the exact byte fingerprint of saved Starter checkpoints.
+        midpoint /= np.sqrt(np.sum(midpoint * midpoint))
         idx = len(vertex_list)
         vertex_list.append(midpoint)
         midpoint_cache[key] = idx

@@ -1,0 +1,230 @@
+"""Consolidate frozen native donor material proof evidence without re-solving."""
+from pathlib import Path
+from fractions import Fraction
+from datetime import datetime, timezone
+import hashlib
+import json
+import subprocess
+
+ROOT=Path('/workspace/Habitable-Moon-Project')
+OUT=ROOT/'analysis/geometric_native_material_history_validation'
+BASE='analysis/geometric_native_material_history_validation/'
+
+def encoded(value):
+    return json.dumps(value,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+
+def digest(path):
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+def read(path):
+    return json.loads((ROOT/path).read_bytes())
+
+def seal_valid(raw,key):
+    assert hashlib.sha256(encoded({k:v for k,v in raw.items() if k!=key})).hexdigest()==raw[key],key
+
+def write(name,value):
+    with (OUT/name).open('x') as stream:
+        json.dump(value,stream,indent=2,sort_keys=True,allow_nan=False)
+        stream.write('\n')
+
+def interval(raw):
+    return Fraction(*raw['lo']),Fraction(*raw['hi'])
+
+def baseline(path):
+    sources=read(path)
+    changed=[p for p,v in sources.items() if digest(ROOT/p)!=v]
+    return dict(path=path,sha256=digest(ROOT/path),count=len(sources),changed_paths=changed)
+
+gate_path=BASE+'release_gates_01/receipt.json'
+control_path=BASE+'material_control_release_01/report.json'
+audit_path=BASE+'material_control_release_01/independent_donor_receipt.json'
+gate,control,audit=map(read,[gate_path,control_path,audit_path])
+assert gate['status']=='PASS' and gate['exit_code']==0 and gate['counts']=={'passed':312}
+assert gate['is_full_profile_execution'] is False and gate['changed_paths']==[]
+assert gate['source_count']==632 and gate['sources_before_sha256']==gate['sources_after_sha256']
+assert gate['runner_sha256']==digest(OUT/'run_release_gates.py')
+assert gate['log_sha256']==digest(OUT/'release_gates_01/pytest.log')
+for name,key in [('sources_before.json','sources_before_sha256'),('sources_after.json','sources_after_sha256')]:
+    assert digest(OUT/'release_gates_01'/name)==gate[key]
+assert control['status']=='PASS' and control['sources_unchanged'] and control['source_count']==632
+seal_valid(control,'report_sha256')
+assert control['archive_transfer_count']==1 and control['contact_sequence']==['entry','exit','entry']
+assert control['geometry_admission_authorized'] is False and control['candidate_memory_adopted'] is False
+assert control['accepted_loaded_native_intervals']==0 and control['accepted_source_work_j']==0
+assert control['whole_parent_symbolic_reservoir_conservation']
+assert control['spatially_distinct_first_entry_times_preserved']
+folder=OUT/'material_control_release_01'
+for name,expected in control['artifacts_sha256'].items():
+    assert digest(folder/name)==expected,name
+assert digest(ROOT/control['source_probe'])==control['source_probe_sha256']
+force_report=read(BASE+'material_control_release_01/original_force/report.json')
+assert force_report['source_code_unchanged'] and force_report['accepted_loaded_native_intervals']==0
+assert force_report['geometry_permission'] is False and force_report['candidate_memory_adopted'] is False
+assert force_report['original_trace_count']==4 and force_report['physical_law']['viscosity_pa_s_m']==0
+for name,metadata in force_report['artifacts'].items():
+    assert digest(folder/'original_force'/name)==metadata['sha256']
+    assert (folder/'original_force'/name).stat().st_size==metadata['bytes']
+
+pairs=[]
+for a,b,scope in [
+    ('material_history_checkpoint.json','material_history_replayed.json','local_material_component'),
+    ('material_history_checkpoint.json','material_history_repeated.json','local_material_component'),
+    ('material_time_queries.json','material_time_queries_replayed.json','local_exact_time_queries'),
+    ('material_point_queries.json','material_point_queries_replayed.json','local_executable_point_time_queries'),
+    ('original_force/initial.json','original_force/after_refusal.json','prepared_global_force_state_only')]:
+    left,right=folder/a,folder/b
+    assert left.read_bytes()==right.read_bytes(),(a,b)
+    pairs.append(dict(first=a,second=b,bytes=left.stat().st_size,sha256=digest(left),scope=scope,
+                      accepted_native_force_checkpoint=False))
+
+sweep=read(BASE+'material_control_release_01/donor_patch_sweep.json')
+history=read(BASE+'material_control_release_01/material_history_checkpoint.json')
+seal_valid(sweep,'payload_sha256')
+seal_valid(history,'history_sha256')
+assert history['sweep_certificate']==sweep
+assert history['admission_authorized'] is False and history['global_inventory_updated'] is False
+assert history['model']=='once_only_passive_archive_first_entry'
+assert tuple(e['operation'] for e in history['events'])==(
+    'live_to_passive_archive_once','contact_exit_keep_archive','contact_reentry_reuse_archive')
+assert {e['cohort_id'] for e in history['events']}=={history['cohort_id']}
+assert interval(sweep['certificate']['patch_area_bounds'])[0]>0
+assert interval(sweep['certificate']['gap_third_derivative_bounds'])[0]>0
+assert all(interval(v)[0]>0 for v in sweep['certificate']['receiver_positive_bounds'])
+assert Fraction(*sweep['certificate']['first_entry_negative_fraction'])>0
+assert interval(sweep['certificate']['first_entry_negative_gap_bounds'])[1]<0
+assert interval(history['events'][0]['time_fraction'])[0]>0
+assert len(history['shares'])==len(history['parent_reservoir_partitions'])==4
+for share,part in zip(history['shares'],history['parent_reservoir_partitions']):
+    assert interval(share['native_area_ratio_bounds'])[0]>0
+    assert interval(share['amount_bounds'])[0]>0
+    assert part['conservation_identity']=='patch_share + unmodelled_parent_complement = parent_amount'
+    assert part['patch_share']==share
+queries=read(BASE+'material_control_release_01/material_time_queries.json')
+assert [q['snapshot']['contact_occupancy'] for q in queries]==['outside','inside','outside','inside','inside']
+assert [q['snapshot']['material_allocation'] for q in queries]==['live','archived','archived','archived','archived']
+assert len({q['snapshot']['archive_cohort_id'] for q in queries})==1
+assert all(q['snapshot']['memory_reference']==history['memory_reference'] for q in queries)
+for old,new in zip(queries[1]['snapshot']['allocations'],queries[-1]['snapshot']['allocations']):
+    assert old['archived_amount_bounds']==new['archived_amount_bounds'] and interval(new['archived_amount_bounds'])[0]>0
+point_queries=read(BASE+'material_control_release_01/material_point_queries.json')
+assert len(point_queries)==12
+common=[row['query'] for row in point_queries if row['query']['time_fraction']!=[0,1]
+        and Fraction(*row['query']['time_fraction']) not in tuple(Fraction(*v) for v in sweep['certificate']['sample_fractions'])]
+assert len(common)==2
+assert common[0]['time_fraction']==common[1]['time_fraction']
+assert [q['material_allocation'] for q in common]==['archived','live']
+assert all(q['query']['memory_reference']==history['memory_reference'] for q in point_queries)
+assert all(q['query']['finite_material_reservoir_assigned_to_point'] is False for q in point_queries)
+
+probe=read(control['source_probe'])
+candidate=read(BASE+'material_control_release_01/original_force/force_candidate.json')
+assert all(candidate[k]==v for k,v in probe['candidate'].items())
+assert candidate['admission']==probe['admission'] and candidate['unresolved']==probe['unresolved']
+assert {str(k):v for k,v in candidate['omega_rad_per_myr']}==probe['omega']
+assert candidate['diagnostics']['source_work_j']==probe['candidate_source_work_j']
+
+seal_valid(audit,'receipt_sha256')
+assert audit['admission_authorized'] is False and audit['certified_roots_per_material_point']==3
+assert audit['decimal_precision']==500 and audit['original_complete_owner_vectors_preserved']
+assert audit['production_complete_native_domains_match_original_force_candidate']
+assert audit['production_patch_exactly_matches_independent_rectangle']
+assert audit['first_material_entry_has_strict_positive_time_lower_bound']
+assert audit['source_probe_sha256']==control['source_probe_sha256']
+assert audit['source_certificate_sha256']==digest(folder/'donor_patch_sweep.json')
+assert audit['audit_source_sha256']==digest(OUT/'independent_donor_sweep_audit.py')
+assert len(audit['point_events_independent_rodrigues'])==5
+assert len(audit['production_windows_independently_verified'])==3
+assert all(w['every_patch_point_bracketed'] for w in audit['production_windows_independently_verified'])
+bound=audit['local_history_independently_bound']
+assert bound['history_sha256']==history['history_sha256'] and bound['archive_transfer_count']==1
+for key in ['four_original_extensive_reservoirs_conserved_symbolically','one_archive_cohort_for_all_three_events',
+            'contact_exit_does_not_resurrect_material','contact_reentry_does_not_allocate_again',
+            'original_material_intensives_and_age_preserved','mechanical_memory_and_work_are_exact_external_references']:
+    assert bound[key],key
+assert bound['global_inventory_updated'] is False and bound['independent_force_or_constitutive_solve_performed'] is False
+expected_audit_sources={'history':'material_history_checkpoint.json','initial':'original_force/initial.json',
+                       'candidate':'original_force/force_candidate.json','support':'original_force/constitutive_time_support.json'}
+assert audit['history_source_files_sha256']=={k:digest(folder/v) for k,v in expected_audit_sources.items()}
+
+baseline_paths={
+    'current_gate':BASE+'release_gates_01/sources_after.json',
+    'current_material_control':BASE+'material_control_release_01/sources_after.json',
+    'current_force_control':BASE+'material_control_release_01/original_force/sources_after.json',
+    'previous_event_624':'analysis/geometric_native_contact_event_validation/release_gates_01/sources_after.json',
+    'previous_force_615':'analysis/geometric_native_underthrust_validation/release_gates_02/sources_after.json',
+    'old_full_417':'analysis/geometric_underthrust_validation/parallel_portable_final/code_and_tests_after.json',
+    'old_supplemental_278':'analysis/geometric_underthrust_validation/parallel_portable_final/supplemental_runtime_after.json',
+    'common_intrinsic_421':'analysis/geometric_intrinsic_validation/release_gates/focused_code_and_tests_after.json',
+    'previous_native_427':'analysis/geometric_native_validation/release_gates/focused_code_and_tests_after.json'}
+baselines={k:baseline(p) for k,p in baseline_paths.items()}
+for k,b in baselines.items():
+    assert b['changed_paths']==(['tectonics/geometric_native_polygons.py'] if k=='previous_native_427' else [])
+for directory in [OUT/'release_gates_01',folder,folder/'original_force']:
+    assert (directory/'sources_before.json').read_bytes()==(directory/'sources_after.json').read_bytes()
+current=read(baseline_paths['current_gate']); previous=read(baseline_paths['previous_event_624'])
+assert current==read(baseline_paths['current_material_control'])==read(baseline_paths['current_force_control'])
+assert all(current[k]==v for k,v in previous.items())
+new_sources={k:v for k,v in current.items() if k not in previous}
+assert len(new_sources)==8
+restored=json.loads(subprocess.check_output([str(ROOT/'.venv/bin/python'),'scripts/cloud_handoff.py','verify'],cwd=ROOT,text=True))
+assert restored==dict(files=9,source_bytes=2110696,verified=True)
+write('restored_source_receipt.json',restored)
+(OUT/'consolidation_source.txt').write_bytes(Path(__file__).read_bytes())
+artifacts={}
+for directory in [OUT/'release_gates_01',folder]:
+    for path in sorted(directory.rglob('*')):
+        if path.is_file():artifacts[str(path.relative_to(ROOT))]=dict(sha256=digest(path),bytes=path.stat().st_size)
+for path in [OUT/'restored_source_receipt.json',OUT/'consolidation_source.txt',
+             ROOT/control['source_probe'],ROOT/'analysis/geometric_native_contact_event_validation/validation_summary.json']:
+    artifacts[str(path.relative_to(ROOT))]=dict(sha256=digest(path),bytes=path.stat().st_size)
+manifest=dict(format='native-original-donor-material-history-artifact-manifest-1',
+    artifacts=artifacts,count=len(artifacts),accepted_loaded_native_intervals=0)
+manifest['manifest_sha256']=hashlib.sha256(encoded(manifest)).hexdigest()
+write('artifact_manifest.json',manifest)
+summary=dict(format='native-original-donor-material-history-validation-1',status='PASS',
+    checked_at_utc=datetime.now(timezone.utc).isoformat(),
+    branch=subprocess.check_output(['git','branch','--show-current'],cwd=ROOT,text=True).strip(),
+    head=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
+    current_gate=dict(path=gate_path,sha256=digest(ROOT/gate_path),cases_passed=312,new_cases_passed=108,
+        seconds=gate['seconds'],pytest_summary=gate['pytest_summary'],source_count=632,full_profile_execution=False),
+    actual_material_control=dict(path=control_path,sha256=digest(ROOT/control_path),seconds=control['seconds'],
+        source_count=632,source_candidate_fields_identical=True,full_original_omega_retained=True,
+        donor_fragment_id='octant:6',receiver_fragment_id='octant:2',
+        patch_area_sr=sweep['certificate']['patch_area_bounds'],
+        exact_roots_per_patch_point=3,positive_first_entry_time_lower_bound=True,
+        whole_receiver_support_count=3,all_points_continuous_history_proved=True,
+        complete_swept_domain_history_proved=False,
+        model='explicit_local_temporal_extension_of_once_only_passive_archive',
+        one_local_archive_cohort=True,four_extensive_fields_conserved_symbolically=True,
+        original_parent_intensives_preserved=True,
+        entry_time_function_executable_per_original_donor_point=True,
+        spatially_different_entry_times_at_one_query_time=True,
+        mechanical_memory_policy='unchanged_external_before_and_unaccepted_candidate_references',
+        mechanical_work_allocated_to_2d_volume=False,
+        global_native_buried_registry_updated=False,accepted_loaded_checkpoint_demonstrated=False,
+        byte_pairs=pairs),
+    independent_donor_and_history_audit=dict(path=audit_path,sha256=digest(ROOT/audit_path),
+        decimal_digits=500,independent_material_points=5,exact_entire_2d_patch_root_count=True,
+        independent_native_area_and_symbolic_reservoir_audit=True,
+        original_mechanical_memory_payloads_bound=True,independent_force_or_constitutive_solve=False),
+    whole_time_inviscid_support=dict(original_traces=4,pressure_minimum_lower_bound_pa=force_report['pressure_minimum_lower_bound_pa'],
+        plastic_rate_maximum_upper_bound_m_s=force_report['maximum_plastic_rate_upper_bound_m_s'],
+        path_model=force_report['path_model'],geometry_permission=False),
+    accepted_loaded_native_intervals=0,accepted_source_work_j=0,global_geometry_admission_authorized=False,
+    original_six_point_plan=[dict(point=p,status='partial' if p==1 else 'pending') for p in range(1,7)],
+    next_within_point_1=[
+        'extend material-time history to complete true donor swept domains including transverse fringes',
+        'conserved local vacancy and hot-birth chronology with actual physical material pairs',
+        'positive loaded native interval and joint checkpoint restart',
+        'physical law for new material pairs on already declared weak planes'],
+    restored_sources=restored,baseline_source_audits=baselines,new_source_manifest=new_sources,
+    previous_event_gate=dict(cases_passed=175,current_execution=False,all_624_sources_unchanged=True),
+    previous_force_gate=dict(cases_passed=317,current_execution=False,all_615_sources_unchanged=True),
+    historical_full_profile=dict(cases_passed=1284,current_execution=False),
+    artifact_manifest=dict(path=BASE+'artifact_manifest.json',sha256=digest(OUT/'artifact_manifest.json'),count=len(artifacts)))
+assert summary['branch']=='fix/genesis-mantle-convection'
+summary['summary_sha256']=hashlib.sha256(encoded(summary)).hexdigest()
+write('validation_summary.json',summary)
+print(json.dumps(dict(status='PASS',passed=312,new_passed=108,current_sources=632,
+    unchanged_previous_sources=624,new_sources=8,artifact_count=len(artifacts),
+    local_archive_cohorts=1,accepted_loaded_native_intervals=0,summary_sha256=summary['summary_sha256'])))

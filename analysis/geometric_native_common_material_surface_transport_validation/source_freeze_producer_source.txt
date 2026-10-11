@@ -1,0 +1,28 @@
+from pathlib import Path
+import ast, hashlib, json
+ROOT=Path('/workspace/Habitable-Moon-Project')
+PARENT=ROOT/'analysis/geometric_native_common_material_surface_transport_validation'
+def enc(v): return json.dumps(v,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+def digest(p): return hashlib.sha256(p.read_bytes()).hexdigest()
+oldpath=ROOT/'analysis/geometric_native_common_strain_projection_validation/frozen_source_map_875.json'
+assert digest(oldpath)=='8f7608219c398a05913d96e80baf685b997dccff466ee9cf9eb1aa89b8124675'
+old=json.loads(oldpath.read_bytes())
+pins={str(p.relative_to(ROOT)):digest(p) for d in ('tectonics','tests','scripts','analysis') for p in sorted((ROOT/d).rglob('*.py'))}
+added={
+ 'tectonics/geometric_native_common_material_surface_transport.py':'8e6781187f5c8afad8dd201dfbf3c2165c2f07e862bf72ef1017cd5d20433438',
+ 'tests/test_geometric_native_common_material_surface_transport.py':'5d5aee42586ea783ef049dc3c9de517bdbd4c16d066819cded5cfa2c65e859d0',
+ 'analysis/geometric_native_common_material_surface_transport_validation/native_control.py':'ad39571acffa6a88ddc0b14f4163b81cdb622b38f92831aed854c49718a41151',
+ 'analysis/geometric_native_common_material_surface_transport_validation/validate.py':'790f81d7edca699a54988eab0ed9e6e9a94650f572f0e466cc1b4ebbd259779b',
+}
+assert len(old)==875 and len(pins)==879 and set(pins)-set(old)==set(added)
+assert all(pins[p]==v for p,v in old.items())
+assert {p:pins[p] for p in added}==added
+for p in added: compile((ROOT/p).read_bytes(),p,'exec')
+testtree=ast.parse((ROOT/'tests/test_geometric_native_common_material_surface_transport.py').read_bytes())
+tests=[n.name for n in testtree.body if isinstance(n,(ast.FunctionDef,ast.AsyncFunctionDef)) and n.name.startswith('test_')]
+assert len(tests)==14
+with (PARENT/'frozen_source_map_879.json').open('xb') as out: out.write(enc(pins)+b'\n')
+report=dict(status='PASS_EXACT879_FREEZE_AND_STATIC_COMPILE_ONLY',prior_python_sources_unchanged=875,current_python_sources=879,added_python_sources=added,fresh_test_function_count=14,test_function_names=tests,source_map_canonical_sha256=hashlib.sha256(enc(pins)).hexdigest(),frozen_source_map_raw_sha256=digest(PARENT/'frozen_source_map_879.json'),producer_raw_sha256=digest(Path(__file__)),project_imports=False,math_or_tests_executed=False)
+report['receipt_sha256']=hashlib.sha256(enc(report)).hexdigest()
+with (PARENT/'source_freeze_receipt.json').open('xb') as out: out.write(enc(report)+b'\n')
+print(enc(report).decode())

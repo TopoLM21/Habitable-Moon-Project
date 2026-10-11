@@ -1,0 +1,243 @@
+"""Stdlib-only peer replay of initial-overlap rejection and common-reference proposal.
+
+Uses a direct interval matrix-exponential series on the whole world cube,
+independent of the diagnostic's Rodrigues/depth-rotation implementation.
+Neither the preflow partition nor all-pair/clamp/face admission is certified.
+"""
+import importlib.util
+import sys
+from fractions import Fraction as F
+from math import factorial,cos,sin
+from pathlib import Path
+from types import SimpleNamespace
+import hashlib,json,time
+sys.set_int_max_str_digits(0)
+ROOT=Path('/workspace/Habitable-Moon-Project')
+HELPER=Path('/tmp/native_cold_body_independent_audit.py')
+HELPER_SHA='ee031938177a3497aa7821c883650a89397a9942f6b177e48b9a655153297f6e'
+NEG=Path('/tmp/native_cold_initial_overlap_readonly_diagnostic_20261005.json')
+NEG_SHA='5dcf4003be2a2cbe132f8950351242d1fbc8c1cf14b532ef232d43dbddb2601c'
+NEG_SCRIPT=NEG.with_suffix('.py')
+NEG_SCRIPT_SHA='7ac239d77614ae8cffe978127752ece60ac82fafa1d0b8598a016c0bdcfe045b'
+CAND=Path('/tmp/native_common_reference_candidate_20261005.json')
+CAND_SHA='50af6b71758feaaed531651b231b50fe5e45228cfa4efa808b26c5a2070d86f4'
+CAND_SCRIPT=CAND.with_suffix('.py')
+CAND_SCRIPT_SHA='42f00f1ca95b4cca7e810887b97a04703d99d30d122f84461793053aa9de9f61'
+FROZEN_MAP='2b322df2d2c426976ee886374517c2e0130acb5a5acfcaf4bb07a6e4c3331e05'
+FROZEN_MAP_FILE=Path('/tmp/point1_cold_833_frozen_source_map_20261005.json')
+OUT=Path('/tmp/native_common_reference_independent_audit_20261005.json')
+
+def raw(path):return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+def encoded(v):return json.dumps(v,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+def vd(v):return hashlib.sha256(encoded(v)).hexdigest()
+def read(path):return json.loads(Path(path).read_bytes())
+def payload(v):
+ if isinstance(v,F):return [v.numerator,v.denominator]
+ if isinstance(v,I):return {'lo':payload(v.lo),'hi':payload(v.hi)}
+ if isinstance(v,(tuple,list)):return [payload(x) for x in v]
+ if isinstance(v,dict):return {k:payload(x) for k,x in v.items()}
+ return v
+assert raw(HELPER)==HELPER_SHA
+spec=importlib.util.spec_from_file_location('common_reference_stdlib_helpers',HELPER)
+h=importlib.util.module_from_spec(spec);sys.modules[spec.name]=h;spec.loader.exec_module(h)
+I=h.FractionInterval
+frac=h._literal_fraction
+bounds=h._bounds
+
+def interval(value):return I(*bounds(value))
+def dot(a,b):return sum((x*y for x,y in zip(a,b)),I(0))
+def cross(a,b):return (a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0])
+def mm(a,b):return tuple(tuple(sum((a[i][k]*b[k][j] for k in range(3)),I(0)) for j in range(3)) for i in range(3))
+def mv(a,b):return tuple(dot(row,b) for row in a)
+def same_interval(a,b):assert (a.lo,a.hi)==(b.lo,b.hi)
+def round_i(value,p=96):return I(*h._rounded((value.lo,value.hi),p))
+def rotate_whole_cube(v,A,tau,N=28):
+ x,y,z=A;K=((0,-z,y),(z,0,-x),(-y,x,0));M=tuple(tuple(I(value)*tau for value in row) for row in K)
+ alpha=max(sum((max(abs(value.lo),abs(value.hi)) for value in row),F(0)) for row in M)
+ assert alpha<N+2
+ term=tuple(tuple(I(i==j) for j in range(3)) for i in range(3));total=term
+ for n in range(1,N+1):
+  term=tuple(tuple(round_i(value/n) for value in row) for row in mm(term,M))
+  total=tuple(tuple(round_i(a+b) for a,b in zip(row,other)) for row,other in zip(total,term))
+ tail=alpha**(N+1)/factorial(N+1)/(1-alpha/F(N+2))
+ scale=max(max(abs(x.lo),abs(x.hi)) for x in v)
+ output=tuple(round_i(value+I(-tail*scale,tail*scale)) for value in mv(total,v))
+ return output,tail*scale,alpha
+
+def ray_values(raw_ray,p):
+ if raw_ray['kind']=='seed':
+  rows=tuple(h.rotation_increment_from_dict(r) for r in raw_ray['rotations']);cert=h.certify_rotation_history(rows,p)
+  maximum=max(abs(x) for x in raw_ray['reference']);vector=tuple(F(x,maximum) for x in raw_ray['reference'])
+  return tuple(sum((x*y for x,y in zip(row,vector)),F(0)) for row in cert.matrix),mv(cert.intervals,vector)
+ assert raw_ray['kind']=='cross' and raw_ray['rotations']==[]
+ a,ia=h._plane_values(raw_ray['planes'][0],p);b,ib=h._plane_values(raw_ray['planes'][1],p)
+ center=tuple(raw_ray['sign']*x for x in cross(a,b));boxed=tuple(raw_ray['sign']*x for x in cross(ia,ib));maximum=max(abs(x) for x in center)
+ assert maximum>0
+ return tuple(x/maximum for x in center),tuple(x/maximum for x in boxed)
+
+def source_A_constraints(prior):
+ support=prior['full_reference_face_birth_support'];R=F.from_float(prior['before']['snapshot']['current_material_epoch']['source_material_state']['journal']['source_surface']['radius_km'])*1000
+ constraints=[]
+ for carrier in support['interface_carriers']:
+  _,first=ray_values(carrier['exact_initial_shared_arc']['start'],128)
+  norm=h.interval_sqrt(dot(first,first),136);start=tuple(x/norm for x in first)
+  inward=h._plane_values(carrier['receiver_inward_plane'],128)[1]
+  norm=h.interval_sqrt(dot(inward,inward),136);inward=tuple(x/norm for x in inward)
+  tangent=cross(inward,start);row=tuple((x.lo+x.hi)/2 for x in tangent)
+  dip=carrier['declaration']['dip_radians'];rhs=-F.from_float(cos(dip))/F.from_float(sin(dip))/R
+  constraints.append((carrier['declaration']['family_id'],row,rhs))
+ assert len(constraints)==2 and {x[0] for x in constraints}=={'born-shared-0','born-shared-3'}
+ rows=[x[1] for x in constraints];rhs=[x[2] for x in constraints]
+ gram=[[sum((a*b for a,b in zip(x,y)),F(0)) for y in rows] for x in rows]
+ determinant=gram[0][0]*gram[1][1]-gram[0][1]*gram[1][0];assert determinant>0
+ multipliers=((rhs[0]*gram[1][1]-rhs[1]*gram[0][1])/determinant,(rhs[1]*gram[0][0]-rhs[0]*gram[1][0])/determinant)
+ axis=tuple(sum((row[j]*coefficient for row,coefficient in zip(rows,multipliers)),F(0)) for j in range(3))
+ assert all(sum((a*b for a,b in zip(row,axis)),F(0))==target for _,row,target in constraints)
+ return axis,constraints
+
+def thickness(component,material):
+ if component['material_kind']=='original_live':
+  parent=next(p for p in material['journal']['source_surface']['fragments'] if p['fragment_id']==component['original_parent_id'])
+  values=tuple(F.from_float(float(x)) for x in parent['parcel']['specific_properties'][:2])
+ else:
+  birth=next(v['newborn'] for v in material['endpoint_vacancies'] if v['newborn'] is not None and v['newborn']['vacancy_domain_id']==component['component_id'])
+  values=tuple(frac(x) for x in birth['specific_properties'][:2])
+ return 1000*sum(values,F(0))
+
+def check_scope(v):
+ for key in ('source_face_or_clamp_compatibility_certified','source_initial_all_pairs_noninterpenetration_certified','whole_clock_all_pairs_admission_certified','force_equilibrium_certified','original_history_state_or_source_masks_modified','original_accepted_native_interval_invalidated'):assert v[key] is False,key
+
+started=time.perf_counter()
+for path,sha in ((NEG,NEG_SHA),(NEG_SCRIPT,NEG_SCRIPT_SHA),(CAND,CAND_SHA),(CAND_SCRIPT,CAND_SCRIPT_SHA)):assert raw(path)==sha
+negative,candidate=read(NEG),read(CAND)
+body=dict(candidate);assert body.pop('candidate_packet_sha256')==vd(body)
+assert negative['diagnostic_source_script_sha256']==NEG_SCRIPT_SHA and candidate['source_script_sha256']==CAND_SCRIPT_SHA
+assert negative['frozen_cold_geometry_python_sha256']==raw(ROOT/'tectonics/geometric_native_cold_body.py')=='d3a9f9df0d6458eacce93d67329444ea2db0123c78ab2d7ef0167e7da0299d8b'
+frozen=read(FROZEN_MAP_FILE);assert len(frozen)==833 and vd(frozen)==FROZEN_MAP
+assert all(raw(ROOT/k)==v for k,v in frozen.items())
+prior=h.sealed(h.AFFINE/'native_control/source_packet.json','packet_sha256');assert raw(h.AFFINE/'native_control/source_packet.json')==h.PRIOR_RAW['native_control/source_packet.json'][0]
+curved=ROOT/'analysis/geometric_native_curved_equilibrium_validation/release_validation_01/native_control/candidate_packet.json';joint=ROOT/'analysis/geometric_native_joint_spherical_validation/release_validation_01/native_control/candidate_packet.json'
+assert raw(curved)=='0e3554a55a8c93eb8ecbdae8351f3280a2ae4bd8596254950afef7f77b98d2cb'
+assert raw(joint)=='8580d79ec47263c9f581a646595ab19d87ae927770d082b3016803d4c405ac45'
+cv=h.sealed(curved,'packet_sha256');jt=h.sealed(joint,'packet_sha256')
+for name in ('before','current_load','original_unaccepted_trial_birth_support','full_reference_face_birth_support'):
+ assert prior[name]==cv[name]==jt[name]
+assert candidate['complete_authenticated_source_dto_json']==[[name,encoded(cv[name]).decode()] for name in ('before','current_load','original_unaccepted_trial_birth_support','full_reference_face_birth_support')]
+assert candidate['source_dto_raw_sha256']=={name:hashlib.sha256(value.encode()).hexdigest() for name,value in candidate['complete_authenticated_source_dto_json']}
+reference=prior['saved_joint_reference_field'];assert reference==cv['saved_joint_reference_field']
+assert reference['groups']==jt['joint_reference_geometry']['groups'] and len(reference['groups'])==5 and reference['declaration_precision']==128
+assert candidate['complete_historical_saved128_reference']==negative['saved_reference_field']==reference
+snapshot=prior['before']['snapshot'];epoch=snapshot['current_material_epoch'];material=epoch['source_material_state'];R=F.from_float(material['journal']['source_surface']['radius_km'])*1000
+for v in (candidate,negative):
+ assert v['source_snapshot_sha256']==prior['source_snapshot_sha256']
+ assert v['source_support_sha256']==prior['full_reference_face_birth_support']['support_sha256']
+ assert v['source_epoch_sha256']==epoch['epoch_sha256']
+ assert v['source_curved_packet_raw_sha256']==raw(curved) and v['source_joint_packet_raw_sha256']==raw(joint)
+axis,constraints=source_A_constraints(prior)
+assert axis==tuple(frac(x) for x in candidate['new_reference']['literal_common_A_per_m'])
+assert candidate['new_reference']['family_ids']==[x[0] for x in constraints]
+source=h.source_from_prior(prior);assert all(f.shared_depth_axis_per_m==axis for f in source.families)
+assert candidate['status']=='PROPOSED_COMMON_REFERENCE_NOT_ADMITTED' and candidate['scope']=='NEW_REFERENCE_CANDIDATE_ONLY';check_scope(candidate)
+for key in ('all_13_components_use_one_common_rate','historical_five_groups_kept_verbatim','rate_selected_from_both_authentic_born_face_constraints'):assert candidate['new_reference'][key] is True
+assert candidate['source_elapsed_time_s']==snapshot['elapsed_time_s']
+components={c['component_id']:c for c in epoch['components']};groups={identity:g for g in reference['groups'] for identity in g['component_ids']};roofs=dict(reference['top_radial_displacements_m'])
+assert len(components)==13 and sum(x['material_kind']=='original_live' for x in components.values())==8 and sum(x['material_kind']=='hot_birth' for x in components.values())==5
+rows=candidate['all_13_bank_source_bindings'];assert len(rows)==13 and {x['component_id'] for x in rows}==set(components)
+volumes=[]
+for row in rows:
+ identity=row['component_id'];c=components[identity];roof=interval(roofs[identity]);assert roof.lo==roof.hi;H=thickness(c,material);top=R+roof.lo;cube=top**3-3*R*R*H;assert cube>0
+ for name in ('material_id','original_parent_id','owner','material_kind'):assert row[name]==c[name]
+ assert row['alias']=='C'+str(sorted(components).index(identity)) and row['complete_actual_source_mask']==c and row['historical_group']==groups[identity]
+ assert frac(row['source_roof_radial_displacement_m'])==roof.lo and frac(row['source_areal_material_thickness_m'])==H and frac(row['source_outer_radius_m'])==top
+ same_interval(interval(row['source_inner_radius_bounds_m']),h.interval_cbrt(I(cube),192));depth=I((R**3-top**3)/(3*R**2),(R**3-cube)/(3*R**2));same_interval(interval(row['common_physical_volume_depth_bounds_m']),depth)
+ same_interval(interval(row['source_material_depth_range_m']),I(0,H));assert tuple(frac(x) for x in row['new_common_angular_rate_per_m'])==axis
+ assert sum((x*x for x in axis),F(0))*max(abs(depth.lo),abs(depth.hi))**2<F(1,16)
+ assert row['historical_saved128_group_rewritten'] is False and row['mask_proxy_promoted_to_material'] is False and row['positive_physical_radial_domain_verified'] is True
+ volumes.append(dict(component_id=identity,source_volume_bounds_m3=payload(interval(c['area_bounds_sr'])*R**2*H)))
+# Analytic rank-one determinant and inverse follow from radial-invariant proper rotation.
+proof=candidate['analytic_common_map_proof'];assert proof['exact_determinant']==1
+for key in ('radius_preserved_exactly','source_sphere_r_equals_R_fixed_pointwise','reference_volume_preserved_exactly','passively_transported_mass_preserved_exactly','individual_global_map_injective_for_positive_radius'):assert proof[key] is True
+for key in ('existing_group_dto_or_rate_mutated','elapsed_physical_time_added','physical_interval_or_evolution_accepted'):assert proof[key] is False
+assert candidate['authentic_partition_evidence_available']['separate_all13_geometric_partition_proof_performed'] is False
+# Collect coefficients of the formal quadratic u dot(A cross u).
+# Every monomial coefficient cancels, so the determinant identity holds for
+# arbitrary directions rather than a finite set of sampled directions.
+formal_coefficients={}
+for outer,inner,coefficient in ((0,2,axis[1]),(0,1,-axis[2]),(1,0,axis[2]),(1,2,-axis[0]),(2,1,axis[0]),(2,0,-axis[1])):
+ monomial=tuple(sorted((outer,inner)))
+ formal_coefficients[monomial]=formal_coefficients.get(monomial,F(0))+coefficient
+assert all(coefficient==0 for coefficient in formal_coefficients.values())
+# Whole-box interval replay with a separate matrix-exponential Taylor bound.
+box=tuple(interval(x) for x in negative['world_box_bounds_m']);assert tuple((x.lo,x.hi) for x in box)==((F(-57050),F(-56950)),(F(75950),F(76050)),(F(1850),F(1950)))
+assert candidate['old_overlap_witness_recheck']['world_box_bounds_m']==negative['world_box_bounds_m']
+radius=h.interval_sqrt(dot(box,box),192);same_interval(radius,interval(negative['radius_bounds_m']));same_interval(radius,interval(candidate['old_overlap_witness_recheck']['radius_bounds_m']))
+tau=(I(R**3)-radius*radius*radius)/(3*R*R);same_interval(tau,interval(negative['physical_volume_depth_bounds_m']));same_interval(tau,interval(candidate['old_overlap_witness_recheck']['physical_volume_depth_bounds_m']))
+unit=tuple(x/radius for x in box);journal=material['journal'];extras=dict(epoch['additional_owner_histories']);motions=dict(journal['omega_rad_per_myr'])
+histories={owner:[dict(omega_rad_per_myr=omega,dt_myr=journal['dt_myr'])]+extras[owner] for owner,omega in motions.items()}
+assert candidate['source_owner_histories']=={str(k):v for k,v in histories.items()}
+for owner,history in histories.items():
+ cert=h.certify_rotation_history(tuple(h.rotation_increment_from_dict(x) for x in history),192)
+ assert payload(cert.intervals)==candidate['source_owner_rotation_matrix_bounds'][str(owner)]
+parents={p['fragment_id']:p for p in material['journal']['source_surface']['fragments']};allocations={p['fragment_id']:p for p in material['parent_allocations']}
+replays=[]
+for row in negative['banks']:
+ identity=row['component_id'];c=components[identity];parent=parents[c['original_parent_id']];allocation=allocations[c['original_parent_id']]
+ assert c['owner']==row['owner']==0 and c['original_parent_id']==row['parent_id'] and parent==row['complete_source_parent'] and allocation==row['source_parent_allocation'] and c==row['complete_actual_mask_source']
+ assert allocation['archived_area_bounds_sr']=={'lo':[0,1],'hi':[0,1]} and not any(d['fragment_id']==c['original_parent_id'] for d in material['sweep_certificate']['donor_domains'])
+ assert not any(x['negative_component_id']==identity for x in epoch['paired_corrections'])
+ assert not parent['geometry']['pose'] and all(not x['rotations'] for x in parent['geometry']['supports'])
+ assert row['source_owner_history']==histories[0]
+ cert=h.certify_rotation_history(tuple(h.rotation_increment_from_dict(x) for x in histories[0]),row['geometry_enclosure_precision']);assert payload(cert.intervals)==row['source_owner_rotation_matrix_bounds']
+ group=groups[identity];old_axis=axis if group['family_ids'] else (F(0),)*3
+ assert tuple(frac(x) for x in row['literal_depth_rate_per_m'])==old_axis
+ current,tail,operator_bound=rotate_whole_cube(unit,tuple(-x for x in old_axis),tau)
+ original=mv(tuple(zip(*cert.intervals)),current)
+ support_bounds=tuple(dot(tuple(F(x) for x in p['normal']),original) for p in parent['geometry']['supports']);assert all(x.lo>0 for x in support_bounds)
+ roof=interval(roofs[identity]).lo;H=thickness(c,material);depth=(I((R+roof)**3)-radius*radius*radius)/(3*R*R);assert 0<depth.lo<=depth.hi<H
+ trace=next(x for x in material['trace_bindings'] if c['original_parent_id'] in (x['donor_fragment_id'],x['receiver_fragment_id']));tr=next(x for x in material['original_mechanics_payload']['fault_traces']['traces'] if x['trace_id']==trace['trace_id']);role='sub' if trace['donor_fragment_id']==c['original_parent_id'] else 'over';inward=tuple((-1 if role=='sub' else 1)*x for x in cross(tuple(F.from_float(float(v)) for v in tr['start']),tuple(F.from_float(float(v)) for v in tr['end'])))
+ beta_sine=dot(inward,original);b=frac(row['source_clamp_beta_radians'])
+ bending=next(x for x in material['original_mechanics_payload']['bending_parameters'] if x['trace_id']==trace['trace_id'])
+ assert b==F.from_float(float(bending[role]['width_m']))/R
+ assert beta_sine.lo>b
+ # sin(beta)<=beta for beta>=0: sin(beta)>b proves beta>b and exact zero supported modes.
+ replays.append(dict(component_id=identity,parent_id=c['original_parent_id'],old_reference_support_bounds=payload(support_bounds),physical_material_depth_bounds_m=payload(depth),beta_sine_bounds=payload(beta_sine),beyond_clamp_certified=True,matrix_exponential_tail_component_upper=payload(round_i(I(tail),96).hi),tail_receipt_rounding_precision=96,matrix_norm_upper=payload(operator_bound)))
+assert {x['parent_id'] for x in replays}=={'octant:2','octant:3'}
+assert negative['status']=='REJECTED_PROPOSED_REFERENCE_INITIAL_OVERLAP' and negative['original_accepted_native_interval_invalidated'] is False
+assert negative['proven_common_open_box_volume_m3']==1000000 and all(x.hi-x.lo==100 for x in box)
+common,tail,operator_bound=rotate_whole_cube(unit,tuple(-x for x in axis),tau)
+cert=h.certify_rotation_history(tuple(h.rotation_increment_from_dict(x) for x in histories[0]),192);original=mv(tuple(zip(*cert.intervals)),common)
+common_supports=[]
+for row in candidate['old_overlap_witness_recheck']['source_parent_rows']:
+ parent=parents[row['original_parent_id']];assert parent==row['complete_source_parent'] and allocations[row['original_parent_id']]==row['source_parent_allocation']
+ supports=tuple(dot(tuple(F(x) for x in p['normal']),original) for p in parent['geometry']['supports'])
+ inside=all(x.lo>0 for x in supports);outside=any(x.hi<0 for x in supports)
+ assert inside==row['common_cube_strictly_inside_this_actual_bank'] and outside==row['common_cube_strictly_outside_this_actual_bank']
+ common_supports.append(dict(parent_id=row['original_parent_id'],strict_support_bounds=payload(supports),cube_inside=inside,cube_outside=outside))
+assert candidate['old_overlap_witness_recheck']['old_C8_C11_cube_witness_removed'] is True and candidate['old_overlap_witness_recheck']['any_other_pair_or_point_exclusion_inferred'] is False
+assert any(x['parent_id']=='octant:3' and x['cube_outside'] for x in common_supports)
+assert all(raw(ROOT/k)==v for k,v in frozen.items())
+result=dict(status='PASS_PEER_REPLAY_ONLY',independent_stdlib_only=True,project_modules_imported=False,
+ source_count=833,frozen_source_map_sha256=FROZEN_MAP,frozen_source_bodies_preserved=True,
+ negative_witness_raw_sha256=NEG_SHA,negative_witness_script_raw_sha256=NEG_SCRIPT_SHA,
+ candidate_raw_sha256=CAND_SHA,candidate_selfseal=candidate['candidate_packet_sha256'],candidate_script_raw_sha256=CAND_SCRIPT_SHA,
+ helper_auditor_raw_sha256=HELPER_SHA,auditor_source_raw_sha256=raw(__file__),
+ all_four_complete_source_dtos_authenticated=True,historical_saved128_five_groups_unchanged=True,
+ literal_common_A_from_both_source_midpoint_tangent_constraints_recomputed=True,
+ source_constraint_kind='Authenticated normal-support literal midpoint tangent rows and float-derived cotangent of declared dip; no exact geometric face compatibility inferred',
+ exact_source_constraint_count=2,all_13_radial_material_domains_replayed=True,
+ literal_common_A_per_m=payload(axis),source_constraints=payload([dict(family_id=family,row=row,right_hand_side=target) for family,row,target in constraints]),
+ all_13_source_reference_volume_receipts=volumes,
+ common_map_inverse_radius_determinant_volume_and_passive_mass_identities_reviewed=True,
+ rank_one_determinant_formal_monomial_coefficients=payload({str(key):value for key,value in formal_coefficients.items()}),
+ direct_interval_matrix_exponential_whole_cube_replay=True,
+ original_saved_group_reference_overlap_rejected=True,positive_overlap_volume_lower_bound_m3=1000000,
+ old_supported_seven_mode_fields_cannot_remove_this_cube=True,negative_reference_support_replays=replays,
+ common_reference_excludes_old_cube_from_C11=True,common_reference_cube_support_replays=common_supports,
+ source_partition_independently_certified=False,source_face_or_clamp_compatibility_certified=False,
+ all_pair_or_whole_clock_admission_certified=False,force_equilibrium_certified=False,
+ original_accepted_native_interval_invalidated=False,candidate_reference_adopted=False,
+ accepted_original_native_intervals=1,accepted_new_native_intervals=0,original_point_1_completed=False,
+ seconds=time.perf_counter()-started)
+result['independent_audit_sha256']=vd(result);OUT.write_bytes(encoded(result)+b'\n')
+print(encoded({k:result[k] for k in ('status','all_13_radial_material_domains_replayed','literal_common_A_from_both_source_midpoint_tangent_constraints_recomputed','positive_overlap_volume_lower_bound_m3','common_reference_excludes_old_cube_from_C11','seconds','independent_audit_sha256')}).decode(),flush=True)
+print('AUDIT_RAW',raw(OUT),'SCRIPT_RAW',raw(__file__),flush=True)

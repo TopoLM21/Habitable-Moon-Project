@@ -1,0 +1,218 @@
+"""Stdlib-only discovery / manifest sealing for final879 after root PASS.
+
+Default discovery is read-only and does not require completed gate outputs.
+--seal-manifest requires gate02, audit, all archives and the exact83-file closure.
+It writes only a fresh artifact_manifest.json with exclusive creation. It never
+executes producer/helper bodies, imports the project, restores temporary files,
+runs tests/math, or recomputes an old baseline. The pinned reader's module-level
+literal declarations are inspected via AST, never imported or executed.
+"""
+from pathlib import Path
+import argparse
+import ast
+import hashlib
+import json
+import sys
+
+ROOT = Path('/workspace/Habitable-Moon-Project')
+PARENT = ROOT / 'analysis/geometric_native_common_material_surface_transport_validation'
+RELEASE = PARENT / 'release_validation_02'
+READER = Path('/tmp/native_common_material_surface_transport_final_readback_gate02_20261006.txt')
+READER_SHA = 'f23843c4065d8d8bd4095a9f0b1ecbf948386e92ea1047506f09104bbf7a66f1'
+CANDIDATE = Path('/tmp/native_common_material_surface_transport_final_manifest_candidates_gate02_20261006.json')
+CANDIDATE_SHA = '161aa00b164f947af8e7578fe64c97b687079dd8f8f616412dbd8ce78834fc06'
+MAP = '4a75d4bc7d404fc11d5d252302fe6b6d961797b4a637f921c38acb679485b79c'
+MAP_RAW = '1b948eace979f3125756f6f0dea803fb55d0d2e87650890a2236c07502b0c336'
+OLD_MAP = '13c19fe10056af9ab621e2c8a23e63ad36b301c95e121a6835cead019378e385'
+OLD_MAP_RAW = '8f7608219c398a05913d96e80baf685b997dccff466ee9cf9eb1aa89b8124675'
+AUDITOR_SHA = 'c38dd9f2e9d0efeac42b64d50c15601d40fb1f56232edafcf34de19f47c11502'
+SCOPE = 'FINITE_LOCAL_MATERIAL_SURFACE_MEASURE_AND_MEMORY_TRANSPORT_COMPONENT_ONLY'
+OUTPUTS = frozenset(('pytest.log', 'control_console.log', 'native_control/report.json', 'native_control/source_packet.json'))
+
+
+def encoded(value):
+    return json.dumps(value, sort_keys=True, separators=(',', ':'), ensure_ascii=False, allow_nan=False).encode()
+
+
+def value_digest(value):
+    return hashlib.sha256(encoded(value)).hexdigest()
+
+
+def exact(actual, expected, label):
+    assert type(actual) is type(expected) and actual == expected, label
+    if type(actual) in (dict, list, tuple):
+        assert encoded(actual) == encoded(expected), label + ': recursive literal kinds'
+
+
+def raw_digest(path):
+    h = hashlib.sha256()
+    with Path(path).open('rb') as stream:
+        for block in iter(lambda: stream.read(1 << 20), b''):
+            h.update(block)
+    return h.hexdigest()
+
+
+def read(path):
+    return json.loads(Path(path).read_bytes())
+
+
+def sealed(path, key):
+    result = read(path)
+    assert type(result) is dict and key in result, str(path)
+    body = dict(result)
+    exact(body.pop(key), value_digest(body), 'selfseal: ' + str(path))
+    return result
+
+
+def console_json(path):
+    return json.loads(next(line for line in reversed(Path(path).read_text().splitlines()) if line.startswith('{')))
+
+
+def reader_literals():
+    exact(raw_digest(READER), READER_SHA, 'exact statically approved reader source')
+    tree = ast.parse(READER.read_bytes(), filename=str(READER))
+    wanted = {'MANIFEST_FILES', 'EXPECTED_MANIFEST_COUNT', 'AUDIT_FIELDS', 'AUDIT_STATIC_EXPECTED'}
+    result = {}
+    for node in tree.body:
+        if isinstance(node, ast.Assign) and len(node.targets) == 1 and isinstance(node.targets[0], ast.Name):
+            name = node.targets[0].id
+            if name in wanted:
+                assert name not in result, 'duplicate reader literal: ' + name
+                result[name] = ast.literal_eval(node.value)
+    exact(set(result), wanted, 'required pinned reader literal declarations')
+    exact(result['EXPECTED_MANIFEST_COUNT'], 83, 'forecast explicit83 count')
+    exact(len(result['MANIFEST_FILES']), 83, '83 explicit literal file paths')
+    exact(len(set(result['MANIFEST_FILES'])), 83, '83 unique explicit literal file paths')
+    exact(raw_digest(CANDIDATE), CANDIDATE_SHA, 'exact forecast candidate JSON')
+    candidate = read(CANDIDATE)
+    exact(candidate['file_count'], 83, 'candidate count')
+    exact(set(candidate['files']), set(result['MANIFEST_FILES']), 'candidate and reader exact file set')
+    return result
+
+
+def source_map():
+    return {str(path.relative_to(ROOT)): raw_digest(path)
+            for name in ('tectonics', 'tests', 'scripts', 'analysis')
+            for path in sorted((ROOT / name).rglob('*.py'))}
+
+
+def current_parent_files(manifest_path):
+    return {str(path.relative_to(ROOT)) for path in PARENT.rglob('*')
+            if path.is_file() and '__pycache__' not in path.parts and path.suffix != '.pyc'
+            and path.resolve() != manifest_path}
+
+
+def run(*, seal_manifest=False, manifest_path=None):
+    producer_before = raw_digest(__file__)
+    declarations = reader_literals()
+    expected = set(declarations['MANIFEST_FILES'])
+    target = (Path(manifest_path) if manifest_path else PARENT / 'artifact_manifest.json').resolve()
+    assert target == PARENT / 'artifact_manifest.json', 'only the authorized new-parent manifest destination'
+    parent_expected = {name for name in expected if Path(name).is_relative_to(PARENT.relative_to(ROOT))}
+    observed = current_parent_files(target)
+    discovery = dict(status='DISCOVERED_FORECAST83_CURRENT_CLOSURE_ONLY', candidate_file_count=83,
+                     expected_parent_file_count=len(parent_expected), actual_parent_file_count=len(observed),
+                     missing=sorted(parent_expected - observed), unexpected=sorted(observed - parent_expected),
+                     outside_parent_missing=sorted(name for name in expected - parent_expected if not (ROOT / name).is_file()),
+                     pinned_reader_source_sha256=READER_SHA, pinned_candidate_json_sha256=CANDIDATE_SHA,
+                     gate_or_audit_executed=False, old_baseline_reexecuted=False, project_imports=False)
+    if not seal_manifest:
+        exact(raw_digest(__file__), producer_before, 'discovery source unchanged')
+        print(encoded(discovery).decode(), flush=True)
+        return discovery
+    exact(observed, parent_expected, 'completed exact parent closure: missing/extra artifacts require candidate and reader revision')
+    exact(discovery['outside_parent_missing'], [], 'both explicit new core/test files exist')
+    assert not target.exists(), 'never overwrite an existing manifest'
+    frozen_path = PARENT / 'frozen_source_map_879.json'
+    exact(raw_digest(frozen_path), MAP_RAW, 'final879 raw map')
+    frozen = read(frozen_path)
+    exact(value_digest(frozen), MAP, 'final879 canonical map')
+    before = source_map()
+    exact(len(before), 879, 'actual879 source count')
+    exact(before, frozen, 'all actual879 source hashes match final freeze')
+    old_path = ROOT / 'analysis/geometric_native_common_strain_projection_validation/frozen_source_map_875.json'
+    exact(raw_digest(old_path), OLD_MAP_RAW, 'read-only old875 raw map')
+    old = read(old_path)
+    exact(len(old), 875, 'old875 source count')
+    exact(value_digest(old), OLD_MAP, 'read-only old875 canonical map')
+    exact({name: before[name] for name in old}, old, 'all875 old sources preserved')
+    exact(set(before) - set(old), {'tectonics/geometric_native_common_material_surface_transport.py',
+                                 'tests/test_geometric_native_common_material_surface_transport.py',
+                                 'analysis/geometric_native_common_material_surface_transport_validation/native_control.py',
+                                 'analysis/geometric_native_common_material_surface_transport_validation/validate.py'}, 'exact four authorized paths')
+    wrapper = sealed(RELEASE / 'report.json', 'report_sha256')
+    native = sealed(RELEASE / 'native_control/report.json', 'report_sha256')
+    # The 265 MB packet is streamed for raw hashes here. Its full JSON/schema
+    # and selfseal are checked once by the separately authorized final reader;
+    # manifest capture links the exact current bytes to both sealed PASS receipts.
+    packet_path = RELEASE / 'native_control/source_packet.json'
+    packet_selfseal = native['source_packet_sha256']
+    audit = sealed(PARENT / 'independent_audit.json', 'audit_packet_sha256')
+    for key, value in (('status', 'PASS'), ('source_count', 879), ('pytest_counts', {'passed': 14}),
+                       ('pytest_exit_code', 0), ('source_map_before_sha256', MAP), ('source_map_after_sha256', MAP),
+                       ('prior_artifacts_and_python_sources_preserved_after', True), ('changed_python_paths', []),
+                       ('physical_candidate_status', SCOPE)):
+        exact(wrapper[key], value, 'completed gate02: ' + key)
+    exact(set(wrapper['outputs']), set(OUTPUTS), 'completed gate02 strict four outputs')
+    exact({str(path.relative_to(RELEASE)) for path in RELEASE.rglob('*') if path.is_file()}, set(OUTPUTS) | {'report.json'}, 'completed gate02 strict five files')
+    for name, row in wrapper['outputs'].items():
+        exact((RELEASE / name).stat().st_size, row['bytes'], 'gate output byte size: ' + name)
+        exact(raw_digest(RELEASE / name), row['sha256'], 'gate output raw pin: ' + name)
+    exact(console_json(PARENT / 'wrapper_console.log'),
+          {key: wrapper.get(key) for key in ('status', 'physical_candidate_status', 'pytest_counts', 'seconds', 'source_count', 'changed_python_paths')},
+          'current final wrapper console summary association')
+    exact(console_json(RELEASE / 'control_console.log'), native, 'current control console complete report association')
+    exact(native['status'], 'PASS', 'native control PASS')
+    exact(native['format'], 'native-common-material-surface-transport-control-1', 'native control format')
+    exact(native['complete_surface_query_count'], 10, 'native surface query count')
+    exact(native['complete_original_material_query_count'], 64, 'native original-material query count')
+    exact(set(audit), set(declarations['AUDIT_FIELDS']), 'entire audit105 schema')
+    for key, value in declarations['AUDIT_STATIC_EXPECTED'].items():
+        exact(audit[key], value, 'fixed audit metadata: ' + key)
+    exact(raw_digest(PARENT / 'independent_audit_source.txt'), AUDITOR_SHA, 'executed independent producer permanent copy')
+    for key, path, value_key, value in (('wrapper_raw_sha256', RELEASE / 'report.json', 'wrapper_selfseal', wrapper['report_sha256']),
+                                      ('native_raw_sha256', RELEASE / 'native_control/report.json', 'native_selfseal', native['report_sha256']),
+                                      ('source_packet_raw_sha256', packet_path, 'source_packet_selfseal', packet_selfseal)):
+        exact(audit[key], raw_digest(path), 'independent current raw association: ' + key)
+        exact(audit[value_key], value, 'independent current selfseal association: ' + value_key)
+    exact(audit['output_manifest'], wrapper['outputs'], 'independent current strict output manifest')
+    exact(console_json(PARENT / 'independent_audit_console.log'), audit, 'current audit console complete report association')
+    rows = {}
+    for name in sorted(expected):
+        path = (ROOT / name).resolve()
+        assert path.is_relative_to(ROOT) and str(path.relative_to(ROOT)) == name, 'canonical artifact path: ' + name
+        rows[name] = dict(bytes=path.stat().st_size, sha256=raw_digest(path))
+    result = dict(format='native-common-material-surface-transport-artifact-manifest-1',
+                  status='PASS_COMPONENT_EVIDENCE_CLOSED', source_count=879, closed_component_file_count=83,
+                  closed_release_output_count=4, source_map_canonical_sha256=MAP, source_map_raw_sha256=MAP_RAW,
+                  physical_candidate_status=SCOPE, accepted_original_native_intervals=1, accepted_new_native_intervals=0,
+                  original_point_1_remaining_work_blocks=1, original_point_1_completed=False,
+                  wrapper_selfseal=wrapper['report_sha256'], native_selfseal=native['report_sha256'], packet_selfseal=packet_selfseal,
+                  independent_audit_selfseal=audit['audit_packet_sha256'], exact_independent_producer_raw_sha256=AUDITOR_SHA,
+                  files=rows)
+    for name, row in rows.items():
+        exact(raw_digest(ROOT / name), row['sha256'], 'current artifact unchanged before/after: ' + name)
+        exact((ROOT / name).stat().st_size, row['bytes'], 'current artifact size unchanged: ' + name)
+    exact(source_map(), before, 'all879 source bytes unchanged during closure capture')
+    exact(current_parent_files(target), parent_expected, 'parent closure unchanged during capture')
+    exact(raw_digest(READER), READER_SHA, 'pinned reader unchanged during closure capture')
+    exact(raw_digest(CANDIDATE), CANDIDATE_SHA, 'candidate unchanged during closure capture')
+    exact(raw_digest(__file__), producer_before, 'manifest protocol source unchanged')
+    assert all(not (name == 'tectonics' or name.startswith('tectonics.') or name == 'tests' or name.startswith('tests.')) for name in sys.modules), 'no project/test imports'
+    result['manifest_sha256'] = value_digest(result)
+    with target.open('xb') as stream:
+        stream.write(encoded(result) + b'\n')
+    print(encoded(dict(status=result['status'], file_count=83, manifest_path=str(target),
+                       manifest_raw_sha256=raw_digest(target), manifest_selfseal=result['manifest_sha256'],
+                       source_map_canonical_sha256=MAP, readback_source_sha256=READER_SHA,
+                       project_imports=False, baseline_or_math_or_test_reexecuted=False,
+                       source_packet_json_parsed_by_manifest_protocol=False)).decode(), flush=True)
+    return result
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--seal-manifest', action='store_true')
+    parser.add_argument('--manifest')
+    args = parser.parse_args()
+    run(seal_manifest=args.seal_manifest, manifest_path=args.manifest)

@@ -1,0 +1,44 @@
+from pathlib import Path
+import hashlib,json,time,argparse
+ROOT=Path('/workspace/Habitable-Moon-Project')
+P=ROOT/'analysis/geometric_native_common_receiving_face_validation'
+F=ROOT/'analysis/geometric_native_common_receiving_face_final_readback'
+def digest(p):
+ h=hashlib.sha256()
+ with Path(p).open('rb') as f:
+  for b in iter(lambda:f.read(1024*1024),b''):h.update(b)
+ return h.hexdigest()
+def enc(x):return json.dumps(x,sort_keys=True,separators=(',',':'),ensure_ascii=False).encode()
+def meaningful(p):return {str(x.relative_to(p)) for x in p.rglob('*') if x.is_file() and '__pycache__' not in x.parts and x.suffix!='.pyc'}
+def run(output,allow_added):
+ t=time.perf_counter()
+ base=Path('/workspace/reference_covariance_baseline_20261008.json')
+ assert base.read_bytes()==base.with_name(base.stem+'_console.log').read_bytes()
+ assert not base.with_name(base.stem+'_stderr.log').stat().st_size
+ assert json.loads(base.read_bytes())['status']=='PASS_FINAL913_EVIDENCE_READBACK_ONLY'
+ prior=json.loads((Path('/workspace')/('receiving_face_guard_'+hashlib.sha256(str(base.resolve()).encode()).hexdigest()+'.json')).read_bytes())
+ pins=dict(prior['dependency_raw_sha256'])
+ manifest=json.loads((P/'artifact_manifest.json').read_bytes())
+ assert digest(P/'artifact_manifest.json')=='5e5aa4dbf39ff7ef83c779f59ad9ebeb70251f7558ab12ae30d6e8b6f1f949b9'
+ assert len(manifest['files'])==60
+ for name,row in manifest['files'].items():
+  path=ROOT/name;assert path.stat().st_size==row['bytes'];pins[str(path)]=row['sha256']
+ expected={str((ROOT/n).relative_to(P)) for n in manifest['files'] if (ROOT/n).is_relative_to(P)}
+ assert meaningful(P)==expected|{'artifact_manifest.json'}
+ assert digest(F/'archive.json')=='310980c3838bdd978122a74f8194b650b4c691fc022293d248b8c1a9944b39e9'
+ archive=json.loads((F/'archive.json').read_bytes())
+ assert meaningful(F)=={'archive.json','readback_source.txt','readback.json','console.log'}
+ for name,row in archive['files'].items():pins[str(F/name)]=row['sha256']
+ for path in (P/'artifact_manifest.json',F/'archive.json'):pins[str(path)]=digest(path)
+ for path,pin in pins.items():assert digest(path)==pin,path
+ actual={str(p.relative_to(ROOT)):digest(p) for d in ('tectonics','tests','scripts','analysis') for p in (ROOT/d).rglob('*.py')}
+ old=prior['source_sha256']
+ added=set(actual)-set(old)
+ expected_added={'tectonics/geometric_native_reference_density_transport.py','tests/test_geometric_native_reference_density_transport.py'} if allow_added else set()
+ assert added==expected_added and all(actual[k]==v for k,v in old.items())
+ result=dict(status='PASS_CLOSED913_AND_ANCESTRY_PRESERVED',old_source_count=len(old),source_count=len(actual),closed_dependency_count=len(pins),dependency_raw_sha256=pins,source_sha256=actual,old_math_executed=False,seconds=time.perf_counter()-t)
+ result['sha256']=hashlib.sha256(enc(result)).hexdigest()
+ with Path(output).open('xb') as f:f.write(enc(result)+b'\n')
+ print(enc({k:v for k,v in result.items() if k not in ('dependency_raw_sha256','source_sha256')}).decode())
+if __name__=='__main__':
+ p=argparse.ArgumentParser();p.add_argument('--output',required=True);p.add_argument('--allow-added',action='store_true');a=p.parse_args();run(a.output,a.allow_added)

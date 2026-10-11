@@ -1,0 +1,69 @@
+"""Byte-only restoration of authenticated923 baseline associations and919 ancestry."""
+from pathlib import Path
+import argparse,hashlib,json,subprocess,sys
+ROOT=Path('/workspace/Habitable-Moon-Project')
+P=ROOT/'analysis/geometric_native_common_cold_preparation_energy_validation'
+F=ROOT/'analysis/geometric_native_common_cold_preparation_energy_final_readback'
+def enc(x):return json.dumps(x,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+def digest(p):
+    h=hashlib.sha256()
+    with Path(p).open('rb') as f:
+        for b in iter(lambda:f.read(1024*1024),b''):h.update(b)
+    return h.hexdigest()
+def load(p):return json.loads(Path(p).read_bytes())
+def sealed(p):
+    x=load(p);assert x['sha256']==hashlib.sha256(enc({k:v for k,v in x.items() if k!='sha256'})).hexdigest(),p;return x
+
+def meaningful(p):return {str(x.relative_to(p)) for x in p.rglob('*') if x.is_file() and '__pycache__' not in x.parts and x.suffix!='.pyc'}
+def run(output):
+    output=Path(output).resolve()
+    assert output.is_relative_to('/workspace') and not output.is_relative_to(ROOT)
+    assert not output.exists()
+    archive=sealed(F/'archive.json')
+    assert archive['status']=='PASS_FINAL923_READBACK_ARCHIVE_CLOSED' and archive['source_count']==923
+    assert archive['actual_reader_exit_code']==0 and archive['actual_reader_stderr_bytes']==0
+    assert archive['actual_reader_stdout_equals_report'] is True
+    assert archive['reader_execution_facts']['actual_exit_code']==0
+    assert archive['reader_execution_facts']['actual_stderr_bytes']==0
+    assert meaningful(F)=={'archive.json','readback_source.txt','readback.json','console.log'}
+    assert digest(P/'artifact_manifest.json')==archive['manifest_raw_sha256']
+    manifest=sealed(P/'artifact_manifest.json');assert manifest['source_count']==923
+    names=set()
+    for name,row in manifest['files'].items():
+        p=ROOT/name;assert digest(p)==row['sha256'] and p.stat().st_size==row['bytes'],name
+        if p.is_relative_to(P):names.add(str(p.relative_to(P)))
+    assert meaningful(P)==names|{'artifact_manifest.json'}
+    for name,row in archive['files'].items():
+        p=F/name;assert digest(p)==row['sha256'] and p.stat().st_size==row['bytes']
+    assert (F/'console.log').read_bytes()==(F/'readback.json').read_bytes()
+    inherited_source=ROOT/'analysis/geometric_native_common_cold_variational_work_validation/baseline_restore_source.txt'
+    assert digest(inherited_source)==manifest['inherited919_restorer_raw_sha256']
+    inherited=Path(str(output)+'.inherited919.json');assert not inherited.exists()
+    child=subprocess.run([sys.executable,str(inherited_source),'--output',str(inherited)],capture_output=True)
+    assert child.returncode==0 and child.stderr==b'',(child.returncode,child.stderr)
+    assert child.stdout==inherited.read_bytes()
+    inherited_report=sealed(inherited)
+    assert inherited_report['status']=='PASS_AUTHENTICATED919_BASELINES_RESTORED'
+    assert inherited_report['required_target_count']==80 and inherited_report['old_physical_math_executed'] is False
+    rows=load(P/'baseline_associations.json');assert len(rows)==10
+    restored=[]
+    for target,row in rows.items():
+        target=Path(target).resolve();source=(ROOT/row['copy']).resolve()
+        assert target.is_relative_to('/workspace') and not target.is_relative_to(ROOT)
+        assert source.is_relative_to(P/'baseline919') and digest(source)==row['sha256']
+        if target.exists():assert digest(target)==row['sha256'],target
+        else:
+            assert target.parent.is_dir()
+            with target.open('xb') as f:f.write(source.read_bytes())
+            restored.append(str(target))
+    assert manifest['required_baseline_target_count']==80+len(rows)==90
+    result=dict(status='PASS_AUTHENTICATED923_BASELINES_RESTORED',required_target_count=90,
+        inherited919_required_target_count=80,restored_new=restored,
+        inherited919_actual_exit_code=child.returncode,inherited919_stderr_bytes=len(child.stderr),
+        inherited919_stdout_equals_receipt=True,repository_files_written=False,old_physical_math_executed=False)
+    result['sha256']=hashlib.sha256(enc(result)).hexdigest()
+    with output.open('xb') as f:f.write(enc(result)+b'\n')
+    print(enc(result).decode())
+
+if __name__=='__main__':
+    p=argparse.ArgumentParser();p.add_argument('--output',required=True);run(p.parse_args().output)

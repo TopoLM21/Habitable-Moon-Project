@@ -1,0 +1,255 @@
+"""Final891 evidence readback only; stdlib, no physical math or project imports."""
+from pathlib import Path
+import argparse
+import hashlib
+import json
+import sys
+import time
+import types
+
+ROOT = Path('/workspace/Habitable-Moon-Project')
+PARENT = ROOT / 'analysis/geometric_native_common_carrier_source_work_validation'
+FINAL = ROOT / 'analysis/geometric_native_common_carrier_source_work_final_readback'
+STAGE = Path('/workspace/carrier_source_work_baseline_20261007')
+MANIFEST_RAW = 'd40cff2179ae8dd54f1b0959f1391839251a15d3dc7891b6fef690993bf6385c'
+MANIFEST_SEAL = '6c5c87a5ce93af01f311b33185e670efa20630727b9dd1225650583d241a9c59'
+PRESERVATION_RAW = 'aa191e6106ff2b397a5738afea209c626e8bd99c3e4de76718a5a46039f63f04'
+SCOPE = 'DECLARED_ARCHIVE_CARRIER_REGISTERED_COMMON_COHESIVE_PREPARATION_ONLY'
+DOCUMENT_NAMES = ('CLOUD_HANDOFF.md', 'GEOMETRIC_NATIVE_COMMON_CARRIER_SOURCE_WORK_IMPLEMENTATION.md')
+RELEASE_FILES = frozenset(('report.json', 'pytest.log', 'control_console.log',
+                          'native_control/report.json', 'native_control/source_packet.json'))
+ADDED_NAMES = frozenset((
+    'tectonics/geometric_native_common_carrier_source_work.py',
+    'tests/test_geometric_native_common_carrier_source_work.py',
+    'analysis/geometric_native_common_carrier_source_work_validation/native_control.py',
+    'analysis/geometric_native_common_carrier_source_work_validation/validate.py',
+))
+
+
+def encoded(value):
+    return json.dumps(value, sort_keys=True, separators=(',', ':'),
+                      ensure_ascii=False, allow_nan=False).encode()
+
+
+def require(condition, label):
+    if not condition:
+        raise ValueError(label)
+
+
+def exact(actual, expected, label):
+    require(type(actual) is type(expected) and actual == expected, label)
+    if type(actual) in (dict, list, tuple):
+        require(encoded(actual) == encoded(expected), label + ' complete literal encoding')
+
+
+def regular(path):
+    path = Path(path)
+    require(path.is_absolute() and path.resolve() == path and not path.is_symlink()
+            and path.is_file(), 'Canonical regular file ' + str(path))
+    return path
+
+
+def digest(path):
+    h = hashlib.sha256()
+    with regular(path).open('rb') as stream:
+        for block in iter(lambda: stream.read(1 << 20), b''):
+            h.update(block)
+    return h.hexdigest()
+
+
+def sealed(path, key):
+    value = json.loads(regular(path).read_bytes())
+    require(type(value) is dict and key in value, 'Complete selfsealed object ' + str(path))
+    exact(value[key], hashlib.sha256(encoded({k: v for k, v in value.items() if k != key})).hexdigest(),
+          'Complete selfseal ' + str(path))
+    return value
+
+
+def source_map():
+    return {str(path.relative_to(ROOT)): digest(path)
+            for folder in ('tectonics', 'tests', 'analysis', 'scripts')
+            for path in sorted((ROOT / folder).rglob('*.py'))}
+
+
+def project_modules():
+    return {name: module for name, module in sys.modules.items()
+            if name in ('tectonics', 'tests', 'analysis') or
+            name.startswith(('tectonics.', 'tests.', 'analysis.'))}
+
+
+def all_files(directory):
+    return {str(path.relative_to(directory)) for path in directory.rglob('*') if path.is_file()}
+
+
+def run(output_path):
+    started = time.perf_counter()
+    reader_raw = digest(__file__)
+    requested = Path(output_path)
+    require(requested.is_absolute() and requested.resolve() == requested and not requested.exists()
+            and not requested.is_symlink() and requested.parent.is_dir()
+            and requested.parent.resolve() == requested.parent, 'Fresh canonical exclusive readback output')
+    if requested.is_relative_to(ROOT):
+        exact(requested, FINAL / 'readback.json', 'Only authorized final repo output')
+        require(not (FINAL / 'archive.json').exists(), 'Final archive not yet sealed')
+        exact(all_files(FINAL), {'readback_source.txt', 'console.log'}, 'Exactly final source and actual console before readback')
+    exact(digest(FINAL / 'readback_source.txt'), reader_raw, 'Executing reader equals final archived source')
+    final_pins = {}
+    if (FINAL / 'archive.json').exists():
+        archive = sealed(FINAL / 'archive.json', 'archive_sha256')
+        for key, expected in (('format', 'native-common-carrier-source-work-final-archive-1'),
+                              ('status', 'PASS_FINAL891_READBACK_ARCHIVE_CLOSED'),
+                              ('total_closed_file_count', 4)):
+            exact(archive[key], expected, 'Already closed final891 archive ' + key)
+        exact(set(archive['files']), {'readback_source.txt', 'readback.json', 'console.log'},
+              'Exactly three final891 archived payloads')
+        exact(all_files(FINAL), set(archive['files']) | {'archive.json'}, 'Strict complete final891 four-file namespace')
+        final_pins[str(FINAL / 'archive.json')] = digest(FINAL / 'archive.json')
+        for name, row in archive['files'].items():
+            exact(set(row), {'bytes', 'sha256'}, 'Complete closed final891 file row')
+            exact(regular(FINAL / name).stat().st_size, row['bytes'], 'Closed final891 file size')
+            exact(digest(FINAL / name), row['sha256'], 'Closed final891 file raw')
+            final_pins[str(FINAL / name)] = row['sha256']
+        saved = sealed(FINAL / 'readback.json', 'audit_sha256')
+        exact(saved['audit_sha256'], archive['readback_selfseal'], 'Closed final891 archived readback link')
+        exact(saved['status'], 'PASS_FINAL891_EVIDENCE_READBACK_ONLY', 'Closed final891 saved readback PASS')
+        exact(saved['current_manifest_raw_sha256'], MANIFEST_RAW, 'Closed final891 archived manifest raw link')
+        exact(saved['executing_readback_source_raw_sha256'], reader_raw, 'Closed final891 archived executing source link')
+    modules_before = project_modules()
+    docs = {str(ROOT / name): digest(ROOT / name) for name in DOCUMENT_NAMES}
+    exact(digest(PARENT / 'artifact_manifest.json'), MANIFEST_RAW, 'Hard-pinned complete current891 manifest raw')
+    manifest = sealed(PARENT / 'artifact_manifest.json', 'manifest_sha256')
+    for key, expected in (('manifest_sha256', MANIFEST_SEAL),
+                          ('format', 'native-common-carrier-source-work-component-manifest-1'),
+                          ('status', 'PASS_COMPONENT_ARTIFACTS_CLOSED'),
+                          ('source_count', 891), ('physical_scope', SCOPE)):
+        exact(manifest[key], expected, 'Current891 manifest ' + key)
+    require(type(manifest['current_release']) is str and
+            '/' not in manifest['current_release'] and manifest['current_release'] not in ('', '.', '..'),
+            'Canonical one-level current release directory')
+    pins = dict(final_pins)
+    pins[str(PARENT / 'artifact_manifest.json')] = MANIFEST_RAW
+    expected_parent = set()
+    for name, row in manifest['files'].items():
+        path = ROOT / name
+        require(path.resolve() == path and path.is_relative_to(ROOT), 'Canonical current manifest path')
+        exact(set(row), {'bytes', 'sha256'}, 'Complete current manifest raw pin row')
+        exact(regular(path).stat().st_size, row['bytes'], 'Current manifest file size')
+        exact(digest(path), row['sha256'], 'Current manifest file raw SHA256')
+        pins[str(path)] = row['sha256']
+        if path.is_relative_to(PARENT):
+            expected_parent.add(str(path.relative_to(PARENT)))
+    exact(len(manifest['files']), manifest['closed_component_file_count'], 'Complete manifest file count')
+    actual_parent = {str(p.relative_to(PARENT)) for p in PARENT.rglob('*')
+                     if p.is_file() and '__pycache__' not in p.parts and p.suffix != '.pyc'}
+    exact(actual_parent, expected_parent | {'artifact_manifest.json'}, 'Strict whole current component namespace')
+    release = PARENT / manifest['current_release']
+    exact(all_files(release), set(RELEASE_FILES), 'Strict five-file gate namespace: four outputs plus report')
+    gate = sealed(release / 'report.json', 'report_sha256')
+    for key, expected in (('status', 'PASS'), ('source_count', 891), ('previous_source_count', 887),
+                          ('tests_exit_code', 0), ('tests_failed', 0), ('tests_skipped', 0),
+                          ('native_control_succeeded', True), ('current_physical_scope', SCOPE)):
+        exact(gate[key], expected, 'Actual current891 gate ' + key)
+    require(type(gate['tests_collected']) is int and gate['tests_collected'] > 0, 'Positive actual test collection')
+    exact(gate['tests_passed'], gate['tests_collected'], 'All actually collected tests passed')
+    exact(manifest['gate_report_selfseal'], gate['report_sha256'], 'Current manifest links actual gate')
+    exact(set(gate['output_raw_sha256']), set(RELEASE_FILES) - {'report.json'},
+          'Complete gate output raw map')
+    for name, pin in gate['output_raw_sha256'].items():
+        exact(digest(release / name), pin, 'Actual gate output raw ' + name)
+    exact(set(gate['additional_source_sha256']), set(ADDED_NAMES), 'Exactly four authorized new891 sources')
+    frozen_path = ROOT / gate['frozen_source_map_path']
+    require(frozen_path.resolve() == frozen_path and frozen_path.is_relative_to(PARENT), 'Frozen map in new component')
+    exact(digest(frozen_path), gate['frozen_source_map_raw_sha256'], 'Actual frozen891 map raw')
+    frozen = json.loads(frozen_path.read_bytes())
+    exact(len(frozen), 891, 'Actual frozen891 source count')
+    exact(source_map(), frozen, 'Complete actual891 source map')
+    exact(hashlib.sha256(encoded(frozen)).hexdigest(), gate['frozen_source_map_sha256'], 'Frozen891 canonical source map')
+    snapshots = {str(PARENT.relative_to(ROOT) / 'source_snapshots' / manifest['current_release'] /
+                     (name.replace('/', '__') + '.txt')): pin
+                 for name, pin in gate['additional_source_sha256'].items()}
+    exact(gate['executing_source_snapshots'], snapshots, 'Exactly four executing frozen source snapshots')
+    for name, pin in snapshots.items():
+        exact(digest(ROOT / name), pin, 'Actual executing frozen source snapshot')
+    control = sealed(release / 'native_control/report.json', 'report_sha256')
+    packet = sealed(release / 'native_control/source_packet.json', 'packet_sha256')
+    exact(control['status'], 'PASS', 'Native control actual PASS')
+    exact(control['physical_candidate_status'], SCOPE, 'Native control explicit limited physical scope')
+    exact(packet['physical_candidate_status'], SCOPE, 'Native packet explicit limited physical scope')
+    exact(gate['native_control_report_sha256'], control['report_sha256'], 'Gate actual native control link')
+    exact(control['source_packet_sha256'], packet['packet_sha256'], 'Native control complete packet selfseal link')
+    exact(control['source_packet_raw_sha256'], digest(release / 'native_control/source_packet.json'), 'Native control actual packet raw link')
+    for key, expected in (('accepted_original_native_intervals', 1), ('accepted_new_native_intervals', 0),
+                          ('original_point_1_completed', False), ('original_point_1_remaining_work_blocks', 1)):
+        exact(control[key], expected, 'Preserved physical progression ' + key)
+    exact(len(control['remaining_physical_conditions']), 3, 'Same three remaining original point1 conditions')
+    for key, expected in (('physical_source_force_prestress_work_handover_certified', False),
+                          ('new_mixed_force_equilibrium_certified', False),
+                          ('physical_material_admission_authorized', False),
+                          ('whole_clock_all_pair_admission_authorized', False),
+                          ('full_system_temporal_path_work_certified', False),
+                          ('clocks_advanced', False),
+                          ('proposed_source_damage_adopted', False),
+                          ('complete_declared_preparation_restart_verified', True)):
+        exact(control[key], expected, 'Native report explicit prepared-scope boundary ' + key)
+        exact(packet[key], expected, 'Native packet explicit prepared-scope boundary ' + key)
+    audit = sealed(PARENT / 'independent_audit/report.json', 'audit_sha256')
+    exact(audit['status'], 'PASS', 'Independent audit actual PASS')
+    exact(manifest['independent_audit_selfseal'], audit['audit_sha256'], 'Manifest actual audit link')
+    exact(audit['source_packet_raw_sha256'], digest(release / 'native_control/source_packet.json'), 'Audit actual packet raw link')
+    exact(digest(PARENT / 'independent_audit/audit_source.txt'), audit['executing_source_raw_sha256'], 'Audit actual executing source link')
+    helper = PARENT / 'baseline_887_preservation_source.txt'
+    exact(digest(helper), PRESERVATION_RAW, 'Authenticated compact immutable887 preservation guard')
+    module = types.ModuleType('_private_final891_preservation')
+    module.__file__ = str(helper)
+    exec(compile(helper.read_bytes(), str(helper), 'exec'), module.__dict__)
+    unique = hashlib.sha256(str(requested).encode()).hexdigest()[:20]
+    preservation_output = STAGE / ('final891_preservation_' + unique + '.json')
+    prior = module.run(gate['additional_source_sha256'], output_path=preservation_output)
+    for key, expected in (('current_python_source_count', 891), ('prior_python_source_count', 887),
+                          ('all887_python_sources_unchanged', True),
+                          ('preserved_prior883_raw_dependency_pin_count', 341),
+                          ('preserved_current887_manifest_file_count', 41),
+                          ('preserved_current887_final_readback_archive_file_count', 4),
+                          ('temporary_dependency_copy_association_count', 15),
+                          ('authoritative_ancestry_release_closure_count', 11)):
+        exact(prior[key], expected, 'Actual preserved887 bytes ' + key)
+    for name, pin in pins.items():
+        exact(digest(name), pin, 'Current dependency raw unchanged AFTER')
+    exact(source_map(), frozen, 'Complete actual891 sources unchanged AFTER')
+    for name, pin in docs.items():
+        exact(digest(name), pin, 'Final document unchanged AFTER')
+    exact(digest(__file__), reader_raw, 'Actual executing reader unchanged AFTER')
+    modules_after = project_modules()
+    exact(set(modules_after), set(modules_before), 'Caller project module names preserved')
+    require(all(modules_after[name] is module for name, module in modules_before.items()), 'Caller project module identities preserved')
+    result = dict(
+        format='native-common-carrier-source-work-final-readback-1',
+        status='PASS_FINAL891_EVIDENCE_READBACK_ONLY', physical_scope=SCOPE, source_count=891,
+        prior_887_sources_unchanged=True, current_manifest_raw_sha256=MANIFEST_RAW,
+        current_manifest_selfseal=MANIFEST_SEAL, current_manifest_file_count=manifest['closed_component_file_count'],
+        current_release=manifest['current_release'], tests_passed=gate['tests_passed'], gate_seconds=gate['elapsed_seconds'],
+        native_control_report_selfseal=control['report_sha256'], native_source_packet_selfseal=packet['packet_sha256'],
+        independent_audit_selfseal=audit['audit_sha256'],
+        prior_887_preservation_path=str(preservation_output), prior_887_preservation_raw_sha256=digest(preservation_output),
+        prior_887_preservation_selfseal=prior['preservation_sha256'],
+        prior_883_dependency_pin_count=341, temporary_alias_count=15, strict_ancestry_closure_count=11,
+        current_dependency_raw_sha256=pins, document_raw_sha256=docs,
+        accepted_original_native_intervals=1, accepted_new_native_intervals=0,
+        original_point_1_remaining_work_blocks=1, original_point_1_completed=False,
+        remaining_physical_conditions=control['remaining_physical_conditions'],
+        project_imports=False, prior_reader_or_auditor_main_reexecuted=False,
+        math_or_tests_or_solver_or_quadrature_reexecuted=False,
+        caller_existing_project_module_count=len(modules_before),
+        executing_readback_source_raw_sha256=reader_raw, seconds=time.perf_counter() - started,
+    )
+    result['audit_sha256'] = hashlib.sha256(encoded(result)).hexdigest()
+    with requested.open('xb') as stream:
+        stream.write(encoded(result) + b'\n')
+    print(encoded(result).decode())
+    return result
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--output', required=True)
+    run(parser.parse_args().output)

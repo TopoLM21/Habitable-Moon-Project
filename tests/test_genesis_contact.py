@@ -33,7 +33,9 @@ def _source_bytes(tmp_path, *, traction_pa=20000., elastic=(.002, -.002, .008), 
     energy[3] = thermal.initial_total_energy-sum(energy[:2])
     thermal = replace(thermal, energy=energy)
     enthalpy = np.full_like(state.column_enthalpy, rock_enthalpy(1000., model.thermal))
+    # This mechanical fixture has no calculated cooling or material birth path.
     state = replace(state, membrane_established=True, column_enthalpy=enthalpy,
+        bulk_birth_history=None, cohort_mechanics=None,
         boundary_energy_j=float(np.sum(state.layer_mass_kg*enthalpy))-state.initial_column_energy_j,
         damage=np.full_like(state.damage, .8))
     # Select planes once from isotropic stress, then prescribe the controlled

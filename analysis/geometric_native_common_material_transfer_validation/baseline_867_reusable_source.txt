@@ -1,0 +1,165 @@
+"""Reusable stdlib immutable867 readback with exactly four declared871 paths.
+
+The full declared871 map is independently checked before and after, while
+the archived863/859 ancestry readers receive a disclosed frozen867 source
+projection. Only saved receipts, source/artifact hashes, output closures and
+seals are replayed. No project imports, tests/control, endpoint formulas,
+force/Hessian, solve, or quadratures are reexecuted.
+"""
+from pathlib import Path, PurePosixPath
+import argparse, hashlib, json, sys, time, types
+
+ROOT = Path('/workspace/Habitable-Moon-Project')
+PARENT = ROOT / 'analysis/geometric_native_common_source_carrier_validation'
+CURRENT = ROOT / 'analysis/geometric_native_common_material_transfer_validation'
+OUT = Path('/tmp/native_material_transfer_baseline867_reusable_readback_20261006.json')
+BOOTSTRAP_SOURCE = CURRENT / 'baseline_867_bootstrap_source.txt'
+BOOTSTRAP_REPORT = CURRENT / 'baseline_867_bootstrap.json'
+BOOTSTRAP_SOURCE_SHA = '8e86273fadec1d0246132f4ff2be0c33f497d1d617dc6ec9221c09a8b5e415d6'
+BOOTSTRAP_REPORT_RAW = '17d4094a5b3a16edaaa36519c29c0a96d1eeba741e8a826f7686fddd16dc1f83'
+BOOTSTRAP_REPORT_SEAL = '60782ce602e6c9d9ad26f30aa1b2313e8496e12ddd0dcb0c3f371b8a85b052fd'
+MAP = 'bfabfa58dbe49ce1102ef9ab72680a301f8cea6fb30093442150d8d4bda45ef8'
+MAP_RAW = '4b2b98b406cf1f955260dcc24770b9a860cf330e49adc72b4d47e018a140ffc6'
+EXPECTED_ADDED_PATHS = frozenset({
+    'tectonics/geometric_native_common_material_transfer.py',
+    'tests/test_geometric_native_common_material_transfer.py',
+    'analysis/geometric_native_common_material_transfer_validation/native_control.py',
+    'analysis/geometric_native_common_material_transfer_validation/validate.py',
+})
+
+
+def enc(value):
+    return json.dumps(value, sort_keys=True, separators=(',', ':'), ensure_ascii=False, allow_nan=False).encode()
+
+
+def vd(value):
+    return hashlib.sha256(enc(value)).hexdigest()
+
+
+def digest(path):
+    h = hashlib.sha256()
+    with Path(path).open('rb') as stream:
+        for block in iter(lambda: stream.read(1 << 20), b''):
+            h.update(block)
+    return h.hexdigest()
+
+
+def read(path):
+    return json.loads(Path(path).read_bytes())
+
+
+def sealed(path, key):
+    raw = read(path)
+    body = dict(raw)
+    assert body.pop(key) == vd(body), str(path)
+    return raw
+
+
+def load(path, name, pin):
+    assert digest(path) == pin, str(path)
+    module = types.ModuleType(name)
+    module.__file__ = str(path)
+    sys.modules[name] = module
+    exec(compile(Path(path).read_bytes(), str(path), 'exec'), module.__dict__)
+    return module
+
+
+def source_map():
+    return {str(p.relative_to(ROOT)): digest(p)
+            for folder in ('tectonics', 'tests', 'scripts', 'analysis')
+            for p in sorted((ROOT / folder).rglob('*.py'))}
+
+
+def normalized_declared_paths(paths):
+    assert not isinstance(paths, (str, bytes)), 'Pass exactly four explicit path strings'
+    names = tuple(paths)
+    assert len(names) == len(set(names)) == 4, 'Exactly four unique additions required'
+    for name in names:
+        assert type(name) is str and name, 'Nonempty path strings required'
+        path = PurePosixPath(name)
+        assert not path.is_absolute() and str(path) == name, name
+        assert len(path.parts) >= 2 and '..' not in path.parts, name
+        assert path.parts[0] in ('tectonics', 'tests', 'scripts', 'analysis') and path.suffix == '.py', name
+    assert frozenset(names) == EXPECTED_ADDED_PATHS, 'Only the four authorized material-transfer paths are allowed'
+    return frozenset(names)
+
+
+def run(declared_additional_source_paths, *, output_path=None,
+        bootstrap_source_path=BOOTSTRAP_SOURCE, bootstrap_report_path=BOOTSTRAP_REPORT):
+    started = time.perf_counter()
+    assert BOOTSTRAP_REPORT_RAW != 'UNFROZEN' and BOOTSTRAP_REPORT_SEAL != 'UNFROZEN', 'Freeze bootstrap867 receipt first'
+    declared = normalized_declared_paths(declared_additional_source_paths)
+    result_path = Path(output_path) if output_path is not None else OUT
+    bootstrap_source_path = Path(bootstrap_source_path)
+    bootstrap_report_path = Path(bootstrap_report_path)
+    assert result_path.resolve().is_relative_to(Path('/tmp')) and result_path.suffix == '.json', 'Scratch JSON output required'
+    assert result_path.resolve() not in {bootstrap_source_path.resolve(), bootstrap_report_path.resolve()}, 'Bootstrap evidence is immutable'
+    assert digest(bootstrap_source_path) == BOOTSTRAP_SOURCE_SHA
+    assert digest(bootstrap_report_path) == BOOTSTRAP_REPORT_RAW
+    bootstrap = sealed(bootstrap_report_path, 'audit_sha256')
+    assert bootstrap['audit_sha256'] == BOOTSTRAP_REPORT_SEAL
+    assert bootstrap['status'] == 'PASS_IMMUTABLE867_BASELINE_READBACK_ONLY'
+    assert bootstrap['baseline_source_count'] == bootstrap['current_python_source_count'] == 867
+    assert bootstrap['source_map_canonical_sha256'] == MAP and bootstrap['frozen_map_raw_sha256'] == MAP_RAW
+    assert bootstrap['auditor_source_sha256'] == BOOTSTRAP_SOURCE_SHA
+    frozen = read(PARENT / 'frozen_source_map_867.json')
+    assert len(frozen) == 867 and vd(frozen) == MAP
+    assert digest(PARENT / 'frozen_source_map_867.json') == MAP_RAW
+    before = source_map()
+    assert len(before) == 871 and set(before) - set(frozen) == declared
+    assert not declared.intersection(frozen) and all(before.get(name) == pin for name, pin in frozen.items())
+    verifier = load(bootstrap_source_path, 'material_transfer871_immutable867_receipt_verifier', BOOTSTRAP_SOURCE_SHA)
+    assert result_path.resolve() != verifier.PRIOR_OUT.resolve(), 'Use a separate nested ancestry scratch path'
+    receipt = verifier.verify_867(expected_complete_source_map=before)
+    for key in ('all867_python_sources_unchanged', 'old863_python_sources_unchanged',
+                'preserved_old1633_artifact_chain', 'preserved826_833_841_847_853_859_863_and867_output_closures',
+                'complete_current_source_map_before_after_identical', 'complete_current_source_map_independently_checked',
+                'baseline863_projection_disclosed'):
+        assert receipt[key] is True, key
+    assert receipt['current_python_source_count'] == 871 and receipt['baseline_source_count'] == 867
+    assert receipt['physics_formula_reexecuted'] is False
+    assert receipt['project_imports'] is False and receipt['pytest_or_control_or_solve_or_quadratures_reexecuted'] is False
+    assert receipt['baseline863_and859_readback_source_view'] == 'IMMUTABLE867_SUBSET_OF_INDEPENDENTLY_CHECKED_COMPLETE_SOURCE_MAP'
+    for key in ('source_map_canonical_sha256', 'frozen_map_raw_sha256', 'previous_added_python_sources',
+                'artifact_manifest_file_count', 'artifact_manifest_raw_sha256', 'artifact_manifest_selfseal',
+                'wrapper_raw_sha256', 'wrapper_selfseal', 'native_raw_sha256', 'native_selfseal',
+                'packet_raw_sha256', 'packet_selfseal', 'prior_independent_audit_raw_sha256',
+                'prior_independent_audit_selfseal', 'current_archived_producer_sha256',
+                'fresh_release_tests_preserved', 'complete_saved_carrier_query_count', 'saved_component_carrier_count',
+                'dependency_raw_sha256', 'accepted_original_native_intervals', 'accepted_new_native_intervals',
+                'original_point_1_remaining_work_blocks', 'remaining_physical_condition_count'):
+        assert receipt[key] == bootstrap[key], key
+    after = source_map()
+    assert after == before, 'Complete declared871 source map changed during baseline readback'
+    for name, pin in frozen.items():
+        assert digest(ROOT / name) == pin, name
+    assert digest(bootstrap_source_path) == BOOTSTRAP_SOURCE_SHA
+    assert digest(bootstrap_report_path) == BOOTSTRAP_REPORT_RAW
+    report = dict(receipt)
+    report.update(
+        status='PASS_IMMUTABLE867_WITH_DECLARED871_SOURCE_ADDITIONS_ONLY',
+        current_python_source_count=871, current_python_source_map_sha256=vd(before),
+        declared_additional_source_paths=sorted(declared), additional_python_source_count=4,
+        additional_python_sources={name: before[name] for name in sorted(declared)},
+        additional_sources_only_whitelisted=True, current_source_map_before_after_identical=True,
+        bootstrap_source_sha256=BOOTSTRAP_SOURCE_SHA, bootstrap_report_raw_sha256=BOOTSTRAP_REPORT_RAW,
+        bootstrap_report_selfseal=BOOTSTRAP_REPORT_SEAL, bootstrap_evidence_preserved=True,
+        baseline867_projection_disclosed=True,
+        baseline867_readback_source_view='IMMUTABLE867_SUBSET_OF_DECLARED871_SOURCE_MAP',
+        complete_declared871_source_map_independently_checked_before_after=True,
+        auditor_source_sha256=digest(__file__), seconds=time.perf_counter() - started)
+    report['audit_sha256'] = vd(report)
+    result_path.write_bytes(enc(report) + b'\n')
+    print(enc(report).decode())
+    return report
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--expected-added-path', action='append', required=True)
+    parser.add_argument('--out', default=str(OUT))
+    parser.add_argument('--bootstrap-source', default=str(BOOTSTRAP_SOURCE))
+    parser.add_argument('--bootstrap-report', default=str(BOOTSTRAP_REPORT))
+    args = parser.parse_args()
+    run(args.expected_added_path, output_path=args.out,
+        bootstrap_source_path=args.bootstrap_source, bootstrap_report_path=args.bootstrap_report)

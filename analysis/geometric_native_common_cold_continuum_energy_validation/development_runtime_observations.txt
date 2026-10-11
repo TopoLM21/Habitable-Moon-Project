@@ -1,0 +1,48 @@
+{
+  "authoritative_release": false,
+  "current_source_bytes": 88429,
+  "current_source_raw_sha256": "186bf177dd7c51b80cea337697626f57518ef9c85722b35c0d29627d333340b7",
+  "format": "continuum-core-development-runtime-observations-1",
+  "notes": [
+    "Development probes were unfrozen; runtime observations are not a release certificate.",
+    "Complete frozen new-source gate is owned by root."
+  ],
+  "observations": [
+    {
+      "field_s": 0.8919485160004115,
+      "method": "analytic_theta_order0_receiver_interior",
+      "raw73kernel_s": 61.4537834340008
+    },
+    {
+      "field_s": 0.464757355999609,
+      "method": "analytic_theta_order0_receiver_interior_projector_simplified",
+      "raw73kernel_s": 13.077944747998117
+    },
+    {
+      "field_s": 0.028131937000580365,
+      "method": "directed_binary64_whole_interval",
+      "raw73kernel_s": 0.00487548599994625
+    },
+    {
+      "integral_s": 71.33687641399956,
+      "method": "whole_interval_coarse_seam1_zero",
+      "rectangular_ldl": "FAIL; no response accepted"
+    },
+    {
+      "actual_interior_coercivity_strictly_positive": true,
+      "cell_count": 3096,
+      "integral_s": 179.48620553799992,
+      "inverse_global_error_m_n": 4.028401497538823e-15,
+      "inverse_method": "ACTUAL_INTERIOR_GRAM_COERCIVITY_AND_RIGHT_RESIDUAL_NORM",
+      "literal_reference_energy_j": 251841262157.02756,
+      "method": "whole_interval_theta4_beta8_depth2_zero",
+      "rectangular_ldl": "FAIL; actual correlated Gram coercivity used"
+    },
+    {
+      "check": "latest_source_pure_tests",
+      "elapsed_s": 1.93,
+      "result": "4 passed, 14 deselected"
+    }
+  ],
+  "writer_stopped": true
+}

@@ -1,0 +1,197 @@
+"""Finalize authorized907 documents after real gate/audit PASS, before reader closure."""
+from pathlib import Path
+import hashlib
+import json
+
+ROOT = Path('/workspace/Habitable-Moon-Project')
+PARENT = ROOT/'analysis/geometric_native_common_mixed_force_validation'
+OLD_HANDOFF_RAW = '7c3c99d7716c5e620b05e569641f63645a54ac8d49f2da4495214a4b055a0fc4'
+DRAFT = Path('/workspace/mixed_force_report_draft.txt')
+
+
+def read(path):
+    return json.loads(Path(path).read_bytes())
+
+
+def digest(path):
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
+gate = read(PARENT/'release_validation_01/report.json')
+native = read(PARENT/'release_validation_01/native_control/report.json')
+audit = read(PARENT/'independent_audit/report.json')
+gatefacts = read(PARENT/'process_execution/gate_execution_facts.json')
+auditfacts = read(PARENT/'independent_audit/actual_execution_facts.json')
+assert gate['status'] == native['status'] == audit['status'] == 'PASS'
+assert gate['tests_passed'] == gate['tests_collected'] == 22 and native['full_assembly_query_count'] == 12
+assert gatefacts['actual_exit_code'] == auditfacts['actual_exit_code'] == 0
+assert auditfacts['console_bytes_equal_canonical_report'] and gatefacts['console_equals_complete_report']
+assert gatefacts['actual_stderr_bytes'] == auditfacts['actual_stderr_bytes'] == 0
+assert audit['scalar_contains_count'] == 735644 and audit['arithmetic_decimal_digits'] == 220
+text = DRAFT.read_text()
+validation = f'''Fresh903 evidence-only reader **PASS32.099436190s**, exit0, перед новой
+математикой; отдельный stdlib903 baseline **PASS22.705194908s**.
+Frozen `release_validation_01`: **22/22tests PASS590.93s** по actual
+pytest console, gate wrapper test phase {gate['tests_elapsed_seconds']:.9f}s;
+native **12 full100 queries PASS{native['elapsed_seconds']:.9f}s**
+({native['full_cold_hot_saved_pairing_count']} saved pairings и4 internal probes).
+Gate **PASS{gate['elapsed_seconds']:.9f}s**, actual process exit0,
+outer wall {gatefacts['actual_wall_seconds']:.9f}s, stdout==полный report,
+stderr0. Выполнен полный system/response restart на последнем запросе;
+physical accepted continuation/restart не заявляется.
+
+Независимый audit **PASS{audit['seconds']:.9f}s**, actual exit0,
+outer wall {auditfacts['actual_wall_seconds']:.9f}s, **220digits,
+735644 численных comparisons** по всем12 полным ответам и6 distinct
+contact cases. Все100 force и100×100 tangent entries, энергии,
+16 atom jets,32 material labels, orientation hyperstress/virtual work,
+roof bridge и исходные associations проверены. В before/after guard
+**1523 raw dependency pins** и полный907 source map; actual stdout
+побайтово равен canonical report, stderr пуст.
+
+[Gate](analysis/geometric_native_common_mixed_force_validation/release_validation_01/report.json),
+[native packet](analysis/geometric_native_common_mixed_force_validation/release_validation_01/native_control/source_packet.json),
+[audit](analysis/geometric_native_common_mixed_force_validation/independent_audit/report.json).
+
+Frozen907 raw `{gate['frozen_source_map_raw_sha256']}`,
+canonical `{gate['frozen_source_map_sha256']}`.
+Native packet raw `{native['source_packet_raw_sha256']}`,
+seal `{native['source_packet_sha256']}`.
+Gate seal `{gate['report_sha256']}`;
+audit seal `{audit['audit_sha256']}`.
+Именно эти executing sources/captures и1523-pin receipts составляют
+authority данного шага; предварительные probes не заменяют frozen gate.'''
+history = '''Сохранён один failed actual auditor launch: project virtualenv не содержит
+`mpmath`, import завершился exit1 до математики и до запуска guard.
+Те же75,862B auditor source затем успешно исполнены системным Python
+с уже доступной mpmath1.3.0. В
+`independent_audit_failed_attempt_01` сохранены неизменные executing
+source, actual stdout/stderr, exit facts, full903/907 before/after
+preservation и directory path association. Frozen gate failed attempts
+нет. Prefreeze decode-only native check02 также сохранён: исправлено
+чтение public895 Jacobian interval как `{lo,hi}` DTO; check03 PASS на
+обоих настоящих ответах без повторного расчёта геометрии. Duplicate
+archival mkdir был остановлен до любых копий; существующие70
+development copies проверены и сохранены.'''
+closure = '''Компонент закрывается самостоятельным stdlib helper в два этапа:
+сначала complete manifest с raw byte pins, затем actual evidence-only
+reader и strict final archive из4 файлов. Dynamic manifest включает
+весь907P, четыре новых Python sources, все actual captures, failed
+attempt и70 immutable development copies. Старые frozen bundles не
+дополняются. Actual reader/closure статусы, времена и file counts
+находятся в authoritative JSON; документы завершены до их исполнения
+и остаются неизменными в процессе закрытия.
+
+[Manifest](analysis/geometric_native_common_mixed_force_validation/artifact_manifest.json),
+[final readback](analysis/geometric_native_common_mixed_force_final_readback/readback.json),
+[закрытый архив4](analysis/geometric_native_common_mixed_force_final_readback/archive.json).
+Самостоятельный reader не импортирует project modules, не выполняет
+force math/tests/solvers/quadrature и проверяет source maps, namespaces,
+snapshots, full packet/report associations и immutable ancestry.
+Текущие mutable документы исключены из immutable dependency rows;
+их actual byte pins фиксируются отдельно при manifest/readback closure.'''
+for marker,value in (('{{VALIDATION_RESULTS}}',validation),('{{ATTEMPT_HISTORY}}',history),('{{CLOSURE_RESULTS}}',closure)):
+    assert text.count(marker) == 1
+    text = text.replace(marker,value)
+assert '{{' not in text
+report_path = ROOT/'GEOMETRIC_NATIVE_COMMON_MIXED_FORCE_IMPLEMENTATION.md'
+with report_path.open('x') as stream:
+    stream.write(text)
+handoff_path = ROOT/'CLOUD_HANDOFF.md'
+old = handoff_path.read_bytes()
+assert hashlib.sha256(old).hexdigest() == OLD_HANDOFF_RAW
+prefix = f'''# Передача работы в облачный чат
+
+Актуально на **07.10.2026, московское время**. Ветка
+`fix/genesis-mantle-convection`. Текущий компонент **907**:
+общая сборка сил на100 координат с исходными материальными контактами.
+[Отчёт](GEOMETRIC_NATIVE_COMMON_MIXED_FORCE_IMPLEMENTATION.md).
+
+Выполнен указанный903 следующий шаг: full cold56/HOT30 operators,
+owner6 loads/drag и internal8 согласованы с16 исходными source atoms
+на32 настоящих full895 material labels (24live/8archived). Вычислены
+энергия,100 force и полный Hessian100×100, включая material/owner/
+internal cross terms, unit Nanson normal curvature, orientation
+hyperstress/director couple и prestress curvature. Whole8 existing
+beams входят ровно один раз; original literal energies/forces,
+area measures, owners/cohorts, history/material/work DTO сохранены.
+Roof input bridge `Aold_original=BQ*C_roof` учитывает подлинную кровлю
+и использует тот же original-Cartesian input, что новое895 поле.
+
+Это **DECLARED_ORIGINAL_SOURCE_ATOM_HUNDRED_COORDINATE_ENDPOINT_ASSEMBLY_ONLY**.
+Допустимы2 saved cold состояния ×4 saved HOT состояния; owner endpoints0
+при сохранении полного6 first/second jet, новые internal residuals.
+Исходные16 contacts целиком COLD: новая physical born COLD–HOT receiving
+law из них не выводится. NEW prepared-zero traction calibration не
+удостоверяет physical old-force/prestress/work handover или reference work.
+Whole modal basal loads и general-state mixed solve остаются открытыми.
+
+Fresh903 evidence-only baselinePASS32.099436190s и отдельный903 guard
+PASS22.705194908s до новой математики. Frozenrelease01:
+**22/22tests PASS590.93s**, **12 full100 native queries PASS{native['elapsed_seconds']:.9f}s**;
+gatePASS{gate['elapsed_seconds']:.9f}s actualexit0. Independent audit
+**PASS{audit['seconds']:.9f}s,220digits,735644comparisons** по всем12
+ответам/6contactcases;1523rawpins/full907map BEFORE/AFTER.
+Actual stdout==report, stderr0. Один pre-math failed auditor import
+изvirtualenv сохранён; успешный запуск использовал system Python/mpmath.
+Ровно4 новыхPY; прежние903P77F4/899P36F4/895P50F4/891P44F4/
+887P41F4,341raw/15TMP/11ancestry не изменены. Старые force solves,
+tests и tensor quad controls не выполнялись. Завершающие actual
+readback/archive статусы и file counts — в linked JSON; документы
+завершены ДО их выполнения.
+
+**Пункт1 открыт. Два прежних блока выполнены; остаётся ОДИН существенный
+блок с ТЕМИ ЖЕ тремя условиями. План не расширен:**
+
+1. Whole-source physical material/old-force/prestress/work handover,
+   HOT law/finite mean, loads/drag и NEW mixed equilibrium. Cold899,
+   HOT/mean903 и declared source-atom mixed assembly907 готовы.
+   Остаются physical handover/reference work, настоящая receiving law
+   born COLD–HOT/new continuous faces, полные modal physical loads,
+   достаточная force precision/general evaluators и NEW mixed solve.
+2. Whole-clock all-pair admission, включая reverse C5→C1.
+3. Accepted continuation, независимая temporal path work, балансы и joint restart.
+
+**Следующий конкретный шаг внутри того же условия1:** определить и
+подключить physical cold/HOT coupling через новые receiving faces и
+полные material/modal нагрузки; получить точность и поддержку состояний
+для настоящего mixed solve. Остаток существенный, не последние проверки.
+Finite mean chart и declared endpoint operator не означают equilibrium.
+
+Принят1 прежний и0 новых физических интервалов. Часы source0/contact2e6/
+memory1e6/material1e6s не продвинуты; proposed damage/slip/work не приняты.
+Physical admission, full handover/reference work, whole-clock/all-pair/
+full-system temporal path work и новое равновесие False. Пункты2–6 открыты.
+
+[Gate](analysis/geometric_native_common_mixed_force_validation/release_validation_01/report.json),
+[audit](analysis/geometric_native_common_mixed_force_validation/independent_audit/report.json),
+[manifest](analysis/geometric_native_common_mixed_force_validation/artifact_manifest.json),
+[final readback](analysis/geometric_native_common_mixed_force_final_readback/readback.json),
+[закрытый архив4](analysis/geometric_native_common_mixed_force_final_readback/archive.json).
+
+В следующей облачной среде сначала выполнить stdlib restorer
+`analysis/geometric_native_common_mixed_force_validation/baseline_restore_source.txt`
+с `--restore --output /workspace/mixed_force_restore_next_cloud_20261007.json`,
+затем sealed907reader со свежим внешнимoutput. Команды в отчёте.
+Restorer восстанавливает50 outside paths/TMP associations изclosedcopies
+без исполнения oldcode.907P/F после закрытия не дополнять и не переписывать.
+
+---
+
+## Историческая точка передачи903
+
+'''.encode()
+handoff_path.write_bytes(prefix+old)
+assert handoff_path.read_bytes()[len(prefix):] == old
+own = Path(__file__).resolve()
+with (PARENT/'document_build_source.txt').open('xb') as stream:
+    stream.write(own.read_bytes())
+facts = dict(status='PASS_DOCUMENTS_FINAL_BEFORE_CLOSED907_READER',
+    old903_handoff_raw_sha256=OLD_HANDOFF_RAW, old903_handoff_preserved_byte_for_byte=True,
+    report_raw_sha256=digest(report_path), handoff_raw_sha256=digest(handoff_path),
+    executing_document_builder_raw_sha256=digest(own),
+    actual_gate_and_audit_exit_codes=0, immutable_old_sources_written=False,
+    finalized_before_manifest_and_final_readback=True)
+with (PARENT/'document_build_facts.json').open('x') as stream:
+    json.dump(facts,stream,sort_keys=True)
+print(json.dumps(facts,sort_keys=True))

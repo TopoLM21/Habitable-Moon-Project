@@ -1,0 +1,154 @@
+{
+  "format": "geometric-distributed-contact-cloud-validation-1",
+  "status": "complete",
+  "date": "2026-10-01",
+  "branch": "fix/genesis-mantle-convection",
+  "base_commit": "224a07ac1b981b95163cdf6633f424af1599b2f2",
+  "runtime": {
+    "python": "3.12.14",
+    "platform": "Linux-6.18.44-x86_64-with-glibc2.41",
+    "packages": {
+      "numpy": "2.5.3",
+      "scipy": "1.18.1",
+      "PyYAML": "6.0.3",
+      "pytest": "9.1.1"
+    }
+  },
+  "cloud_sources": {
+    "files": 9,
+    "source_bytes": 2110696,
+    "verified": true,
+    "archive_sha256": {
+      "cloud_sources.zip": "6418f8e711bd36e72b2c01b55c30e57c64f644fdc6cd9de863b0d32785d7d14f",
+      "cloud_sources_manifest.json": "30c5bceb3643175e9824c96e802268504f002818b16fddecb095eee3899db3b2"
+    }
+  },
+  "checks": {
+    "focused_cloud_profile": {
+      "passed": 623,
+      "seconds": 507.19,
+      "log": "analysis/geometric_distributed_contact_validation/final_cloud_tests.log"
+    },
+    "legacy_basal_fractional_and_contact_dependencies": {
+      "passed": 124,
+      "seconds": 16.18,
+      "log": "analysis/geometric_distributed_contact_validation/dependency_tests.log"
+    },
+    "git_diff_check": "passed"
+  },
+  "control": {
+    "report": "analysis/geometric_distributed_contact_validation/cloud_control/report.json",
+    "elapsed_seconds": 30.040311783996003,
+    "point_count": 16,
+    "mixed_branch_trace_steps": 26,
+    "sliding_point_steps": 50,
+    "maximum_resultant_torque_relative_residual": 7.599399065267362e-16,
+    "maximum_incremental_work_relative_residual": 3.0295730022433386e-14,
+    "spatial_sensitivity": {
+      "layouts": [
+        {
+          "panel_count": 2,
+          "gauss_order": 4,
+          "points": 32,
+          "difference_from_previous_layout_rad": 6.443563866583933e-08,
+          "relative_difference_from_previous_layout": 0.0013082119384826912
+        },
+        {
+          "panel_count": 4,
+          "gauss_order": 4,
+          "points": 64,
+          "difference_from_previous_layout_rad": 5.896305135571852e-09,
+          "relative_difference_from_previous_layout": 0.00011971025622994605
+        }
+      ],
+      "interpretation": "Separate fresh histories on finer fixed grids; nonlinear spatial sensitivity, not history regridding or a convergence claim"
+    },
+    "source_surface_preserved": true,
+    "main_passive_archive_preserved": true,
+    "transferred_material_during_mechanical_steps_km2": 0.0,
+    "new_slab_cohorts_during_mechanical_steps": 0,
+    "restart_exact": true,
+    "checkpoint_bytes_identical": true,
+    "independent_continuum_elastic_quadrature_cases": [
+      {
+        "panel_count": 1,
+        "gauss_order": 2,
+        "points": 8,
+        "angular_velocity_relative_error": 0.00029034977760136076
+      },
+      {
+        "panel_count": 1,
+        "gauss_order": 4,
+        "points": 16,
+        "angular_velocity_relative_error": 7.135166846238682e-08
+      },
+      {
+        "panel_count": 2,
+        "gauss_order": 4,
+        "points": 32,
+        "angular_velocity_relative_error": 2.0632378948327764e-10
+      },
+      {
+        "panel_count": 1,
+        "gauss_order": 8,
+        "points": 32,
+        "angular_velocity_relative_error": 6.88024779616697e-16
+      }
+    ],
+    "nonempty_archive_subdivision": {
+      "cohort_count": 2,
+      "surface_fragments_before": 10,
+      "surface_fragments_after": 11,
+      "original_contact_count": 4,
+      "new_contact_count": 5,
+      "physical_point_count": 16,
+      "physical_histories_unchanged_at_rebind": true,
+      "retained_polarity_support_count": 2,
+      "original_acceptance_transactions_preserved": true,
+      "cohort_payloads_preserved": true,
+      "surface_extensive_residual": {
+        "area_km2": 0.0,
+        "oceanic_volume_km3": 0.0,
+        "cold_mantle_volume_km3": 0.0,
+        "density_excess_mass_kg": 0.0
+      },
+      "cut_vs_uncut_rotation_relative_difference": 4.295325601364432e-16,
+      "restart_exact": true,
+      "checkpoint_bytes_identical": true
+    },
+    "code_hashes_match_current_files": true
+  },
+  "mean_compatibility_replay": {
+    "report": "analysis/geometric_distributed_contact_validation/mean_compatibility/report.json",
+    "elapsed_seconds": 15.952619244999369,
+    "maximum_resultant_torque_relative_residual": 7.884357182700686e-16,
+    "maximum_incremental_work_relative_residual": 4.464129080266087e-14,
+    "sliding_contact_steps": 19,
+    "time_step_sensitivity": {
+      "comparison_step_duration_s": 50000000000.0,
+      "final_small_rotation_difference_rad": 7.039478156382726e-07,
+      "final_small_rotation_relative_difference": 0.013330519507919882,
+      "interpretation": "backward-Euler timestep sensitivity, not an assertion of convergence"
+    },
+    "source_surface_preserved": true,
+    "passive_material_archive_preserved": true,
+    "restart_exact": true,
+    "checkpoint_bytes_identical": true,
+    "code_hashes_match_current_files": true
+  },
+  "scope": "Fixed physical dipping arcs and quadrature; continuous closure envelope; shared Euler/contact balance; verified material subdivision preserves mechanical history and archival payloads; no solved material motion, fault advection, bending, vector strike friction, thermal feedback or slab pull",
+  "limitations": [
+    "Physical fault arcs, quadrature and small-rotation reference are fixed; no finite fault advection or bending degrees of freedom.",
+    "Continuous free-gap closure is checked exactly; nonlinear pointwise strength between quadrature nodes is not certified.",
+    "Changing the quadrature rejects restart; no elastic/plastic history interpolation or mean-to-distributed migration.",
+    "Near-cancelled sources may make the unchanged T dot q work certificate reject an otherwise conservative material subdivision; no past-work adjustment is made.",
+    "Split slab support retains unresolved lateral allocation; original cohorts are not duplicated or assigned fabricated local mass.",
+    "Solved point stresses are not a uniform whole-arc admission snapshot; no material underthrust is inferred directly from slip."
+  ],
+  "next_step": "Introduce transverse deformation degrees of freedom and bending resistance with explicit physics and work balance, then finite transport of physical fault geometry and spatial material admission.",
+  "notes": [
+    "Targeted new checks overlap the focused profile; counts should not be summed.",
+    "Saved50 missing inputs are not fabricated; its earlier rejection receipt remains historical evidence.",
+    "Results and code changes remain local in the requested branch; no commit or push performed."
+  ]
+}

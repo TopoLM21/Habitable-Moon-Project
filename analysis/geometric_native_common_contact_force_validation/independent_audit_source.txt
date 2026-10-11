@@ -1,0 +1,251 @@
+"""Independent stdlib source-current/contact-force component readback.
+
+Authenticates the immutable847 ancestry and exact853 additions, then replays
+literal current memory and source contact clocks.  Exact rational interval
+algebra independently checks the objective local20-coordinate force/Hessian.
+No project module, pytest, body/face quadrature, state update or force solve
+is executed.  This is a component audit, never a face-memory transfer proof.
+"""
+import argparse
+from fractions import Fraction as F
+from functools import lru_cache
+import hashlib,json,sys,time,types
+from pathlib import Path
+
+ROOT=Path('/workspace/Habitable-Moon-Project')
+PARENT=ROOT/'analysis/geometric_native_common_contact_force_validation'
+BASELINE_SOURCE_SHA='e54df4a17f7364437f991f90b7883194277e0d5287a1941d0d9ac41d2af6724e'
+BASELINE_JSON_SHA='a74d392b5e92e78fd03c41d675cd26f829302c281203e22830deee625cb5daab'
+FORMULA_SHA='061505c158ae8026549788c242fbda541c0718526d61c452f07e9f32d24d50cd'
+AFFINE_RAW='ccd511b2b82e66ba103d0d900b993a18d02953288f447c71ac9e589dc70c7d1e'
+EXPECTED_SOURCE_MAP='9d4a7a71f81b8093b09d26c74f742909839496fe18dd1429875e3a6d54c05c21'
+EXPECTED_SOURCE_MAP_RAW='f9fafa4aedce0265147d44f9338cfcbc8b49518f66dfa5a4ce0a4a0ee968420e'
+ADDED={
+ 'tectonics/geometric_native_common_contact_state.py',
+ 'tectonics/geometric_native_common_contact_constitutive.py',
+ 'tests/test_geometric_native_common_contact_state.py',
+ 'tests/test_geometric_native_common_contact_constitutive.py',
+ 'analysis/geometric_native_common_contact_force_validation/native_control.py',
+ 'analysis/geometric_native_common_contact_force_validation/validate.py'}
+FALSE=(
+ 'new_mixed_force_equilibrium_certified','whole_clock_material_admission_authorized',
+ 'physical_material_admission_authorized','original_point_1_completed',
+ 'face_depth_memory_or_measure_transfer_certified','old_rod_prestrain_or_energy_transferred',
+ 'old_node_states_assigned_to_new_cuts','source_history_advanced',
+ 'hot_curve_contact_law_inferred','finite_owner_whole_clock_motion_certified',
+ 'full_genuine_source_reconstructed','inherited_force_certificate_for_placement',
+ 'contact_energy_adopted_on_new_face','complete_three_dimensional_strain_energy_certified')
+
+def enc(x):return json.dumps(x,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+def value_sha(x):return hashlib.sha256(enc(x)).hexdigest()
+def digest(path):
+ h=hashlib.sha256()
+ with Path(path).open('rb') as f:
+  for b in iter(lambda:f.read(1<<20),b''):h.update(b)
+ return h.hexdigest()
+def read(path):return json.loads(Path(path).read_bytes())
+def sealed(path,key):
+ x=read(path);body=dict(x);assert body.pop(key)==value_sha(body),str(path);return x
+def module(path,name,sha):
+ assert digest(path)==sha,str(path)
+ m=types.ModuleType(name);m.__file__=str(path);sys.modules[name]=m
+ exec(compile(Path(path).read_bytes(),str(path),'exec'),m.__dict__);return m
+
+def source_observations(packet,formula):
+ I,parse,frac,contains=formula.I,formula.invparse,formula.frac,formula.contains
+ # Independent fixed binary outward grid and exact alternating Taylor tails.
+ # 1152 absolute bits exceed the source observer's declared160-digit budget.
+ bits=1152;grid=F(1<<bits);threshold=F(1,1<<1080)
+ def compress(x):
+  lo=x.lo*grid;hi=x.hi*grid
+  return I(F(lo.numerator//lo.denominator)/grid,F(-((-hi.numerator)//hi.denominator))/grid)
+ @lru_cache(maxsize=128)
+ def trig_point(x):
+  assert F(0)<=x<=F(4)
+  if not x:return I(0),I(1)
+  squared=x*x;out=[]
+  for sine in (True,False):
+   term=I(x if sine else F(1));total=term;n=0
+   while True:
+    a=2*n+(2 if sine else 1)
+    following=compress(-term*squared/(a*(a+1)))
+    tail=max(abs(following.lo),abs(following.hi))
+    if squared <= (a+2)*(a+3) and tail<=threshold:
+     out.append(total+I(-tail,tail));break
+    total=compress(total+following);term=following;n+=1
+    assert n<1000
+  return tuple(out)
+ def atan_inverse(q):
+  x=F(1,q);term=x;total=x;n=0
+  while True:
+   following=-term*x*x*F(2*n+1,2*n+3)
+   if abs(following)<threshold:return I(min(total,total+following),max(total,total+following))
+   total+=following;term=following;n+=1
+ pi=16*atan_inverse(5)-4*atan_inverse(239)
+ @lru_cache(maxsize=256)
+ def trig_ranges(lo,hi):
+  assert F(0)<=lo<=hi<=F(4)
+  a,b=trig_point(lo),trig_point(hi)
+  s=I(min(a[0].lo,b[0].lo),max(a[0].hi,b[0].hi))
+  c=I(min(a[1].lo,b[1].lo),max(a[1].hi,b[1].hi))
+  if lo<=pi.hi/2 and hi>=pi.lo/2:s=I(s.lo,max(s.hi,F(1)))
+  if lo<=pi.hi and hi>=pi.lo:c=I(min(c.lo,F(-1)),c.hi)
+  if not lo:c=I(c.lo,max(c.hi,F(1)))
+  return s,c
+ def literal(x):assert type(x) is float;return F.from_float(x)
+ def field(poly,angle):
+  a=tuple(literal(x) for x in poly['coefficients']);assert len(a)==5
+  result=I(a[0])
+  for frequency,index in ((1,1),(2,3)):
+   if a[index] or a[index+1]:
+    s,c=trig_ranges(frequency*angle.lo,frequency*angle.hi)
+    result=result+a[index]*c+a[index+1]*s
+  return result
+ def square(x):return I(F(0) if x.lo<=0<=x.hi else min(x.lo*x.lo,x.hi*x.hi),max(x.lo*x.lo,x.hi*x.hi))
+ old_path=ROOT/'analysis/geometric_native_affine_body_validation/release_validation_01/native_control/source_packet.json'
+ assert digest(old_path)==AFFINE_RAW
+ old=sealed(old_path,'packet_sha256')
+ dtos={key:json.loads(raw) for key,raw in packet['complete_source_dto_json']}
+ keys={'before','current_load','full_reference_face_birth_support','original_unaccepted_trial_birth_support'}
+ assert set(dtos)==keys and all(dtos[key]==old[key] for key in keys)
+ assert packet['saved_joint_reference_field']==old['saved_joint_reference_field']
+ assert packet['source_snapshot_sha256']==old['source_snapshot_sha256']
+ before=dtos['before'];history=before['original_physical_history'];path=history['contact_time_path']
+ memory=path['step']['memory'];states=before['snapshot']['states'];nodes=history['quadrature_histories']
+ assert len(states)==len(nodes)==16 and dict(states)=={n['point_id']:n['unaccepted_candidate_state'] for n in nodes}
+ assert before['snapshot']['spatial_memory']==memory
+ assert packet['complete_original_physical_history']==history and packet['complete_original_current_states']==states
+ assert packet['source_node_point_ids']==[n['point_id'] for n in nodes]
+ assert packet['old_node_state_count']==16 and packet['old_node_states_preserved_once'] is True
+ assert packet['old_node_states_reassigned_to_new_port_points'] is False
+ assert packet['constitutive_history_advanced_during_geometry_binding'] is False
+ assert packet['source_native_elapsed_time_s']==before['snapshot']['elapsed_time_s']==1000000.0
+ traces={r['trace_id']:r for r in path['initial_mechanics']['fault_traces']['traces']}
+ current={r['trace_id']:r for r in memory['traces']};anchors={r[0]:r for r in path['step']['anchor_fields']}
+ bindings=before['snapshot']['current_material_epoch']['source_material_state']['trace_bindings']
+ by_recv={r['receiver_fragment_id']:r['trace_id'] for r in bindings}
+ cut_byid={r['cut_id']:r for r in packet['cut_set']['cuts']}
+ expectedpairs={('octant:5','octant:1'),('octant:5','octant:3'),('octant:6','octant:2'),('octant:7','octant:2'),('octant:7','octant:3')}
+ cold=[r for r in cut_byid.values() if r['receiving_trace_id'] is not None]
+ assert len(cold)==5 and {(r['donor_original_parent_id'],r['receiver_original_parent_id']) for r in cold}==expectedpairs
+ curve=[r for r in cut_byid.values() if r['kind']=='true_curved_envelope'];assert len(curve)==1 and curve[0]['receiving_trace_id'] is None
+ case_count=piece_count=literal_coeff_count=field_count=0
+ for row in packet['contact_query_rows']:
+  cut=cut_byid[row['cut_id']];tid=by_recv[cut['receiver_original_parent_id']]
+  assert cut['receiving_trace_id']==tid
+  for label,case in row['cases'].items():
+   state=case['source_observation'];ingredients=case['port_ingredients'];angle=parse(state['computational_angle_bounds'])
+   assert state['receiving_trace_id']==tid and state['source_current_node_epoch']=='unaccepted_candidate' and state['precision']==160
+   assert state['source_snapshot_sha256']==packet['source_snapshot_sha256']
+   assert state['source_history_binding_sha256']==history['binding_sha256']
+   assert state['source_current_memory_sha256']==value_sha(memory)
+   assert state['source_current_atom_states_sha256']==value_sha(states)
+   assert state['source_current_memory_trace_json']==enc(current[tid]).decode()
+   assert state['source_trace_json']==enc(traces[tid]).decode()
+   assert state['source_endpoint_anchor_fields_json']==enc(anchors[tid]).decode()
+   assert state['geometry_bounds_sha256']==ingredients['geometry_bounds_sha256']
+   assert state['port_binding_sha256']==ingredients['port_binding_sha256']
+   assert angle==parse(ingredients['receiving_computational_angle_bounds_radians'])
+   assert frac(state['source_native_elapsed_time_s'])==literal(before['snapshot']['elapsed_time_s'])==F(1000000)
+   assert frac(state['source_memory_elapsed_time_s'])==literal(memory['elapsed_time_s'])==F(1000000)
+   assert state['source_memory_stage_count']==memory['stage_count']==1
+   receiving_states=[s for identity,s in states if identity.startswith(tid+':')]
+   assert len(receiving_states)==4 and all(s['traction_shear_pa']==0. for s in receiving_states)
+   assert all(frac(state['source_contact_elapsed_time_s'])==literal(s['elapsed_time_s'])==F(2000000) for s in receiving_states)
+   assert state['source_contact_step_count']==2 and all(s['step_count']==2 for s in receiving_states)
+   trace=traces[tid];law=trace['law'];cols=trace['columns']
+   assert all(law[k]==0. for k in ('friction_dry','friction_wet','cohesion_pa','viscosity_pa_s_m'))
+   kn,kt=literal(law['normal_stiffness_pa_m']),literal(law['tangential_stiffness_pa_m'])
+   knc=1./(cols['sub_length_m']/cols['sub_normal_modulus_pa']+cols['over_length_m']/cols['over_normal_modulus_pa'])
+   ktc=1./(cols['sub_length_m']/cols['sub_shear_modulus_pa']+cols['over_length_m']/cols['over_shear_modulus_pa'])
+   kns,kts=1./(1./knc+law['normal_stiffness_pa_m']**-1),1./(1./ktc+law['tangential_stiffness_pa_m']**-1)
+   for key,value in {'normal_stiffness_pa_m':kn,'tangential_stiffness_pa_m':kt,
+    'original_column_normal_stiffness_pa_m':literal(knc),'original_column_shear_stiffness_pa_m':literal(ktc),
+    'original_series_normal_stiffness_pa_m':literal(kns),'original_series_shear_stiffness_pa_m':literal(kts),
+    'source_interface_height_m':literal(trace['contact_height_m']),'source_water':literal(trace['water'])}.items():assert frac(state[key])==value,key
+   extent=literal(current[tid]['extent_radians']);assert F(0)<=angle.lo<=angle.hi<=extent
+   expected=[]
+   for index,piece in enumerate(current[tid]['pieces']):
+    lo,hi=max(angle.lo,literal(piece['low_radians'])),min(angle.hi,literal(piece['high_radians']))
+    if lo<=hi:expected.append((index,I(lo,hi),piece))
+   rows=state['memory_piece_intersections'];assert len(rows)==len(expected)>0
+   for item,(index,sub,piece) in zip(rows,expected):
+    assert item['piece_index']==index and parse(item['computational_angle_bounds'])==sub
+    assert item['original_piece_json']==enc(piece).decode()
+    contains(field(piece['plastic_slip'],sub),item['plastic_slip_bounds_m'],'actual current literal p harmonic')
+    contains(field(piece['cumulative_slip'],sub),item['cumulative_slip_bounds_m'],'actual current literal c harmonic')
+    piece_count+=1;literal_coeff_count+=10;field_count+=2
+   for key,poly in (('free_gap_bounds_m',anchors[tid][1]),('free_jump_bounds_m',anchors[tid][2])):
+    contains(field(poly,angle),state[key],'authentic endpoint anchor harmonic');field_count+=1
+   P=-literal(kns)*field(anchors[tid][1],angle)
+   contains(P,state['normal_pressure_bounds_pa'],'literal binary64 source series pressure')
+   assert parse(state['normal_pressure_bounds_pa']).lo>0 and parse(state['shear_traction_bounds_pa'])==I(0)
+   contains(-P/kn,state['contact_reference_gap_bounds_m'],'source calibrated contact-only gap')
+   contains(square(P)/(2*kn),state['contact_reference_energy_density_bounds_j_m2'],'source contact-only preload energy')
+   pboxes=[parse(r['plastic_slip_bounds_m']) for r in rows];cboxes=[parse(r['cumulative_slip_bounds_m']) for r in rows]
+   assert parse(state['plastic_slip_bounds_m'])==I(min(x.lo for x in pboxes),max(x.hi for x in pboxes))
+   assert parse(state['cumulative_slip_bounds_m'])==I(min(x.lo for x in cboxes),max(x.hi for x in cboxes))
+   assert state['contact_reference_jump_bounds_m']==state['plastic_slip_bounds_m']
+   if label=='zero':
+    for force in case['responses'].values():
+     assert parse(force['traction_bounds_pa'][0])==-parse(state['normal_pressure_bounds_pa'])
+     assert force['contact_gap_bounds_m']==state['contact_reference_gap_bounds_m']
+     assert force['recoverable_energy_bounds_j_m2']==force['reference_recoverable_energy_bounds_j_m2']
+   case_count+=1
+ assert case_count==20
+ return dict(source_current_state_case_count=case_count,source_closed_memory_piece_count=piece_count,
+  source_literal_current_p_c_coefficient_count=literal_coeff_count,independent_certified_source_harmonic_enclosure_count=field_count,
+  all_four_complete_source_dtos_unchanged=True,historical_saved128_unchanged=True,original_sixteen_current_states_and_clocks_unchanged=True,
+  literal_current_step_memory_used=True,previous_dense_query_substitution_performed=False,
+  source_native_clock_s=1000000,source_contact_clock_s=2000000,source_current_epoch='unaccepted_candidate')
+
+def run(args):
+ start=time.perf_counter()
+ baseline=module(PARENT/'baseline_847_audit_source.txt','force_stdlib_baseline',BASELINE_SOURCE_SHA)
+ assert digest(PARENT/'baseline_847_audit.json')==BASELINE_JSON_SHA
+ inherited,current,old_reports,old_audit=baseline.verify_847()
+ assert len(current)==853 and set(current)-set(inherited)==ADDED
+ assert value_sha(current)==args.expected_source_map==EXPECTED_SOURCE_MAP
+ assert digest(PARENT/'frozen_source_map_853.json')==EXPECTED_SOURCE_MAP_RAW and read(PARENT/'frozen_source_map_853.json')==current
+ formula=module(PARENT/'independent_force_formula_helper_source.txt','force_stdlib_formula',FORMULA_SHA)
+ out=Path(args.out).resolve();wrapper=sealed(out/'report.json','report_sha256')
+ assert wrapper['status']==wrapper['regression_validation_status']=='PASS' and wrapper['physical_candidate_status']=='COMMON_CONTACT_REST_LAW_COMPONENT_ONLY'
+ assert wrapper['source_count']==853 and wrapper['verified_prior_python_sources']==847
+ assert wrapper['source_map_before_sha256']==wrapper['source_map_after_sha256']==args.expected_source_map
+ assert wrapper['changed_python_paths']==[] and wrapper['prior_artifacts_and_python_sources_preserved_after'] is True
+ assert wrapper['execution_mode']=='same_python_process' and wrapper['pytest_import_mode']=='importlib' and wrapper['pytest_exit_code']==0
+ assert set(wrapper['test_paths'])=={p for p in ADDED if p.startswith('tests/')}
+ assert set(wrapper['pytest_counts'])=={'passed'} and wrapper['pytest_counts']['passed']>0
+ if args.expected_tests is not None:assert wrapper['pytest_counts']=={'passed':args.expected_tests}
+ assert wrapper['added_python_sources']=={p:current[p] for p in ADDED}
+ baseline.output_closure(out,wrapper)
+ native=sealed(out/'native_control/report.json','report_sha256');packet=sealed(out/'native_control/source_packet.json','packet_sha256')
+ assert native['status']=='PASS' and native['source_packet_sha256']==packet['packet_sha256']
+ assert native['contact_query_rows_sha256']==value_sha(packet['contact_query_rows'])
+ assert packet['authenticated_prior_contact_wrapper_raw_sha256']==baseline.WRAPPER_RAW
+ assert packet['authenticated_prior_contact_source_packet_raw_sha256']==baseline.PACKET_RAW
+ summary={k:packet[k] for k in ('physical_candidate_status','actual_cold_contact_cut_count','retained_true_hot_curve_count','current_state_query_case_count','local_force_density_case_count','local_coordinate_count','exact_symmetric_hessian_entry_replay_count','accepted_original_native_intervals','accepted_new_native_intervals','original_point_1_remaining_work_blocks','remaining_physical_conditions')}
+ assert all(native[k]==v and wrapper[k]==v for k,v in summary.items() if k!='remaining_physical_conditions')
+ assert native['remaining_physical_conditions']==packet['remaining_physical_conditions'] and len(packet['remaining_physical_conditions'])==3
+ assert all(native.get(k) is False and packet.get(k) is False and wrapper.get(k) is False for k in FALSE)
+ source_counts=source_observations(packet,formula);force_counts=formula.audit_packet(packet)
+ formula_status=force_counts.pop('status');assert formula_status=='PASS_EXACT_RATIONAL_LOCAL_FORMULA_REPLAY_ONLY'
+ assert force_counts['force_response_count']==40 and force_counts['residual_entry_count']==800 and force_counts['hessian_entry_count']==16000
+ assert baseline.source_map()==current
+ result=dict(status='PASS',scope='COMMON_CONTACT_REST_LAW_COMPONENT_ONLY',final_python_sources=853,unchanged_prior_python_sources=847,
+  source_map_canonical_sha256=args.expected_source_map,frozen_source_map_raw_sha256=EXPECTED_SOURCE_MAP_RAW,audited_release_path=str(out.relative_to(ROOT)),all_old_sources_and_releases_preserved=True,verified_prior_artifacts=1633,
+  output_closure_count=4,fresh_test_module_count=2,fresh_tests=wrapper['pytest_counts']['passed'],execution_mode='same_python_process',
+  wrapper_raw_sha256=digest(out/'report.json'),wrapper_seal=wrapper['report_sha256'],native_raw_sha256=digest(out/'native_control/report.json'),
+  native_seal=native['report_sha256'],source_packet_raw_sha256=digest(out/'native_control/source_packet.json'),source_packet_seal=packet['packet_sha256'],
+  baseline_source_sha256=BASELINE_SOURCE_SHA,independent_formula_helper_source_sha256=FORMULA_SHA,
+  local_formula_audit_status=formula_status,**source_counts,**force_counts,accepted_original_native_intervals=1,accepted_new_native_intervals=0,original_point_1_remaining_work_blocks=1,
+  remaining_physical_condition_count=3,source_law_or_memory_assigned_to_hot_curve=False,source_atoms_reassigned_to_new_cut_points=False,
+  second_certified_tensor_quadrature_performed=False,second_certified_whole_boundary_quadrature_performed=False,
+  face_depth_memory_or_measure_transfer_certified=False,old_rod_prestrain_or_energy_transferred=False,new_mixed_force_equilibrium_certified=False,
+  physical_material_admission_authorized=False,whole_clock_material_admission_authorized=False,source_history_advanced=False,
+  auditor_script_sha256=digest(__file__),seconds=time.perf_counter()-start)
+ result['audit_packet_sha256']=value_sha(result)
+ Path(args.result).write_bytes(enc(result)+b'\n');print(enc(result).decode())
+
+if __name__=='__main__':
+ p=argparse.ArgumentParser();p.add_argument('--out',required=True);p.add_argument('--expected-source-map',required=True);p.add_argument('--expected-tests',type=int,default=19);p.add_argument('--result',required=True);run(p.parse_args())

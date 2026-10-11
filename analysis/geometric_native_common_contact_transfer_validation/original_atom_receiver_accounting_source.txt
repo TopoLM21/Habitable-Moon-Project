@@ -1,0 +1,118 @@
+"""Source atom angular bookkeeping only, with exact endpoint uncertainty.
+
+No atom is assigned to a new physical material point/area or constitutive port.
+Literal current unaccepted-candidate stores are summed once as Fractions.
+"""
+from fractions import Fraction as F
+from pathlib import Path
+import hashlib,json,sys,time,types
+
+ROOT=Path('/workspace/Habitable-Moon-Project')
+PARENT=ROOT/'analysis/geometric_native_common_contact_transfer_validation'
+SOURCE=ROOT/'analysis/geometric_native_affine_body_validation/release_validation_01/native_control/source_packet.json'
+SOURCE_RAW='ccd511b2b82e66ba103d0d900b993a18d02953288f447c71ac9e589dc70c7d1e'
+DESIGN=PARENT/'source_theta_allocation_design.json'
+DESIGN_RAW='0eb62b8a9bd6b24a154b1764f61f78492364b682e9b1f1ba5b3dc247f1645396'
+DESIGN_SOURCE=PARENT/'source_theta_allocation_design_source.txt'
+DESIGN_SOURCE_RAW='374f620725cd2b396c2c9fd981e5477b14bdc4470633820760c06481561616f9'
+CUTS=ROOT/'analysis/geometric_native_common_reference_validation/retained_original_contact_cut_audit.json'
+CUTS_RAW='7ac3cd74013a20d7a06e95eccec4e6ceb3db412fb197ec3ed559c5af43108200'
+HELPER=ROOT/'analysis/geometric_native_cold_body_validation/independent_audit_source.txt'
+HELPER_RAW='ee031938177a3497aa7821c883650a89397a9942f6b177e48b9a655153297f6e'
+OUT=Path('/tmp/native_common_contact_original_atom_receiver_accounting_20261005.json')
+NOTE=Path('/tmp/native_common_contact_original_atom_receiver_accounting_20261005.txt')
+STORE_FIELDS=('contact_energy_j','bulk_energy_j','cumulative_external_work_j',
+ 'cumulative_numerical_dissipation_j','cumulative_friction_work_j','cumulative_viscous_work_j')
+
+def enc(v):return json.dumps(v,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+def digest(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def vd(v):return hashlib.sha256(enc(v)).hexdigest()
+def sealed(p,raw,key):
+ assert digest(p)==raw
+ v=json.loads(p.read_bytes());body=dict(v);assert body.pop(key)==vd(body);return v
+def pair(v):return [v.numerator,v.denominator]
+def exact_display(v):return {'exact_sum_of_literal_binary64_values':pair(v),'display_binary64':float(v)}
+def payload(v):
+ if type(v) is F:return pair(v)
+ if hasattr(v,'lo') and hasattr(v,'hi'):return {'lo':pair(v.lo),'hi':pair(v.hi)}
+ if type(v) is tuple:return [payload(x) for x in v]
+ return v
+
+def main():
+ started=time.perf_counter()
+ source=sealed(SOURCE,SOURCE_RAW,'packet_sha256');design=sealed(DESIGN,DESIGN_RAW,'audit_sha256');cuts=sealed(CUTS,CUTS_RAW,'audit_sha256')
+ assert digest(DESIGN_SOURCE)==DESIGN_SOURCE_RAW and digest(HELPER)==HELPER_RAW
+ assert design['positive_measure_duplicate_theta_interiors'] is False and design['both_two_cut_receivers_share_exact_projective_endpoint'] is True
+ h=types.ModuleType('receiver_atom_pure_interval');h.__file__=str(HELPER);sys.modules[h.__name__]=h;exec(compile(HELPER.read_bytes(),str(HELPER),'exec'),h.__dict__)
+ I=h.FractionInterval;readi=lambda v:I(F(*v['lo']),F(*v['hi']));dot=lambda a,b:sum((x*y for x,y in zip(a,b)),I(0))
+ before=source['before'];snap=before['snapshot'];history=before['original_physical_history'];material=snap['current_material_epoch']['source_material_state']
+ assert design['source_snapshot_sha256']==source['source_snapshot_sha256']
+ histories=dict(snap['owner_histories']);Q={o:h.certify_rotation_history(tuple(h.rotation_increment_from_dict(x) for x in rows),160).intervals for o,rows in histories.items()}
+ inverse=lambda o,v:tuple(dot(tuple(Q[o][j][i] for j in range(3)),v) for i in range(3))
+ rows={(r['donor_parent'],r['receiver_parent']):r for r in cuts['true_source_endpoint_cold_boundary_arcs']}
+ bindings={r['receiver_fragment_id']:r for r in material['trace_bindings']}
+ source_memory=history['contact_time_path']['step']['memory'];assert source_memory==snap['spatial_memory']
+ extents={r['trace_id']:F.from_float(r['extent_radians']) for r in source_memory['traces']}
+ half_pi=h.interval_pi(168)/2
+ def angle(parent,q):
+  trace=next(r for r in material['original_mechanics_payload']['fault_traces']['traces'] if r['trace_id']==bindings[parent]['trace_id'])
+  S,T=(tuple(I(F.from_float(x)) for x in trace[k]) for k in ('start','end'))
+  x,y=dot(S,q),dot(T,q);assert x.lo>0 and y.lo>0
+  native=h.interval_atan(y/x,160) if y.hi<=x.lo else half_pi-h.interval_atan(x/y,160)
+  return native*extents[trace['trace_id']]/half_pi
+ def endpoint(parent,pair_key,key):return angle(parent,inverse(0,tuple(readi(x) for x in rows[pair_key][key])))
+ sigma8=endpoint('octant:2',('octant:6','octant:2'),'raw_end_direction_bounds')
+ alpha8=endpoint('octant:2',('octant:6','octant:2'),'raw_start_direction_bounds')
+ sigma11=endpoint('octant:3',('octant:7','octant:3'),'raw_end_direction_bounds')
+ env=material['sweep_certificate']['envelope'];q=(readi(env['terminal_height_bounds']),-readi(env['terminal_slope_bounds']),I(1))
+ gamma7=angle('octant:1',inverse(0,tuple(dot(row,q) for row in Q[1])))
+ Gamma={p:extents[b['trace_id']] for p,b in bindings.items()}
+ assert 0<sigma8.lo<=sigma8.hi<alpha8.lo<=alpha8.hi<Gamma['octant:2']
+ assert 0<sigma11.lo<=sigma11.hi<Gamma['octant:3'] and 0<gamma7.lo<=gamma7.hi<Gamma['octant:1']
+ states=dict(snap['states']);atoms=history['quadrature_histories'];assert len(atoms)==len(states)==16
+ def classify(parent,theta):
+  if parent=='octant:0':return 'inactive:octant:0','whole original receiver carrier has no current cold cut'
+  if parent=='octant:1':
+   if theta<gamma7.lo:return 'inactive:octant:1','theta strictly below certified C7 terminal-trim support'
+   if theta>gamma7.hi:return 'cut:octant:5:octant:1','theta strictly inside C7 terminal-trim support'
+   return 'uncertain:gamma7','literal node lies in unresolved exact-endpoint band'
+  if parent=='octant:2':
+   if theta<sigma8.lo:return 'cut:octant:7:octant:2','theta strictly inside microscopic C10/C8 support'
+   if sigma8.hi<theta<alpha8.lo:return 'cut:octant:6:octant:2','theta strictly inside C9/C8 long support'
+   if theta>alpha8.hi:return 'inactive:octant:2','theta strictly above C8 long-support terminal'
+   return 'uncertain:octant:2','literal node lies in unresolved shared/terminal endpoint band'
+  if parent=='octant:3':
+   if theta<sigma11.lo:return 'cut:octant:5:octant:3','theta strictly inside microscopic C6/C11 support'
+   if theta>sigma11.hi:return 'cut:octant:7:octant:3','theta strictly inside C10/C11 long support'
+   return 'uncertain:sigma11','literal node lies in unresolved shared-endpoint band'
+  raise AssertionError(parent)
+ labels=['cut:octant:5:octant:1','cut:octant:5:octant:3','cut:octant:6:octant:2','cut:octant:7:octant:2','cut:octant:7:octant:3','inactive:octant:0','inactive:octant:1','inactive:octant:2','inactive:octant:3','uncertain:gamma7','uncertain:octant:2','uncertain:sigma11']
+ ledgers={label:[] for label in labels};atom_rows=[]
+ for atom in atoms:
+  tid=atom['trace_id'];binding=next(b for b in bindings.values() if b['trace_id']==tid);parent=binding['receiver_fragment_id'];theta=F(*atom['computational_angle'])
+  assert 0<theta<Gamma[parent] and states[atom['point_id']]==atom['unaccepted_candidate_state']
+  assert atom['original_area_m2']==atom['original_point']['area_m2']==states[atom['point_id']]['area_m2']
+  bucket,reason=classify(parent,theta);ledgers[bucket].append(atom)
+  atom_rows.append({'point_id':atom['point_id'],'trace_id':tid,'original_receiver_parent':parent,'original_donor_parent':binding['donor_fragment_id'],'computational_angle_exact':pair(theta),'original_area_m2':pair(F.from_float(atom['original_area_m2'])),'source_accounting_bucket':bucket,'strict_endpoint_comparison_reason':reason,'original_current_state_sha256':vd(states[atom['point_id']]),'source_node_state_epoch':'unaccepted_candidate','source_contact_elapsed_time_s':atom['unaccepted_candidate_state']['elapsed_time_s'],'source_contact_step_count':atom['unaccepted_candidate_state']['step_count'],'assigned_to_new_physical_material_point_or_area':False})
+ assert sum(map(len,ledgers.values()))==16 and len({r['point_id'] for r in atom_rows})==16
+ def budget(subset):
+  value={'count':len(subset),'original_area_m2':exact_display(sum((F.from_float(a['original_area_m2']) for a in subset),F(0))),'point_ids':[a['point_id'] for a in subset]}
+  for epoch in ('prepared_state','previous_state','unaccepted_candidate_state'):
+   value[epoch]={key:exact_display(sum((F.from_float(a[epoch][key]) for a in subset),F(0))) for key in STORE_FIELDS}
+  value['current_minus_previous_work_and_energy_j']={key:exact_display(sum((F.from_float(a['unaccepted_candidate_state'][key])-F.from_float(a['previous_state'][key]) for a in subset),F(0))) for key in STORE_FIELDS}
+  return value
+ budgets={label:budget(subset) for label,subset in ledgers.items()}
+ active=[a for label,subset in ledgers.items() if label.startswith('cut:') for a in subset];inactive=[a for label,subset in ledgers.items() if label.startswith('inactive:') for a in subset];uncertain=[a for label,subset in ledgers.items() if label.startswith('uncertain:') for a in subset]
+ all_budget=budget(atoms)
+ for epoch in ('prepared_state','previous_state','unaccepted_candidate_state'):
+  for key in STORE_FIELDS:
+   assert sum((F(*b[epoch][key]['exact_sum_of_literal_binary64_values']) for b in budgets.values()),F(0))==F(*all_budget[epoch][key]['exact_sum_of_literal_binary64_values'])
+ report={'status':'PASS_ONCE_ONLY_ORIGINAL_ATOM_RECEIVER_ANGULAR_SOURCE_ACCOUNTING_ONLY','source_packet_raw_sha256':SOURCE_RAW,'source_theta_design_raw_sha256':DESIGN_RAW,'source_theta_design_source_sha256':DESIGN_SOURCE_RAW,'source_cut_audit_raw_sha256':CUTS_RAW,'stdlib_interval_helper_sha256':HELPER_RAW,'source_snapshot_sha256':source['source_snapshot_sha256'],'source_history_binding_sha256':history['binding_sha256'],'source_current_atom_states_sha256':vd(snap['states']),'source_current_memory_sha256':vd(source_memory),'source_native_elapsed_time_s':snap['elapsed_time_s'],'source_continuous_memory_elapsed_time_s':source_memory['elapsed_time_s'],'source_contact_elapsed_time_s':sorted({a['unaccepted_candidate_state']['elapsed_time_s'] for a in atoms}),'actual_exact_endpoint_enclosure_receipts':{'sigma8':payload(sigma8),'alpha8':payload(alpha8),'sigma11':payload(sigma11),'gamma7':payload(gamma7)},'endpoints_selected_or_midpoint_adopted':False,'original_atom_count':16,'current_receiver_active_source_atom_count':len(active),'current_receiver_inactive_source_atom_count':len(inactive),'uncertain_endpoint_source_atom_count':len(uncertain),'atom_rows':atom_rows,'once_only_source_bucket_budgets':budgets,'active_current_receiver_source_atom_budget':budget(active),'inactive_current_receiver_source_atom_budget':budget(inactive),'uncertain_source_atom_budget':budget(uncertain),'all16_source_atom_budget':all_budget,'literal_atom_area_equated_to_continuous_C_dtheta':False,'previous_original_donor_label_membership_reclassified_as_receiving_allocation':False,'new_target_face_area_or_three_dimensional_atom_map_certified':False,'old_world_force_equivalence_or_global_work_handover_certified':False,'material_admission_or_new_interval_acceptance':False,'old_rod_prestress_transferred':False,'project_imports_pytest_quadrature_or_binder':False,'source_script_sha256':digest(Path(__file__)),'seconds':time.perf_counter()-started}
+ report['positive_C8_continuum_inactive_tail_retained_despite_zero_original_nodes']=True
+ report['positive_three_microscopic_cut_supports_retained_despite_zero_original_nodes']=True
+ report['original_gauss_weights_are_not_quadrature_of_new_truncated_supports']=True
+ report['audit_sha256']=vd(report);OUT.write_bytes(enc(report)+b'\n')
+ NOTE.write_text('READ-ONLY SOURCE ACCOUNTING, not target material or force transfer.\nReproduce: python /tmp/native_common_contact_original_atom_receiver_accounting_20261005.py\nInputs are pinned archived repository JSON/TXT and immutable source CCD packet.\nOriginal atom theta is its exact computational_angle; original_area_m2 and every state/work store remain literal binary64.\nEndpoint intervals are outward enclosures; atoms in an unresolved band would be reserved once. No midpoint is selected.\nCurrent receiver support classification is distinct from old incoming-donor live/archive membership.\nSource budgets sum literal stores exactly as Fractions; display values are one binary64 rounding of each exact sum.\nZero original nodes in the three tiny cuts or positive C8 inactive tail does not mean zero continuous source measure there. Original Gauss weights are not quadrature weights for the new truncated supports.\nNo source C dtheta continuum area, true full-depth face area, old world force or rod material prestress has been substituted.\n')
+ print(enc({k:report[k] for k in ('status','seconds','original_atom_count','current_receiver_active_source_atom_count','current_receiver_inactive_source_atom_count','uncertain_endpoint_source_atom_count','audit_sha256')}).decode())
+
+if __name__=='__main__':main()

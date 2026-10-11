@@ -1,0 +1,510 @@
+"""Independent 220-digit curved receiving-face audit; no project imports.
+
+Source-input interval representatives diagnose algebra and complete two-jets.
+They do not re-certify native curve/root geometry or physical admission.
+"""
+from pathlib import Path
+import argparse, hashlib, json, sys, time
+import mpmath as mp
+
+mp.mp.dps = 220
+N = 26
+comparisons = 0
+
+def encoded(value):
+    return json.dumps(value, sort_keys=True, separators=(",", ":"),
+                      ensure_ascii=False, allow_nan=False).encode()
+
+def raw_hash(path):
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+def fraction(value):
+    if isinstance(value, (int, str)):
+        return mp.mpf(value)
+    return mp.mpf(value[0]) / value[1]
+
+def ends(value):
+    if isinstance(value, dict):
+        return fraction(value["lo"]), fraction(value["hi"])
+    if isinstance(value, list) and len(value) == 2 and isinstance(value[0], list):
+        return fraction(value[0]), fraction(value[1])
+    v = fraction(value)
+    return v, v
+
+def representative(value):
+    lo, hi = ends(value)
+    return (lo + hi) / 2
+
+def contains(value, expected, label):
+    global comparisons
+    lo, hi = ends(value)
+    tolerance = mp.mpf("1e-190") * max(1, abs(expected), abs(lo), abs(hi))
+    if not lo - tolerance <= expected <= hi + tolerance:
+        raise ValueError(label + " outside saved native enclosure")
+    comparisons += 1
+
+class Dual:
+    __slots__ = ("v", "g", "H")
+    def __init__(self, value, gradient=None, hessian=None):
+        self.v = mp.mpf(value)
+        self.g = [mp.mpf(0)] * N if gradient is None else gradient
+        self.H = [[mp.mpf(0)] * N for _ in range(N)] if hessian is None else hessian
+    @classmethod
+    def variable(cls, value, index):
+        gradient = [mp.mpf(0)] * N
+        gradient[index] = mp.mpf(1)
+        return cls(value, gradient)
+    def __add__(self, other):
+        other = other if isinstance(other, Dual) else Dual(other)
+        return Dual(self.v + other.v,
+                    [a + b for a, b in zip(self.g, other.g)],
+                    [[self.H[i][j] + other.H[i][j] for j in range(N)]
+                     for i in range(N)])
+    __radd__ = __add__
+    def __neg__(self):
+        return Dual(-self.v, [-x for x in self.g], [[-x for x in row] for row in self.H])
+    def __sub__(self, other):
+        return self + (-other if isinstance(other, Dual) else -mp.mpf(other))
+    def __rsub__(self, other):
+        return -self + other
+    def __mul__(self, other):
+        other = other if isinstance(other, Dual) else Dual(other)
+        return Dual(self.v * other.v,
+                    [self.g[i] * other.v + self.v * other.g[i] for i in range(N)],
+                    [[self.H[i][j] * other.v + self.v * other.H[i][j]
+                      + self.g[i] * other.g[j] + self.g[j] * other.g[i]
+                      for j in range(N)] for i in range(N)])
+    __rmul__ = __mul__
+    def unary(self, value, first, second):
+        return Dual(value, [first * x for x in self.g],
+                    [[first * self.H[i][j] + second * self.g[i] * self.g[j]
+                      for j in range(N)] for i in range(N)])
+    def inverse(self):
+        return self.unary(1 / self.v, -1 / self.v**2, 2 / self.v**3)
+    def __truediv__(self, other):
+        return self * (other.inverse() if isinstance(other, Dual) else 1 / mp.mpf(other))
+    def __rtruediv__(self, other):
+        return self.inverse() * other
+    def sqrt(self):
+        value = mp.sqrt(self.v)
+        return self.unary(value, 1 / (2 * value), -1 / (4 * value**3))
+    def __pow__(self, exponent):
+        exponent = mp.mpf(exponent)
+        return self.unary(self.v**exponent, exponent * self.v**(exponent-1),
+                          exponent * (exponent-1) * self.v**(exponent-2))
+
+def cross(a, b):
+    return [a[1]*b[2]-a[2]*b[1], a[2]*b[0]-a[0]*b[2], a[0]*b[1]-a[1]*b[0]]
+
+def dot(a, b):
+    return sum((x*y for x, y in zip(a, b)), 0)
+
+def matvec(A, x):
+    return [dot(row, x) for row in A]
+
+def matmul(A, B):
+    return [[sum((A[i][k]*B[k][j] for k in range(3)), 0)
+             for j in range(3)] for i in range(3)]
+
+def transpose(A):
+    return [[A[j][i] for j in range(3)] for i in range(3)]
+
+def determinant(A):
+    return dot(A[0], cross(A[1], A[2]))
+
+def inverse(A):
+    det = determinant(A)
+    rows = [cross(A[1], A[2]), cross(A[2], A[0]), cross(A[0], A[1])]
+    return [[rows[j][i] / det for j in range(3)] for i in range(3)]
+
+def cofactor(A):
+    return [cross(A[1], A[2]), cross(A[2], A[0]), cross(A[0], A[1])]
+
+def norm(v):
+    x = dot(v, v)
+    return x.sqrt() if isinstance(x, Dual) else mp.sqrt(x)
+
+def left_owner_twojet(theta, vector):
+    first = cross(theta, vector)
+    second = cross(theta, first)
+    return [vector[i] + first[i] + second[i]/2 for i in range(3)]
+
+def rotation(axis, parameter):
+    length = mp.sqrt(dot(axis, axis))
+    if not length:
+        return [[mp.mpf(i == j) for j in range(3)] for i in range(3)]
+    unit = [x/length for x in axis]
+    angle = length*parameter
+    skew = [[0, -unit[2], unit[1]], [unit[2], 0, -unit[0]], [-unit[1], unit[0], 0]]
+    return [[mp.cos(angle)*int(i == j) + (1-mp.cos(angle))*unit[i]*unit[j]
+             + mp.sin(angle)*skew[i][j] for j in range(3)] for i in range(3)]
+
+def polynomial(coefficients, value):
+    result = mp.mpf(0)
+    for coefficient in reversed(coefficients):
+        result = result*value + fraction(coefficient)
+    return result
+
+HOT_GENERATORS = (
+    ((1,0,0),(0,1,0),(0,0,1)), ((1,0,0),(0,-1,0),(0,0,0)),
+    ((1,0,0),(0,1,0),(0,0,-2)), ((0,1,0),(1,0,0),(0,0,0)),
+    ((0,0,1),(0,0,0),(1,0,0)), ((0,0,0),(0,0,1),(0,1,0)))
+COLD_GENERATORS = (
+    ((1,0,0),(0,0,0),(0,0,0)), ((0,0,0),(0,1,0),(0,0,0)),
+    ((0,0,0),(0,0,0),(0,0,1)), ((0,1,0),(1,0,0),(0,0,0)),
+    ((0,0,1),(0,0,0),(1,0,0)), ((0,0,0),(0,0,1),(0,1,0)))
+
+def quintic_seam(q, numerator, denominator, radius, width):
+    a, b = q[numerator], abs(q[denominator])
+    if not b:
+        return (mp.mpf("0.5") if not a else mp.mpf(a > 0)), [mp.mpf(0)]*3
+    angle = mp.atan(a/b)
+    if angle <= -width or angle >= width:
+        return mp.mpf(angle >= width), [mp.mpf(0)]*3
+    t = (angle+width)/(2*width)
+    value = t**3*(10-15*t+6*t*t)
+    slope = 30*t*t*(1-t)**2/(2*width)
+    gradient = [mp.mpf(0)]*3
+    transverse = q[1]**2+q[2]**2
+    gradient[numerator] = slope*b/(radius*transverse)
+    gradient[denominator] = -slope*(1 if q[denominator] > 0 else -1)*a/(radius*transverse)
+    return value, gradient
+
+def scalar_jet_check(raw, value, label):
+    contains(raw["value_bounds"], value.v, label+" value")
+    for i in range(N):
+        contains(raw["first_bounds"][i], value.g[i], label+" first")
+        for j in range(N):
+            contains(raw["second_bounds"][i][j], value.H[i][j], label+" second")
+
+def matrix(raw):
+    return [[representative(x) for x in row] for row in raw]
+
+def vector(raw):
+    return [representative(x) for x in raw]
+
+def check_vector(raw, value, label):
+    for i, x in enumerate(value):
+        contains(raw[i], x, label+" vector")
+
+def check_matrix(raw, value, label):
+    for i, row in enumerate(value):
+        for j, x in enumerate(row):
+            contains(raw[i][j], x, label+" matrix")
+
+def source_geometry(point, cold, bank, body):
+    bounds = json.loads(point['cut_bounds_json'])
+    cut = bounds['cut']
+    sweep = json.loads(cut['complete_source_sweep_json'])
+    polynomials = {p['name']: p['coefficients'] for p in sweep['analytic_polynomials']}
+    root = representative(point['implicit_root_bounds'])
+    lam = representative(point['lambda_bounds'])
+    u = root+(1-root)*lam
+    contains(bounds['parameter_bounds'], u, 'correlated normalized curve parameter')
+    value = {key: polynomial(coeffs, u) for key, coeffs in polynomials.items()}
+    a, b = value['Y']/value['C'], value['Z']/value['C']
+    k, h = value['B1']/value['A1'], value['height_numerator']/value['A1']
+    if ends(point['lambda_bounds']) == (0, 0):
+        # Exact source turning-root identity, rather than its rectangle corner.
+        h = mp.mpf(0)
+        k = representative(cut['maximum_ratio_bounds'])
+    q = [h, -k, mp.mpf(1)]
+    q = [x/norm(q) for x in q]
+    Nlocal = [-mp.mpf(1), a, b]
+    Nlocal = [x/norm(Nlocal) for x in Nlocal]
+    pose = matrix(bank['material_owner_pose_bounds'])
+    U, normal = matvec(pose, q), matvec(pose, Nlocal)
+    R = fraction(body['radius_m'])
+    depth = representative(bounds['receiver_material_depth_bounds_m'])
+    cubes = R**3-3*R**2*depth
+    radius = mp.root(cubes, 3)
+    omega = [fraction(x) for x in body['angular_rate_per_physical_volume_depth_m']]
+    Q = rotation(omega, depth)
+    c = cubes/R**2*dot(omega, cross(normal, U))
+    metric = mp.sqrt(1+c*c)
+    common_normal = matvec(Q, [(normal[i]-c*U[i])/metric for i in range(3)])
+    speed = -value['curvature_numerator']/value['A1']**2 * mp.sqrt(1+a*a+b*b)/(1+h*h+k*k)
+    density = speed*R**2/radius*metric*(1-root)
+    check_vector(bounds['source_unit_world_direction_bounds'], U, 'source-correlated world ray')
+    check_vector(cold['original_unit_direction_bounds'], q, 'source-correlated original ray')
+    check_vector(bounds['receiver_inward_unit_normal_bounds'], common_normal, 'common face inward normal')
+    contains(bounds['source_angular_speed_bounds'], speed, 'genuine curve angular speed')
+    contains(point['reference_area_density_bounds'], density, 'complete normalized curved area density')
+    return bounds, q, U, common_normal, depth, radius, density, Q
+
+def cold_bank_modes(bank, q, depth):
+    R = fraction(bank['radius_m'])
+    top = R+fraction(bank['roof_radial_displacement_m'])
+    radius = mp.root(R**3-3*R**2*depth, 3)
+    old_radius = mp.root(top**3-3*R**2*depth, 3)
+    tau = depth+(R**3-top**3)/(3*R**2)
+    pose = matrix(bank['material_owner_pose_bounds'])
+    omega = [fraction(x) for x in bank['angular_rate_per_physical_volume_depth_m']]
+    twist = rotation(omega, tau)
+    total = matmul(twist, pose)
+    e = matvec(total, q)
+    label = dot([fraction(x) for x in bank['original_quarter_inward']], q)
+    beta = mp.asin(min(mp.mpf(1), max(mp.mpf(0), label)))
+    width = fraction(bank['beta_cut_radians'])
+    t = min(mp.mpf(1), beta/width)
+    chi = (1-t)**2*(t+2)/2
+    slope = -mp.mpf('1.5')*(1-t*t)/width
+    X = [old_radius*x for x in e]
+    dq = [[(int(i == j)-q[i]*q[j])/radius for j in range(3)] for i in range(3)]
+    de = matmul(total, dq)
+    axis_e = cross(omega, e)
+    for i in range(3):
+        for j in range(3):
+            de[i][j] += axis_e[i]*(-radius**2/R**2*q[j])
+    Aold = [[e[i]*radius**2/old_radius**2*q[j]+old_radius*de[i][j]
+             for j in range(3)] for i in range(3)]
+    alpha, radial = old_radius/radius, radius**2/old_radius**2
+    bridge = [[alpha*int(i == j)+(radial-alpha)*q[i]*q[j]
+               for j in range(3)] for i in range(3)]
+    if not chi:
+        return [[mp.mpf(0)]*3 for _ in range(7)], [[[mp.mpf(0)]*3 for _ in range(3)] for _ in range(7)], X, Aold, bridge
+    transverse = mp.sqrt(1-label*label)
+    inward = [fraction(x) for x in bank['original_quarter_inward']]
+    gb = [(inward[i]-label*q[i])/(radius*transverse) for i in range(3)]
+    modes = [[chi*x for x in e]]
+    gradients = [[[chi*de[i][j]+slope*e[i]*gb[j] for j in range(3)] for i in range(3)]]
+    for generator in COLD_GENERATORS:
+        EX = matvec(generator, X)
+        ED = matmul(generator, Aold)
+        modes.append([chi*x/R for x in EX])
+        gradients.append([[chi*ED[i][j]/R+slope*EX[i]/R*gb[j]
+                           for j in range(3)] for i in range(3)])
+    return modes, gradients, X, Aold, bridge
+
+def cold_fields(cold, q):
+    banks = json.loads(cold['source_owner_banks_json'])
+    depth = representative(cold['material_depth_bounds_m'])
+    source_bank = json.loads(cold['source_bank_json'])
+    R = fraction(source_bank['radius_m'])
+    radius = mp.root(R**3-3*R**2*depth, 3)
+    wy, gy = quintic_seam(q, 1, 2, radius, mp.mpf('0.01'))
+    wz, gz = quintic_seam(q, 2, 1, radius, mp.mpf('0.01'))
+    modes = [[mp.mpf(0)]*3 for _ in range(56)]
+    gradients = [[[mp.mpf(0)]*3 for _ in range(3)] for _ in range(56)]
+    order = cold['coordinate_order']
+    saved_weights = dict(cold['seam_weights'])
+    saved_grads = dict(cold['seam_weight_original_gradients'])
+    saved_banks = {b['component_id']: b for b in cold['bank_field_enclosures']}
+    for bank in banks:
+        signs = [sum(fraction(bank[name][i]) for name in ('original_quarter_start', 'original_quarter_end')) for i in (1,2)]
+        fy, fz = (wy if signs[0] > 0 else 1-wy), (wz if signs[1] > 0 else 1-wz)
+        dy, dz = (gy if signs[0] > 0 else [-x for x in gy]), (gz if signs[1] > 0 else [-x for x in gz])
+        weight = fy*fz
+        dweight = [dy[i]*fz+fy*dz[i] for i in range(3)]
+        contains(saved_weights[bank['original_parent_id']], weight, 'independent quintic seam weight')
+        check_vector(saved_grads[bank['original_parent_id']], dweight, 'independent seam material gradient')
+        if not weight and not any(dweight):
+            continue
+        bm, bg, X, Aold, correction = cold_bank_modes(bank, q, depth)
+        saved = saved_banks[bank['component_id']]
+        check_vector(saved['reference_position_bounds_m'], X, 'independent original-roof bank position')
+        check_matrix(saved['reference_original_gradient_bounds'], Aold, 'independent original-roof bank gradient')
+        check_matrix(saved['roof_chart_correction_bounds'], correction, 'independent roof radial and tangential factors')
+        contains([[1,1],[1,1]], determinant(correction), 'unit roof determinant')
+        selected = [i for i, row in enumerate(order) if row[1] == bank['component_id']]
+        for k, global_index in enumerate(selected):
+            modes[global_index] = [weight*x for x in bm[k]]
+            gradients[global_index] = [[weight*bg[k][i][j]+bm[k][i]*dweight[j] for j in range(3)] for i in range(3)]
+    for k in range(56):
+        check_vector(cold['mode_displacement_columns'][k], modes[k], 'independent full56 mode column')
+        check_matrix(cold['mode_original_gradient_columns_per_m'][k], gradients[k], 'independent full56 mode material gradient')
+    scale = fraction(cold['fixed_radial_scale'])
+    archive_pose = matrix(cold['archive_carrier_original_gradient_bounds'])
+    archive_X = matvec(archive_pose, [radius*x for x in q])
+    check_vector(cold['archive_carrier_position_bounds_m'], archive_X, 'exact live-envelope zero activation carrier')
+    coordinates = [fraction(x) for x in cold['bound_coordinate_increments']]
+    y = [scale*archive_X[i]+sum(coordinates[k]*modes[k][i] for k in range(56)) for i in range(3)]
+    A = [[scale*archive_pose[i][j]+sum(coordinates[k]*gradients[k][i][j] for k in range(56)) for j in range(3)] for i in range(3)]
+    check_vector(cold['position_bounds_m'], y, 'independent full cold position')
+    check_matrix(cold['original_cartesian_gradient_bounds'], A, 'independent full cold material gradient')
+    return y, A, modes, coordinates, radius
+
+def audit_point(point, label, operator=None):
+    global N
+    indices = point['active_coordinate_indices']
+    N = len(indices)
+    where = {value: i for i, value in enumerate(indices)}
+    cold = json.loads(point['cold_field_json'])
+    bank = json.loads(cold['source_bank_json'])
+    body = json.loads(point['hot_body_json'])
+    chart = json.loads(point['hot_chart_json'])
+    bounds, q, U, common_normal, depth, radius, density, Q = source_geometry(point, cold, bank, body)
+    cold_y, cold_A, modes, cold_coordinates, cold_radius = cold_fields(cold, q)
+    xi = [Dual.variable(0, i) for i in range(N)]
+    cold_local = [Dual(cold_y[i])+sum((xi[where[36+k]]*modes[k][i] for k in range(56) if 36+k in where), 0) for i in range(3)]
+    cold_owner = [xi[where[3*cold['owner']+i]] for i in range(3)]
+    cold_jets = left_owner_twojet(cold_owner, cold_local)
+    R, scale = fraction(body['radius_m']), fraction(body['fixed_owner_scale'])
+    omega = [fraction(x) for x in body['angular_rate_per_physical_volume_depth_m']]
+    X = [scale*radius*x for x in matvec(Q, U)]
+    axial = cross(omega, U)
+    C = [[int(i == j)-radius**3/R**2*axial[i]*U[j] for j in range(3)] for i in range(3)]
+    A0 = [[scale*x for x in row] for row in matmul(Q, C)]
+    check_vector(point['hot_prepared_position_bounds_m'], X, 'independent complete prepared HOT position')
+    check_matrix(point['hot_prepared_original_world_gradient_bounds'], A0, 'independent original-world HOT gradient')
+    h0 = representative(chart['finite_mean_root_certificate']['scalar_affine_amplitude_bounds_m'])
+    J = matrix(chart['implicit_physical_coordinate_jacobian'])
+    hs = matrix(chart['implicit_scalar_coordinate_hessian'])
+    body_indices = body['authentic_old100_coordinate_indices']
+    body_xi = [xi[where[i]] for i in body_indices]
+    amplitudes = [Dual(h0)]+[Dual(fraction(x)) for x in chart['finite_mean_root_certificate']['five_tracefree_amplitudes_m']]
+    for k in range(6):
+        amplitudes[k] = amplitudes[k]+sum((J[k][a]*body_xi[a] for a in range(6)), 0)
+    for a in range(6):
+        for b in range(6):
+            amplitudes[0] = amplitudes[0]+hs[a][b]*body_xi[a]*body_xi[b]/2
+    Fhot = [[Dual(int(i == j))+sum((HOT_GENERATORS[k][i][j]*amplitudes[k]/R for k in range(6)), 0) for j in range(3)] for i in range(3)]
+    hot_owner = [xi[where[3*body['owner']+i]] for i in range(3)]
+    hot_y = left_owner_twojet(hot_owner, matvec(Fhot, X))
+    hot_A_unrotated = matmul(Fhot, A0)
+    hot_columns = [left_owner_twojet(hot_owner, [hot_A_unrotated[i][j] for i in range(3)]) for j in range(3)]
+    hot_A = [[hot_columns[j][i] for j in range(3)] for i in range(3)]
+    hot_channels = hot_y+[x for row in hot_A for x in row]
+    local_indices = list(range(3*body['owner'], 3*body['owner']+3))+body_indices
+    for channel, value in enumerate(hot_channels):
+        contains(point['hot_spatial_values'][channel], value.v, 'independent HOT channel value '+label+' channel '+str(channel))
+        for a, global_index in enumerate(local_indices):
+            contains(point['hot_spatial_first'][channel][a], value.g[where[global_index]], 'independent complete HOT first jet')
+            for b, other in enumerate(local_indices):
+                contains(point['hot_spatial_second'][channel][a][b], value.H[where[global_index]][where[other]], 'independent complete HOT second jet')
+    material = matvec(transpose(A0), common_normal)
+    material = [x/norm(material) for x in material]
+    check_vector(point['original_world_material_normal_bounds'], material, 'independent original-world normal pullback')
+    raw_normal = matvec(cofactor(hot_A), material)
+    magnitude = norm(raw_normal)
+    normal = [x/magnitude for x in raw_normal]
+    check_vector(point['current_receiver_unit_normal_bounds'], [x.v for x in normal], 'independent receiving Nanson normal')
+    gap = dot([hot_y[i]-cold_jets[i] for i in range(3)], normal)
+    contains(point['gap_bounds_m'], gap.v, 'independent unweighted physical gap')
+    stiffness = mp.mpf(10**7)
+    energy = gap*gap*(stiffness*density/2) if gap.v < 0 else Dual(0)
+    traction = stiffness*min(gap.v, 0)
+    contains(point['normal_traction_bounds_pa'], traction, 'bare unbonded unilateral traction')
+    contains(point['normal_tangent_bounds_pa_m'], stiffness if gap.v < 0 else 0, 'unilateral semismooth branch tangent')
+    contains(point['energy_density_bounds_j_per_lambda_per_m'], energy.v, 'independent virgin work density')
+    for a in range(N):
+        contains(point['gap_first'][a], gap.g[a], 'unweighted gap first')
+        contains(point['gradient_density_bounds'][a], energy.g[a], 'independent work covector')
+        for b in range(N):
+            contains(point['gap_second'][a][b], gap.H[a][b], 'unweighted gap second with Nanson curvature')
+            contains(point['hessian_density_bounds'][a][b], energy.H[a][b], 'work tangent with complete prestress curvature')
+    for axis in range(3):
+        total = sum(gap.g[where[3*owner+axis]] for owner in (0,1))
+        if abs(total) > mp.mpf('1e-175')*max(1, abs(gap.v)):
+            raise ValueError('joint owner rotation broke unweighted gap objectivity')
+    alpha, radial = radius/cold_radius, cold_radius**2/radius**2
+    input_C = [[alpha*int(i == j)+(radial-alpha)*q[i]*q[j] for j in range(3)] for i in range(3)]
+    bridge = matmul(matrix(bank['material_owner_pose_bounds']), input_C)
+    bridge_inverse = inverse(bridge)
+    check_matrix(point['cold_parent_to_hot_world_input_bridge_bounds'], bridge, 'independent two-sided roof-aware input bridge')
+    check_matrix(point['bridge_inverse_bounds'], bridge_inverse, 'independent roof bridge inverse')
+    check_matrix(point['cold_gradient_in_hot_world_input_bounds'], matmul(cold_A, bridge_inverse), 'independent common-input cold gradient')
+    contains([[1,1],[1,1]], determinant(input_C), 'unit two-sided bridge determinant')
+    if operator is not None:
+        depth_lo, depth_hi = ends(bounds['receiver_material_depth_bounds_m'])
+        width = depth_hi-depth_lo
+        if width <= 0 or ends(point['lambda_bounds']) != (0,1):
+            raise ValueError('whole-face normalized lambda/depth coverage changed')
+        contains(operator['energy_bounds_j'], energy.v*width, 'complete whole-face range energy')
+        for i in range(100):
+            value = energy.g[where[i]]*width if i in where else 0
+            contains(operator['gradient_bounds'][i], value, 'whole-face original100 gradient injection')
+            for j in range(100):
+                value = energy.H[where[i]][where[j]]*width if i in where and j in where else 0
+                contains(operator['hessian_bounds'][i][j], value, 'whole-face original100 second injection')
+        for flag in ('complete_curved_face_covered','positive_correction_boundary_used_once','semismooth_tangent_hull_retained'):
+            assert operator[flag] is True
+        assert operator['force_precision_sufficient_for_mixed_solve'] is False
+    for flag in ('physical_source_work_handover_certified','preparation_or_activation_work_paid','physical_material_admission_authorized','new_mixed_equilibrium_certified','clocks_advanced'):
+        assert point[flag] is False
+    return dict(label=label, active_coordinate_count=N, branch=point['branch'],
+                independently_reconstructed_gap_m=mp.nstr(gap.v, 50),
+                all_unweighted_gap_and_work_first_second_entries_compared=True,
+                cold56_mode_columns_and_gradients_independently_reconstructed=True,
+                whole100_range_operator_checked=operator is not None)
+
+def array_rows(path, key):
+    """Decode one 55MB row at a time rather than the 1.1GB whole packet."""
+    decoder = json.JSONDecoder()
+    token = '"'+key+'":['
+    with Path(path).open() as stream:
+        text = ''
+        while token not in text:
+            chunk = stream.read(1024*1024)
+            if not chunk:
+                raise ValueError('missing native array '+key)
+            text = text[-len(token):]+chunk
+        text = text[text.index(token)+len(token):]
+        while True:
+            text = text.lstrip()
+            if text.startswith(','):
+                text = text[1:].lstrip()
+            if text.startswith(']'):
+                return
+            while True:
+                try:
+                    item, end = decoder.raw_decode(text)
+                    break
+                except json.JSONDecodeError:
+                    chunk = stream.read(8*1024*1024)
+                    if not chunk:
+                        raise
+                    text += chunk
+            text = text[end:]
+            yield item
+
+def file_digest(path):
+    value = hashlib.sha256()
+    with Path(path).open('rb') as stream:
+        for block in iter(lambda: stream.read(1024*1024), b''):
+            value.update(block)
+    return value.hexdigest()
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--input', default='/workspace/Habitable-Moon-Project/analysis/geometric_native_common_receiving_face_validation/native_control.json')
+    parser.add_argument('--output', default='/workspace/receiving_face_audit_20261008.json')
+    args = parser.parse_args()
+    start = time.perf_counter()
+    source = Path(__file__).resolve()
+    source_sha = raw_hash(source)
+    native_sha = file_digest(args.input)
+    expected_native_sha = 'a1d0a1f7a4e765c015980fdc4536842a44a085fbc0b6d9c96ec2105d202d8dc9'
+    if native_sha != expected_native_sha:
+        raise ValueError('native packet raw binding changed')
+    results = []
+    point_count = operator_count = 0
+    for row in array_rows(args.input, 'point_queries'):
+        results.append(audit_point(row['response'], row['label']))
+        point_count += 1
+    for row in array_rows(args.input, 'whole_face_operators'):
+        operator = row['operator']
+        results.append(audit_point(operator['point'], row['cold_label']+'/'+row['hot_query_label'], operator))
+        operator_count += 1
+    assert point_count == 12 and operator_count == 8
+    assert raw_hash(source) == source_sha and file_digest(args.input) == native_sha
+    report = dict(status='PASS_INDEPENDENT_COMPLETE_CURVED_RECEIVING_FACE_AUDIT',
+                  arithmetic_decimal_digits=220, comparisons=comparisons,
+                  point_query_count=point_count, whole_face_operator_count=operator_count,
+                  native_packet_raw_sha256=native_sha, executing_source_raw_sha256=source_sha,
+                  method='INDEPENDENT_SOURCE_CURVE_COLD56_MODES_DENSE_SECOND_ORDER_DUAL_NANSON_WORK',
+                  interval_input_representatives_are_algebra_diagnostics_only=True,
+                  inherited_geometry_and_mean_root_proofs_recertified=False,
+                  saved_archive_owner_pose_used_as_frozen_input=True,
+                  full_face_integration_is_a_conservative_range_not_tight_quadrature=True,
+                  source_modules_imported=False, old_math_mains_or_solvers_executed=False,
+                  physical_admission_or_new_equilibrium_certified=False,
+                  results=results, seconds=time.perf_counter()-start)
+    report['audit_sha256'] = hashlib.sha256(encoded(report)).hexdigest()
+    with Path(args.output).open('xb') as output:
+        output.write(encoded(report)+b'\n')
+    sys.stdout.buffer.write(encoded(report)+b'\n')
+
+if __name__ == '__main__':
+    main()
+

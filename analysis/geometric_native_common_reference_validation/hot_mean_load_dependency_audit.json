@@ -1,0 +1,158 @@
+{
+  "audit_sha256": "7b0ce959be8b0f4d9d02b4039edf627c81996b1c70e4182b0f1c4256ba0b82eb",
+  "can_compute_from_authenticated_inputs": [
+    "all92 same-field virtual traces once the physical boundary/source extension is declared",
+    "true HOT base, common Q, authentic masks and area, exact isotropic finite chart, its SPD monotonicity and implicit derivatives",
+    "tangential beta law and manufactured traction coefficients; complete material/cell/correction inputs",
+    "fresh modal force/drag projections and required Gram blocks, with authentic correlated positive/negative corrections"
+  ],
+  "correction": {
+    "new_operator_term": "deltaA*(traction.dot(psi_C1)-traction.dot(psi_C6)); corresponding signed Gram differences retained with the same correlated deltaA",
+    "old_owner_only_cancellation_is_not_modal_cancellation": true,
+    "pure_owner_cancellation_condition": "Only if the two chosen physical owner traces coincide, such as the old common nominal R trace; different true bases do not satisfy this automatically",
+    "single_accounting": "Saved material_cell_measure.area_bounds already contains signed correction. Use either proxy+one shared deltaA or the final material measures with retained correlation, never add both",
+    "source_record": {
+      "area_bounds_sr": {
+        "hi": [
+          3743076510110644991298378111140601361078851864284970371764487914609319360719258936312054341674012708168400859156276703624242428280933309012135638500820552479224686289898668376245817330982539135654503157512650999146060865403677643961294320136626305947011974912617480919495239,
+          955817617075735460500506151862589481392747089741262485159303087045620278063936848777919749033718309254935070419898578852257172005547439853911462763909541026344757390179384719579840362453374287493938325189716061282626840282419276540453877064942187856951560030779293185494137540679932062470516339196405113085352284893263039738510595600147141361664
+        ],
+        "lo": [
+          29944612080885159930387024889124810888467966742011507940277367742699645808494634211591463450230332908563926305108200661181615817517875387063316796398943363662270207751332398345697314222127609432752758221636715960130945603118716048828726394035840589138574684173247411635304047,
+          7646540936605883684004049214900715851141976717930099881274424696364962224511494790223357992269746474039480563359188630818057376044379518831291702111276328210758059121435077756638722899626994299951506601517728490261014722259354212323631016519537502855612480246234345483953100325439456499764130713571240904682818279146104317908084764801177130893312
+        ]
+      },
+      "cell": 15,
+      "correction_id": "curved-correction:ee07107554643955da3bdab39d44b03f009e4ed5874905476ffd9fb03236dd36",
+      "negative_component_id": "native-first-entry-live-domain:221a2c74d5c022e84fccdcb377d64af43cda4d3ff480060d7849a7b65a02dddd",
+      "owner": 1,
+      "positive_component_id": "native-first-entry-actual-vacancy:295fbe0419278e61a5f98008203b81e02049a15755b3d2d8d6f374e4cd4679a4"
+    }
+  },
+  "current_load_sha256": "6d76898f5b2b1a689b44d68f62d124726f77dae2f4a0a496659ddff266dee79f",
+  "dof_count_decomposition": {
+    "cold_7_modes_each": 56,
+    "hot_6_modes_each": 30,
+    "owner_rotations": 6
+  },
+  "finite_mean_chart": {
+    "deformation": "F=(1+h/R)I+sum(bj*Bj)/R, positive definite near the accepted reference",
+    "direction": "v(u)=Q(A_star*tau_b)u; tau_b=2000m; r_b=(R^3-3R^2*H)^(1/3)",
+    "explicit_new_chart_not_recovery_of_historical_3D_mean": true,
+    "explicit_new_mean_provenance": "Choose q as actual finite radial change averaged on the true common-reference base in declared R^2 dOmega. This is an explicit NEW six-coordinate chart; no historical roof-shift/column-offset or volume-mean identity is asserted",
+    "first_derivative": "Set y=Fv,s=|y|,d_p=Kp*v/R. M_p=r_b*<y.dot(d_p)/s>",
+    "generators": "K0=I; B1=diag(1,-1,0); B2=diag(1,1,-2); B3=E_xy; B4=E_xz; B5=E_yz",
+    "implicit_derivatives": "h_q=1/M_h; h_bj=-M_bj/M_h; for any chart indices a,b, h_ab=-(J_a^T Hess(M) J_b)/M_h, J=d(h,b)/d(q,b)",
+    "independent_seventh_unpriced_mode": false,
+    "isotropic_exact": "b=0 gives M=r_b*h/R and h=R*q/r_b on the positive branch, independently of the actual angular mask",
+    "linear_reference_normal_is_different": "(r_b/R)*<v^T(sum(ai*Ei))v> is only reference-normal displacement, not finite actual radius change",
+    "load_chain_rule": "A^T f_a; fixed dead-load tangent includes the same coordinate second derivatives; D_z=A^T D_a A",
+    "material_mean_measure": "Normalize the authentic base Lagrangian R^2 dOmega by its actual source area; use positive correction inclusion",
+    "mean_chart_implemented": false,
+    "mean_equation": "M(h,b)=r_b*<|F v|-1>_actual_Omega=q; actual area, not proxy or midpoint, normalizes the integral",
+    "monotonicity": "M_h=(r_b/R)<v^T F v/|Fv|> >= (r_b/R)*lambda_min(F)/lambda_max(F)>0",
+    "old_scalar_foundation_added_again": false,
+    "physical_amplitudes": "a=(h+b1+b2,h-b1+b2,h-2b2,b3,b4,b5)",
+    "physical_chain_rule": "A=d(a)/d(z)=C*J; U_z=A^T U_a; Hess_z=A^T Hess_a A+(sum of physical diagonal forces)*Hess(h)",
+    "preserved_zero_source_state": "The immutable accepted/source HOT birth scalar remains0. NEW q=0,b=0 gives h=0 and a=0, preserving this exact zero state without redefining a historical nonzero scalar",
+    "required_integrals": "M and all first/second derivatives on the complete actual mask, including its positive curve; no nonzero b midpoint or linear-mean substitute",
+    "safe_bracket": "If rho>=norm(T)_2 in metres and R+R*q/r_b>2*rho, h lies in [R*q/r_b-rho,R*q/r_b+rho], with both endpoint F positive definite",
+    "second_derivative": "M_pq=r_b*<d_p.dot(d_q)/s-(y.dot(d_p))*(y.dot(d_q))/s^3>",
+    "six_coordinates": "z=(q,b1,b2,b3,b4,b5) replaces, rather than supplements, the six affine amplitudes",
+    "source_old_foundation_scope": "Source registers one scalar w/R per HOT patch, with birth w=0 and uniform Winkler energy .5*rho*g*actual_area*(w-w_birth)^2. It does not specify a finite spatial mean, base-vs-roof measure, or whole3D lifting of this scalar",
+    "volume_mean_is_different": "The whole-volume isotropic coefficient mu=<r>/R is 0.989863..., while the true-base coefficient r_b/R is 0.979586..."
+  },
+  "format": "native-common-hot-finite-base-mean-and-same-field-load-dependency-audit-1",
+  "material_cell_measure_count": 68,
+  "new_dof_count": 92,
+  "no_duplicate_old_14_coordinate_block_or_106_dof_body": true,
+  "not_established": [
+    "nonisotropic finite mean integral/interval chart solve and its derivatives",
+    "a selected and certified physical traction surface/measure/discretization extension",
+    "normal damping/normal mantle stress parameters",
+    "new92 solved force equilibrium",
+    "whole-clock all-pair spatial admission",
+    "a new accepted mixed interval or joint restart"
+  ],
+  "old_dof_count": 19,
+  "quadratures_or_benchmarks_performed": false,
+  "repository_python_edits": false,
+  "same_field_operators": {
+    "centroid_material_membership": "A physical cell centroid need not belong to a tiny component. Never assume that membership or erase its positive reservoir; analytic field extensions or interval integration over the actual cell intersection must be explicit",
+    "dimensioned_blocks": "owner-owner D is N*m*s; owner-modal D is N*s; modal-modal D is N*s/m, for angles dimensionless and modal amplitudes metres",
+    "exact_reference_radial_nulls": "If the extended traction and tangent projector use the true common-base radial n, pure isotropic HOT and cold tip psi0=chi*n have zero direct tangential source/drag; elastic/contact cross coupling remains",
+    "field": "Use the very same complete physical placement x_o(X,a)=O_o*(X+u_o(X,a)); owner virtual field is e_k cross x_o under a spatial angular convention, modal traces are O_o*d(u_o)/d(a_i)",
+    "geometry_moments": "For continuous true-base manufactured tangential source, HOT forces use angular moments degree<=3 and tangent Gram blocks degree<=4; COLD chi and true endpoint/curve masks require their own actual supported angular integrals",
+    "load": "f_i=integral_Gamma traction.dot(psi_i) dA0; preserve actual per-material masks/correlations, trace surface, physical source parameters and declared measure",
+    "normal_damping_unidentified": "Original rotation traces are tangential: beta*I and beta*P_n coincide on them. They do not identify a nonzero normal damping coefficient for new radial modes",
+    "not_inherited": "Normal viscous drag, normal mantle traction, side-face stress, and an actual-current-area/follower extension are not supplied by the old owner-only source operator",
+    "old_operator_scope": "birth_continuum_motion.py:174-187 copies only 6x6 owner D and 6 owner torques, explicitly zeroing 13 radial rows; this is not a new92 basis projection",
+    "physical_clock": "Use actual a(z(t)) velocity/path work. J(z)*Delta_z/dt is not exactly (a_new-a_old)/dt for a finite nonlinear chart step",
+    "source_centroid_rule": "The saved source certifies a fixed nominal-sphere cell-centroid rule, not continuum quadrature. Moving the traction evaluation to a true base or integrating varying physical mode traces needs an explicit new rule and fresh certificate",
+    "source_traction": "Source supplies beta*R*(1+0.17*n_x)*(Omega cross n), beta=1.2e14 Pa*s/m, Omega=(0,0,1.1e-12) /s; global prescribed independently of owners",
+    "tangential_drag": "D_ij=beta*integral_Gamma (P_n psi_i).dot(P_n psi_j) dA0 with P_n=I-n*n^T; retains owner-modal and modal-modal cross terms; PSD by the full Gram integral"
+  },
+  "scope": "Necessary force-field connection within existing point1 condition1",
+  "source_code_raw_sha256": {
+    "tectonics/geometric_native_birth_contact_network.py": "f78d6e8214fe1f4a1df8b82499fd94fba1df92ae434a725176e3369f9ba510f9",
+    "tectonics/geometric_native_birth_continuum_motion.py": "6d29f37ee2920eca87ee89ce8651250b916eff1e9a097984a61681112f327f7e",
+    "tectonics/geometric_native_common_hot.py": "59b4a6289bc6555a2b2e5b9d83a73fdcc8b88181db683e7050a3fb23924ad9ad",
+    "tectonics/geometric_native_common_reference.py": "3cc6253681e90f315aaa667c6db01fc674ead39016f51d5a3776f261f59e0e2f",
+    "tectonics/geometric_native_implicit_mantle_loading.py": "df642fe40a9ac99d981b56b27767624766941156e515e9b8b5e64a2027dc756c",
+    "tectonics/geometric_native_mantle_loading.py": "438f6b9be2444d4537ee3515a51afc0fc4ec0b5805e424994f1837f9ab553e15",
+    "tectonics/geometric_spatial_mantle_loading.py": "a1b6ccba38e2d7650b9c49b3ea0c9dd10e5e1e19f4ec9cb485b29658fa0247d4"
+  },
+  "source_foundation_radial_births_m": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "source_packet_raw_sha256": "ccd511b2b82e66ba103d0d900b993a18d02953288f447c71ac9e589dc70c7d1e",
+  "source_packet_seal_sha256": "afbc10eb17cdc173177a32507be37f77f936827fe83e64764165ae702f892697",
+  "source_parameters": {
+    "amplitude_constant": 1.0,
+    "amplitude_gradient": [
+      0.17,
+      0.0,
+      0.0
+    ],
+    "angular_velocity_rad_s": [
+      0.0,
+      0.0,
+      1.1e-12
+    ],
+    "basal_drag_pa_s_m": 120000000000000.0,
+    "provenance": "Explicit second spatial source selected before either force result"
+  },
+  "status": "READ_ONLY_MATHEMATICAL_DEPENDENCY_AUDIT",
+  "true_hot_base": {
+    "areal_depth_m": [
+      2000,
+      1
+    ],
+    "numerical_approximations_not_certified_enclosures": {
+      "base_radius_m": "97958.61087155614938293055672519195484790363119096333477765767231142301659333351021736295200647740331",
+      "base_radius_over_R": "0.9795861087155614938293055672519195484790363119096333477765767231142301659333351021736295200647740331",
+      "isotropic_base_h_per_q": "1.020839302540953044746658686580114427071416641568704063677151257215331782149059489025075567600264118",
+      "volume_mean_radius_over_R": "0.9898632225921524475056595847899453053713233350618081636252235034077955502833125494598531392389050972"
+    },
+    "physical_volume_depth_m": [
+      2000,
+      1
+    ],
+    "radius_cube_m3": [
+      940000000000000,
+      1
+    ],
+    "radius_m": [
+      100000,
+      1
+    ],
+    "roof_offset_m": [
+      0,
+      1
+    ]
+  }
+}

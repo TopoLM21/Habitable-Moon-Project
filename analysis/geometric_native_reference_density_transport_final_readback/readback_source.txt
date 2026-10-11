@@ -1,0 +1,40 @@
+"""Final915 evidence-only readback: bytes, complete ancestry and frozen sources."""
+from pathlib import Path
+import argparse,hashlib,json,time,subprocess,sys
+ROOT=Path(__file__).resolve().parents[2]
+P=ROOT/'analysis/geometric_native_reference_density_transport_validation'
+MANIFEST_RAW='faf05efb7c2b401cb4d1d9cd8f3310d13b8fc2ee48f0e2496840d72c33cf1398'
+def enc(x):return json.dumps(x,sort_keys=True,separators=(',',':'),ensure_ascii=False).encode()
+def digest(p):
+ h=hashlib.sha256()
+ with Path(p).open('rb') as f:
+  for b in iter(lambda:f.read(1024*1024),b''):h.update(b)
+ return h.hexdigest()
+def run(output):
+ t=time.perf_counter();output=Path(output);assert not output.exists()
+ assert digest(P/'artifact_manifest.json')==MANIFEST_RAW
+ m=json.loads((P/'artifact_manifest.json').read_bytes())
+ assert m['sha256']==hashlib.sha256(enc({k:v for k,v in m.items() if k!='sha256'})).hexdigest()
+ names=set()
+ for name,row in m['files'].items():
+  path=ROOT/name;assert digest(path)==row['sha256'] and path.stat().st_size==row['bytes']
+  if path.is_relative_to(P):names.add(str(path.relative_to(P)))
+ actual={str(f.relative_to(P)) for f in P.rglob('*') if f.is_file() and '__pycache__' not in f.parts and f.suffix!='.pyc'}
+ assert actual==names|{'artifact_manifest.json'}
+ docs=json.loads((P/'document_facts.json').read_bytes())
+ for name,pin in docs['document_raw_sha256'].items():assert digest(name)==pin
+ old=(P/'baseline913/historical913_handoff.txt').read_bytes();assert (ROOT/'CLOUD_HANDOFF.md').read_bytes().endswith(old)
+ guard_output=Path(str(output)+'.ancestry.json')
+ child=subprocess.run([sys.executable,str(P/'preservation_source.txt'),'--allow-added','--output',str(guard_output)],capture_output=True,check=True)
+ assert child.stderr==b'' and json.loads(child.stdout)['status']=='PASS_CLOSED913_AND_ANCESTRY_PRESERVED'
+ guard=json.loads(guard_output.read_bytes());assert guard['source_count']==915
+ assert guard['source_sha256']==json.loads((P/'frozen_source_map_915.json').read_bytes())
+ report=json.loads((P/'report.json').read_bytes());assert report['status']=='PASS_REFERENCE_DENSITY_TRANSPORT_GATE'
+ for name,row in m['files'].items():assert digest(ROOT/name)==row['sha256']
+ for name,pin in docs['document_raw_sha256'].items():assert digest(name)==pin
+ result=dict(status='PASS_FINAL915_EVIDENCE_READBACK_ONLY',manifest_raw_sha256=MANIFEST_RAW,manifest_file_count=len(m['files']),source_count=915,tests_passed=9,independent_exact_comparisons=20857,closed913_and_ancestry_preserved=True,guard_actual_exit_code=child.returncode,guard_stderr_bytes=len(child.stderr),document_raw_sha256=docs['document_raw_sha256'],historical913_handoff_preserved=True,old_physical_math_executed=False,reference_gap_resolved=False,preparation_work_paid=False,new_equilibrium_certified=False,accepted_new_intervals=0,original_point_1_completed=False,seconds=time.perf_counter()-t)
+ result['sha256']=hashlib.sha256(enc(result)).hexdigest()
+ with output.open('xb') as f:f.write(enc(result)+b'\n')
+ print(enc(result).decode())
+if __name__=='__main__':
+ p=argparse.ArgumentParser();p.add_argument('--output',required=True);run(p.parse_args().output)

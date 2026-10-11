@@ -1,0 +1,76 @@
+"""Explicit byte-only finalization phases. No phase runs on import.
+Root executes only after genuine native/test/audit captures and docs are final.
+"""
+from pathlib import Path
+import argparse,hashlib,json,subprocess,sys
+ROOT=Path('/workspace/Habitable-Moon-Project')
+P=ROOT/'analysis/geometric_native_common_general_force_validation'
+F=ROOT/'analysis/geometric_native_common_general_force_final_readback'
+OUT=Path('/workspace')
+RUNID='native_common_20261008_general935'
+CAPTURE=P/'byte_capture_source.txt'
+DRAFT_READER=OUT/(RUNID+'_readback_source.txt')
+CLOSED_READER=OUT/(RUNID+'_readback_closed_source.txt')
+READER_REPORT=OUT/(RUNID+'_final_readback.json')
+READER_CAPTURE=OUT/(RUNID+'_final_readback_capture')
+def enc(x):return json.dumps(x,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+def digest(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def sealed(p):
+ x=json.loads(Path(p).read_bytes());k='report_sha256' if 'report_sha256' in x else 'sha256'
+ assert x[k]==hashlib.sha256(enc({a:b for a,b in x.items() if a!=k})).hexdigest(),p
+ return x
+
+def copy_new(source,target):
+ with Path(target).open('xb') as f:f.write(Path(source).read_bytes())
+ assert digest(source)==digest(target)
+def capture(label,source,command,report=None):
+ directory=OUT/(RUNID+'_'+label+'_capture')
+ args=[sys.executable,str(CAPTURE),'--directory',str(directory),'--source',str(source)]
+ if report is not None:args+=['--report',str(report)]
+ subprocess.run(args+['--']+command,cwd=ROOT,check=True)
+ facts=sealed(directory/'execution_facts.json')
+ assert facts['actual_exit_code']==0 and facts['actual_stderr_bytes']==0
+ assert facts['executed_source_raw_sha256']==facts['executed_source_after_raw_sha256']==digest(source)
+ return directory,facts
+
+def run(phase):
+ if phase=='after':
+  assert not (P/'artifact_manifest.json').exists()
+  config=json.loads((P/'closure_facts.json').read_bytes())
+  report=OUT/(RUNID+'_after_preservation.json');source=P/'preservation_source.txt'
+  command=[sys.executable,str(source),'--new-config',str(P/'closure_facts.json'),'--baseline',config['baseline_readback_path'],'--baseline-console',config['baseline_readback_console_path'],'--baseline-stderr',config['baseline_readback_stderr_path'],'--output',str(report)]
+  directory,facts=capture('after_preservation',source,command,report)
+  after=sealed(report);before=sealed(P/'before_preservation.json')
+  assert after['source_count']==935 and after['dependency_count']==2322 and after['old_math_executed'] is False
+  assert after['dependency_raw_sha256']==before['dependency_raw_sha256']
+  assert json.loads((directory/'console.log').read_bytes())=={k:v for k,v in after.items() if k not in ('dependency_raw_sha256','source_sha256')}
+  for origin,target in [(report,'after_preservation.json'),(directory/'console.log','after_console.log'),(directory/'stderr.log','after_stderr.log'),(directory/'execution_facts.json','after_execution_facts.json')]:copy_new(origin,P/target)
+ elif phase=='close':
+  source=P/'close_evidence_source.txt'
+  capture('closure',source,[sys.executable,str(source),'--config',str(P/'closure_facts.json')])
+ elif phase=='readback':
+  raw=digest(P/'artifact_manifest.json');text=DRAFT_READER.read_text();placeholder='REPLACE_WITH_NEW935_MANIFEST_RAW_SHA256'
+  assert text.count(placeholder)==1
+  with CLOSED_READER.open('x') as f:f.write(text.replace(placeholder,raw))
+  directory,facts=capture('final_readback',CLOSED_READER,[sys.executable,str(CLOSED_READER),'--output',str(READER_REPORT)],READER_REPORT)
+  assert facts['actual_stdout_equals_report'] is True
+  report=sealed(READER_REPORT);assert report['status']=='PASS_FINAL935_EVIDENCE_READBACK_ONLY' and report['manifest_raw_sha256']==raw
+  F.mkdir(exist_ok=True);assert not any(F.iterdir())
+  copy_new(CLOSED_READER,F/'readback_source.txt');copy_new(READER_REPORT,F/'readback.json');copy_new(directory/'console.log',F/'console.log')
+ elif phase=='seal':
+  source=P/'close_evidence_source.txt';facts=READER_CAPTURE/'execution_facts.json'
+  capture('seal',source,[sys.executable,str(source),'--seal-final',str(facts)])
+ elif phase=='restore':
+  source=P/'baseline_restore_source.txt';report=OUT/(RUNID+'_restore.json')
+  directory,facts=capture('restore',source,[sys.executable,str(source),'--output',str(report)],report)
+  assert facts['actual_stdout_equals_report'] is True
+  restored=sealed(report);assert restored['status']=='PASS_AUTHENTICATED935_BASELINES_RESTORED' and restored['required_target_count']==126
+  assert restored['repository_files_written'] is False and restored['old_physical_math_executed'] is False
+ elif phase=='postread':
+  report=OUT/(RUNID+'_closed_readback.json')
+  directory,facts=capture('closed_readback',CLOSED_READER,[sys.executable,str(CLOSED_READER),'--output',str(report)],report)
+  assert facts['actual_stdout_equals_report'] is True and sealed(report)['closed_final_archive_verified'] is True
+ else:raise AssertionError('Unknown explicit phase')
+
+if __name__=='__main__':
+ parser=argparse.ArgumentParser();parser.add_argument('phase',choices=('after','close','readback','seal','restore','postread'));run(parser.parse_args().phase)

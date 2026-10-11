@@ -1,0 +1,58 @@
+from __future__ import annotations
+from dataclasses import fields
+from fractions import Fraction as F
+import hashlib,json,time,sys
+from pathlib import Path
+sys.path.insert(0,'/workspace/Habitable-Moon-Project')
+from tectonics.geometric_native_pose import FractionInterval as I
+from tectonics.geometric_native_cold_strain_energy import _payload
+from tectonics.geometric_native_cold_tensor_integration import ColdTensorCellReceipt,ColdTensorCorrectionReceipt,ColdTensorEndpointStripReceipt
+from tectonics import geometric_native_common_cold as cold
+from analysis.geometric_native_common_material_transfer_validation.native_control import source_context
+
+def decode_scalar(v):
+ if type(v) is dict and set(v)=={'lo','hi'}:return I(F(*v['lo']),F(*v['hi']))
+ if type(v) is list:
+  if len(v)==2 and all(type(x)is int for x in v):return F(*v)
+  return tuple(decode_scalar(x) for x in v)
+ if type(v)in(str,int,bool) or v is None:return v
+ raise ValueError('not literal typed scalar')
+
+def receipt(v):
+ for cls in (ColdTensorCellReceipt,ColdTensorCorrectionReceipt,ColdTensorEndpointStripReceipt):
+  if set(v)=={x.name for x in fields(cls)}:
+   return cls(**{k:decode_scalar(x)for k,x in v.items()})
+ raise ValueError('unexpected receipt schema')
+
+def restore(row,source,reference):
+ body=cold.bind_native_common_cold_body(row['component_id'],source=source,reference=reference,precision=160)
+ mat=cold.build_native_common_cold_strain_material(body)
+ assert cold.native_common_cold_body_to_dict(body)==row['body']
+ assert cold.native_common_cold_strain_material_to_dict(mat)==row['material']
+ r=row['diagnostic_response']['raw_integrals']
+ coords=tuple(F(*x)for x in r['coordinates_m'])
+ raw=cold._common_raw_receipt(body,mat,coords,
+  tuple(decode_scalar(x)for x in r['quarter_integral_bounds']),
+  tuple(decode_scalar(x)for x in r['removed_material_correction_bounds']),
+  r['integration_cell_count'],tuple(decode_scalar(x)for x in r['maximum_taylor_remainder_absolute_upper_bounds']),
+  r['taylor_order'],r['precision'],tuple(receipt(x)for x in r['cell_receipts']),tuple(receipt(x)for x in r['correction_receipts']))
+ cold.validate_native_common_cold_tensor_integral(raw,body=body,material=mat)
+ if _payload(raw)!=r:
+  print('DIFF KEYS',[k for k in r if _payload(raw).get(k)!=r[k]],flush=True)
+  raise ValueError('Full raw restoration mismatch')
+ response=cold.evaluate_native_common_cold_strain_energy(body,coords,material=mat,integrals=raw,precision=64)
+ restored=cold.native_common_cold_strain_energy_to_dict(response)
+ if restored!=row['diagnostic_response']:
+  print('RESPONSE DIFF KEYS',[k for k in restored if restored[k]!=row['diagnostic_response'].get(k)],flush=True)
+  raise ValueError('Full diagnostic restoration mismatch')
+ print('RESTORED',row['component_id'],raw.integral_snapshot_sha256,flush=True)
+ return body,mat,raw
+
+def main():
+ t=time.perf_counter(); packet=json.loads(Path('/tmp/strain_projection_closed_841_context.json').read_bytes())
+ source,reference,*_=source_context()
+ assert reference.reference_snapshot_sha256==packet['common_reference_sha']
+ rows=packet['cold_components']
+ for row in rows:restore(row,source,reference)
+ print('PASS all8 typed replay withoutquad; seconds',time.perf_counter()-t,flush=True)
+if __name__=='__main__':main()

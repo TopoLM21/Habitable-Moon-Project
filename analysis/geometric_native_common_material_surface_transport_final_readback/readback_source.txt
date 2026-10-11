@@ -1,0 +1,565 @@
+"""Stdlib final879 sealed-evidence readback: NO helper/producer/physics execution.
+
+Execute only after root approves the fresh gate, independent audit and explicit
+closed manifest. Old1633 preservation is the saved BEFORE-math receipt plus
+recorded byte hashes and strict releases, never a fresh baseline/math rerun.
+Missing or wrong temporary dependencies FAIL; this reader never regenerates or
+restores them. ROOT/CLOUD implementation documents are separately linked.
+"""
+from pathlib import Path
+import argparse, ast, hashlib, json, sys, time
+ROOT=Path('/workspace/Habitable-Moon-Project')
+PARENT=ROOT/'analysis/geometric_native_common_material_surface_transport_validation'
+PRIOR=ROOT/'analysis/geometric_native_common_strain_projection_validation'
+RELEASE=PARENT/'release_validation_02'
+MAP='4a75d4bc7d404fc11d5d252302fe6b6d961797b4a637f921c38acb679485b79c'
+MAP_RAW='1b948eace979f3125756f6f0dea803fb55d0d2e87650890a2236c07502b0c336'
+OLD_MAP='13c19fe10056af9ab621e2c8a23e63ad36b301c95e121a6835cead019378e385'
+OLD_MAP_RAW='8f7608219c398a05913d96e80baf685b997dccff466ee9cf9eb1aa89b8124675'
+OLD_MANIFEST_RAW='035c7eeae472676924792d07e1d05b8e3660a4a9d0fa9d8cfe8f55df71862412'
+OLD_MANIFEST_SEAL='519d42468d7291b2af3db6894943a2ec91e2c12f490643e2d18f4b16d63777a2'
+AUDITOR_SHA='c38dd9f2e9d0efeac42b64d50c15601d40fb1f56232edafcf34de19f47c11502'
+BOOTSTRAP_SOURCE_SHA='85de6cb6261971ed36e78756c038455a3ec114bccac65f2a6ea3704bcc30355e'
+BOOTSTRAP_REPORT_RAW='1bae41cd1b0f5abc11decd794878c4084742e61e68c2e537fa8026275aeaaf1d'
+BOOTSTRAP_REPORT_SEAL='5076cb213fdcef2ab59666ea525c6793d75fa12ea2a5a08011b2f631613b44ca'
+REUSABLE_SHA='ad75a879a8485a22e21b44b97f42e89c43c408e399b4abd3a11cfcdb1adf8682'
+DRAFT_SHA='c7d6b28ad9f7d0ea6439e7cdf75b742c3866c24bc1c6f7f81f9173e854f59dd1'
+OLD_PACKET_RAW='2ddf12415b9abecbbeead78a203ba82d7e18fea84bc9197aa789a607514939b2'
+OLD_PACKET_SEAL='f4c5f9519698c28bf12b9854dc05f78704f25068fca427478a0cfc98786f1a8d'
+SCOPE='FINITE_LOCAL_MATERIAL_SURFACE_MEASURE_AND_MEMORY_TRANSPORT_COMPONENT_ONLY'
+ADDED=frozenset(('tectonics/geometric_native_common_material_surface_transport.py','tests/test_geometric_native_common_material_surface_transport.py','analysis/geometric_native_common_material_surface_transport_validation/native_control.py','analysis/geometric_native_common_material_surface_transport_validation/validate.py'))
+OUTPUTS=frozenset(('pytest.log','control_console.log','native_control/report.json','native_control/source_packet.json'))
+BASELINE_EVIDENCE={'baseline_875_bootstrap_source.txt':BOOTSTRAP_SOURCE_SHA,'baseline_875_bootstrap.json':BOOTSTRAP_REPORT_RAW,'baseline_875_reusable_source.txt':REUSABLE_SHA}
+REMAINING=['Whole-source physical material and old-force/prestress/work handover, HOT law/mean chart, loads/drag and NEW mixed equilibrium', 'Whole-clock all-pair admission including reverse C5 to C1', 'Accepted continuation with independent path work, balances and joint restart']
+ANCESTRY=(('analysis/geometric_native_affine_body_validation/release_validation_01', 826, 39, 'a5ed86778a9388a56df2c89d758d17795c861c118bd4de66c6be0b5400b084db'), ('analysis/geometric_native_cold_body_validation/release_validation_01', 833, 20, 'a0843a4f9d886e61125eae0bda9c4964b60d54736b539776b1d32d46d8e56a67'), ('analysis/geometric_native_common_reference_validation/release_validation_01', 841, 36, '9898f31f796006a7791140bf1c290c0e1605555a12e476e1585ce3f5992a743f'), ('analysis/geometric_native_common_contact_validation/release_validation_01', 847, 25, 'e8ffabb1a29c1fb021e94fe53e815b6ad8d16ea14e9103a30b9f7428ac9ab847'), ('analysis/geometric_native_common_contact_force_validation/release_validation_02', 853, 19, '1d7a6ac8113a408aab6764f1c4a9fccb09f8d48184f5118434fc685574504313'), ('analysis/geometric_native_common_contact_transfer_validation/release_validation_01', 859, 21, '1b5e1695f2ddfa8ea879619e91cde6b4cfb2c7c7c89e34db04148d8765f7f9ae'), ('analysis/geometric_native_common_source_allocation_validation/release_validation_02', 863, 17, '7df81606a168656cd51208a71d7ad425714751f736d9ed4ca50218263e106f95'), ('analysis/geometric_native_common_source_carrier_validation/release_validation_02', 867, 18, '47b5c882c041f5a2c6d460c71eae11091a6217ff78a0df14af9b57f214ba633e'), ('analysis/geometric_native_common_material_transfer_validation/release_validation_01', 871, 14, '44d12b3fb10edfef90a83c50385278b45135d1b051a5733d2b2f7d98f2755b56'), ('analysis/geometric_native_common_strain_projection_validation/release_validation_03', 875, 14, 'a7e74fc5d8774eaaabdcf3919357d27dbd6c35f0c79ea741cb0a89057e51e10e'))
+OLD_MANIFEST_FILES=('analysis/geometric_native_common_strain_projection_validation/baseline_871_bootstrap.json', 'analysis/geometric_native_common_strain_projection_validation/baseline_871_bootstrap_console.txt', 'analysis/geometric_native_common_strain_projection_validation/baseline_871_bootstrap_source.txt', 'analysis/geometric_native_common_strain_projection_validation/baseline_871_prior867_readback.json', 'analysis/geometric_native_common_strain_projection_validation/baseline_871_reusable_source.txt', 'analysis/geometric_native_common_strain_projection_validation/baseline_after_gate.json', 'analysis/geometric_native_common_strain_projection_validation/baseline_before_independent_audit.json', 'analysis/geometric_native_common_strain_projection_validation/bootstrap_attempt01_preserved/bootstrap_source.txt', 'analysis/geometric_native_common_strain_projection_validation/bootstrap_attempt01_preserved/failure_console.log', 'analysis/geometric_native_common_strain_projection_validation/bootstrap_attempt01_preserved/preservation.json', 'analysis/geometric_native_common_strain_projection_validation/bootstrap_attempt01_preserved/prior867_readback.json', 'analysis/geometric_native_common_strain_projection_validation/cauchy_projection_intersection_probe.json', 'analysis/geometric_native_common_strain_projection_validation/cauchy_projection_intersection_probe_console.txt', 'analysis/geometric_native_common_strain_projection_validation/cauchy_projection_intersection_probe_source.txt', 'analysis/geometric_native_common_strain_projection_validation/cauchy_pure_math_guard.json', 'analysis/geometric_native_common_strain_projection_validation/cauchy_pure_math_guard_console.txt', 'analysis/geometric_native_common_strain_projection_validation/cauchy_pure_math_guard_final_test_reconciliation.json', 'analysis/geometric_native_common_strain_projection_validation/cauchy_pure_math_guard_source.txt', 'analysis/geometric_native_common_strain_projection_validation/diagnostic_development_failures_preserved/preservation.json', 'analysis/geometric_native_common_strain_projection_validation/diagnostic_development_failures_preserved/runtime_attempt02_console.txt', 'analysis/geometric_native_common_strain_projection_validation/diagnostic_development_failures_preserved/runtime_attempt02_source.txt', 'analysis/geometric_native_common_strain_projection_validation/diagnostic_development_failures_preserved/syntax_attempt01_console.txt', 'analysis/geometric_native_common_strain_projection_validation/diagnostic_development_failures_preserved/syntax_attempt01_source.txt', 'analysis/geometric_native_common_strain_projection_validation/dual_restore_preflight.json', 'analysis/geometric_native_common_strain_projection_validation/dual_restore_preflight_console.txt', 'analysis/geometric_native_common_strain_projection_validation/dual_restore_preflight_executed_controller.txt', 'analysis/geometric_native_common_strain_projection_validation/dual_restore_preflight_source.txt', 'analysis/geometric_native_common_strain_projection_validation/failed_release01_preserved/baseline_after_failed_gate.json', 'analysis/geometric_native_common_strain_projection_validation/failed_release01_preserved/core_source.txt', 'analysis/geometric_native_common_strain_projection_validation/failed_release01_preserved/frozen_source_map_875.json', 'analysis/geometric_native_common_strain_projection_validation/failed_release01_preserved/gate_console.log', 'analysis/geometric_native_common_strain_projection_validation/failed_release01_preserved/native_control_source.txt', 'analysis/geometric_native_common_strain_projection_validation/failed_release01_preserved/preservation.json', 'analysis/geometric_native_common_strain_projection_validation/failed_release01_preserved/test_source.txt', 'analysis/geometric_native_common_strain_projection_validation/failed_release01_preserved/validation_wrapper_source.txt', 'analysis/geometric_native_common_strain_projection_validation/failed_release02_preserved/baseline_after_failed_gate.json', 'analysis/geometric_native_common_strain_projection_validation/failed_release02_preserved/core_source.txt', 'analysis/geometric_native_common_strain_projection_validation/failed_release02_preserved/frozen_source_map_875.json', 'analysis/geometric_native_common_strain_projection_validation/failed_release02_preserved/gate_console.log', 'analysis/geometric_native_common_strain_projection_validation/failed_release02_preserved/independent_audit_pre_gate02_source.txt', 'analysis/geometric_native_common_strain_projection_validation/failed_release02_preserved/native_control_source.txt', 'analysis/geometric_native_common_strain_projection_validation/failed_release02_preserved/preservation.json', 'analysis/geometric_native_common_strain_projection_validation/failed_release02_preserved/test_source.txt', 'analysis/geometric_native_common_strain_projection_validation/failed_release02_preserved/validation_wrapper_source.txt', 'analysis/geometric_native_common_strain_projection_validation/frozen_source_map_875.json', 'analysis/geometric_native_common_strain_projection_validation/independent_audit.json', 'analysis/geometric_native_common_strain_projection_validation/independent_audit_console.log', 'analysis/geometric_native_common_strain_projection_validation/independent_audit_source.txt', 'analysis/geometric_native_common_strain_projection_validation/initial_precision_mismatch_probe.json', 'analysis/geometric_native_common_strain_projection_validation/initial_precision_mismatch_probe_console.txt', 'analysis/geometric_native_common_strain_projection_validation/initial_precision_mismatch_probe_source.txt', 'analysis/geometric_native_common_strain_projection_validation/native_control.py', 'analysis/geometric_native_common_strain_projection_validation/normal_branch_diagnostic.json', 'analysis/geometric_native_common_strain_projection_validation/normal_branch_diagnostic_console.txt', 'analysis/geometric_native_common_strain_projection_validation/normal_branch_diagnostic_source.txt', 'analysis/geometric_native_common_strain_projection_validation/release_validation_01/pytest.log', 'analysis/geometric_native_common_strain_projection_validation/release_validation_01/report.json', 'analysis/geometric_native_common_strain_projection_validation/release_validation_02/pytest.log', 'analysis/geometric_native_common_strain_projection_validation/release_validation_02/report.json', 'analysis/geometric_native_common_strain_projection_validation/release_validation_03/control_console.log', 'analysis/geometric_native_common_strain_projection_validation/release_validation_03/native_control/report.json', 'analysis/geometric_native_common_strain_projection_validation/release_validation_03/native_control/source_packet.json', 'analysis/geometric_native_common_strain_projection_validation/release_validation_03/pytest.log', 'analysis/geometric_native_common_strain_projection_validation/release_validation_03/report.json', 'analysis/geometric_native_common_strain_projection_validation/test_fraction_polynomial_oracle_source.txt', 'analysis/geometric_native_common_strain_projection_validation/test_pure_math_guard.json', 'analysis/geometric_native_common_strain_projection_validation/test_pure_math_guard_console.txt', 'analysis/geometric_native_common_strain_projection_validation/test_pure_math_guard_development_note.txt', 'analysis/geometric_native_common_strain_projection_validation/test_pure_math_guard_final_source_reconciliation.json', 'analysis/geometric_native_common_strain_projection_validation/test_pure_math_guard_source.txt', 'analysis/geometric_native_common_strain_projection_validation/validate.py', 'tectonics/geometric_native_common_strain_projection.py', 'tests/test_geometric_native_common_strain_projection.py')
+MANIFEST_FILES=('analysis/geometric_native_common_material_surface_transport_validation/baseline_875_bootstrap.json', 'analysis/geometric_native_common_material_surface_transport_validation/baseline_875_bootstrap_console.log', 'analysis/geometric_native_common_material_surface_transport_validation/baseline_875_bootstrap_source.txt', 'analysis/geometric_native_common_material_surface_transport_validation/baseline_875_reusable_draft01_source.txt', 'analysis/geometric_native_common_material_surface_transport_validation/baseline_875_reusable_draft_reconciliation.json', 'analysis/geometric_native_common_material_surface_transport_validation/baseline_875_reusable_source.txt', 'analysis/geometric_native_common_material_surface_transport_validation/baseline_after_gate.json', 'analysis/geometric_native_common_material_surface_transport_validation/baseline_after_gate_projection.json', 'analysis/geometric_native_common_material_surface_transport_validation/baseline_before_gate.json', 'analysis/geometric_native_common_material_surface_transport_validation/baseline_before_gate_projection.json', 'analysis/geometric_native_common_material_surface_transport_validation/baseline_before_independent_audit.json', 'analysis/geometric_native_common_material_surface_transport_validation/baseline_before_independent_audit_projection.json', 'analysis/geometric_native_common_material_surface_transport_validation/core_pre_type_guard_source.txt', 'analysis/geometric_native_common_material_surface_transport_validation/core_type_guard_source.txt', 'analysis/geometric_native_common_material_surface_transport_validation/failed_gate_preservation_console.log', 'analysis/geometric_native_common_material_surface_transport_validation/failed_gate_preservation_producer_source.txt', 'analysis/geometric_native_common_material_surface_transport_validation/failed_validation_01/baseline_after_gate.json', 'analysis/geometric_native_common_material_surface_transport_validation/failed_validation_01/baseline_after_gate_projection.json', 'analysis/geometric_native_common_material_surface_transport_validation/failed_validation_01/baseline_before_gate.json', 'analysis/geometric_native_common_material_surface_transport_validation/failed_validation_01/baseline_before_gate_projection.json', 'analysis/geometric_native_common_material_surface_transport_validation/failed_validation_01/frozen_source_map_879.json', 'analysis/geometric_native_common_material_surface_transport_validation/failed_validation_01/frozen_sources/geometric_native_common_material_surface_transport.py.txt', 'analysis/geometric_native_common_material_surface_transport_validation/failed_validation_01/frozen_sources/native_control.py.txt', 'analysis/geometric_native_common_material_surface_transport_validation/failed_validation_01/frozen_sources/test_geometric_native_common_material_surface_transport.py.txt', 'analysis/geometric_native_common_material_surface_transport_validation/failed_validation_01/frozen_sources/validate.py.txt', 'analysis/geometric_native_common_material_surface_transport_validation/failed_validation_01/preservation_receipt.json', 'analysis/geometric_native_common_material_surface_transport_validation/failed_validation_01/source_freeze_console.log', 'analysis/geometric_native_common_material_surface_transport_validation/failed_validation_01/source_freeze_producer_source.txt', 'analysis/geometric_native_common_material_surface_transport_validation/failed_validation_01/source_freeze_receipt.json', 'analysis/geometric_native_common_material_surface_transport_validation/failed_validation_01/wrapper_console.log', 'analysis/geometric_native_common_material_surface_transport_validation/fixed_packet_replay_ast_reconciliation.json', 'analysis/geometric_native_common_material_surface_transport_validation/frozen_source_map_879.json', 'analysis/geometric_native_common_material_surface_transport_validation/frozen_sources/geometric_native_common_material_surface_transport.py.txt', 'analysis/geometric_native_common_material_surface_transport_validation/frozen_sources/native_control.py.txt', 'analysis/geometric_native_common_material_surface_transport_validation/frozen_sources/test_geometric_native_common_material_surface_transport.py.txt', 'analysis/geometric_native_common_material_surface_transport_validation/frozen_sources/validate.py.txt', 'analysis/geometric_native_common_material_surface_transport_validation/independent_audit.json', 'analysis/geometric_native_common_material_surface_transport_validation/independent_audit_console.log', 'analysis/geometric_native_common_material_surface_transport_validation/independent_audit_pre_test7_replay_correction_source.txt', 'analysis/geometric_native_common_material_surface_transport_validation/independent_audit_source.txt', 'analysis/geometric_native_common_material_surface_transport_validation/independent_audit_test7_replay_correction_reconciliation.json', 'analysis/geometric_native_common_material_surface_transport_validation/native_control.py', 'analysis/geometric_native_common_material_surface_transport_validation/native_control_smoke01_source.txt', 'analysis/geometric_native_common_material_surface_transport_validation/pure_guard_before_freeze/earlier_51ed_reconstruction_disclosure.txt', 'analysis/geometric_native_common_material_surface_transport_validation/pure_guard_before_freeze/earlier_51ed_report_reconstructed.json', 'analysis/geometric_native_common_material_surface_transport_validation/pure_guard_before_freeze/pure_math_console_normalized.txt', 'analysis/geometric_native_common_material_surface_transport_validation/pure_guard_before_freeze/pure_math_producer_source.txt', 'analysis/geometric_native_common_material_surface_transport_validation/pure_guard_before_freeze/pure_math_report.json', 'analysis/geometric_native_common_material_surface_transport_validation/pure_guard_before_freeze/receipt.json', 'analysis/geometric_native_common_material_surface_transport_validation/pure_guard_before_freeze/type_and_ast_equivalence_console_normalized.txt', 'analysis/geometric_native_common_material_surface_transport_validation/pure_guard_before_freeze/type_and_ast_equivalence_producer_source.txt', 'analysis/geometric_native_common_material_surface_transport_validation/pure_guard_before_freeze/type_and_ast_equivalence_report.json', 'analysis/geometric_native_common_material_surface_transport_validation/pure_math_guard_attempt01/archive.json', 'analysis/geometric_native_common_material_surface_transport_validation/pure_math_guard_attempt01/console.log', 'analysis/geometric_native_common_material_surface_transport_validation/pure_math_guard_attempt01/preservation.json', 'analysis/geometric_native_common_material_surface_transport_validation/pure_math_guard_attempt01/producer_source.txt', 'analysis/geometric_native_common_material_surface_transport_validation/pure_math_guard_attempt01/test_source.txt', 'analysis/geometric_native_common_material_surface_transport_validation/pure_math_guard_attempt02/archive.json', 'analysis/geometric_native_common_material_surface_transport_validation/pure_math_guard_attempt02/console.log', 'analysis/geometric_native_common_material_surface_transport_validation/pure_math_guard_attempt02/producer_source.txt', 'analysis/geometric_native_common_material_surface_transport_validation/pure_math_guard_attempt02/result.json', 'analysis/geometric_native_common_material_surface_transport_validation/pure_math_guard_attempt02/test_source.txt', 'analysis/geometric_native_common_material_surface_transport_validation/release_validation_01/pytest.log', 'analysis/geometric_native_common_material_surface_transport_validation/release_validation_01/report.json', 'analysis/geometric_native_common_material_surface_transport_validation/release_validation_02/control_console.log', 'analysis/geometric_native_common_material_surface_transport_validation/release_validation_02/native_control/report.json', 'analysis/geometric_native_common_material_surface_transport_validation/release_validation_02/native_control/source_packet.json', 'analysis/geometric_native_common_material_surface_transport_validation/release_validation_02/pytest.log', 'analysis/geometric_native_common_material_surface_transport_validation/release_validation_02/report.json', 'analysis/geometric_native_common_material_surface_transport_validation/smoke01.json', 'analysis/geometric_native_common_material_surface_transport_validation/smoke01_console.log', 'analysis/geometric_native_common_material_surface_transport_validation/smoke01_producer_source.txt', 'analysis/geometric_native_common_material_surface_transport_validation/source_epoch_transition_reconciliation.json', 'analysis/geometric_native_common_material_surface_transport_validation/source_freeze_console.log', 'analysis/geometric_native_common_material_surface_transport_validation/source_freeze_producer_source.txt', 'analysis/geometric_native_common_material_surface_transport_validation/source_freeze_receipt.json', 'analysis/geometric_native_common_material_surface_transport_validation/test7_AST_reconciliation.json', 'analysis/geometric_native_common_material_surface_transport_validation/test_full_body_context_ast_reconciliation.json', 'analysis/geometric_native_common_material_surface_transport_validation/test_source_before_full_body_contexts.txt', 'analysis/geometric_native_common_material_surface_transport_validation/validate.py', 'analysis/geometric_native_common_material_surface_transport_validation/wrapper_console.log', 'tectonics/geometric_native_common_material_surface_transport.py', 'tests/test_geometric_native_common_material_surface_transport.py')
+EXPECTED_MANIFEST_COUNT=83
+AUDIT_FIELDS=('status', 'audit_scope', 'final_python_sources', 'unchanged_prior_python_sources', 'fresh_tests', 'source_map_canonical_sha256', 'frozen_source_map_raw_sha256', 'source_map_before_after_identical', 'added_python_source_count', 'added_python_sources', 'output_closure_count', 'output_manifest', 'wrapper_raw_sha256', 'wrapper_selfseal', 'native_raw_sha256', 'native_selfseal', 'source_packet_raw_sha256', 'source_packet_selfseal', 'independent_genuine_cold_cut_count', 'independent_surface_query_count', 'independent_complete_finite_surface_side_count', 'independent_body_nanson_first_derivative_coordinate_count', 'independent_body_nanson_second_derivative_coordinate_pair_count', 'independent_complete_nanson_and_density_twojets', 'finite_incremental_gradient_was_already_I_plus_Du', 'independent_complete_original_cold_body_context_count', 'independent_precision_dependent_original_body_field_allowlist_count', 'independent_prior_passive_point_binding_association_count', 'density_and_state_binding_tokens_authenticated_by_gate_replay_not_independently_reconstructed', 'gate_port_serialization_authentication', 'generic_historical_port_decoder_executed_by_gate', 'independent_original_material_attachment_count', 'independent_original_material_query_count', 'independent_archived_original_donor_attachment_count', 'independent_live_original_donor_attachment_count', 'independent_live_original_receiver_attachment_count', 'independent_original_material_query_depth_count', 'same_parent_original_quarter_field_extension_declared', 'literal_original_support_dots_contracted_before_geometry_normalization', 'full_original_cartesian_gradient_includes_right_owner_pose', 'authentic_saved_nonzero_cold_coordinate_count', 'original_material_membership_authenticated', 'current_live_mask_membership_of_archived_labels_claimed', 'local_nanson_material_measure_pullback_balance_once', 'current_source_memory_all_closed_piece_intersections_retained', 'current_plastic_and_cumulative_memory_scalars_unchanged', 'historical_cumulative_work_reconstructed_from_current_stretch', 'old_atom_area_smeared_into_continuous_density', 'current_material_sides_glued_or_injective_certified', 'current_normals_used_as_constitutive_directors', 'whole_archived_three_dimensional_history_recovered', 'local_archive_force_or_work_handover_certified', 'old_source_mechanical_potential_modified', 'new_energy_or_force_law_added', 'whole_face_measure_or_memory_integral_certified', 'physical_source_material_handover_certified', 'hot_material_receiving_law_certified', 'new_mixed_force_equilibrium_certified', 'whole_clock_all_pair_admission_authorized', 'physical_material_admission_authorized', 'source_state_or_work_advanced', 'original_point_1_completed', 'accepted_original_native_intervals', 'accepted_new_native_intervals', 'original_point_1_remaining_work_blocks', 'remaining_physical_condition_count', 'remaining_physical_conditions', 'source_contact_epoch_s', 'source_memory_epoch_s', 'genuine_current_reference_geometry_epoch_s', 'virtual_original_source_geometry_epoch_s', 'preserved_old1633_artifact_chain', 'old1633_preservation_is_saved_before_math_receipt_and_recorded180_raw_dependencies_and_strict_closures_only', 'baseline1633_reexecuted', 'preserved_875_closed_manifest_file_count', 'preserved_875_recorded_raw_dependency_pin_count', 'preserved_authoritative_ancestry_release_closure_count_after_math', 'ancestry_release_wrapper_raw_sha256', 'complete_recorded_dependency_hashes_checked_after_math', 'dependency_raw_sha256', 'project_imports', 'old_pytest_or_control_reexecuted', 'historical_force_solver_reexecuted', 'old_contact_force_or_Hessian_quadratures_reexecuted', 'old_tensor_quadratures_reexecuted', 'independent_fraction_geometry_uses_no_midpoint_or_tolerance_classification', 'pure_stdlib_source_geometry_helper_sha256', 'pure_stdlib_quaternion_helper_sha256', 'pure_stdlib_cartesian_exponential_and_original_membership_helper_sha256', 'old_auditor_mains_reexecuted', 'baseline875_reusable_producer_sha256', 'baseline875_readback_path', 'baseline875_readback_raw_sha256', 'baseline875_readback_selfseal', 'baseline875_readback_timing', 'baseline875_projected_reader_report_path', 'baseline875_projected_reader_report_raw_sha256', 'baseline875_projected_reader_selfseal', 'initial_current_release_raw_sha256', 'executing_producer_raw_sha256_checked_before_after', 'auditor_script_sha256', 'surface_query_receipts', 'original_material_query_receipts', 'seconds', 'audit_packet_sha256')
+AUDIT_STATIC_EXPECTED={'status': 'PASS', 'audit_scope': 'FINITE_LOCAL_MATERIAL_SURFACE_MEASURE_AND_MEMORY_TRANSPORT_COMPONENT_ONLY', 'final_python_sources': 879, 'unchanged_prior_python_sources': 875, 'fresh_tests': 14, 'source_map_canonical_sha256': '4a75d4bc7d404fc11d5d252302fe6b6d961797b4a637f921c38acb679485b79c', 'frozen_source_map_raw_sha256': '1b948eace979f3125756f6f0dea803fb55d0d2e87650890a2236c07502b0c336', 'source_map_before_after_identical': True, 'added_python_source_count': 4, 'output_closure_count': 4, 'independent_genuine_cold_cut_count': 5, 'independent_surface_query_count': 10, 'independent_complete_finite_surface_side_count': 20, 'independent_body_nanson_first_derivative_coordinate_count': 7, 'independent_body_nanson_second_derivative_coordinate_pair_count': 49, 'independent_complete_nanson_and_density_twojets': True, 'finite_incremental_gradient_was_already_I_plus_Du': True, 'independent_complete_original_cold_body_context_count': 8, 'independent_precision_dependent_original_body_field_allowlist_count': 6, 'independent_prior_passive_point_binding_association_count': 64, 'density_and_state_binding_tokens_authenticated_by_gate_replay_not_independently_reconstructed': True, 'gate_port_serialization_authentication': 'COMPLETE_CANONICAL_DTO_EQUALITY_WITH_CORRESPONDING_GENUINE_TYPED_FACTORY_QUERY', 'generic_historical_port_decoder_executed_by_gate': False, 'independent_original_material_attachment_count': 32, 'independent_original_material_query_count': 64, 'independent_archived_original_donor_attachment_count': 8, 'independent_live_original_donor_attachment_count': 8, 'independent_live_original_receiver_attachment_count': 16, 'independent_original_material_query_depth_count': 2, 'same_parent_original_quarter_field_extension_declared': True, 'literal_original_support_dots_contracted_before_geometry_normalization': True, 'full_original_cartesian_gradient_includes_right_owner_pose': True, 'authentic_saved_nonzero_cold_coordinate_count': 56, 'original_material_membership_authenticated': True, 'current_live_mask_membership_of_archived_labels_claimed': False, 'local_nanson_material_measure_pullback_balance_once': True, 'current_source_memory_all_closed_piece_intersections_retained': True, 'current_plastic_and_cumulative_memory_scalars_unchanged': True, 'historical_cumulative_work_reconstructed_from_current_stretch': False, 'old_atom_area_smeared_into_continuous_density': False, 'current_material_sides_glued_or_injective_certified': False, 'current_normals_used_as_constitutive_directors': False, 'whole_archived_three_dimensional_history_recovered': False, 'local_archive_force_or_work_handover_certified': False, 'old_source_mechanical_potential_modified': False, 'new_energy_or_force_law_added': False, 'whole_face_measure_or_memory_integral_certified': False, 'physical_source_material_handover_certified': False, 'hot_material_receiving_law_certified': False, 'new_mixed_force_equilibrium_certified': False, 'whole_clock_all_pair_admission_authorized': False, 'physical_material_admission_authorized': False, 'source_state_or_work_advanced': False, 'original_point_1_completed': False, 'accepted_original_native_intervals': 1, 'accepted_new_native_intervals': 0, 'original_point_1_remaining_work_blocks': 1, 'remaining_physical_condition_count': 3, 'remaining_physical_conditions': ['Whole-source physical material and old-force/prestress/work handover, HOT law/mean chart, loads/drag and NEW mixed equilibrium', 'Whole-clock all-pair admission including reverse C5 to C1', 'Accepted continuation with independent path work, balances and joint restart'], 'source_contact_epoch_s': 2000000, 'source_memory_epoch_s': 1000000, 'genuine_current_reference_geometry_epoch_s': 1000000, 'virtual_original_source_geometry_epoch_s': 0, 'preserved_old1633_artifact_chain': True, 'old1633_preservation_is_saved_before_math_receipt_and_recorded180_raw_dependencies_and_strict_closures_only': True, 'baseline1633_reexecuted': False, 'preserved_875_closed_manifest_file_count': 73, 'preserved_875_recorded_raw_dependency_pin_count': 180, 'preserved_authoritative_ancestry_release_closure_count_after_math': 10, 'complete_recorded_dependency_hashes_checked_after_math': True, 'project_imports': False, 'old_pytest_or_control_reexecuted': False, 'historical_force_solver_reexecuted': False, 'old_contact_force_or_Hessian_quadratures_reexecuted': False, 'old_tensor_quadratures_reexecuted': False, 'independent_fraction_geometry_uses_no_midpoint_or_tolerance_classification': True, 'pure_stdlib_source_geometry_helper_sha256': '3e3226705f7a1931e01d9147046686492e73d728d5a7b33a01d1e4555eaa43f4', 'pure_stdlib_quaternion_helper_sha256': 'ee031938177a3497aa7821c883650a89397a9942f6b177e48b9a655153297f6e', 'pure_stdlib_cartesian_exponential_and_original_membership_helper_sha256': '06d07d554a7265f96e132327e0526e2a7baf83d18b29d0d620413e3acf7eaaf7', 'old_auditor_mains_reexecuted': False, 'baseline875_reusable_producer_sha256': 'ad75a879a8485a22e21b44b97f42e89c43c408e399b4abd3a11cfcdb1adf8682', 'baseline875_readback_timing': 'BEFORE_NEW_LOCAL_SURFACE_AND_ORIGINAL_FIELD_MATHEMATICS', 'executing_producer_raw_sha256_checked_before_after': True}
+
+
+def enc(value):
+    return json.dumps(value, sort_keys=True, separators=(',', ':'), ensure_ascii=False, allow_nan=False).encode()
+
+
+def vd(value):
+    return hashlib.sha256(enc(value)).hexdigest()
+
+
+def exact(actual, expected, label):
+    assert type(actual) is type(expected) and actual == expected, label
+    if type(actual) in (dict, list, tuple):
+        assert enc(actual) == enc(expected), label + ' recursive literal kinds'
+
+
+def digest(path):
+    h = hashlib.sha256()
+    with Path(path).open('rb') as stream:
+        for block in iter(lambda: stream.read(1 << 20), b''):
+            h.update(block)
+    return h.hexdigest()
+
+
+def read(path):
+    return json.loads(Path(path).read_bytes())
+
+
+def sealed(path, key):
+    value = read(path)
+    assert type(value) is dict and key in value, str(path)
+    body = dict(value)
+    exact(body.pop(key), vd(body), 'selfseal ' + str(path))
+    return value
+
+
+def source_map():
+    return {str(p.relative_to(ROOT)): digest(p)
+        for directory in ('tectonics', 'tests', 'scripts', 'analysis')
+        for p in sorted((ROOT / directory).rglob('*.py'))}
+
+
+def files_from_manifest(manifest, pins):
+    for name, row in manifest['files'].items():
+        path = (ROOT / name).resolve()
+        assert path.is_relative_to(ROOT) and str(path.relative_to(ROOT)) == name, name
+        assert type(row['bytes']) is int and row['bytes'] >= 0, name
+        exact(path.stat().st_size, row['bytes'], 'literal artifact bytes ' + name)
+        add_pin(pins, path, row['sha256'])
+
+
+def closure(directory, wrapper, pins):
+    exact(set(wrapper['outputs']), set(OUTPUTS), 'strict four outputs ' + str(directory))
+    actual = {str(p.relative_to(directory)) for p in directory.rglob('*') if p.is_file()}
+    exact(actual, set(OUTPUTS) | {'report.json'}, 'strict five files ' + str(directory))
+    for name, row in wrapper['outputs'].items():
+        path = directory / name
+        exact(path.stat().st_size, row['bytes'], 'closed output bytes ' + str(path))
+        add_pin(pins, path, row['sha256'])
+
+
+def literal_constants(path):
+    tree = ast.parse(Path(path).read_bytes(), filename=str(path))
+    values = {}
+    for node in tree.body:
+        if isinstance(node, ast.Assign) and len(node.targets) == 1 and isinstance(node.targets[0], ast.Name):
+            try:
+                values[node.targets[0].id] = ast.literal_eval(node.value)
+            except (TypeError, ValueError):
+                if isinstance(node.value, ast.Call) and isinstance(node.value.func, ast.Name) and node.value.func.id == 'dict':
+                    try:
+                        values[node.targets[0].id] = {k.arg: ast.literal_eval(k.value) for k in node.value.keywords if k.arg is not None}
+                    except (TypeError, ValueError):
+                        pass
+    return values, tree
+
+
+def add_pin(pins,path,pin):
+    path=Path(path).resolve()
+    assert path.is_relative_to(ROOT) or path.is_relative_to(Path('/tmp')), str(path)
+    assert type(pin) is str and len(pin)==64 and all(c in '0123456789abcdef' for c in pin), str(path)
+    name=str(path)
+    if name in pins:
+        exact(pins[name],pin,'overlapping recorded raw pin '+name)
+    else:
+        exact(digest(path),pin,'recorded raw bytes BEFORE final readback '+name)
+        pins[name]=pin
+
+
+def annotation_schemas(tree):
+    return {n.name:tuple(item.target.id for item in n.body if isinstance(item,ast.AnnAssign) and isinstance(item.target,ast.Name))
+        for n in tree.body if isinstance(n,ast.ClassDef)}
+
+
+def bare(value,name,schemas,key='binding_sha256'):
+    exact(set(value),set(schemas[name]),'strict complete bare schema '+name)
+    body=dict(value);exact(body.pop(key),vd(body),'complete bare selfseal '+name)
+
+
+def exported(value,name,schemas,constants,fmt):
+    exact(set(value),set(schemas[name])|{'format','scope'}|set(constants['_FLAGS']),'strict entire exported DTO '+name)
+    exact(value['format'],fmt,'typed format '+name);exact(value['scope'],SCOPE,'typed scope '+name)
+    for key,flag in constants['_FLAGS'].items():exact(value[key],flag,'typed physical scope flag '+key)
+    body={key:value[key] for key in schemas[name] if key!='binding_sha256'}
+    exact(value['binding_sha256'],vd(body),'typed binding includes overlapping flags '+name)
+
+
+def summary(value,expected):
+    for key,flag in expected.items():exact(value[key],flag,'complete fixed native scope '+key)
+
+
+def saved_baseline(path,current_map,bootstrap,pins):
+    receipt=sealed(path,'audit_sha256');add_pin(pins,path,digest(path))
+    for key,value in (('status','PASS_IMMUTABLE875_WITH_DECLARED_SOURCE_ADDITIONS_ONLY'),('baseline_source_count',875),
+        ('current_python_source_count',879),('additional_python_source_count',4),('source_epoch','IMMUTABLE875_TO_EXACT_AUTHORIZED_MATERIAL_SURFACE879'),
+        ('declared_next_component_physical_scope',SCOPE),('new_component_physics_validated',False),('exact_authorized_four_path_whitelist_checked',True),
+        ('all875_python_sources_unchanged',True),('complete_full_actual_source_map_independently_checked_before_after',True),
+        ('complete_declared879_source_map_before_after_identical',True),('current_python_source_map_sha256',current_map),
+        ('frozen875_source_map_canonical_sha256',OLD_MAP),('frozen875_source_map_raw_sha256',OLD_MAP_RAW),('frozen875_projection_disclosed',True),
+        ('nested_reader_source_view','IMMUTABLE875_SUBSET_OF_INDEPENDENTLY_CHECKED_FULL_DECLARED879_SOURCE_MAP'),
+        ('nested_reader_actual875_count_and_flags_are_projected_view_only',True),('preserved_closed875_manifest_file_count',73),
+        ('closed875_manifest_raw_sha256',OLD_MANIFEST_RAW),('closed875_manifest_selfseal',OLD_MANIFEST_SEAL),
+        ('preserved_old1633_artifact_chain',True),('authoritative_ancestry_release_closure_count',9),('recorded_raw_dependency_pin_count',180),
+        ('all180_recorded_dependency_raw_sha256_hashed_by_wrapper_before_and_nested_reader_after',True),
+        ('saved_baseline_temp_and_permanent_copy_association_verified_before_after',True),('bootstrap_reader_raw_sha256',BOOTSTRAP_SOURCE_SHA),
+        ('bootstrap_report_raw_sha256',BOOTSTRAP_REPORT_RAW),('bootstrap_report_selfseal',BOOTSTRAP_REPORT_SEAL),('bootstrap_evidence_preserved',True),
+        ('bootstrap_document_hashes_are_initial_readback_only',True),('preexisting_project_modules_preserved',True),('project_imports',False),
+        ('baseline1633_reexecuted',False),('math_or_solver_or_test_or_quadrature_reexecuted',False),('auditor_source_sha256',REUSABLE_SHA)):
+        exact(receipt[key],value,'saved baseline875 receipt '+key)
+    exact(receipt['declared_additional_source_paths'],sorted(ADDED),'saved exact four additional source paths')
+    exact(receipt['additional_python_sources'],{name:current_map_value[name] for name in sorted(ADDED)},'saved exact four current source byte hashes')
+    exact(receipt['dependency_raw_sha256'],bootstrap['dependency_raw_sha256'],'saved complete180 bootstrap dependency map')
+    exact(receipt['bootstrap_document_raw_sha256'],bootstrap['document_raw_sha256'],'initial875 document snapshot only')
+    for name,pin in receipt['dependency_raw_sha256'].items():add_pin(pins,name,pin)
+    return receipt
+
+
+def projection(path,receipt,bootstrap,pins):
+    value=sealed(path,'audit_sha256')
+    exact(value['audit_sha256'],receipt['projected_reader_selfseal'],'saved nested875 projection selfseal')
+    add_pin(pins,path,receipt['projected_reader_report_raw_sha256'])
+    for key,expected in bootstrap.items():
+        if key not in ('audit_sha256','seconds','document_raw_sha256'):exact(value[key],expected,'exact saved frozen875 projection '+key)
+    exact(value['document_raw_sha256'],{},'projected old reader has no current-document freeze')
+    return value
+
+
+def copy_association(temporary,permanent,pin,pins,associations):
+    temporary=Path(temporary).resolve();permanent=Path(permanent).resolve()
+    assert temporary.is_relative_to(Path('/tmp')) and permanent.is_relative_to(ROOT)
+    add_pin(pins,permanent,pin);add_pin(pins,temporary,pin)
+    associations[str(temporary)]=dict(permanent_copy=str(permanent),sha256=pin)
+
+
+def check_auxiliary_artifacts(pins,frozen):
+    draft=sealed(PARENT/'baseline_875_reusable_draft_reconciliation.json','reconciliation_sha256')
+    for key,value in (('status','PRESERVED_UNUSED_DRAFT_AND_CORRECTED_BEFORE_RUNTIME'),('draft_executed',False),
+        ('final_executed',False),('old875_sources_or_closed_evidence_modified',False),('draft_raw_sha256',DRAFT_SHA),('final_raw_sha256',REUSABLE_SHA)):
+        exact(draft[key],value,'literal pre-runtime draft reconciliation '+key)
+    add_pin(pins,PARENT/'baseline_875_reusable_draft01_source.txt',DRAFT_SHA)
+    freeze=sealed(PARENT/'source_freeze_receipt.json','receipt_sha256')
+    for key,value in (('status','PASS_EXACT879_FREEZE_AND_STATIC_COMPILE_ONLY'),('current_python_sources',879),
+        ('prior_python_sources_unchanged',875),('fresh_test_function_count',14),('source_map_canonical_sha256',MAP),
+        ('frozen_source_map_raw_sha256',MAP_RAW),('math_or_tests_executed',False),('project_imports',False)):
+        exact(freeze[key],value,'literal freeze metadata '+key)
+    exact(freeze['added_python_sources'],{name:frozen[name] for name in sorted(ADDED)},'exact source freeze four new hashes')
+    add_pin(pins,PARENT/'source_freeze_producer_source.txt',freeze['producer_raw_sha256'])
+    testtree=ast.parse((ROOT/'tests/test_geometric_native_common_material_surface_transport.py').read_bytes())
+    testnames=[n.name for n in testtree.body if isinstance(n,(ast.FunctionDef,ast.AsyncFunctionDef)) and n.name.startswith('test_')]
+    exact(testnames,freeze['test_function_names'],'fresh14 AST names from current frozen test file');exact(len(testnames),14,'fresh14 static function count')
+    for name,key in (('pure_guard_before_freeze/receipt.json','receipt_sha256'),('pure_guard_before_freeze/pure_math_report.json','receipt_sha256'),
+        ('pure_guard_before_freeze/type_and_ast_equivalence_report.json','receipt_sha256'),
+        ('pure_guard_before_freeze/earlier_51ed_report_reconstructed.json','receipt_sha256'),('pure_math_guard_attempt01/archive.json','archive_sha256'),
+        ('pure_math_guard_attempt01/preservation.json','preservation_sha256'),('pure_math_guard_attempt02/archive.json','archive_sha256'),
+        ('pure_math_guard_attempt02/result.json','guard_sha256'),('smoke01.json','report_sha256'),('test_full_body_context_ast_reconciliation.json','reconciliation_sha256')):
+        sealed(PARENT/name,key)
+    pure=read(PARENT/'pure_guard_before_freeze/receipt.json')
+    for key,value in (('status','PASS'),('scope','AST_SELECTED_PURE_MATH_AND_SYNTHETIC_TYPE_GUARDS_ONLY'),
+        ('core_whole_source_sha256',frozen['tectonics/geometric_native_common_material_surface_transport.py']),
+        ('project_modules_imported',False),('real_material_source_queries_executed',False),('physical_solver_or_quadrature_executed',False),('original_tests_executed',False)):
+        exact(pure[key],value,'limited pure guard scope '+key)
+    assert 'reconstruct' in pure['console_provenance'].lower() and 'reconstruct' in pure['earlier_report_provenance'].lower(),'normalized/reconstructed evidence must remain disclosed'
+    for row in pure['artifacts']:
+        path=ROOT/row['path'];exact(path.stat().st_size,row['byte_count'],'declared pure evidence byte size '+row['path']);add_pin(pins,path,row['sha256'])
+    for attempt in ('attempt01','attempt02'):
+        archived=read(PARENT/('pure_math_guard_'+attempt+'/archive.json'))
+        exact(archived['producer_reexecuted_during_copy'],False,'pure guard raw copy must not rerun its producer')
+        for name,row in archived['files'].items():
+            path=PARENT/('pure_math_guard_'+attempt)/name
+            exact(path.stat().st_size,row['bytes'],'pure guard copied historical payload byte size '+name);add_pin(pins,path,row['raw_sha256'])
+    failed=read(PARENT/'pure_math_guard_attempt01/preservation.json')
+    exact(failed['status'],'FAILED_TEST_ORACLE_DECIMAL_ZERO_POWER_ZERO','literal failed pure oracle attempt remains FAILED')
+    smoke=read(PARENT/'smoke01.json');exact(smoke['status'],'PASS_THREE_LOCAL_QUERIES_ONLY','smoke stays three local queries only')
+
+
+FAILED_MAP='93193719c3f64e9912b71c08be4418918b86139f9865c9bb95715dd6985d58ef'
+FAILED_MAP_RAW='a77717f3cbde54537fb37d4fc5c909e407881d09c90f2bb6cdc92882f442ee20'
+FAILED_TEST='tests/test_geometric_native_common_material_surface_transport.py'
+FAILED_NATIVE='analysis/geometric_native_common_material_surface_transport_validation/native_control.py'
+CORRECTED_TEST_FUNCTION='test_literal_current_memory_pieces_and_all_clocks_advect_at_the_same_material_label'
+FAILED_FOLDER_FILES=frozenset(('frozen_source_map_879.json','source_freeze_receipt.json','source_freeze_producer_source.txt','source_freeze_console.log',
+    'frozen_sources/geometric_native_common_material_surface_transport.py.txt','frozen_sources/test_geometric_native_common_material_surface_transport.py.txt',
+    'frozen_sources/native_control.py.txt','frozen_sources/validate.py.txt','baseline_before_gate.json','baseline_before_gate_projection.json',
+    'baseline_after_gate.json','baseline_after_gate_projection.json','wrapper_console.log','preservation_receipt.json'))
+
+
+def preserved_failed_gate01(pins,bootstrap,current_sources):
+    directory=PARENT/'failed_validation_01';release=PARENT/'release_validation_01'
+    receipt=sealed(directory/'preservation_receipt.json','preservation_sha256')
+    exact(receipt['preservation_sha256'],'bfb74073330e244bd5eeb121c5e441b964149d7a076ff6620ca0319e40fc06da','exact immutable failed01 preservation seal')
+    for key,value in (('status','PRESERVED_FAILED_FROZEN_GATE_01_BEFORE_TEST7_ONLY_CORRECTION'),
+        ('source_map_canonical_sha256',FAILED_MAP),('frozen_source_map_raw_sha256',FAILED_MAP_RAW),
+        ('historical_tmp_paths_are_metadata_not_current_inputs',True),('interrupted_by_owner_for_redundant_old_geometry_rebinding',True),('test14_completed',False)):
+        exact(receipt[key],value,'literal preserved failed01 metadata '+key)
+    exact(receipt['failed_release_relative_path'],str(release.relative_to(ROOT)),'failed01 exact declared original release path')
+    actual_folder={str(path.relative_to(directory)) for path in directory.rglob('*') if path.is_file()}
+    exact(actual_folder,set(FAILED_FOLDER_FILES),'exact failed01 preserved archive files')
+    # This exact partial subset must be confirmed by the root's completed gate.
+    # A failed test gate has no current-control outputs and no PASS closure.
+    exact({str(path.relative_to(release)) for path in release.rglob('*') if path.is_file()},{'pytest.log','report.json'},'literal failed01 partial two files only')
+    expected_artifacts={str((directory/name).relative_to(ROOT)) for name in FAILED_FOLDER_FILES if name!='preservation_receipt.json'}|{str((release/name).relative_to(ROOT)) for name in ('pytest.log','report.json')}
+    exact(set(receipt['artifact_raw_sha256']),expected_artifacts,'exact failed01 raw preserved payload list')
+    for name,pin in receipt['artifact_raw_sha256'].items():add_pin(pins,ROOT/name,pin)
+    add_pin(pins,directory/'preservation_receipt.json',digest(directory/'preservation_receipt.json'))
+    frozen=read(directory/'frozen_source_map_879.json');exact(len(frozen),879,'preserved failed01 source count');exact(vd(frozen),FAILED_MAP,'preserved failed01 canonical map')
+    add_pin(pins,directory/'frozen_source_map_879.json',FAILED_MAP_RAW)
+    exact(set(frozen),set(current_sources),'failed and current879 have exactly same source paths')
+    exact({name for name in frozen if frozen[name]!=current_sources[name]},{FAILED_TEST,FAILED_NATIVE},'EXACT2 corrected memory test and equivalent native replay sources change after failed01')
+    expected_four={name:frozen[name] for name in sorted(ADDED)}
+    exact(receipt['failed_source4_sha256'],expected_four,'failed01 exact four frozen source hashes')
+    for name,pin in expected_four.items():add_pin(pins,directory/'frozen_sources'/(Path(name).name+'.txt'),pin)
+    wrapper=sealed(release/'report.json','report_sha256');add_pin(pins,release/'report.json',receipt['wrapper_raw_sha256'])
+    exact(wrapper['report_sha256'],receipt['wrapper_selfseal'],'failed01 original wrapper selfseal')
+    exact(wrapper['status'],'FAIL','failed01 stays literal FAIL')
+    exact(wrapper['source_count'],879,'failed01 actual879 count');exact(wrapper['source_map_before_sha256'],FAILED_MAP,'failed01 source before');exact(wrapper['source_map_after_sha256'],FAILED_MAP,'failed01 source after')
+    exact(wrapper['changed_python_paths'],[],'failed01 sources frozen during its execution')
+    exact(wrapper['pytest_counts'],receipt['failed_status_counts'],'literal completed failed01 pytest counts')
+    exact(wrapper['pytest_counts'],{'failed':1,'passed':12},'literal failed01 actual12 pass/1 fail count; interruptedtest14')
+    exact(wrapper['pytest_exit_code'],2,'literal failed01 owner-interrupted pytest exit2')
+    exact(wrapper['report_sha256'],'8c0a84f95f2432aacddbb1f3e92901cd26f07b02fa87ef1ff0e19e38895d171c','exact immutable failed01 wrapper seal')
+    exact(receipt['wrapper_raw_sha256'],'962137f7ed6a89433e6e99045b418faf74d61d103002a676f9b9c810a6db8ace','exact immutable failed01 wrapper bytes')
+    assert type(wrapper['pytest_exit_code']) is int and wrapper['pytest_exit_code']!=0,'failed01 pytest exit must remain nonzero'
+    assert wrapper['pytest_counts'].get('failed',0)>0 and sum(wrapper['pytest_counts'].values())<14,'interrupted gate must not claim all14 tests completed'
+    exact(receipt['failing_test_names'],[CORRECTED_TEST_FUNCTION],'only literal failed test7; test14 interrupted rather than passed')
+    exact(set(wrapper['outputs']),{'pytest.log'},'failed01 only its actual pytest output manifest')
+    for name,row in wrapper['outputs'].items():
+        exact((release/name).stat().st_size,row['bytes'],'failed01 actual output byte size');add_pin(pins,release/name,row['sha256'])
+    freeze=sealed(directory/'source_freeze_receipt.json','receipt_sha256')
+    add_pin(pins,directory/'source_freeze_receipt.json',receipt['source_freeze_receipt_raw_sha256'])
+    exact(freeze['source_map_canonical_sha256'],FAILED_MAP,'failed01 original freeze canonical map');exact(freeze['frozen_source_map_raw_sha256'],FAILED_MAP_RAW,'failed01 original freeze raw map')
+    exact(freeze['added_python_sources'],expected_four,'failed01 original exact freeze four sources');add_pin(pins,directory/'source_freeze_producer_source.txt',freeze['producer_raw_sha256'])
+    for when in ('before','after'):
+        name='baseline_before_gate' if when=='before' else 'baseline_after_gate'
+        value=sealed(directory/(name+'.json'),'audit_sha256')
+        for key,flag in (('status','PASS_IMMUTABLE875_WITH_DECLARED_SOURCE_ADDITIONS_ONLY'),('baseline_source_count',875),('current_python_source_count',879),
+            ('current_python_source_map_sha256',FAILED_MAP),('all875_python_sources_unchanged',True),('preserved_old1633_artifact_chain',True),
+            ('recorded_raw_dependency_pin_count',180),('frozen875_projection_disclosed',True),('project_imports',False),('baseline1633_reexecuted',False)):
+            exact(value[key],flag,'failed01 saved '+when+'875 readback '+key)
+        exact(value['additional_python_sources'],expected_four,'failed01 saved '+when+' four epoch pins')
+        exact(value['dependency_raw_sha256'],bootstrap['dependency_raw_sha256'],'failed01 all180 unchanged old dependency pins')
+        exact(wrapper['prior_baseline_'+when],value,'failed01 original embedded '+when+' sealed receipt')
+        add_pin(pins,directory/(name+'.json'),wrapper['prior_baseline_'+when+'_raw_sha256'])
+        projected=sealed(directory/(name+'_projection.json'),'audit_sha256')
+        exact(projected['audit_sha256'],value['projected_reader_selfseal'],'failed01 original saved frozen875 projection seal')
+        add_pin(pins,directory/(name+'_projection.json'),value['projected_reader_report_raw_sha256'])
+        # Deliberately do not add the historical original TMP strings to pins:
+        # later finalgate02 owns those same live paths with distinct raw bytes.
+    oldtree=ast.parse((directory/'frozen_sources/test_geometric_native_common_material_surface_transport.py.txt').read_bytes())
+    newtree=ast.parse((ROOT/FAILED_TEST).read_bytes())
+    def without_target(tree):
+        return ast.dump(ast.Module(body=[node for node in tree.body if not(isinstance(node,(ast.FunctionDef,ast.AsyncFunctionDef)) and node.name==CORRECTED_TEST_FUNCTION)],type_ignores=tree.type_ignores),include_attributes=False)
+    exact(without_target(oldtree),without_target(newtree),'ALL helpers/imports/constants/other13 tests unchanged by memory test7 correction')
+    oldtarget=[node for node in oldtree.body if isinstance(node,ast.FunctionDef) and node.name==CORRECTED_TEST_FUNCTION]
+    newtarget=[node for node in newtree.body if isinstance(node,ast.FunctionDef) and node.name==CORRECTED_TEST_FUNCTION]
+    exact(len(oldtarget),1,'exact old corrected test7 AST function');exact(len(newtarget),1,'exact final corrected test7 AST function')
+    assert ast.dump(oldtarget[0],include_attributes=False)!=ast.dump(newtarget[0],include_attributes=False),'test7 oracle must actually change'
+    oldnative=ast.parse((directory/'frozen_sources/native_control.py.txt').read_bytes())
+    newnative=ast.parse((ROOT/FAILED_NATIVE).read_bytes())
+    def without_replay(tree):
+        return ast.dump(ast.Module(body=[node for node in tree.body if not(isinstance(node,(ast.FunctionDef,ast.AsyncFunctionDef)) and node.name=='replay_packet')],type_ignores=tree.type_ignores),include_attributes=False)
+    exact(without_replay(oldnative),without_replay(newnative),'ALL native fixtures/inputs/context/bank/query/schema unchanged except equivalent replay_packet')
+    oldreplay=[node for node in oldnative.body if isinstance(node,ast.FunctionDef) and node.name=='replay_packet']
+    newreplay=[node for node in newnative.body if isinstance(node,ast.FunctionDef) and node.name=='replay_packet']
+    exact(len(oldreplay),1,'exact old native replay AST');exact(len(newreplay),1,'exact final native replay AST')
+    assert ast.dump(oldreplay[0],include_attributes=False)!=ast.dump(newreplay[0],include_attributes=False),'replay optimization must actually change'
+    return dict(preserved_failed_native_attempt01=True,failed_native_attempt01_literal_counts=wrapper['pytest_counts'],
+        failed_native_attempt01_closed_actual_file_count=2,failed_native_attempt01_promoted_to_four_output_pass=False,
+        failed_native_attempt01_payload_count=len(expected_artifacts),failed_native_attempt01_historical_tmp_paths_are_metadata_only=True,
+        only_test7_memory_harmonic_oracle_and_equivalent_native_replay_changed_after_failed01=True,
+        failed_native_attempt01_interrupted_by_owner=True,failed_native_attempt01_test14_completed=False)
+
+
+def check_final_source_reconciliations(pins,frozen):
+    test=sealed(PARENT/'test7_AST_reconciliation.json','reconciliation_sha256')
+    exact(test['reconciliation_sha256'],'0fb53e42c30861a9a8bf6b86b27455bc3b011c20947645a0dbb923bba5028ce5','exact pinned test7 AST reconciliation')
+    for key,value in (('status','PASS_TEST7_HARMONIC_ORACLE_AST_RECONCILIATION_ONLY'),('test_function_count',14),
+        ('failed_gate_01_test_source_sha256','2cbd122e25a972d885372ad6217bf6740047ed27e2f7850705bcdc627ecfbd02'),
+        ('current_test_source_sha256',frozen[FAILED_TEST]),('changed_function_names',[CORRECTED_TEST_FUNCTION]),
+        ('all_nonfunction_nodes_ast_unchanged',True),('all_other_functions_including_test14_and_all_helpers_ast_unchanged',True),
+        ('project_imports_executed',False),('new_or_old_test_functions_executed',False),('pure_guard_reexecuted',False)):
+        exact(test[key],value,'corrected memory oracle AST source epoch '+key)
+    replay=sealed(PARENT/'fixed_packet_replay_ast_reconciliation.json','reconciliation_sha256')
+    exact(replay['reconciliation_sha256'],'83cbf766db5e49b1a983bf7c77eb2e2198f18aa6136708d563ed04894b4f003d','exact pinned native replay AST reconciliation')
+    for key,value in (('status','PASS_STATIC_FIXED_PACKET_PORT_REPLAY_EQUIVALENCE_ONLY'),('changed_top_level_ast_names',['replay_packet']),
+        ('old_native_source_raw_sha256','1c0d8b9e6326c87cf08c49748a5714e2c3acbe05bec1ade20c58cfc46db08744'),
+        ('new_native_source_raw_sha256',frozen[FAILED_NATIVE]),('core_source_raw_sha256',frozen['tectonics/geometric_native_common_material_surface_transport.py']),
+        ('wrapper_source_raw_sha256',frozen['analysis/geometric_native_common_material_surface_transport_validation/validate.py']),
+        ('all_other_native_ast_nodes_identical',True),('complete_expected_query_arguments_checked_before_factory_selection',True),
+        ('full_literal_port_dto_compared_against_corresponding_genuine_native_query',True),('new_response_from_dict_uses_actual_registered_typed_port',True),
+        ('whole_port_collection_rebound_per_serialized_row',False),('old_generic_port_from_dict_reexecuted',False),('packet_schema_and_physical_summary_unchanged',True),
+        ('math_or_tests_executed',False),('project_imports',False)):
+        exact(replay[key],value,'fixed packet replay source epoch '+key)
+    transition=sealed(PARENT/'source_epoch_transition_reconciliation.json','reconciliation_sha256')
+    exact(transition['reconciliation_sha256'],'c95e62859735e4efe99a937c46f07376a5f10c6d533b6a6854da939e4f4dd110','exact pinned whole sourceepoch AST reconciliation')
+    for key,value in (('status','PASS_STATIC_TEST7_HARMONIC_ORACLE_AND_FIXED_PACKET_REPLAY_DELTA_ONLY'),('previous_source_map_canonical_sha256',FAILED_MAP),
+        ('current_source_map_canonical_sha256',MAP),('changed_python_paths',sorted((FAILED_TEST,FAILED_NATIVE))),
+        ('python_source_count_before',879),('python_source_count_after',879),('physical_core_and_validation_wrapper_unchanged',True),
+        ('all875_prior_sources_unchanged',True),('all_other_test_and_native_ast_nodes_unchanged',True),('all_physical_query_arguments_and_summary_schema_unchanged',True),
+        ('project_imports',False),('math_or_tests_executed',False)):
+        exact(transition[key],value,'whole source epoch transition '+key)
+    preserved=read(PARENT/'failed_validation_01/preservation_receipt.json')
+    exact(transition['preservation_receipt_selfseal'],preserved['preservation_sha256'],'source transition binds literal failed01 receipt')
+    add_pin(pins,PARENT/'failed_gate_preservation_producer_source.txt',preserved['preservation_producer_raw_sha256'])
+    reconciliation=sealed(PARENT/'independent_audit_test7_replay_correction_reconciliation.json','reconciliation_sha256')
+    exact(reconciliation['reconciliation_sha256'],'62bed7a2beea89d4a6ae57d15be038000232f28bcbfcfc554c21b720f32fd208','exact pinned unexecuted audit draft reconciliation')
+    for key,value in (('status','PASS_STATIC_COMPILE_AND_UNEXECUTED_DRAFT_PRESERVATION'),('prior_producer_raw_sha256','75285eacdaf72d01c5203daa2b863644906468ea3cb3228bea97ca9aff9b45cd'),
+        ('prior_producer_executed',False),('new_producer_executed',False),('new_producer_raw_sha256',AUDITOR_SHA),
+        ('new_source_map_canonical_sha256',MAP),('new_source_map_raw_sha256',MAP_RAW),('new_gate_selected','release_validation_02'),
+        ('only_two_pins_docstring_and_report_descriptor_changed',True),('mathematical_function_ast_unchanged',True),('source_schemas_unchanged',True),
+        ('gate_port_serialization_authentication','COMPLETE_CANONICAL_DTO_EQUALITY_WITH_CORRESPONDING_GENUINE_TYPED_FACTORY_QUERY'),
+        ('generic_historical_port_decoder_executed_by_gate',False),('project_imports',False),('baseline_executed',False)):
+        exact(reconciliation[key],value,'pre-runtime audit draft source epoch '+key)
+    add_pin(pins,PARENT/'independent_audit_pre_test7_replay_correction_source.txt',reconciliation['prior_producer_raw_sha256'])
+
+
+def run(output_path,*,artifact_manifest_path=None,document_paths=()):
+    global current_map_value
+    started=time.perf_counter();output_path=Path(output_path).resolve();producer_pin=digest(__file__)
+    assert output_path.is_relative_to(Path('/tmp')) and output_path.suffix=='.json' and not output_path.exists(),'fresh scratch output only'
+    manifest_path=(Path(artifact_manifest_path) if artifact_manifest_path else PARENT/'artifact_manifest.json').resolve()
+    docpaths=frozenset(Path(path).resolve() for path in document_paths)
+    for path in docpaths:assert path.is_relative_to(ROOT) and path.is_file() and str(path.relative_to(ROOT)) not in MANIFEST_FILES
+    pins={};associations={};before=source_map();current_map_value=before
+    frozen=read(PARENT/'frozen_source_map_879.json');exact(len(before),879,'independently measured full879 source count')
+    exact(before,frozen,'complete actual879 source bytes equal final freeze');exact(vd(frozen),MAP,'final879 canonical source map')
+    add_pin(pins,PARENT/'frozen_source_map_879.json',MAP_RAW)
+    old=read(PRIOR/'frozen_source_map_875.json');exact(len(old),875,'old875 count');exact(vd(old),OLD_MAP,'old875 map')
+    add_pin(pins,PRIOR/'frozen_source_map_875.json',OLD_MAP_RAW)
+    exact(set(before)-set(old),set(ADDED),'exact four new879 paths')
+    for name,pin in old.items():exact(before[name],pin,'all875 old Python source bytes '+name)
+    manifest=sealed(manifest_path,'manifest_sha256');add_pin(pins,manifest_path,digest(manifest_path))
+    exact(len(MANIFEST_FILES),EXPECTED_MANIFEST_COUNT,'explicit manifest unique count');exact(len(set(MANIFEST_FILES)),EXPECTED_MANIFEST_COUNT,'explicit unique manifest files')
+    exact(set(manifest['files']),set(MANIFEST_FILES),'exact explicit new component artifact manifest')
+    for key,value in (('status','PASS_COMPONENT_EVIDENCE_CLOSED'),('source_count',879),('closed_component_file_count',EXPECTED_MANIFEST_COUNT),
+        ('closed_release_output_count',4),('source_map_canonical_sha256',MAP),('source_map_raw_sha256',MAP_RAW),('physical_candidate_status',SCOPE),
+        ('accepted_original_native_intervals',1),('accepted_new_native_intervals',0),('original_point_1_remaining_work_blocks',1),('original_point_1_completed',False)):
+        exact(manifest[key],value,'final component manifest '+key)
+    actual_parent={str(path.relative_to(PARENT)) for path in PARENT.rglob('*') if path.is_file() and '__pycache__' not in path.parts and path.suffix!='.pyc' and path.resolve()!=manifest_path and path.resolve() not in docpaths}
+    declared_parent={str(Path(name).relative_to(PARENT.relative_to(ROOT))) for name in MANIFEST_FILES if Path(name).is_relative_to(PARENT.relative_to(ROOT))}
+    exact(actual_parent,declared_parent,'strict closed new validation parent files');files_from_manifest(manifest,pins)
+    for name,pin in BASELINE_EVIDENCE.items():add_pin(pins,PARENT/name,pin)
+    bootstrap=sealed(PARENT/'baseline_875_bootstrap.json','audit_sha256');exact(bootstrap['audit_sha256'],BOOTSTRAP_REPORT_SEAL,'saved initial875 bootstrap seal')
+    exact(bootstrap['status'],'PASS_FINAL875_EVIDENCE_READBACK_ONLY','fresh completed875 bootstrap status');exact(len(bootstrap['dependency_raw_sha256']),180,'complete180 saved bootstrap raw pins')
+    exact(bootstrap['recorded_raw_dependency_pin_count'],180,'saved180 pin count')
+    exact(bootstrap['source_map_canonical_sha256'],OLD_MAP,'bootstrap875 map');exact(bootstrap['current_manifest_selfseal'],OLD_MANIFEST_SEAL,'bootstrap old73 seal')
+    for name,pin in bootstrap['dependency_raw_sha256'].items():add_pin(pins,name,pin)
+    oldmanifest=sealed(PRIOR/'artifact_manifest.json','manifest_sha256');exact(oldmanifest['manifest_sha256'],OLD_MANIFEST_SEAL,'old875 manifest seal')
+    old_parent_files={str(path.relative_to(PRIOR)) for path in PRIOR.rglob('*') if path.is_file() and '__pycache__' not in path.parts and path.suffix!='.pyc' and path.name!='artifact_manifest.json'}
+    declared_old_parent={str(Path(name).relative_to(PRIOR.relative_to(ROOT))) for name in OLD_MANIFEST_FILES if Path(name).is_relative_to(PRIOR.relative_to(ROOT))}
+    exact(old_parent_files,declared_old_parent,'strict immutable old875 validation parent closure')
+    add_pin(pins,PRIOR/'artifact_manifest.json',OLD_MANIFEST_RAW);exact(set(oldmanifest['files']),set(OLD_MANIFEST_FILES),'exact old73 declared artifact files');files_from_manifest(oldmanifest,pins)
+    wrapper=sealed(RELEASE/'report.json','report_sha256');native=sealed(RELEASE/'native_control/report.json','report_sha256');packet=sealed(RELEASE/'native_control/source_packet.json','packet_sha256')
+    closure(RELEASE,wrapper,pins);add_pin(pins,RELEASE/'report.json',digest(RELEASE/'report.json'))
+    for key,value in (('status','PASS'),('source_count',879),('pytest_counts',{'passed':14}),('pytest_exit_code',0),('expected_fresh_test_count',14),
+        ('source_map_before_sha256',MAP),('source_map_after_sha256',MAP),('prior_source_map_sha256',OLD_MAP),('verified_prior_python_sources',875),
+        ('verified_prior_artifacts',1633),('execution_mode','same_python_process'),('pytest_import_mode','importlib'),('historical_tests_reexecuted',False),
+        ('baseline1633_reexecuted',False),('changed_python_paths',[]),('prior_artifacts_and_python_sources_preserved_after',True),
+        ('test_paths',['tests/test_geometric_native_common_material_surface_transport.py']),('control','analysis.geometric_native_common_material_surface_transport_validation.native_control:run')):
+        exact(wrapper[key],value,'sealed fresh same-process gate '+key)
+    exact(wrapper['added_python_sources'],{name:frozen[name] for name in sorted(ADDED)},'gate exact new source hashes');exact(wrapper['verified_current_baseline_evidence'],BASELINE_EVIDENCE,'gate exact baseline evidence')
+    exact(wrapper['frozen_source_map_raw_sha256'],MAP_RAW,'gate frozen879 raw map')
+    for when in ('before','after'):
+        basename='baseline_before_gate' if when=='before' else 'baseline_after_gate'
+        receipt=saved_baseline(PARENT/(basename+'.json'),MAP,bootstrap,pins)
+        exact(wrapper['prior_baseline_'+when],receipt,'wrapper saved '+when+' baseline body')
+        exact(wrapper['prior_baseline_'+when+'_selfseal'],receipt['audit_sha256'],'wrapper '+when+' baseline selfseal')
+        copy_association(wrapper['prior_baseline_'+when+'_path'],PARENT/(basename+'.json'),wrapper['prior_baseline_'+when+'_raw_sha256'],pins,associations)
+        projection(PARENT/(basename+'_projection.json'),receipt,bootstrap,pins)
+        copy_association(receipt['projected_reader_report_path'],PARENT/(basename+'_projection.json'),receipt['projected_reader_report_raw_sha256'],pins,associations)
+    audit=sealed(PARENT/'independent_audit.json','audit_packet_sha256');exact(set(audit),set(AUDIT_FIELDS),'strict ENTIRE independent audit schema')
+    for key,value in AUDIT_STATIC_EXPECTED.items():exact(audit[key],value,'fixed independent audit metadata '+key)
+    add_pin(pins,PARENT/'independent_audit_source.txt',AUDITOR_SHA);exact(audit['auditor_script_sha256'],AUDITOR_SHA,'exact executed independent producer source')
+    for key,value in (('wrapper_raw_sha256',digest(RELEASE/'report.json')),('wrapper_selfseal',wrapper['report_sha256']),
+        ('native_raw_sha256',digest(RELEASE/'native_control/report.json')),('native_selfseal',native['report_sha256']),
+        ('source_packet_raw_sha256',digest(RELEASE/'native_control/source_packet.json')),('source_packet_selfseal',packet['packet_sha256'])):
+        exact(audit[key],value,'independent audit actual current output association '+key)
+    exact(audit['output_manifest'],wrapper['outputs'],'independent strict current four-output association')
+    exact(audit['added_python_sources'],{name:frozen[name] for name in sorted(ADDED)},'independent exact new source hashes')
+    initial={str(RELEASE/name):digest(RELEASE/name) for name in set(OUTPUTS)|{'report.json'}}
+    exact(audit['initial_current_release_raw_sha256'],initial,'audit current5 raw pins captured BEFORE new math')
+    beforeaudit=saved_baseline(PARENT/'baseline_before_independent_audit.json',MAP,bootstrap,pins)
+    exact(audit['baseline875_readback_selfseal'],beforeaudit['audit_sha256'],'independent BEFORE-math baseline selfseal')
+    copy_association(audit['baseline875_readback_path'],PARENT/'baseline_before_independent_audit.json',audit['baseline875_readback_raw_sha256'],pins,associations)
+    projection(PARENT/'baseline_before_independent_audit_projection.json',beforeaudit,bootstrap,pins)
+    exact(audit['baseline875_projected_reader_report_raw_sha256'],beforeaudit['projected_reader_report_raw_sha256'],'audit exact original projection raw')
+    exact(audit['baseline875_projected_reader_selfseal'],beforeaudit['projected_reader_selfseal'],'audit exact original projection seal')
+    copy_association(audit['baseline875_projected_reader_report_path'],PARENT/'baseline_before_independent_audit_projection.json',audit['baseline875_projected_reader_report_raw_sha256'],pins,associations)
+    for name,pin in audit['dependency_raw_sha256'].items():add_pin(pins,name,pin)
+    for name,pin in bootstrap['dependency_raw_sha256'].items():exact(audit['dependency_raw_sha256'][name],pin,'audit keeps all original180 raw pins '+name)
+    executing=[name for name,pin in audit['dependency_raw_sha256'].items() if Path(name).is_relative_to(Path('/tmp')) and name.endswith('.py') and pin==AUDITOR_SHA]
+    exact(len(executing),1,'exact independently executing scratch producer path');copy_association(executing[0],PARENT/'independent_audit_source.txt',AUDITOR_SHA,pins,associations)
+    oldtemp='/tmp/native_common_strain_projection_final_independent_audit_20261006_baseline871_readback.json'
+    copy_association(oldtemp,PRIOR/'baseline_before_independent_audit.json','b048664d22012a46ca95715e60586424568995c37f4637b18e7b51aa40cd685d',pins,associations)
+    for directory,count,tests,pin in ANCESTRY:
+        release=ROOT/directory;oldwrapper=sealed(release/'report.json','report_sha256');add_pin(pins,release/'report.json',pin)
+        for key,value in (('status','PASS'),('source_count',count),('pytest_counts',{'passed':tests})):exact(oldwrapper[key],value,'authoritative saved old release '+str(count)+' '+key)
+        closure(release,oldwrapper,pins);exact(audit['ancestry_release_wrapper_raw_sha256'][str(release/'report.json')],pin,'independent same old release pin '+str(count))
+    exact(len(audit['ancestry_release_wrapper_raw_sha256']),10,'exact ten strict saved ancestry releases')
+    for key,value in (('wrapper_selfseal',wrapper['report_sha256']),('native_selfseal',native['report_sha256']),('packet_selfseal',packet['packet_sha256']),('independent_audit_selfseal',audit['audit_packet_sha256']),('exact_independent_producer_raw_sha256',AUDITOR_SHA)):
+        exact(manifest[key],value,'manifest actual live sealed packet '+key)
+    lines=(PARENT/'independent_audit_console.log').read_text().splitlines()
+    exact(json.loads(next(line for line in reversed(lines) if line.startswith('{'))),audit,'independent final console JSON association')
+    coreconstants,coretree=literal_constants(ROOT/'tectonics/geometric_native_common_material_surface_transport.py')
+    auditconstants,audittree=literal_constants(PARENT/'independent_audit_source.txt');schemas=auditconstants['SCHEMAS'];core_schemas=annotation_schemas(coretree)
+    for path in ('tectonics/geometric_native_common_contact_ports.py','tectonics/geometric_native_common_contact_cuts.py'):
+        core_schemas.update(annotation_schemas(ast.parse((ROOT/path).read_bytes())))
+    exact(schemas,{name:core_schemas[name] for name in schemas},'all8 auditor/frozen production complete DTO schemas')
+    exact(auditconstants['FLAGS'],coreconstants['_FLAGS'],'auditor/production exact14 typed scope flags')
+    wrapperconstants,wrappertree=literal_constants(PARENT/'validate.py')
+    expected_summary={}
+    for item in wrappertree.body:
+        if isinstance(item,ast.Assign) and any(isinstance(t,ast.Name) and t.id=='EXPECTED_NATIVE_SUMMARY' for t in item.targets):
+            for kw in item.value.keywords:
+                if isinstance(kw.value,ast.Name) and kw.value.id=='PHYSICAL_SCOPE':expected_summary[kw.arg]=SCOPE
+                elif isinstance(kw.value,ast.Call) and isinstance(kw.value.func,ast.Name) and kw.value.func.id=='list':expected_summary[kw.arg]=REMAINING
+                else:expected_summary[kw.arg]=ast.literal_eval(kw.value)
+    for value in (wrapper,native,packet):summary(value,expected_summary)
+    exact(set(packet),set(expected_summary)|{'format','prior_875_packet_raw_sha256','prior_875_packet_selfseal','common_reference','allocation','material_transfer','original_cold_body_contexts','surface_queries','original_material_queries','packet_sha256'},'strict ENTIRE surface packet schema')
+    exact(set(native),set(expected_summary)|{'format','status','source_packet_sha256','surface_queries_sha256','original_material_queries_sha256','original_cold_body_contexts_sha256','seconds','report_sha256'},'strict ENTIRE native report schema')
+    for key,value in (('status','PASS'),('format','native-common-material-surface-transport-control-1'),('source_packet_sha256',packet['packet_sha256']),
+        ('surface_queries_sha256',vd(packet['surface_queries'])),('original_material_queries_sha256',vd(packet['original_material_queries'])),('original_cold_body_contexts_sha256',vd(packet['original_cold_body_contexts']))):exact(native[key],value,'complete native packet linkage '+key)
+    exact(packet['format'],'native-common-material-surface-transport-packet-1','new packet format')
+    exact(packet['prior_875_packet_raw_sha256'],OLD_PACKET_RAW,'old875 predecessor raw');exact(packet['prior_875_packet_selfseal'],OLD_PACKET_SEAL,'old875 predecessor seal')
+    priorpacket=sealed(PRIOR/'release_validation_03/native_control/source_packet.json','packet_sha256');exact(priorpacket['packet_sha256'],OLD_PACKET_SEAL,'full saved875 predecessor selfseal')
+    add_pin(pins,PRIOR/'release_validation_03/native_control/source_packet.json',OLD_PACKET_RAW);exact(packet['material_transfer'],priorpacket['material_transfer'],'ENTIRE32 material attachments retained')
+    contexts=packet['original_cold_body_contexts'];exact(type(contexts),list,'literal full cold context list');exact(len(contexts),8,'exact8 full cold contexts')
+    ids=[row['original_body']['component_id'] for row in contexts];exact(ids,sorted(set(ids)),'sorted unique8 full original cold body contexts');bodies=dict(zip(ids,contexts))
+    cold_schema=annotation_schemas(ast.parse((ROOT/'tectonics/geometric_native_cold_body.py').read_bytes()))['NativeColdBody']
+    for body in contexts:
+        exact(set(body),{'original_body','embedding_bank','body_snapshot_sha256','mathematical_body_view'},'entire full original96 cold context export')
+        original=body['original_body'];bank=body['embedding_bank']
+        exact(set(original),set(cold_schema),'entire original cold body schema')
+        exact(original['geometry_enclosure_precision'],96,'genuine current96 source body precision')
+        exact(original['geometry_source_sha256'],vd({key:value for key,value in original.items() if key!='geometry_source_sha256'}),'complete original source cold body seal')
+        bound=vd([original['geometry_source_sha256'],bank['bank_snapshot_sha256'],bank['reference_snapshot_sha256'],bank['component_id'],'fixed_global_symmetric_generators_in_orthogonal_computational_frame'])
+        exact(body['body_snapshot_sha256'],bound,'full original-parent cold binding token')
+        exact(body['mathematical_body_view']['body_snapshot_sha256'],bound,'full original96 view binding token')
+    exact(len(packet['surface_queries']),10,'complete ten saved surface queries');exact(len(packet['original_material_queries']),64,'complete64 saved original point queries')
+    exact(len(audit['surface_query_receipts']),10,'independent ten actual surface receipts');exact(len(audit['original_material_query_receipts']),64,'independent64 actual original receipts')
+    for index,row in enumerate(packet['surface_queries']):
+        exact(set(row),{'arguments','port_response','response'},'strict complete surface query row')
+        args=row['arguments'];portrow=row['port_response'];response=row['response'];port=portrow['port'];cut=port['cut'];geometry=portrow['geometry']
+        bare(port,'NativeCommonContactPort',schemas);bare(geometry,'NativeCommonContactCutBounds',schemas,'bounds_snapshot_sha256');bare(cut,'NativeCommonContactCut',schemas,'cut_snapshot_sha256')
+        exact(set(portrow),set(schemas['NativeCommonContactPortResponse'])|{'format','scope'}|set(auditconstants['PORT_FLAGS']),'complete port response schema')
+        exact(portrow['binding_sha256'],vd({key:portrow[key] for key in schemas['NativeCommonContactPortResponse'] if key!='binding_sha256'}),'complete port response selfseal')
+        exact(portrow['format'],'native-common-contact-body-ports-1','current authentic port export format')
+        exact(portrow['scope'],'AUTHENTIC_COMMON_CUT_BODY_KINEMATICS_ONLY','current port kinematic scope')
+        for key in auditconstants['PORT_FLAGS']:exact(portrow[key],False,'port cannot introduce a new physical law '+key)
+        exported(response,'NativeCommonSurfaceTransportResponse',schemas,coreconstants,coreconstants['FORMAT'])
+        for key,value in (('port_response_binding_sha256',portrow['binding_sha256']),('cut_snapshot_sha256',cut['cut_snapshot_sha256']),('geometry_bounds_sha256',geometry['bounds_snapshot_sha256']),('allocation_binding_sha256',packet['allocation']['binding_sha256']),('parameter_bounds',args['parameter_bounds']),('physical_radius_cubed_bounds_m3',args['physical_radius_cubed_bounds_m3'])):exact(response[key],value,'surface complete query identity '+key)
+        exact(args['cut_id'],cut['cut_id'],'surface cut association');exact(geometry['cut'],cut,'same entire geometry cut')
+        for side in ('donor','receiver'):
+            body=bodies[cut[side+'_component_id']];field=portrow[side+'_fields'];typedside=response[side]
+            exact(set(field),set(schemas['NativeCommonBodyPortFields']),'complete finite body field schema');exact(set(typedside),set(schemas['NativeCommonFiniteSurfaceSide']),'complete finite surface side schema')
+            exact(port[side+'_body'],{key:body[key] for key in ('original_body','embedding_bank','body_snapshot_sha256')},'same ENTIRE96 full cold body context '+side)
+            for object_ in (field,typedside):exact(object_['coordinates_m'],args[side+'_coordinates_m'],'same typed seven coordinate query '+side)
+            exact(typedside['body_snapshot_sha256'],body['body_snapshot_sha256'],'same authentic body seal '+side)
+        independent=audit['surface_query_receipts'][index]
+        exact(independent['cut_id'],cut['cut_id'],'independent same surface cut order');exact(independent['nonzero'],bool(index%2),'independent same zero/nonzero branch order')
+    attachments=packet['material_transfer']['attachments'];exact(len(attachments),32,'ENTIRE original32 material label set')
+    for index,row in enumerate(packet['original_material_queries']):
+        exact(set(row),{'arguments','response'},'strict complete original query row');args=row['arguments'];response=row['response'];attachment=attachments[index//2]
+        exported(response,'NativeCommonOriginalMaterialTransportResponse',schemas,coreconstants,coreconstants['ORIGINAL_FORMAT'])
+        for key in ('point_id','side','material_depth_bounds_m','coordinates_m'):exact(response[key],args[key],'complete original same typed query '+key)
+        for key in ('point_id','trace_id','side','original_parent_id','original_material_id','owner','original_label_membership','archive_cohort_id','geometry_field_component_id','original_direction_literal','areal_material_thickness_m','roof_radial_displacement_m','complete_original_parent_json','complete_parent_allocation_json','complete_archive_cohort_json'):exact(response[key],attachment[key],'complete original lineage association '+key)
+        exact(response['material_system_binding_sha256'],packet['material_transfer']['binding_sha256'],'same complete material system')
+        exact(response['body_snapshot_sha256'],bodies[response['geometry_field_component_id']]['body_snapshot_sha256'],'same complete original96 cold body context')
+        independent=audit['original_material_query_receipts'][index]
+        for key in ('point_id','side','original_parent_id','original_label_membership'):exact(independent[key],response[key],'independent same original query lineage '+key)
+        exact(args['material_depth_bounds_m'],{'lo':independent['material_depth_m'],'hi':independent['material_depth_m']},'independent same pointwise material depth')
+    failed_metadata=preserved_failed_gate01(pins,bootstrap,frozen)
+    check_final_source_reconciliations(pins,frozen)
+    check_auxiliary_artifacts(pins,frozen)
+    temporary_inputs={name for name in pins if Path(name).is_relative_to(Path('/tmp'))}
+    exact(temporary_inputs,set(associations),'EVERY recorded temporary dependency has a closed permanent exact copy')
+    documents={str(path):digest(path) for path in sorted(docpaths)}
+    assert str(output_path) not in pins and str(output_path) not in documents,'output must not overwrite evidence input'
+    for name,pin in pins.items():exact(digest(name),pin,'recorded raw bytes AFTER final readback '+name)
+    exact(source_map(),before,'complete actual879 source map before/after endpoint')
+    for name,pin in documents.items():exact(digest(name),pin,'current separately declared document association '+name)
+    exact(digest(__file__),producer_pin,'final stdlib reader source immutable before/after')
+    assert all(not(name=='tectonics' or name.startswith('tectonics.') or name=='tests' or name.startswith('tests.')) for name in sys.modules),'no project/test imports'
+    report=dict(status='PASS_FINAL879_EVIDENCE_READBACK_ONLY',final_python_source_count=879,unchanged_prior_python_sources=875,
+        source_map_canonical_sha256=MAP,frozen_source_map_raw_sha256=MAP_RAW,complete_actual879_source_map_before_after_identical=True,
+        current_manifest_file_count=EXPECTED_MANIFEST_COUNT,current_manifest_raw_sha256=pins[str(manifest_path)],current_manifest_selfseal=manifest['manifest_sha256'],
+        current_release='release_validation_02',current_release_closed_output_count=4,fresh_saved_tests=14,
+        wrapper_selfseal=wrapper['report_sha256'],native_selfseal=native['report_sha256'],packet_selfseal=packet['packet_sha256'],independent_audit_selfseal=audit['audit_packet_sha256'],
+        preserved_old875_manifest_file_count=73,preserved_old875_recorded_dependency_pin_count=180,authoritative_ancestry_release_closure_count=10,
+        original_cold_body_context_count=8,complete_surface_query_count=10,complete_original_material_query_count=64,
+        full_current_DTO_schemas_and_query_identity_bindings_checked=True,failed_pure_oracle_receipt_preserved_as_failed=True,
+        unused_baseline_draft_preserved_as_never_executed=True,reconstructed_earlier_pure_report_kept_with_explicit_disclosure=True,
+        old1633_full_readback_timing='SAVED_BEFORE_INDEPENDENT_MATH_RECEIPT_ONLY_PLUS_180_RAW_PINS_AND_TEN_RELEASE_CLOSURES_NO_BASELINE_RERUN',
+        temporary_dependency_exact_closed_copy_associations=associations,missing_or_wrong_temp_dependency_regenerated_or_restored=False,
+        recorded_raw_dependency_pin_count=len(pins),dependency_raw_sha256=pins,document_raw_sha256=documents,
+        document_hashes_are_separate_from_component_manifest=True,accepted_original_native_intervals=1,accepted_new_native_intervals=0,
+        original_point_1_remaining_work_blocks=1,remaining_physical_conditions=REMAINING,project_imports=False,
+        baseline_reexecuted=False,math_or_solver_or_test_or_quadrature_reexecuted=False,auditor_source_sha256=producer_pin,seconds=time.perf_counter()-started)
+    report.update(failed_metadata)
+    report['audit_sha256']=vd(report)
+    with output_path.open('xb') as stream:stream.write(enc(report)+b'\n')
+    print(enc(report).decode(),flush=True);return report
+
+
+if __name__=='__main__':
+    parser=argparse.ArgumentParser();parser.add_argument('--out',required=True);parser.add_argument('--manifest');parser.add_argument('--document',action='append',default=[])
+    args=parser.parse_args();run(args.out,artifact_manifest_path=args.manifest,document_paths=args.document)

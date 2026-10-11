@@ -1,0 +1,273 @@
+READ-ONLY MATHEMATICAL CONTRACT: NEXT CONTACT-ONLY REFERENCE FORCE STEP
+2026-10-05. This is a design audit, not a constitutive implementation or an adopted
+contact-energy assignment. No repository Python, frozen outputs, integral evaluator,
+or old worker was changed or run for this contract.
+
+1. AUTHENTIC SOURCE STATE AND SCOPE
+
+Use the authentic contact_time_path.step.memory at path endpoint u=1. Preserve the
+complete closed memory pieces, current plastic slip p*, cumulative slip c*, trace
+identity, and source-history binding. Do not substitute previous_memory, initial
+zero plastic slip, Gauss interpolation, or a donor's incoming trace for the receiving
+family. The source memory elapsed_time_s=1000000 and stage_count=1 are literal path
+metadata; current_point_states have physical elapsed_time_s=2000000 and step_count=2.
+These clocks must not be merged or reset.
+
+For a FIXED authenticated receiver material label a, observe the actual source
+endpoint pressure P*(a)>=0, shear traction T*(a), and current plastic p*(a). Declare
+contact-only reference offsets by
+    g*(a) = -P*(a)/kn_contact,
+    j*(a) = p*(a) + T*(a)/kt_contact.
+Use contact kn=kt=1000000 Pa/m. Column or series stiffness is not the contact law:
+kn_column=500000, kt_column=199999.99999999997 Pa/m;
+kn_series=333333.3333333333, kt_series=166666.66666666666 Pa/m are old binary64 values.
+No old column bulk energy is added to the NEW full 3D body energy.
+
+The archived contact_energy_decomposition_audit.json independently separates all16
+source energies: contact 14.285931143e9 J, old1000m rods 28.571862286e9 J, and accepted
+eight-beam reference 251.841262157e9 J. The source all16 producer/validator float
+replays are bit-exact; exact-literal decompositions retain their rounding residuals.
+The old rod carrier is NOT included in the beam calibration of NEW full-tensor body
+energy. A contact-only force component may omit rods from its formula, but cannot
+claim those source rods have been transferred to NEW body preload, preserved by beam
+calibration, or physically discarded. A separate authenticated same-body initial
+strain/prestress/work transfer or other explicit physical disposition is unresolved.
+An unchanged historical ledger documents the old energy; it does not provide the
+missing new traction-producing field or certify a physical energy/work transfer.
+
+These equations preserve the declared point traction and recoverable contact spring
+energy density. They do not assign it to a new material face. Literal binary64 ledger
+gap/traction/energy can contain rounding mismatch; do not claim exact equality of
+all three ledger floats. Keep exact literal fractions, and replay reconstructed
+identities with exact arithmetic or outward enclosures. Never overwrite the ledger.
+A geometric shared reference point X has zero incremental jump; negative g* is an
+explicit source-calibrated rest offset, not a proof of current geometric penetration.
+
+Receiving family and continuous observation: U=Q(Astar*tau)^T X/r; original receiver
+q=O_receiver^T U; native theta=atan2(q.dot(E_original),q.dot(S_original)). Convert native
+theta to the literal old computational quarter coordinate with the authenticated
+native_quarter_material_coordinate_bounds. Query the complete history at u=1 and
+retain every closed intersecting memory piece. Native angle is not silently the old
+binary64 extent coordinate. This computes an observation only. First-entry ancestry,
+cohort transfer, and assignment onto the new face remain separate unproved actions.
+
+2. OBJECTIVE RECEIVER-ATTACHED MATERIAL-DIRECTOR KINEMATICS
+
+At fixed common-reference material label a, X(a) is the ONE coupled source point.
+For each side s in {donor d, receiver r}, let its owner increment be R_s in SO(3),
+body modes psi_sb(X), modal amplitudes q_sb in metres, and
+    z_s = X + sum_b q_sb psi_sb(X),    y_s = R_s z_s,
+    w = y_r - y_d.
+Cold: psi_0=chi e, psi_i=chi E_i X/R (six fixed GLOBAL symmetric E_i).
+HOT: six psi_i=E_i X/R. Keep the actual all13/all14 port mode associations.
+At R_d=R_r=I, the existing port's jump is the increment difference, with the shared
+X cancelled symbolically. At q=0 and equal owners, w=0 exactly.
+
+Select and DECLARE reference directors N0,D0, then
+    e_n = R_r N0,    e_t = R_r D0,
+    xi_n = e_n.dot(w),    xi_t = e_t.dot(w),
+    g = g* + xi_n,    j = j* + xi_t.
+Two possible director declarations have different meanings:
+(a) NEW actual common-cut oriented normal/down preserves geometric reference normal,
+    and scalar P*,T*. It does not preserve the old world traction direction.
+(b) Authentic old receiver-director pair preserves old source frame identity, with
+    literal sin(dip)=0.49999999999999994 and cos(dip)=0.8660254037844387, including its
+    norm defect. It is not proved equal to the new physical face normal/down.
+Never silently identify or renormalize these choices. The minimal contract uses
+receiver-attached material directors, not a follower current-deformed normal.
+The angular port component remains observable; no source angular stiffness exists.
+
+Under one common superposed rotation G: y_s -> G y_s and e_l -> G e_l. Then xi_l,
+g,j and the energy below are unchanged. Fixed world projection directors at nonzero
+jump fail this test. The source material label and its memory remain fixed during
+all derivatives. A moving lookup, evolving cut domain, or finite owner clock requires
+additional advection/domain/chronology derivatives absent from this contract.
+
+3. FROZEN-MEMORY ELASTIC PREDICTOR: ENERGY, FORCE, HESSIAN
+
+On the compressive branch g<0, with p* held fixed, the conditional spring energy per
+ORIGINAL interface area is
+    W_frozen = (kn/2) g^2 + (kt/2) (j-p*)^2              [J/m^2],
+    W* = P*^2/(2kn) + T*^2/(2kt).
+Subtracting W* changes no force or Hessian. Such a subtraction does not transfer old
+work/energy to a new face. This is a frozen-memory ELASTIC PREDICTOR only, not the
+actual relaxed shear response of the present source law.
+
+Let x_i comprise body amplitudes [m] and owner exponential chart coordinates [rad].
+The energy gradient/residual f_i=dW/dx_i (restoring mechanical force is -f_i) is
+    f_i = kn g xi_n,i + kt (j-p*) xi_t,i.
+The symmetric energy Hessian is
+    H_ij = kn (xi_n,i xi_n,j + g xi_n,ij)
+         + kt (xi_t,i xi_t,j + (j-p*) xi_t,ij).
+The prestress geometric terms g* xi_n,ij and (T*/kt) xi_t,ij survive at q=0. Dropping
+these terms loses the source-preload stiffness and rotation objectivity.
+Body/body xi_l,bc=0 in the declared material-director model, so that block is the
+Gram stiffness. Owner/body and owner/owner require the geometric second terms.
+
+Conjugate traction in world coordinates:
+    t = kn g e_n + kt (j-p*) e_t,
+    t_i = kn (xi_n,i e_n + g e_n,i)
+        + kt (xi_t,i e_t + (j-p*) e_t,i).
+For a side body mode, f_sb = sign_s (R_s psi_sb).dot(t), sign_r=+1, sign_d=-1.
+For independent owners, complete generalized moment gradients (including material
+frame reaction) are f_owner,r = y_d cross t and f_owner,d = -y_d cross t. The receiver
+term is not just y_r cross t: rotating its attached directors contributes -w cross t.
+For one shared owner both cancel exactly, including nonzero body amplitudes. These
+are generalized energy gradients, not an assertion of force equilibrium or admission.
+
+Only AFTER an authenticated measure/memory transfer, a fixed material reference
+measure mu* permits U=integral_Gamma W dmu*, with f=integral f_point dmu* and
+H=integral H_point dmu*. The material reference measure has no x derivatives.
+If a NEW model instead uses current measure J(x) da, the additional terms are
+    f_i = integral (J W_i + J_i W) da,
+    H_ij = integral (J W_ij + J_i W_j + J_j W_i + J_ij W) da,
+plus moving-boundary terms if Gamma changes. No source proof currently justifies
+this alternative, its area derivatives, or a domain-evolution rule.
+
+4. ACTUAL SOURCE RETURN-MAP: FRICTION-FREE RELAXATION IS NOT FROZEN kt
+
+All FOUR source families have friction_dry=friction_wet=cohesion=viscosity=0.
+The unchanged source return-map has trial=kt(j-p_old), strength=0 and, for nonzero
+trial, Delta p=trial/kt; hence p_new=j and returned shear=0. Its relaxed tangent is
+zero. At trial=0 the existing branch code emits a one-sided kt corner selection;
+that selection is not the derivative of the fully relaxed zero-shear mapping under
+an arbitrary finite increment. Do not promote it to a physical elastic stick law.
+
+For the next friction-free compressive source branch, keeping p* as old accepted
+memory and minimizing over the NEW p gives
+    W_inc(g,j,p) = (kn/2)g^2 + (kt/2)(j-p)^2,
+    p_new=j,    W_relaxed=(kn/2)g^2,
+    traction=(-P,0),    D_local=diag(kn,0),
+    f_i=kn g xi_n,i,
+    H_ij=kn(xi_n,i xi_n,j + g xi_n,ij).
+Cumulative memory updates to c_new=c*+abs(p_new-p*); the old p*,c* are not erased.
+Source friction/viscous work is zero; released frozen shear energy is not to be called
+physical fracture work or heat. The unchanged source names its backward-Euler shear
+relaxation remainder separately. No new thermal deposition is inferred.
+
+For a general source constitutive traction t_a(g,j), its branchwise generalized
+Jacobian is J_ij = xi_a,i D_ab xi_b,j + t_a xi_a,ij. Coulomb coupling can make D,
+and therefore J, nonsymmetric; it is not automatically an energy Hessian. A putative
+pressure-dependent slip-strength minimization must not add spurious normal force.
+The present contract closes only the compression/friction-free source branch.
+Opening/damage requires the authentic max-opening/damage state, branch bounds and
+cohesive/dissipation derivatives; extending the compression quadratic over opening
+is not authorized by this design.
+
+5. EXACT FIRST/SECOND PORT DERIVATIVES IN A LEFT EXPONENTIAL CHART
+
+Use a fresh local owner chart delta theta=0 at the current R_s. Set L_alpha v =
+e_alpha cross v and S_alpha_beta=(L_alpha L_beta+L_beta L_alpha)/2. Partial derivatives
+below are coordinate partials of exp([delta theta]x) at zero, not ordered Lie products.
+
+Side derivatives (zero if variable does not belong to that side/owner):
+    y_s,b = R_s psi_sb;
+    y_s,alpha = L_alpha y_s;
+    y_s,bc = 0;
+    y_s,alpha b = L_alpha R_s psi_sb;
+    y_s,alpha beta = S_alpha_beta y_s  (same owner).
+Different independent owner variables have zero mixed side second derivative.
+Set w_i=y_r,i-y_d,i and w_ij=y_r,ij-y_d,ij, preserving shared expressions exactly.
+For a shared owner, w_alpha=L_alpha w and w_alpha_beta=S_alpha_beta w. At q=0 these
+are symbolic zeros. Do not enclose shared X-X as independent interval subtraction.
+
+Receiver-attached frame derivatives:
+    e_l,alpha=L_alpha e_l             (receiver owner only),
+    e_l,alpha beta=S_alpha_beta e_l  (both receiver-owner coordinates),
+    e_l,b=0, e_l,alpha b=0, e_l,bc=0.
+The COMPLETE scalar first/second derivatives are
+    xi_l,i = e_l.dot(w_i) + e_l,i.dot(w),
+    xi_l,ij = e_l.dot(w_ij) + e_l,i.dot(w_j)
+            + e_l,j.dot(w_i) + e_l,ij.dot(w).
+In particular:
+    xi_l,alpha b = e_l.dot(w_alpha b) + e_l,alpha.dot(w_b),
+    xi_l,alpha beta = e_l.dot(w_alpha beta) + e_l,alpha.dot(w_beta)
+                   + e_l,beta.dot(w_alpha) + e_l,alpha beta.dot(w).
+At w=0 the frame term in the FIRST derivative vanishes, but its cross terms in the
+SECOND derivative generally do not. For a shared-owner body pair, all owner xi
+partials vanish by the cancellations; this holds for nonzero q and its body cross.
+Using unsymmetrized L_alpha L_beta as a Hessian is wrong. At a nonzero accumulated
+exponential coordinate, use dexp/Jacobian derivatives or rebase a fresh left chart;
+adding chart angles is not a finite owner update or a whole-clock proof.
+
+Existing frozen ports supply actual side psi, spatial G, displaced y at identity
+incremental owners; w_body, w_owner=L_cross(actual displaced sides), and w_owner,body.
+Their projected_owner_rotation_jacobian and projected_owner_body_cross derivatives
+are projections onto FIXED reference geometry. They are not the full xi derivatives
+above when the receiver-attached frame also rotates.
+
+NEW NEEDED SECOND-DERIVATIVE/API RECEIPTS, BEFORE ANY FORCE ASSEMBLY:
+- symmetric left-chart w_owner,owner, with authenticated actual side y and shared-owner
+  cancellation; body/body is declared exactly zero at fixed reference material labels;
+- frame e_l,i and e_l,ij for the explicitly selected material-director declaration;
+- complete xi_l,i/xi_l,ij, including both owner/body frame cross terms and all
+  owner/owner frame terms, with local chart/owner IDs/units made explicit;
+- at finite R_s, rotate mode columns by R_s and authenticate the rebase/finite chart;
+  current infinitesimal ports alone do not certify finite owner motion;
+- source law branch, fixed material label, exact current memory and measure/cohort
+  binding. A positive body integral k does not authenticate a new interface law.
+
+6. IF A FOLLOWER CURRENT-NORMAL LAW IS CHOSEN LATER (NOT THIS MINIMAL CONTRACT)
+
+With receiver local F=I+sum q_b G_b, v=F^-T N0, l=norm(v), a=v/l, P=I-aa^T,
+    v_i=-F^-T F_i^T v,
+    v_ij=F^-T F_j^T F^-T F_i^T v + F^-T F_i^T F^-T F_j^T v
+         -F^-T F_ij^T v,
+    a_i=P v_i/l,
+    a_ij=P v_ij/l
+         -[P v_i (a.dot(v_j))+P v_j (a.dot(v_i))
+           +a (v_i.dot(P v_j))]/l^2.
+At a fixed material point F_i=G_i and F_ij=0 for body coordinates. World frame is
+R_r a, so owner/body cross terms are also necessary. Down/angular directors need
+an explicit push-forward and/or Gram-Schmidt rule plus their first/second derivatives.
+A moving source label also needs G spatial derivatives and memory-advection terms.
+Current area/coarea differentiation needs its own J_i,J_ij. Existing port gradients
+provide ingredients, not these missing complete frame/deformed-surface derivatives.
+
+7. UNPROVED MEMORY/MEASURE TRANSFER AND HOT GAP
+
+Original source measure is
+    dmu_old = R * 1000m / sin_literal(dip) * dtheta_comp.
+Its 1000m contact height and two 1000m elastic column lengths are not a certified
+radial memory density for the actual roughly 10km common material face. Column
+length is along its old normal; contact height is a separate old geometric input.
+
+Actual common cut parameter alpha and physical-volume depth tau give reference
+    dA0 = J0(alpha,tau) dalpha dtau,
+    J0 = speed(alpha) R^2/r * sqrt(1+c^2),
+    c=(r^3/R^2) (Astar.dot(T)),    T=U_alpha/speed,    X=r Q(Astar*tau) U.
+This is genuine geometric coarea. It does not supply a Radon--Nikodym memory/energy
+transfer from the one-dimensional old interface measure to this two-dimensional face.
+A material/cohort map and its measure-preserving/distribution proof are still required.
+Do not set p*,P*,work constant in tau, multiply a 1000m energy by ten, assign 16 old
+area atoms to the new cut samples, divide old totals by new face area, or use a Gauss
+point as an energy allocation. Old16 atom energies/work/areas remain separate intact.
+
+Five current cold receiving families are associated by authentic receiver parent,
+including two cross-pairs. The old Oct4->Oct0 family (four atoms) has no current cold
+cut; its history/work/energy must not be discarded or reassigned. Symbolic source
+endpoints can be genuine boundary queries, but unresolved interval root/trim bands
+are not material-face quadrature domains and must not be promoted.
+
+The sixth cut is true Cold C6 (Oct5) -> newborn HOT C1. Its receiving_trace_id is NONE.
+The incoming donor 0668 lineage does not license old cold Oct1 pressure, memory,
+stiffness, rest state, or energy on this HOT receiver. No receiving HOT law exists in
+the frozen source. A future HOT interface requires an explicit new constitutive and
+birth/cohort/rest/preload declaration; no automatic zero law or nonzero law is inferred.
+
+8. MEANINGFUL VERIFICATION FOR A FUTURE IMPLEMENTATION (NOT RUN HERE)
+
+Replay exact current endpoint memory and pressure/shear/rest identities, distinguishing
+literal ledger rounding and point-density calibration. Verify the selected source/new
+frame declaration explicitly. Test common finite rigid rotation invariance at nonzero
+body q and shared-owner exact cancellation. Independently finite-difference body,
+owner/body and symmetric owner/owner derivatives, including prestress and receiver
+frame terms. Test full symmetric frozen/relaxed compression Hessians and distinguish
+frozen kt from friction-free relaxed zero shear. Preserve all old16 ledger identities.
+Authenticate whole-face label/cohort/measure transfer before any new spatial energy
+integration, and keep HOT absent law and root/trim bands explicitly unresolved.
+
+No constitutive law, finite clock, force equilibrium, admission, thermal coupling,
+spatial memory assignment, or whole-face energy transfer is implemented or certified
+by this contract. It identifies the exact derivative implementation that can follow
+frozen847, and the source transfer information still missing.

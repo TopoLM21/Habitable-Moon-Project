@@ -1,0 +1,264 @@
+"""Independent exact-rational set/curve replay. No project imports or quadrature."""
+from fractions import Fraction as F
+from math import factorial, comb
+from dataclasses import dataclass
+from pathlib import Path
+import json, hashlib, time
+
+ROOT = Path('/workspace/Habitable-Moon-Project')
+INPUT = Path('/tmp/native_common_reference_candidate_20261005.json')
+OUTPUT = Path('/tmp/native_curved_partition_peer_20261005.json')
+CURVED = ROOT/'analysis/geometric_native_curved_equilibrium_validation/release_validation_01/native_control/candidate_packet.json'
+JOINT = ROOT/'analysis/geometric_native_joint_spherical_validation/release_validation_01/native_control/candidate_packet.json'
+EXPECTED_CURVED = '0e3554a55a8c93eb8ecbdae8351f3280a2ae4bd8596254950afef7f77b98d2cb'
+EXPECTED_JOINT = '8580d79ec47263c9f581a646595ab19d87ae927770d082b3016803d4c405ac45'
+
+def enc(x): return json.dumps(x,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+def digest(x): return hashlib.sha256(x).hexdigest()
+def rat(x): return F(*x)
+def fr(x): return [x.numerator,x.denominator]
+
+@dataclass(frozen=True)
+class I:
+    lo: F
+    hi: F=None
+    def __post_init__(self):
+        object.__setattr__(self,'lo',F(self.lo)); object.__setattr__(self,'hi',F(self.lo if self.hi is None else self.hi))
+        assert self.lo <= self.hi
+    def __add__(self,x):
+        x=iv(x);return I(self.lo+x.lo,self.hi+x.hi)
+    __radd__=__add__
+    def __neg__(self): return I(-self.hi,-self.lo)
+    def __sub__(self,x): return self+-iv(x)
+    def __rsub__(self,x): return iv(x)+-self
+    def __mul__(self,x):
+        x=iv(x);z=[self.lo*x.lo,self.lo*x.hi,self.hi*x.lo,self.hi*x.hi];return I(min(z),max(z))
+    __rmul__=__mul__
+    def __truediv__(self,x):
+        x=iv(x);assert not x.lo<=0<=x.hi;return self*I(1/x.hi,1/x.lo)
+    def __rtruediv__(self,x): return iv(x)/self
+    @property
+    def mid(self): return (self.lo+self.hi)/2
+    def dto(self):
+        # Only compress huge derived exact fractions, always outward. The
+        # authenticated source's literal area/clock/envelope rational pairs
+        # remain unchanged; no process-wide integer string limit override.
+        value=self
+        if max(v.bit_length() for x in (self.lo,self.hi) for v in (abs(x.numerator),x.denominator))>12000:
+            value=roundi(self,384)
+        return {'lo':fr(value.lo),'hi':fr(value.hi)}
+
+def iv(x):return x if isinstance(x,I) else I(x)
+def readi(x):return I(rat(x['lo']),rat(x['hi']))
+def power2(e):return F(2**e) if e>=0 else F(1,2**(-e))
+def roundi(x,p):
+    x=iv(x);a=max(abs(x.lo),abs(x.hi))
+    if not a:return I(0)
+    e=a.numerator.bit_length()-a.denominator.bit_length()
+    if a<power2(e):e-=1
+    scale=power2((3322*p+999)//1000+8-e)
+    a,b=x.lo*scale,x.hi*scale
+    return I(F(a.numerator//a.denominator)/scale,F(-((-b.numerator)//b.denominator))/scale)
+def deriv(co,n=1):return tuple(x*F(factorial(k),factorial(k-n)) for k,x in enumerate(co) if k>=n) or (F(0),)
+def cross(a,b):return (a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0])
+def normal_coefficients(d,r,n):
+    # Independent convolution of the two matrix exponential series.
+    right=[(F(-1),F(0),F(0))]
+    for k in range(1,n+1):right.append(tuple(x/k for x in cross(r,right[-1])))
+    out=[(F(0),)*3 for _ in range(n+1)]
+    for k,row in enumerate(right):
+        left=row
+        for j in range(n-k+1):
+            if j:left=tuple(x/j for x in cross(tuple(-x for x in d),left))
+            out[k+j]=tuple(a+b for a,b in zip(out[k+j],left))
+    return tuple(out)
+
+class Poly:
+    def __init__(self,co,tails,p,n):
+        self.p,self.n=p,n
+        ce=tuple(roundi(I(x),p+24).mid for x in co)
+        er=tuple(abs(a-b) for a,b in zip(co,ce))
+        self.co=ce
+        self.tails=tuple(roundi(I(t+sum((x*F(factorial(k),factorial(k-j)) for k,x in enumerate(er) if k>=j),F(0))),p+24).hi for j,t in enumerate(tails))
+    def derivative(self):return Poly(deriv(self.co),self.tails[1:],self.p,self.n)
+    def __neg__(self):return Poly(tuple(-x for x in self.co),self.tails,self.p,self.n)
+    def __sub__(self,x):
+        n=max(len(self.co),len(x.co));return Poly(tuple((self.co[k] if k<len(self.co) else 0)-(x.co[k] if k<len(x.co) else 0) for k in range(n)),tuple(a+b for a,b in zip(self.tails,x.tails)),self.p,self.n)
+    def __mul__(self,x):
+        out=[F(0)]*(len(self.co)+len(x.co)-1)
+        for i,a in enumerate(self.co):
+            for j,b in enumerate(x.co):out[i+j]+=a*b
+        tails=[]
+        for j in range(min(len(self.tails),len(x.tails))):
+            t=sum((abs(a)*F(factorial(k),factorial(k-j)) for k,a in enumerate(out) if k>self.n and k>=j),F(0))
+            for k in range(j+1):
+                l=j-k;ap=sum(map(abs,deriv(self.co,k)),F(0));bp=sum(map(abs,deriv(x.co,l)),F(0))
+                t+=comb(j,k)*(self.tails[k]*bp+x.tails[l]*ap+self.tails[k]*x.tails[l])
+            tails.append(t)
+        return Poly(tuple(out[:self.n+1]),tuple(tails),self.p,self.n)
+    def bounds(self,u,j=0):
+        y=I(0)
+        for a in reversed(deriv(self.co,j)):y=roundi(y*u+a,self.p+16)
+        return roundi(y+I(-self.tails[j],self.tails[j]),self.p+16)
+
+def bernstein(co,u,tail):
+    # Exact Bernstein convex hull; independent of project clipping/pose code.
+    n=len(co)-1;l,w=u.lo,u.hi-u.lo
+    power=tuple(sum((co[k]*comb(k,j)*l**(k-j)*w**j for k in range(j,n+1)),F(0)) for j in range(n+1))
+    be=tuple(sum((power[k]*F(comb(i,k),comb(n,k)) for k in range(i+1)),F(0)) for i in range(n+1))
+    return I(min(be)-tail,max(be)+tail)
+def factored_bounds(co,u,rate,j=0):
+    n=len(co)-1
+    tail=rate**(n+2)/factorial(n+2)*F(factorial(n+1),factorial(n+1-j))/(1-rate/F(n+2-j))
+    return bernstein(deriv(co,j),u,tail)
+def rotation(a,n=24):
+    rate=sum(map(abs,a),F(0));tail=rate**(n+1)/factorial(n+1)/(1-rate/F(n+2))
+    cols=[]
+    for j in range(3):
+        term=tuple(F(i==j) for i in range(3));total=term
+        for k in range(1,n+1):
+            term=tuple(x/k for x in cross(a,term));total=tuple(x+y for x,y in zip(total,term))
+        cols.append(tuple(I(x-tail,x+tail) for x in total))
+    return tuple(tuple(cols[j][i] for j in range(3)) for i in range(3))
+
+def main():
+    started=time.monotonic();p=json.loads(INPUT.read_bytes());raw=CURVED.read_bytes();assert digest(raw)==EXPECTED_CURVED
+    packet=json.loads(raw);assert enc(packet['before']).decode()==dict(p['complete_authenticated_source_dto_json'])['before']
+    # The candidate does not grant source authority: check the fixed authenticated raw packet.
+    b=packet['before'];e=b['snapshot']['current_material_epoch'];m=e['source_material_state'];s=m['sweep_certificate'];j=m['journal']
+    assert enc(s['journal'])==enc(j)
+    assert e['additional_owner_histories']==[[0,[]],[1,[]]] and e['phase']=='partition'
+    prec,n=s['precision'],s['order'];dt=F.from_float(j['dt_myr']);motions=dict(j['omega_rad_per_myr'])
+    endpoint_clock=F.from_float(j['source_surface']['time_myr'])+dt
+    assert rat(e['time_myr'])==endpoint_clock
+    assert all(rat(x['newborn']['birth_time_myr'])==endpoint_clock for x in m['endpoint_vacancies'] if x['newborn'])
+    axes={k:tuple(F.from_float(v)*dt for v in omega) for k,omega in motions.items()}
+    co=normal_coefficients(axes[1],axes[0],n);rate=sum(map(abs,axes[1]),F(0))+sum(map(abs,axes[0]),F(0))
+    assert rate==rat(s['normal_rate_bound']) and rate<F(1,4)
+    tails=tuple(rate**(n+1)/factorial(n+1-d)/(1-rate/F(n+2-d)) for d in range(7))
+    c=Poly(tuple(-x[0] for x in co),tails,prec,n);y=Poly(tuple(x[1] for x in co),tails,prec,n);z=Poly(tuple(x[2] for x in co),tails,prec,n)
+    ap=y.derivative()*c-y*c.derivative();bp=z.derivative()*c-z*c.derivative();curv=bp.derivative()*ap-bp*ap.derivative();h=z*y.derivative()-y*z.derivative();area=-h*curv
+    polys={'C':c,'Y':y,'Z':z,'A1':ap,'B1':bp,'curvature_numerator':curv,'height_numerator':h,'area_integrand_numerator':area}
+    matches={}
+    for row in s['analytic_polynomials']:
+        obj=polys[row['name']];matches[row['name']]=obj.co==tuple(map(rat,row['coefficients'])) and obj.tails==tuple(map(rat,row['derivative_tails']))
+    assert all(matches.values())
+    whole=I(0,1);root=readi(s['envelope']['maximum_ratio_time_fraction'])
+    signs={'C_positive':c.bounds(whole),'a_derivative_positive':ap.bounds(whole),'b_derivative_positive':bp.bounds(whole),'curvature_derivative_negative':curv.bounds(whole,1),'curvature_after_maximum_negative':curv.bounds(I(root.lo,1))}
+    assert all(v.lo>0 for k,v in signs.items() if 'positive' in k)
+    assert all(v.hi<0 for k,v in signs.items() if 'negative' in k)
+    # q=Z/Y; its factor u cancels analytically, retaining the tiny turning root.
+    A=tuple(row[1] for row in co[1:]);B=tuple(-row[2] for row in co[1:])
+    def fb(co,u,j=0):return factored_bounds(co,u,rate,j)
+    def V(u):return fb(A,u)*fb(B,u,1)-fb(A,u,1)*fb(B,u)
+    vprime=fb(A,whole)*fb(B,whole,2)-fb(A,whole,2)*fb(B,whole)
+    before,after=V(I(root.lo)),V(I(root.hi))
+    assert vprime.lo>0 and before.hi<0 and after.lo>0
+    a_over_u,b_over_u=fb(A,whole),fb(B,whole)
+    assert a_over_u.lo>0 and b_over_u.hi<0
+    q0=-fb(B,I(0))/fb(A,I(0));q1=z.bounds(I(1))/y.bounds(I(1));qm=z.bounds(root)/y.bounds(root)
+    k1=bp.bounds(I(1))/ap.bounds(I(1));h1=h.bounds(I(1))/ap.bounds(I(1))
+    assert (q0-q1).lo>0 and qm.lo>q1.hi and q1.lo>k1.hi and k1.lo>0 and h1.lo>0
+    env={'maximum_ratio_bounds':qm,'terminal_ratio_bounds':q1,'terminal_slope_bounds':k1,'terminal_height_bounds':h1}
+    assert all(v.dto()==s['envelope'][k] for k,v in env.items())
+    # Proven envelope containing hull only. It never replaces E as a material mask.
+    chart=(I(0,h1.hi),I(-qm.hi,-k1.lo),I(1));rot=rotation(axes[1])
+    moved=tuple(sum((rot[i][j]*chart[j] for j in range(3)),I(0)) for i in range(3))
+    fragments=j['source_surface']['fragments'];parent=next(x for x in fragments if x['fragment_id']=='octant:5')
+    expected_orthants=set((x,y,z) for x in (-1,1) for y in (-1,1) for z in (-1,1));orthants=[]
+    for f in fragments:
+        geom=f['geometry'];assert geom['pose']==[] and all(x['rotations']==[] for x in geom['supports'])
+        supports={tuple(x['normal']) for x in geom['supports']}
+        sign=tuple(next(s for s in (-1,1) if tuple(s if j==i else 0 for j in range(3)) in supports) for i in range(3))
+        assert len(supports)==3 and f['parcel']['plate']==int(sign[0]>0)
+        orthants.append(sign)
+    assert len(orthants)==8 and set(orthants)==expected_orthants
+    ns=[tuple(x['normal']) for x in parent['geometry']['supports']]
+    assert set(ns)=={(1,0,0),(0,-1,0),(0,0,1)}
+    footprint=tuple((n,sum((n[i]*moved[i] for i in range(3)),I(0))) for n in ns)
+    assert all(v.lo>0 for n,v in footprint)
+    corr=e['paired_corrections'];assert len(corr)==1;corr=corr[0]
+    source_chart=corr['containing_chart'];assert len(source_chart['vertices'])==4
+    source_xy=[]
+    for ray in source_chart['vertices']:
+        assert ray['kind']=='seed' and ray['rotations']==[] and ray['planes']==[]
+        x,y0,z0=map(F,ray['reference']);assert z0>0;source_xy.append((x/z0,y0/z0))
+    xs={x for x,y0 in source_xy};ys={y0 for x,y0 in source_xy}
+    assert len(xs)==len(ys)==2 and set(source_xy)==set((x,y0) for x in xs for y0 in ys)
+    assert min(xs)==0 and max(xs)>=chart[0].hi and min(ys)<=chart[1].lo and max(ys)>=chart[1].hi
+    for support in source_chart['supports']:
+        assert support['rotations']==[]
+        values=sum((F(support['normal'][i])*chart[i] for i in range(3)),I(0))
+        assert values.lo>=0
+    comps={x['component_id']:x for x in e['components']};neg,pos=comps[corr['negative_component_id']],comps[corr['positive_component_id']]
+    assert neg['owner']==pos['owner']==corr['owner']==1 and neg['original_parent_id']==pos['original_parent_id']=='octant:5'
+    assert corr['containing_chart']['pose']==[{'dt_myr':j['dt_myr'],'omega_rad_per_myr':motions[1]}]
+    assert neg['proxy_geometries'][0]['pose']==corr['containing_chart']['pose'] and all(x['pose']==[] for x in pos['proxy_geometries'])
+    domain=next(x for x in s['donor_domains'] if x['fragment_id']=='octant:5')
+    expected_cases={'octant:4':'empty','octant:5':'endpoint_plus_curved_swept_extra','octant:6':'endpoint_equals_whole_swept','octant:7':'endpoint_equals_whole_swept'}
+    assert {x['fragment_id']:x['domain_case'] for x in s['donor_domains']}==expected_cases
+    extra=readi(domain['extra_swept_area_bounds_sr']);assert extra.lo>0 and extra.dto()==corr['area_bounds_sr']
+    vac=next(x for x in m['endpoint_vacancies'] if x['fixed_original_parent_id']=='octant:5')
+    assert vac['curved_extra_donor_ids']==['octant:5'] and vac['vacancy_domain_id']==pos['component_id']
+    allocation=next(x for x in m['parent_allocations'] if x['fragment_id']=='octant:5')
+    assert allocation['live_domain_id']==neg['component_id'] and allocation['archive_domain_id'] in corr['measure_reference']
+    report={
+      'format':'independent-native-curved-source-set-replay-1',
+      'status':'CURVED_SET_TRANSFER_AND_SOURCE_OWNER_CLOCK_PROVED',
+      'scope':'exact source interiors/set identities, not finite mixed equilibrium or whole-clock physical admission',
+      'input_candidate_raw_sha256':digest(INPUT.read_bytes()),'source_curved_packet_raw_sha256':digest(raw),
+      'source_script_sha256':digest(Path(__file__).read_bytes()),'project_imports_used':False,'full_first_entry_quadrature_replayed':False,
+      'derived_exact_scalar_serialization':'fractions over 12000 bits compressed outward on a relative 384-decimal rational binary grid; literal source area/clock/envelope unchanged',
+      'source_epoch_sha256':e['epoch_sha256'],'source_material_state_sha256':m['state_sha256'],
+      'source_additional_owner_histories':e['additional_owner_histories'],'source_phase':e['phase'],
+      'source_endpoint_clock_myr':fr(endpoint_clock),'all_five_hot_birth_clocks_equal_source_endpoint':True,
+      'source_primitive_orthants_all_eight_complete':True,
+      'negative_component_id':neg['component_id'],'positive_component_id':pos['component_id'],'correction_id':corr['correction_id'],
+      'donor_parent_id':'octant:5','recipient_fixed_parent_id':'octant:5','both_owner':1,
+      'normal_definition':'n(u)=exp(-[Omega1] D u) exp([Omega0] D u) (-1,0,0)=(-C,Y,Z)',
+      'analytic_polynomial_source_matches':matches,
+      'recomputed_strict_orientation_signs':{k:v.dto() for k,v in signs.items()},
+      'maximum_ratio_root_source_bracket':root.dto(),'maximum_ratio_turning_before':before.dto(),'maximum_ratio_turning_after':after.dto(),'maximum_ratio_turning_derivative_positive':vprime.dto(),
+      'Y_over_u_positive':a_over_u.dto(),'Z_over_u_positive':(-b_over_u).dto(),'initial_ratio_above_terminal':(q0-q1).dto(),
+      'recomputed_envelope':{k:v.dto() for k,v in env.items()},
+      'endpoint_image_of_enclosing_hull_strict_fixed_oct5_supports':[{'normal':list(n),'bounds':v.dto()} for n,v in footprint],
+      'containing_hull_is_material_mask':False,'true_curved_extra_area_bounds_sr':extra.dto(),'true_curved_extra_area_display_sr':[float(extra.lo),float(extra.hi)],
+      'proof_flags':{
+        'all_eight_analytic_polynomials_and_derivative_tails_independently_reproduced':True,
+        'oct4_complete_swept_domain_empty':True,
+        'oct6_complete_swept_domain_equals_endpoint_archive':True,
+        'oct7_complete_swept_domain_equals_endpoint_archive':True,
+        'oct5_swept_minus_endpoint_contained_by_verified_envelope_hull':True,
+        'verified_envelope_hull_contained_by_literal_source_containing_chart':True,
+        'rotated_true_extra_strictly_inside_fixed_original_oct5':True,
+        'negative_C6_and_positive_C1_use_same_true_curved_world_set':True,
+        'all_additional_owner_histories_empty':True,
+        'source_cold_and_all_hot_endpoint_clocks_equal':True,
+        'whole_all13_partition_certified':False
+      },
+      'true_curved_domain':'E={q in P5: exists 0<u<=1 with n(u).q>0} minus {q in P5:n(1).q>0}',
+      'negative_actual_mask':'R1(1)(P5 minus S5), where S5=the complete once-only first-entry domain',
+      'positive_actual_mask':'(fixed P5 minus union all complete retained original masks) = raw gap in fixed P5 disjoint_union R1(1) E',
+      'set_proof':[
+        'All receiver-owner original octants retained. Their common rigid image is the endpoint hemisphere R0(1){x<=0}.',
+        'If q in donor Pj and R1(1)q is in endpoint receiver hemisphere, then n(1).q>0 for interiors. Time u=1 is an allowed first-entry time, so q is archived; no retained donor interior intersects a retained receiver interior.',
+        'All donor octants share the same original owner1 rotation. Since primitive source octants have disjoint interiors, different retained donor originals remain disjoint.',
+        'For every q in E, q lies in P5, q is archived, and n(1).q<=0: R1(1)E lies in donor endpoint geometry, outside the receiver endpoint interior, and outside ALL retained donor masks.',
+        'The independently recomputed strict footprint inequalities show R1(1)E is inside fixed P5, so no curved material is allocated to a different fixed-parent vacancy.',
+        'Raw gap is outside all whole moved originals, whereas R1(1)E is inside whole moved P5; therefore the raw gap and the curved extra are disjoint interiors.',
+        'C6 removes exactly S5 once; C1 fills exactly R1(1)E once. Both are owner1 and all extra owner histories are empty, so they refer to the same endpoint world set. Their chart is a bound, not a substituted material set.',
+        'At support equalities source faces/zero-area boundaries remain separate. These statements certify disjoint material interiors, not the exclusion of legitimate shared faces.'
+      ],
+      'other_three_donor_branches_analytic_set_proof':[
+        'P4=(x,-y,-z), x,y,z>=0. Since C>0,Y/u>0,Z/u>0, the receiver predicate -Cx-Yy-Zz cannot be positive at any u>0. The whole swept domain is empty.',
+        'P6=(x,y,-z). Write a=Y/C>0, q=Z/Y>0. The proved one maximum of q and q(0)>q(1) imply q(u)>=q(1) for every u. Since a is increasing, x<a(u)(y-q(u)z) implies x<a(1)(y-q(1)z): every positive first entry lies inside the endpoint archive. The reverse implication follows because u=1 is included.',
+        'P7=(x,y,z), x,y,z>=0. Both a=Y/C and b=Z/C are strictly increasing by the recomputed A1/B1 signs. Thus x<a(u)y+b(u)z implies x<a(1)y+b(1)z, and the whole swept domain equals the endpoint archive.',
+        'P5=(x,-y,z) is the sole curved branch. For u before the proved ratio maximum, a(u)(q(u)-y/z) is dominated by its value at the maximum whenever it is positive. After that maximum, k=bprime/aprime decreases because the recomputed curvature is negative. The envelope h=b-a*k increases from zero to h(1), giving x/z in [0,h(1)] and -y/z in [-qmax,-k(1)] for the swept-only extra.'
+      ],
+      'remaining_external_partition_work':'Independently certify all raw gap polygon masks as fixed-parent complements and their mutual separation. The curved branch and the other three donor whole-swept branches have separate analytic set proofs above.',
+      'whole_all13_partition_certificate':False,'new_common_reference_admitted':False,
+      'elapsed_s':time.monotonic()-started}
+    OUTPUT.write_bytes(enc(report)+b'\n')
+    print(json.dumps({'status':report['status'],'elapsed_s':report['elapsed_s'],'report':str(OUTPUT),'report_raw_sha256':digest(OUTPUT.read_bytes()),'footprint_supports':[{'normal':list(n),'bounds_display':[float(v.lo),float(v.hi)]} for n,v in footprint],'exact_area_display':float(extra.lo)}))
+
+if __name__=='__main__':main()

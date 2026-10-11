@@ -1,0 +1,115 @@
+"""Read-only retained-cut contact-source review; stdlib, no quadratures."""
+from pathlib import Path
+from fractions import Fraction as F
+import json,hashlib
+ROOT=Path('/workspace/Habitable-Moon-Project')
+PACKET=ROOT/'analysis/geometric_native_common_reference_validation/release_validation_01/native_control/source_packet.json'
+CUT=ROOT/'analysis/geometric_native_common_reference_validation/retained_original_contact_cut_audit.json'
+HIST=ROOT/'analysis/geometric_native_common_reference_validation/contact_history_audit.json'
+OUT=Path('/tmp/native_common_retained_contact_source_review_20261005.json')
+def enc(x):return json.dumps(x,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+def sha(b):return hashlib.sha256(b).hexdigest()
+raw=PACKET.read_bytes();assert sha(raw)=='dc8f820dbd926c53223a5c141a10296d1c7135efc6bf1077763785866dda9275'
+p=json.loads(raw); body=dict(p); seal=body.pop('packet_sha256');assert sha(enc(body))==seal
+b=p['before'];h=b['original_physical_history'];s=b['snapshot'];material=s['current_material_epoch']['source_material_state']
+cut=json.loads(CUT.read_bytes());assert sha(CUT.read_bytes())=='7ac3cd74013a20d7a06e95eccec4e6ceb3db412fb197ec3ed559c5af43108200'
+assert sha(HIST.read_bytes())=='6da68ccda2089921fbe197293a05e4f84c3ea83fd2abb648b98d20f9b1813901'
+states=dict(s['states']);nodes=h['quadrature_histories'];assert len(states)==len(nodes)==16
+assert all(states[n['point_id']]==n['unaccepted_candidate_state'] for n in nodes)
+assert s['spatial_memory']==h['contact_time_path']['step']['memory']
+assert all(a[0]==q[0] and a[1]==q[1]['coefficients'] and a[2]==q[2]['coefficients']
+ for a,q in zip(s['free_anchor_fields'],h['contact_time_path']['step']['anchor_fields']))
+bindings=material['trace_bindings'];byrecv={r['receiver_fragment_id']:r for r in bindings};bydon={r['donor_fragment_id']:r for r in bindings}
+receiving=[]
+for r in cut['true_source_endpoint_cold_boundary_arcs']:
+ donor,receiver=r['donor_parent'],r['receiver_parent']; incoming,source=bydon[donor],byrecv[receiver]
+ receiving.append(dict(donor_component_id=r['donor_component_id'],receiver_component_id=r['receiver_component_id'],
+  donor_parent=donor,receiver_parent=receiver,receiving_trace_id=source['trace_id'],incoming_own_donor_trace_id=incoming['trace_id'],
+  cross_pair=source['donor_fragment_id']!=donor,native_arc_canonical_sha256=sha(enc(r['native_arc'])),
+  source_terminal_live_trim=r.get('C6_exact_live_cut_status','not_C6_trim'),source_receiver_family_selector='authentic receiver original parent, not donor own trace',
+  source_first_event_ancestry_assigned=False,pressure_or_memory_adopted_on_cut=False))
+assert len(receiving)==5 and sum(r['cross_pair'] for r in receiving)==2
+laws=[]
+for binding in bindings:
+ atom=next(n for n in nodes if n['trace_id']==binding['trace_id']);t=atom['original_material'];law=t['law'];columns=t['columns']
+ assert law['normal_stiffness_pa_m']==law['tangential_stiffness_pa_m']==1000000.0
+ assert law['friction_dry']==law['friction_wet']==law['cohesion_pa']==law['viscosity_pa_s_m']==0.0
+ assert t['water']==.7
+ kn_col=1/(columns['sub_length_m']/columns['sub_normal_modulus_pa']+columns['over_length_m']/columns['over_normal_modulus_pa'])
+ kt_col=1/(columns['sub_length_m']/columns['sub_shear_modulus_pa']+columns['over_length_m']/columns['over_shear_modulus_pa'])
+ laws.append(dict(trace_id=binding['trace_id'],literal_original_material=t,literal_original_frame=atom['original_frame'],
+  source_kn_column_pa_m=kn_col,source_kt_column_pa_m=kt_col,
+  source_kn_series_binary64_pa_m=1/(1/kn_col+1/law['normal_stiffness_pa_m']),
+  source_kt_series_binary64_pa_m=1/(1/kt_col+1/law['tangential_stiffness_pa_m'])))
+files=(
+ 'tectonics/geometric_native_common_reference.py',
+ 'tectonics/geometric_native_contact_field_history.py',
+ 'tectonics/geometric_native_contact_reference_transport.py',
+ 'tectonics/geometric_native_first_entry_material.py',
+ 'tectonics/geometric_native_first_entry_physical_binding.py',
+ 'tectonics/geometric_native_first_entry_contact_handover.py',
+ 'tectonics/geometric_native_first_entry_contact_domain_handover.py',
+ 'tectonics/geometric_contact_mechanics.py',
+ 'tectonics/geometric_native_physical_history.py')
+a=dict(format='native-common-retained-cut-contact-source-and-reference-readonly-review-1',
+ status='SOURCE_FAMILY_AND_REFERENCE_DEPENDENCY_REVIEW_ONLY',scope='existing point1 condition1; geometry and body ports do not imply force law',
+ project_imports=False,repository_python_or_docs_edits=False,quadratures=False,source_pressure_adopted_on_new_cuts=False,
+ source_common841_packet_raw_sha256=sha(raw),source_common841_packet_seal_sha256=seal,
+ source_cut_audit_raw_sha256=sha(CUT.read_bytes()),source_history_audit_raw_sha256=sha(HIST.read_bytes()),
+ source_file_raw_sha256={f:sha((ROOT/f).read_bytes()) for f in files},
+ original_history_binding_sha256=h['binding_sha256'],source_snapshot_sha256=p['source_snapshot_sha256'],
+ five_receiving_family_bindings=receiving,
+ authentic_family_without_current_cold_cut=dict(trace_id=byrecv['octant:0']['trace_id'],donor_parent='octant:4',receiver_parent='octant:0',preserved_atom_count=4,old_memory_work_energy_not_discarded=True,pressure_automatically_reassigned_to_new_cut=False),
+ curve=dict(donor_component_id=cut['actual_curved_restriction']['negative_component_id'],
+  actual_other_side=cut['actual_curved_restriction']['positive_hot_component_id'],receiving_trace_id=None,
+  incoming_own_donor_trace_id=bydon['octant:5']['trace_id'],cold_receiver_pressure_source_available=False,
+  explanation='True current other side is newborn HOT C1, not old cold receiver oct1. Incoming own0668 lineage is not an opposite receiver family or force declaration',
+  earlier_envelope='On the source curve g(u*)=0 and derivative g_prime(u*)=0. This is an envelope/touch witness; first-entry/cohort/memory requires separate exact chronology, not a root midpoint or a current-cut shortcut'),
+ source_current_configuration=dict(atom_count=16,preserved_once=True,
+  current_node_source_epoch='unaccepted_candidate literal DTO label, because complete current snapshot equals these records',
+  continuous_field_query_time_fraction=[1,1],current_continuous_memory_sha256=sha(enc(h['contact_time_path']['step']['memory'])),
+  symbol_source_continuous_memory_accessor_returns='step.previous_memory: do not use as current-state adoption shortcut',
+  native_geometry_elapsed_s=s['elapsed_time_s'],local_contact_elapsed_s=sorted(set(x['elapsed_time_s'] for x in states.values())),
+  current_free_gap_bounds_m=[min(x['gap_free_m'] for x in states.values()),max(x['gap_free_m'] for x in states.values())],
+  current_contact_spring_gap_bounds_m=[min(x['gap_m'] for x in states.values()),max(x['gap_m'] for x in states.values())],
+  current_pressure_bounds_pa=[min(-x['traction_normal_pa'] for x in states.values()),max(-x['traction_normal_pa'] for x in states.values())],
+  all_current_shear_traction_zero=all(x['traction_shear_pa']==0 for x in states.values()),
+  all_current_plastic_and_cumulative_states_preserved=True,old_atoms_equal_firstentry_branches=False),
+ literal_four_family_parameters=laws,
+ computable_source_observations=dict(
+  actual_receiver_theta='U=Q(Astar*tau)^T*(X/r); c=O_receiver^T*U; theta_native=atan2(c.dot(T_source),c.dot(S_source)) on the authentic quarter. Convert with native_quarter_material_coordinate_bounds; native angle is not silently the old binary64 computational coordinate',
+  continuous_current_state='query_native_contact_field_history(history,receiving_trace,theta_comp,I(1),expected_source_history_dto=fullsource,source_expression_context=fullcut/context). Retain every closed intersecting memory piece, no Gauss interpolation',
+  first_event_distinct='Current receiver family selection does not authenticate an incoming first-entry transfer. Exact donor label/chronology root and first receiving ancestry must be proved separately; live current cut labels and archived source labels are distinct',
+  source_directors='n_old=sin_literal*H_receiver+cos_literal*radial_receiver; d_old=cos_literal*H_receiver-sin_literal*radial_receiver, carried by old receiver SO3. Keep literal norm defect; no renormalization or mapped-normal identity',
+  original_interface_measure='R*contact_height/source_literal_sin(dip) dtheta_comp, contactheight1000m. Source supplies no density over a new full10km face or current face coarea',
+  no_finite_work_density='Continuous state supplies per-original-interface-area energy, not arbitrary current-cut point work or old16 atom ledger allocation'),
+ minimal_explicit_contact_only_reference=dict(
+  implemented_or_adopted=False,
+  compressed_branch_only=True,
+  source_current_scalar_symbols='At authentic source(theta_current,u=1), retain pressure Pstar, shear Tstar, plastic pstar, cumulative cstar, and all source clocks/old atom work lineages',
+  contact_reference='g_contact_star=-Pstar/kn_contact; j_contact_star=pstar+Tstar/kt_contact. These are contact spring coordinates, not g_free/j_free series anchors or physical face clearance',
+  finite_relative_port='Delta_r(z)=(x_receiver(z)-x_donor(z))-(x_receiver(zstar)-x_donor(zstar)) at frozen authentic material labels',
+  receiver_attached_projection='delta_g=(O_receiver*n_ref).dot(Delta_r); delta_j=(O_receiver*d_ref).dot(Delta_r), equivalently project O_receiver^T relative separation with material reference directors; reference frame and its owner derivatives must be declared',
+  spring_law='g_contact=g_contact_star+delta_g; j_contact=j_contact_star+delta_j; P=-kn_contact*g_contact while whole branch is compressed; retain pstar,cstar and update the same declared contact return map for actual increments',
+  old_nodal_literal_rounding='All16 literal states remain byteidentical. Symbolic -P/kn identities are continuous-source reference expressions, not permission to rewrite stored binary64 gap/traction values; retain their original arithmetic enclosures',
+  geometric_gap_is_not_contact_spring_gap='A compressed eigen-offset at coincident reference faces does not authorize negative geometric separation or body volume overlap. Body admission remains independent of the contact spring strain',
+  current_zero_increment_identity='delta_g=delta_j=0 preserves source Pstar,Tstar,pstar,cstar and source CONTACT stored energy density .5*kn*g_contact_star^2+.5*kt*(j_contact_star-pstar)^2',
+  energy_derivative='At fixed plastic state dU=kn*g_contact*dg+kt*(j_contact-p)*dj. Hessian includes kn*dg tensor dg + kt*dj tensor dj plus both prestress terms kn*g*Hess(g)+kt*(j-p)*Hess(j)',
+  zero_source_shear_strength='Here friction/cohesion/viscosity are exactly0, so source shear traction is0. An actual inviscid return map has zero yielded shear algorithmic stiffness; do not retain an elastic kt force after enforcing zero strength',
+  opening='Existing solve_compressed_contact rejects positive free opening and contains no Mode-I branch. Do not silently add unilateral clipping/tensile damage; a future opening extension needs its explicit law/history',
+  source_transport_api_limit='Existing zero-work transport preserves COMPLETE lumped columns+contact configuration, original axes and measure. Contact-only separation is a NEW declared law and cannot be certified merely by that API',
+  old_rod_separation='Old1000m rod energy/work/compliance remains immutable historical source. Do not charge it again with the new bulk or distribute it over current cuts/depth; explicit energy/measure transfer remains unresolved'),
+ frame_options=dict(
+  source_preserving='Unchanged old receiver axes gives source-compatible reference identity, but no equality with actual new face normal/dip',
+  new_common_reference_frame='Declare N0=oriented normal from genuine common cut, S0=normalized angular tangent, D0=N0 cross S0 with explicit inward sign. This is NEW; scalar source preload can be retained, but old global traction direction is not preserved automatically',
+  finite_objectivity='Rotate material directors with receiver owner. Fixed global directors with nonzero relative modal displacement lose common-rigid-rotation objectivity',
+  follower_normal='If the law uses actual deformed normal rather than a material reference director, use normalized receiver F_inc^-T*N0 and include all normal/frame derivative terms; receiver-attached reference alone does not certify current-normal contact'),
+ missing_before_physical_cut_force=[
+  'independent exact material correspondence and receiving theta support for whole cut including trim/endpoint uncertainty',
+  'separate first-event ancestry/reference if a transfer is claimed; five current cuts are not the16 causal archive branches',
+  'explicit frame/contact-only rest reference and compression/opening scope',
+  'source measure to actual face-depth law and once-only energy/work/memory separation from old rods and16 atoms',
+  'fresh92 samefield loads/drag and mixed force solve, then wholeclock admission and accepted work/restart'],
+ safe_current_implementation='Geometry receipts plus actual body displacement/derivative ports; source parameters/families preserved separately, constitutive force/admission flags False')
+a['audit_sha256']=sha(enc(a));OUT.write_text(json.dumps(a,sort_keys=True,indent=2,ensure_ascii=False,allow_nan=False)+'\n')
+print(json.dumps(dict(output=str(OUT),raw_sha256=sha(OUT.read_bytes()),seal_sha256=a['audit_sha256'],producer_raw_sha256=sha(Path(__file__).read_bytes()))))

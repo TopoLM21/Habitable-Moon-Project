@@ -1,0 +1,195 @@
+"""Check and explicitly retain actual943 captures; no scientific computation.
+Expected statuses and typed native/audit assertions come from root-finalized
+closure_facts.template.json; pending placeholders cannot authorize staging.
+"""
+from pathlib import Path
+import argparse,hashlib,json,re,runpy,shutil
+ROOT=Path('/workspace/Habitable-Moon-Project')
+P=ROOT/'analysis/geometric_native_common_initialization_handover_validation'
+NEW=('tectonics/geometric_native_common_initialization_source.py',
+ 'tests/test_geometric_native_common_initialization_source.py',
+ 'tectonics/geometric_native_common_initialization_handover.py',
+ 'tests/test_geometric_native_common_initialization_handover.py')
+CONTROL='analysis/geometric_native_common_initialization_handover_validation/native_control.txt'
+def enc(x):return json.dumps(x,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False).encode()
+def sha(path):
+ h=hashlib.sha256()
+ with Path(path).open('rb') as stream:
+  while block:=stream.read(1<<20):h.update(block)
+ return h.hexdigest()
+def sealed(path):
+ data=json.loads(Path(path).read_bytes());key='report_sha256' if 'report_sha256' in data else 'sha256'
+ assert data[key]==hashlib.sha256(enc({k:v for k,v in data.items() if k!=key})).hexdigest(),('selfseal',str(path))
+ return data
+
+def equal_files(a,b):
+ if Path(a).stat().st_size!=Path(b).stat().st_size:return False
+ with Path(a).open('rb') as left,Path(b).open('rb') as right:
+  while block:=left.read(1<<20):
+   if block!=right.read(1<<20):return False
+ return True
+
+def assert_fields(data,expected,label):
+ for key,value in expected.items():
+  assert type(data[key]) is type(value) and data[key]==value,(label,key,data.get(key),value)
+
+def source_path(key):
+ path=(ROOT/key).resolve()
+ assert path.is_relative_to('/workspace'),('watched source outside workspace',key)
+ return path
+
+def capture(directory,kind,report=None):
+ directory=Path(directory).resolve();assert directory.is_relative_to('/workspace') and not directory.is_relative_to(ROOT)
+ facts=sealed(directory/'execution_facts.json')
+ for key in ('actual_exit_code','actual_child_exit_code'):
+  assert type(facts[key]) is int and facts[key]==0,(kind,'actual exit',key,facts.get(key))
+ stdout=directory/'console.log';stderr=directory/'stderr.log'
+ assert stderr.stat().st_size==facts['actual_stderr_bytes']==0,(kind,'actual stderr')
+ assert sha(stdout)==facts['actual_stdout_raw_sha256'] and sha(stderr)==facts['actual_stderr_raw_sha256']
+ before=facts['source_before_sha256'];assert isinstance(before,dict) and before==facts['source_after_sha256'],(kind,'source changed')
+ assert set(facts['source_snapshots'])==set(before),(kind,'complete actual snapshot catalogue')
+ snapshots={}
+ for key,pin in before.items():
+  current=source_path(key);snapshot=Path(facts['source_snapshots'][key]).resolve()
+  assert snapshot.is_relative_to(directory) and snapshot.is_file() and not snapshot.is_symlink(),(kind,'snapshot location',key)
+  assert sha(snapshot)==pin,(kind,'captured snapshot',key)
+  assert current.is_file() and sha(current)==pin,(kind,'current source',key)
+  snapshots[key]=snapshot
+ for key in NEW:assert key in before,(kind,'new PY not watched',key)
+ if kind in ('native','tests'):assert set(before)==set(NEW)|{CONTROL},(kind,'exact science capture catalogue')
+ wrapper=Path(facts['executed_capture_source_path']).resolve()
+ assert wrapper.is_relative_to('/workspace') and wrapper.is_file() and sha(wrapper)==facts['executed_capture_source_raw_sha256'],(kind,'actual capture source')
+ if 'executed_source_path' in facts:
+  executed=Path(facts['executed_source_path']).resolve();key=str(executed.relative_to(ROOT)) if executed.is_relative_to(ROOT) else str(executed)
+  assert key in before and facts['executed_source_raw_sha256']==facts['executed_source_after_raw_sha256']==before[key]
+  assert Path(facts['executed_source_snapshot']).resolve()==snapshots[key]
+ if report is not None:
+  report=Path(report).resolve();assert report.is_relative_to('/workspace') and report.is_file()
+  assert equal_files(stdout,report),(kind,'actual stdout != complete report')
+  if 'report_raw_sha256' in facts:assert sha(report)==facts['report_raw_sha256']
+  if 'actual_stdout_equals_report' in facts:assert facts['actual_stdout_equals_report'] is True
+  packet=sealed(report)
+ else:packet=None
+ return dict(directory=directory,facts=facts,snapshots=snapshots,wrapper=wrapper,report=report,packet=packet)
+
+def relative_dest(name):
+ path=(P/name).resolve();assert path.parent==P and path.name==name and not path.exists(),('fresh direct P destination',name)
+ return path
+
+def copy_new(source,target):
+ assert not Path(source).is_symlink() and Path(source).is_file()
+ with Path(source).open('rb') as original,Path(target).open('xb') as retained:shutil.copyfileobj(original,retained,1<<20)
+ assert sha(source)==sha(target),('retained raw bytes',str(target))
+
+def retain(receipt,destination,report_name=None):
+ destination.mkdir()
+ for path in sorted(receipt['directory'].iterdir()):
+  assert path.is_file() and not path.is_symlink(),('unexpected capture member',str(path))
+  copy_new(path,destination/path.name)
+ wrapper=destination/'executed_capture_source_snapshot.txt'
+ copy_new(receipt['wrapper'],wrapper)
+ if report_name is not None:
+  report=destination/report_name
+  if report.exists():
+   assert sha(report)==sha(receipt['report']),('capture contains exact genuine report',report_name)
+  else:copy_new(receipt['report'],report)
+ for key,path in receipt['snapshots'].items():assert sha(destination/path.name)==receipt['facts']['source_before_sha256'][key]
+
+def report_info(receipt):
+ return dict(actual_exit_code=receipt['facts']['actual_exit_code'],actual_stderr_bytes=receipt['facts']['actual_stderr_bytes'],
+  actual_seconds=receipt['facts']['actual_seconds'],execution_facts_raw_sha256=sha(receipt['directory']/'execution_facts.json'),
+  report_raw_sha256=sha(receipt['report']) if receipt['report'] else None)
+
+def run(args):
+ assert not (P/'artifact_manifest.json').exists(),('P already frozen')
+ if args.output:
+  output=Path(args.output).resolve()
+  assert output.is_relative_to('/workspace') and not output.is_relative_to(ROOT) and not output.exists(),('fresh outside output',str(output))
+ gate=runpy.run_path(str(P/'close_evidence_source.txt'))
+ template=json.loads((P/'closure_facts.template.json').read_bytes())
+ assert set(template['new_sources'])==set(NEW)
+ expected_native=template['validations']['native']['expected_status']
+ expected_audit=template['validations']['audit']['expected_status']
+ assert all(isinstance(v,str) and v.startswith('PASS_') and 'PENDING' not in v for v in (expected_native,expected_audit)),('real final status declaration required')
+ native_assertions=template['native_assertions'];audit_assertions=template['validations']['audit']['report_assertions']
+ assert isinstance(native_assertions,dict) and native_assertions and isinstance(audit_assertions,dict) and audit_assertions,('actual scope assertions required')
+ native=capture(args.native_capture,'native',args.native_report)
+ tests=capture(args.tests_capture,'tests')
+ audit=capture(args.audit_capture,'audit',args.audit_report)
+ n=native['packet'];a=audit['packet']
+ gate['capture_shape']('native',dict(kind='native',report_origin_path=str(Path(args.native_report).resolve())),native['facts'])
+ gate['capture_shape']('tests',dict(kind='tests'),tests['facts'])
+ gate['capture_shape']('audit',dict(kind='audit',report_origin_path=str(Path(args.audit_report).resolve()),native_input_origin_path=str(Path(args.native_report).resolve())),audit['facts'])
+ assert n['status']==expected_native and a['status']==expected_audit
+ for packet,claims,label in ((n,native_assertions,'native'),(a,audit_assertions,'independent audit')):
+  for field,expected in claims.items():
+   value=gate['claim_at'](packet,field)
+   assert type(value) is type(expected) and value==expected,(label,'typed scope assertion',field,value,expected)
+ science=gate['extract_science'](n,template)
+ assert native['facts']['source_before_sha256']==tests['facts']['source_before_sha256'],('native/tests source identity')
+ newpins={key:native['facts']['source_before_sha256'][key] for key in NEW}
+ assert {key:audit['facts']['source_before_sha256'][key] for key in NEW}==newpins
+ assert a['executed_new_source_raw_sha256']==newpins
+ assert a['native_input_raw_sha256']==sha(args.native_report),('audited native raw identity')
+ authority=a['authoritative_input_raw_sha256']
+ assert isinstance(authority,dict) and authority,('independent authority raw catalogue required')
+ for key,pin in authority.items():
+  current=source_path(key)
+  assert current.is_file() and sha(current)==pin,('audited authority current raw identity',key)
+  if not current.is_relative_to(ROOT):
+   assert key in audit['facts']['source_before_sha256'] and audit['facts']['source_before_sha256'][key]==pin,('outside audit authority must have captured before/after/snapshot',key)
+ assert Path(a['native_input_path']).resolve()==Path(args.native_report).resolve(),('audited native path identity')
+ summary=tests['directory'].joinpath('console.log').read_text()
+ counts=[int(v) for v in re.findall(r'\b([1-9][0-9]*) passed\b',summary)]
+ assert len(counts)==1 and not re.search(r'\b[1-9][0-9]* (?:failed|error|errors)\b',summary),('real successful pytest summary',counts)
+ passed=counts[0]
+ old=gate['verify_old']();sources=gate['actual_sources']()
+ inherited=sealed(gate['OLD_P']/'report.json')
+ assert n['remaining_physical_conditions']==inherited['remaining_physical_conditions'],('unchanged inherited three physical conditions')
+ assert len(sources)==943 and set(sources)-set(old)==set(NEW) and all(sources[k]==v for k,v in old.items())
+ assert all(sources[key]==newpins[key] for key in NEW)
+ config={k:v for k,v in template.items() if k!='_template_pending'}
+ native_dest=args.native_dest;tests_dest=args.tests_dest;audit_dest=args.audit_dest
+ paths={key:Path(value).name for key,value in native['facts']['source_snapshots'].items()}
+ config['source_snapshots']={key:native_dest+'/'+paths[key] for key in NEW}
+ validations=config['validations']
+ validations['native']=dict(kind='native',report=native_dest+'/native_control.json',console=native_dest+'/console.log',
+  stderr=native_dest+'/stderr.log',execution_facts=native_dest+'/execution_facts.json',exit_code_key='actual_child_exit_code',expected_status=expected_native,
+  report_origin_path=str(Path(args.native_report).resolve()),executed_capture_source_snapshot=native_dest+'/executed_capture_source_snapshot.txt')
+ validations['tests']=dict(kind='tests',console=tests_dest+'/console.log',stderr=tests_dest+'/stderr.log',
+  execution_facts=tests_dest+'/execution_facts.json',exit_code_key='actual_child_exit_code',tests_passed=passed,
+  executed_capture_source_snapshot=tests_dest+'/executed_capture_source_snapshot.txt')
+ outside={key:audit_dest+'/'+path.name for key,path in audit['snapshots'].items() if not source_path(key).is_relative_to(ROOT)}
+ assert all(Path(key).is_absolute() for key in outside)
+ executed_path=Path(audit['facts']['executed_source_path']).resolve()
+ executed_key=str(executed_path.relative_to(ROOT)) if executed_path.is_relative_to(ROOT) else str(executed_path)
+ validations['audit']=dict(kind='audit',report=audit_dest+'/report.json',console=audit_dest+'/console.log',
+  stderr=audit_dest+'/stderr.log',execution_facts=audit_dest+'/execution_facts.json',exit_code_key='actual_child_exit_code',
+  expected_status=expected_audit,executed_source_snapshot=audit_dest+'/'+audit['snapshots'][executed_key].name,
+  report_origin_path=str(Path(args.audit_report).resolve()),native_input_origin_path=str(Path(args.native_report).resolve()),
+  executed_capture_source_snapshot=audit_dest+'/executed_capture_source_snapshot.txt',watched_source_snapshots=outside,
+  report_assertions=audit_assertions)
+ if args.mode=='stage':
+  assert args.authorize_stage,('Explicit root authorization is required for retaining final captures')
+  destinations=[relative_dest(name) for name in (native_dest,tests_dest,audit_dest)]
+  assert len(set(destinations))==3 and not (P/'closure_facts.json').exists()
+  retain(native,destinations[0],'native_control.json');retain(tests,destinations[1]);retain(audit,destinations[2],'report.json')
+  with (P/'closure_facts.json').open('xb') as stream:stream.write(json.dumps(config,sort_keys=True,indent=2,ensure_ascii=False,allow_nan=False).encode()+b'\n')
+  for name in ('before','native','tests','audit'):gate['validation_receipt'](name,validations[name])
+  gate['extract_science'](n,config)
+ result=dict(status='PASS_GENUINE943_FINAL_CAPTURE_STAGING' if args.mode=='stage' else 'PASS_GENUINE943_FINAL_CAPTURE_READONLY_CHECK',
+  tests_passed=passed,source_count=943,inherited_source_count=939,dependency_count=2708,
+  audit_outside_watched_snapshot_count=len(outside),native=report_info(native),tests=report_info(tests),audit=report_info(audit),
+  current_new_source_raw_sha256=newpins,repository_files_written=args.mode=='stage',old_physical_math_executed=False,
+  after_executed=False,closure_executed=False,docs_finality_asserted=False,original_point_1_completed=False)
+ result['sha256']=hashlib.sha256(enc(result)).hexdigest()
+ if args.output:
+  with Path(args.output).open('xb') as stream:stream.write(enc(result)+b'\n')
+ print(enc(result).decode())
+
+if __name__=='__main__':
+ parser=argparse.ArgumentParser()
+ parser.add_argument('--mode',choices=['check','stage'],default='check');parser.add_argument('--authorize-stage',action='store_true')
+ for name in ('native-capture','native-report','tests-capture','audit-capture','audit-report'):parser.add_argument('--'+name,required=True)
+ parser.add_argument('--native-dest',default='final_native01');parser.add_argument('--tests-dest',default='final_tests01');parser.add_argument('--audit-dest',default='independent_audit01');parser.add_argument('--output')
+ run(parser.parse_args())

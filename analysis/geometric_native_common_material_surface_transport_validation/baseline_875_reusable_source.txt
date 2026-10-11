@@ -1,0 +1,232 @@
+"""Stdlib immutable875 verifier for the exact four material-surface sources.
+
+The actual complete879 source map is independently checked before and after.
+The pinned original85de reader receives an explicitly disclosed frozen875
+projection only, not an invented actual875 map. Its hash/schema verification
+reads the closed73 evidence and saved1633 receipt without executing a legacy
+baseline, physical algebra, project module, solver, test or quadrature.
+The bootstrap document hashes describe the initial completed875 readback;
+current documents are not part of the immutable Python/artifact source freeze.
+"""
+from pathlib import Path, PurePosixPath
+from contextlib import redirect_stdout
+import argparse, hashlib, io, json, sys, time, types
+
+ROOT = Path('/workspace/Habitable-Moon-Project')
+PRIOR = ROOT / 'analysis/geometric_native_common_strain_projection_validation'
+BOOTSTRAP_SOURCE = Path('/tmp/native_common_local_face_baseline875_source_20261006.txt')
+BOOTSTRAP_REPORT = Path('/tmp/native_common_local_face_baseline875_20261006.json')
+BOOTSTRAP_SOURCE_SHA = '85de6cb6261971ed36e78756c038455a3ec114bccac65f2a6ea3704bcc30355e'
+BOOTSTRAP_REPORT_RAW = '1bae41cd1b0f5abc11decd794878c4084742e61e68c2e537fa8026275aeaaf1d'
+BOOTSTRAP_REPORT_SEAL = '5076cb213fdcef2ab59666ea525c6793d75fa12ea2a5a08011b2f631613b44ca'
+MAP = '13c19fe10056af9ab621e2c8a23e63ad36b301c95e121a6835cead019378e385'
+MAP_RAW = '8f7608219c398a05913d96e80baf685b997dccff466ee9cf9eb1aa89b8124675'
+MANIFEST_RAW = '035c7eeae472676924792d07e1d05b8e3660a4a9d0fa9d8cfe8f55df71862412'
+MANIFEST_SEAL = '519d42468d7291b2af3db6894943a2ec91e2c12f490643e2d18f4b16d63777a2'
+DECLARED_NEXT_PHYSICAL_SCOPE = 'FINITE_LOCAL_MATERIAL_SURFACE_MEASURE_AND_MEMORY_TRANSPORT_COMPONENT_ONLY'
+AUTHORIZED_ADDITIONAL_SOURCE_PATHS = frozenset((
+    'tectonics/geometric_native_common_material_surface_transport.py',
+    'tests/test_geometric_native_common_material_surface_transport.py',
+    'analysis/geometric_native_common_material_surface_transport_validation/native_control.py',
+    'analysis/geometric_native_common_material_surface_transport_validation/validate.py',
+))
+SAVED_BASELINE_TEMP = Path('/tmp/native_common_strain_projection_final_independent_audit_20261006_baseline871_readback.json')
+SAVED_BASELINE_PERMANENT = PRIOR / 'baseline_before_independent_audit.json'
+SAVED_BASELINE_RAW = 'b048664d22012a46ca95715e60586424568995c37f4637b18e7b51aa40cd685d'
+INITIAL_DOCUMENT_SNAPSHOT = {
+    str(ROOT / 'CLOUD_HANDOFF.md'): '0ac9aa9a60423bdc9e3213a9a6416d99452e2aece144f56890489baad7474c1f',
+    str(ROOT / 'GEOMETRIC_NATIVE_COMMON_STRAIN_PROJECTION_IMPLEMENTATION.md'): '80fd8d560a545ed79508e8d685eb3f18e6f5748d079dccb0a074569c9073e098',
+}
+
+
+def enc(value):
+    return json.dumps(value, sort_keys=True, separators=(',', ':'), ensure_ascii=False, allow_nan=False).encode()
+
+
+def vd(value):
+    return hashlib.sha256(enc(value)).hexdigest()
+
+
+def exact(actual, expected, label):
+    assert type(actual) is type(expected) and actual == expected, label
+    if type(actual) in (dict, list, tuple):
+        assert enc(actual) == enc(expected), label + ' recursive literal kinds'
+
+
+def digest(path):
+    h = hashlib.sha256()
+    with Path(path).open('rb') as stream:
+        for block in iter(lambda: stream.read(1 << 20), b''):
+            h.update(block)
+    return h.hexdigest()
+
+
+def sealed(path, key):
+    value = json.loads(Path(path).read_bytes())
+    body = dict(value)
+    exact(body.pop(key), vd(body), 'selfseal ' + str(path))
+    return value
+
+
+def source_map():
+    return {str(path.relative_to(ROOT)): digest(path)
+        for directory in ('tectonics', 'tests', 'scripts', 'analysis')
+        for path in sorted((ROOT / directory).rglob('*.py'))}
+
+
+def project_modules():
+    result = {}
+    for name, module in sys.modules.items():
+        location = getattr(module, '__file__', None)
+        path = Path(location).resolve() if isinstance(location, str) else None
+        project_file = path is not None and path.suffix == '.py' and path.is_relative_to(ROOT)
+        project_namespace = name == 'tectonics' or name.startswith('tectonics.') or name == 'tests' or name.startswith('tests.')
+        if project_file or project_namespace:
+            result[name] = module
+    return result
+
+
+def normalized_paths(paths):
+    assert not isinstance(paths, (str, bytes)), 'Declare exactly four authorized additive path strings'
+    names = tuple(paths)
+    assert len(names) == len(set(names)) == 4, 'Four unique explicitly declared additions required'
+    for name in names:
+        assert type(name) is str and name
+        path = PurePosixPath(name)
+        assert not path.is_absolute() and str(path) == name and '..' not in path.parts, name
+        assert len(path.parts) >= 2 and path.parts[0] in ('tectonics', 'tests', 'scripts', 'analysis') and path.suffix == '.py', name
+    declared = frozenset(names)
+    exact(declared, AUTHORIZED_ADDITIONAL_SOURCE_PATHS, 'Exact authorized material-surface source whitelist')
+    return declared
+
+
+def run(expected_added_paths, *, output_path,
+        bootstrap_source_path=BOOTSTRAP_SOURCE, bootstrap_report_path=BOOTSTRAP_REPORT):
+    started = time.perf_counter()
+    modules_before = project_modules()
+    producer_pin = digest(__file__)
+    declared = normalized_paths(expected_added_paths)
+    output_path = Path(output_path).resolve()
+    bootstrap_source_path = Path(bootstrap_source_path).resolve()
+    bootstrap_report_path = Path(bootstrap_report_path).resolve()
+    projected_path = output_path.with_name(output_path.stem + '_frozen875_reader_projection.json')
+    assert output_path.is_relative_to(Path('/tmp')) and output_path.suffix == '.json'
+    assert len({output_path, projected_path, bootstrap_source_path, bootstrap_report_path}) == 4
+    exact(digest(bootstrap_source_path), BOOTSTRAP_SOURCE_SHA, 'pinned original875 reader')
+    exact(digest(bootstrap_report_path), BOOTSTRAP_REPORT_RAW, 'immutable initial875 readback')
+    bootstrap = sealed(bootstrap_report_path, 'audit_sha256')
+    exact(bootstrap['audit_sha256'], BOOTSTRAP_REPORT_SEAL, 'initial875 bootstrap selfseal')
+    for key, expected in (
+        ('status', 'PASS_FINAL875_EVIDENCE_READBACK_ONLY'), ('final_python_source_count', 875),
+        ('current_manifest_file_count', 73), ('source_map_canonical_sha256', MAP),
+        ('frozen_source_map_raw_sha256', MAP_RAW), ('current_manifest_raw_sha256', MANIFEST_RAW),
+        ('current_manifest_selfseal', MANIFEST_SEAL), ('complete_actual875_source_map_before_after_identical', True),
+        ('baseline_reexecuted', False), ('math_or_solver_or_test_or_quadrature_reexecuted', False),
+        ('project_imports', False), ('auditor_source_sha256', BOOTSTRAP_SOURCE_SHA)):
+        exact(bootstrap[key], expected, 'bootstrap ' + key)
+    exact(bootstrap['document_raw_sha256'], INITIAL_DOCUMENT_SNAPSHOT, 'initial completed875 document snapshot only')
+    exact(len(bootstrap['dependency_raw_sha256']), 180, 'complete saved875 raw dependency map count')
+    exact(bootstrap['recorded_raw_dependency_pin_count'], 180, 'saved875 raw dependency count')
+    for path in (SAVED_BASELINE_TEMP, SAVED_BASELINE_PERMANENT):
+        exact(bootstrap['dependency_raw_sha256'][str(path)], SAVED_BASELINE_RAW, 'saved temp/permanent baseline association ' + str(path))
+        exact(digest(path), SAVED_BASELINE_RAW, 'saved baseline bytes before readback ' + str(path))
+    # Missing scratch evidence is an explicit failure here. Restoration, if needed,
+    # is a separate authorized copy from the immutable permanent b048 receipt;
+    # a wrong existing scratch receipt must never be replaced by this verifier.
+    frozen_path = PRIOR / 'frozen_source_map_875.json'
+    frozen = json.loads(frozen_path.read_bytes())
+    exact(len(frozen), 875, 'immutable875 source count')
+    exact(vd(frozen), MAP, 'immutable875 canonical source map')
+    exact(digest(frozen_path), MAP_RAW, 'immutable875 raw source map')
+    before = source_map()
+    exact(len(before), 879, 'independently measured complete actual879 source count')
+    exact(set(before) - set(frozen), set(declared), 'only explicitly declared four879 additions')
+    assert not declared.intersection(frozen)
+    for name, pin in frozen.items():
+        exact(before.get(name), pin, 'all875 old source bytes ' + name)
+    protected_paths = set(bootstrap['dependency_raw_sha256']) | {str(bootstrap_source_path), str(bootstrap_report_path), str(Path(__file__).resolve())}
+    assert str(output_path) not in protected_paths and str(projected_path) not in protected_paths, 'Scratch outputs cannot replace immutable input dependencies'
+
+    # The unchanged original85de reader assembles its pinned dependency map
+    # without hashing each input at add_pin time, then hashes all180 bytes in
+    # its final loop. Supply the independently pinned BEFORE byte-hash here;
+    # do not attribute that extra check to the original producer.
+    for name, pin in bootstrap['dependency_raw_sha256'].items():
+        exact(digest(name), pin, 'all180 recorded raw dependency bytes BEFORE nested readback ' + name)
+
+    reader = types.ModuleType('declared879_stdlib_frozen875_evidence_reader')
+    reader.__file__ = str(bootstrap_source_path)
+    sys.modules[reader.__name__] = reader
+    exec(compile(bootstrap_source_path.read_bytes(), str(bootstrap_source_path), 'exec'), reader.__dict__)
+    def frozen875_source_view():
+        complete = source_map()
+        exact(complete, before, 'complete actual879 map while serving disclosed frozen875 view')
+        return {name: complete[name] for name in frozen}
+    reader.source_map = frozen875_source_view
+    with redirect_stdout(io.StringIO()):
+        projected = reader.run(projected_path, artifact_manifest_path=PRIOR / 'artifact_manifest.json', document_paths=())
+    # The original reader's count/status/actual875 flags describe its disclosed
+    # frozen875 source view; the wrapper independently certifies actual879.
+    for key, value in bootstrap.items():
+        if key not in ('audit_sha256', 'seconds', 'document_raw_sha256'):
+            exact(projected[key], value, 'preserved complete frozen875 receipt ' + key)
+    exact(projected['document_raw_sha256'], {}, 'legacy reader has no current-document freeze')
+    exact(projected['dependency_raw_sha256'], bootstrap['dependency_raw_sha256'], 'all180 raw dependency pins individually hashed AFTER readback by original reader')
+    for path in (SAVED_BASELINE_TEMP, SAVED_BASELINE_PERMANENT):
+        exact(digest(path), SAVED_BASELINE_RAW, 'saved baseline bytes after readback ' + str(path))
+    exact(digest(bootstrap_source_path), BOOTSTRAP_SOURCE_SHA, 'original reader source after readback')
+    exact(digest(bootstrap_report_path), BOOTSTRAP_REPORT_RAW, 'immutable875 bootstrap report after readback')
+    after = source_map()
+    exact(after, before, 'complete actual879 map unchanged before/after')
+    modules_after = project_modules()
+    exact(set(modules_after), set(modules_before), 'no imported project/test modules')
+    assert all(modules_after[name] is module for name, module in modules_before.items()), 'No project modules reloaded or replaced'
+    exact(digest(__file__), producer_pin, 'reusable producer source unchanged')
+    report = dict(status='PASS_IMMUTABLE875_WITH_DECLARED_SOURCE_ADDITIONS_ONLY',
+        baseline_source_count=875, current_python_source_count=879, additional_python_source_count=4,
+        source_epoch='IMMUTABLE875_TO_EXACT_AUTHORIZED_MATERIAL_SURFACE879',
+        declared_next_component_physical_scope=DECLARED_NEXT_PHYSICAL_SCOPE,
+        new_component_physics_validated=False, exact_authorized_four_path_whitelist_checked=True,
+        declared_additional_source_paths=sorted(declared), additional_python_sources={name: before[name] for name in sorted(declared)},
+        all875_python_sources_unchanged=True, complete_full_actual_source_map_independently_checked_before_after=True,
+        complete_declared879_source_map_before_after_identical=True, current_python_source_map_sha256=vd(before),
+        frozen875_source_map_canonical_sha256=MAP, frozen875_source_map_raw_sha256=MAP_RAW,
+        frozen875_projection_disclosed=True, nested_reader_source_view='IMMUTABLE875_SUBSET_OF_INDEPENDENTLY_CHECKED_FULL_DECLARED879_SOURCE_MAP',
+        nested_reader_actual875_count_and_flags_are_projected_view_only=True,
+        preserved_closed875_manifest_file_count=73, closed875_manifest_raw_sha256=MANIFEST_RAW,
+        closed875_manifest_selfseal=MANIFEST_SEAL, preserved_old1633_artifact_chain=True,
+        old1633_preservation_is_saved_before_math_receipt_plus_recorded_dependency_and_nine_closure_readback=True,
+        authoritative_ancestry_release_closure_count=projected['authoritative_ancestry_release_closure_count'],
+        recorded_raw_dependency_pin_count=projected['recorded_raw_dependency_pin_count'], dependency_raw_sha256=projected['dependency_raw_sha256'],
+        all180_recorded_dependency_raw_sha256_hashed_by_wrapper_before_and_nested_reader_after=True,
+        saved_baseline_temp_raw_sha256=SAVED_BASELINE_RAW, saved_baseline_permanent_copy_raw_sha256=SAVED_BASELINE_RAW,
+        saved_baseline_temp_and_permanent_copy_association_verified_before_after=True,
+        wrapper_selfseal=projected['wrapper_selfseal'], native_selfseal=projected['native_selfseal'],
+        packet_selfseal=projected['packet_selfseal'], independent_audit_selfseal=projected['independent_audit_selfseal'],
+        failed_native_attempt01_preserved=projected['failed_native_attempt01_preserved'],
+        failed_native_attempt02_preserved=projected['failed_native_attempt02_preserved'],
+        accepted_original_native_intervals=1, accepted_new_native_intervals=0, original_point_1_remaining_work_blocks=1,
+        remaining_physical_conditions=projected['remaining_physical_conditions'],
+        bootstrap_reader_raw_sha256=BOOTSTRAP_SOURCE_SHA, bootstrap_report_raw_sha256=BOOTSTRAP_REPORT_RAW,
+        bootstrap_report_selfseal=BOOTSTRAP_REPORT_SEAL, bootstrap_evidence_preserved=True,
+        bootstrap_document_raw_sha256=bootstrap['document_raw_sha256'], bootstrap_document_hashes_are_initial_readback_only=True,
+        projected_reader_report_path=str(projected_path), projected_reader_report_raw_sha256=digest(projected_path),
+        projected_reader_selfseal=projected['audit_sha256'], preexisting_project_module_count=len(modules_before),
+        preexisting_project_modules_preserved=True, project_imports=False, baseline1633_reexecuted=False,
+        math_or_solver_or_test_or_quadrature_reexecuted=False, auditor_source_sha256=producer_pin,
+        seconds=time.perf_counter() - started)
+    report['audit_sha256'] = vd(report)
+    output_path.write_bytes(enc(report) + b'\n')
+    print(enc(report).decode(), flush=True)
+    return report
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--expected-added-path', action='append', required=True)
+    parser.add_argument('--out', required=True)
+    parser.add_argument('--bootstrap-source', default=str(BOOTSTRAP_SOURCE))
+    parser.add_argument('--bootstrap-report', default=str(BOOTSTRAP_REPORT))
+    args = parser.parse_args()
+    run(args.expected_added_path, output_path=args.out,
+        bootstrap_source_path=args.bootstrap_source, bootstrap_report_path=args.bootstrap_report)

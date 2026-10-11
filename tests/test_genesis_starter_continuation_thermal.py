@@ -9,6 +9,7 @@ import pytest
 
 from tectonics.genesis import GenesisParameters
 from tectonics.genesis_shell import ShellParameters
+from tectonics.genesis_solidification import advance_solidification_history
 from tectonics.genesis_starter import StarterModel
 from tectonics.genesis_starter_continuation import (YoungWorldCoupling,
     build_starter_continuation, project_thermal)
@@ -157,8 +158,14 @@ def test_mature_outer_step_does_not_control_late_genesis_cooling(source):
     late = deepcopy(initial)
     # Reach a late physical heat/orbit/column state cheaply before exercising
     # the real mature heat hook with its unmodified forcing-step controls.
-    late.thermal_context, _ = model.loading.advance(late.thermal_context, 50.,
+    previous = model.loading.sample(late.thermal_context).thermal
+    late.thermal_context, samples = model.loading.advance(late.thermal_context, 50.,
         max_sample_myr=1., max_thermal_step_myr=.5)
+    for sample in samples:
+        late.solidification_history = advance_solidification_history(
+            late.solidification_history, previous, sample.thermal, model.thermal)
+        previous = sample.thermal
+    late.thermal_samples += len(samples)
     checkpoint = deepcopy(checkpoint)
     checkpoint.thermal, _ = project_thermal(model, late, ThermalParameters(**cfg["thermal"]))
     checkpoint.state.time_myr = late.time_myr

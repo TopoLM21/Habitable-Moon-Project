@@ -1,0 +1,107 @@
+from pathlib import Path
+from dataclasses import replace,asdict
+from datetime import datetime,timezone
+from collections import Counter
+import hashlib,json,math,uuid
+import numpy as np
+from analysis.geometric_underthrust_validation import underthrust_case as control
+import tectonics.geometric_underthrust_motion as engine
+import tectonics.geometric_transport as transport
+import tectonics.geometric_surface as surface
+import tectonics.spherical_polygons as spherical
+from tectonics.geometric_boundary_io import save_boundary_checkpoint
+root=Path.cwd()
+base=root/'analysis/geometric_underthrust_validation'
+checkpoint=base/'cloud_control/direct_final.json'
+tracked=('tectonics/spherical_polygons.py','tectonics/geometric_surface.py','tectonics/geometric_transport.py','tectonics/geometric_underthrust_motion.py','tectonics/geometric_underthrust_motion_io.py','tectonics/geometric_boundary.py')
+def hashes():return {name:hashlib.sha256((root/name).read_bytes()).hexdigest() for name in tracked}
+before_hashes=hashes()
+print(json.dumps(dict(status='running',started_utc=datetime.now(timezone.utc).isoformat(),purpose='fresh actual current-source physical trial and witness audit')),flush=True)
+mesh=control.build_icosphere(0)
+origin,state,_=control.load_underthrust_motion_checkpoint(checkpoint,mesh=mesh)
+accepted=control._snapshot(state)
+checkpoint_sha=hashlib.sha256(checkpoint.read_bytes()).hexdigest()
+original_rotate=transport.rotate_surface
+captured=[]
+def instrument(before,omega,dt):
+    result=original_rotate(before,omega,dt)
+    if before.time_myr==state.current_surface.time_myr:
+        captured.append((before,{int(owner):tuple(map(float,values)) for owner,values in omega.items()},dt,result))
+    return result
+transport.rotate_surface=instrument
+source=control.SOURCE_INTERVALS[0]
+load=control.assemble_physical_spatial_mantle_load(mesh,state.current_surface,source)
+try:
+    # The loader already physically replayed and validated the accepted state;
+    # this is the identical kernel invoked by the public API after that check.
+    engine._advance(mesh,origin,state,load,control.DT_S,source.provenance)
+except transport.UnresolvedPolarityError as error:
+    refusal=dict(type=type(error).__name__,args=[repr(value) for value in error.args],overlaps=[asdict(value) for value in error.overlaps],reason_counts=dict(sorted(Counter(value.reason for value in error.overlaps).items())))
+else:raise AssertionError('Actual next source must reach the physical guard')
+assert len(captured)==1
+assert 'new_material_requires_new_physical_pair' in refusal['reason_counts']
+assert control._snapshot(state)==accepted
+assert hashlib.sha256(checkpoint.read_bytes()).hexdigest()==checkpoint_sha
+source_surface,omega,dt,candidate=captured[0]
+assert isinstance(candidate,surface._RigidlyAdvectedCandidates)
+assert candidate.phase=='advected_candidates'
+assert candidate._source_surface==source_surface
+assert candidate._rotation_vectors==tuple((owner,omega[owner]) for owner in sorted(omega))
+assert candidate._dt_myr==dt
+assert surface.totals(candidate.fragments)==surface.totals(source_surface.fragments)
+surface.audit_partition(source_surface)
+checks=[]
+def refuses(name,operation):
+    try:operation()
+    except (ValueError,AttributeError,TypeError) as error:
+        checks.append(dict(case=name,rejected=True,exception_type=type(error).__name__,reason=str(error)))
+        return
+    raise AssertionError('Not rejected: '+name)
+refuses('ordinary persisted-surface constructor remains strict',lambda:surface.GeometricSurfaceState(candidate.time_myr,candidate.radius_km,candidate.fragments,candidate.known_material_ids,candidate.phase,candidate.version))
+refuses('partition audit refuses temporary candidates',lambda:surface.audit_partition(candidate))
+probe=Path('/tmp')/('underthrust_candidate_public_save_probe_'+uuid.uuid4().hex)
+refuses('geometric checkpoint refusal before directory/file creation',lambda:surface.save_geometric_checkpoint(probe/'geometric.json',candidate))
+refuses('joint boundary checkpoint refusal before directory/file creation',lambda:save_boundary_checkpoint(probe/'boundary.json',candidate,state.current_inventory))
+assert not probe.exists()
+refuses('candidate witness readonly',lambda:setattr(candidate,'_dt_myr',2*dt))
+for bad_dt in (0.,False,-dt):
+    refuses('nonadvancing/nonreal private witness dt '+repr(bad_dt),lambda bad_dt=bad_dt:surface._certify_rigid_candidates(source_surface,source_surface.fragments,omega,bad_dt))
+refuses('common zero-owner motion cannot produce differential witness',lambda:surface._certify_rigid_candidates(source_surface,source_surface.fragments,{owner:(0.,0.,0.) for owner in omega},dt))
+wrong=list(candidate.fragments)
+wrong[0]=replace(wrong[0],parcel=replace(wrong[0].parcel,material_id='forged-target-material'))
+refuses('target material ID must equal source-derived parcel',lambda:surface._certify_rigid_candidates(source_surface,tuple(wrong),omega,dt))
+wrong_omega=dict(omega)
+wrong_omega[1]=tuple(value*1.01 for value in wrong_omega[1])
+refuses('actual full q is bound to projected target',lambda:surface._certify_rigid_candidates(source_surface,candidate.fragments,wrong_omega,dt))
+fragments=list(origin.fragments)
+fragments[1]=replace(fragments[1],polygon=fragments[0].polygon)
+invalid=surface.GeometricSurfaceState(origin.time_myr,origin.radius_km,tuple(fragments))
+refuses('source phase alone cannot certify overlapping source partition',lambda:surface._certify_rigid_candidates(invalid,invalid.fragments,omega,dt))
+old_ld=spherical._LD
+try:
+    spherical._LD=np.float64
+    _,errors=spherical._rigid_rotation_projection(np.eye(3),(1e-300,0.,0.),1e300)
+    assert np.isinf(errors).all()
+finally:spherical._LD=old_ld
+checks.append(dict(case='nonzero-vector squared-norm underflow returns no finite proof',rejected=True))
+envelopes=[]
+errors=dict(candidate._projection_area_errors_km2)
+for old,new in zip(source_surface.fragments,candidate.fragments,strict=True):
+    assert new.parcel==replace(old.parcel,age_myr=old.parcel.age_myr+dt)
+    target,_=spherical._rigid_rotation_projection(old.polygon,omega[old.parcel.plate],dt)
+    expected=replace(old,polygon=tuple(map(tuple,target)),parcel=replace(old.parcel,age_myr=old.parcel.age_myr+dt))
+    assert asdict(new)==asdict(expected)
+    area=spherical.polygon_area(new.polygon)*source_surface.radius_km**2
+    assert math.isfinite(errors[new.fragment_id]) and 0.<=errors[new.fragment_id]<area
+    if not math.isclose(area,new.parcel.area_km2,rel_tol=surface.AREA_REL_TOL,abs_tol=0.):
+        assert abs(area-new.parcel.area_km2)<=errors[new.fragment_id]+surface.AREA_REL_TOL*max(area,new.parcel.area_km2)
+        envelopes.append(dict(fragment_id=new.fragment_id,material_id=new.parcel.material_id,preserved_material_area_km2=new.parcel.area_km2,measured_rotated_area_km2=area,projection_area_error_km2=errors[new.fragment_id],strict_positive_lower_area_km2=area-errors[new.fragment_id]))
+after_hashes=hashes()
+assert before_hashes==after_hashes
+assert hashlib.sha256(checkpoint.read_bytes()).hexdigest()==checkpoint_sha
+receipt=dict(status='passed',recorded_utc=datetime.now(timezone.utc).isoformat(),method='Independent read-only audit of genuinely reloaded fresh FIRST checkpoint and actual full SOURCE next-force result. Accepted state was physically replayed by checkpoint loader, then the identical advance kernel generated the trial and genuine physical refusal. Adversarial witness/persistence checks use that actual trial. No production or test edits.',code_sha256_before=before_hashes,code_sha256_after=after_hashes,code_unchanged=True,checkpoint_sha256=checkpoint_sha,checkpoint_file_unchanged=True,input_state_unchanged=True,area_rel_tolerance=surface.AREA_REL_TOL,complete_rotation_vectors_rad_per_myr=candidate._rotation_vectors,complete_rotation_increment_radians=tuple((owner,tuple(value*dt for value in values)) for owner,values in candidate._rotation_vectors),dt_myr=dt,checks=checks,source_material_budgets_exact=True,source_resolved_partition_audited=True,target_exact_executed_map=True,uncertain_positive_features=envelopes,public_save_created_no_path=True,actual_current_source=asdict(source),actual_physical_refusal=refusal)
+out=base/'rigid_candidate_independent_audit_receipt.json'
+with out.open('x',encoding='utf-8') as handle:
+    json.dump(receipt,handle,indent=2,sort_keys=True,allow_nan=False)
+    handle.write('\n')
+print(json.dumps(dict(status=receipt['status'],recorded_utc=receipt['recorded_utc'],checkpoint_sha256=checkpoint_sha,adversarial_cases=len(checks),uncertain_positive_features=envelopes,actual_refusal_reason_counts=refusal['reason_counts'],full_rotation_increment_radians=receipt['complete_rotation_increment_radians'],receipt=str(out.relative_to(root))),indent=2),flush=True)

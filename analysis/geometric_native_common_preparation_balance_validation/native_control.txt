@@ -1,0 +1,182 @@
+"""NEW preparation/contact/load controls from immutable whole source packets."""
+from fractions import Fraction as F
+import hashlib
+import json
+from pathlib import Path
+import sys
+import time
+
+ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT))
+P = ROOT/'analysis/geometric_native_common_preparation_balance_validation'
+AUTHORITY923 = ROOT/'analysis/geometric_native_common_cold_preparation_energy_validation/development_native01/native_control.json'
+AUTHORITY907 = ROOT/'analysis/geometric_native_common_mixed_force_validation/release_validation_01/native_control/source_packet.json'
+PIN923 = '33b6a3585b6d8cd644e29d30bf2e648e2479f6e87393b7122061dda56d08a5d4'
+PIN907 = '5e5555712e57fd69156ee475fe5feb161baef3cb96dd911a443228d160f53005'
+NEW = ('tectonics/geometric_native_common_preparation_contacts.py',
+       'tests/test_geometric_native_common_preparation_contacts.py',
+       'tectonics/geometric_native_common_preparation_balance.py',
+       'tests/test_geometric_native_common_preparation_balance.py')
+
+def encoded(value):
+    return json.dumps(value, sort_keys=True, separators=(',', ':'),
+        ensure_ascii=False, allow_nan=False).encode()
+
+def digest(value):
+    return hashlib.sha256(encoded(value)).hexdigest()
+
+def read_authority(path, pin):
+    raw = path.read_bytes()
+    if hashlib.sha256(raw).hexdigest() != pin:
+        raise ValueError('The immutable complete authority changed: '+str(path))
+    return json.loads(raw)
+
+def context():
+    """One context per exact executing source set, shared by runpy test fixtures."""
+    key = tuple(hashlib.sha256((ROOT/s).read_bytes()).hexdigest() for s in NEW)
+    key += (hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),)
+    cache = getattr(sys, '_habitable_moon_preparation_context_927', {})
+    if key in cache:
+        return cache[key]
+    from analysis.geometric_native_common_mixed_force_validation import native_control as saved
+    from tectonics.geometric_native_common_reference import bind_native_common_reference
+    from tectonics.geometric_native_common_cold_depth_preparation import bind_native_common_cold_depth_preparation
+    from tectonics.geometric_native_common_preparation_contacts import bind_native_common_preparation_contacts
+    from tectonics.geometric_native_common_preparation_balance import bind_native_common_preparation_balance
+    started = time.monotonic()
+    hot903, cold899, work891, transport879 = saved.source_packets()
+    source895 = saved.geometry_packets()[0]
+    cold923 = read_authority(AUTHORITY923, PIN923)
+    current907 = read_authority(AUTHORITY907, PIN907)
+    source_read_seconds = time.monotonic()-started
+    started = time.monotonic()
+    cold_carrier = saved.cold_carrier()
+    reference = bind_native_common_reference()
+    preparations = tuple(bind_native_common_cold_depth_preparation(reference, cold_carrier, owner,
+        provenance='Whole-source NEW radial twist on unchanged frozen895 cold prepared reference')
+        for owner in (0, 1))
+    geometry_restoration_seconds = time.monotonic()-started
+    started = time.monotonic()
+    contacts = bind_native_common_preparation_contacts(current907, work891, preparations,
+        source895=source895, provenance='Actual whole original16 follower contacts of physical cold T_lambda on zero895')
+    balance = bind_native_common_preparation_balance(cold923, cold899, hot903, current907,
+        contacts_system=contacts, provenance='Cold whole-source preparation plus original16 contacts, same8 internal beams, frozenHOT and actual owner load potential')
+    result = dict(contacts_system=contacts, balance_system=balance,
+        cold923=cold923, cold899=cold899, hot903=hot903, current907=current907,
+        source907=current907, source891=work891, source895=source895,
+        preparations=preparations, cold_carrier=cold_carrier, reference=reference,
+        timings=dict(whole_authority_read_seconds=source_read_seconds,
+            geometry_restoration_seconds=geometry_restoration_seconds,
+            new_contact_and_balance_binding_seconds=time.monotonic()-started))
+    cache[key] = result
+    sys._habitable_moon_preparation_context_927 = cache
+    return result
+
+def run(output):
+    from tectonics import geometric_native_common_preparation_contacts as contact_api
+    from tectonics import geometric_native_common_preparation_balance as balance_api
+    started = time.monotonic()
+    ctx = context()
+    contacts, balance = ctx['contacts_system'], ctx['balance_system']
+    contacts_dto = contact_api.native_common_preparation_contacts_to_dict(contacts)
+    balance_dto = balance_api.native_common_preparation_balance_to_dict(balance)
+    contacts_restart = contact_api.native_common_preparation_contacts_from_dict(
+        contacts_dto, ctx['source907'], ctx['source891'], ctx['preparations'],
+        source895=ctx['source895'], provenance=contacts.provenance)
+    balance_restart = balance_api.native_common_preparation_balance_from_dict(
+        balance_dto, ctx['cold923'], ctx['cold899'], ctx['hot903'], ctx['current907'],
+        contacts_system=contacts_restart)
+    contact_equal = contact_api.native_common_preparation_contacts_to_dict(contacts_restart) == contacts_dto
+    balance_equal = balance_api.native_common_preparation_balance_to_dict(balance_restart) == balance_dto
+    assert contact_equal and balance_equal
+    zero = (F(0),)*8
+    internal = tuple(F((-1 if i%2 else 1)*(i+1), 1000000) for i in range(8))
+    specs = [('lambda_'+str(lam), lam, zero) for lam in
+        (F(0),F(1,1000),F(1,100),F(1,4),F(1,2),F(3,4),F(1))]
+    specs += [('half_internal', F(1,2), internal), ('endpoint_internal', F(1), internal)]
+    queries = []
+    query_started = time.monotonic()
+    for label, lam, increments in specs:
+        c = contact_api.evaluate_native_common_preparation_contacts(contacts,
+            preparation_fraction=lam, internal_coordinates=increments, precision=96)
+        b = balance_api.evaluate_native_common_preparation_balance(balance,
+            preparation_fraction=lam, internal_coordinates=increments, precision=96)
+        cdto = contact_api.native_common_preparation_contacts_response_to_dict(c)
+        bdto = balance_api.native_common_preparation_balance_response_to_dict(b)
+        cr = contact_api.native_common_preparation_contacts_response_from_dict(cdto,
+            system=contacts_restart, expected_preparation_fraction=lam,
+            expected_internal_coordinates=increments, precision=96)
+        br = balance_api.native_common_preparation_balance_response_from_dict(bdto,
+            system=balance_restart, expected_preparation_fraction=lam,
+            expected_internal_coordinates=increments, precision=96)
+        assert contact_api.native_common_preparation_contacts_response_to_dict(cr) == cdto
+        assert balance_api.native_common_preparation_balance_response_to_dict(br) == bdto
+        counts = {}
+        for atom in map(json.loads, c.atoms_json):
+            branch = atom['loading']['branch']
+            counts[branch] = counts.get(branch,0)+1
+        assert len(b.gradient_bounds)==15 and len(b.hessian_bounds)==15
+        assert all(len(row)==15 for row in b.hessian_bounds)
+        assert b.common_owner_rotation_gradient_bounds_nm[2].hi < 0
+        assert not b.general_state_mixed_operator_certified
+        queries.append(dict(label=label, preparation_fraction=[lam.numerator,lam.denominator],
+            internal_coordinates=[[v.numerator,v.denominator] for v in increments],
+            contact_response=cdto, balance_response=bdto, branch_counts=counts,
+            complete_contacts_response_restart_equal=True,
+            complete_balance_response_restart_equal=True))
+    assert queries[0]['branch_counts'] == {'intact_or_compressed':16}
+    assert queries[2]['branch_counts'].keys() == {'intact_or_compressed','monotone_softening','fully_failed_open'}
+    assert queries[6]['branch_counts'] == {'fully_failed_open':12,'intact_or_compressed':4}
+    assert balance_api._bounds(balance_api._saved(queries[6]['balance_response'][
+        'independent_owner_relaxed_potential_work_lower_bound_j'])).lo > 0
+    differences=[]
+    for before,after in ((F(0),F(1)),(F(1),F(0)),(F(1,2),F(1,2))):
+        difference = balance_api.compare_native_common_preparation_balance_states(balance,before,after)
+        assert balance_api.native_common_preparation_balance_state_difference_from_dict(
+            difference,system=balance_restart,before_fraction=before,after_fraction=after)==difference
+        assert not difference['temporal_path_work_certified']
+        differences.append(difference)
+    try:
+        balance_api.require_native_common_preparation_full_physical_solve(balance)
+    except ValueError as error:
+        full_solve_rejection=str(error)
+    else:
+        raise AssertionError('The incomplete physical solve must reject missing body loading')
+    assert 'missing86 loads cannot be filled with zero' in full_solve_rejection
+    result = dict(format='native-common-joint-preparation-native-1',
+        status='PASS_NATIVE927_DECLARED_PREPARATION_CONTACT_LOAD_ACTIVE15',
+        contacts_system=contacts_dto,balance_system=balance_dto,queries=queries,
+        signed_state_differences=differences,full_physical_solve_rejection=full_solve_rejection,
+        complete_contacts_restart_equal=contact_equal,complete_balance_restart_equal=balance_equal,
+        joint_preparation_active_block_computed=True,active_mixed_coordinate_count=15,
+        full_mixed_coordinate_count=101,missing_body_modal_load_derivative_coordinate_count=86,
+        full_mixed_force_and_tangent_certified=False,cold_constitutive_preparation_work_computed=True,
+        reference_preparation_work_paid=False,full_system_preparation_work_certified=False,
+        historical_archived_three_dimensional_prestress_recovered=False,
+        new_preparation_path_constitutive_admissibility_certified=False,
+        new_mixed_force_equilibrium_certified=False,whole_clock_all_pair_admission_authorized=False,
+        physical_material_admission_authorized=False,full_system_temporal_path_work_certified=False,
+        clocks_advanced=False,source_geometry_elapsed_time_s=0,contact_geometry_elapsed_time_s=2000000,
+        memory_elapsed_time_s=1000000,material_geometry_elapsed_time_s=1000000,
+        accepted_original_native_intervals=1,accepted_new_native_intervals=0,
+        original_point_1_completed=False,original_point_1_remaining_work_blocks=1,
+        previous_tensor_quadrature_reexecuted=False,historical_force_solve_reexecuted=False,
+        remaining_physical_conditions=[
+            'Physical material/force/prestress/work handover, full preparation and load work, general-state mixed operator and NEW equilibrium',
+            'Whole-clock all-pair admission, including reverse C5 to C1',
+            'Accepted continuation with independent temporal path work, balances and restart'],
+        timings=dict(ctx['timings'],new_queries_and_restart_seconds=time.monotonic()-query_started,
+            total_seconds=time.monotonic()-started))
+    result['sha256']=digest(result)
+    raw=encoded(result)+b'\n'
+    output=Path(output)
+    output.parent.mkdir(parents=True,exist_ok=True)
+    with output.open('xb') as stream: stream.write(raw)
+    sys.stdout.buffer.write(raw)
+    return result
+
+if __name__ == '__main__':
+    import argparse
+    parser=argparse.ArgumentParser()
+    parser.add_argument('--output',required=True)
+    run(parser.parse_args().output)

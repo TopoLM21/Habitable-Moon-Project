@@ -1,0 +1,158 @@
+Расчёт напряжений материала из настоящего Genesis
+09.10.2026, ветка fix/genesis-mantle-convection
+
+Результат
+
+Ранее birth catalogue рассчитывал происхождение глубинного материала, но
+механическая память была одной усреднённой strain на грань. Теперь каждое
+живое поколение материала получает свою plane-stress Maxwell memory,
+температуру и вязкость. Эта память участвует в равновесии Mobile/Fault и
+Coupled. Энергия суммируется по объёмам когорт. Это выполненный следующий
+результат внутри условия 1 пункта 1 прежнего плана.
+
+Новый расчёт действительно начинается с FaultModel.initial(): расплавленная
+планета 2300 K, 228.384889 бар, без твёрдой поверхности, океана или заданных
+плит. Старое depth-average сохранение не превращалось в историю когорт.
+Старые origin/bulk_birth evidence packages и native943 P/F не изменены.
+
+Физический и численный закон
+
+genesis_cohort_mechanics.py сохраняет permanent birth IDs и живые интервалы
+фиксированной массовой координаты q. Температура каждой когорты — интеграл
+существующего кусочно-линейного conductive profile по её живому интервалу,
+включая границу поверхности и mantle boundary, а не температура центра слоя.
+При частичном retirement старый температурный интеграл берётся по оставшейся
+массе. Отдельная strain когорты сохраняется, а не восстанавливается из средней.
+
+Для существующей активной когорты фиксируются endpoint local viscosity и
+tau=eta/E. r=exp(-dt/tau), b=(1-r)/(dt/tau). Old-frame elastic predictor:
+  m_i = r_i e_i_old - b_i alpha deltaT_i [1,1,0].
+Полный геометрический Hencky increment и общий weak-plane plastic increment
+действуют с собственным b_i, затем tensor переносится polar rotation в текущий
+chord frame. Engineering shear учитывается как gamma_xy=2 epsilon_xy.
+
+До появления несущей замкнутой оболочки strain когорт остаётся None: движение
+изолированных рафтов не рассчитывалось. При первом whole-membrane gate задано
+явное stress-free mechanical activation в настоящей old geometry при локальной
+endpoint temperature. Историческая деформация до этого gate не восстановлена.
+Последующие новые cohorts активируются при solidus в thermal-first chart;
+их endpoint cooling действует как instantaneous increment с b=1. Внутреннее
+время рождения не придумано; birth brackets сохранены. Это stated numerical
+closure, а не точная реконструкция движения фронта внутри thermal interval.
+
+При общих E/nu/damage на грань средние stress и tangent являются точными
+объёмными суммами: sigma_face=sum(V_i C e_i)/sum(V_i),
+tangent_face=sum(V_i b_i C)/sum(V_i). Поэтому Mobile/Fault Newton и Coupled
+собирают силы из рассчитанной памяти. Средняя elastic strain остаётся
+производной величиной для прежних интерфейсов. Повреждение пока общее на грань.
+В Fault общий through-thickness plane gamma корректирует каждую когорту
+с её b_i; transported plastic flow переводится обратно в old frame перед
+Maxwell update. Разные plastic slips по глубине этой моделью не заявлены.
+
+Упругая энергия: sum(0.5 V_i e_i:C:e_i), с сохранением межслойной вариации.
+Работа и вязкая диссипация для существующих когорт рассчитаны интегрированием
+точной constant-driving Maxwell trajectory, с endpoint local viscosity.
+Для instantaneous activation используется соответствующий линейный путь.
+Отдельная constitutive identity:
+  E = Wmechanical - Wplastic + Wthermal - Dviscous
+      + signed_damage_energy_change - remelt_energy_removed.
+Энергия retirement суммируется по действительно удалённой массе. При отсутствии
+retirement она строго нулевая; округление остаётся в balance residual.
+
+Общий баланс thermal/mantle/contact/friction этим не закрыт. Fault friction
+work остаётся backward-Euler estimate в отдельном ledger. Coupled сохраняет
+отдельные split predictor/loss/remainder counters; exact cohort work не
+превращает их в общий замкнутый energy reservoir.
+
+Сохранения и экспорт
+
+Mobile/Fault 0.3, Coupled 0.4 требуют собственную constitutive memory.
+Загрузка проверяет live IDs/coverage, source, clocks, activation, temperatures,
+volume-mean strain, энергию, work identity и elastic limit каждой когорты.
+Предыдущие физические форматы требуют повторного расчёта от расплава.
+Явные bulk_birth_history=None и cohort_mechanics=None оставлены только для
+declared mechanical fixtures; строгий producer export их отклоняет.
+
+Bulk export 0.2 содержит реальные source bytes и cohort state. Readback
+пересоздаёт пакет целиком. Instantaneous 3D plane-stress tensors экспортируются
+по когортам; энергия face mean записана отдельно. Full historical 3D total
+strain/prestress/placement/natural metric и plate ownership ещё не получены;
+physical_force_work_admission=False. Старый native943 importer не использован.
+
+Фактические проверки final02
+
+Canonical traction 20 кПа, reduced mesh 80 faces; параметры остальных физических
+законов из configs/genesis_moon.yaml. В 0.866 Myr — настоящий precursor,
+80 cohorts с unavailable elastic memory. Save/load и формирование совпадают
+полностью. В 0.868 Myr — несущая оболочка: 480 когорт, 438 принятых интервалов,
+62.0556–63.4266 м solid thickness. Максимальный local temperature contrast на
+одной грани 14.50896 K; strain component contrast 0.0003609304.
+
+Source energy 4.276852389239655e19 J; energy of face mean 3.788398148994852e19 J.
+Разница 4.88454240244804e18 J, или 11.42% полной энергии, сохраняется в когортах.
+Source Dviscous=1.6406460386142783e19 J. Force residual=1.467376727540016e-9.
+Actual source checkpoint SHA256:
+  cd79ee2a5139c4b91abdb1b4714a761c9153cc9f4490f5aa63fa2facba458c89
+
+Отдельный Fault 1+1 год и Coupled 1+1 год полностью воспроизводятся после
+save/load. Fault->Coupled переносит cohort memory/source bytes/material/velocity
+точно. Итог Coupled: 640 когорт, 440 интервалов, 0.868002 Myr;
+energy=4.27174006736274e19 J, Dviscous=1.645671308734308e19 J, remelt energy=0.
+Actual control exit0/stderr0, 74.919811291 s; 25 physics sources до/после совпадают.
+
+353 targeted tests PASS, 86.58 s; captured execution 89.061351057 s,
+exit0/stderr0. Проверены analytic Maxwell work/dissipation, разные температуры,
+plastic rotation/return tangent, retirement/refreeze, force assembly и variance
+energy; Mobile/Fault/Contact/Coupled, checkpoints/growth/CLI/GUI/thermal guards.
+
+Отдельный verifier использует только stdlib/NumPy и не импортирует producer
+physics. Независимо восстановлены boundary/column temperatures, profile means,
+mass-q birth/retirement/refreeze, weighted strain, полная энергия и constitutive
+identity семи snapshots. Проверены source prefix/activation, source bytes и
+3D Hooke/energy. Три пары direct/resumed совпадают по metadata и 23/23/40 arrays.
+Сравнивались содержимое NPZ, не случайные ZIP container bytes.
+Максимальный independently recomputed relative work residual 1.37668e-15.
+Это readback принятых состояний и counters, не replay всех механических шагов.
+Actual verifier exit0/stderr0, 10.560548746 s. Полный JSON stdout после parsing
+равен report; pretty-format bytes отличаются. Report selfseal:
+  f0364f15250f91b4c0eedc14972f4bde630f630b594564dec85cde7508e0ee96
+
+Evidence: analysis/genesis_cohort_mechanics_validation/evidence/PACKAGE_README.txt.
+Controller source SHA256:
+  c2679095974d71dc6eb147fb76f467620469b3e890617edcb10e44330bffabd1
+Constitutive source SHA256:
+  08cd62d035ab652274acd26d415f86f9deddb3a3b70aa87c0edabccc1502bd99
+Independent verifier source SHA256:
+  84b909e7d413b8623943ecb8176483f91dca8353588d54bed8adcb3f6e942ded
+
+Предварительные серии
+
+При первой интеграции 79 PASS/3 FAIL/12 setup ERROR: thermal-only F(mesh,mesh)
+roundoff ошибочно считался raft strain, а DTO требовал literal JSON lists вместо
+immutable tuples. Исправлены реальный нулевой mechanical increment до gate и
+JSON representation. Аналитические fixture boundary/normalization проверки
+также исправлены без ослабления физических guards. Эти серии не final evidence.
+
+Captured run01: реальное формирование/restart и 353 tests прошли, но subtraction
+двух больших энергий записала 4096 J как retirement при нулевой retired mass.
+После direct removed-mass correction выполнен новый final02 control и все
+353 tests. Run01 сохранён отдельно как предварительный результат.
+
+Остаток пункта 1 прежнего плана
+
+Пункт 1 остаётся открытым по тем же трём условиям; новые этапы не добавлены.
+1. Полная физическая объёмная память/prestress, перенос сил и работы,
+   physical operator и новое равновесие. Теперь producer считает depth-cohort
+   stress/work в plane-stress closure. Full 3D material placement/natural state,
+   owner binding и admission в подробный native operator остаются открыты.
+2. Допуск всех физических пар на всём интервале времени, включая C5->C1.
+3. Новое принятое подробное продолжение с независимой временной работой,
+   балансами и restart. Этот bounded Genesis/Coupled control не закрывает его.
+
+Следующий конкретный шаг внутри условия 1: связать рассчитанные IDs и memory
+настоящего Genesis с material ownership и объёмным механическим оператором;
+проверить перенос resultants/energy/work и новое равновесие без replacement
+initialization. Не раздавать прежнюю среднюю strain глубинным cohort IDs.
+Пункты 2–6 общего плана открыты. Chemical continents, early isolated-raft
+motion, shared closed heat/work balance и длительная сходимость остаются задачами
+этого плана. Большие cohort counts не сертифицированы для длительных прогонов.

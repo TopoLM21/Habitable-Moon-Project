@@ -8,6 +8,8 @@ once; allocating it laterally to force sections is deliberately unresolved.
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass, replace
+from collections.abc import Mapping
+from numbers import Real
 import hashlib
 import json
 import math
@@ -17,8 +19,11 @@ import numpy as np
 from .fractional_surface import EXTENSIVE_FIELDS, SurfaceParcel
 from .geometric_contacts import GeometricContact, extract_contacts
 from .geometric_surface import GeometricFragment, GeometricSurfaceState, rotations
+from .geometric_rotation_vectors import rotation_vectors_payload
 from .geometric_transport import GeometricLoss
-from .spherical_polygons import arc_length, intersect_convex, polygon_area, shared_boundary_arcs
+from .spherical_polygons import (
+    _edge_distance, _edge_normal, arc_length, intersect_convex, polygon_area, shared_boundary_arcs,
+)
 
 VERSION = "geometric-boundary-1"
 _EPS = np.finfo(float).eps
@@ -104,6 +109,31 @@ class GeometricTransactionRecord:
 
 
 @dataclass(frozen=True, slots=True)
+class GeometricRepresentationRecord:
+    """A verified zero-time material subdivision, without slab acceptance."""
+
+    record_id: str
+    payload_sha256: str
+    before_surface_digest: str
+    after_surface_digest: str
+    time_myr: float
+    fragment_parents: tuple[tuple[str, str], ...]
+
+
+def _representation_payload(before_digest, after_digest, time_myr, fragment_parents):
+    return dict(operation="conservative_material_subdivision", before_surface_digest=before_digest,
+        after_surface_digest=after_digest, time_myr=time_myr, fragment_parents=fragment_parents)
+
+
+def _representation_record(before, after, fragment_parents):
+    parents = tuple(sorted(fragment_parents))
+    before_digest, after_digest = surface_digest(before), surface_digest(after)
+    digest = _hash(_representation_payload(before_digest, after_digest, before.time_myr, parents))
+    return GeometricRepresentationRecord("geometric-representation:"+digest, digest,
+        before_digest, after_digest, before.time_myr, parents)
+
+
+@dataclass(frozen=True, slots=True)
 class GeometricBoundaryState:
     time_myr: float
     radius_km: float
@@ -112,6 +142,7 @@ class GeometricBoundaryState:
     contacts: tuple[GeometricContact, ...]
     transactions: tuple[GeometricTransactionRecord, ...] = ()
     version: str = VERSION
+    representations: tuple[GeometricRepresentationRecord, ...] = ()
 
 
 def _event_identity(loss):
@@ -188,7 +219,7 @@ def _rotate_vectors(values, omega, dt):
 
 def _contact_frame(contact):
     origin = np.asarray(contact.start)
-    tangent = np.cross(contact.normal_a_to_b, origin)
+    tangent = np.cross(_edge_normal(origin, np.asarray(contact.end)), origin)
     tangent /= np.linalg.norm(tangent)
     if float(tangent@(np.asarray(contact.end)-origin)) < 0.:
         tangent = -tangent
@@ -197,28 +228,30 @@ def _contact_frame(contact):
 
 def _arc_interval(start, end, contact):
     """A positive common interval on a known contact plane; no distance search."""
+    if not (0. < arc_length(start, end) < math.pi):
+        return None
     origin, tangent, extent = _contact_frame(contact)
-    normal = np.asarray(contact.normal_a_to_b)
     points = [np.asarray(start, dtype=float), np.asarray(end, dtype=float)]
     endpoints = (np.asarray(contact.start), np.asarray(contact.end))
+    plane_normal = _edge_normal(*endpoints)
     for index, point in enumerate(points):
-        # Same binary64 construction as the polygon kernel's vertex filter.
-        # This resolves shared endpoints, never a physical minimum arc length.
+        if _edge_distance(point, endpoints[0], endpoints[1], None) != 0.:
+            return None
+        # An exact endpoint remains itself even when a very short arc's
+        # alternate-construction intervals overlap at both endpoints.
+        # Approximate incidence with start cannot rewrite a known exact end.
+        if any(np.array_equal(point, endpoint) for endpoint in endpoints):
+            continue
+        # The perpendicular endpoint plane measures angular incidence without
+        # subtracting rounded global angles.  Its operation/coordinate bound
+        # resolves alternate constructions of one endpoint while preserving
+        # actual tiny pole displacements and positive support intervals.
         for endpoint in endpoints:
-            if np.array_equal(point, endpoint):
+            if (np.array_equal(point, endpoint) or
+                    (np.dot(point, endpoint) > 0. and
+                     _edge_distance(point, plane_normal, endpoint, None) == 0.)):
                 points[index] = endpoint
                 break
-        else:
-            # Never merge the two distinct endpoints of a representable short
-            # contact merely because both lie in one binary64 error ball.
-            if extent > 8.*_EPS:
-                nearest = min(endpoints, key=lambda endpoint: np.linalg.norm(point-endpoint))
-                if np.linalg.norm(point-nearest) <= 4.*_EPS:
-                    points[index] = nearest
-        point = points[index]
-        error_bound = 64.*_EPS*float(np.sum(np.abs(point*normal)))
-        if abs(float(point@normal)) > error_bound:
-            return None
     angles = []
     for point in points:
         if np.array_equal(point, endpoints[0]):
@@ -358,6 +391,9 @@ def _group_totals(fragments):
 
 
 def _verify_transaction(before, result, inventory, omega, dt):
+    if isinstance(omega, Mapping) and (
+            isinstance(dt, (bool, np.bool_)) or not isinstance(dt, Real)):
+        raise ValueError("Compact slab transport requires an explicit real timestep")
     dt = float(dt)
     omega = rotations(before, omega, dt)
     after = result.state
@@ -540,7 +576,7 @@ def consume_geometric_transaction(before, result, inventory, omega, dt):
             unresolved_support=unresolved_claim))
     after_digest = surface_digest(result.state)
     payload = dict(before_surface_digest=inventory.surface_digest, after_surface_digest=after_digest,
-        omega=np.asarray(omega).tolist(), dt=float(dt),
+        omega=rotation_vectors_payload(omega), dt=float(dt),
         losses=sorted((_loss_payload(loss) for loss in losses), key=lambda row: row["fragment"]["fragment_id"]),
         births=sorted((asdict(fragment) for fragment in result.births), key=lambda row: row["fragment_id"]),
         contacts=[asdict(contact) for contact in contacts])
@@ -550,8 +586,9 @@ def consume_geometric_transaction(before, result, inventory, omega, dt):
         tuple(sorted(_event_identity(loss) for loss in losses)))
     if any(item.transaction_id == record.transaction_id for item in inventory.transactions):
         raise ValueError("Duplicate geometric slab transaction; replay rejected")
-    return GeometricBoundaryState(result.state.time_myr, result.state.radius_km, after_digest,
-        tuple(cohorts), contacts, inventory.transactions+(record,))
+    return replace(inventory, time_myr=result.state.time_myr, radius_km=result.state.radius_km,
+        surface_digest=after_digest, cohorts=tuple(cohorts), contacts=contacts,
+        transactions=inventory.transactions+(record,))
 
 
 def polarity_evidence(inventory):
@@ -581,6 +618,7 @@ def boundary_diagnostics(inventory, *, thermal_diffusivity_m2_s=None):
                              for field in EXTENSIVE_FIELDS}
     output = dict(version=inventory.version, time_myr=inventory.time_myr,
         cohort_count=len(inventory.cohorts), transaction_count=len(inventory.transactions),
+        representation_count=len(inventory.representations),
         accepted=extensive(inventory.cohorts), by_attachment={key: extensive(rows) for key, rows in groups.items()},
         attachment_counts={key: len(rows) for key, rows in groups.items()}, forces_active=False,
         thermal_evolution="archival values frozen; optional passive warming diagnostic only")
@@ -641,8 +679,15 @@ def boundary_from_dict(data):
         contacts = tuple(_contact_from_dict(row) for row in data["contacts"])
         transactions = tuple(GeometricTransactionRecord(**{**row, "event_ids": tuple(row["event_ids"])})
             for row in data["transactions"])
+        for row in data.get("representations", ()):
+            if any(not isinstance(item, (list, tuple)) or len(item) != 2
+                   for item in row["fragment_parents"]):
+                raise TypeError("A representation parent must be an explicit pair")
+        representations = tuple(GeometricRepresentationRecord(**{**row,
+            "fragment_parents": tuple(tuple(item) for item in row["fragment_parents"])})
+            for row in data.get("representations", ()))
         inventory = GeometricBoundaryState(**{**data, "cohorts": tuple(cohorts),
-            "contacts": contacts, "transactions": transactions})
+            "contacts": contacts, "transactions": transactions, "representations": representations})
     except (KeyError, TypeError, OverflowError) as error:
         raise ValueError("Malformed geometric boundary checkpoint") from error
     if (not math.isfinite(inventory.time_myr) or inventory.time_myr < 0. or
@@ -683,7 +728,6 @@ def boundary_from_dict(data):
                     _arc_interval(support.start, support.end, contact) is None):
                 raise ValueError("Saved cohort support does not match its current contact")
     seen, transaction_ids = set(), set()
-    previous = None
     for record in transactions:
         if (record.transaction_id in transaction_ids or record.transaction_id != "geometric-transaction:"+record.payload_sha256
                 or not math.isfinite(record.start_time_myr) or not math.isfinite(record.end_time_myr)
@@ -691,17 +735,81 @@ def boundary_from_dict(data):
                 or record.end_time_myr > inventory.time_myr):
             raise ValueError("Invalid saved transaction identity or time")
         transaction_ids.add(record.transaction_id)
-        if previous is not None and (record.start_time_myr != previous.end_time_myr or
-                record.before_surface_digest != previous.after_surface_digest):
-            raise ValueError("Saved slab transactions do not form a contiguous surface history")
         for identity in record.event_ids:
             if identity in seen or identity not in event_map or event_map[identity].acceptance_time_myr != record.end_time_myr:
                 raise ValueError("Saved transaction acceptance registry is inconsistent")
             seen.add(identity)
-        previous = record
     if seen != set(event_map):
         raise ValueError("Saved cohorts are absent from the acceptance registry")
-    if previous is not None and (previous.end_time_myr != inventory.time_myr or
-            previous.after_surface_digest != inventory.surface_digest):
-        raise ValueError("Saved boundary is not at its final transaction surface")
+    _validate_representation_history(inventory)
     return inventory
+
+
+def _validate_representation_history(inventory):
+    """Merge physical and representation registries into one nonforking path.
+
+    Old version-1 files omit the representation registry. Their physical
+    transaction chronology and acceptance registry keep the same checks.
+    Representation records cannot bypass either or create acceptance events.
+    """
+    records = inventory.representations
+    record_ids = set()
+    for record in records:
+        parents = record.fragment_parents
+        valid_parents = (isinstance(parents, tuple) and bool(parents)
+            and all(isinstance(item, tuple) and len(item) == 2
+                    and all(isinstance(value, str) and value for value in item) for item in parents)
+            and parents == tuple(sorted(parents))
+            and len({item[0] for item in parents}) == len(parents))
+        if (not valid_parents or isinstance(record.time_myr, (bool, np.bool_))
+                or not isinstance(record.time_myr, (int, float))
+                or not math.isfinite(record.time_myr)
+                or record.time_myr < 0. or record.time_myr > inventory.time_myr
+                or record.before_surface_digest == record.after_surface_digest):
+            raise ValueError("Invalid saved material representation record")
+        digest = _hash(_representation_payload(record.before_surface_digest,
+            record.after_surface_digest, record.time_myr, parents))
+        if (not isinstance(record.record_id, str) or record.payload_sha256 != digest
+                or record.record_id != "geometric-representation:"+digest
+                or record.record_id in record_ids):
+            raise ValueError("Saved representation identity or payload digest mismatch")
+        record_ids.add(record.record_id)
+
+    edges = []
+    for record in inventory.transactions:
+        edges.append((record, record.start_time_myr, record.end_time_myr, "transaction"))
+    for record in records:
+        edges.append((record, record.time_myr, record.time_myr, "representation"))
+    if not edges:
+        return
+    by_before, by_after = {}, {}
+    for edge in edges:
+        record = edge[0]
+        for digest in (record.before_surface_digest, record.after_surface_digest):
+            if (not isinstance(digest, str) or len(digest) != 64
+                    or any(value not in "0123456789abcdef" for value in digest)):
+                raise ValueError("Invalid saved surface-history digest")
+        if (record.before_surface_digest in by_before or record.after_surface_digest in by_after):
+            raise ValueError("Saved boundary histories fork or merge")
+        by_before[record.before_surface_digest] = edge
+        by_after[record.after_surface_digest] = edge
+    starts = set(by_before)-set(by_after)
+    if len(starts) != 1:
+        raise ValueError("Saved boundary histories contain a cycle or disconnected start")
+    current = starts.pop()
+    clock = by_before[current][1]
+    physical, representations, visited = [], [], set()
+    while current in by_before:
+        if current in visited:
+            raise ValueError("Saved boundary histories contain a cycle")
+        visited.add(current)
+        record, start, end, kind = by_before[current]
+        if start != clock:
+            raise ValueError("Saved boundary histories do not form a contiguous clock")
+        (physical if kind == "transaction" else representations).append(record)
+        current, clock = record.after_surface_digest, end
+    if (len(visited) != len(edges) or tuple(physical) != inventory.transactions
+            or tuple(representations) != records):
+        raise ValueError("Saved boundary histories do not form a contiguous ordered surface history")
+    if current != inventory.surface_digest or clock != inventory.time_myr:
+        raise ValueError("Saved boundary is not at its final transaction or representation surface")
