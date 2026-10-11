@@ -1,0 +1,124 @@
+{
+  "format": "genesis-exact-events-sphere-trial-readback-1",
+  "independent_pi_identity": "4*(atan(1/2)+atan(1/3)); alternating rational bounds",
+  "auditor_pin": {
+    "path": "/workspace/Habitable-Moon-Project/analysis/genesis_volume_exact_events_validation/audit_sphere_trials.py",
+    "bytes": 4281,
+    "sha256": "cff5cc5d9998c1b193bf3db99d189f6140391c34d119c8a61bd662b950f8a692"
+  },
+  "trials": [
+    {
+      "report_pin": {
+        "path": "/workspace/genesis-exact-events-sphere-midpoint-smoothed-01/report.json",
+        "bytes": 1174477,
+        "sha256": "ad2a57606b7b1c90209576edc158fbe703f038bb66dfbab96c6720bbab94c69f"
+      },
+      "nodes": 3400,
+      "missing_cells": 0,
+      "source_budget_failures": 0,
+      "sphere_events": false,
+      "smoothing": true,
+      "relative_error_bounds_from_independent_pi": [
+        [
+          0.0033043014612416295,
+          0.0033043014612420536
+        ],
+        [
+          0.0034008304571001157,
+          0.00340083045710054
+        ]
+      ],
+      "both_banks_fail_original_tolerance": true,
+      "partition_audit": {
+        "cells": 114,
+        "exact_positive_area_intersection_checks": 159,
+        "all_cells_inside_initial_support": true,
+        "no_positive_area_overlap": true,
+        "exact_total_parameter_area_preserved": true
+      },
+      "sampled_fiber_audit": {
+        "independent_bank_fiber_checks": 912,
+        "whole_Gamma_fibers_not_used": 0,
+        "all_sampled_bank_fibers_contained": true,
+        "proof_for_whole_cells_is_separate": true
+      },
+      "numerical_integration_repeated": false
+    },
+    {
+      "report_pin": {
+        "path": "/workspace/genesis-exact-events-sphere-balanced-native-01/report.json",
+        "bytes": 812855,
+        "sha256": "0efa4d59c259818dbe9bd6acb6aab536d4021c07b810b0866262d553465f07b7"
+      },
+      "nodes": 3400,
+      "missing_cells": 8,
+      "source_budget_failures": 0,
+      "sphere_events": true,
+      "smoothing": false,
+      "relative_error_bounds_from_independent_pi": [
+        [
+          0.0006079581242709251,
+          0.0006079581242713491
+        ],
+        [
+          0.0062022847484136095,
+          0.006202284748414034
+        ]
+      ],
+      "both_banks_fail_original_tolerance": true,
+      "partition_audit": {
+        "cells": 78,
+        "exact_positive_area_intersection_checks": 320,
+        "all_cells_inside_initial_support": true,
+        "no_positive_area_overlap": true,
+        "exact_total_parameter_area_preserved": true
+      },
+      "sampled_fiber_audit": {
+        "independent_bank_fiber_checks": 624,
+        "whole_Gamma_fibers_not_used": 0,
+        "all_sampled_bank_fibers_contained": true,
+        "proof_for_whole_cells_is_separate": true
+      },
+      "numerical_integration_repeated": false
+    },
+    {
+      "report_pin": {
+        "path": "/workspace/genesis-exact-events-sphere-balanced-smoothed-01/report.json",
+        "bytes": 817019,
+        "sha256": "9a74f12e9727babea17400ce1c38580498bb48ce06bf613f287974abf777afe0"
+      },
+      "nodes": 3400,
+      "missing_cells": 4,
+      "source_budget_failures": 0,
+      "sphere_events": true,
+      "smoothing": true,
+      "relative_error_bounds_from_independent_pi": [
+        [
+          0.006789391757355956,
+          0.00678939175735638
+        ],
+        [
+          0.0054466454478054585,
+          0.005446645447805883
+        ]
+      ],
+      "both_banks_fail_original_tolerance": true,
+      "partition_audit": {
+        "cells": 79,
+        "exact_positive_area_intersection_checks": 317,
+        "all_cells_inside_initial_support": true,
+        "no_positive_area_overlap": true,
+        "exact_total_parameter_area_preserved": true
+      },
+      "sampled_fiber_audit": {
+        "independent_bank_fiber_checks": 632,
+        "whole_Gamma_fibers_not_used": 0,
+        "all_sampled_bank_fibers_contained": true,
+        "proof_for_whole_cells_is_separate": true
+      },
+      "numerical_integration_repeated": false
+    }
+  ],
+  "four_original_tensor_controls_rerun": false,
+  "disposition": "Curved-event refinement and smoothing rejected; exact Gamma cuts retained separately"
+}
