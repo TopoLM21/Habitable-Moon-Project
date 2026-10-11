@@ -347,5 +347,3 @@ def verify_partition(raw,cells,certificate):
     if partition_events(raw,cells,max_depth=certificate['max_depth'],max_cells=certificate['max_cells'])!=certificate:
         raise ValueError('Canonical event partition differs')
     return True
-
-

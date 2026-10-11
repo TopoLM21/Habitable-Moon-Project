@@ -19,7 +19,7 @@ source-event/Bernstein прототип в рабочий модуль разб�
 
 Общая регрессия: **108 тестов PASS за 32,25 с** (80 прежних, 8 precision,
 20 event/coverage). 476 закреплённых в control исходников неизменны.
-Report: `/workspace/genesis-event-partition-02/report.json`;
+Report: `/workspace/genesis-event-partition-03/report.json`;
 [малый отчёт](analysis/genesis_volume_event_partition_validation/summary.json).
 Новый угловой прогон с этим разбиением пока не выполнялся.
 
