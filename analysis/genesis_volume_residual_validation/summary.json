@@ -1,0 +1,638 @@
+{
+  "base_commit": "64a8913055d90c0afb1ab1ca7bfb5b589ed0ffe1",
+  "status": "TARGET_DIRECTION_CONFIRMED_SMALL_SET_FAILED",
+  "diagnostic_radial_evaluations_separate": 33,
+  "working_radial_evaluations_total": 10131,
+  "total_radial_evaluations": 10164,
+  "indicator_extra_radial_evaluations": 0,
+  "full_tensor_controls_started": false,
+  "cases": [
+    {
+      "case": "half_ball",
+      "radial_evaluations": 3366,
+      "indicator_extra_calls": 0,
+      "fine_errors": [
+        2.9639739564466844e-06,
+        2.947570218324266e-06
+      ],
+      "coarse_errors": [
+        1.532631737308903e-05,
+        3.309500110010362e-05
+      ],
+      "analytic_gate": false,
+      "embedded_gate": false,
+      "combined_to_allowance": [
+        517.7133036443956,
+        547.0890713444749
+      ],
+      "localization": {
+        "nodes": 3366,
+        "leaves": 27,
+        "worst_bank": 1,
+        "embedded_to_allowance": [
+          517.7130625910843,
+          547.0888302911596
+        ],
+        "top3_fraction": 0.3069332672323813,
+        "cells_for_80_percent": 11,
+        "triangle_fractions": {
+          "0": 0.3078597995636049,
+          "1": 0.3842804008727728,
+          "2": 0.3078597995636224
+        },
+        "top3": [
+          {
+            "cell": [
+              "1",
+              "1/2",
+              "1",
+              "1/2",
+              "3/4"
+            ],
+            "fraction": 0.11406275729922612,
+            "observed": [
+              5.332001595269075e-07,
+              4.084243525651202e-06
+            ],
+            "direction": {
+              "s": [
+                2.2592227643336466e-06,
+                1.9078315863012547e-06
+              ],
+              "t": [
+                7.15933310823325e-07,
+                2.515664334713116e-07
+              ]
+            }
+          },
+          {
+            "cell": [
+              "0",
+              "0",
+              "1/2",
+              "1/4",
+              "1/2"
+            ],
+            "fraction": 0.09643525496657968,
+            "observed": [
+              2.1678926734469564e-06,
+              3.4530558007512613e-06
+            ],
+            "direction": {
+              "s": [
+                9.727458704118594e-07,
+                1.3113235579101232e-06
+              ],
+              "t": [
+                9.498567779456883e-07,
+                1.1918338744804064e-06
+              ]
+            }
+          },
+          {
+            "cell": [
+              "2",
+              "0",
+              "1/2",
+              "1/2",
+              "3/4"
+            ],
+            "fraction": 0.09643525496657551,
+            "observed": [
+              2.167892673446931e-06,
+              3.453055800751112e-06
+            ],
+            "direction": {
+              "s": [
+                9.727458704118513e-07,
+                1.3113235579101143e-06
+              ],
+              "t": [
+                9.498567779456805e-07,
+                1.1918338744803994e-06
+              ]
+            }
+          }
+        ]
+      },
+      "matched_changed_directions": [
+        {
+          "parent": [
+            "2",
+            "0",
+            "1/2",
+            "0",
+            "1/2"
+          ],
+          "new_axis": "t",
+          "old_axis": "s",
+          "new_to_old_child_error": 0.15249688037864167
+        },
+        {
+          "parent": [
+            "0",
+            "0",
+            "1/2",
+            "1/2",
+            "1"
+          ],
+          "new_axis": "t",
+          "old_axis": "s",
+          "new_to_old_child_error": 0.15249688037867754
+        },
+        {
+          "parent": [
+            "0",
+            "0",
+            "1",
+            "0",
+            "1/2"
+          ],
+          "new_axis": "s",
+          "old_axis": "t",
+          "new_to_old_child_error": 2.9453861234013727
+        },
+        {
+          "parent": [
+            "2",
+            "0",
+            "1",
+            "1/2",
+            "1"
+          ],
+          "new_axis": "s",
+          "old_axis": "t",
+          "new_to_old_child_error": 2.9453861234013727
+        }
+      ],
+      "result_pins": [
+        {
+          "path": "/workspace/genesis-residual-half-ball-01/report.json",
+          "bytes": 1331935,
+          "sha256": "419997e576da4740d5cda3f27968858e05384fd42eb38413d34b407a53515d54"
+        },
+        {
+          "path": "/workspace/genesis-residual-half-ball-01/ray_certificates.json",
+          "bytes": 455651,
+          "sha256": "06ed5115a4dfa9e658e408ddfb7b7a5b51f4b760a8092e146c1a9a2b8fd4f49c"
+        },
+        {
+          "path": "/workspace/genesis-residual-half-ball-01/samples.json",
+          "bytes": 1578491,
+          "sha256": "76cd096f024c993dbb7eb7cff1f633b5285efaaf7d77b333e884ea9fce9044df"
+        },
+        {
+          "path": "/workspace/genesis-residual-half-ball-01/source_pins.json",
+          "bytes": 837,
+          "sha256": "fecf9fc2795e0e4739c77ade403ed354715a2109b9d02c02b086fd9a73c0d34e"
+        }
+      ]
+    },
+    {
+      "case": "small_half_ball",
+      "radial_evaluations": 3366,
+      "indicator_extra_calls": 0,
+      "fine_errors": [
+        3.2549796114954863e-06,
+        3.237457724142399e-06
+      ],
+      "coarse_errors": [
+        2.0005504273544636e-05,
+        2.615353697551724e-05
+      ],
+      "analytic_gate": false,
+      "embedded_gate": false,
+      "combined_to_allowance": [
+        524.609220001123,
+        528.528818178059
+      ],
+      "localization": {
+        "nodes": 3366,
+        "leaves": 27,
+        "worst_bank": 1,
+        "embedded_to_allowance": [
+          524.6089921413687,
+          528.5285903183005
+        ],
+        "top3_fraction": 0.3145999558098112,
+        "cells_for_80_percent": 13,
+        "triangle_fractions": {
+          "0": 0.31940292880577614,
+          "1": 0.36119414238838343,
+          "2": 0.31940292880584037
+        },
+        "top3": [
+          {
+            "cell": [
+              "1",
+              "1/2",
+              "1",
+              "1/2",
+              "3/4"
+            ],
+            "fraction": 0.12410223471963218,
+            "observed": [
+              7.181055279170966e-16,
+              3.998142402857999e-15
+            ],
+            "direction": {
+              "s": [
+                2.0101026362433694e-15,
+                1.7506418459017142e-15
+              ],
+              "t": [
+                6.097411659755687e-16,
+                2.0489952691192774e-16
+              ]
+            }
+          },
+          {
+            "cell": [
+              "0",
+              "0",
+              "1/2",
+              "1/4",
+              "1/2"
+            ],
+            "fraction": 0.0952488605450918,
+            "observed": [
+              2.174363949418649e-15,
+              3.0685870325346907e-15
+            ],
+            "direction": {
+              "s": [
+                1.0630715279531906e-15,
+                1.0533926637398559e-15
+              ],
+              "t": [
+                8.959881337870508e-16,
+                1.0964284898546678e-15
+              ]
+            }
+          },
+          {
+            "cell": [
+              "2",
+              "0",
+              "1/2",
+              "1/2",
+              "3/4"
+            ],
+            "fraction": 0.09524886054508724,
+            "observed": [
+              2.174363949418624e-15,
+              3.068587032534544e-15
+            ],
+            "direction": {
+              "s": [
+                1.0630715279531833e-15,
+                1.0533926637398474e-15
+              ],
+              "t": [
+                8.959881337870439e-16,
+                1.096428489854658e-15
+              ]
+            }
+          }
+        ]
+      },
+      "matched_changed_directions": [
+        {
+          "parent": [
+            "2",
+            "0",
+            "1/2",
+            "0",
+            "1/2"
+          ],
+          "new_axis": "t",
+          "old_axis": "s",
+          "new_to_old_child_error": 0.13277267801228476
+        },
+        {
+          "parent": [
+            "0",
+            "0",
+            "1/2",
+            "1/2",
+            "1"
+          ],
+          "new_axis": "t",
+          "old_axis": "s",
+          "new_to_old_child_error": 0.13277267801231127
+        },
+        {
+          "parent": [
+            "0",
+            "0",
+            "1",
+            "0",
+            "1/2"
+          ],
+          "new_axis": "s",
+          "old_axis": "t",
+          "new_to_old_child_error": 4.234162860345815
+        },
+        {
+          "parent": [
+            "2",
+            "0",
+            "1",
+            "1/2",
+            "1"
+          ],
+          "new_axis": "s",
+          "old_axis": "t",
+          "new_to_old_child_error": 4.234162860345818
+        }
+      ],
+      "result_pins": [
+        {
+          "path": "/workspace/genesis-residual-small-half-ball-01/report.json",
+          "bytes": 1341029,
+          "sha256": "4bc9f3f90292cc5cbabf45346d71fe4851ee70983c6977ad68c08b543b005ebf"
+        },
+        {
+          "path": "/workspace/genesis-residual-small-half-ball-01/ray_certificates.json",
+          "bytes": 469169,
+          "sha256": "b362e6cacc7e32f9db9c522e4d45b3e30f9922f52a618425775b206a7e40391f"
+        },
+        {
+          "path": "/workspace/genesis-residual-small-half-ball-01/samples.json",
+          "bytes": 1670460,
+          "sha256": "74679cf6eeedadab99e39854a775d2afe5fa1edbd833a2344ba8f12ebf1b4808"
+        },
+        {
+          "path": "/workspace/genesis-residual-small-half-ball-01/source_pins.json",
+          "bytes": 837,
+          "sha256": "fecf9fc2795e0e4739c77ade403ed354715a2109b9d02c02b086fd9a73c0d34e"
+        }
+      ]
+    },
+    {
+      "case": "tangent_Gamma",
+      "radial_evaluations": 3399,
+      "indicator_extra_calls": 0,
+      "fine_errors": [
+        2.7790759181268333e-09,
+        0.0
+      ],
+      "coarse_errors": [
+        9.686318455458703e-06,
+        0.0
+      ],
+      "analytic_gate": true,
+      "embedded_gate": false,
+      "combined_to_allowance": [
+        49.79684998472972,
+        0
+      ],
+      "localization": {
+        "nodes": 3399,
+        "leaves": 53,
+        "worst_bank": 0,
+        "embedded_to_allowance": [
+          49.79672945771471,
+          0
+        ],
+        "top3_fraction": 0.4185008756904911,
+        "cells_for_80_percent": 15,
+        "triangle_fractions": {
+          "0": 0.19476729806608786,
+          "1": 0.6104654038679168,
+          "2": 0.1947672980659952
+        },
+        "top3": [
+          {
+            "cell": [
+              "1",
+              "0",
+              "1/2",
+              "1/4",
+              "3/8"
+            ],
+            "fraction": 0.18052090836453683,
+            "observed": [
+              1.1767032694251665e-06,
+              0.0
+            ],
+            "direction": {
+              "s": [
+                1.0772814623676616e-06,
+                0.0
+              ],
+              "t": [
+                2.012282816211275e-08,
+                0.0
+              ]
+            }
+          },
+          {
+            "cell": [
+              "1",
+              "0",
+              "1/2",
+              "3/4",
+              "1"
+            ],
+            "fraction": 0.11898998366299,
+            "observed": [
+              7.756215281298324e-07,
+              0.0
+            ],
+            "direction": {
+              "s": [
+                1.000184535554136e-06,
+                0.0
+              ],
+              "t": [
+                2.721116705504975e-08,
+                0.0
+              ]
+            }
+          },
+          {
+            "cell": [
+              "1",
+              "0",
+              "1/2",
+              "0",
+              "1/4"
+            ],
+            "fraction": 0.11898998366296427,
+            "observed": [
+              7.756215281296646e-07,
+              0.0
+            ],
+            "direction": {
+              "s": [
+                1.0001845355541176e-06,
+                0.0
+              ],
+              "t": [
+                2.721116705498918e-08,
+                0.0
+              ]
+            }
+          }
+        ]
+      },
+      "matched_changed_directions": [
+        {
+          "parent": [
+            "0",
+            "0",
+            "1/4",
+            "1/4",
+            "1/2"
+          ],
+          "new_axis": "t",
+          "old_axis": "s",
+          "new_to_old_child_error": 0.030220988480198482
+        },
+        {
+          "parent": [
+            "2",
+            "1/2",
+            "1",
+            "0",
+            "1/2"
+          ],
+          "new_axis": "t",
+          "old_axis": "s",
+          "new_to_old_child_error": 0.03135204092739324
+        },
+        {
+          "parent": [
+            "0",
+            "1/2",
+            "1",
+            "1/2",
+            "1"
+          ],
+          "new_axis": "t",
+          "old_axis": "s",
+          "new_to_old_child_error": 0.0313520409277194
+        },
+        {
+          "parent": [
+            "1",
+            "1/2",
+            "1",
+            "1/4",
+            "1/2"
+          ],
+          "new_axis": "t",
+          "old_axis": "s",
+          "new_to_old_child_error": 0.0729062834457912
+        },
+        {
+          "parent": [
+            "1",
+            "1/2",
+            "1",
+            "1/2",
+            "3/4"
+          ],
+          "new_axis": "t",
+          "old_axis": "s",
+          "new_to_old_child_error": 0.0729062834459122
+        },
+        {
+          "parent": [
+            "2",
+            "1/2",
+            "1",
+            "1/2",
+            "3/4"
+          ],
+          "new_axis": "t",
+          "old_axis": "s",
+          "new_to_old_child_error": 0.3005545890894924
+        },
+        {
+          "parent": [
+            "0",
+            "1/2",
+            "1",
+            "1/4",
+            "1/2"
+          ],
+          "new_axis": "t",
+          "old_axis": "s",
+          "new_to_old_child_error": 0.3005545890896556
+        },
+        {
+          "parent": [
+            "1",
+            "0",
+            "1",
+            "1/2",
+            "1"
+          ],
+          "new_axis": "s",
+          "old_axis": "t",
+          "new_to_old_child_error": 0.6656358569916795
+        },
+        {
+          "parent": [
+            "1",
+            "0",
+            "1",
+            "0",
+            "1/2"
+          ],
+          "new_axis": "s",
+          "old_axis": "t",
+          "new_to_old_child_error": 0.6656358569917193
+        },
+        {
+          "parent": [
+            "2",
+            "0",
+            "1",
+            "1/2",
+            "1"
+          ],
+          "new_axis": "s",
+          "old_axis": "t",
+          "new_to_old_child_error": 2.3679069379110245
+        },
+        {
+          "parent": [
+            "0",
+            "0",
+            "1",
+            "0",
+            "1/2"
+          ],
+          "new_axis": "s",
+          "old_axis": "t",
+          "new_to_old_child_error": 2.3679069379110294
+        }
+      ],
+      "result_pins": [
+        {
+          "path": "/workspace/genesis-residual-tangent-Gamma-01/report.json",
+          "bytes": 952310,
+          "sha256": "376f2c8ca035fcb57a52586fbe59b664a7d19cf2df5c57b519f664383f77b207"
+        },
+        {
+          "path": "/workspace/genesis-residual-tangent-Gamma-01/ray_certificates.json",
+          "bytes": 520052,
+          "sha256": "6f7a3fc1d88725e5005c73db6a9e62c66965623ea4e2732e817832e3c506e461"
+        },
+        {
+          "path": "/workspace/genesis-residual-tangent-Gamma-01/samples.json",
+          "bytes": 1471984,
+          "sha256": "f67db8897161106c1e3deef6a9c55eca76024c0d8d4c273ef855c63b7701c309"
+        },
+        {
+          "path": "/workspace/genesis-residual-tangent-Gamma-01/source_pins.json",
+          "bytes": 837,
+          "sha256": "fecf9fc2795e0e4739c77ade403ed354715a2109b9d02c02b086fd9a73c0d34e"
+        }
+      ]
+    }
+  ]
+}
