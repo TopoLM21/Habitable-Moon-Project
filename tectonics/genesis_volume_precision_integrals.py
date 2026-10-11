@@ -75,6 +75,24 @@ class PreparedPrecisionIntegrals:
     def evaluate(self, N):
         interval = prepare_fixed_N_interval(self.source.geometry, N)
         geometry = self.base.geometry.evaluate(N, interval)
+        return self.evaluate_prepared(N, interval, geometry)
+
+    def evaluate_prepared(self, N, interval, geometry):
+        """Contract coefficients at the same N/chart as certified moments.
+
+        Also used by the exact angular map lane, whose N is rational rather
+        than rounded to a native material node.
+        """
+        if tuple(map(fraction, N)) != tuple(geometry.barycentric):
+            raise ValueError('Prepared geometry and coefficient N differ')
+        if (geometry.source_binding_sha256 != self.base.geometry.source_binding_sha256
+                or geometry.empty != (interval is None)):
+            raise ValueError('Prepared geometry source or support differs')
+        if interval is not None and (
+                tuple(map(fraction, interval.barycentric)) != tuple(geometry.barycentric)
+                or fraction(interval.lambda_mid) != geometry.lambda_mid
+                or fraction(interval.lambda_halfwidth) != geometry.lambda_halfwidth):
+            raise ValueError('Prepared geometry and coefficient chart differ')
         if interval is None:
             enclosure = point(np.zeros(len(self.names), LD))
             return self._result(enclosure, (), geometry, interval)
