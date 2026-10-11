@@ -1,0 +1,579 @@
+{
+  "format": "genesis-bank-bounds-event-integration-validation-1",
+  "base_commit": "dcbc8cf889f58b0a0c2673032bcc662fbd6c4f80",
+  "status": "COMPLETED_FOUR_ORIGINAL_CONTROLS",
+  "cases": [
+    {
+      "case": 0,
+      "radius_m": 100.0,
+      "nodes_before": 3332,
+      "nodes_after": 3400,
+      "positive_nodes": 2685,
+      "pointwise_failed_nodes": 0,
+      "failed_before": 1992,
+      "failed_after": 1992,
+      "source_budget_failures": 0,
+      "unresolved_cells_before": 6,
+      "unresolved_cells_after": 19,
+      "old_missing_bank_classification": {
+        "OPEN": 2,
+        "POSITIVE_WITNESS": 3,
+        "PROVED_EMPTY": 1
+      },
+      "unresolved_bank_volume_before": [
+        23707.45028853561,
+        56767.51249563415
+      ],
+      "unresolved_bank_volume_after": [
+        0.0,
+        5.107010029865617e-08
+      ],
+      "bank_volume_estimates_before": [
+        518733.2912554319,
+        517894.9645864473
+      ],
+      "bank_volume_estimates_after": [
+        546578.9485945866,
+        540337.9950075498
+      ],
+      "bank_volume_lower_after": [
+        216427.7770455242,
+        80163.57378705715
+      ],
+      "bank_volume_upper_after": [
+        805887.935236181,
+        848150.0031955393
+      ],
+      "median_normalized_embedded_error_improvement": 0.14317202103200832,
+      "median_absolute_embedded_error_improvement": 0.05964410778605976,
+      "median_old_over_new_own_allowance": 0.9509411035703973,
+      "status": "OPEN",
+      "reason": "Predeclared angular cell or radial-line work budget exhausted",
+      "depth_before": 3,
+      "depth_after": 7,
+      "certified_empty_cells_skipped": 12,
+      "measure_preserved": true,
+      "bank_audit": {
+        "all_sampled_bank_fibers_contained": true,
+        "independent_bank_fiber_checks": 696,
+        "proof_for_whole_cells_is_separate": true,
+        "whole_Gamma_fibers_not_used": 0
+      },
+      "independent_tensor_components": 5072,
+      "independent_tensor_misses": 0,
+      "parent_K_M_bytes_unchanged": true,
+      "node_file_pin": {
+        "path": "/workspace/genesis-banks-full-02/case_000/nodes.jsonl",
+        "bytes": 1817563,
+        "raw_sha256": "292beeb1946bfb53d7727c058cd72e82f70b0f1e3be47838ff569e7dd5f29145"
+      },
+      "seconds": 3361.983092884,
+      "proven_positive_banks_unreachable_by_remaining_midpoint_depth": 18,
+      "sliver_audit_pin": {
+        "path": "/workspace/genesis-banks-sliver-audit-case0/report.json",
+        "bytes": 43167,
+        "raw_sha256": "f2b3d443651487fef21d93de50fa928f4085159ac164daffbeea4330fdb968c6"
+      },
+      "independent_mesh_audit": {
+        "case": 0,
+        "cells": 87,
+        "exact_positive_area_intersection_checks": 376,
+        "all_cells_inside_initial_support": true,
+        "no_positive_area_overlap": true,
+        "exact_total_parameter_area_preserved": true,
+        "angular_pin": {
+          "path": "/workspace/genesis-banks-full-02/case_000/angular.json",
+          "bytes": 1363964,
+          "raw_sha256": "e41c74bdca2294ffe036be57e3b1ec8f5779b0f1f1586a6d3393c97dc5bcf135"
+        },
+        "mesh_pin": {
+          "path": "/workspace/genesis-banks-full-02/case_000/partition.json",
+          "bytes": 14504,
+          "raw_sha256": "0e321044a1915f71d953f1e2caa3b9426334d5a9c09f8f56f4397b44bc5089d6"
+        }
+      },
+      "independent_mesh_audit_pin": {
+        "path": "/workspace/genesis-banks-partition-audit-case0/report.json",
+        "bytes": 955,
+        "raw_sha256": "73ff096fd7ace88b05a5c33acedb5fc1e39c3ad778bf53676d6eb896d6e6c44a"
+      }
+    },
+    {
+      "case": 1,
+      "radius_m": 4.024215510221975,
+      "nodes_before": 3400,
+      "nodes_after": 3400,
+      "positive_nodes": 1558,
+      "pointwise_failed_nodes": 0,
+      "failed_before": 1992,
+      "failed_after": 1992,
+      "source_budget_failures": 0,
+      "unresolved_cells_before": 41,
+      "unresolved_cells_after": 1,
+      "old_missing_bank_classification": {
+        "OPEN": 2,
+        "POSITIVE_WITNESS": 6,
+        "PROVED_EMPTY": 36
+      },
+      "unresolved_bank_volume_before": [
+        1582.806784318796,
+        1527.6387298363343
+      ],
+      "unresolved_bank_volume_after": [
+        0.7162983149672018,
+        0.0
+      ],
+      "bank_volume_estimates_before": [
+        136.40894314832553,
+        136.4413065996215
+      ],
+      "bank_volume_estimates_after": [
+        136.4117194533863,
+        137.5528111518177
+      ],
+      "bank_volume_lower_after": [
+        8.609741279531283,
+        10.677119549925752
+      ],
+      "bank_volume_upper_after": [
+        426.66629095864414,
+        541.6141554352331
+      ],
+      "median_normalized_embedded_error_improvement": 0.16689216330659157,
+      "median_absolute_embedded_error_improvement": 0.13719448097560888,
+      "median_old_over_new_own_allowance": 0.9936038780021922,
+      "status": "OPEN",
+      "reason": "Predeclared angular cell or radial-line work budget exhausted",
+      "depth_before": 5,
+      "depth_after": 8,
+      "certified_empty_cells_skipped": 92,
+      "measure_preserved": true,
+      "bank_audit": {
+        "all_sampled_bank_fibers_contained": true,
+        "independent_bank_fiber_checks": 1176,
+        "proof_for_whole_cells_is_separate": true,
+        "whole_Gamma_fibers_not_used": 0
+      },
+      "independent_tensor_components": 5072,
+      "independent_tensor_misses": 0,
+      "parent_K_M_bytes_unchanged": true,
+      "node_file_pin": {
+        "path": "/workspace/genesis-banks-full-02/case_001/nodes.jsonl",
+        "bytes": 1730581,
+        "raw_sha256": "b1ddfebe4b389a91868436629b6220bbfb0e3bf9e201266906f101e676dbf638"
+      },
+      "seconds": 2700.100613484001,
+      "proven_positive_banks_unreachable_by_remaining_midpoint_depth": 0,
+      "sliver_audit_pin": {
+        "path": "/workspace/genesis-banks-sliver-audit-case1/report.json",
+        "bytes": 1403,
+        "raw_sha256": "ec43fc69d31bae26bafd7a7981a35d11aa4c45d53821b10a0460dd157a135e2b"
+      },
+      "independent_mesh_audit": {
+        "case": 1,
+        "cells": 147,
+        "exact_positive_area_intersection_checks": 487,
+        "all_cells_inside_initial_support": true,
+        "no_positive_area_overlap": true,
+        "exact_total_parameter_area_preserved": true,
+        "angular_pin": {
+          "path": "/workspace/genesis-banks-full-02/case_001/angular.json",
+          "bytes": 1956337,
+          "raw_sha256": "29f9fc0acd3c9eeb024def0ea67f2043edeffd499617b30302b0a1cec9538efd"
+        },
+        "mesh_pin": {
+          "path": "/workspace/genesis-banks-full-02/case_001/partition.json",
+          "bytes": 14609,
+          "raw_sha256": "40c4c40bbb378a4e65d8055cab94ca9093d9786ddf0e590fced20c8cc298dd27"
+        }
+      },
+      "independent_mesh_audit_pin": {
+        "path": "/workspace/genesis-banks-partition-audit-case1/report.json",
+        "bytes": 956,
+        "raw_sha256": "7af39ab21300eb88e576f1fd9dda540e6ef12cddebd0e89e706c1749d86baa17"
+      }
+    },
+    {
+      "case": 2,
+      "radius_m": 100.0,
+      "nodes_before": 3332,
+      "nodes_after": 3366,
+      "positive_nodes": 3114,
+      "pointwise_failed_nodes": 0,
+      "failed_before": 1992,
+      "failed_after": 1992,
+      "source_budget_failures": 0,
+      "unresolved_cells_before": 3,
+      "unresolved_cells_after": 22,
+      "old_missing_bank_classification": {
+        "OPEN": 1,
+        "POSITIVE_WITNESS": 2,
+        "PROVED_EMPTY": 0
+      },
+      "unresolved_bank_volume_before": [
+        15229.503513499101,
+        30459.007026998202
+      ],
+      "unresolved_bank_volume_after": [
+        5.631762999921355e-07,
+        2.358272993204584e-05
+      ],
+      "bank_volume_estimates_before": [
+        520413.1995788536,
+        518236.05374263745
+      ],
+      "bank_volume_estimates_after": [
+        558961.2785493222,
+        518498.7475029216
+      ],
+      "bank_volume_lower_after": [
+        789.1249820438294,
+        0.0
+      ],
+      "bank_volume_upper_after": [
+        831429.553932857,
+        874501.7536235427
+      ],
+      "median_normalized_embedded_error_improvement": 0.04755174718843895,
+      "median_absolute_embedded_error_improvement": 0.01662515727013055,
+      "median_old_over_new_own_allowance": 0.8521517727040215,
+      "status": "OPEN",
+      "reason": "Predeclared angular cell or radial-line work budget exhausted",
+      "depth_before": 3,
+      "depth_after": 8,
+      "certified_empty_cells_skipped": 5,
+      "measure_preserved": true,
+      "bank_audit": {
+        "all_sampled_bank_fibers_contained": true,
+        "independent_bank_fiber_checks": 648,
+        "proof_for_whole_cells_is_separate": true,
+        "whole_Gamma_fibers_not_used": 0
+      },
+      "independent_tensor_components": 5072,
+      "independent_tensor_misses": 0,
+      "parent_K_M_bytes_unchanged": true,
+      "node_file_pin": {
+        "path": "/workspace/genesis-banks-full-02/case_002/nodes.jsonl",
+        "bytes": 1834534,
+        "raw_sha256": "7d5c97ce67a7104d2f05c3ca3b25c39e6c485efa31e49adbb221607dd9832089"
+      },
+      "seconds": 4024.5987681729985,
+      "proven_positive_banks_unreachable_by_remaining_midpoint_depth": 18,
+      "sliver_audit_pin": {
+        "path": "/workspace/genesis-banks-sliver-audit-case2/report.json",
+        "bytes": 50182,
+        "raw_sha256": "5925c0a6c76779b6d981064616cb87c68bc69ad69e6d94d45e84ab8cc0516757"
+      },
+      "independent_mesh_audit": {
+        "case": 2,
+        "cells": 81,
+        "exact_positive_area_intersection_checks": 340,
+        "all_cells_inside_initial_support": true,
+        "no_positive_area_overlap": true,
+        "exact_total_parameter_area_preserved": true,
+        "angular_pin": {
+          "path": "/workspace/genesis-banks-full-02/case_002/angular.json",
+          "bytes": 1365010,
+          "raw_sha256": "14b59d988005b0e75aadc992004cfffee1b071454be89ad25ac08bd82c7ca9c2"
+        },
+        "mesh_pin": {
+          "path": "/workspace/genesis-banks-full-02/case_002/partition.json",
+          "bytes": 14712,
+          "raw_sha256": "84cef9811c67d2a7518cb4e6b451a45c407dc734060388af5bbb053de91edb57"
+        }
+      },
+      "independent_mesh_audit_pin": {
+        "path": "/workspace/genesis-banks-partition-audit-case2/report.json",
+        "bytes": 955,
+        "raw_sha256": "9077a824ebc2cf84460dab58f88ced2598cb97c757456953f7a86b5d7af2d230"
+      }
+    },
+    {
+      "case": 3,
+      "radius_m": 100.0,
+      "nodes_before": 3366,
+      "nodes_after": 3332,
+      "positive_nodes": 2671,
+      "pointwise_failed_nodes": 0,
+      "failed_before": 1992,
+      "failed_after": 1992,
+      "source_budget_failures": 0,
+      "unresolved_cells_before": 6,
+      "unresolved_cells_after": 13,
+      "old_missing_bank_classification": {
+        "OPEN": 1,
+        "POSITIVE_WITNESS": 5,
+        "PROVED_EMPTY": 0
+      },
+      "unresolved_bank_volume_before": [
+        67731.38772789732,
+        101603.71243569066
+      ],
+      "unresolved_bank_volume_after": [
+        0.00043519795838671663,
+        3.8208738372427245e-07
+      ],
+      "bank_volume_estimates_before": [
+        523340.3226433107,
+        523932.3840936128
+      ],
+      "bank_volume_estimates_after": [
+        504462.01581802394,
+        545231.777969314
+      ],
+      "bank_volume_lower_after": [
+        0.0,
+        6445.440632083487
+      ],
+      "bank_volume_upper_after": [
+        826500.3740743536,
+        771941.5685383563
+      ],
+      "median_normalized_embedded_error_improvement": 0.8509467280121465,
+      "median_absolute_embedded_error_improvement": 0.22928126738280183,
+      "median_old_over_new_own_allowance": 0.9658555247517706,
+      "status": "OPEN",
+      "reason": "Predeclared angular cell or radial-line work budget exhausted",
+      "depth_before": 3,
+      "depth_after": 7,
+      "certified_empty_cells_skipped": 14,
+      "measure_preserved": true,
+      "bank_audit": {
+        "all_sampled_bank_fibers_contained": true,
+        "independent_bank_fiber_checks": 720,
+        "proof_for_whole_cells_is_separate": true,
+        "whole_Gamma_fibers_not_used": 0
+      },
+      "independent_tensor_components": 5072,
+      "independent_tensor_misses": 0,
+      "parent_K_M_bytes_unchanged": true,
+      "node_file_pin": {
+        "path": "/workspace/genesis-banks-full-02/case_003/nodes.jsonl",
+        "bytes": 1834272,
+        "raw_sha256": "5fbf8e4f71c5740b5c5fa850565578837f8fe2ebbfb642ea3f0bbb309052ea3e"
+      },
+      "seconds": 3643.028303208999,
+      "proven_positive_banks_unreachable_by_remaining_midpoint_depth": 10,
+      "sliver_audit_pin": {
+        "path": "/workspace/genesis-banks-sliver-audit-case3/report.json",
+        "bytes": 26508,
+        "raw_sha256": "a4c43a00b1fd19ec8e984b6ef6067cafcbd3579d815d02af4d5b581d3a97887a"
+      },
+      "independent_mesh_audit": {
+        "case": 3,
+        "cells": 90,
+        "exact_positive_area_intersection_checks": 581,
+        "all_cells_inside_initial_support": true,
+        "no_positive_area_overlap": true,
+        "exact_total_parameter_area_preserved": true,
+        "angular_pin": {
+          "path": "/workspace/genesis-banks-full-02/case_003/angular.json",
+          "bytes": 1428306,
+          "raw_sha256": "b563bf7edf07f8ad82c0e318627a4649af2c64464430ce031c4c1fb3628b726c"
+        },
+        "mesh_pin": {
+          "path": "/workspace/genesis-banks-full-02/case_003/partition.json",
+          "bytes": 32820,
+          "raw_sha256": "1c87e2cfc87e5b8e15eb1fb6e877473bcb7bf3cf34237945946a9f61914f5977"
+        }
+      },
+      "independent_mesh_audit_pin": {
+        "path": "/workspace/genesis-banks-partition-audit-case3/report.json",
+        "bytes": 955,
+        "raw_sha256": "1e92ea4bcc8972d4f9112053ffede6af130b3bce73fbda381b6a693587513512"
+      }
+    }
+  ],
+  "history": {
+    "source_time_myr": 0.8684000000000005,
+    "cohort_count": 800,
+    "accepted_interval_count": 4,
+    "all_800_cohort_memory_sha256": "1216a018a75ca788b718d774f2159cdc754222ec3d0b037aa25af390ea09c1bc",
+    "raw_history_files_rechecked": {
+      "accepted_parent": {
+        "bytes": 24345685,
+        "path": "/workspace/Habitable-Moon-Project/analysis/genesis_volume_creation_validation/evidence/actual_continuation/direct_after_second.json",
+        "raw_sha256": "62579a0bad128830a66e2f44579cf2b1f5d3835b691225b8d431102f3e4486d7"
+      },
+      "genuine_birth_memory_fixture": {
+        "bytes": 167526670,
+        "path": "/workspace/Habitable-Moon-Project/analysis/genesis_volume_memory_validation/evidence/actual_control/control_fixture.json",
+        "raw_sha256": "a98ff7cc89aeb59eb004c05b8ac87f75f2e39a4f10d4454fdf93c288153c9c0e"
+      }
+    }
+  },
+  "event_mesh_strategy_verdict": "REJECTED_AS_A_GENERAL_ANGULAR_CONVERGENCE_FIX",
+  "next_step": "Exact affine Gamma cuts without rounded-edge slivers; replace unconditional missing-first priority, then curved sphere event integration and angular remainder at unchanged 2e-6",
+  "total_nodes": 13498,
+  "frozen_469_sources_unchanged": true,
+  "numerical_sources_match_completed_run": true,
+  "original_angular_options": {
+    "angular_orders": [
+      3,
+      5
+    ],
+    "max_cells": 2000,
+    "max_depth": 24,
+    "max_line_evaluations": 3400,
+    "relative_tolerance": 2e-06
+  },
+  "full_report_pin": {
+    "path": "/workspace/genesis-banks-full-02/report.json",
+    "bytes": 6121276,
+    "raw_sha256": "84d1066a322998cf592263f1ee38511205b7457882d725b439c000c20d69b41e"
+  },
+  "old_report_pin": {
+    "path": "/workspace/genesis-mapped-full-03/report.json",
+    "bytes": 2115840,
+    "raw_sha256": "dbc3a5f8b54217d9e72568fbc5bd5f01b19f7bde55b8d5372defee287ac1d462"
+  },
+  "diagnosis_pin": {
+    "path": "/workspace/genesis-banks-diagnostic-04/report.json",
+    "bytes": 506572,
+    "raw_sha256": "b48ec1c7d472b3130ae4fe458cbaddfd70c8005127b722b80b0d3a303fd21eb3"
+  },
+  "test_log_pin": {
+    "path": "/workspace/genesis-banks-regression-final-02.log",
+    "bytes": 100,
+    "raw_sha256": "331aa8924d04f544a5663b51bb47103a7d991f895f840aa97ce0c5dd7b4f194e"
+  },
+  "stopped_pilot_pin": {
+    "path": "/workspace/genesis-banks-full-01/STOPPED.json",
+    "bytes": 368,
+    "raw_sha256": "1a756dafdf6f79438a2f21c9cb75ed5bc2ee9ee270985d1c36ef10d23af173e5"
+  },
+  "tests": {
+    "main_regression": "67 passed in 13.62s",
+    "midpoint_sliver_proof": "5 passed in 1.01s"
+  },
+  "sliver_test_log_pin": {
+    "path": "/workspace/genesis-banks-sliver-tests-01.log",
+    "bytes": 98,
+    "raw_sha256": "84e0448ccbf0640b1612abedb4e2155304501ab0dc416b5570699564f875bdc1"
+  },
+  "analytic_sphere_control": {
+    "before_pin": {
+      "path": "/workspace/genesis-banks-sphere-oracle-baseline-02/report.json",
+      "bytes": 9067,
+      "raw_sha256": "ebcd130961c3d9f3ef1f7a8a5eb3b71fbf1e2ecc70b189544902a8ccade129f5"
+    },
+    "after_pin": {
+      "path": "/workspace/genesis-banks-sphere-oracle-current-01/report.json",
+      "bytes": 1165736,
+      "raw_sha256": "2a24ba0bcc7cf4fd34dd8f309e86650fdb57b5e0b9d8893a14d5a055fde92921"
+    },
+    "relative_errors_before": [
+      0.0018585765745333075,
+      0.001116289183707658
+    ],
+    "relative_errors_after": [
+      0.0019572433450153796,
+      0.0008630015867241212
+    ],
+    "interpretation": "Missing-bank correction alone does not resolve curved-sphere angular error at the unchanged cap"
+  },
+  "source_pins": {
+    "analysis/genesis_volume_banks_validation/angular.py": {
+      "bytes": 12483,
+      "raw_sha256": "9ab5dd541c349599ea9723256b5a534b23df7629c28d831072ede519751d42b1"
+    },
+    "analysis/genesis_volume_banks_validation/control.py": {
+      "bytes": 8547,
+      "raw_sha256": "15efb1e3e8ffc18eb543d31c13b2003dea8f33079a5c3da6030b90a75db73b87"
+    },
+    "analysis/genesis_volume_banks_validation/diagnose.py": {
+      "bytes": 6043,
+      "raw_sha256": "d2430d9ec5365bab0f37c8961eb78206782b10a23355071a1e5e603f8ff029d2"
+    },
+    "analysis/genesis_volume_banks_validation/independent_bank.py": {
+      "bytes": 2346,
+      "raw_sha256": "28ab1e5bedee39ee368aea025aa519d40160b5f267671c8f04a26352b551820a"
+    },
+    "analysis/genesis_volume_banks_validation/radial_exclusion_fixture.json": {
+      "bytes": 2558,
+      "raw_sha256": "070af835f37902ebdd0e15cd49725270ddf0061ce272466b32ac90bf996ba9ff"
+    },
+    "analysis/genesis_volume_mapped_validation/independent.py": {
+      "bytes": 2936,
+      "raw_sha256": "436888d66d0d3a41ea2c398d35f4d6fb7d4bf140d959d4e0703079a10fe3b706"
+    },
+    "tectonics/genesis_volume_bank_bounds.py": {
+      "bytes": 8371,
+      "raw_sha256": "fa704660ac734464bd19ad43d4f1b54651ff7142091fe9437db1b520aa25cc02"
+    },
+    "tectonics/genesis_volume_event_mesh.py": {
+      "bytes": 3848,
+      "raw_sha256": "1c1e1cc2d07ce9f595d1fd0256c60e43b3b7455b88882015d15618f99881306d"
+    },
+    "tectonics/genesis_volume_event_partition.py": {
+      "bytes": 16017,
+      "raw_sha256": "73f4d320a1449112bb72267303f2f273fd08023b0e66f422d1cf6c10f614150d"
+    },
+    "tectonics/genesis_volume_mapped_integrals.py": {
+      "bytes": 4125,
+      "raw_sha256": "8a854bf850ab8dd1fc8c752369a273526e5399b49ce424c685a0e4f7dbfc4bfb"
+    },
+    "tectonics/genesis_volume_precision_integrals.py": {
+      "bytes": 9782,
+      "raw_sha256": "f74766faefd5788f4c0ddb14c5e0552c2993f7ba0cbc3930842a37e93e6a72ef"
+    },
+    "tectonics/genesis_volume_rational_fields.py": {
+      "bytes": 6548,
+      "raw_sha256": "a259b84b6639fbfaf2bdb7907d1401c76a08e26129d7113f9bdd85f640a60bbe"
+    },
+    "tectonics/genesis_volume_source_coverage.py": {
+      "bytes": 5413,
+      "raw_sha256": "582ab53d38de0bae47bcc57bde8dd096e6fd41d601b893689bf9a7bd9b7bcf94"
+    },
+    "tests/test_genesis_volume_bank_bounds.py": {
+      "bytes": 9377,
+      "raw_sha256": "3b80ab44341bc5b6e0b5e7f53cfd4f11e22e0b2151dfc9a3c0a03aa7216c7ead"
+    }
+  },
+  "additional_validation_source_pins": {
+    "analysis/genesis_volume_banks_validation/partition_audit.py": {
+      "path": "/workspace/Habitable-Moon-Project/analysis/genesis_volume_banks_validation/partition_audit.py",
+      "bytes": 3988,
+      "raw_sha256": "3a3759544212d7bf7c838b24e4a5ca0a404888105bbc09180f9c24eea6daef4a"
+    },
+    "analysis/genesis_volume_banks_validation/sliver_audit.py": {
+      "path": "/workspace/Habitable-Moon-Project/analysis/genesis_volume_banks_validation/sliver_audit.py",
+      "bytes": 4312,
+      "raw_sha256": "966d13e5bb2d0ea2ce4e255fad193aeed9f06797155303bb78f79611d630c247"
+    },
+    "analysis/genesis_volume_banks_validation/sphere_oracle.py": {
+      "path": "/workspace/Habitable-Moon-Project/analysis/genesis_volume_banks_validation/sphere_oracle.py",
+      "bytes": 3347,
+      "raw_sha256": "bfd7bd740e3337d5e6309c2a549d2a5c7d1df3c951d16fb9171b4fe5dcae07c8"
+    },
+    "analysis/genesis_volume_banks_validation/compare.py": {
+      "path": "/workspace/Habitable-Moon-Project/analysis/genesis_volume_banks_validation/compare.py",
+      "bytes": 8229,
+      "raw_sha256": "c5f101c9b4a1c4cae3c50ff6e85ba6c940d3226d8f829c29bb01bfdd2321fbb7"
+    },
+    "tests/test_genesis_volume_bank_sliver_audit.py": {
+      "path": "/workspace/Habitable-Moon-Project/tests/test_genesis_volume_bank_sliver_audit.py",
+      "bytes": 1671,
+      "raw_sha256": "98287061efdd9033a9f16dc97ede7f17531806b9b68ed40410ae5aca25a163ef"
+    }
+  },
+  "scope": {
+    "whole_cell_bank_volume_bounds_certified": true,
+    "exact_domain_partition": true,
+    "exact_event_alignment": false,
+    "angular_remainder_certified": false,
+    "ideal_Gauss_parameters_certified": false,
+    "independent_tensor_audit_is_sampled": true,
+    "physical_creation_admitted": false,
+    "physical_release_admitted": false,
+    "new_accepted_intervals": 0,
+    "new_material_cohorts": 0,
+    "stage_1_open": true,
+    "angular_controls_open": [
+      0,
+      1,
+      2,
+      3
+    ]
+  }
+}
