@@ -1,0 +1,300 @@
+{
+  "status": "PASS",
+  "meaning": "Separate saved-ledger consistency only, not global coupled closure",
+  "new_Genesis_steps": 0,
+  "units": "J unless explicitly stated",
+  "intervals": [
+    {
+      "thermal": {
+        "dt_myr": 4.999999999999449e-05,
+        "global_units": "J (saved energy * 1e12 J/m2 * spherical reference area)",
+        "global_delta_mantle_j": -3.015074767442491e+25,
+        "global_delta_surface_j": -1.5766965052082182e+24,
+        "global_input_j": 1.2456988778784558e+26,
+        "global_OLR_out_j": 1.5629733196746874e+26,
+        "sources_j": {
+          "radiogenic_analytic": 1.6015787952016886e+22,
+          "orbital_dissipation": 4.103867992996976e+20,
+          "absorbed_stellar": 1.2455346161313862e+26,
+          "absorbed_giant": 0.0
+        },
+        "mantle_to_surface_inferred_j": 3.016717384917623e+25,
+        "mantle_to_surface_independently_recorded_j": null,
+        "column_delta_j": -7.214996546354118e+23,
+        "column_net_boundary_in_j": -7.214996546355167e+23,
+        "column_top_boundary_in_j": null,
+        "column_bottom_boundary_in_j": null,
+        "checks": {
+          "global_thermal": {
+            "residual_j": -9983416598528.0,
+            "relative_to_throughput": 3.5544968925976285e-14,
+            "tolerance": 1e-09,
+            "status": "PASS"
+          },
+          "source_decomposition": {
+            "residual_j": -44365250560000.0,
+            "relative_to_throughput": 3.5614747149454176e-13,
+            "tolerance": 1e-09,
+            "status": "PASS"
+          },
+          "orbit_heat_transfer": {
+            "residual_j": 0.0,
+            "relative_to_throughput": 0.0,
+            "tolerance": 1e-09,
+            "status": "PASS"
+          },
+          "columns": {
+            "residual_j": 104989917184.0,
+            "relative_to_throughput": 1.4551624038827604e-13,
+            "tolerance": 1e-09,
+            "status": "PASS"
+          }
+        }
+      },
+      "mechanics": {
+        "delta_K_plus_U_j": -7.917487906018108e+17,
+        "signed_inputs_j": 2.028629381444172e+17,
+        "sinks_j": 9.946117287462376e+17,
+        "ledger_j": {
+          "balance_residual_j": 10496.0,
+          "birth_kinetic_inflow_j": 55.60811941040414,
+          "damage_energy_change_j": -1805435110069215.2,
+          "elastic_after_j": 3.3649858366734594e+19,
+          "elastic_before_after_damage_j": 3.443980172222633e+19,
+          "elastic_before_j": 3.44416071573364e+19,
+          "external_work_j": 1225451610903130.5,
+          "internal_work_j": -8749152301428322.0,
+          "kinetic_after_j": 0.14898431110728197,
+          "kinetic_before_j": 5014.979534255348,
+          "numerical_kinetic_j": 5057.971225960077,
+          "numerical_memory_j": 1.6775838545096186e+16,
+          "physical_drag_j": 9974603912331476.0,
+          "physical_maxwell_j": 9.678612862888049e+17,
+          "remelt_elastic_outflow_j": 0.0,
+          "remelt_kinetic_outflow_j": 0.0,
+          "thermal_work_j": 2.0344292164358323e+17
+        },
+        "check": {
+          "residual_j": 9543.125,
+          "relative_to_throughput": 4.7974122585652975e-15,
+          "tolerance": 1e-11,
+          "status": "PASS"
+        },
+        "thermal_counterentry_j": null,
+        "mantle_traction_reservoir_debit_j": null,
+        "birth_donor_kinetic_debit_j": null,
+        "damage_energy_destination_j": null,
+        "numerical_heat_conversion": "forbidden"
+      },
+      "birth": {
+        "cohorts": 80,
+        "mass_kg": 8.052492550438249e+17,
+        "enthalpy_transfer_j": null,
+        "latent_heat_already_in_column_enthalpy": true
+      }
+    },
+    {
+      "thermal": {
+        "dt_myr": 4.999999999999449e-05,
+        "global_units": "J (saved energy * 1e12 J/m2 * spherical reference area)",
+        "global_delta_mantle_j": -3.014994753312447e+25,
+        "global_delta_surface_j": -1.5774967185389253e+24,
+        "global_input_j": 1.2456988771596506e+26,
+        "global_OLR_out_j": 1.5629733196746874e+26,
+        "sources_j": {
+          "radiogenic_analytic": 1.601578772073984e+22,
+          "orbital_dissipation": 4.103150394499725e+20,
+          "absorbed_stellar": 1.2455346161313862e+26,
+          "absorbed_giant": 0.0
+        },
+        "mantle_to_surface_inferred_j": 3.016637363588466e+25,
+        "mantle_to_surface_independently_recorded_j": null,
+        "column_delta_j": -7.219132608150168e+23,
+        "column_net_boundary_in_j": -7.219132608151533e+23,
+        "column_top_boundary_in_j": null,
+        "column_bottom_boundary_in_j": null,
+        "checks": {
+          "global_thermal": {
+            "residual_j": -159734481027072.0,
+            "relative_to_throughput": 5.687188458913403e-13,
+            "tolerance": 1e-09,
+            "status": "PASS"
+          },
+          "source_decomposition": {
+            "residual_j": 66247119077376.0,
+            "relative_to_throughput": 5.318068458761697e-13,
+            "tolerance": 1e-09,
+            "status": "PASS"
+          },
+          "orbit_heat_transfer": {
+            "residual_j": 0.0,
+            "relative_to_throughput": 0.0,
+            "tolerance": 1e-09,
+            "status": "PASS"
+          },
+          "columns": {
+            "residual_j": 136561557504.0,
+            "relative_to_throughput": 1.8916615737159417e-13,
+            "tolerance": 1e-09,
+            "status": "PASS"
+          }
+        }
+      },
+      "mechanics": {
+        "delta_K_plus_U_j": -7.440700254729134e+17,
+        "signed_inputs_j": 2.264228767173508e+17,
+        "sinks_j": 9.704929021902543e+17,
+        "ledger_j": {
+          "balance_residual_j": -9856.0,
+          "birth_kinetic_inflow_j": 0.0016310069024885272,
+          "damage_energy_change_j": -674097180599526.1,
+          "elastic_after_j": 3.290578834126168e+19,
+          "elastic_before_after_damage_j": 3.364918426955399e+19,
+          "elastic_before_j": 3.3649858366734594e+19,
+          "external_work_j": 1245157553153267.8,
+          "internal_work_j": -8599701746267060.0,
+          "kinetic_after_j": 0.1494821001348708,
+          "kinetic_before_j": 0.148984311107282,
+          "numerical_kinetic_j": 0.00012192856630502868,
+          "numerical_memory_j": 1.640248650867802e+16,
+          "physical_drag_j": 9844859299420326.0,
+          "physical_maxwell_j": 9.44245556382156e+17,
+          "remelt_elastic_outflow_j": 0.0,
+          "remelt_kinetic_outflow_j": 0.0,
+          "thermal_work_j": 2.2585181634479706e+17
+        },
+        "check": {
+          "residual_j": -9827.625,
+          "relative_to_throughput": 5.063213227948654e-15,
+          "tolerance": 1e-11,
+          "status": "PASS"
+        },
+        "thermal_counterentry_j": null,
+        "mantle_traction_reservoir_debit_j": null,
+        "birth_donor_kinetic_debit_j": null,
+        "damage_energy_destination_j": null,
+        "numerical_heat_conversion": "forbidden"
+      },
+      "birth": {
+        "cohorts": 80,
+        "mass_kg": 8.044879019738482e+17,
+        "enthalpy_transfer_j": null,
+        "latent_heat_already_in_column_enthalpy": true
+      }
+    }
+  ],
+  "full_window_thermal": {
+    "dt_myr": 9.999999999998899e-05,
+    "global_units": "J (saved energy * 1e12 J/m2 * spherical reference area)",
+    "global_delta_mantle_j": -6.030069520754938e+25,
+    "global_delta_surface_j": -3.154193223747143e+24,
+    "global_input_j": 2.4913977550381065e+26,
+    "global_OLR_out_j": 3.125946639349375e+26,
+    "sources_j": {
+      "radiogenic_analytic": 3.203157567275673e+22,
+      "orbital_dissipation": 8.2070183874967e+20,
+      "absorbed_stellar": 2.4910692322627724e+26,
+      "absorbed_giant": 0.0
+    },
+    "mantle_to_surface_inferred_j": 6.033354748506089e+25,
+    "mantle_to_surface_independently_recorded_j": null,
+    "column_delta_j": -1.4434129154504284e+24,
+    "column_net_boundary_in_j": -1.44341291545067e+24,
+    "column_top_boundary_in_j": null,
+    "column_bottom_boundary_in_j": null,
+    "checks": {
+      "global_thermal": {
+        "residual_j": -169717880848384.0,
+        "relative_to_throughput": 3.0213187750773497e-13,
+        "tolerance": 1e-09,
+        "status": "PASS"
+      },
+      "source_decomposition": {
+        "residual_j": 21881868517376.0,
+        "relative_to_throughput": 8.782968706271999e-14,
+        "tolerance": 1e-09,
+        "status": "PASS"
+      },
+      "orbit_heat_transfer": {
+        "residual_j": 0.0,
+        "relative_to_throughput": 0.0,
+        "tolerance": 1e-09,
+        "status": "PASS"
+      },
+      "columns": {
+        "residual_j": 241551409152.0,
+        "relative_to_throughput": 1.6734740736096403e-13,
+        "tolerance": 1e-09,
+        "status": "PASS"
+      }
+    }
+  },
+  "full_window_mechanics": {
+    "delta_K_plus_U_j": -1.5358188160747244e+18,
+    "signed_inputs_j": 4.29285814861768e+17,
+    "sinks_j": 1.965104630936492e+18,
+    "ledger_j": {
+      "balance_residual_j": 768.0,
+      "birth_kinetic_inflow_j": 55.60975041730663,
+      "damage_energy_change_j": -2479532290668741.5,
+      "elastic_after_j": 3.290578834126168e+19,
+      "elastic_before_j": 3.44416071573364e+19,
+      "external_work_j": 2470609164056398.0,
+      "internal_work_j": -1.7348854047695382e+16,
+      "kinetic_after_j": 0.1494821001348708,
+      "kinetic_before_j": 5014.979534255348,
+      "numerical_kinetic_j": 5057.971347888643,
+      "numerical_memory_j": 3.317832505377421e+16,
+      "physical_drag_j": 1.98194632117518e+16,
+      "physical_maxwell_j": 1.912106842670961e+18,
+      "remelt_elastic_outflow_j": 0.0,
+      "remelt_kinetic_outflow_j": 0.0,
+      "thermal_work_j": 4.292947379883803e+17
+    },
+    "check": {
+      "residual_j": -284.125,
+      "relative_to_throughput": 7.229258827419208e-17,
+      "tolerance": 1e-11,
+      "status": "PASS"
+    },
+    "thermal_counterentry_j": null,
+    "mantle_traction_reservoir_debit_j": null,
+    "birth_donor_kinetic_debit_j": null,
+    "damage_energy_destination_j": null,
+    "numerical_heat_conversion": "forbidden"
+  },
+  "combined_global_residual_j": null,
+  "combined_global_status": "UNDEFINED: overlapping reservoirs and missing counterentries",
+  "input_pins": [
+    {
+      "path": "analysis/genesis_volume_creation_validation/evidence/actual_continuation/direct_after_second.json",
+      "bytes": 24345685,
+      "sha256": "62579a0bad128830a66e2f44579cf2b1f5d3835b691225b8d431102f3e4486d7"
+    },
+    {
+      "path": "/workspace/genesis-be-time-control-01/50/step_1.json",
+      "bytes": 36013786,
+      "sha256": "044c7780b4f612b8445bd2198bd068c45feef80bd7a2b8225d1a5cb9ed697ea3"
+    },
+    {
+      "path": "/workspace/genesis-be-time-control-01/50/step_2.json",
+      "bytes": 38527105,
+      "sha256": "0536be1e28221249c4ea92603b6c19a3a1f16c8c54fbfa241273332f525ee97d"
+    }
+  ],
+  "canonical_unchanged": true,
+  "seconds": 0.91458818600222,
+  "peak_rss_kib": 297660,
+  "audit_sha256": "ef552c8695e74bf1c651b72c68bf7f07f5c9377f468ef313ef495ee05446e191",
+  "tests_passed": 59,
+  "original_report_sha256": "e76174811aab3da0a920fe18efc543f88a89462d943ff6144f84fa4048174ade",
+  "source_sha256": {
+    "tectonics/genesis.py": "0591a2c10efeb1e3a49f09ef2335f909e0386ac1780dd1e966c292f77b76c6fe",
+    "tectonics/genesis_onset.py": "14d352a00619347c936819b68ea963a2ebe3827af272b934647e92626d68ec8d",
+    "tectonics/genesis_volume_thermal.py": "d0579e6d1ff126f6af59210deaa45241b004add9ad389f61cb9fe6718f49a0e7",
+    "tectonics/genesis_mobile.py": "2724aef43e28da20dc141868f46f10df2aebcb2d819aca3275aca9232daad256",
+    "tectonics/genesis_volume_loading.py": "53563c6bc474664b0f5dc9be1f968ea4ba721a871bd28c966acc53fe4f26f6ae",
+    "tectonics/genesis_volume_basal.py": "d0527160660f6669340898614cf19d71156031e6648212e2cbbb5e18d88950c3",
+    "analysis/genesis_be_candidate/solver.py": "f031064cf41ec7b1f0d3d18391e47607bd29290cc3bcdb362fab4badfcd3a184"
+  }
+}

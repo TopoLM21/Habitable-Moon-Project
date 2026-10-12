@@ -1,3 +1,10 @@
+**Карта энергетических журналов BE50 завершена:**
+[числа, единицы, контрчлены и ближайший физический блокер](analysis/genesis_energy_inventory/README.md).
+Отдельные бюджеты PASS (59 тестов); общий global/column/mechanical баланс
+UNDEFINED. Maxwell/drag не возвращены в тепло, донор Wthermal не определён;
+numerical sinks в тепло не переводить. Uncut matrix check не закрывает
+глобальную пространственную сходимость или точность коры. Новых шагов нет.
+
 **Uncut spatial control PASS:**
 [независимая полная матрица, критерий и разделение четырёх старых controls](analysis/genesis_uncut_spatial_control/README.md).
 71 тест PASS; новых шагов нет. Четыре старых шар/Γ контроля относятся к
