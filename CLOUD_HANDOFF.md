@@ -1,3 +1,9 @@
+**Консервативный h-view готов; BLOCKED_SUBCELL_RESOLUTION.**
+[Mass/enthalpy partition и unresolved front](analysis/genesis_enthalpy_reconstruction_validation/README.md).
+41 тест PASS, 800 IDs/память сохранены, applied retirement=0. Старый фронт
+лежит внутри [0;1/32] before/after; физический remelt unknown, mechanical input null.
+Следующий шаг — conservative subcell initialization, не вывоз почти твёрдой массы.
+
 **Важная коррекция: BLOCKED_PHASE_MAPPING, а не доказанный remelt.**
 [Масса/фаза/энтальпия 80 полос и исправление](analysis/genesis_retirement_diagnosis/README.md).
 77 тестов PASS. 3,002e17 кг не расплавились: интерполированная твёрдая доля
