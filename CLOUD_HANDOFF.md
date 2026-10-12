@@ -1,3 +1,17 @@
+**Создана отдельная feat/simplified-genesis; упрощённый цикл 0.1 работает.**
+Основа и сохранённая подробная ветка fix/genesis-source-precision:
+74b695b7a0835e960203d86fb0d2a51bf10ef294.
+[Модель, опыт, приближения, CLI и границы совместимости](analysis/simplified_genesis_validation/README.md).
+Реализован advance: source/conduction → moment memory/damage → persistent belt
+→ effective split → domain torque/drag rotation → restart. Пассивный запас
+2,548e18 Дж не сила/тепло. Стеснённое охлаждение и жёсткие домены — явная новая модель.
+Настоящий опыт 3×25лет: один owner, splits0; ΔTmean−5,02К, damage max0,042615.
+Синтетика из D=0: два домена и относительное движение, точный restart.
+64 tests PASS, вычисления <5мин. Canonical/default/архивы/push не менялись.
+Прямой mature export не допускается молча. Фиксированный каталог фаз и малая
+подвижность без contact/remesh ограничивают длительный прогон; это не прежние
+инженерные budgets, выданные за физический запрет. Restore CLOSED.
+
 **Genesis→eligibility→Starter selector→restart выполнен без нового шага.**
 [Результат и один предлагаемый путь к рождению/движению плит](analysis/genesis_starter_selector_bridge/README.md).
 На saved endpoint: NO_CANDIDATE; 800 когорт/один owner, source readiness совпал,
