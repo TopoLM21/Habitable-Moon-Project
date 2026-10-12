@@ -1,0 +1,85 @@
+{
+  "bundle_manifest": {
+    "files": {
+      "cuts.json": "20be57d6bae5255b3d440ea77a9da086bb32ecac06c38ada97d337ff1b0e59b9",
+      "packet.json": "4c0427d81bcb4b2a1dd8df2021e5ae1f6fedf983a9b8b2c165d69128a716bc95",
+      "source.json": "62579a0bad128830a66e2f44579cf2b1f5d3835b691225b8d431102f3e4486d7",
+      "transfer.json": "860544af528b345e19edc80d01738672059cc80939996ef6d72026353b992a82"
+    },
+    "format": "genesis-transfer-bridge-1",
+    "input_paths": {
+      "cuts": "/workspace/genesis-exploratory-100-01/continuation/half2.json",
+      "packet": "/workspace/genesis-exploratory-100-01/continuation/initial.json",
+      "source": "/workspace/Habitable-Moon-Project/analysis/genesis_volume_creation_validation/evidence/actual_continuation/direct_after_second.json"
+    },
+    "new_time_steps": 0
+  },
+  "bytes": 40425683,
+  "checks": [
+    {
+      "code": "FIRST_PARTITION",
+      "requirement": "Source-certified first partition; owner count alone is insufficient.",
+      "status": "FAIL"
+    },
+    {
+      "code": "PRIMARY_SOLIDIFICATION",
+      "requirement": "Starter material inventory must certify its primary surface reservoir; solid cut coverage is not this criterion.",
+      "status": "UNPROVEN"
+    },
+    {
+      "code": "CONSERVATIVE_CANONICAL_REMAP",
+      "requirement": "Reference face indices are not a conservative remap of displaced geometry.",
+      "status": "UNPROVEN"
+    },
+    {
+      "code": "ACTIVE_MEMORY_AND_MOMENTUM_CLOSURE",
+      "requirement": "Existing consumer does not evolve conical memory, residual velocity or their moment/energy ledgers.",
+      "status": "FAIL"
+    },
+    {
+      "code": "ACTIVE_THERMAL_CLOSURE",
+      "requirement": "Existing mature source mass/enthalpy arrays are archives, not active full-column reservoirs.",
+      "status": "FAIL"
+    },
+    {
+      "code": "EXPLICIT_MATURE_FIELDS",
+      "requirement": "Independent mantle flow, chemical crust, liquid water, relief and thermal projection must be justified; no continents are inferred from thickness.",
+      "status": "UNPROVEN"
+    }
+  ],
+  "code_sha256": {
+    "analysis/genesis_transfer_bridge/run_saved.py": "0d31b31e3ac2fa314c091c8c7466bacc223c50e3ea5645c138602e1c3062f5ce",
+    "tectonics/genesis_transfer_bridge.py": "e265218cdeec29fb84c7436d8afd6b504ab67f6eedb2110c1b6aa484503c493e"
+  },
+  "cohorts": 800,
+  "input_sha256": {
+    "cuts": "20be57d6bae5255b3d440ea77a9da086bb32ecac06c38ada97d337ff1b0e59b9",
+    "packet": "4c0427d81bcb4b2a1dd8df2021e5ae1f6fedf983a9b8b2c165d69128a716bc95",
+    "source": "62579a0bad128830a66e2f44579cf2b1f5d3835b691225b8d431102f3e4486d7"
+  },
+  "inventory_totals": {
+    "enthalpy_grouping_residual_j": 0.0,
+    "mass_grouping_residual_kg": 0.0,
+    "total_enthalpy_j": 4.3833079785138317e+30,
+    "total_mass_kg": 2.0316747196205566e+24
+  },
+  "memory_projection_errors": {
+    "strain0": {
+      "mass_weighted_coefficient_rms": 4.375264085897571e-05,
+      "max_abs_coefficient": 0.00028015991770996145,
+      "reconstruction_max_abs": 2.541098841762901e-20
+    },
+    "strain1": {
+      "mass_weighted_coefficient_rms": 2.4015665318826556e-06,
+      "max_abs_coefficient": 2.2792696729499372e-05,
+      "reconstruction_max_abs": 1.6940658945086007e-21
+    }
+  },
+  "new_time_steps": 0,
+  "physical_gate": "PHYSICAL_HANDOFF_NOT_IMPLEMENTED: residual/thermal consumer required",
+  "preserved_elastic_energy_j": 3.44416071573364e+19,
+  "seconds": 0.893984198999533,
+  "status": "DATA_BRIDGE_VERIFIED_PHYSICAL_HANDOFF_BLOCKED",
+  "time_myr": 0.8684000000000005,
+  "velocity_relative_mass_rms": 0.9999998862718125
+}
