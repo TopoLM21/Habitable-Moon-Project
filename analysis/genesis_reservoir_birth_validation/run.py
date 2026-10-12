@@ -25,7 +25,7 @@ def main():
     try:require_loading_request(restored)
     except ValueError:guard=True
     else:guard=False
-    if packet['status']=='BLOCKED_REMELT' and not guard:raise ValueError('Remelt guard failed')
+    if packet['status'].startswith('BLOCKED_') and not guard:raise ValueError('Remelt guard failed')
     if ROOT.read_bytes()!=raw:raise ValueError('Canonical changed')
     for path,sha in zip(paths,hashes):
         if hashlib.sha256(path.read_bytes()).hexdigest()!=sha:raise ValueError('Thermal source changed')

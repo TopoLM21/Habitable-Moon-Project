@@ -65,7 +65,7 @@ def prepare(before,after,legacy_raw):
     old_memory=r['mechanics'];old_ids={c.id for c in h.cohorts}
     live=[c for c in candidate.cohorts if c.live_q_hi>c.q_lo]
     before_t=cohort_temperature(candidate,T0,ts0,tm0);after_t=cohort_temperature(candidate,T1,ts1,tm1)
-    payload=dict(format='genesis-reservoir-birth-proposal-0.1',status='BLOCKED_REMELT' if retirements else 'READY_FOR_LOADING_PREPARATION',
+    payload=dict(format='genesis-reservoir-birth-proposal-0.1',status='BLOCKED_PHASE_MAPPING' if retirements else 'READY_FOR_LOADING_PREPARATION',
       legacy_raw_sha256=sha,before_thermal_state_sha256=digest(asdict(before)),after_thermal_state_sha256=digest(asdict(after)),
       before_time_myr=before.time_myr,after_time_myr=after.time_myr,parent_mechanical_time_myr=h.time_myr,
       parent_memory_sha256=digest(old_memory),parent_memory_preserved=True,
@@ -75,8 +75,9 @@ def prepare(before,after,legacy_raw):
       proposed_history=bulk_birth_to_dict(candidate),history_admitted_to_mechanics=False,
       mechanical_loading_request=None if retirements else dict(ids=[c.id for c in live],before_temperature_k=before_t.tolist(),after_temperature_k=after_t.tolist(),birth_temperature_k=[c.birth_temperature_k for c in live],old_memory_source='unchanged parent_memory_sha256',newborn_memory='existing stress-free-at-solidus policy; to be evaluated by prepare_volume_loading'),
       diagnostic_retained_temperatures=dict(ids=[c.id for c in live],before_temperature_k=before_t.tolist(),after_temperature_k=after_t.tolist()),
+      physical_melt_export_mass_kg=None,retirement_semantics='legacy connected fully-solid envelope, not demonstrated liquid mass',
       remelt_elastic_outflow_j=None,remelt_kinetic_outflow_j=None,latent_heat_source_added=False,new_thermal_steps=0,
-      blocker='BE no_remelt requires conservative memory/kinetic removal and donor accounting before accepting this proposal' if retirements else None)
+      blocker='Conservative phase/enthalpy mapping required before interpreting envelope recession as physical remelt; BE no_remelt remains closed' if retirements else None)
     return {**payload,'sha256':digest(payload)}
 
 

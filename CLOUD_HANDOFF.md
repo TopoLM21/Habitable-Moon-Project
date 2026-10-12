@@ -1,3 +1,10 @@
+**Важная коррекция: BLOCKED_PHASE_MAPPING, а не доказанный remelt.**
+[Масса/фаза/энтальпия 80 полос и исправление](analysis/genesis_retirement_diagnosis/README.md).
+77 тестов PASS. 3,002e17 кг не расплавились: интерполированная твёрдая доля
+>99,992%, а FV-ячейки охлаждаются. T-интерполяция не сохраняет энтальпию.
+Сначала консервативная phase mapping; mechanical export пока не обоснован.
+Исторические записи ниже про remelt/outflows этим уточнением заменены.
+
 **Front/birth adapter готов; реальный профиль BLOCKED_REMELT.**
 [Сохранённые ID/память, mass partition и guard](analysis/genesis_reservoir_birth_validation/README.md).
 72 теста PASS. Newborn=0; 3,002e17 кг предлагается исключить из live материала
