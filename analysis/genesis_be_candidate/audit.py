@@ -97,16 +97,20 @@ def face_driver(s,source):
         [c['strain0'] for c in mem],[c['strain1'] for c in mem],[c['temperature_k'] for c in mem],s['fault_history']['damage'],current,source['source']['parameters']['shell'])
 
 
-def audit(before_packet,packet,midpoint):
+def audit(before_packet,packet,midpoint=None,*,dt_myr=.0001,chained=False):
     before=before_packet['runtime_state'];after=packet['state'];report=packet['report'];source=packet['source_packet']
-    if packet['format']!='genesis-be-isolated-candidate-0.1' or source!=before_packet['source_packet']:raise ValueError('Wrong BE format/source')
+    if packet['format']!=('genesis-be-chain-0.1' if chained else 'genesis-be-isolated-candidate-0.1') or source!=before_packet['source_packet']:raise ValueError('Wrong BE format/source')
     if after['scheme']!='backward_euler_velocity_and_maxwell_endpoint':raise ValueError('Scheme changed')
-    if after['interval_ledger']!=after['be_accumulated_ledger']:raise ValueError('Single BE ledger duplicated or accumulated predictor')
-    for k in ['geometry','thermal','history']:
-        if after[k]!=midpoint['runtime_state'][k]:raise ValueError('Thermal-first oracle '+k)
+    if not chained and after['interval_ledger']!=after['be_accumulated_ledger']:raise ValueError('Single BE ledger duplicated or accumulated predictor')
+    if midpoint is not None:
+        for k in ['geometry','thermal','history']:
+            if after[k]!=midpoint['runtime_state'][k]:raise ValueError('Thermal-first oracle '+k)
     for which,s in [('predictor',report['predictor_state']),('final',after)]:
-        for k in ['thermal0','maxwell_ratio','old0','old1']:
-            if report[which]['inputs'][k]!=midpoint['runtime_state']['last_report']['audit_input'][k]:raise ValueError('Prepared thermal/source oracle '+k)
+        if midpoint is not None:
+            for k in ['thermal0','maxwell_ratio','old0','old1']:
+                if report[which]['inputs'][k]!=midpoint['runtime_state']['last_report']['audit_input'][k]:raise ValueError('Prepared thermal/source oracle '+k)
+        else:
+            thermal_inputs(before,s,report[which]['inputs'],source)
         if report[which]['inputs']['basal_drag_pa_s_m']!=before['last_report']['audit_input']['basal_drag_pa_s_m']:raise ValueError('Drag parameter changed')
     for k in ['geometry','thermal','history']:
         if report['predictor_state'][k]!=after[k]:raise ValueError('Predictor material/thermal origin')
@@ -116,16 +120,22 @@ def audit(before_packet,packet,midpoint):
     retained=oldmass/newmass
     close(report['predictor_driver']['retained_fraction'],retained,'retained mass fraction',rtol=3e-12,atol=0)
     close(report['predictor_state']['fault_history']['damage'],np.asarray(before['fault_history']['damage'])*retained,'predictor damage',rtol=3e-12,atol=0)
-    for k in ['surface_temperature_k','ocean_fraction']:
-        close(report['predictor_driver'][k],midpoint['runtime_state']['last_report']['fault_evolution']['predictor_driver'][k],k,0,0)
+    if midpoint is not None:
+        for k in ['surface_temperature_k','ocean_fraction']:
+            close(report['predictor_driver'][k],midpoint['runtime_state']['last_report']['fault_evolution']['predictor_driver'][k],k,0,0)
+    else:
+        tp=source['source']['parameters']['thermal'];_,surface=q.global_temperatures(after['thermal']['global_state'],tp)
+        close(report['predictor_driver']['surface_temperature_k'],surface,'surface T',rtol=3e-10)
+        close(report['predictor_driver']['ocean_fraction'],fault.ocean_fraction(surface,tp),'ocean',rtol=3e-10)
     current=np.asarray(after['geometry']['vertices_m'])+np.asarray(report['predictor_state']['displacement_m']).reshape(-1,6)[:,:3]
     close(report['predictor_driver']['physical_vertices_m'],current,'predictor physical vertices',0,0)
     for s in [after,report['predictor_state']]:
-        if abs(s['mechanics']['time_myr']-before['thermal']['time_myr']-.0001)>1e-14:raise ValueError('Single interval clock')
+        if abs(s['mechanics']['time_myr']-before['thermal']['time_myr']-dt_myr)>1e-14:raise ValueError('Single interval clock')
         if s['mechanics']['accepted_steps']!=before['mechanics']['state']['accepted_steps']+1:raise ValueError('Memory counter')
         if s['fault_history']['time_myr']!=s['thermal']['time_myr'] or s['mechanics']['time_myr']!=s['thermal']['time_myr']:raise ValueError('Shared clock')
-        for c,ref in zip(s['mechanics']['cohorts'],midpoint['runtime_state']['mechanics']['state']['cohorts']):
-            if c['id']!=ref['id'] or c['temperature_k']!=ref['temperature_k']:raise ValueError('Source temperature')
+        if midpoint is not None:
+            for c,ref in zip(s['mechanics']['cohorts'],midpoint['runtime_state']['mechanics']['state']['cohorts']):
+                if c['id']!=ref['id'] or c['temperature_k']!=ref['temperature_k']:raise ValueError('Source temperature')
     pred=trial(before,report['predictor_state'],report['predictor']['inputs'],source)
     final=trial(before,after,report['final']['inputs'],source)
     driver=face_driver(report['predictor_state'],source)
@@ -151,3 +161,20 @@ def audit(before_packet,packet,midpoint):
     geom=q.geometry_binding(after['last_certificate'],g['vertices_m'],g['faces'],before['displacement_m'],after['displacement_m'],
         before['geometry']['cohorts']+g['cohorts'],g['column_mass_kg'],g['density_kg_m3'],before['thermal']['time_myr'],after['thermal']['time_myr'])
     return dict(status='PASS',predictor=pred,final=final,independent_damage='PASS',geometry=geom)
+
+
+def thermal_inputs(before,after,inputs,source):
+    """Independent enthalpy/profile inversion; no midpoint trajectory oracle."""
+    p=source['source']['parameters']['thermal'];shell=source['source']['parameters']['shell']
+    tm0,ts0=q.global_temperatures(before['thermal']['global_state'],p)
+    tm1,ts1=q.global_temperatures(after['thermal']['global_state'],p)
+    T0=q.conductive_temperatures(before['thermal'],p);T1=q.conductive_temperatures(after['thermal'],p)
+    masses=np.asarray(after['thermal']['layer_mass_kg']);old={c['id'] for c in before['geometry']['cohorts']}
+    memories={c['id']:c for c in after['mechanics']['cohorts']}
+    for i,c in enumerate(after['geometry']['cohorts']):
+        f=c['face_index'];lo=c['q_lo'];hi=c['live_q_hi']
+        previous=p['solidus_k'] if c['id'] not in old else q.profile_mean(masses[f],T0[f],ts0,tm0,lo,hi)
+        endpoint=q.profile_mean(masses[f],T1[f],ts1,tm1,lo,hi)
+        close(memories[c['id']]['temperature_k'],endpoint,'profile endpoint',rtol=2e-12,atol=1e-8)
+        expected=np.zeros((3,6));expected[:,:3]=shell['linear_expansion_per_k']*(endpoint-previous)
+        close(inputs['thermal0'][i],expected,'profile thermal increment',rtol=2e-7,atol=2e-13)

@@ -1,0 +1,478 @@
+{
+  "status": "PASS_BOUNDED_BE_TIME_MATERIAL_CONTROL",
+  "base_sha": "9d237ab22fdd1b2f5aeb7525dd599c2024e6f11c",
+  "branches": {
+    "100": {
+      "cohorts": 880,
+      "ledger": {
+        "balance_residual_j": 5632.0,
+        "birth_kinetic_inflow_j": 111.167839513896,
+        "damage_energy_change_j": -1592850721907861.5,
+        "elastic_after_j": 3.2919302085676077e+19,
+        "elastic_before_after_damage_j": 3.4440014306614493e+19,
+        "elastic_before_j": 3.44416071573364e+19,
+        "external_work_j": 2490468878051422.5,
+        "internal_work_j": -1.7205742204745808e+16,
+        "kinetic_after_j": 0.14951930723744178,
+        "kinetic_before_j": 5014.979534255348,
+        "numerical_kinetic_j": 5112.427238782314,
+        "numerical_memory_j": 6.542639989728818e+16,
+        "physical_drag_j": 1.9696211082797252e+16,
+        "physical_maxwell_j": 1.8892317999770578e+18,
+        "remelt_elastic_outflow_j": 0.0,
+        "remelt_kinetic_outflow_j": 0.0,
+        "thermal_work_j": 4.5115172114067245e+17
+      },
+      "numerical_total_j": 6.542639989729329e+16,
+      "numerical_to_abs_external_work": 26.270715716987322,
+      "numerical_to_physical_dissipation": 0.034273895881997106,
+      "max_damage": 0.039765234420941736,
+      "old_endpoint_rms_m_s": 6.347209962366857e-11,
+      "old_full100_mean_rms_m_s": 6.347209962366857e-11,
+      "mechanical_solve_seconds": 8.575020598000265,
+      "control_seconds": 113.20852148800259
+    },
+    "50": {
+      "cohorts": 960,
+      "ledger": {
+        "balance_residual_j": 768.0,
+        "birth_kinetic_inflow_j": 55.60975041730663,
+        "damage_energy_change_j": -2479532290668741.5,
+        "elastic_after_j": 3.290578834126168e+19,
+        "elastic_before_j": 3.44416071573364e+19,
+        "external_work_j": 2470609164056398.0,
+        "internal_work_j": -1.7348854047695382e+16,
+        "kinetic_after_j": 0.1494821001348708,
+        "kinetic_before_j": 5014.979534255348,
+        "numerical_kinetic_j": 5057.971347888643,
+        "numerical_memory_j": 3.317832505377421e+16,
+        "physical_drag_j": 1.98194632117518e+16,
+        "physical_maxwell_j": 1.912106842670961e+18,
+        "remelt_elastic_outflow_j": 0.0,
+        "remelt_kinetic_outflow_j": 0.0,
+        "thermal_work_j": 4.292947379883803e+17
+      },
+      "numerical_total_j": 3.3178325053779264e+16,
+      "numerical_to_abs_external_work": 13.429208284528926,
+      "numerical_to_physical_dissipation": 0.017173701166939608,
+      "max_damage": 0.039817142368348865,
+      "old_endpoint_rms_m_s": 6.346423190148957e-11,
+      "old_full100_mean_rms_m_s": 6.357790292020439e-11,
+      "mechanical_solve_seconds": 22.518432332002703,
+      "control_seconds": 95.83650706899789
+    },
+    "25": {
+      "cohorts": 1120,
+      "ledger": {
+        "balance_residual_j": 9216.0,
+        "birth_kinetic_inflow_j": 27.81259636246561,
+        "damage_energy_change_j": -2928320058603928.5,
+        "elastic_after_j": 3.289898173231303e+19,
+        "elastic_before_j": 3.44416071573364e+19,
+        "external_work_j": 2460730145324324.5,
+        "internal_work_j": -1.7423636473726958e+16,
+        "kinetic_after_j": 0.14946350275786158,
+        "kinetic_before_j": 5014.979534255348,
+        "numerical_kinetic_j": 5030.72221083814,
+        "numerical_memory_j": 1.6708767477879178e+16,
+        "physical_drag_j": 1.9884366619051308e+16,
+        "physical_maxwell_j": 1.9238551612658053e+18,
+        "remelt_elastic_outflow_j": 0.0,
+        "remelt_kinetic_outflow_j": 0.0,
+        "thermal_work_j": 4.1829046025263795e+17
+      },
+      "numerical_total_j": 1.6708767477884208e+16,
+      "numerical_to_abs_external_work": 6.790166532333025,
+      "numerical_to_physical_dissipation": 0.008596196783663908,
+      "max_damage": 0.03984351018523005,
+      "old_endpoint_rms_m_s": 6.346029921586531e-11,
+      "old_full100_mean_rms_m_s": 6.363772455267675e-11,
+      "mechanical_solve_seconds": 51.65433587500229,
+      "control_seconds": 199.83308974600004
+    }
+  },
+  "comparisons": {
+    "100_vs_50": {
+      "top_A_m": {
+        "max_abs_difference": 0.005119677132998657,
+        "symmetric_relative_max": 0.002372035771095824
+      },
+      "P_m": {
+        "max_abs_difference": 0.2522156824238664,
+        "symmetric_relative_max": 0.0011433264164658697
+      },
+      "face_tensile_pa": {
+        "max_abs_difference": 3336.3301140107214,
+        "symmetric_relative_max": 0.0001922727825399572
+      },
+      "damage": {
+        "max_abs_difference": 5.1907947407128785e-05,
+        "symmetric_relative_max": 0.0013036582818256454
+      },
+      "old_endpoint_velocity": {
+        "mass_weighted_cosine": 0.9999999219580259,
+        "kinetic_a_j": 0.1462796643985424,
+        "kinetic_b_j": 0.1462434022790519,
+        "signed_energy_difference_j": -3.626211949050995e-05,
+        "cross_work_j": -3.626211949055413e-05,
+        "difference_field_energy_j": 2.507666305425437e-08,
+        "rms_a_m_s": 6.347209962366857e-11,
+        "rms_b_m_s": 6.346423190148957e-11,
+        "rms_difference_m_s": 2.6280024115289858e-14,
+        "relative_rms_difference": 0.00041404056697519597
+      },
+      "old_full100_mean_velocity": {
+        "mass_weighted_cosine": 0.999905334241346,
+        "kinetic_a_j": 0.1462796643985424,
+        "kinetic_b_j": 0.1467677456248093,
+        "signed_energy_difference_j": 0.00048808122626689543,
+        "cross_work_j": 0.0004880812262668564,
+        "difference_field_energy_j": 2.8147975801386407e-05,
+        "rms_a_m_s": 6.347209962366857e-11,
+        "rms_b_m_s": 6.357790292020439e-11,
+        "rms_difference_m_s": 8.804698148475306e-13,
+        "relative_rms_difference": 0.01384867657482497
+      },
+      "common_newborn_endpoint_velocity": {
+        "mass_weighted_cosine": 0.9999999255108407,
+        "kinetic_a_j": 0.003239519762208573,
+        "kinetic_b_j": 0.003238697855818993,
+        "signed_energy_difference_j": -8.219063895799524e-07,
+        "cross_work_j": -8.219063895811593e-07,
+        "difference_field_energy_j": 5.346955611204782e-10,
+        "rms_a_m_s": 6.344214091436498e-11,
+        "rms_b_m_s": 6.34340923743657e-11,
+        "rms_difference_m_s": 2.5774532856717255e-14,
+        "relative_rms_difference": 0.0004062683334017377
+      },
+      "common_newborn_full100_mean_velocity": {
+        "mass_weighted_cosine": 0.999905147873745,
+        "kinetic_a_j": 0.0032395197622085733,
+        "kinetic_b_j": 0.0032504813059351842,
+        "signed_energy_difference_j": 1.0961543726610914e-05,
+        "cross_work_j": 1.0961543726610405e-05,
+        "difference_field_energy_j": 6.248464954547571e-07,
+        "rms_a_m_s": 6.344214091436498e-11,
+        "rms_b_m_s": 6.354938466815781e-11,
+        "rms_difference_m_s": 8.810979333544018e-13,
+        "relative_rms_difference": 0.013864775213093237
+      },
+      "unmatched_material_kg": 60988104364939.66,
+      "old_memory": {
+        "strain0": {
+          "max_abs_difference": 1.5201398433892276e-07,
+          "symmetric_relative_max": 0.00043124983054352575
+        },
+        "strain1": {
+          "max_abs_difference": 1.1187626281524741e-07,
+          "symmetric_relative_max": 0.0027958813622035736
+        },
+        "temperature_k": {
+          "max_abs_difference": 1.858146947597561e-05,
+          "symmetric_relative_max": 1.327948583467806e-08
+        }
+      },
+      "numerical_dissipation_ratio": 1.9719621105418257
+    },
+    "50_vs_25": {
+      "top_A_m": {
+        "max_abs_difference": 0.002596277701114147,
+        "symmetric_relative_max": 0.0012014555408006633
+      },
+      "P_m": {
+        "max_abs_difference": 0.1243725747479516,
+        "symmetric_relative_max": 0.0005634793322114392
+      },
+      "face_tensile_pa": {
+        "max_abs_difference": 1674.8219733312726,
+        "symmetric_relative_max": 9.653859125717505e-05
+      },
+      "damage": {
+        "max_abs_difference": 2.6367816881187056e-05,
+        "symmetric_relative_max": 0.0006617844853178016
+      },
+      "old_endpoint_velocity": {
+        "mass_weighted_cosine": 0.9999999793008421,
+        "kinetic_a_j": 0.1462434022790519,
+        "kinetic_b_j": 0.146225278322012,
+        "signed_energy_difference_j": -1.812395703990055e-05,
+        "cross_work_j": -1.812395703987092e-05,
+        "difference_field_energy_j": 6.615416138025203e-09,
+        "rms_a_m_s": 6.346423190148957e-11,
+        "rms_b_m_s": 6.346029921586531e-11,
+        "rms_difference_m_s": 1.3498001476878226e-14,
+        "relative_rms_difference": 0.00021268675397868346
+      },
+      "old_full100_mean_velocity": {
+        "mass_weighted_cosine": 0.9999759558842094,
+        "kinetic_a_j": 0.1467677456248093,
+        "kinetic_b_j": 0.14704406857077834,
+        "signed_energy_difference_j": 0.0002763229459690486,
+        "cross_work_j": 0.0002763229459690952,
+        "difference_field_energy_j": 7.194379728696205e-06,
+        "rms_a_m_s": 6.357790292020439e-11,
+        "rms_b_m_s": 6.363772455267675e-11,
+        "rms_difference_m_s": 4.4513071797688113e-13,
+        "relative_rms_difference": 0.00699476169372492
+      },
+      "common_newborn_endpoint_velocity": {
+        "mass_weighted_cosine": 0.9999999801762777,
+        "kinetic_a_j": 0.0032386364093496844,
+        "kinetic_b_j": 0.003238224435849715,
+        "signed_energy_difference_j": -4.119734999695132e-07,
+        "cross_work_j": -4.119734999689422e-07,
+        "difference_field_energy_j": 1.414976823995897e-10,
+        "rms_a_m_s": 6.343409070549269e-11,
+        "rms_b_m_s": 6.343005598343873e-11,
+        "rms_difference_m_s": 1.3259168360083704e-14,
+        "relative_rms_difference": 0.00020902275436787503
+      },
+      "common_newborn_full100_mean_velocity": {
+        "mass_weighted_cosine": 0.9999759113068485,
+        "kinetic_a_j": 0.003250419644769624,
+        "kinetic_b_j": 0.0032566174271782644,
+        "signed_energy_difference_j": 6.197782408640367e-06,
+        "cross_work_j": 6.197782408640747e-06,
+        "difference_field_energy_j": 1.5969756163859352e-07,
+        "rms_a_m_s": 6.354938308292424e-11,
+        "rms_b_m_s": 6.360994105979575e-11,
+        "rms_difference_m_s": 4.4544159063272536e-13,
+        "relative_rms_difference": 0.007002704030396655
+      },
+      "unmatched_material_kg": 30456175708372.562,
+      "old_memory": {
+        "strain0": {
+          "max_abs_difference": 7.680866360141756e-08,
+          "symmetric_relative_max": 0.00021794972199222026
+        },
+        "strain1": {
+          "max_abs_difference": 5.645577415533577e-08,
+          "symmetric_relative_max": 0.0014091329869705019
+        },
+        "temperature_k": {
+          "max_abs_difference": 9.279078540203045e-06,
+          "symmetric_relative_max": 6.631412624252561e-09
+        }
+      },
+      "numerical_dissipation_ratio": 1.9856835698799584
+    },
+    "100_vs_25": {
+      "top_A_m": {
+        "max_abs_difference": 0.007715954834112804,
+        "symmetric_relative_max": 0.003570641416376327
+      },
+      "P_m": {
+        "max_abs_difference": 0.376588257171818,
+        "symmetric_relative_max": 0.0017061615078716589
+      },
+      "face_tensile_pa": {
+        "max_abs_difference": 5011.152087341994,
+        "symmetric_relative_max": 0.0002887928120535687
+      },
+      "damage": {
+        "max_abs_difference": 7.827576428831584e-05,
+        "symmetric_relative_max": 0.0019645800263183785
+      },
+      "old_endpoint_velocity": {
+        "mass_weighted_cosine": 0.9999998208760758,
+        "kinetic_a_j": 0.1462796643985424,
+        "kinetic_b_j": 0.146225278322012,
+        "signed_energy_difference_j": -5.43860765304105e-05,
+        "cross_work_j": -5.4386076530425054e-05,
+        "difference_field_energy_j": 5.7450692758586366e-08,
+        "rms_a_m_s": 6.347209962366857e-11,
+        "rms_b_m_s": 6.346029921586531e-11,
+        "rms_difference_m_s": 3.9777595042960853e-14,
+        "relative_rms_difference": 0.0006266941739568341
+      },
+      "old_full100_mean_velocity": {
+        "mass_weighted_cosine": 0.9997858771333578,
+        "kinetic_a_j": 0.1462796643985424,
+        "kinetic_b_j": 0.14704406857077834,
+        "signed_energy_difference_j": 0.000764404172235944,
+        "cross_work_j": 0.0007644041722359517,
+        "difference_field_energy_j": 6.380312890266504e-05,
+        "rms_a_m_s": 6.347209962366857e-11,
+        "rms_b_m_s": 6.363772455267675e-11,
+        "rms_difference_m_s": 1.3255981083090596e-12,
+        "relative_rms_difference": 0.020830381941324486
+      },
+      "common_newborn_endpoint_velocity": {
+        "mass_weighted_cosine": 0.9999998288326741,
+        "kinetic_a_j": 0.0032394583003647393,
+        "kinetic_b_j": 0.003238224435849715,
+        "signed_energy_difference_j": -1.2338645150244618e-06,
+        "cross_work_j": -1.2338645150245266e-06,
+        "difference_field_energy_j": 1.2262804409013331e-09,
+        "rms_a_m_s": 6.34421392474263e-11,
+        "rms_b_m_s": 6.343005598343873e-11,
+        "rms_difference_m_s": 3.903341262248634e-14,
+        "relative_rms_difference": 0.0006152600319837076
+      },
+      "common_newborn_full100_mean_velocity": {
+        "mass_weighted_cosine": 0.9997854638152822,
+        "kinetic_a_j": 0.0032394583003647398,
+        "kinetic_b_j": 0.0032566174271782644,
+        "signed_energy_difference_j": 1.7159126813524623e-05,
+        "cross_work_j": 1.7159126813524718e-05,
+        "difference_field_energy_j": 1.416301056826172e-06,
+        "rms_a_m_s": 6.34421392474263e-11,
+        "rms_b_m_s": 6.360994105979575e-11,
+        "rms_difference_m_s": 1.3265371330909283e-12,
+        "relative_rms_difference": 0.02085424244999588
+      },
+      "unmatched_material_kg": 91444280073312.22,
+      "old_memory": {
+        "strain0": {
+          "max_abs_difference": 2.2882264794034032e-07,
+          "symmetric_relative_max": 0.0006491490146642117
+        },
+        "strain1": {
+          "max_abs_difference": 1.6833203697058318e-07,
+          "symmetric_relative_max": 0.004201558292452682
+        },
+        "temperature_k": {
+          "max_abs_difference": 2.7860548016178655e-05,
+          "symmetric_relative_max": 1.9910898375587944e-08
+        }
+      },
+      "numerical_dissipation_ratio": 3.9156927633287095
+    }
+  },
+  "midway": {
+    "time_50": 0.8684500000000005,
+    "time_25": 0.8684500000000006,
+    "old_endpoint_velocity": {
+      "mass_weighted_cosine": 0.9999999945990045,
+      "kinetic_a_j": 0.1473517309564672,
+      "kinetic_b_j": 0.14734141543666185,
+      "signed_energy_difference_j": -1.0315519805348394e-05,
+      "cross_work_j": -1.0315519805363163e-05,
+      "difference_field_energy_j": 1.7721799684550099e-09,
+      "rms_a_m_s": 6.370426482092991e-11,
+      "rms_b_m_s": 6.370203493838091e-11,
+      "rms_difference_m_s": 6.9862608768886615e-15,
+      "relative_rms_difference": 0.0001096670826753398
+    }
+  },
+  "new_substeps": 6,
+  "seconds": 349.311776464001,
+  "peak_rss_kib": 748804,
+  "cumulative_audits": {
+    "25": {
+      "balance_relative": 2.8244907258713195e-15,
+      "balance_residual_j": 97280.0,
+      "independent_totals": {
+        "birth_kinetic_inflow_j": 27.8125963624656,
+        "damage_energy_change_j": -2928320058634240.0,
+        "elastic_after_j": 3.2898981732313117e+19,
+        "elastic_before_j": 3.444160715733643e+19,
+        "external_work_j": 2460730145324325.0,
+        "internal_work_j": -1.742363647372697e+16,
+        "kinetic_after_j": 0.14946350275786172,
+        "kinetic_before_j": 5014.979534255348,
+        "numerical_kinetic_j": 5030.72221083814,
+        "numerical_memory_j": 1.6708767477879168e+16,
+        "physical_drag_j": 1.98843666190513e+16,
+        "physical_maxwell_j": 1.9238551612658058e+18,
+        "remelt_elastic_outflow_j": 0.0,
+        "remelt_kinetic_outflow_j": 0.0,
+        "thermal_work_j": 4.182904602526378e+17
+      },
+      "intervals": 4,
+      "status": "PASS"
+    },
+    "50": {
+      "balance_relative": 1.204124993660931e-15,
+      "balance_residual_j": 41472.0,
+      "independent_totals": {
+        "birth_kinetic_inflow_j": 55.609750417306635,
+        "damage_energy_change_j": -2479532290695168.0,
+        "elastic_after_j": 3.290578834126172e+19,
+        "elastic_before_j": 3.444160715733643e+19,
+        "external_work_j": 2470609164056398.5,
+        "internal_work_j": -1.7348854047695372e+16,
+        "kinetic_after_j": 0.1494821001348709,
+        "kinetic_before_j": 5014.979534255348,
+        "numerical_kinetic_j": 5057.971347888643,
+        "numerical_memory_j": 3.3178325053774184e+16,
+        "physical_drag_j": 1.9819463211751784e+16,
+        "physical_maxwell_j": 1.9121068426709627e+18,
+        "remelt_elastic_outflow_j": 0.0,
+        "remelt_kinetic_outflow_j": 0.0,
+        "thermal_work_j": 4.2929473798838e+17
+      },
+      "intervals": 2,
+      "status": "PASS"
+    }
+  },
+  "restart_byte_identical": {
+    "25": true,
+    "50": true
+  },
+  "max_independent_impulse": 9.335260776118414e-15,
+  "max_independent_balance": 3.526407408480575e-15,
+  "canonical_parent_unchanged": true,
+  "original_800_supports_unchanged": true,
+  "physical_error_bound_claimed": false,
+  "total_output_bytes": 390374883,
+  "report_sha256": "2af04937d8f87031f2bb0b0365aa1148042bed6f5899637f52bce7a53642e9a4",
+  "directory": "/workspace/genesis-be-time-control-01",
+  "all_prefix_ledgers_rechecked": {
+    "50": {
+      "status": "PASS",
+      "intervals": 2,
+      "independent_totals": {
+        "external_work_j": 2470609164056398.5,
+        "internal_work_j": -1.7348854047695372e+16,
+        "thermal_work_j": 4.2929473798838e+17,
+        "physical_drag_j": 1.9819463211751784e+16,
+        "physical_maxwell_j": 1.9121068426709627e+18,
+        "numerical_kinetic_j": 5057.971347888643,
+        "numerical_memory_j": 3.3178325053774184e+16,
+        "birth_kinetic_inflow_j": 55.609750417306635,
+        "damage_energy_change_j": -2479532290695168.0,
+        "remelt_kinetic_outflow_j": 0.0,
+        "remelt_elastic_outflow_j": 0.0,
+        "kinetic_before_j": 5014.979534255348,
+        "elastic_before_j": 3.444160715733643e+19,
+        "kinetic_after_j": 0.1494821001348709,
+        "elastic_after_j": 3.290578834126172e+19
+      },
+      "balance_residual_j": 41728.0,
+      "balance_relative": 1.2115578639921713e-15
+    },
+    "25": {
+      "status": "PASS",
+      "intervals": 4,
+      "independent_totals": {
+        "external_work_j": 2460730145324325.0,
+        "internal_work_j": -1.742363647372697e+16,
+        "thermal_work_j": 4.182904602526378e+17,
+        "physical_drag_j": 1.98843666190513e+16,
+        "physical_maxwell_j": 1.9238551612658058e+18,
+        "numerical_kinetic_j": 5030.72221083814,
+        "numerical_memory_j": 1.6708767477879168e+16,
+        "birth_kinetic_inflow_j": 27.8125963624656,
+        "damage_energy_change_j": -2928320058634240.0,
+        "remelt_kinetic_outflow_j": 0.0,
+        "remelt_elastic_outflow_j": 0.0,
+        "kinetic_before_j": 5014.979534255348,
+        "elastic_before_j": 3.444160715733643e+19,
+        "kinetic_after_j": 0.14946350275786172,
+        "elastic_after_j": 3.2898981732313117e+19
+      },
+      "balance_residual_j": 97280.0,
+      "balance_relative": 2.8244907258713195e-15
+    }
+  },
+  "tests_passed": 135,
+  "implementation_pins": {
+    "analysis/genesis_be_time_control/chain.py": "e8912468e8e6f0c0667d55bff10c29fb140f5382557c44497e069dcd65b39020",
+    "analysis/genesis_be_time_control/compare.py": "bf17a077631b7db04ed8f5b8f25cee74d669fdbcf5a227a6512f28f31bb5b4c6",
+    "analysis/genesis_be_time_control/run.py": "664787343122f5ce0ff072f12599c2175463b690414e1d5b54f9da4fc2b3b922",
+    "analysis/genesis_be_time_control/audit.py": "411d6b175a3688da334de78b1508ed25b22ad47ad706acdd1a269650deaecbdb",
+    "analysis/genesis_be_time_control/checkpoint.py": "0edd330029f7c89ff8864ddbce4f1815913819fba80287c6307dbd37b6e63b89",
+    "analysis/genesis_be_candidate/audit.py": "fe54607c6148ebbf5972d332aa2d05fb6405387792f91fd1ea8953a75a6fc00a"
+  }
+}
