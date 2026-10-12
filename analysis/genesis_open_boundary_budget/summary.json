@@ -1,0 +1,151 @@
+{
+  "status": "PASS",
+  "new_evolution_steps": 0,
+  "base_sha": "7e67a44d85ef834b31517142fcbe9825c69321d9",
+  "open_budget": {
+    "unit": "J",
+    "ports": [
+      {
+        "name": "prescribed_mechanical_driver",
+        "energy_into_domain_j": 1202004608818388.2,
+        "kind": "external_work"
+      },
+      {
+        "name": "unresolved_basal_interface",
+        "energy_into_domain_j": -9846184662537930.0,
+        "kind": "mechanical_energy_export"
+      }
+    ],
+    "storage_increments": {
+      "damage_unresolved_j": 8208625640516060.0,
+      "interface_unresolved_j": 0.0
+    },
+    "numerical_sink_j": 8207145387963364.0,
+    "control_volume_energy_change_j": -1.685132508334329e+16,
+    "net_boundary_input_j": -8644180053719542.0,
+    "balance_residual_j": 358339614.9149701,
+    "thermal_feedback_from_unresolved_j": 0.0,
+    "hypothesis": "unresolved channels return no heat during this bounded interval; not a universal constitutive law"
+  },
+  "expanded_interface_budget": {
+    "unit": "J",
+    "ports": [
+      {
+        "name": "prescribed_mechanical_driver",
+        "energy_into_domain_j": 1202004608818388.2,
+        "kind": "external_work"
+      }
+    ],
+    "storage_increments": {
+      "damage_unresolved_j": 8208625640516060.0,
+      "interface_unresolved_j": 9846184662537930.0
+    },
+    "numerical_sink_j": 8207145387963364.0,
+    "control_volume_energy_change_j": -7005140420805361.0,
+    "net_boundary_input_j": 1202004608818388.2,
+    "balance_residual_j": 358339614.9149701,
+    "thermal_feedback_from_unresolved_j": 0.0,
+    "hypothesis": "unresolved channels return no heat during this bounded interval; not a universal constitutive law"
+  },
+  "balance_allowance_j": 202441268218.6682,
+  "dt_seconds": 1577879999.9998262,
+  "scales": {
+    "retained_solid_capacity_j_k": 8.71423901092267e+22,
+    "column_sensible_capacity_j_k": 5.058141529007871e+25,
+    "top_conduction_to_water_j": 5.4894036955323373e+23,
+    "bottom_conduction_to_deep_j": 1.9153271155726525e+23,
+    "top_conduction_mean_power_w": 347897412701405.8,
+    "basal_area_m2": 326057132811092.75
+  },
+  "terms": {
+    "traction": {
+      "energy_j": 1202004608818387.5,
+      "mean_power_w": 761784.5519421755,
+      "over_maxwell": 0.0012469450546157743,
+      "over_initial_elastic": 3.489978279257937e-05,
+      "over_top_conduction": 2.189681567410798e-09,
+      "homogenized_retained_solid_delta_k": 1.3793569436318666e-08
+    },
+    "drag": {
+      "energy_j": 9846184662537920.0,
+      "mean_power_w": 6240135.28439362,
+      "over_maxwell": 0.010214312974935018,
+      "over_initial_elastic": 0.0002858805228675453,
+      "over_top_conduction": 1.7936710813510468e-08,
+      "homogenized_retained_solid_delta_k": 1.1298960988098258e-07
+    },
+    "damage_release": {
+      "energy_j": 8208625640516058.0,
+      "mean_power_w": 5202313.002583823,
+      "over_maxwell": 0.00851552903586268,
+      "over_initial_elastic": 0.0002383345702486343,
+      "over_top_conduction": 1.4953583477922775e-08,
+      "homogenized_retained_solid_delta_k": 9.419784825992422e-08
+    },
+    "maxwell": {
+      "energy_j": 9.639595621065802e+17,
+      "mean_power_w": 610920705.0641915,
+      "over_maxwell": 1.0,
+      "over_initial_elastic": 0.02798822824100551,
+      "over_top_conduction": 1.7560369314632813e-06,
+      "homogenized_retained_solid_delta_k": 1.106189032568795e-05
+    },
+    "thermal_work": {
+      "energy_j": -3.3498198491272344e+16,
+      "mean_power_w": -21229877.10806654,
+      "over_maxwell": -0.034750626279454466,
+      "over_initial_elastic": -0.0009726084598272557,
+      "over_top_conduction": -6.102338313820048e-08,
+      "homogenized_retained_solid_delta_k": -3.844076166522948e-07
+    },
+    "numerical": {
+      "energy_j": 8207145387963364.0,
+      "mean_power_w": 5201374.875126288,
+      "over_maxwell": 0.008513993439753793,
+      "over_initial_elastic": 0.0002382915916342528,
+      "over_top_conduction": 1.495088691444376e-08,
+      "homogenized_retained_solid_delta_k": 9.418086166418318e-08
+    }
+  },
+  "healing_cohorts": 0,
+  "max_face_homogenized_drag_delta_k": 3.075396299764261e-07,
+  "max_cohort_damage_heat_scenario_delta_k": 1.593543988349379e-06,
+  "thermal_feedback_applied": false,
+  "detailed_audit_sha256": "21660de2625e22354bb0141a9cade0b51a2f1a08e79fde9ab6e6658f68237bd2",
+  "face_ports_checked": 80,
+  "damage_cohorts_checked": 800,
+  "tests_passed": 74,
+  "full_split_interval": {
+    "status": "PASS",
+    "conduction_global_residual_j": 1611775455789056.0,
+    "conduction_endpoint_roundoff_allowance_j": 9363261707255808.0,
+    "complete_thermal_delta_j": 9.990695364119757e+17,
+    "open_budget": {
+      "unit": "J",
+      "ports": [
+        {
+          "name": "prescribed_mechanical_driver",
+          "energy_into_domain_j": 1202004608818388.2,
+          "kind": "external_work"
+        },
+        {
+          "name": "unresolved_basal_interface",
+          "energy_into_domain_j": -9846184662537930.0,
+          "kind": "mechanical_energy_export"
+        }
+      ],
+      "storage_increments": {
+        "damage_unresolved_j": 8208625640516060.0,
+        "interface_unresolved_j": 0.0
+      },
+      "numerical_sink_j": 8207145387963364.0,
+      "control_volume_energy_change_j": -1.5239549627554234e+16,
+      "net_boundary_input_j": -8644180053719542.0,
+      "balance_residual_j": 1611775814128671.0,
+      "thermal_feedback_from_unresolved_j": 0.0,
+      "hypothesis": "unresolved channels return no heat during this bounded interval; not a universal constitutive law"
+    },
+    "combined_stage_allowance_j": 9363464148524026.0,
+    "note": "Whole existing split interval; its larger endpoint-rounding bound does not replace local feedback or mechanical checks."
+  }
+}

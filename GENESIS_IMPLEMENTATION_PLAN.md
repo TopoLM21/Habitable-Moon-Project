@@ -1,3 +1,10 @@
+**Энергетические границы уточнены на saved BE50, без нового шага.**
+[Открытый бюджет и физический остаток](analysis/genesis_open_boundary_budget/README.md).
+Внешний driver задан измеренной работой; требование динамического mantle donor
+снято для этой открытой постановки. Drag — unresolved interface export;
+damage — nonthermal accounting storage. Thermal return/healing convention,
+splitting accuracy и closure sensitivity остаются OPEN; этап 2 не закрыт.
+
 **Уточнение сопряжения: один isolated BE50 defined feedback PASS.**
 [Независимый аудит и ограничения](analysis/genesis_cutcell_mechanical_trial/README.md).
 800 IDs/массы сохранены, Maxwell→тот же cut-cell и встречная thermal work

@@ -1,3 +1,14 @@
+**Open energy boundary budget PASS; новая эволюция не запускалась. Restore CLOSED.**
+[Источник тяг, drag/damage convention и количественный бюджет](analysis/genesis_open_boundary_budget/README.md).
+Предписанная тяга — внешний work port; динамический mantle donor не нужен.
+Basal drag — интерфейсный экспорт, не доказанный объёмный нагрев мантии.
+Damage release проверен по 800 когортам; healing=0. Накопитель учётный,
+не доказанная fracture free energy. Неопределённые каналы пока без возврата тепла.
+Открытый баланс с numerical sink PASS; нет double counting внутренних Q/W.
+Остаточный физический вопрос — возврат interface/damage энергии и funding healing.
+Следующий bounded численный контроль может явно сохранить эту гипотезу;
+splitting/closure sensitivity и четыре пространственных контроля остаются OPEN.
+
 **Текущий результат: cut-cell BE50 defined feedback PASS. Restore CLOSED.**
 База `435725080eb762868726024de703059fc7adb0e1`, один isolated 50-летний
 механический интервал, 4 bounded correctors, 800 IDs/массы сохранены.
