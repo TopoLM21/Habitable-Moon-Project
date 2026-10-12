@@ -1,3 +1,18 @@
+**Один series_resistance25 завершён; ошибка локализована в тепловом градиенте.**
+[Результат, баланс, стоимость и сохранённое разложение](analysis/genesis_aggregate_series_validation/README.md).
+Те же pinned inputs/full25; новаяэволюция ровно1trial. Весьпроцесс2,920с,
+coupled0,204с,peak272,9MiB; одна сборка stiffness/RHS37,63→2,79ms(≈13,5×),
+не end-to-end benchmark. Силы2,086%,stress3,204%/0,2838MPa,damage4,509e−5;
+24/24 tensile classifications совпали. Но Tmaxdiff11,123K,activeU4,518e19J
+противfull3,505e19J; numerical memory sink≈44,6×. Балансы/restart PASS,
+резерв2,548e18J неизменен,не тепло. Точного event/contact certificate нет.
+Сохранённое Maxwell-тождество безновыхsolves: доминирует потерянный тепловой
+градиент; ошибка среднихT≈0,34K противвнутригрупповогоразброса11,46K.
+Рекомендуется ещё1тепловоймомент на80твёрдыхгрупп; не реализован/не прогнан.
+Допуск Starter закрыт, критерии не подгонялись. После offline-уведомления
+реальный доступ/exit0/файлы подтверждены, повторныйпроцесс не запускался.
+Canonical/default/архивы прежние. Restore CLOSED.
+
 **Активный aggregate-coupled адаптер выполнен, но передача в Starter не допущена.**
 [Реализация, один25-летний шаг и цена сокращения](analysis/genesis_aggregate_coupled/README.md).
 Исходные12MPa/20kPa,252скорости/M,source/damage law сохранены. Активная память

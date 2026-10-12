@@ -1,0 +1,88 @@
+{
+  "active_initial_elastic_j": 3.189323625591562e+19,
+  "active_memory_scalars_after": 960,
+  "active_memory_scalars_before": 28800,
+  "artifact_bytes": 476275,
+  "canonical_advanced": false,
+  "comparison": "same original physical initial state/parameters and 25-year interval; reduced initial projection is the intentional change",
+  "comparison_metrics": {
+    "damage_max_difference": 4.508563112728958e-05,
+    "elastic_active_after_j": 4.517940521419575e+19,
+    "full_elastic_after_j": 3.5049455317935157e+19,
+    "reserve_j": 2.5483709014207944e+18,
+    "stress_max_difference_pa": 283820.06259937957,
+    "stress_relative_l2": 0.03203918279332778,
+    "temperature_mass_rms_k": 0.03918582666374888,
+    "temperature_max_difference_k": 11.12290283387938,
+    "thermal_total_difference_j": -2.646415471478938e+19,
+    "velocity_max_difference_m_s": 3.345466316076234e-08
+  },
+  "contact_parameters": {
+    "activation_damage": 0.65,
+    "alignment_degrees": 35.0,
+    "basal_drag_pa_s_m": 100000000000000.0,
+    "equilibrium_tolerance": 1e-08,
+    "max_added_strain": 0.005,
+    "max_frozen_duration_years": 10000.0,
+    "max_jump_edge_fraction": 0.02,
+    "max_motion_edge_fraction": 0.02,
+    "max_newton_iterations": 40,
+    "max_omitted_relaxation_fraction": 0.01,
+    "max_penetration_m": 5.0,
+    "max_step_jump_m": 2.0,
+    "min_step_years": 0.01
+  },
+  "correctors": [
+    {
+      "exchange_error_over_budget": null,
+      "index": 1,
+      "temperature_error_k": 0.0004357537779924314
+    },
+    {
+      "exchange_error_over_budget": 2598.154343576914,
+      "index": 2,
+      "temperature_error_k": 3.0399860406760126e-08
+    },
+    {
+      "exchange_error_over_budget": 0.215392358166096,
+      "index": 3,
+      "temperature_error_k": 2.0463630789890885e-12
+    }
+  ],
+  "damage_energy_change_j": -5766241125822464.0,
+  "input_sha256": {
+    "/workspace/Habitable-Moon-Project/analysis/genesis_volume_creation_validation/evidence/actual_continuation/direct_after_second.json": "62579a0bad128830a66e2f44579cf2b1f5d3835b691225b8d431102f3e4486d7",
+    "/workspace/genesis-exploratory-100-01/continuation/initial.json": "4c0427d81bcb4b2a1dd8df2021e5ae1f6fedf983a9b8b2c165d69128a716bc95",
+    "/workspace/genesis-forced-coupled-25-01/candidate.json": "e6ad0ed1372b18a73c3852f639edafd959776e6cb0d3a747aa75bcffe8c365a5"
+  },
+  "ledger": {
+    "balance": 558.0,
+    "balance_relative": 1.2350760204888037e-17,
+    "drag": 5117856998418086.0,
+    "elastic_after": 4.517940521419575e+19,
+    "elastic_before": 3.1887470014789796e+19,
+    "external_work": 601732762081767.4,
+    "internal_work": -4516124236336278.0,
+    "kinetic_after": 0.1532614223247427,
+    "kinetic_before": 5014.979534255348,
+    "maxwell": 6.638380119387133e+17,
+    "momentum_relative": 1.5537277233308872e-15,
+    "numerical_kinetic": 5000.405005821986,
+    "numerical_memory": 1.4103801302929543e+19,
+    "thermal_work": 2.8064090638510547e+19
+  },
+  "new_events": false,
+  "new_trials": 1,
+  "nodal_velocity_dofs": 252,
+  "peak_rss_kib": 279476,
+  "restart_payload_exact": true,
+  "setup_seconds": 2.1447823100024834,
+  "source_parameter_sha256": "6c4812689aa33380c8337593e4cd4faaa6d808645cd36cc88500676fc74c376f",
+  "status": "COMPLETED_AGGREGATE_TRIAL_NOT_CANONICAL",
+  "thermal_reduction": "series_resistance",
+  "thermal_unknowns_after": 2642,
+  "thermal_unknowns_before": 3362,
+  "total_seconds": 2.9199682969992864,
+  "trial_seconds": 0.20426091799890855,
+  "unresolved_reserve_j": 2.5483709014207944e+18
+}

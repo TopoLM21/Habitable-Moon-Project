@@ -1,0 +1,684 @@
+{
+  "assembly_benchmark": {
+    "aggregate_blocks": 80,
+    "aggregate_seconds": 0.0027908259944524616,
+    "full_blocks": 800,
+    "full_seconds": 0.037629320002452005,
+    "repeats": 1,
+    "scope": "one frozen stiffness/RHS assembly each, prepared operands; no thermal/source/damage/audit work, no nodal solve; different reduced/full representations",
+    "speed_ratio": 13.483219690962706
+  },
+  "decomposition": {
+    "energy_metric_norms": {
+      "actual_difference": 5714862966.859025,
+      "identity_residual": 0.0012652867555288437,
+      "kinematics": 211153397.54799467,
+      "relaxation_coefficient": 3278926.7339250864,
+      "thermal_gradient": 5710598617.652338,
+      "thermal_mean": 311414132.2123739,
+      "unresolved_memory_relaxation": 683165.8856105106
+    },
+    "faces": [
+      {
+        "aggregate_temperature_k": 1388.1729194487446,
+        "equation_identity_max_abs": 1.4964531079141724e-17,
+        "face": 0,
+        "full_temperature_mean_k": 1387.8353764570634,
+        "full_temperature_slope_k_per_m": -0.28854022123544987,
+        "mean_error_k": 0.3375429916811754
+      },
+      {
+        "aggregate_temperature_k": 1388.165083075394,
+        "equation_identity_max_abs": 4.607859233063394e-18,
+        "face": 1,
+        "full_temperature_mean_k": 1387.8265837470362,
+        "full_temperature_slope_k_per_m": -0.29058443175200405,
+        "mean_error_k": 0.3384993283577842
+      },
+      {
+        "aggregate_temperature_k": 1388.1595993581368,
+        "equation_identity_max_abs": 8.917562868693274e-18,
+        "face": 2,
+        "full_temperature_mean_k": 1387.8203928450191,
+        "full_temperature_slope_k_per_m": -0.2920227255662173,
+        "mean_error_k": 0.3392065131176878
+      },
+      {
+        "aggregate_temperature_k": 1388.1802659071036,
+        "equation_identity_max_abs": 1.4512850760018368e-17,
+        "face": 3,
+        "full_temperature_mean_k": 1387.8439109406827,
+        "full_temperature_slope_k_per_m": -0.28660549533401536,
+        "mean_error_k": 0.3363549664209131
+      },
+      {
+        "aggregate_temperature_k": 1388.1732202474361,
+        "equation_identity_max_abs": 1.201812697211764e-17,
+        "face": 4,
+        "full_temperature_mean_k": 1387.8357003398044,
+        "full_temperature_slope_k_per_m": -0.2884637741390917,
+        "mean_error_k": 0.33751990763175854
+      },
+      {
+        "aggregate_temperature_k": 1388.1615569599069,
+        "equation_identity_max_abs": 1.589711435406871e-17,
+        "face": 5,
+        "full_temperature_mean_k": 1387.8225661556712,
+        "full_temperature_slope_k_per_m": -0.29151434848282504,
+        "mean_error_k": 0.33899080423566375
+      },
+      {
+        "aggregate_temperature_k": 1388.1680302655363,
+        "equation_identity_max_abs": 7.562310153086393e-18,
+        "face": 6,
+        "full_temperature_mean_k": 1387.829833600844,
+        "full_temperature_slope_k_per_m": -0.2898238312109654,
+        "mean_error_k": 0.3381966646923047
+      },
+      {
+        "aggregate_temperature_k": 1388.1824879422004,
+        "equation_identity_max_abs": 4.286833746054014e-18,
+        "face": 7,
+        "full_temperature_mean_k": 1387.8463841982157,
+        "full_temperature_slope_k_per_m": -0.286029904103115,
+        "mean_error_k": 0.3361037439847223
+      },
+      {
+        "aggregate_temperature_k": 1388.1765308926488,
+        "equation_identity_max_abs": 3.266159044612582e-18,
+        "face": 8,
+        "full_temperature_mean_k": 1387.839442296338,
+        "full_temperature_slope_k_per_m": -0.28759858116336623,
+        "mean_error_k": 0.3370885963108776
+      },
+      {
+        "aggregate_temperature_k": 1388.170061953104,
+        "equation_identity_max_abs": 1.497130734271976e-17,
+        "face": 9,
+        "full_temperature_mean_k": 1387.8321452759533,
+        "full_temperature_slope_k_per_m": -0.2892890940962491,
+        "mean_error_k": 0.3379166771508153
+      },
+      {
+        "aggregate_temperature_k": 1388.1707604835124,
+        "equation_identity_max_abs": 1.680513367352532e-17,
+        "face": 10,
+        "full_temperature_mean_k": 1387.8330039821042,
+        "full_temperature_slope_k_per_m": -0.2890948835447782,
+        "mean_error_k": 0.3377565014081938
+      },
+      {
+        "aggregate_temperature_k": 1388.187836459811,
+        "equation_identity_max_abs": 1.2963839257727067e-17,
+        "face": 11,
+        "full_temperature_mean_k": 1387.8524840441005,
+        "full_temperature_slope_k_per_m": -0.2846220994856537,
+        "mean_error_k": 0.3353524157105312
+      },
+      {
+        "aggregate_temperature_k": 1388.178920005155,
+        "equation_identity_max_abs": 2.0708261494473135e-17,
+        "face": 12,
+        "full_temperature_mean_k": 1387.8421620082215,
+        "full_temperature_slope_k_per_m": -0.2869704568002943,
+        "mean_error_k": 0.33675799693355657
+      },
+      {
+        "aggregate_temperature_k": 1388.1721615282338,
+        "equation_identity_max_abs": 7.060866648311848e-18,
+        "face": 13,
+        "full_temperature_mean_k": 1387.8346114354608,
+        "full_temperature_slope_k_per_m": -0.2887241459359382,
+        "mean_error_k": 0.33755009277297177
+      },
+      {
+        "aggregate_temperature_k": 1388.1767950031187,
+        "equation_identity_max_abs": 1.3362791775883842e-17,
+        "face": 14,
+        "full_temperature_mean_k": 1387.8398368050323,
+        "full_temperature_slope_k_per_m": -0.28751214575192247,
+        "mean_error_k": 0.33695819808644956
+      },
+      {
+        "aggregate_temperature_k": 1388.1916071790451,
+        "equation_identity_max_abs": 3.9043983703686974e-18,
+        "face": 15,
+        "full_temperature_mean_k": 1387.85681765662,
+        "full_temperature_slope_k_per_m": -0.28362433716500235,
+        "mean_error_k": 0.33478952242512605
+      },
+      {
+        "aggregate_temperature_k": 1388.1777793613498,
+        "equation_identity_max_abs": 2.6708642892822598e-17,
+        "face": 16,
+        "full_temperature_mean_k": 1387.8408691371344,
+        "full_temperature_slope_k_per_m": -0.2872689779487793,
+        "mean_error_k": 0.33691022421544403
+      },
+      {
+        "aggregate_temperature_k": 1388.1777000945815,
+        "equation_identity_max_abs": 2.1516754442627364e-17,
+        "face": 17,
+        "full_temperature_mean_k": 1387.8408370745492,
+        "full_temperature_slope_k_per_m": -0.2872792723753288,
+        "mean_error_k": 0.33686302003229684
+      },
+      {
+        "aggregate_temperature_k": 1388.17140080764,
+        "equation_identity_max_abs": 9.405877362785378e-18,
+        "face": 18,
+        "full_temperature_mean_k": 1387.8337057726196,
+        "full_temperature_slope_k_per_m": -0.2889307795626168,
+        "mean_error_k": 0.3376950350204879
+      },
+      {
+        "aggregate_temperature_k": 1388.1913608881457,
+        "equation_identity_max_abs": 2.4301375256725877e-17,
+        "face": 19,
+        "full_temperature_mean_k": 1387.8565038868462,
+        "full_temperature_slope_k_per_m": -0.28369549086107476,
+        "mean_error_k": 0.3348570012994969
+      },
+      {
+        "aggregate_temperature_k": 1388.1649001492858,
+        "equation_identity_max_abs": 8.650535732071356e-18,
+        "face": 20,
+        "full_temperature_mean_k": 1387.8262945734307,
+        "full_temperature_slope_k_per_m": -0.29064518215362306,
+        "mean_error_k": 0.3386055758551265
+      },
+      {
+        "aggregate_temperature_k": 1388.1581283367082,
+        "equation_identity_max_abs": 1.6886448836461732e-17,
+        "face": 21,
+        "full_temperature_mean_k": 1387.8187039466902,
+        "full_temperature_slope_k_per_m": -0.2924126866466961,
+        "mean_error_k": 0.339424390017939
+      },
+      {
+        "aggregate_temperature_k": 1388.1625343669525,
+        "equation_identity_max_abs": 2.5031517657259084e-17,
+        "face": 22,
+        "full_temperature_mean_k": 1387.8236061556322,
+        "full_temperature_slope_k_per_m": -0.29126742354849977,
+        "mean_error_k": 0.33892821132030804
+      },
+      {
+        "aggregate_temperature_k": 1388.1759771015309,
+        "equation_identity_max_abs": 9.825582188149884e-18,
+        "face": 23,
+        "full_temperature_mean_k": 1387.8389908291128,
+        "full_temperature_slope_k_per_m": -0.2877403855031305,
+        "mean_error_k": 0.3369862724180166
+      },
+      {
+        "aggregate_temperature_k": 1388.1542144015768,
+        "equation_identity_max_abs": 8.009543549236664e-18,
+        "face": 24,
+        "full_temperature_mean_k": 1387.814363055162,
+        "full_temperature_slope_k_per_m": -0.29342949857469514,
+        "mean_error_k": 0.3398513464148891
+      },
+      {
+        "aggregate_temperature_k": 1388.1593841031536,
+        "equation_identity_max_abs": 1.5924219408380846e-17,
+        "face": 25,
+        "full_temperature_mean_k": 1387.8201873082103,
+        "full_temperature_slope_k_per_m": -0.2920744626283534,
+        "mean_error_k": 0.339196794943291
+      },
+      {
+        "aggregate_temperature_k": 1388.1557331609292,
+        "equation_identity_max_abs": 2.56011473142876e-17,
+        "face": 26,
+        "full_temperature_mean_k": 1387.8160592562833,
+        "full_temperature_slope_k_per_m": -0.29303296749833513,
+        "mean_error_k": 0.3396739046459061
+      },
+      {
+        "aggregate_temperature_k": 1388.1692769178485,
+        "equation_identity_max_abs": 3.554446708210583e-17,
+        "face": 27,
+        "full_temperature_mean_k": 1387.8315214185488,
+        "full_temperature_slope_k_per_m": -0.28948314285033006,
+        "mean_error_k": 0.33775549929964654
+      },
+      {
+        "aggregate_temperature_k": 1388.1695667119209,
+        "equation_identity_max_abs": 1.2171439935570669e-17,
+        "face": 28,
+        "full_temperature_mean_k": 1387.8316528259436,
+        "full_temperature_slope_k_per_m": -0.28940859298334837,
+        "mean_error_k": 0.33791388597728655
+      },
+      {
+        "aggregate_temperature_k": 1388.175141587665,
+        "equation_identity_max_abs": 2.8731357570865868e-18,
+        "face": 29,
+        "full_temperature_mean_k": 1387.8379670184909,
+        "full_temperature_slope_k_per_m": -0.2879459077509156,
+        "mean_error_k": 0.3371745691740671
+      },
+      {
+        "aggregate_temperature_k": 1388.1713121224545,
+        "equation_identity_max_abs": 5.267274382500867e-18,
+        "face": 30,
+        "full_temperature_mean_k": 1387.8336284574189,
+        "full_temperature_slope_k_per_m": -0.28895078376730204,
+        "mean_error_k": 0.3376836650356836
+      },
+      {
+        "aggregate_temperature_k": 1388.1870285229702,
+        "equation_identity_max_abs": 1.5124620306172787e-17,
+        "face": 31,
+        "full_temperature_mean_k": 1387.8516285480307,
+        "full_temperature_slope_k_per_m": -0.2848241078234568,
+        "mean_error_k": 0.3353999749394916
+      },
+      {
+        "aggregate_temperature_k": 1388.1721660857352,
+        "equation_identity_max_abs": 1.0733601507606494e-17,
+        "face": 32,
+        "full_temperature_mean_k": 1387.8346506851908,
+        "full_temperature_slope_k_per_m": -0.28871828281713147,
+        "mean_error_k": 0.3375154005443619
+      },
+      {
+        "aggregate_temperature_k": 1388.1663870097912,
+        "equation_identity_max_abs": 1.6805133673525319e-18,
+        "face": 33,
+        "full_temperature_mean_k": 1387.8281481668841,
+        "full_temperature_slope_k_per_m": -0.29022987208145457,
+        "mean_error_k": 0.33823884290700335
+      },
+      {
+        "aggregate_temperature_k": 1388.163702035578,
+        "equation_identity_max_abs": 2.0545207652126682e-17,
+        "face": 34,
+        "full_temperature_mean_k": 1387.825146215381,
+        "full_temperature_slope_k_per_m": -0.29093059569423574,
+        "mean_error_k": 0.3385558201969161
+      },
+      {
+        "aggregate_temperature_k": 1388.1813238130874,
+        "equation_identity_max_abs": 1.1533200609814553e-17,
+        "face": 35,
+        "full_temperature_mean_k": 1387.8452431010185,
+        "full_temperature_slope_k_per_m": -0.28630909752691464,
+        "mean_error_k": 0.336080712068906
+      },
+      {
+        "aggregate_temperature_k": 1388.1650515133288,
+        "equation_identity_max_abs": 1.2508982565051507e-17,
+        "face": 36,
+        "full_temperature_mean_k": 1387.8265947626876,
+        "full_temperature_slope_k_per_m": -0.29058669853919017,
+        "mean_error_k": 0.3384567506411713
+      },
+      {
+        "aggregate_temperature_k": 1388.1667703976518,
+        "equation_identity_max_abs": 5.624298769768554e-18,
+        "face": 37,
+        "full_temperature_mean_k": 1387.8284463693724,
+        "full_temperature_slope_k_per_m": -0.2901491556012407,
+        "mean_error_k": 0.3383240282794304
+      },
+      {
+        "aggregate_temperature_k": 1388.1628475112416,
+        "equation_identity_max_abs": 4.961495488542064e-18,
+        "face": 38,
+        "full_temperature_mean_k": 1387.8240733298544,
+        "full_temperature_slope_k_per_m": -0.29116927239342166,
+        "mean_error_k": 0.33877418138717985
+      },
+      {
+        "aggregate_temperature_k": 1388.1789410476229,
+        "equation_identity_max_abs": 2.4584284261108813e-17,
+        "face": 39,
+        "full_temperature_mean_k": 1387.8424418041984,
+        "full_temperature_slope_k_per_m": -0.28694880359118713,
+        "mean_error_k": 0.3364992434244414
+      },
+      {
+        "aggregate_temperature_k": 1388.173145156132,
+        "equation_identity_max_abs": 1.2671612890924333e-17,
+        "face": 40,
+        "full_temperature_mean_k": 1387.8355295833721,
+        "full_temperature_slope_k_per_m": -0.28849944683196976,
+        "mean_error_k": 0.3376155727598871
+      },
+      {
+        "aggregate_temperature_k": 1388.1670466233295,
+        "equation_identity_max_abs": 9.974659986866641e-18,
+        "face": 41,
+        "full_temperature_mean_k": 1387.828658282051,
+        "full_temperature_slope_k_per_m": -0.29009161603380773,
+        "mean_error_k": 0.33838834127845985
+      },
+      {
+        "aggregate_temperature_k": 1388.164187224068,
+        "equation_identity_max_abs": 5.128996253861602e-18,
+        "face": 42,
+        "full_temperature_mean_k": 1387.8254812801695,
+        "full_temperature_slope_k_per_m": -0.2908327476672941,
+        "mean_error_k": 0.3387059438985034
+      },
+      {
+        "aggregate_temperature_k": 1388.1834376452582,
+        "equation_identity_max_abs": 1.0429093163068573e-17,
+        "face": 43,
+        "full_temperature_mean_k": 1387.8473893674288,
+        "full_temperature_slope_k_per_m": -0.28579207488044406,
+        "mean_error_k": 0.3360482778293772
+      },
+      {
+        "aggregate_temperature_k": 1388.1736191820708,
+        "equation_identity_max_abs": 7.75818652213895e-18,
+        "face": 44,
+        "full_temperature_mean_k": 1387.8360995949565,
+        "full_temperature_slope_k_per_m": -0.28836936805900665,
+        "mean_error_k": 0.3375195871142296
+      },
+      {
+        "aggregate_temperature_k": 1388.1657365461956,
+        "equation_identity_max_abs": 2.3296794181282277e-17,
+        "face": 45,
+        "full_temperature_mean_k": 1387.827251509077,
+        "full_temperature_slope_k_per_m": -0.2904233911539525,
+        "mean_error_k": 0.33848503711851663
+      },
+      {
+        "aggregate_temperature_k": 1388.1710983045175,
+        "equation_identity_max_abs": 1.0828469197698976e-17,
+        "face": 46,
+        "full_temperature_mean_k": 1387.8333331138883,
+        "full_temperature_slope_k_per_m": -0.2890149175795394,
+        "mean_error_k": 0.3377651906291703
+      },
+      {
+        "aggregate_temperature_k": 1388.1854378891883,
+        "equation_identity_max_abs": 9.175060884658581e-18,
+        "face": 47,
+        "full_temperature_mean_k": 1387.84971701448,
+        "full_temperature_slope_k_per_m": -0.28525843174758003,
+        "mean_error_k": 0.33572087470838596
+      },
+      {
+        "aggregate_temperature_k": 1388.1731675474832,
+        "equation_identity_max_abs": 2.2331600137886e-17,
+        "face": 48,
+        "full_temperature_mean_k": 1387.8356405923191,
+        "full_temperature_slope_k_per_m": -0.28847759900464714,
+        "mean_error_k": 0.33752695516409403
+      },
+      {
+        "aggregate_temperature_k": 1388.1719814240912,
+        "equation_identity_max_abs": 6.383240290508407e-18,
+        "face": 49,
+        "full_temperature_mean_k": 1387.8343613659724,
+        "full_temperature_slope_k_per_m": -0.28877860036572284,
+        "mean_error_k": 0.33762005811877316
+      },
+      {
+        "aggregate_temperature_k": 1388.1674395497912,
+        "equation_identity_max_abs": 5.342872073043313e-18,
+        "face": 50,
+        "full_temperature_mean_k": 1387.8292910104221,
+        "full_temperature_slope_k_per_m": -0.28996007014749814,
+        "mean_error_k": 0.3381485393690582
+      },
+      {
+        "aggregate_temperature_k": 1388.1858763337436,
+        "equation_identity_max_abs": 8.578749689791554e-18,
+        "face": 51,
+        "full_temperature_mean_k": 1387.8502899230414,
+        "full_temperature_slope_k_per_m": -0.2851312750539871,
+        "mean_error_k": 0.3355864107022626
+      },
+      {
+        "aggregate_temperature_k": 1388.1717431957877,
+        "equation_identity_max_abs": 2.0613393804380653e-17,
+        "face": 52,
+        "full_temperature_mean_k": 1387.8340282361337,
+        "full_temperature_slope_k_per_m": -0.28885134873660234,
+        "mean_error_k": 0.3377149596540221
+      },
+      {
+        "aggregate_temperature_k": 1388.164347020753,
+        "equation_identity_max_abs": 1.0503208545953324e-17,
+        "face": 53,
+        "full_temperature_mean_k": 1387.8258140764128,
+        "full_temperature_slope_k_per_m": -0.2907691177707056,
+        "mean_error_k": 0.3385329443401588
+      },
+      {
+        "aggregate_temperature_k": 1388.1648362996696,
+        "equation_identity_max_abs": 6.456296882209091e-18,
+        "face": 54,
+        "full_temperature_mean_k": 1387.8263024763053,
+        "full_temperature_slope_k_per_m": -0.29064951361806957,
+        "mean_error_k": 0.33853382336428695
+      },
+      {
+        "aggregate_temperature_k": 1388.1814069069958,
+        "equation_identity_max_abs": 1.3782920117721975e-17,
+        "face": 55,
+        "full_temperature_mean_k": 1387.8452249062964,
+        "full_temperature_slope_k_per_m": -0.28630302037968836,
+        "mean_error_k": 0.3361820006994094
+      },
+      {
+        "aggregate_temperature_k": 1388.1730726454336,
+        "equation_identity_max_abs": 1.3252253976267156e-17,
+        "face": 56,
+        "full_temperature_mean_k": 1387.8354650899553,
+        "full_temperature_slope_k_per_m": -0.28851497694150485,
+        "mean_error_k": 0.33760755547837107
+      },
+      {
+        "aggregate_temperature_k": 1388.1675374335186,
+        "equation_identity_max_abs": 1.1758934890257824e-17,
+        "face": 57,
+        "full_temperature_mean_k": 1387.829280702799,
+        "full_temperature_slope_k_per_m": -0.2899525122395383,
+        "mean_error_k": 0.33825673071964957
+      },
+      {
+        "aggregate_temperature_k": 1388.1690887707928,
+        "equation_identity_max_abs": 2.6459191689856207e-18,
+        "face": 58,
+        "full_temperature_mean_k": 1387.830956849961,
+        "full_temperature_slope_k_per_m": -0.2895583878537533,
+        "mean_error_k": 0.33813192083175636
+      },
+      {
+        "aggregate_temperature_k": 1388.185376737297,
+        "equation_identity_max_abs": 2.6926330360266953e-17,
+        "face": 59,
+        "full_temperature_mean_k": 1387.849596000428,
+        "full_temperature_slope_k_per_m": -0.2852834683843957,
+        "mean_error_k": 0.33578073686908283
+      },
+      {
+        "aggregate_temperature_k": 1388.157428965915,
+        "equation_identity_max_abs": 1.8241701552068612e-17,
+        "face": 60,
+        "full_temperature_mean_k": 1387.8179207104574,
+        "full_temperature_slope_k_per_m": -0.2925950198896215,
+        "mean_error_k": 0.33950825545753105
+      },
+      {
+        "aggregate_temperature_k": 1388.1613795147373,
+        "equation_identity_max_abs": 1.623423346707592e-17,
+        "face": 61,
+        "full_temperature_mean_k": 1387.82230843339,
+        "full_temperature_slope_k_per_m": -0.29156956940144557,
+        "mean_error_k": 0.3390710813473561
+      },
+      {
+        "aggregate_temperature_k": 1388.1544292874057,
+        "equation_identity_max_abs": 1.0841598208381417e-17,
+        "face": 62,
+        "full_temperature_mean_k": 1387.814573051231,
+        "full_temperature_slope_k_per_m": -0.2933771479112306,
+        "mean_error_k": 0.33985623617468264
+      },
+      {
+        "aggregate_temperature_k": 1388.1711516745588,
+        "equation_identity_max_abs": 1.4950555035512028e-17,
+        "face": 63,
+        "full_temperature_mean_k": 1387.8335621143528,
+        "full_temperature_slope_k_per_m": -0.28900115085415906,
+        "mean_error_k": 0.33758956020597
+      },
+      {
+        "aggregate_temperature_k": 1388.1687730063604,
+        "equation_identity_max_abs": 1.5355013267825957e-17,
+        "face": 64,
+        "full_temperature_mean_k": 1387.8307386982392,
+        "full_temperature_slope_k_per_m": -0.28961967745101064,
+        "mean_error_k": 0.33803430812122315
+      },
+      {
+        "aggregate_temperature_k": 1388.1609284551635,
+        "equation_identity_max_abs": 7.440337408681774e-18,
+        "face": 65,
+        "full_temperature_mean_k": 1387.8218848064942,
+        "full_temperature_slope_k_per_m": -0.2916756398677568,
+        "mean_error_k": 0.33904364866930337
+      },
+      {
+        "aggregate_temperature_k": 1388.1634007469086,
+        "equation_identity_max_abs": 1.6418886649577358e-17,
+        "face": 66,
+        "full_temperature_mean_k": 1387.8247046674355,
+        "full_temperature_slope_k_per_m": -0.291023246912214,
+        "mean_error_k": 0.3386960794730385
+      },
+      {
+        "aggregate_temperature_k": 1388.178401725615,
+        "equation_identity_max_abs": 1.1926223897340549e-18,
+        "face": 67,
+        "full_temperature_mean_k": 1387.8418213244022,
+        "full_temperature_slope_k_per_m": -0.2870916972497589,
+        "mean_error_k": 0.33658040121281374
+      },
+      {
+        "aggregate_temperature_k": 1388.16682247172,
+        "equation_identity_max_abs": 8.158197831479794e-18,
+        "face": 68,
+        "full_temperature_mean_k": 1387.8286328881186,
+        "full_temperature_slope_k_per_m": -0.2901168576008412,
+        "mean_error_k": 0.3381895836014337
+      },
+      {
+        "aggregate_temperature_k": 1388.1716389222283,
+        "equation_identity_max_abs": 6.507330617281162e-18,
+        "face": 69,
+        "full_temperature_mean_k": 1387.8340105270374,
+        "full_temperature_slope_k_per_m": -0.2888632288722557,
+        "mean_error_k": 0.3376283951909045
+      },
+      {
+        "aggregate_temperature_k": 1388.1727266153946,
+        "equation_identity_max_abs": 9.469828350303078e-18,
+        "face": 70,
+        "full_temperature_mean_k": 1387.8352727726617,
+        "full_temperature_slope_k_per_m": -0.2885727178340437,
+        "mean_error_k": 0.33745384273288437
+      },
+      {
+        "aggregate_temperature_k": 1388.1849472702736,
+        "equation_identity_max_abs": 3.227830803749325e-18,
+        "face": 71,
+        "full_temperature_mean_k": 1387.8493120397602,
+        "full_temperature_slope_k_per_m": -0.28536373969462764,
+        "mean_error_k": 0.3356352305133896
+      },
+      {
+        "aggregate_temperature_k": 1388.1612263244865,
+        "equation_identity_max_abs": 2.063393435335157e-17,
+        "face": 72,
+        "full_temperature_mean_k": 1387.8222896883672,
+        "full_temperature_slope_k_per_m": -0.2915881894114722,
+        "mean_error_k": 0.33893663611934244
+      },
+      {
+        "aggregate_temperature_k": 1388.1610378181351,
+        "equation_identity_max_abs": 2.4745644037560757e-17,
+        "face": 73,
+        "full_temperature_mean_k": 1387.8221386117532,
+        "full_temperature_slope_k_per_m": -0.29162977246038985,
+        "mean_error_k": 0.3388992063819387
+      },
+      {
+        "aggregate_temperature_k": 1388.1622500086871,
+        "equation_identity_max_abs": 1.2441219929271163e-17,
+        "face": 74,
+        "full_temperature_mean_k": 1387.8234897734533,
+        "full_temperature_slope_k_per_m": -0.2913136029426429,
+        "mean_error_k": 0.338760235233849
+      },
+      {
+        "aggregate_temperature_k": 1388.1745765642481,
+        "equation_identity_max_abs": 1.923188306740889e-17,
+        "face": 75,
+        "full_temperature_mean_k": 1387.8375954751573,
+        "full_temperature_slope_k_per_m": -0.2880821077244638,
+        "mean_error_k": 0.3369810890908411
+      },
+      {
+        "aggregate_temperature_k": 1388.1662626594637,
+        "equation_identity_max_abs": 5.380353280959316e-18,
+        "face": 76,
+        "full_temperature_mean_k": 1387.8277907015406,
+        "full_temperature_slope_k_per_m": -0.2902947910371974,
+        "mean_error_k": 0.33847195792304774
+      },
+      {
+        "aggregate_temperature_k": 1388.1654906699848,
+        "equation_identity_max_abs": 7.459183891758182e-18,
+        "face": 77,
+        "full_temperature_mean_k": 1387.8269878850067,
+        "full_temperature_slope_k_per_m": -0.29048616896400703,
+        "mean_error_k": 0.33850278497811814
+      },
+      {
+        "aggregate_temperature_k": 1388.1657991737402,
+        "equation_identity_max_abs": 7.457701584100487e-18,
+        "face": 78,
+        "full_temperature_mean_k": 1387.8273155412687,
+        "full_temperature_slope_k_per_m": -0.2904086411620489,
+        "mean_error_k": 0.3384836324714797
+      },
+      {
+        "aggregate_temperature_k": 1388.1805726744778,
+        "equation_identity_max_abs": 1.56396163381034e-17,
+        "face": 79,
+        "full_temperature_mean_k": 1387.8441897418113,
+        "full_temperature_slope_k_per_m": -0.2865358698888869,
+        "mean_error_k": 0.3363829326665382
+      }
+    ],
+    "full_endpoint_projection_energy_at_aggregate_damage_j": 3.251506357824877e+19,
+    "identity_relative": 2.2140281628209615e-13,
+    "metric": "sqrt(sum(delta_coeff^T H_at_aggregate_damage delta_coeff)), sqrt(J); term norms do not add because cross terms exist"
+  },
+  "energy": {
+    "aggregate_numerical_memory_j": 1.4103801302929543e+19,
+    "aggregate_thermal_work_j": 2.8064090638510547e+19,
+    "full_numerical_memory_j": 3.1652797243878694e+17,
+    "full_thermal_work_j": 1.4353726908364175e+18
+  },
+  "input_after_sha256": "c1823a3191862e06816558c627a6ca9c07d22f135a40dbfc0e1b1145cf97d4e7",
+  "new_nodal_solves": 0,
+  "new_planetary_trials": 0,
+  "seconds": 2.9647964899995713,
+  "status": "SAVED_ALGEBRA_IDENTITY_PASS_NO_NEW_EVOLUTION",
+  "thermal": {
+    "aggregate_solid_mean_error_mass_rms_k": 0.3376285978047926,
+    "aggregate_vs_full_group_mean_max_k": 0.33985623617468264,
+    "full_profile_within_group_max_difference_k": 11.461559419705281,
+    "within_solid_group_mass_rms_k": 6.545639095888074
+  }
+}

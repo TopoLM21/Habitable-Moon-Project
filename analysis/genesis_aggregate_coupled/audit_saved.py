@@ -1,5 +1,5 @@
 """Independent saved-endpoint balance/restart inspection; no mechanical solve."""
-import json,math,time
+import argparse,json,math,time
 from pathlib import Path
 import numpy as np
 from .adapter import Adapter
@@ -14,10 +14,14 @@ OUT=Path('/workspace/genesis-aggregate-coupled-25-02')
 
 
 def main():
+    global OUT
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--directory',type=Path,default=OUT)
+    OUT=parser.parse_args().directory
     started=time.perf_counter();report=json.loads((OUT/'report.json').read_bytes())
     for name,pin in report['input_sha256'].items(): assert digest(Path(name).read_bytes())==pin
     p=json.loads(Path('/workspace/genesis-exploratory-100-01/continuation/initial.json').read_bytes())['packet'];root=json.loads((ROOT/'analysis/genesis_volume_creation_validation/evidence/actual_continuation/direct_after_second.json').read_bytes());full=json.loads(Path('/workspace/genesis-forced-coupled-25-01/candidate.json').read_bytes());r=json.loads((OUT/'after.json').read_bytes())
-    a=Adapter(p,root['source_packet'],full['thermal_packet']['fixed_cut_geometry'],full['inputs'],report['contact_parameters'])
+    a=Adapter(p,root['source_packet'],full['thermal_packet']['fixed_cut_geometry'],full['inputs'],report['contact_parameters'],thermal_reduction=r.get('thermal_reduction','projected_graph'))
     dt=(r['time_myr']-a.time)*SECONDS_PER_MYR;v=np.array(r['velocity_m_s']);du=np.array(r['displacement_m'])-a.u0;e=np.array(r['memory']);damage=np.array(r['fault_history']['damage']);T=np.array(r['temperature_k']);E=np.array(r['energy_j'])
     force=np.zeros_like(v);Q=[];W=[];U=0.;oldnewC=0.;numerical=0.;memory_error=0.
     for f,b in enumerate(a.blocks):
@@ -68,7 +72,7 @@ def main():
     surface_ratios=[]
     for f,group in enumerate(a.solid_group):
         first=next(i for i,c in enumerate(a.cuts) if c['face']==f)
-        surface_ratios.append(a.m[group]/p['thermal']['mass_kg'][first])
+        surface_ratios.append(1. if a.thermal_reduction=='series_resistance' else a.m[group]/p['thermal']['mass_kg'][first])
     a.restore(r)
     assert np.array_equal(a.old,e) and np.array_equal(a.v0,v) and np.array_equal(a.E0,E) and a.reserve==r['unresolved_reserve_j']
     result=dict(status='SAVED_BALANCES_AND_ACTIVE_RESTART_PASS_NOT_PHYSICAL_ADMISSION',new_time_steps=0,
