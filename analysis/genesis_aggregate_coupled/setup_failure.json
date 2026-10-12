@@ -1,0 +1,17 @@
+{
+  "artifact_bytes": 0,
+  "canonical_advanced": false,
+  "comparison": "same original physical initial state/parameters and 25-year interval; reduced initial projection is the intentional change",
+  "error": "ValueError: Independent basal traction needs face constants or three nodal vectors",
+  "input_sha256": {
+    "/workspace/Habitable-Moon-Project/analysis/genesis_volume_creation_validation/evidence/actual_continuation/direct_after_second.json": "62579a0bad128830a66e2f44579cf2b1f5d3835b691225b8d431102f3e4486d7",
+    "/workspace/genesis-exploratory-100-01/continuation/initial.json": "4c0427d81bcb4b2a1dd8df2021e5ae1f6fedf983a9b8b2c165d69128a716bc95",
+    "/workspace/genesis-forced-coupled-25-01/candidate.json": "e6ad0ed1372b18a73c3852f639edafd959776e6cb0d3a747aa75bcffe8c365a5"
+  },
+  "new_trials": 0,
+  "peak_rss_kib": 259584,
+  "source_parameter_sha256": "6c4812689aa33380c8337593e4cd4faaa6d808645cd36cc88500676fc74c376f",
+  "status": "STOPPED",
+  "total_seconds": 1.338691981996817,
+  "traceback": "Traceback (most recent call last):\n  File \"/workspace/Habitable-Moon-Project/analysis/genesis_aggregate_coupled/run.py\", line 32, in main\n    a=Adapter(initial,source,full['thermal_packet']['fixed_cut_geometry'],full['inputs'],contact)\n      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/Habitable-Moon-Project/analysis/genesis_aggregate_coupled/adapter.py\", line 39, in __init__\n    self.D,self.F=q.basal_drag_and_force(self.X,self.faces,g['column_mass_kg'],g['density_kg_m3'],g['cohorts'],full_inputs['basal_drag_pa_s_m'],full_inputs['basal_traction_at_vertices_pa'])\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/Habitable-Moon-Project/analysis/genesis_volume_continuation_validation/independent_audit.py\", line 101, in basal_drag_and_force\n    raise ValueError(\"Independent basal traction needs face constants or three nodal vectors\")\nValueError: Independent basal traction needs face constants or three nodal vectors\n"
+}
