@@ -125,13 +125,26 @@ class Adapter:
         solid=set(self.solid_group)
         if any(i not in solid and T0[i]>self.gp.solidus_k and T[i]<=self.gp.solidus_k for i in range(self.n-2)):raise ValueError('UNSUPPORTED_NEW_SOLID')
 
-    def mechanical(self,T,damage,dt):
+    def temperature_coefficients(self,T,f):
+        return np.array([T[self.solid_group[f]],0.])
+
+    def solid_mean_temperature(self,T):
+        return T[self.solid_group]
+
+    def expand_temperature(self,T):
+        return np.asarray(T)[self.map]
+
+    def mechanical_blocks(self,T,damage):
         blocks=[]
         for f,b in enumerate(self.blocks):
             temp=T[self.solid_group[f]];p=self.shell
             eta=np.clip(p['viscosity_reference_pa_s']*np.exp(np.clip(p['activation_energy_j_mol']/8.314462618*(1/temp-1/p['viscosity_reference_temperature_k']),-60,60)),p['viscosity_min_pa_s'],p['viscosity_max_pa_s'])
-            theta=(np.array([temp,0.])-b['old_temperature_coeff'])[:,None]*p['linear_expansion_per_k']*np.array([1.,1.,1.,0.,0.,0.])[None,:]
+            theta=(self.temperature_coefficients(T,f)-b['old_temperature_coeff'])[:,None]*p['linear_expansion_per_k']*np.array([1.,1.,1.,0.,0.,0.])[None,:]
             blocks.append(dict(H=np.kron(b['G'],self.C(f,damage)),L=b['L'],R=np.eye(12)*p['young_modulus_pa']/eta,old=self.old[f],theta=theta.ravel(),dofs=b['dofs']))
+        return blocks
+
+    def mechanical(self,T,damage,dt):
+        blocks=self.mechanical_blocks(T,damage)
         result=step(self.M,self.D,self.F,self.v0,dt,blocks)
         if result['ledger']['momentum_relative']>self.contact_parameters['equilibrium_tolerance']:raise ValueError('AGGREGATE_MOMENTUM_GATE')
         if result['ledger']['balance_relative']>5e-10:raise ValueError('AGGREGATE_ENERGY_GATE')
@@ -143,6 +156,11 @@ class Adapter:
             stress.append([local[0,0],local[1,1],local[0,1]])
         result.update(stress=np.array(stress),vertices=X)
         return result
+
+    def heat_feedback(self,base,result):
+        Q=np.array([r['maxwell'] for r in result['rows']]);W=np.array([r['thermal_work'] for r in result['rows']])
+        E=base.copy();np.add.at(E,self.solid_group,Q-W)
+        return E,Q,W
 
     def advance(self,years=25.):
         if years!=25.:raise ValueError('ONE_25_YEAR_TRIAL_ONLY')
@@ -157,10 +175,10 @@ class Adapter:
         T=self.temperature(base);self.phase_guard(T,T0);previous=None;correctors=[]
         for iteration in range(6):
             pred=self.mechanical(T,self.history.damage,dt)
-            faults,evolution=evaluate_volume_fault_evolution(self.history,self.source,after_time_myr=target,physical_vertices_m=pred['vertices'],face_stress_pa=pred['stress'],face_mean_temperature_k=T[self.solid_group],retained_fraction=np.ones(80),active_material=np.ones(80,dtype=bool),surface_temperature_k=float(T[-1]),ocean_fraction=0.,orbit_before=self.orbit,orbit_after=orbit,weak_plane_slip_available=True)
+            faults,evolution=evaluate_volume_fault_evolution(self.history,self.source,after_time_myr=target,physical_vertices_m=pred['vertices'],face_stress_pa=pred['stress'],face_mean_temperature_k=self.solid_mean_temperature(T),retained_fraction=np.ones(80),active_material=np.ones(80,dtype=bool),surface_temperature_k=float(T[-1]),ocean_fraction=0.,orbit_before=self.orbit,orbit_after=orbit,weak_plane_slip_available=True)
             gate(faults,self.fault_parameters);healing_guard(self.history.damage,faults.damage)
-            final=self.mechanical(T,faults.damage,dt);Q=np.array([r['maxwell'] for r in final['rows']]);W=np.array([r['thermal_work'] for r in final['rows']])
-            E=base.copy();np.add.at(E,self.solid_group,Q-W);nextT=self.temperature(E);self.phase_guard(nextT,T0)
+            final=self.mechanical(T,faults.damage,dt)
+            E,Q,W=self.heat_feedback(base,final);nextT=self.temperature(E);self.phase_guard(nextT,T0)
             err=float(np.max(np.abs(nextT-T)));exerr=None if previous is None else float(max(np.max(np.abs(Q-previous[0])/(1e3+3e-8*np.abs(Q))),np.max(np.abs(W-previous[1])/(1e3+3e-8*np.abs(W)))))
             correctors.append(dict(index=iteration+1,temperature_error_k=err,exchange_error_over_budget=exerr))
             if err<=1e-8 and exerr is not None and exerr<=1:break
@@ -204,7 +222,7 @@ class Adapter:
             raise ValueError('AGGREGATE_RESTART_ENTHALPY')
         self.old=memory.copy();self.v0=velocity.copy();self.u0=displacement.copy();self.E0=energy.copy()
         self.time=saved['time_myr'];self.history=history;self.orbit=TidalOrbitState(**saved['orbit'])
-        for f,b in enumerate(self.blocks): b['old_temperature_coeff']=np.array([temperature[self.solid_group[f]],0.])
+        for f,b in enumerate(self.blocks): b['old_temperature_coeff']=self.temperature_coefficients(temperature,f)
         self.active_initial=sum(.5*e@np.kron(b['G'],self.C(f,history.damage))@e for f,(b,e) in enumerate(zip(self.blocks,self.old)))
         self.edges=self.thermal_edges(self.packet)
         return self
