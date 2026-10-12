@@ -410,3 +410,24 @@ unknown, а не ноль; статус BLOCKED_SUBCELL_RESOLUTION, mechanical i
 материальных интервалов. Нельзя подставлять centre temperature в память старых
 когорт или объявлять новый activation threshold. Если начальный профиль не
 восстановим, нужна явная conservative initialization, без переписывания истории.
+
+
+## Идентифицируемость закрыта решением: явный cut-cell closure
+
+[Feasibility и рабочий кандидат](analysis/genesis_cutcell_feasibility/README.md).
+Принятые current mean temperatures 800 когорт известны, внутренний градиент
+не единственен (3280 допустимых альтернатив). Поиск единственной истинной
+реконструкции прекращён. Выбран ограниченный численный closure: constant h
+старых material intervals по current temperatures, остаточная энергия в
+незакреплённой части каждой исходной ячейки. Это явная инициализация, не история.
+
+3360 cut-cells из 2560 исходных, только existing material boundaries;
+42 теста PASS. Cell energy сохранена, массы ≤1,31e−16 относительной ошибки,
+800 IDs/температуры/память прежние. Top flux изменился лишь на 4,54e−11
+относительно прежнего мигрированного FV-состояния. Evolution не запускалась.
+
+Следующий результат конкретен: один implicit conservative enthalpy FV step
+на этой фиксированной сетке (explicit CFL лишь 15,35 суток). Не добавлять
+разрешение без нового критерия. Двухфазный материал не удалять автоматически;
+mechanical admission/feedback остаются отдельными условиями. Canonical/default
+и неизвестный historical opening balance сохраняются.

@@ -1,3 +1,9 @@
+**Cut-cell initialization FEASIBLE: выбран явный численный closure.**
+[Идентифицируемость, sensitivity и следующий implicit step](analysis/genesis_cutcell_feasibility/README.md).
+3360 cells, 800 старых IDs/mean T/память сохранены, 42 теста PASS. Уникальный
+истинный профиль из данных не восстановим; дальнейший поиск прекращён.
+Следующий шаг — один implicit enthalpy FV на существующих material boundaries.
+
 **Консервативный h-view готов; BLOCKED_SUBCELL_RESOLUTION.**
 [Mass/enthalpy partition и unresolved front](analysis/genesis_enthalpy_reconstruction_validation/README.md).
 41 тест PASS, 800 IDs/память сохранены, applied retirement=0. Старый фронт
