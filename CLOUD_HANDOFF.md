@@ -1,3 +1,10 @@
+**Sidecar неприменённых обменов BE50 создан:**
+[проверка и ограничения](analysis/genesis_energy_inventory/SIDECAR.md).
+28 тестов PASS; applied_to_thermal_state=false, historical_opening_balance=null.
+Physical и numerical sinks раздельны, неизвестные контрагенты не назначены.
+Предложение архитектуры подготовлено; реализация coupling ожидает ответа
+пользователя. Новых расчётов в ожидании не запускать.
+
 **Карта энергетических журналов BE50 завершена:**
 [числа, единицы, контрчлены и ближайший физический блокер](analysis/genesis_energy_inventory/README.md).
 Отдельные бюджеты PASS (59 тестов); общий global/column/mechanical баланс

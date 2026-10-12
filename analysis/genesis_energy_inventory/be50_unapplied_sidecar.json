@@ -1,0 +1,232 @@
+{
+  "after_time_myr": 0.8685000000000005,
+  "applied_to_thermal_state": false,
+  "before_time_myr": 0.8684000000000005,
+  "combined_global_energy_closed": false,
+  "combined_heating_j": null,
+  "dt_myr": 5e-05,
+  "format": "genesis-unapplied-energy-exchanges-0.1",
+  "historical_opening_balance": null,
+  "input_pins": [
+    {
+      "bytes": 24345685,
+      "path": "analysis/genesis_volume_creation_validation/evidence/actual_continuation/direct_after_second.json",
+      "sha256": "62579a0bad128830a66e2f44579cf2b1f5d3835b691225b8d431102f3e4486d7"
+    },
+    {
+      "bytes": 36013786,
+      "path": "/workspace/genesis-be-time-control-01/50/step_1.json",
+      "sha256": "044c7780b4f612b8445bd2198bd068c45feef80bd7a2b8225d1a5cb9ed697ea3"
+    },
+    {
+      "bytes": 38527105,
+      "path": "/workspace/genesis-be-time-control-01/50/step_2.json",
+      "sha256": "0536be1e28221249c4ea92603b6c19a3a1f16c8c54fbfa241273332f525ee97d"
+    }
+  ],
+  "integrator": "be50",
+  "intervals": [
+    {
+      "after_time_myr": 0.8684500000000005,
+      "before_time_myr": 0.8684000000000005,
+      "exchanges": {
+        "birth_donor_debit_pending": {
+          "donor": "unassigned",
+          "source_fields": [
+            "birth_kinetic_inflow_j"
+          ],
+          "source_multiplier": -1,
+          "value_j": -55.60811941040414
+        },
+        "damage_destination_pending": {
+          "recipient": "unassigned",
+          "source_fields": [
+            "damage_energy_change_j"
+          ],
+          "source_multiplier": -1,
+          "value_j": 1805435110069215.2
+        },
+        "numerical_dissipation_diagnostic": {
+          "components_j": {
+            "kinetic": 5057.971225960077,
+            "memory": 1.6775838545096186e+16
+          },
+          "destination": "diagnostic_only_never_heat",
+          "source_fields": [
+            "numerical_kinetic_j",
+            "numerical_memory_j"
+          ],
+          "value_j": 1.6775838545101244e+16
+        },
+        "physical_dissipation_unassigned": {
+          "components_j": {
+            "basal_drag": 9974603912331476.0,
+            "maxwell": 9.678612862888049e+17
+          },
+          "recipient": "unassigned",
+          "source_fields": [
+            "physical_drag_j",
+            "physical_maxwell_j"
+          ],
+          "value_j": 9.778358902011364e+17
+        },
+        "thermomechanical_counterentry_pending": {
+          "counterparty": "unassigned",
+          "source_fields": [
+            "thermal_work_j"
+          ],
+          "source_multiplier": -1,
+          "value_j": -2.0344292164358323e+17
+        },
+        "traction_donor_debit_pending": {
+          "donor": "unassigned",
+          "source_fields": [
+            "external_work_j"
+          ],
+          "source_multiplier": -1,
+          "value_j": -1225451610903130.5
+        }
+      },
+      "index": 1,
+      "source_field": "state.interval_ledger",
+      "source_packet_sha256": "a191d5dc35f57b2a0c4fbf40aa212672eef7d176ef42d40ea5e97dde2e122c47",
+      "source_raw_sha256": "044c7780b4f612b8445bd2198bd068c45feef80bd7a2b8225d1a5cb9ed697ea3"
+    },
+    {
+      "after_time_myr": 0.8685000000000005,
+      "before_time_myr": 0.8684500000000005,
+      "exchanges": {
+        "birth_donor_debit_pending": {
+          "donor": "unassigned",
+          "source_fields": [
+            "birth_kinetic_inflow_j"
+          ],
+          "source_multiplier": -1,
+          "value_j": -0.0016310069024885272
+        },
+        "damage_destination_pending": {
+          "recipient": "unassigned",
+          "source_fields": [
+            "damage_energy_change_j"
+          ],
+          "source_multiplier": -1,
+          "value_j": 674097180599526.1
+        },
+        "numerical_dissipation_diagnostic": {
+          "components_j": {
+            "kinetic": 0.00012192856630502868,
+            "memory": 1.640248650867802e+16
+          },
+          "destination": "diagnostic_only_never_heat",
+          "source_fields": [
+            "numerical_kinetic_j",
+            "numerical_memory_j"
+          ],
+          "value_j": 1.640248650867802e+16
+        },
+        "physical_dissipation_unassigned": {
+          "components_j": {
+            "basal_drag": 9844859299420326.0,
+            "maxwell": 9.44245556382156e+17
+          },
+          "recipient": "unassigned",
+          "source_fields": [
+            "physical_drag_j",
+            "physical_maxwell_j"
+          ],
+          "value_j": 9.540904156815763e+17
+        },
+        "thermomechanical_counterentry_pending": {
+          "counterparty": "unassigned",
+          "source_fields": [
+            "thermal_work_j"
+          ],
+          "source_multiplier": -1,
+          "value_j": -2.2585181634479706e+17
+        },
+        "traction_donor_debit_pending": {
+          "donor": "unassigned",
+          "source_fields": [
+            "external_work_j"
+          ],
+          "source_multiplier": -1,
+          "value_j": -1245157553153267.8
+        }
+      },
+      "index": 2,
+      "source_field": "state.interval_ledger",
+      "source_packet_sha256": "c56e053d1853a98f20565e3816e0eea30ae8d9c12e25eb1a26a3cef852c9fa0d",
+      "source_raw_sha256": "0536be1e28221249c4ea92603b6c19a3a1f16c8c54fbfa241273332f525ee97d"
+    }
+  ],
+  "new_Genesis_steps": 0,
+  "scheme": "backward_euler_velocity_and_maxwell_endpoint",
+  "semantics": "Unapplied exchange records for this window; not a reservoir, temperature increment or calculated heating",
+  "sha256": "5c83b8d0496aaaa08d0cf7acff3c340e65720bd9efb30cfcf60f0ae47f88a37d",
+  "units": {
+    "energy": "J",
+    "time": "Myr"
+  },
+  "window": {
+    "exchanges": {
+      "birth_donor_debit_pending": {
+        "donor": "unassigned",
+        "source_fields": [
+          "birth_kinetic_inflow_j"
+        ],
+        "source_multiplier": -1,
+        "value_j": -55.60975041730663
+      },
+      "damage_destination_pending": {
+        "recipient": "unassigned",
+        "source_fields": [
+          "damage_energy_change_j"
+        ],
+        "source_multiplier": -1,
+        "value_j": 2479532290668741.5
+      },
+      "numerical_dissipation_diagnostic": {
+        "components_j": {
+          "kinetic": 5057.971347888643,
+          "memory": 3.317832505377421e+16
+        },
+        "destination": "diagnostic_only_never_heat",
+        "source_fields": [
+          "numerical_kinetic_j",
+          "numerical_memory_j"
+        ],
+        "value_j": 3.3178325053779264e+16
+      },
+      "physical_dissipation_unassigned": {
+        "components_j": {
+          "basal_drag": 1.98194632117518e+16,
+          "maxwell": 1.912106842670961e+18
+        },
+        "recipient": "unassigned",
+        "source_fields": [
+          "physical_drag_j",
+          "physical_maxwell_j"
+        ],
+        "value_j": 1.9319263058827126e+18
+      },
+      "thermomechanical_counterentry_pending": {
+        "counterparty": "unassigned",
+        "source_fields": [
+          "thermal_work_j"
+        ],
+        "source_multiplier": -1,
+        "value_j": -4.292947379883803e+17
+      },
+      "traction_donor_debit_pending": {
+        "donor": "unassigned",
+        "source_fields": [
+          "external_work_j"
+        ],
+        "source_multiplier": -1,
+        "value_j": -2470609164056398.0
+      }
+    },
+    "source_field": "state.be_accumulated_ledger",
+    "source_raw_sha256": "0536be1e28221249c4ea92603b6c19a3a1f16c8c54fbfa241273332f525ee97d"
+  }
+}
