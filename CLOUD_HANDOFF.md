@@ -1,3 +1,14 @@
+**Opt-in контракты событий и restart реализованы; физические переходы не добавлены.**
+[Механизм и ограничения](analysis/genesis_adaptive_control/README.md#explicit-event-contract-and-restart-2026-10-12).
+122 адресных теста PASS (25 новых): phase/birth/damage gate, внутренние пересечения,
+касания, несколько событий, бюджет локализации, rollback и CLI/restart.
+Интервальные границы должны покрывать весь путь; знаки концов не доказывают безопасность.
+Возможное неподдерживаемое событие останавливает до trial, принятое состояние сохраняется.
+Рост dt остаётся под прежним контролем ошибки. Реального сертифицированного поставщика
+границ пока нет: planetary CLI не подключён к этой опции и больших шагов не обещает.
+Новых физических шагов 0; canonical/defaults/пороги прежние, forced25 всё ещё REJECTED.
+Следующий отдельный этап — более точная устойчивая coupled-схема. Restore CLOSED.
+
 **Один opt-in invariant fast path проверен на saved replay: 1,8055×.**
 [Кэш-контракт, bitwise proof, профиль и следующий finite plan](analysis/genesis_invariant_fastpath/README.md).
 97 scoped tests PASS (12 новых). Ровно один before/after benchmark:114,256→63,281с;

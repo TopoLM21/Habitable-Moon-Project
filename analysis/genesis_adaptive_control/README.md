@@ -183,3 +183,103 @@ OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 \
 The frozen seed is the existing forced25; this command is not a general-purpose
 resume or automatic long-evolution service. The final report and acceptance
 journal provide the exact last accepted private checkpoint for the next task.
+
+## Explicit event contract and restart (2026-10-12)
+
+`events.EventPolicy` is an opt-in argument to `controller.integrate`; the default
+physical CLI, configuration, physical laws, thresholds, canonical cursor and
+output/work acceptance criteria are unchanged. This mechanism has no transition
+handler. It prevents crossing a **possible** unsupported event; it does not
+create material, remelt it, or activate damage. Archive restore remains CLOSED.
+
+Each `Event` identifies `phase`, `birth`, or `damage_gate`, a cohort/face identity,
+margin units and transition name (for example `remelt`). The policy binds the
+source SHA, provider SHA, its implementation SHA, explicit assumptions, complete
+event catalogue and validity interval. A snapshot's source SHA must agree.
+Resolution in years is a separate localization setting, not a relaxed physical
+or output tolerance. Evaluation/time budgets are positive and finite.
+
+The provider `enclose(snapshot,event,a,b)` must return lower/upper bounds on the
+signed safety margin **throughout the closed interval**. Positive means safe.
+This is an explicit mathematical obligation of the provider: include every
+relevant event, intermediate coupled stages, and all whole/half-step trial paths.
+The generic controller cannot establish that obligation from samples or a SHA.
+Monotone margins may use endpoints only if monotonicity over that entire interval
+is established. Otherwise use justified range/derivative bounds or return `None`.
+Endpoint signs alone do not exclude two crossings or grazing contact. Empty or
+incomplete catalogues cannot establish physical safety. The synthetic CLI's
+analytic affine/quadratic bounds demonstrate mechanics only; they are not a
+certified physical provider or a rigorous interval-arithmetic library.
+
+Before any trial, the controller checks the candidate interval. If every lower
+bound is positive, the existing audited whole/two-half comparison proceeds;
+error-based growth remains clamped by the unchanged controller limits. Otherwise,
+left-first bisection locates the earliest interval that cannot be certified safe,
+within the configured time resolution. All possible events in that interval are
+reported together; no arbitrary transition ordering is invented. Loose bounds
+can cause an early conservative stop. The report says `POSSIBLE_UNSUPPORTED_EVENT`,
+not proof of a root. `certified_safe_until_years` is null if no safe prefix was
+proved; even a proved prefix is **not automatically committed**.
+
+Birth time is represented by its scheduled-time signed margin; localization
+cannot overshoot it because no trial is dispatched on the suspect interval.
+Phase/remelt and damage contact use the same fail-closed rule. Existing accepted
+history is retained, including when failure occurs after earlier smooth windows.
+No crossing, transition or localized endpoint is silently accepted. Implementing
+an audited birth transfer or a remelt law is a separate physical-model task.
+
+Missing/nonfinite/reversed bounds, source or validity mismatch, provider mutation,
+resolution failure and exhausted budgets return UNRESOLVED and stop. Budget
+counts span all intervals and restart. On Linux/main thread, the provider is also
+under the existing hard alarm deadline. A failed physical audit still stops; it
+is never interpreted as evidence for an event bracket. The policy and explicit
+`FastPath` cache context are single-worker options; neither is installed globally
+by the runner. No synthetic geometry is fabricated to claim a cache speedup here.
+
+### Saved controller state and CLI
+
+With an event policy, `controller_state` contains the accepted snapshot, history,
+next proposed dt, attempts, trial calls, accepted/rejected counts and event budget/
+blocked state. Its digest and binding cover original initial state, exact config,
+controller code and event contract. Resume requires the original initial snapshot
+and unchanged bindings. A blocked event stays blocked without spending a fresh
+budget. Completed iterations emit `controller_checkpoint` after the existing
+accept/reject records; accepted states still require the preceding durable
+`accept` callback. An interrupted uncompleted attempt rolls back to the last
+saved checkpoint. Callback storage is caller-owned; save checkpoints durably.
+Runtime allowance is per invocation; localization time/evaluation and controller
+attempt/rejection budgets persist. This is integrity checking of trusted local
+JSON, not an authentication scheme for hostile checkpoint authors.
+
+A separate **synthetic-only** CLI supports configuration validation, exclusive
+JSON output creation and saved restart:
+
+```sh
+python -m analysis.genesis_adaptive_control.event_replay --help
+python -m analysis.genesis_adaptive_control.event_replay \
+  --controller-config analysis/genesis_adaptive_control/config.json \
+  --event-config /path/to/manufactured-events.json --output /new/result.json
+# Same configs, new output; blocked events remain blocked:
+python -m analysis.genesis_adaptive_control.event_replay \
+  --controller-config analysis/genesis_adaptive_control/config.json \
+  --event-config /path/to/manufactured-events.json \
+  --resume /new/result.json --output /new/restarted.json
+```
+
+Event JSON has exactly `source_sha256`, `valid_years`, `resolution_years`,
+`max_evaluations`, `seconds`, and `events`. Each synthetic row has exactly `kind`,
+`identity`, `units`, `transition`, `formula`, `center`, `offset`; formulas are
+`constant` (offset), `decreasing` (center-time+offset), or `touch`
+((time-center)^2+offset). A negative quadratic offset tests two interior crossings.
+These are prescribed test margins, never substituted for physical thresholds.
+The existing planetary CLI remains unchanged and has no event-safe claim: a
+complete, justified physical enclosure provider must be developed before wiring
+this option into it. `--help` and tests launch no planetary calculation.
+
+Validation: 25 new tests plus 97 existing scoped tests (122 total), including
+CLI save/restart/no-overwrite, configuration errors, preserved growth/error
+rejection, crossings, contact at start/end, simultaneous events, absent bounds,
+hard timeout, unsupported remelt, durable-accept/checkpoint failure, rollback and
+restart equivalence. No new planetary series or physical step was executed.
+The previous real 25-year pair remains rejected. A higher-order coupled stable
+scheme is a subsequent task, not implemented or validated by this mechanism.

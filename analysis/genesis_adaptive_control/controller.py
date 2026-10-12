@@ -30,7 +30,7 @@ def load_config(path):
     return c
 
 
-def integrate(initial,c,advance,audit,observe,assess,emit=lambda *a:None,clock=time.monotonic):
+def integrate(initial,c,advance,audit,observe,assess,emit=lambda *a:None,clock=time.monotonic,*,event_policy=None,resume=None):
     """Each callback gets isolated data. Only audited half1+half2 commit together.
 
     advance(snapshot,h_years,label,remaining_seconds) returns a snapshot with
@@ -41,11 +41,28 @@ def integrate(initial,c,advance,audit,observe,assess,emit=lambda *a:None,clock=t
     accepted=copy.deepcopy(initial);start=clock();initial_hash=fingerprint(initial)
     history=[];attempts=calls=windows=rejects=0;h=c['initial_step_years'];origin=initial['elapsed_years']
     status='STOPPED';reason=''
+    binding=fingerprint(dict(config=c,initial=initial,controller_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+        event_binding=event_policy.binding if event_policy else None))
+    if resume is not None and event_policy is None:raise ValueError('EVENT_POLICY_REQUIRED_FOR_RESTART')
+    if resume is not None:
+        saved=copy.deepcopy(resume);sha=saved.pop('sha256')
+        if fingerprint(saved)!=sha or saved['binding']!=binding or saved['version']!=1:
+            raise ValueError('CONTROLLER_RESTART_BINDING')
+        accepted=saved['accepted'];history=saved['history'];h=saved['next_step_years']
+        attempts=saved['attempts'];calls=saved['trial_calls'];windows=saved['windows'];rejects=saved['rejects']
+        if event_policy:event_policy.restore(saved['event_state'])
+    def checkpoint():
+        state=dict(version=1,binding=binding,accepted=copy.deepcopy(accepted),history=copy.deepcopy(history),
+            next_step_years=h,attempts=attempts,trial_calls=calls,windows=windows,rejects=rejects,
+            event_state=event_policy.state() if event_policy else None)
+        state['sha256']=fingerprint(state)
+        return state
     try:
         while accepted['elapsed_years']-origin<c['horizon_years']-1e-10:
             if clock()-start>=c['runtime_seconds']:raise StopRun('RUNTIME_LIMIT')
             if attempts>=c['max_attempts']:raise StopRun('ATTEMPT_LIMIT')
             if windows>=c['max_accepted_windows']:raise StopRun('ACCEPTED_WINDOW_LIMIT')
+            if rejects>=c['max_rejections_per_window']:raise StopRun('REJECTION_LIMIT')
             remaining=c['horizon_years']-(accepted['elapsed_years']-origin)
             h=min(h,remaining,c['max_step_years'])
             if h<c['min_step_years']*(1-1e-12):raise StopRun('MIN_STEP_LIMIT')
@@ -53,6 +70,10 @@ def integrate(initial,c,advance,audit,observe,assess,emit=lambda *a:None,clock=t
             if 0<remaining-h<c['min_step_years']:
                 h=remaining/2
                 if h<c['min_step_years']:raise StopRun('MIN_STEP_FINAL_REMAINDER')
+            if event_policy:
+                proof=event_policy.check(copy.deepcopy(accepted),h)
+                emit('event_check',proof)
+                if proof['status']!='CLEAR':raise StopRun(proof.get('reason','EVENT_UNRESOLVED'))
             attempts+=1;base=copy.deepcopy(accepted);base_hash=fingerprint(base)
             event=dict(attempt=attempts,start_years=base['elapsed_years'],step_years=h,base_sha256=base_hash)
             emit('attempt',event)
@@ -92,6 +113,7 @@ def integrate(initial,c,advance,audit,observe,assess,emit=lambda *a:None,clock=t
             if score>1 and rejects>=c['max_rejections_per_window']:raise StopRun('REJECTION_LIMIT')
             if score>1 and h<=c['min_step_years']*(1+1e-12):raise StopRun('MIN_STEP_BUDGET_UNMET')
             h=max(c['min_step_years'],h*min(c['max_factor'],max(c['min_factor'],factor)))
+            if event_policy:emit('controller_checkpoint',checkpoint())
         status='PASS';reason='HORIZON_COMPLETE'
     except Exception as exc:
         reason=f'{type(exc).__name__}: {exc}'
@@ -102,7 +124,8 @@ def integrate(initial,c,advance,audit,observe,assess,emit=lambda *a:None,clock=t
     if fingerprint(initial)!=initial_hash:raise RuntimeError('Caller initial state changed')
     return dict(status=status,reason=reason,accepted=accepted,attempts=attempts,trial_calls=calls,
                 accepted_windows=windows,accepted_substeps=2*windows,history=history,seconds=clock()-start,
-                initial_unchanged=True,canonical_advanced=False)
+                initial_unchanged=True,canonical_advanced=False,
+                **({'controller_state':checkpoint()} if event_policy else {}))
 
 
 # Unlike the legacy single-level alarm helper, preserve an enclosing deadline.
