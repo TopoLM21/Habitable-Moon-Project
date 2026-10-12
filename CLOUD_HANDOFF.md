@@ -1,3 +1,17 @@
+**Один opt-in invariant fast path проверен на saved replay: 1,8055×.**
+[Кэш-контракт, bitwise proof, профиль и следующий finite plan](analysis/genesis_invariant_fastpath/README.md).
+97 scoped tests PASS (12 новых). Ровно один before/after benchmark:114,256→63,281с;
+24 frozen linear replays +3 independent audits на каждый путь. 0 новых physical
+steps/нелинейных коррекций, никаких повторов из-за environmentDisconnected.
+Сборки65,55→31,57с, аудиты41,74→26,14с; pure linear24 solves≈0,023с.
+Однократная загрузка54,54с отдельно, её устранение не заявляется. Побитово
+совпали solver outputs/ledgers и audit reports; warm-cache corrupted memory
+отвергается. Producer/auditor caches раздельные, только invariants, SHA bindings
+geometry/material/source/solver; default/physics/budgets/canonical прежние.
+Предыдущая forced25-пара всё ещё ENGINEERING REJECTED. Следующий возможный
+шаг: event-aware dtgrowth contract, затем отдельный coupled L-stable order2
+prototype с energy/event tests. Оба НЕ реализованы здесь. Restore CLOSED.
+
 **Приоритет после пары — стратегия крупного шага, не запуск длинной мелкошаговой серии.**
 [Измеренная стоимость и рекомендация stability/accuracy/events](analysis/genesis_forced_pair_validation/README.md#large-step-recommendation-after-the-measured-pair-code-review-only).
 BE не требует секундного разрешения жёстких мод. Потолок50лет инженерный,

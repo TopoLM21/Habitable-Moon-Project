@@ -1,3 +1,13 @@
+**Стоимость текущей алгебры снижена без смены физики или допусков.**
+[Явный invariant cache и frozen replay114,26→63,28с](analysis/genesis_invariant_fastpath/README.md).
+97 тестов PASS; bitwise solver/audit equivalence, независимость аудитора сохранена.
+Новых временных шагов0. Это ускорение saved correction-shaped workload, не
+измерение новой траектории. Setup54,5с отдельно; default не включает кэш.
+Следующее конечное предложение — event-aware рост dt с локализацией границ,
+затем отдельная L-stable схема порядка2 для coupled source/conduction/mechanics
+с явным энергетическим балансом. Сейчас ни eventlocator, ни integrator не добавлен.
+Отказ точности forced25 остаётся в силе; не подменять его speedup или startup PASS.
+
 **Приоритет после пары — стратегия крупного шага, не запуск длинной мелкошаговой серии.**
 [Измеренная стоимость и рекомендация stability/accuracy/events](analysis/genesis_forced_pair_validation/README.md#large-step-recommendation-after-the-measured-pair-code-review-only).
 BE не требует секундного разрешения жёстких мод. Потолок50лет инженерный,
