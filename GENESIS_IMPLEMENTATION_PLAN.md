@@ -1,3 +1,14 @@
+**Source100 исправлен; та же exploratory100/2×50 пара завершена, но отклонена.**
+[Диагноз и измерения](analysis/genesis_exploratory_100/SOURCE_PRECISION.md).
+Причина source-остатка — температурная остановка root solver: ошибка2,1e-11K
+при C4,73e24J/K. Компенсированная невязка/уточнение корня дают0,027 прежнего
+энергетического допуска; bound/физика не менялись. 70-digit tests и независимый
+source audit PASS. Все3 trials и audits завершены; Tdiff0,721K,stress506kPa,
+displacement6,92cm,damage0,00211. Global/local numerical-work ratios12,23/15,30.
+100лет вычисляемы, но не приняты; fine2×50 также не допускается этими бюджетами.
+148testsPASS; aggregate195,64/600s включая failed54,4s,isolated10s,reload54,9s.
+Нет full-path event certificate, accepted/canonical progress0. SDIRK2/Restore CLOSED.
+
 **Одна exploratory100-проба остановлена на source conservation, без повторов.**
 [Runbook и фактический результат](analysis/genesis_exploratory_100/README.md).
 Явные exploratory выходные бюджеты и isolated100 cap реализованы; verified/default

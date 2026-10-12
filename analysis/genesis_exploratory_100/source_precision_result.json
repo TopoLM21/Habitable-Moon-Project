@@ -1,0 +1,587 @@
+{
+  "source_diagnosis": {
+    "H_before_j": 9.066414225016783e+27,
+    "H_after_j": 9.00292648430795e+27,
+    "delta_H_j": -6.348774070883293e+25,
+    "Q_star_j": 2.4910692322627724e+26,
+    "Q_OLR_j": -3.1259466393511065e+26,
+    "Q_net_j": -6.348774070883341e+25,
+    "ulp_H_before_j": 1099511627776.0,
+    "ulp_H_after_j": 1099511627776.0,
+    "ulp_Q_star_j": 34359738368.0,
+    "ulp_Q_OLR_j": 68719476736.0,
+    "old_T_k": 1364.3779999024125,
+    "new_T_k": 1364.3779999023914,
+    "delta_T_k": -2.114575181622058e-11,
+    "capacity_j_k": 4.732222406336507e+24,
+    "temperature_root_error_equivalent_j": 100066400543549.92,
+    "new_residual_j": 481036337152.0,
+    "unchanged_allowance_j": 17592186044416.0,
+    "new_ratio": 0.02734375,
+    "audit": {
+      "status": "PASS",
+      "ports_checked": 5,
+      "orbital_heat_j": 8.207018387456168e+20,
+      "independent_eccentricity_release_j": 8.207018387451738e+20,
+      "stored_orbit_debit_j": 8.2070183874967e+20,
+      "orbital_debit_allowance_j": 2599544469708.85,
+      "net_source_j": -6.345488843132191e+25,
+      "source_residual_j": 86369050820608.0,
+      "source_allowance_j": 9024791440785408.0,
+      "surface_source_temperature_k": 1364.3779999023916
+    },
+    "seconds": 0.18449373500334332
+  },
+  "continuation": {
+    "status": "PAIR_COMPLETE_DIAGNOSTIC_ONLY",
+    "accepted": false,
+    "canonical_advanced": false,
+    "new_trials_started": 3,
+    "completed_trials": 3,
+    "preflight": {
+      "status": "UNCERTIFIED_DIAGNOSTIC",
+      "unsupported": [],
+      "closest_old_cut": 639,
+      "closest_old_id": 736,
+      "old_margin_k": 0.24621753760720821,
+      "initial_conduction_rate_at_closest_k_year": -0.006844695723912822,
+      "maximum_old_conduction_rate_k_year": 5.319387973505364e-10,
+      "conduction_only_global_upper_k": 2306.395587753871,
+      "old_boundary_flux_upper_w": 9016252144551118.0,
+      "old_one_sided_conduction_bound": false,
+      "birth_margin_k": 187.87340425633738,
+      "water_margin_k": 730.6980516551203,
+      "max_damage": 0.039591572199468364,
+      "damage_margin": 0.6104084278005316,
+      "full_path_certified": false,
+      "limitation": "Real graph maximum principle cannot bound old nodes below solidus; source/mechanical-feedback rates and stress-dependent damage lack full-path envelopes. Endpoint rates are diagnostics, not extrapolation bounds."
+    },
+    "setup_seconds": 54.885339956999815,
+    "assessment": {
+      "score": 15.295173118554043,
+      "next_factor": 0.2045105259838348,
+      "checks": {
+        "stress_pa": {
+          "local_ratio": 2.0378465349244235,
+          "global_ratio": 0.29269627515377755,
+          "max_difference": 505952.845196094,
+          "rms_difference": 471411.6748091879
+        },
+        "velocity_m_s": {
+          "local_ratio": 1.774783135197344,
+          "global_ratio": 0.507619246923588,
+          "max_difference": 3.4937374289136182e-12,
+          "rms_difference": 3.164493646664104e-12
+        },
+        "damage": {
+          "local_ratio": 2.113548903016571,
+          "global_ratio": 0.9046006159759428,
+          "max_difference": 0.002113548903016571,
+          "rms_difference": 0.0009046006159759428
+        },
+        "temperature_k": {
+          "local_ratio": 1.442623288298364,
+          "global_ratio": 0.6471158725660805,
+          "max_difference": 0.721311644149182,
+          "rms_difference": 0.32355793628304025
+        },
+        "enthalpy_j_kg": {
+          "local_ratio": 1.4426232882984913,
+          "global_ratio": 0.6471210590727269,
+          "max_difference": 865.5739729790948,
+          "rms_difference": 388.27263544363615
+        },
+        "damage_margin": {
+          "local_ratio": 0.06998939060231849,
+          "global_ratio": 0.06998939060231849
+        },
+        "numerical_work": {
+          "predicted_step_factor": 0.25563815747979346,
+          "local_ratio": 15.295173118554043,
+          "global_ratio": 12.230267423497303,
+          "total_j": 6.061457354837128e+18,
+          "global_budget_j": 4.956111869795751e+17,
+          "max_local_j": 6.333682603597344e+16,
+          "physical_heat_j": 2.380137770879728e+18
+        },
+        "displacement_m": {
+          "local_ratio": 5.104947703008027,
+          "global_ratio": 2.374332329262562,
+          "max_difference": 0.06923705118686616,
+          "rms_difference": 0.06357422941232606
+        }
+      },
+      "estimator": "BE step doubling: |fine-coarse|/(2^1-1); no extrapolation or proof of global error"
+    },
+    "output_budgets_pass": false,
+    "full_path_events_certified": false,
+    "reason": "No complete physical interval enclosure; no acceptance even if output budgets pass",
+    "events": {
+      "whole100": {
+        "status": "UNCERTIFIED_DIAGNOSTIC",
+        "unsupported": [],
+        "closest_old_cut": 639,
+        "closest_old_id": 736,
+        "old_margin_k": 6.175279817897717,
+        "initial_conduction_rate_at_closest_k_year": -0.0594278849355883,
+        "maximum_old_conduction_rate_k_year": -0.0594278849355883,
+        "conduction_only_global_upper_k": 2306.3926808223905,
+        "old_boundary_flux_upper_w": 9016219898476076.0,
+        "old_one_sided_conduction_bound": false,
+        "birth_margin_k": 187.61182382006245,
+        "water_margin_k": 717.6715947570071,
+        "max_damage": 0.04609308071557966,
+        "damage_margin": 0.6039069192844204,
+        "full_path_certified": false,
+        "limitation": "Real graph maximum principle cannot bound old nodes below solidus; source/mechanical-feedback rates and stress-dependent damage lack full-path envelopes. Endpoint rates are diagnostics, not extrapolation bounds.",
+        "damage_frozen_driver": {
+          "max_loading_per_myr": 72.53974559687771,
+          "max_change": 0.0065173938423836175,
+          "maximum_along_frozen_driver": 0.04609308071557966,
+          "minimum_gate_margin": 0.6039069192844204,
+          "full_path_certified": false,
+          "reason": "Exact monotone exponential for frozen stage driver only; stress/temperature driver between stages is not enclosed"
+        },
+        "thermal_stages": [
+          {
+            "stage": "source_endpoint",
+            "check": {
+              "status": "UNCERTIFIED_DIAGNOSTIC",
+              "unsupported": [],
+              "closest_old_cut": 639,
+              "closest_old_id": 736,
+              "old_margin_k": 0.24621753760720821,
+              "initial_conduction_rate_at_closest_k_year": -0.006844695723912822,
+              "maximum_old_conduction_rate_k_year": 5.319387973505364e-10,
+              "conduction_only_global_upper_k": 2306.395587753871,
+              "old_boundary_flux_upper_w": 9016252144551118.0,
+              "old_one_sided_conduction_bound": false,
+              "birth_margin_k": 187.87340425633738,
+              "water_margin_k": 717.2819999023916,
+              "max_damage": 0.039591572199468364,
+              "damage_margin": 0.6104084278005316,
+              "full_path_certified": false,
+              "limitation": "Real graph maximum principle cannot bound old nodes below solidus; source/mechanical-feedback rates and stress-dependent damage lack full-path envelopes. Endpoint rates are diagnostics, not extrapolation bounds."
+            }
+          },
+          {
+            "stage": "thermal_packet",
+            "check": {
+              "status": "UNCERTIFIED_DIAGNOSTIC",
+              "unsupported": [],
+              "closest_old_cut": 639,
+              "closest_old_id": 736,
+              "old_margin_k": 6.175202439603254,
+              "initial_conduction_rate_at_closest_k_year": -0.05928984901389845,
+              "maximum_old_conduction_rate_k_year": -0.05928984901389845,
+              "conduction_only_global_upper_k": 2306.3926808223905,
+              "old_boundary_flux_upper_w": 9016223228228544.0,
+              "old_one_sided_conduction_bound": false,
+              "birth_margin_k": 187.61182382006245,
+              "water_margin_k": 717.6715947570071,
+              "max_damage": 0.039591572199468364,
+              "damage_margin": 0.6104084278005316,
+              "full_path_certified": false,
+              "limitation": "Real graph maximum principle cannot bound old nodes below solidus; source/mechanical-feedback rates and stress-dependent damage lack full-path envelopes. Endpoint rates are diagnostics, not extrapolation bounds."
+            }
+          }
+        ]
+      },
+      "half1": {
+        "status": "UNCERTIFIED_DIAGNOSTIC",
+        "unsupported": [],
+        "closest_old_cut": 639,
+        "closest_old_id": 736,
+        "old_margin_k": 2.06290282324494,
+        "initial_conduction_rate_at_closest_k_year": -0.03637517823657227,
+        "maximum_old_conduction_rate_k_year": -0.03637517823657227,
+        "conduction_only_global_upper_k": 2306.394134464767,
+        "old_boundary_flux_upper_w": 9016236418861742.0,
+        "old_one_sided_conduction_bound": false,
+        "birth_margin_k": 187.74763301180792,
+        "water_margin_k": 724.1645391658863,
+        "max_damage": 0.04099337215732968,
+        "damage_margin": 0.6090066278426703,
+        "full_path_certified": false,
+        "limitation": "Real graph maximum principle cannot bound old nodes below solidus; source/mechanical-feedback rates and stress-dependent damage lack full-path envelopes. Endpoint rates are diagnostics, not extrapolation bounds.",
+        "damage_frozen_driver": {
+          "max_loading_per_myr": 33.41200558016952,
+          "max_change": 0.0014024282217255657,
+          "maximum_along_frozen_driver": 0.04099337215732968,
+          "minimum_gate_margin": 0.6090066278426703,
+          "full_path_certified": false,
+          "reason": "Exact monotone exponential for frozen stage driver only; stress/temperature driver between stages is not enclosed"
+        },
+        "thermal_stages": [
+          {
+            "stage": "source_endpoint",
+            "check": {
+              "status": "UNCERTIFIED_DIAGNOSTIC",
+              "unsupported": [],
+              "closest_old_cut": 639,
+              "closest_old_id": 736,
+              "old_margin_k": 0.24621753760720821,
+              "initial_conduction_rate_at_closest_k_year": -0.006844695723912822,
+              "maximum_old_conduction_rate_k_year": 5.319387973505364e-10,
+              "conduction_only_global_upper_k": 2306.395587753871,
+              "old_boundary_flux_upper_w": 9016252144551118.0,
+              "old_one_sided_conduction_bound": false,
+              "birth_margin_k": 187.87340425633738,
+              "water_margin_k": 723.9900257787558,
+              "max_damage": 0.039591572199468364,
+              "damage_margin": 0.6104084278005316,
+              "full_path_certified": false,
+              "limitation": "Real graph maximum principle cannot bound old nodes below solidus; source/mechanical-feedback rates and stress-dependent damage lack full-path envelopes. Endpoint rates are diagnostics, not extrapolation bounds."
+            }
+          },
+          {
+            "stage": "thermal_packet",
+            "check": {
+              "status": "UNCERTIFIED_DIAGNOSTIC",
+              "unsupported": [],
+              "closest_old_cut": 639,
+              "closest_old_id": 736,
+              "old_margin_k": 2.062901373144541,
+              "initial_conduction_rate_at_closest_k_year": -0.03633367671546468,
+              "maximum_old_conduction_rate_k_year": -0.03633367671546468,
+              "conduction_only_global_upper_k": 2306.394134464767,
+              "old_boundary_flux_upper_w": 9016237688146896.0,
+              "old_one_sided_conduction_bound": false,
+              "birth_margin_k": 187.74763301180792,
+              "water_margin_k": 724.1645391658863,
+              "max_damage": 0.039591572199468364,
+              "damage_margin": 0.6104084278005316,
+              "full_path_certified": false,
+              "limitation": "Real graph maximum principle cannot bound old nodes below solidus; source/mechanical-feedback rates and stress-dependent damage lack full-path envelopes. Endpoint rates are diagnostics, not extrapolation bounds."
+            }
+          }
+        ]
+      },
+      "half2": {
+        "status": "UNCERTIFIED_DIAGNOSTIC",
+        "unsupported": [],
+        "closest_old_cut": 639,
+        "closest_old_id": 736,
+        "old_margin_k": 5.45541647849268,
+        "initial_conduction_rate_at_closest_k_year": -0.06792933697546887,
+        "maximum_old_conduction_rate_k_year": -0.06792933697546887,
+        "conduction_only_global_upper_k": 2306.3926809988634,
+        "old_boundary_flux_upper_w": 9016220325885140.0,
+        "old_one_sided_conduction_bound": false,
+        "birth_margin_k": 187.61773243031485,
+        "water_margin_k": 717.6592900106491,
+        "max_damage": 0.04398599227214539,
+        "damage_margin": 0.6060140077278546,
+        "full_path_certified": false,
+        "limitation": "Real graph maximum principle cannot bound old nodes below solidus; source/mechanical-feedback rates and stress-dependent damage lack full-path envelopes. Endpoint rates are diagnostics, not extrapolation bounds.",
+        "damage_frozen_driver": {
+          "max_loading_per_myr": 67.10135228134648,
+          "max_change": 0.0030014167176414808,
+          "maximum_along_frozen_driver": 0.04398599227214539,
+          "minimum_gate_margin": 0.6060140077278546,
+          "full_path_certified": false,
+          "reason": "Exact monotone exponential for frozen stage driver only; stress/temperature driver between stages is not enclosed"
+        },
+        "thermal_stages": [
+          {
+            "stage": "source_endpoint",
+            "check": {
+              "status": "UNCERTIFIED_DIAGNOSTIC",
+              "unsupported": [],
+              "closest_old_cut": 639,
+              "closest_old_id": 736,
+              "old_margin_k": 2.06290282324494,
+              "initial_conduction_rate_at_closest_k_year": -0.03637517823657227,
+              "maximum_old_conduction_rate_k_year": -0.03637517823657227,
+              "conduction_only_global_upper_k": 2306.394134464767,
+              "old_boundary_flux_upper_w": 9016236418861742.0,
+              "old_one_sided_conduction_bound": false,
+              "birth_margin_k": 187.74763301180792,
+              "water_margin_k": 717.456513289522,
+              "max_damage": 0.04099337215732968,
+              "damage_margin": 0.6090066278426703,
+              "full_path_certified": false,
+              "limitation": "Real graph maximum principle cannot bound old nodes below solidus; source/mechanical-feedback rates and stress-dependent damage lack full-path envelopes. Endpoint rates are diagnostics, not extrapolation bounds."
+            }
+          },
+          {
+            "stage": "thermal_packet",
+            "check": {
+              "status": "UNCERTIFIED_DIAGNOSTIC",
+              "unsupported": [],
+              "closest_old_cut": 639,
+              "closest_old_id": 736,
+              "old_margin_k": 5.455384835248651,
+              "initial_conduction_rate_at_closest_k_year": -0.06784964023625457,
+              "maximum_old_conduction_rate_k_year": -0.06784964023625457,
+              "conduction_only_global_upper_k": 2306.3926809988634,
+              "old_boundary_flux_upper_w": 9016221960700868.0,
+              "old_one_sided_conduction_bound": false,
+              "birth_margin_k": 187.61773243031485,
+              "water_margin_k": 717.6592900106491,
+              "max_damage": 0.04099337215732968,
+              "damage_margin": 0.6090066278426703,
+              "full_path_certified": false,
+              "limitation": "Real graph maximum principle cannot bound old nodes below solidus; source/mechanical-feedback rates and stress-dependent damage lack full-path envelopes. Endpoint rates are diagnostics, not extrapolation bounds."
+            }
+          }
+        ]
+      }
+    },
+    "cache": {
+      "producer": {
+        "namespace": "producer",
+        "bindings": {
+          "geometry_sha256": "7518f81dc349cadef4908d36be56d7f84de8162cbca8acc5fdb3b02377068a2f",
+          "material_sha256": "65ebb2dae6a0b296e9ffe7f4392c19933f4bc3a333e7273e40ec9514df81cb8f",
+          "source_sha256": "3b3610e18c0ccbf57f586a8e5be8880a1750187cec094b5eeeeb6aea71599328",
+          "solver_sha256": "a349a83bfcbf71a1070723479c774852a31c098905897c34c4f54596175c4e86"
+        },
+        "entries": 961,
+        "bytes": 3440405,
+        "invalidations": 0,
+        "functions": {
+          "tectonics.genesis_volume_operator.conical_strain_operators": {
+            "hits": 35040,
+            "misses": 160
+          },
+          "tectonics.genesis_volume_operator.conical_radial_moments": {
+            "hits": 16800,
+            "misses": 800
+          },
+          "tectonics.genesis_volume_basal.assemble_genesis_volume_basal": {
+            "hits": 21,
+            "misses": 1
+          }
+        }
+      },
+      "independent_auditor": {
+        "namespace": "independent-auditor",
+        "bindings": {
+          "geometry_sha256": "7518f81dc349cadef4908d36be56d7f84de8162cbca8acc5fdb3b02377068a2f",
+          "material_sha256": "65ebb2dae6a0b296e9ffe7f4392c19933f4bc3a333e7273e40ec9514df81cb8f",
+          "source_sha256": "3b3610e18c0ccbf57f586a8e5be8880a1750187cec094b5eeeeb6aea71599328",
+          "solver_sha256": "a349a83bfcbf71a1070723479c774852a31c098905897c34c4f54596175c4e86"
+        },
+        "entries": 2651,
+        "bytes": 4998586,
+        "invalidations": 0,
+        "functions": {
+          "analysis.genesis_volume_fault_validation.independent_audit.physical_face_geometry": {
+            "hits": 11932,
+            "misses": 86
+          },
+          "analysis.genesis_volume_continuation_validation.independent_audit.angular_rule": {
+            "hits": 16808,
+            "misses": 1
+          },
+          "analysis.genesis_volume_continuation_validation.independent_audit.radial_rule": {
+            "hits": 21600,
+            "misses": 800
+          },
+          "analysis.genesis_volume_continuation_validation.independent_audit.conical_scales": {
+            "hits": 25680,
+            "misses": 1680
+          },
+          "analysis.genesis_volume_continuation_validation.independent_audit.independent_strain_operators": {
+            "hits": 7120,
+            "misses": 80
+          },
+          "analysis.genesis_volume_continuation_validation.independent_audit.mass_matrix": {
+            "hits": 16,
+            "misses": 2
+          },
+          "analysis.genesis_volume_continuation_validation.independent_audit.prescribed_traction": {
+            "hits": 5,
+            "misses": 1
+          },
+          "analysis.genesis_volume_continuation_validation.independent_audit.basal_drag_and_force": {
+            "hits": 5,
+            "misses": 1
+          }
+        }
+      }
+    },
+    "seconds": 131.23927386300056,
+    "artifact_bytes": 39378418,
+    "peak_rss_kib": 606484,
+    "canonical_unchanged": true,
+    "timings": [
+      {
+        "label": "whole100",
+        "stage": "decode",
+        "inclusive_seconds": 0.04599044299538946,
+        "exclusive_seconds": 0.04599044299538946
+      },
+      {
+        "label": "whole100",
+        "stage": "apply_ports",
+        "inclusive_seconds": 0.0021645009983330965,
+        "exclusive_seconds": 0.0021645009983330965
+      },
+      {
+        "label": "whole100",
+        "stage": "conduct",
+        "inclusive_seconds": 0.047383800003444776,
+        "exclusive_seconds": 0.047383800003444776
+      },
+      {
+        "label": "whole100",
+        "stage": "mechanical",
+        "inclusive_seconds": 13.969464629997674,
+        "exclusive_seconds": 13.969464629997674
+      },
+      {
+        "label": "whole100",
+        "stage": "decode",
+        "inclusive_seconds": 0.046658708997711074,
+        "exclusive_seconds": 0.046658708997711074
+      },
+      {
+        "label": "whole100",
+        "stage": "audit_forced",
+        "inclusive_seconds": 9.50652582100156,
+        "exclusive_seconds": 9.50652582100156
+      },
+      {
+        "label": "half1",
+        "stage": "decode",
+        "inclusive_seconds": 0.04365569299989147,
+        "exclusive_seconds": 0.04365569299989147
+      },
+      {
+        "label": "half1",
+        "stage": "apply_ports",
+        "inclusive_seconds": 0.0012363880014163442,
+        "exclusive_seconds": 0.0012363880014163442
+      },
+      {
+        "label": "half1",
+        "stage": "conduct",
+        "inclusive_seconds": 0.04587698000250384,
+        "exclusive_seconds": 0.04587698000250384
+      },
+      {
+        "label": "half1",
+        "stage": "mechanical",
+        "inclusive_seconds": 14.864093994998257,
+        "exclusive_seconds": 14.864093994998257
+      },
+      {
+        "label": "half1",
+        "stage": "decode",
+        "inclusive_seconds": 0.04988293399946997,
+        "exclusive_seconds": 0.04988293399946997
+      },
+      {
+        "label": "half1",
+        "stage": "audit_forced",
+        "inclusive_seconds": 8.777506785998412,
+        "exclusive_seconds": 8.777506785998412
+      },
+      {
+        "label": "half2",
+        "stage": "decode",
+        "inclusive_seconds": 0.04411834399797954,
+        "exclusive_seconds": 0.04411834399797954
+      },
+      {
+        "label": "half2",
+        "stage": "apply_ports",
+        "inclusive_seconds": 0.0011138730042148381,
+        "exclusive_seconds": 0.0011138730042148381
+      },
+      {
+        "label": "half2",
+        "stage": "conduct",
+        "inclusive_seconds": 0.047564941000018734,
+        "exclusive_seconds": 0.047564941000018734
+      },
+      {
+        "label": "half2",
+        "stage": "mechanical",
+        "inclusive_seconds": 13.277199805001146,
+        "exclusive_seconds": 13.277199805001146
+      },
+      {
+        "label": "half2",
+        "stage": "decode",
+        "inclusive_seconds": 0.09608819799905177,
+        "exclusive_seconds": 0.09608819799905177
+      },
+      {
+        "label": "half2",
+        "stage": "audit_forced",
+        "inclusive_seconds": 9.43162860099983,
+        "exclusive_seconds": 9.43162860099983
+      }
+    ],
+    "remaining_budget_seconds": 535.600246617003,
+    "prior_seconds": 54.399753382997005,
+    "isolated_work_charge_seconds": 10.0,
+    "aggregate_charged_seconds": 195.63902724599757
+  },
+  "tests_passed": 148,
+  "files": {
+    "/workspace/genesis-exploratory-100-01/corrected_source100.json": {
+      "bytes": 311862,
+      "sha256": "2e6e349231f1f0089c74be386244b385e1cee8cefcece6425db8b43800ed190e"
+    },
+    "/workspace/genesis-exploratory-100-01/continuation/whole100.json": {
+      "bytes": 12392676,
+      "sha256": "f28836c2589cd7d89b1ccee07c5ac34d61229e9f2f3d9b452c202d2f1fda17df"
+    },
+    "/workspace/genesis-exploratory-100-01/continuation/whole100_events.json": {
+      "bytes": 2788,
+      "sha256": "475253883f614809e80abf723db4a685a250161518f5f26e853ef582a0f41ed1"
+    },
+    "/workspace/genesis-exploratory-100-01/continuation/half2.json": {
+      "bytes": 12533350,
+      "sha256": "20be57d6bae5255b3d440ea77a9da086bb32ecac06c38ada97d337ff1b0e59b9"
+    },
+    "/workspace/genesis-exploratory-100-01/continuation/report.json": {
+      "bytes": 19970,
+      "sha256": "b31ce4a5cb062b5b567af0d1c3904aa5310c974d0c17184f82aa7499e0146411"
+    },
+    "/workspace/genesis-exploratory-100-01/continuation/half2_events.json": {
+      "bytes": 2781,
+      "sha256": "de6c0527b65ed19aebbcd9f464a7480470b48a3e1e1d8db2ad0f08b3fe6c69bc"
+    },
+    "/workspace/genesis-exploratory-100-01/continuation/half1.json": {
+      "bytes": 12388953,
+      "sha256": "9de96bee0a91121cbb6f6445aad3900d3b9114b327bdb64d5fc98db112cd63c7"
+    },
+    "/workspace/genesis-exploratory-100-01/continuation/preflight.json": {
+      "bytes": 787,
+      "sha256": "a9cd1e3ebf4a71fab168823e1dfcb01bf7aeeae9844420af35d322eddca4129a"
+    },
+    "/workspace/genesis-exploratory-100-01/continuation/half2_audit.json": {
+      "bytes": 2779,
+      "sha256": "b8c7fa2459bb30379b0be5537c765e435d4935925cb39662f75ff8a7270fc434"
+    },
+    "/workspace/genesis-exploratory-100-01/continuation/half1_audit.json": {
+      "bytes": 2769,
+      "sha256": "288a4b6dc9d4c0882125da6126801af57ab05859c01053f9e8d2b8cd00dd262a"
+    },
+    "/workspace/genesis-exploratory-100-01/continuation/provenance.json": {
+      "bytes": 41887,
+      "sha256": "c8e8862a1b93377f94275d7128995064c49adbaeafd90c0d07895de3987824b5"
+    },
+    "/workspace/genesis-exploratory-100-01/continuation/config.json": {
+      "bytes": 851,
+      "sha256": "a413975741ccbe64bc4eda05fc853d21ef087815fcccd6db8ab2cb5feedf79c5"
+    },
+    "/workspace/genesis-exploratory-100-01/continuation/half1_events.json": {
+      "bytes": 2787,
+      "sha256": "06597f964cfbadbe45f04ede4b01ed06d960128f1753049f414c3921eb18498f"
+    },
+    "/workspace/genesis-exploratory-100-01/continuation/whole100_audit.json": {
+      "bytes": 2767,
+      "sha256": "848318824b769366ad5104da5d648d20fccb54052087cd3a34cbdef838dd9baf"
+    },
+    "/workspace/genesis-exploratory-100-01/continuation/initial.json": {
+      "bytes": 2003243,
+      "sha256": "4c0427d81bcb4b2a1dd8df2021e5ae1f6fedf983a9b8b2c165d69128a716bc95"
+    }
+  }
+}

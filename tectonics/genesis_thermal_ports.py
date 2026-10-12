@@ -20,6 +20,22 @@ def radiogenic_energy(p,start_myr,dt_seconds):
     return power*(-math.expm1(-rate*dt_seconds))/rate
 
 
+def surface_endpoint(energy,capacity,latent,stellar,giant,dt_area,p):
+    """Same radiative equation, compensated residual in kelvin and tight root.
+
+    Temperature convergence alone at 1e-10 K did not meet the existing energy
+    ULP audit for large reservoirs. The independent energy bound is unchanged.
+    """
+    def balance(T):
+        return math.fsum((capacity*T,latent,-energy,-stellar,-giant,
+                          dt_area*outgoing_longwave_w_m2(T,p)))/capacity
+    low=647.096;high=max(3000.,math.fsum((energy,stellar,giant,-latent))/capacity+1.)
+    if balance(low)>0:raise ValueError('UNSUPPORTED_WATER_PHASE under radiative forcing')
+    T=brentq(balance,low,high,xtol=np.nextafter(0.,1.),rtol=4*np.finfo(float).eps)
+    candidates=(np.nextafter(T,-np.inf),T,np.nextafter(T,np.inf))
+    return min((x for x in candidates if x>=low),key=lambda x:abs(balance(x)))
+
+
 def apply_ports(before,p,tides,orbit,target_myr):
     if p.tidal_heat_flux_w_m2!=0:raise ValueError('Orbit-derived tides cannot duplicate prescribed tidal flux')
     if before['time_myr']!=orbit.time_myr or target_myr<=orbit.time_myr:raise ValueError('Shared source clocks')
@@ -35,10 +51,7 @@ def apply_ports(before,p,tides,orbit,target_myr):
     stellar=p.absorbed_stellar_flux_w_m2*area*dt;giant=p.giant_absorbed_flux_w_m2*area*dt
     capacity=mass[-1]*p.water_heat_capacity_j_kg_k;latent=mass[-1]*p.water_latent_heat_j_kg
     # Supported existing hot-vapor branch only; no new water/ice EOS.
-    def balance(T):return capacity*T+latent-E[-1]-stellar-giant+dt*area*outgoing_longwave_w_m2(T,p)
-    low=647.096;high=max(3000.,(E[-1]+stellar+giant-latent)/capacity+1.)
-    if balance(low)>0:raise ValueError('UNSUPPORTED_WATER_PHASE under radiative forcing')
-    T=brentq(balance,low,high,xtol=1e-10,rtol=1e-14)
+    T=surface_endpoint(E[-1],capacity,latent,stellar,giant,dt*area,p)
     olr=dt*area*outgoing_longwave_w_m2(T,p)
     rows=[dict(name='radiogenic',recipient=len(E)-2,energy_into_thermal_j=radio,scope='external nuclear energy; no nuclear inventory state'),
           dict(name='tidal',recipient=len(E)-2,energy_into_thermal_j=tide,scope='paired orbital dissipation'),

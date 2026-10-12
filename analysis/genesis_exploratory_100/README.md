@@ -1,3 +1,10 @@
+## Latest outcome: source fixed; the same pair completed and failed accuracy/work budgets
+
+[Source arithmetic diagnosis and completed100/2x50 results](SOURCE_PRECISION.md).
+148 tests PASS. Independent audits PASS for all three completed trials, but
+exploratory output/work criteria FAIL; no state accepted. Aggregate charged
+cost195.639s of the original600s. Original failure below is retained as history.
+
 ## Executed outcome: STOPPED at source energy audit
 
 The single authorized attempt is retained in `/workspace/genesis-exploratory-100-01/`.
