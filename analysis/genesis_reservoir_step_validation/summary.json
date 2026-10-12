@@ -1,0 +1,70 @@
+{
+  "status": "PASS",
+  "isolated_thermal_steps": 1,
+  "dt_years": 50,
+  "new_canonical_Genesis_steps": 0,
+  "before_time_myr": 0.8684000000000005,
+  "after_time_myr": 0.8684500000000005,
+  "exchanges": 2640,
+  "audit": {
+    "status": "PASS",
+    "energy_residual_j": 1066453264498688.0,
+    "endpoint_roundoff_allowance_j": 4681445633163264.0,
+    "max_local_residual_over_allowance": 0.23671129993272638,
+    "column_delta_j": -7.456435557932266e+23,
+    "deep_delta_j": 1.915804400623133e+23,
+    "water_delta_j": 5.5406311679736655e+23,
+    "initial_bottom_into_columns_w": -121416355486986.9,
+    "legacy_bottom_into_columns_w": -105878731111560.31,
+    "bottom_flux_change_w": -15537624375426.588,
+    "top_flux_change_w": 0.0,
+    "top_flux_comparison": "Same retained profile, surface temperature and geometry; only mantle representation changed",
+    "deep_melt_fraction_before": 0.40878759774934414,
+    "deep_melt_fraction_after": 0.4087876837754141,
+    "column_temperature_min_k": 1576.8905849362402,
+    "column_temperature_max_k": 2306.3941346414094,
+    "column_melt_mass_change_kg": -5.025769549385252e+17,
+    "all_mass_unchanged": true,
+    "latent_heat_added_separately": false,
+    "local_tolerance": "4*(ulp(E_before)+ulp(E_after)) + 1e-11*abs(expected exchange); whole-state energy not used as local scale"
+  },
+  "restart_byte_identical": true,
+  "canonical_sha256": "62579a0bad128830a66e2f44579cf2b1f5d3835b691225b8d431102f3e4486d7",
+  "historical_opening_balance": null,
+  "seconds": 0.6509662819953519,
+  "peak_rss_kib": 158924,
+  "files": {
+    "after.json": {
+      "bytes": 434047,
+      "sha256": "154b7dce4f1dbad58c3cf7ce583c39c8c6a0e55f80bacb895edae8085bb2c236"
+    },
+    "restart.json": {
+      "bytes": 434047,
+      "sha256": "154b7dce4f1dbad58c3cf7ce583c39c8c6a0e55f80bacb895edae8085bb2c236"
+    },
+    "exchanges.json": {
+      "bytes": 647173,
+      "sha256": "96cd65060195afb426e822c4ce3993347ee275da6c53a4532cd5421c013546f2"
+    }
+  },
+  "migration_check": {
+    "legacy_effective_mantle_mass_kg": 2.0294942205147904e+24,
+    "new_deep_mass_kg": 1.9883968205916015e+24,
+    "deep_specific_enthalpy_j_kg": 2137842.109479265,
+    "deep_energy_positive": true,
+    "mass_partition_residual_kg": 0.0,
+    "global_thermal_projection_residual_j": 0.0,
+    "column_profiles_preserved_from_projection_report": true
+  },
+  "CFL": {
+    "max_fraction_of_limit": 0.0026334438447877593,
+    "limit_years": 18986.544975683624
+  },
+  "bottom_outflow_relative_change": 0.1467492499419472,
+  "code_sha256": {
+    "tectonics/genesis_reservoir_conduction.py": "04966a1797a52c4e23f780385f1577644baeb92fb90a16a299972a7bf1a04768",
+    "tectonics/genesis_reservoir_thermal.py": "a2fa2f604b888dda1b0cd2335aea08133334b1362c0510fbb5f256f042b85e5c",
+    "analysis/genesis_reservoir_step_validation/run.py": "480738c2ea2450ad7b3c6bc47048f7d7dee6512ac7c1bb42fb35d116aaac5b99"
+  },
+  "tests_passed": 79
+}
