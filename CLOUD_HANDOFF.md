@@ -1,3 +1,15 @@
+**Текущий результат: cut-cell BE50 defined feedback PASS. Restore CLOSED.**
+База `435725080eb762868726024de703059fc7adb0e1`, один isolated 50-летний
+механический интервал, 4 bounded correctors, 800 IDs/массы сохранены.
+Локальный Maxwell и парная thermal work изменяют настоящие тепловые энергии
+и температуры; predictor/коррекции не накапливаются. 66 тестов, независимые
+импульс/память/работа/damage/геометрия/local heat и restart PASS.
+[Результат и оставшиеся ограничения](analysis/genesis_cutcell_mechanical_trial/README.md).
+Drag/damage хранятся отдельно без heat policy; external traction donor,
+splitting accuracy и sensitivity closure OPEN. Canonical/default прежние.
+Следующий шаг требует закрытия этих физических обменов и оценки splitting;
+повторять завершённый trial или восстанавливать архивы не нужно.
+
 **Активная задача: завершение implicit enthalpy на фиксированных cut-cells. Restore CLOSED.**
 Правильная база — `e5440e38578b07cfc7d2acdcee730955b8821f66`; `10ea182` —
 исторический ancestor передачи, не целевой checkout. Цепочка текущей работы:

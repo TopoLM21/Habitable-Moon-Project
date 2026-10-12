@@ -1,3 +1,10 @@
+**Уточнение сопряжения: один isolated BE50 defined feedback PASS.**
+[Независимый аудит и ограничения](analysis/genesis_cutcell_mechanical_trial/README.md).
+800 IDs/массы сохранены, Maxwell→тот же cut-cell и встречная thermal work
+реально применены; 4 ограниченные коррекции, 66 тестов PASS, canonical unchanged.
+Этап 2 не закрыт: drag/damage thermal feedback, донор внешней traction work,
+ошибка разделения conduction/mechanics и sensitivity профиля остаются OPEN.
+
 **Текущее уточнение: fixed cut-cell implicit thermal input готов.**
 Один isolated 50-летний шаг: 3360 cells, 800 старых IDs/память/массы сохранены,
 58 тестов и независимый readback PASS; retirement=0, canonical advancement=0.
