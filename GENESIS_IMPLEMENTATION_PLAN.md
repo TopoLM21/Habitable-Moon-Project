@@ -1,3 +1,15 @@
+**Рабочий forced BE pipeline получил отдельную адаптивную опцию.**
+[Инженерные бюджеты, 85 tests, saved replay и bounded100 runbook](analysis/genesis_adaptive_control/README.md).
+Численный допуск теперь по значимым выходам и знаку/бюджету диссипации,
+а не по N/Maxwell как мнимой ошибке stress. Глобальные и локальные проверки,
+step doubling, audited rollback, gate-stop и жёсткие resource limits реализованы.
+Следующий практический шаг — один ограниченный 100-летний private trial; пока
+не запускался. Unforced replay PASS, forced error estimate пока отсутствует.
+Это не требует разрешать все сверхбыстрые моды секундами или сначала закрывать
+всю неизвестную физику. Реальные domain/gate/audit/resource guards обязательны.
+Canonical, physical coefficients, BE и default прежние; ни один физический этап
+не объявлен закрытым. Не расширять план бесконечным sweep или новой реставрацией.
+
 **Forced numerical memory: количественный диагноз, без нового шага.**
 [Разложение и пределы exact-Maxwell прототипа](analysis/genesis_forced_memory_diagnosis/README.md).
 54 теста PASS; 63,4% не сняты малым ΔT. Охлаждение/деформация доминируют;

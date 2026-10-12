@@ -1,3 +1,20 @@
+**Отдельный адаптивный BE-контроллер готов к bounded pilot; новых шагов0.**
+[Конфиг, replay, ограничения и команда 100-летнего trial](analysis/genesis_adaptive_control/README.md).
+31 новый / 85 адресных тестов PASS; независимые saved audits и read-only adapter
+preflight PASS (800 IDs, полный orbit, nmant63). Production/default/canonical прежние.
+Приём по stress/physical velocity/damage margin/T/h и global+local numerical work;
+бюджеты инженерные, не физически выведенные. N/Maxwell не трактуется как output error.
+Whole vs 2×half, каждый с аудитом; fine-пара принимается целиком, rejected ветви
+не меняют accepted cursor. Negative dissipation/gate/phase/audit failures → STOP.
+Unforced saved pair проходит (worst ratio0,521). Forced25 local work ratio9,392;
+реальной forced whole/half пары ещё нет. Отвергнутый exact-Maxwell не подключён.
+Следующий готовый рабочий шаг: отдельный pilot100лет от private0,868425Myr,
+initial macro25лет, оценочно macro≈9лет/36–42 trials/62–72мин; hard90мин/4GiB/
+2GB artifacts, min macro0,25лет. 100лет не гарантированы; остановка сохраняет
+последний принятый private checkpoint. Никакой новой серии в этой задаче нет.
+Открытые пространственные/тепловые/fracture вопросы сохранены, но не поставлены
+искусственными условиями для уже поддержанного bounded pipeline. Restore CLOSED.
+
 **Диагноз forced memory завершён, новых планетарных шагов 0. Restore CLOSED.**
 [Saved-forcing разложение, exact-Maxwell прототип и следующий численный путь](analysis/genesis_forced_memory_diagnosis/README.md).
 54 адресных теста PASS. Старые 800 IDs; canonical/default/production неизменны.

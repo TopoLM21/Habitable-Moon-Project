@@ -1,0 +1,92 @@
+{
+  "status": "PASS_MANUFACTURED_AND_SAVED_REPLAY_ONLY",
+  "base_commit": "614a7cbcde35ea5fd2d85e6677dc22be6ea010cb",
+  "new_planetary_steps": 0,
+  "new_tests": 31,
+  "scoped_tests_passed": 85,
+  "config_sha256": "f2f4155160c2bd94cb81809aa84fbc6571de622426a5b7294f699471b1828700",
+  "replay": {
+    "path": "/workspace/genesis-adaptive-replay-final.json",
+    "sha256": "29ab159dae53e8f522099613f22626f40601100bbe1b75c0996e06234d81e76e"
+  },
+  "adapter_preflight": {
+    "path": "/workspace/genesis-adaptive-preflight-final.json",
+    "sha256": "d5d6a8fc6f4eed0c0676564fb3b3ac9c65c897d4fe9cbb815f8273f833e118ee",
+    "result": {
+      "status": "PASS_READ_ONLY_ADAPTER_PREFLIGHT",
+      "evolution_calls": 0,
+      "seed_sha256": "e6ad0ed1372b18a73c3852f639edafd959776e6cb0d3a747aa75bcffe8c365a5",
+      "private_start_time_myr": 0.8684250000000006,
+      "old_cohorts": 800,
+      "typed_memory_and_actual_orbit_preserved": true,
+      "linux": "Linux",
+      "architecture": "x86_64",
+      "python": "3.12.14",
+      "longdouble_nmant": 63,
+      "available_disk_bytes": 6010347520
+    }
+  },
+  "saved_unforced_assessment": {
+    "score": 0.5209432118904703,
+    "next_factor": 1.108395605656361,
+    "checks": {
+      "stress_pa": {
+        "local_ratio": 0.5209432118904703,
+        "global_ratio": 0.0955630147909209,
+        "max_difference": 7164.592461450116,
+        "rms_difference": 5982.622280745758
+      },
+      "velocity_m_s": {
+        "local_ratio": 0.04032716491071883,
+        "global_ratio": 0.022798187284551373,
+        "max_difference": 4.8944594858017056e-14,
+        "rms_difference": 4.005909363683243e-14
+      },
+      "damage": {
+        "local_ratio": 0.20992424808546906,
+        "global_ratio": 0.06258904578140541,
+        "max_difference": 2.0992424808546906e-05,
+        "rms_difference": 6.258904578140541e-06
+      },
+      "temperature_k": {
+        "local_ratio": 0.15271796877186716,
+        "global_ratio": 0.06954239054841226,
+        "max_difference": 0.007635898438593358,
+        "rms_difference": 0.0034771195274206127
+      },
+      "enthalpy_j_kg": {
+        "local_ratio": 0.15271796877107893,
+        "global_ratio": 0.06954299700335853,
+        "max_difference": 9.163078126264736,
+        "rms_difference": 4.172579820201512
+      },
+      "damage_margin": {
+        "local_ratio": 0.0006885901460025285,
+        "global_ratio": 0.0006885901460025285
+      },
+      "numerical_work": {
+        "predicted_step_factor": 3.9561151050179633,
+        "local_ratio": 0.07455797267030477,
+        "global_ratio": 0.011853907234771402,
+        "total_j": 4083268857956783.5,
+        "global_budget_j": 3.4446607157336403e+17,
+        "max_local_j": 88011546724902.97,
+        "physical_heat_j": 9.711518945809009e+17
+      }
+    },
+    "estimator": "BE step doubling: |fine-coarse|/(2^1-1); no extrapolation or proof of global error"
+  },
+  "saved_unforced_controller_status": "PASS",
+  "saved_forced_single_work": {
+    "predicted_step_factor": 0.32604679823139726,
+    "local_ratio": 9.392179914138199,
+    "global_ratio": 0.9030251510015848,
+    "total_j": 3.1652797243879194e+17,
+    "global_budget_j": 3.5051955317935155e+17,
+    "max_local_j": 4231915445288771.0,
+    "physical_heat_j": 4.992730377966656e+17
+  },
+  "forced_pair_available": false,
+  "forced_series_executed": false,
+  "input_hashes_unchanged": true
+}
