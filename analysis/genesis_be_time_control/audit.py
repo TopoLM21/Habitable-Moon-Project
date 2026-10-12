@@ -17,7 +17,7 @@ def before_view(root,previous):
         'last_report':{'audit_input':previous['report']['final']['inputs']}})
 
 
-def verify_link(root,previous,packet):
+def verify_link(root,previous,packet,*,max_elapsed_myr=.0001):
     required={'format','parent_sha256','predecessor_sha256','step_sizes_myr','source_packet','state','report','sha256'}
     if set(packet)!=required or packet['format']!='genesis-be-chain-0.1':raise ValueError('Chain schema')
     body={k:v for k,v in packet.items() if k!='sha256'}
@@ -27,7 +27,7 @@ def verify_link(root,previous,packet):
     prefix=PARENT_SHA if previous is None else previous['sha256'];sizes=[] if previous is None else previous['step_sizes_myr']
     if packet['predecessor_sha256']!=prefix or packet['step_sizes_myr'][:-1]!=sizes:raise ValueError('Predecessor/clock prefix')
     dt=packet['step_sizes_myr'][-1]
-    if dt not in (5e-5,2.5e-5) or sum(packet['step_sizes_myr'])>.0001+1e-14:raise ValueError('Bounded interval')
+    if dt not in (5e-5,2.5e-5) or (max_elapsed_myr is not None and sum(packet['step_sizes_myr'])>max_elapsed_myr+1e-14):raise ValueError('Bounded interval')
     before=before_view(root,previous)['runtime_state'];after=packet['state']
     if abs(after['thermal']['time_myr']-before['thermal']['time_myr']-dt)>1e-14:raise ValueError('Clock step')
     return dt
@@ -67,8 +67,8 @@ def verify_sum(root,packets,audits):
     return dict(status='PASS',intervals=len(packets),independent_totals=expected,balance_residual_j=net,balance_relative=relative)
 
 
-def audit_step(root,previous,packet):
-    dt=verify_link(root,previous,packet)
+def audit_step(root,previous,packet,*,max_elapsed_myr=.0001):
+    dt=verify_link(root,previous,packet,max_elapsed_myr=max_elapsed_myr)
     thermal,history=replay_thermal(root,previous,packet)
     result=mechanical_audit(before_view(root,previous),packet,None,dt_myr=dt,chained=True)
     result['thermal_and_birth_replay']='PASS'

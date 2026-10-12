@@ -36,14 +36,14 @@ def seal(packet):
     return {**packet,'sha256':hashlib.sha256(json.dumps(packet,sort_keys=True,separators=(',',':'),allow_nan=False).encode()).hexdigest()}
 
 
-def transition(model,parent,previous,dt):
+def transition(model,parent,previous,dt,*,max_elapsed_myr=.0001):
     if dt not in (5e-5,2.5e-5):raise ValueError('Only bounded 50/25-year control')
     if previous is None:
         model.validate_state(parent);sizes=[];prefix=PARENT_SHA
     else:
         if not isinstance(parent,BEState) or state_payload(parent)!=previous['state']:raise ValueError('Parent state differs from chain')
         sizes=previous['step_sizes_myr'];prefix=previous['sha256']
-    if sum(sizes)+dt>.0001+1e-14:raise ValueError('Outside original 100-year interval')
+    if max_elapsed_myr is not None and sum(sizes)+dt>max_elapsed_myr+1e-14:raise ValueError('Outside original 100-year interval')
     gate(parent.fault_history,model.fault_parameters)
     thermal=prepare_volume_thermal_step(parent.thermal,parent.history,parent.geometry,dt,displacement_m=parent.displacement_m)
     no_remelt(parent.geometry,thermal.geometry);retained=retained_live_fraction(parent.geometry,thermal.geometry)

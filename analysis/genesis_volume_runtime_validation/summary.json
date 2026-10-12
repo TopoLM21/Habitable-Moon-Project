@@ -1,0 +1,173 @@
+{
+  "status": "PASS",
+  "new_Genesis_steps": 0,
+  "stages": {
+    "legacy_default_load": 54.80615951800064,
+    "be50_attach_saved_chain": 30.653567397999723,
+    "be50_load_bundle": 93.68863248400157,
+    "be25_attach_saved_chain": 79.9564505970011,
+    "be25_load_bundle": 132.65014918499946
+  },
+  "modes": {
+    "be50": {
+      "description": {
+        "integrator_metadata": {
+          "integrator": "be50",
+          "scheme": "backward_euler_velocity_and_maxwell_endpoint",
+          "dt_myr": 5e-05,
+          "role": "engineering_candidate",
+          "physical_accuracy_certified": false,
+          "numerical_dissipation_destination": "diagnostic_only_no_thermal_feedback",
+          "scope": "intact_stop_before_activation_no_remelt"
+        },
+        "time_myr": 0.8685000000000005,
+        "cohorts": 960,
+        "BE_intervals": 2,
+        "gate": {
+          "faces": 80,
+          "active": [],
+          "damage_candidates": [],
+          "persistent_candidates": [],
+          "ready": [],
+          "max_damage": 0.039817142368348865,
+          "max_candidate_age_myr": 0.0,
+          "activation_damage": 0.65,
+          "activation_persistence_myr": 0.05
+        }
+      },
+      "restart_byte_identical": true,
+      "wrong_integrators_rejected": true,
+      "thermal_payload_unchanged": true,
+      "reservoir": {
+        "elastic_release_j": 1.5358188160747192e+18,
+        "kinetic_release_j": 5014.830052155213,
+        "external_work_j": 2470609164056398.0,
+        "thermal_mechanical_work_j": 4.292947379883803e+17,
+        "birth_kinetic_inflow_j": 55.60975041730663,
+        "damage_energy_change_j": -2479532290668741.5,
+        "source_total_j": 1.9651046309364923e+18,
+        "physical_dissipation_j": 1.9319263058827126e+18,
+        "numerical_dissipation_j": 3.3178325053779264e+16,
+        "source_minus_sinks_j": 448.0,
+        "numerical_over_external": 13.429208284528926,
+        "numerical_over_elastic_release": 0.021603020295439004,
+        "global_thermal_reservoir_closed": false
+      }
+    },
+    "be25": {
+      "description": {
+        "integrator_metadata": {
+          "integrator": "be25",
+          "scheme": "backward_euler_velocity_and_maxwell_endpoint",
+          "dt_myr": 2.5e-05,
+          "role": "control_mode",
+          "physical_accuracy_certified": false,
+          "numerical_dissipation_destination": "diagnostic_only_no_thermal_feedback",
+          "scope": "intact_stop_before_activation_no_remelt"
+        },
+        "time_myr": 0.8685000000000007,
+        "cohorts": 1120,
+        "BE_intervals": 4,
+        "gate": {
+          "faces": 80,
+          "active": [],
+          "damage_candidates": [],
+          "persistent_candidates": [],
+          "ready": [],
+          "max_damage": 0.03984351018523005,
+          "max_candidate_age_myr": 0.0,
+          "activation_damage": 0.65,
+          "activation_persistence_myr": 0.05
+        }
+      },
+      "restart_byte_identical": true,
+      "wrong_integrators_rejected": true,
+      "thermal_payload_unchanged": true,
+      "reservoir": {
+        "elastic_release_j": 1.5426254250233692e+18,
+        "kinetic_release_j": 5014.8300707525905,
+        "external_work_j": 2460730145324324.5,
+        "thermal_mechanical_work_j": 4.1829046025263795e+17,
+        "birth_kinetic_inflow_j": 27.81259636246561,
+        "damage_energy_change_j": -2928320058603928.5,
+        "source_total_j": 1.9604482953627325e+18,
+        "physical_dissipation_j": 1.9437395278848566e+18,
+        "numerical_dissipation_j": 1.6708767477884208e+16,
+        "source_minus_sinks_j": -8240.0,
+        "numerical_over_external": 6.790166532333025,
+        "numerical_over_elastic_release": 0.010831383436864517,
+        "global_thermal_reservoir_closed": false
+      }
+    }
+  },
+  "default_byte_identical": true,
+  "seconds": 444.86751519099926,
+  "peak_rss_kib": 1375172,
+  "canonical_bytes_unchanged": true,
+  "artifacts": {
+    "be25_restart.json": {
+      "bytes": 207614804,
+      "sha256": "589828caf75cebc5b02dc84d9a8ad6cae9db27d0939616847959d003088654ec"
+    },
+    "be50_restart.json": {
+      "bytes": 110786215,
+      "sha256": "3f5ac8d54870101ac0b96e0da50950552eee87a7f16c3a066e68f4b2a3237639"
+    },
+    "be50.json": {
+      "bytes": 110786215,
+      "sha256": "3f5ac8d54870101ac0b96e0da50950552eee87a7f16c3a066e68f4b2a3237639"
+    },
+    "be25.json": {
+      "bytes": 207614804,
+      "sha256": "589828caf75cebc5b02dc84d9a8ad6cae9db27d0939616847959d003088654ec"
+    },
+    "midpoint.json": {
+      "bytes": 24345685,
+      "sha256": "62579a0bad128830a66e2f44579cf2b1f5d3835b691225b8d431102f3e4486d7"
+    }
+  },
+  "report_path": "/workspace/genesis-volume-runtime-validation-01/report.json",
+  "report_sha256": "e470b2ee4cb87768f25ada22242d31dc57046295c4b30e2537378e1194cbd402",
+  "tests": {
+    "passed": 156,
+    "failed": 0
+  },
+  "real_cli_inspect": {
+    "BE_intervals": 2,
+    "action": "inspect",
+    "cohorts": 960,
+    "gate": {
+      "activation_damage": 0.65,
+      "activation_persistence_myr": 0.05,
+      "active": [],
+      "damage_candidates": [],
+      "faces": 80,
+      "max_candidate_age_myr": 0.0,
+      "max_damage": 0.039817142368348865,
+      "persistent_candidates": [],
+      "ready": []
+    },
+    "integrator_metadata": {
+      "dt_myr": 5e-05,
+      "integrator": "be50",
+      "numerical_dissipation_destination": "diagnostic_only_no_thermal_feedback",
+      "physical_accuracy_certified": false,
+      "role": "engineering_candidate",
+      "scheme": "backward_euler_velocity_and_maxwell_endpoint",
+      "scope": "intact_stop_before_activation_no_remelt"
+    },
+    "status": "PASS",
+    "time_myr": 0.8685000000000005
+  },
+  "validation_scope": "Existing accepted midpoint and saved BE chains only; no new advance; reservoir arithmetic from saved cumulative ledger after independent chain audits.",
+  "post_validation_hardening": "Bulk process loaded code before additional post-restore gate and malformed-JSON guard; recorded describe gates passed for both modes. Final CLI BE50 uses hardened code; final unit tests cover malformed JSON and audit rejection.",
+  "final_code_sha256": {
+    "tectonics/genesis_volume_runtime.py": "5cd0d33f64485faf1db9e365b8f99b6bb4ad17b311ef7a8a82d298449daf44ed",
+    "tectonics/genesis_volume_slip_dynamics.py": "1a1463787635d8ea9b4b076170e15441751b2a2a9d6ad7087644ee5813d6ff57",
+    "run_genesis_volume.py": "8e7943320b0a68ee31ba8802d1cd8ce2a97534f7ac0e1853a342312e9159dd70",
+    "analysis/genesis_be_time_control/chain.py": "6fd0f3dd0c400af1eb644e8a361afb4ab29268ce251a4f61b2b99c7484fbb77e",
+    "analysis/genesis_be_time_control/audit.py": "95391a6de93bea6c0b8055ad49f757025f07e673dfc4b62efed948fb1ce951dc",
+    "analysis/genesis_be_time_control/checkpoint.py": "44050d81758a22f20772270ee742557b2f0a232d9a4290ae90484708de31966c",
+    "analysis/genesis_volume_runtime_validation/run.py": "2e4636a6fba298133897b489b380af7d924ffd836efc99646406341bb8fd6e1e"
+  }
+}

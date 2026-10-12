@@ -108,6 +108,11 @@ class VolumeSlipModel(VolumeModel):
         self.initial_fault_history = initial_volume_fault_history(self.source_packet)
         self.fault_parameters = _source(self.source_packet).model.fault_p
 
+    def configured_runtime(self, state, *, integrator="midpoint", root_bytes=None):
+        """Explicit intact runtime; raw model.step and its default stay unchanged."""
+        from .genesis_volume_runtime import VolumeRuntime
+        return VolumeRuntime.from_root(self, state, integrator=integrator, root_bytes=root_bytes)
+
     def _state_damage(self, state):
         return np.asarray(state.fault_history.damage)
 

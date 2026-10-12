@@ -10,12 +10,12 @@ from analysis.genesis_connected_step_validation.run import PARENT,PARENT_SHA
 from .audit import audit_step,verify_prefixes
 
 
-def restore(root,packets):
-    raw=PARENT.read_bytes()
+def restore(root,packets,*,root_bytes=None,max_elapsed_myr=.0001):
+    raw=PARENT.read_bytes() if root_bytes is None else root_bytes
     if hashlib.sha256(raw).hexdigest()!=PARENT_SHA or json.loads(raw)!=root:raise ValueError('Unauthenticated root')
     previous=None;audits=[]
     for packet in packets:
-        result,thermal,history=audit_step(root,previous,packet);audits.append(result);previous=packet
+        result,thermal,history=audit_step(root,previous,packet,max_elapsed_myr=max_elapsed_myr);audits.append(result);previous=packet
     totals=verify_prefixes(root,packets,audits);s=packets[-1]['state'];source=root['source_packet']
     tuples=lambda v:tuple(tuples(x) for x in v) if isinstance(v,list) else v
     raw=dict(s['geometry']);raw['cohorts']=tuple(ConicalCohortGeometry(**{k:tuples(v) for k,v in c.items()}) for c in raw['cohorts'])
