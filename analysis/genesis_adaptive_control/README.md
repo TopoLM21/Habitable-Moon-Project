@@ -1,5 +1,13 @@
 # Opt-in adaptive controller for the working forced BE pipeline
 
+**Subsequent real pair: audits PASS, engineering REJECTED.** See
+[the forced25 / 2×12.5 report](../genesis_forced_pair_validation/README.md).
+Exactly two new trials were measured in 158.2 s / 39.4 MB. The controller
+proposes 5.5869 years, not executed. The original implementation-only evidence
+below is historical; the real forced pair now exists and fails output budgets.
+The configured private coarse seed has not gained engineering admission for a
+long run. No default/seed change is made silently.
+
 Base `614a7cbcde35ea5fd2d85e6677dc22be6ea010cb`. **No planetary evolution was
 run for this implementation.** Production, canonical history, physical laws,
 source coefficients and the BE solver are unchanged. The rejected exponential
@@ -119,7 +127,8 @@ unforced step-doubling pair **passes**, worst budget ratio **0.520943**:
 
 The saved **single** forced25 passes the global work budget (0.9030) but fails
 local work (9.3922). This does not fabricate a forced step-doubling pair: **no such
-saved pair exists**, and its actual output-error assessment is still unknown.
+saved pair existed at the implementation stage**. The subsequent real pair is
+now linked above; it rejects the larger window under unchanged budgets.
 The adapter was initialized with evolution functions replaced by failure guards;
 its real checkpoint, typed memory and full orbit restore pass with **zero**
 evolution calls. Linux/x86_64, Python 3.12.14 and longdouble nmant=63 verified.
@@ -128,8 +137,9 @@ paths/hashes and the configuration hash.
 
 ## Next bounded run and expected resources
 
-The runner is ready for a **separate** authorized 100-year trial, not executed
-here. Existing physical uncertainty is recorded rather than made an artificial
+The runner implementation supports a **separate** bounded 100-year trial,
+not executed here; the subsequent rejection must be accounted for before
+claiming an engineering-admitted start and step schedule. Existing physical uncertainty is recorded rather than made an artificial
 prerequisite for this already supported pipeline. The run still stops on its
 actual phase/fault/healing/material/audit/resource boundaries.
 
@@ -138,15 +148,18 @@ work. The local budget predicts a macro-window near **11.5 years**, or **9.2 yea
 with safety**. This is a cost estimate from the older forced25 interval, **not**
 a forecast that the new starting state's rates remain identical. Roughly 11
 accepted windows plus 1–3 rejected attempts means **36–42 trial calls**, about
-**62–72 minutes at the prior 103 s/trial**, plus setup/IO differences. Expect
+**62–72 minutes at the prior 103 s/trial**, plus setup/IO differences.
+This historical estimate overcounted recurring setup: the subsequent measured
+pair gives about 40–44 s per additional trial, but rejects the old step/count
+assumption, so this is not a validated 100-year resource forecast. Expect
 roughly 1–1.5 GB of snapshots. Current read-only preflight found **6,010,347,520
 free bytes**; caps are enforced again while writing. 90 minutes is a hard stop,
 not a guarantee that all 100 years will finish. Output errors may demand smaller
 steps or a phase/gate may stop the run earlier.
 
-Remaining numerical uncertainty is the missing forced whole/half comparison and
-actual sequential adapter execution; these are exactly what the bounded run
-would measure. It may produce a justified partial endpoint instead of 100 years.
+The subsequent pair has now exercised the actual sequential adapter and
+measured the forced whole/half difference. It rejects the large window, so
+engineering output accuracy at an admissible step remains to be demonstrated. It may produce a justified partial endpoint instead of 100 years.
 Spatial closure/admission and unresolved heat return/healing laws remain open;
 no physical plan stage is declared complete by this controller.
 

@@ -1,3 +1,29 @@
+**Приоритет после пары — стратегия крупного шага, не запуск длинной мелкошаговой серии.**
+[Измеренная стоимость и рекомендация stability/accuracy/events](analysis/genesis_forced_pair_validation/README.md#large-step-recommendation-after-the-measured-pair-code-review-only).
+BE не требует секундного разрешения жёстких мод. Потолок50лет инженерный,
+но проверенные25лет не проходят accuracy. Автоматический рост есть; event guards
+пока останавливают, а не локализуют переход. Сначала безопасное устранение
+повторных geometry/assembly/audit вычислений, затем короткая проверка более
+точной stiffly stable схемы с event location. Новых разработок/прогонов для этой
+рекомендации не было; 100лет/крупный dt не запускались. Не обещать ускорение
+на тысячи/миллионы лет без проверки ошибок и поддержки достигнутых переходов.
+
+**Одна настоящая forced-пара завершена: ENGINEERING REJECTED, без повторов.**
+[Результат 25 vs 2×12,5, стоимость, packets и хеши](analysis/genesis_forced_pair_validation/README.md).
+От закреплённого0,8684Myr переиспользован совместимый forced25; ровно2 новых
+половинных trial, 4 коррекции каждый /16 BE solves. Все3 независимых аудита и
+restart/readback PASS. 158,219с total (54,916с setup), peak553,45MiB,39,393MB.
+44 pre-run tests PASS; read-only controller/hash replay PASS, без новых solves.
+Критерии неизменны: stress ratio12,815, T/h3,216, local numerical work4,423,
+velocity1,011 → REJECT. Принятый курсор этой проверки остаётся в начале;
+оба half packets сохранены как trials, прежние записи не переписаны.
+Предложенный следующий macro5,5869лет НЕ запускался. 100-летней серии нет.
+Старая оценка62–72мин завышала recurring setup; измеренный дальнейший trial
+около40–44с. Но прежнее число trials не подтверждено: forced accuracy не проходит.
+Следующий возможный конечный контроль — меньший шаг по правилу контроллера,
+с прежними допусками и началом; не ослаблять их для PASS. Canonical/default/
+physics/push/архивы не менялись. Restore CLOSED, spatial controls OPEN.
+
 **Отдельный адаптивный BE-контроллер готов к bounded pilot; новых шагов0.**
 [Конфиг, replay, ограничения и команда 100-летнего trial](analysis/genesis_adaptive_control/README.md).
 31 новый / 85 адресных тестов PASS; независимые saved audits и read-only adapter

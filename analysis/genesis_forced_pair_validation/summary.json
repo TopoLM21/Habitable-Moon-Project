@@ -1,0 +1,151 @@
+{
+  "status": "PAIR_COMPLETE_REJECTED",
+  "original_pair_status": "PAIR_COMPLETE_REJECTED",
+  "unchanged_engineering_budgets": true,
+  "ids": 800,
+  "births": 0,
+  "accepted_cursor_unchanged": true,
+  "all_three_independent_audits": "PASS",
+  "assessment": {
+    "score": 12.81498334927055,
+    "next_factor": 0.22347603836653382,
+    "checks": {
+      "stress_pa": {
+        "local_ratio": 12.81498334927055,
+        "global_ratio": 2.5074745597495394,
+        "max_difference": 163981.43167441114,
+        "rms_difference": 161551.63618808042
+      },
+      "velocity_m_s": {
+        "local_ratio": 1.0114115180796919,
+        "global_ratio": 0.6050546518023391,
+        "max_difference": 1.1538751870365296e-12,
+        "rms_difference": 1.0800494967731318e-12
+      },
+      "damage": {
+        "local_ratio": 0.49741311746787087,
+        "global_ratio": 0.16404015992377174,
+        "max_difference": 4.974131174678709e-05,
+        "rms_difference": 1.6404015992377176e-05
+      },
+      "temperature_k": {
+        "local_ratio": 3.21642714002337,
+        "global_ratio": 1.4755947133781444,
+        "max_difference": 0.1608213570011685,
+        "rms_difference": 0.07377973566890722
+      },
+      "enthalpy_j_kg": {
+        "local_ratio": 3.216427140023249,
+        "global_ratio": 1.4755983082126995,
+        "max_difference": 192.98562840139493,
+        "rms_difference": 88.53589849276197
+      },
+      "damage_margin": {
+        "local_ratio": 0.0016307402590609104,
+        "global_ratio": 0.0016307402590609104
+      },
+      "numerical_work": {
+        "predicted_step_factor": 0.4751604400576457,
+        "local_ratio": 4.423371731126458,
+        "global_ratio": 0.4003097738198553,
+        "total_j": 1.3970739311300803e+17,
+        "global_budget_j": 3.489982065136342e+17,
+        "max_local_j": 1913659133288423.5,
+        "physical_heat_j": 4.96474274107728e+17
+      }
+    },
+    "estimator": "BE step doubling: |fine-coarse|/(2^1-1); no extrapolation or proof of global error"
+  },
+  "measured": {
+    "total_seconds": 158.21895893799956,
+    "setup_seconds": 54.91606983100064,
+    "controller_seconds": 103.17785017200367,
+    "peak_rss_bytes": 580337664,
+    "artifact_bytes": 39392647,
+    "stages": {
+      "source_audit": {
+        "calls": 5,
+        "inclusive_seconds": 0.004284909009584226,
+        "exclusive_seconds": 0.004284909009584226
+      },
+      "independent_coupled_audit": {
+        "calls": 3,
+        "inclusive_seconds": 41.546901272005925,
+        "exclusive_seconds": 41.54397376400448
+      },
+      "observable_extraction": {
+        "calls": 3,
+        "inclusive_seconds": 1.3813694810014567,
+        "exclusive_seconds": 1.3813694810014567
+      },
+      "typed_decode": {
+        "calls": 4,
+        "inclusive_seconds": 0.18055917099991348,
+        "exclusive_seconds": 0.18055917099991348
+      },
+      "sources": {
+        "calls": 2,
+        "inclusive_seconds": 0.002198052992753219,
+        "exclusive_seconds": 0.002198052992753219
+      },
+      "conduction_with_audit": {
+        "calls": 2,
+        "inclusive_seconds": 0.09291849399596686,
+        "exclusive_seconds": 0.09291849399596686
+      },
+      "mechanical_correctors": {
+        "calls": 2,
+        "inclusive_seconds": 47.292800624003576,
+        "exclusive_seconds": 47.292800624003576
+      }
+    },
+    "unprofiled_io_and_controller_seconds": 12.804784610991192
+  },
+  "counts": {
+    "reused_whole": 1,
+    "new_trials": 2,
+    "corrections": 8,
+    "BE_predictor_final_solves": 16,
+    "independent_coupled_audits": 3,
+    "source_audits": 5,
+    "endpoint_typed_restart_checks": 3,
+    "parent_typed_decodes": 2,
+    "checkpoint_disk_readbacks": 3
+  },
+  "fine_energy": {
+    "physical_maxwell_j": 4.96474274107728e+17,
+    "thermal_work_j": 1.1026049826210657e+18,
+    "numerical_memory_j": 1.39707393113003e+17,
+    "numerical_kinetic_j": 5001.846355070767
+  },
+  "whole_energy": {
+    "physical_maxwell_j": 4.992730377966657e+17,
+    "thermal_work_j": 1.4353726908364175e+18,
+    "numerical_memory_j": 3.1652797243878694e+17,
+    "numerical_kinetic_j": 4998.739765309741
+  },
+  "fine_final_elastic_j": 3.489732065136342e+19,
+  "whole_final_elastic_j": 3.5049455317935157e+19,
+  "fine_max_damage": 0.039977165915195956,
+  "whole_max_damage": 0.0400266912248807,
+  "fine_surface_temperature_k": 1374.5154345171127,
+  "whole_surface_temperature_k": 1374.5182088946196,
+  "fine_end_time_myr": 0.8684250000000004,
+  "whole_end_time_myr": 0.8684250000000006,
+  "proposed_next_macro_years": 5.586900959163345,
+  "proposed_step_executed": false,
+  "whole_packet_raw_sha256": "4ac5efaeb55948a226379bbc184f298248a2e09a67a423699748790e0d3a0539",
+  "half1_packet_raw_sha256": "f9f0dff6dad2dedfd52529536939d2c8eacf3554dba1a552a96839091ef7c5fa",
+  "half2_packet_raw_sha256": "5e8d430efa592c06be35ea967757ad81e63f0a0191706fa8f612173182e75fdb",
+  "report_raw_sha256": "8722bf15dcd276279409d7c480432eff7d1fb200bc8561ab2fa16076d29d3ba0",
+  "base_commit": "d5c01fe11f185134e491fc885a8ea852c4d6ff6a",
+  "verification_path": "/workspace/genesis-forced-pair-25-01-verification.json",
+  "verification_raw_sha256": "bc3469eaffd56f90354753bbc7a1018558d37aeef7d751591bdfdd790ad3971a",
+  "report_path": "/workspace/genesis-forced-pair-25-01/report.json",
+  "working_fine_packet_path": "/workspace/genesis-forced-pair-25-01/001_half2.json",
+  "pre_run_tests_passed": 44,
+  "verification_status": "PASS_HASH_AND_CONTROLLER_REPLAY",
+  "verification_new_solver_calls": 0,
+  "new_planetary_trials": 2,
+  "engineering_accepted": false
+}
