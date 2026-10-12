@@ -1,3 +1,9 @@
+**Пользователь одобрил coupling; первый opt-in замкнутый блок готов.**
+[Реализация, инварианты, реальная миграция и следующий шаг](analysis/genesis_coupled_thermal_validation/README.md).
+120 тестов PASS; проекция сохраняет общий тепловой запас и профили колонок,
+явно меняя определение глубокого mantle (1645,27 К). Canonical/default прежние.
+Исторические записи ниже об ожидании ответа больше не являются блокировкой.
+
 **Sidecar неприменённых обменов BE50 создан:**
 [проверка и ограничения](analysis/genesis_energy_inventory/SIDECAR.md).
 28 тестов PASS; applied_to_thermal_state=false, historical_opening_balance=null.
