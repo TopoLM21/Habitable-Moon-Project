@@ -1,3 +1,14 @@
+**Одна exploratory100-проба остановлена на source conservation, без повторов.**
+[Runbook и фактический результат](analysis/genesis_exploratory_100/README.md).
+Явные exploratory выходные бюджеты и isolated100 cap реализованы; verified/default
+и conservation/gate/numerical-work ограничения прежние. Реальный тепловой граф
+даёт UNCERTIFIED event check: текущий cooling не доказывает весь путь.
+Первый coarse100 source-stage: остаток9,94e13J > allowance1,76e13J (5,65×).
+54,40с всего,54,19с setup; завершённых trials0, halves0, accepted0, canonical unchanged.
+Пара не получена: новые различия100/2×50 неизвестны. Исправление точности source
+при прежнем аудите — prerequisite отдельного будущего запуска, не выполнено здесь.
+SDIRK2 CLOSED; Restore CLOSED. Никакого автоматического уменьшения или продолжения.
+
 **SDIRK2 закрыт как непригодный при неизменном строгом требовании пассивности.**
 [Конечное решение](analysis/genesis_sdirk2_prototype/FINAL_DECISION.md).
 Тонкий блок исправлен исключением памяти, масштабированием и refinement:

@@ -1,0 +1,88 @@
+{
+  "report": {
+    "status": "STOPPED",
+    "accepted": false,
+    "canonical_advanced": false,
+    "new_trials_started": 1,
+    "completed_trials": 0,
+    "preflight": {
+      "status": "UNCERTIFIED_DIAGNOSTIC",
+      "unsupported": [],
+      "closest_old_cut": 639,
+      "closest_old_id": 736,
+      "old_margin_k": 0.24621753760720821,
+      "initial_conduction_rate_at_closest_k_year": -0.006844695723912822,
+      "maximum_old_conduction_rate_k_year": 5.319387973505364e-10,
+      "conduction_only_global_upper_k": 2306.395587753871,
+      "old_boundary_flux_upper_w": 9016252144551118.0,
+      "old_one_sided_conduction_bound": false,
+      "birth_margin_k": 187.87340425633738,
+      "water_margin_k": 730.6980516551203,
+      "max_damage": 0.039591572199468364,
+      "damage_margin": 0.6104084278005316,
+      "full_path_certified": false,
+      "limitation": "Real graph maximum principle cannot bound old nodes below solidus; source/mechanical-feedback rates and stress-dependent damage lack full-path envelopes. Endpoint rates are diagnostics, not extrapolation bounds."
+    },
+    "setup_seconds": 54.19176533299469,
+    "reason": "ValueError: Source endpoint energy audit",
+    "seconds": 54.399753382997005,
+    "artifact_bytes": 2046768,
+    "peak_rss_kib": 477504,
+    "canonical_unchanged": true,
+    "timings": [
+      {
+        "label": "whole100",
+        "stage": "decode",
+        "inclusive_seconds": 0.04999005600257078,
+        "exclusive_seconds": 0.04999005600257078
+      },
+      {
+        "label": "whole100",
+        "stage": "apply_ports",
+        "inclusive_seconds": 0.000883925000380259,
+        "exclusive_seconds": 0.000883925000380259
+      }
+    ]
+  },
+  "static_source_diagnosis": {
+    "scope": "Static reconstruction of the failed water radiative scalar equation only; no orbit integration, no apply_ports call, no new trial",
+    "surface_endpoint_k": 1364.3779999024125,
+    "residual_j": 99437082836992.0,
+    "unchanged_allowance_j": 17592186044416.0,
+    "ratio": 5.65234375,
+    "new_planetary_trials": 0
+  },
+  "artifacts": {
+    "report.json": {
+      "path": "/workspace/genesis-exploratory-100-01/report.json",
+      "bytes": 1591,
+      "sha256": "83a7ac21b865abb184e86a6f184fef7d98ea6de6525ea190ef0d63406bcb6500"
+    },
+    "preflight.json": {
+      "path": "/workspace/genesis-exploratory-100-01/preflight.json",
+      "bytes": 787,
+      "sha256": "a9cd1e3ebf4a71fab168823e1dfcb01bf7aeeae9844420af35d322eddca4129a"
+    },
+    "static_failure_diagnosis.json": {
+      "path": "/workspace/genesis-exploratory-100-01/static_failure_diagnosis.json",
+      "bytes": 321,
+      "sha256": "eaa84f0ef2270ae76421681a9ef3999c0313a36fbd73ba052567412f34d064ee"
+    },
+    "provenance.json": {
+      "path": "/workspace/genesis-exploratory-100-01/provenance.json",
+      "bytes": 41887,
+      "sha256": "f7a67217b554badc867f0c5ee28757bfd7b9959beccd4a650078fd433d64a239"
+    },
+    "config.json": {
+      "path": "/workspace/genesis-exploratory-100-01/config.json",
+      "bytes": 851,
+      "sha256": "a413975741ccbe64bc4eda05fc853d21ef087815fcccd6db8ab2cb5feedf79c5"
+    },
+    "initial.json": {
+      "path": "/workspace/genesis-exploratory-100-01/initial.json",
+      "bytes": 2003243,
+      "sha256": "4c0427d81bcb4b2a1dd8df2021e5ae1f6fedf983a9b8b2c165d69128a716bc95"
+    }
+  },
+  "physical_conclusion": "No completed 100-year or 50-year physical trial; source conservation guard stopped first coarse attempt; no acceptance or retry"
+}

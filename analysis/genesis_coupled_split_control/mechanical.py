@@ -25,14 +25,15 @@ from analysis.genesis_cutcell_mechanical_trial.audit import audit_feedback
 from analysis.genesis_be_candidate.adapter import preparation_view
 
 
-def advance(model,parent,root,packet,radial_moments,*,orbit_after=None):
+def advance(model,parent,root,packet,radial_moments,*,orbit_after=None,diagnostic_max_step_years=50):
     r=root['runtime_state'];report={'correctors':[]}
     template=SimpleNamespace(after_ids=tuple(c.id for c in parent.mechanics.cohorts),radial_moments=radial_moments)
     report['before_gate']=gate(parent.fault_history,model.fault_parameters)
     t=packet['time_myr'];end_orbit=replace(parent.thermal.orbit,time_myr=t) if orbit_after is None else orbit_after
     if end_orbit.time_myr!=t:raise ValueError('Endpoint orbit clock mismatch')
     dt=(t-parent.time_myr)*SECONDS_PER_MYR
-    assert 0 < t-parent.time_myr <=5e-5+1e-14
+    if diagnostic_max_step_years not in (50,100):raise ValueError('Unsupported diagnostic step cap')
+    assert 0 < t-parent.time_myr <=diagnostic_max_step_years/1e6+1e-14
     ids=list(template.after_ids); index={x['material_id']:i for i,x in enumerate(packet['fixed_cut_geometry']) if x['material_id'] is not None};idx=np.array([index[i] for i in ids])
     m=np.array(packet['mass_kg']);base=np.array(packet['energy_j']);T=np.array(packet['temperature_k']);initial_T=T.copy()
     gp=GenesisParameters(**root['source_packet']['source']['parameters']['thermal']);n=len(T)
