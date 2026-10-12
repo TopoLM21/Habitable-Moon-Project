@@ -1,0 +1,112 @@
+{
+  "status": "PROTOTYPE_VERIFIED_WITH_ADMISSION_BLOCKERS",
+  "scheme": "SDIRK2 gamma=1-1/sqrt(2)",
+  "gamma": 0.29289321881345254,
+  "energy_matrix_eigenvalues": [
+    -0.0857864376269048,
+    0.085786437626905
+  ],
+  "real_patch": {
+    "cohort_id": 1,
+    "mass_kg": 3.916381244759399e+17,
+    "source_sha256": "4ac5efaeb55948a226379bbc184f298248a2e09a67a423699748790e0d3a0539",
+    "canonical_sha256": "62579a0bad128830a66e2f44579cf2b1f5d3835b691225b8d431102f3e4486d7",
+    "operator_dimension": 18,
+    "memory_dimension": 36,
+    "relaxation_per_s": 8.721322078204633e-12,
+    "scope": "isolated real-geometry/coefficient patch with manufactured states and forcing; not global planet"
+  },
+  "real_patch_attempt": {
+    "status": "BLOCKED_STAGE_SOLVE",
+    "reason": "STAGE_SOLVE_FAILED: stage=0 defect=1.29062e-09 nfev=441 message=The iteration is not making good progress, as measured by the \n improvement from the last five Jacobian evaluations.",
+    "mass_condition_number": 1063084436929.2051,
+    "maximum_drag_matrix_entry": 5.8462378685798605e+25
+  },
+  "analytic_convergence": {
+    "uniform": {
+      "errors": [
+        0.00017431059605341027,
+        4.394760490444205e-05,
+        1.1034585741061087e-05
+      ],
+      "ratios": [
+        3.966327549190096,
+        3.982714524652019
+      ],
+      "max_balance_residual_j": [
+        7.359740529684633e-15,
+        8.897062130270878e-15,
+        1.2904575168204321e-14
+      ]
+    },
+    "variable": {
+      "errors": [
+        0.0002902906711559176,
+        7.499176323312858e-05,
+        1.9067008738536173e-05
+      ],
+      "ratios": [
+        3.87096740549338,
+        3.9330638728645124
+      ],
+      "max_balance_residual_j": [
+        8.515120574793811e-15,
+        1.3328479318223518e-14,
+        1.3112647167262282e-14
+      ]
+    }
+  },
+  "negative_numerical_example": {
+    "energy_change_j": -0.001517047757822354,
+    "external_work_j": 0.0,
+    "source_heat_j": 0.0,
+    "physical_drag_j": 0.005194574746727005,
+    "physical_maxwell_j": 0.08261794055504525,
+    "thermal_work_to_mechanics_j": 0.0,
+    "thermal_feedback_j": [
+      0.08261794055504525
+    ],
+    "conduction_node_j": [
+      0.0
+    ],
+    "numerical_kinetic_j": -6.832435156716577e-06,
+    "numerical_memory_j": -0.003670694553759833,
+    "signed_numerical_j": -0.0036775269889165497,
+    "balance_residual_j": -1.189846832172492e-14,
+    "impulse_residual": [
+      0.0
+    ],
+    "stage_equation_defects": [
+      [
+        2.1788126858268697e-15,
+        -8.673617379884035e-18,
+        1.3877787807814457e-17
+      ],
+      [
+        9.853229343548264e-16,
+        0.0,
+        2.7755575615628914e-17
+      ]
+    ],
+    "independent_rate_defects": [
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ]
+    ]
+  },
+  "code_manifest": {
+    "analysis/genesis_sdirk2_prototype/audit.py": "b226f15787308760a7668def54a990462d2f8593265b4535b688f348728135c5",
+    "analysis/genesis_sdirk2_prototype/core.py": "3d16499f1c3f873df03bce3f59b370f699dfed917f871a33536e66de19d9a177",
+    "analysis/genesis_sdirk2_prototype/validate.py": "8da24cb3e2a3e9c87b19748f65c4157098faa4aaa18cdb25d1c72a66df32cb44",
+    "analysis/genesis_sdirk2_prototype/model.py": "f3f7c2237ce944cf06fd4323b98e848cd22d33e1327ead1e326695363e7a10c3"
+  },
+  "new_planetary_steps": 0,
+  "admission": "BLOCKED: signed numerical energy may be negative; real thin-cohort stage solve fails; physical interval event bounds and dynamic-coefficient/damage/orbit stages absent"
+}
