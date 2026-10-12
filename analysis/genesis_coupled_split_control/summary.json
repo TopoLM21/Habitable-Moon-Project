@@ -1,0 +1,130 @@
+{
+  "canonical_advanced": false,
+  "comparison": {
+    "column_liquid_mass_difference_kg": -122757334261730.0,
+    "damage": {
+      "max_abs": 2.0992424808546906e-05,
+      "relative_l2": 0.0005855553914880378,
+      "rms": 6.258904578140541e-06
+    },
+    "front_q": {
+      "max_abs": 0.0,
+      "relative_l2": 0.0,
+      "rms": 0.0
+    },
+    "interpretation": "Combined temporal/splitting sensitivity only; two resolutions do not isolate splitting error or prove convergence.",
+    "melt_fraction": {
+      "max_abs": 1.1214151113270177e-07,
+      "relative_l2": 2.095193811803662e-08,
+      "rms": 1.7307187390693954e-08
+    },
+    "physical_velocity": {
+      "difference_rms_m_s": 3.70280151236199e-14,
+      "relative_mass_norm": 0.0005869082964197686,
+      "v25_rms_m_s": 6.308995008163374e-11,
+      "v50_rms_m_s": 6.308576385535308e-11
+    },
+    "specific_enthalpy_j_kg": {
+      "max_abs": 9.163078126264736,
+      "relative_l2": 1.5469851379622395e-06,
+      "rms": 4.172579820201512
+    },
+    "stress_pa": {
+      "max_abs": 5182.882556267083,
+      "relative_l2": 0.0005011637597715626,
+      "rms": 3452.6821718718506
+    },
+    "temperature_k": {
+      "max_abs": 0.007635898438593358,
+      "relative_l2": 1.7513217180819905e-06,
+      "rms": 0.0034771195274206127
+    },
+    "velocity_m_s": {
+      "max_abs": 3.168362499583961e-10,
+      "relative_l2": 0.10673333321869867,
+      "rms": 1.259667614457809e-10
+    }
+  },
+  "correctors": [
+    4,
+    4
+  ],
+  "cumulative_allowance_j": 1.872692804124223e+16,
+  "cumulative_ledger": {
+    "damage_energy_change_j": -8522417388761640.0,
+    "external_work_j": 1202969473019911.8,
+    "numerical_kinetic_j": 5003.647581528401,
+    "numerical_memory_j": 4083268857951781.0,
+    "physical_drag_j": 9915718040209576.0,
+    "physical_maxwell_j": 9.711518945809007e+17,
+    "thermal_work_j": -3.0182505300844576e+16
+  },
+  "cumulative_open_budget": {
+    "balance_residual_j": 1016978977026273.9,
+    "control_volume_energy_change_j": -1.1779038448120174e+16,
+    "hypothesis": "unresolved channels return no heat during this bounded interval; not a universal constitutive law",
+    "net_boundary_input_j": -8712748567189664.0,
+    "numerical_sink_j": 4083268857956784.5,
+    "ports": [
+      {
+        "energy_into_domain_j": 1202969473019911.8,
+        "kind": "external_work",
+        "name": "prescribed_mechanical_driver"
+      },
+      {
+        "energy_into_domain_j": -9915718040209576.0,
+        "kind": "mechanical_energy_export",
+        "name": "unresolved_basal_interface"
+      }
+    ],
+    "storage_increments": {
+      "damage_unresolved_j": 8522417388761640.0,
+      "interface_unresolved_j": 0.0
+    },
+    "thermal_feedback_from_unresolved_j": 0.0,
+    "unit": "J"
+  },
+  "feedback_temperature_lag_k": [
+    2.1740120246249717e-05,
+    2.24909365442727e-05
+  ],
+  "final_sha256": "ad8810c6f6c537e6252deeaccafda569dcc403431a3442651934b7086992ad6d",
+  "original_stop": "Predictor zero damage energy suffered 8192 J cancellation in independent audit; delta-C integral removes cancellation without tolerance change or new solve.",
+  "readback_seconds": 32.84860247100005,
+  "restart_byte_identical": true,
+  "sequential_runner_usable": true,
+  "status": "PASS",
+  "steps_passed": 2,
+  "steps_started": 2,
+  "tests_passed": 81,
+  "unresolved_heat_return": "zero only for this diagnostic window",
+  "readback_new_physical_solves": 0,
+  "new_coupled_steps": 2,
+  "producer_seconds": 122.3484617330032,
+  "final_readonly_batch_status": "PASS",
+  "final_readonly_batch_sha256": "c0371914332d6730881fa0e06c771db0c2ea8a41b04a9ca4db5e0a0127594539",
+  "step_audits": [
+    {
+      "correctors": 4,
+      "local_heat_balance_j": 66202061.625,
+      "momentum_relative": 5.384396586353399e-15,
+      "status": "PASS",
+      "step": 1
+    },
+    {
+      "correctors": 4,
+      "local_heat_balance_j": 66991046.75,
+      "momentum_relative": 6.0058241014305625e-15,
+      "status": "PASS",
+      "step": 2
+    }
+  ],
+  "code_sha256": {
+    "analysis/genesis_coupled_split_control/run.py": "329dcea7b950cf78bf5f7e85ab9db1222de4c7f9dbd5ac6c29a48b199b71f413",
+    "analysis/genesis_coupled_split_control/finish.py": "b81f949078ed3a5e9107112dfc269846c540140c2953950d39cd58a46225d7b2",
+    "analysis/genesis_coupled_split_control/verify.py": "58adb54407adc65f39a5dca0f086b5a13a8563a8ea40ba895104a427ee0b0ff1",
+    "analysis/genesis_coupled_split_control/audit.py": "834934f5d452d3443708c6d3ab0f97b8cf81839c333b984440629bd4985556aa",
+    "analysis/genesis_coupled_split_control/thermal.py": "6fd428a2c0e6417b80e53ef91646c4e9d42220b5a1e4efafb77f20b4eab600fe",
+    "analysis/genesis_coupled_split_control/mechanical.py": "c505fac9e37152d20acca4091ad2e70b04409b38ed5e623314a90a01694824c2"
+  }
+}

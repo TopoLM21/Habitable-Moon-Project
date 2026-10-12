@@ -1,3 +1,15 @@
+**Полная coupled chain: saved BE50 vs 2×25 лет PASS. Restore CLOSED.**
+[Runner, runbook, comparison и guards](analysis/genesis_coupled_split_control/README.md).
+Ровно два новых связанных шага, 4 коррекции каждый; второй из decoded restart
+первого. 800 IDs/массы/память сохранены; phase/newbirth/healing/gate не возникли.
+81 тест, независимые аудиты и итоговая read-only batch verification PASS.
+ΔTmax 0,007636 K; physical mass-RMS velocity difference 0,05869%; front unchanged.
+Thermal work magnitude отличается на 9,90%: temporal/splitting accuracy OPEN.
+Пригоден bounded sequential control при прежних guards и явном no-return-heat
+для unresolved drag/damage; не длительная planetary evolution и не default.
+Аудитор damage использует integral(delta-C), устраняя отмену 8192 J без
+ослабления допуска; оба рассчитанных шага сохранены, повторных шагов нет.
+
 **Open energy boundary budget PASS; новая эволюция не запускалась. Restore CLOSED.**
 [Источник тяг, drag/damage convention и количественный бюджет](analysis/genesis_open_boundary_budget/README.md).
 Предписанная тяга — внешний work port; динамический mantle donor не нужен.

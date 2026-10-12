@@ -1,3 +1,10 @@
+**Связанное последовательное исполнение проверено: BE50 vs 2×25 PASS.**
+[Два шага, restart, сравнение и ограничения](analysis/genesis_coupled_split_control/README.md).
+800 existing IDs; 81 тест; canonical/default unchanged. Runner готов для
+ограниченных последовательных контролей до healing/phase/birth/activation guard.
+Этапы 2 и 6 остаются частичными: временная/splitting чувствительность работы,
+тепловой возврат unresolved каналов, profile/spatial accuracy ещё OPEN.
+
 **Энергетические границы уточнены на saved BE50, без нового шага.**
 [Открытый бюджет и физический остаток](analysis/genesis_open_boundary_budget/README.md).
 Внешний driver задан измеренной работой; требование динамического mantle donor
