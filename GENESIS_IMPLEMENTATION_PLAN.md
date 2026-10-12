@@ -1,3 +1,11 @@
+**Forced numerical memory: количественный диагноз, без нового шага.**
+[Разложение и пределы exact-Maxwell прототипа](analysis/genesis_forced_memory_diagnosis/README.md).
+54 теста PASS; 63,4% не сняты малым ΔT. Охлаждение/деформация доминируют;
+простая exponential замена даёт signed numerical work и не допущена в production.
+Следующий численный шаг — work-budget controller, global Q + local stored-energy
+gate; пока только обоснованный проект, новых реальных шагов0. Ни один физический
+этап этим не закрыт; canonical и существующая история сохранены.
+
 **Инженерный forced pipeline существующего сценария работает.**
 [Один coupled25 с реальными источниками и restart](analysis/genesis_forced_coupled_validation/README.md).
 87 тестов; исходные source coefficients, fixed-grid closure и canonical прежние.

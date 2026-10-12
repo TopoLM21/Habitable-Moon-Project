@@ -1,3 +1,16 @@
+**Диагноз forced memory завершён, новых планетарных шагов 0. Restore CLOSED.**
+[Saved-forcing разложение, exact-Maxwell прототип и следующий численный путь](analysis/genesis_forced_memory_diagnosis/README.md).
+54 адресных теста PASS. Старые 800 IDs; canonical/default/production неизменны.
+63,4% N/Maxwell вызваны главным образом охлаждением/деформацией, z=0,0069–0,0081.
+Локальные N/Q до59,1 и N/U до0,941 нельзя скрывать глобальным средним.
+Exact frozen-forcing probe: stress L2 +/−0,0337%, heat −1,012%, thermal work
+−22,18%; max |Δdamage|4,07e−7. Это не новая равновесная траектория.
+Изолированный endpoint-BE/exact-memory прототип сохраняет stiff scalar damping,
+но signed coupling defect бывает отрицательным: production admission отсутствует.
+Следующий один путь — bounded BE work-budget controller с глобальным и локальным
+допусками; оценка13 шагов/25лет при5% Q и1% local U, без выполненного dt sweep.
+Return/healing, splitting и spatial controls остаются OPEN. Ждать поручения.
+
 **Реальные thermal ports подключены: один forced coupled25 PASS. Restore CLOSED.**
 [Источники, budget, runbook и ограничения](analysis/genesis_forced_coupled_validation/README.md).
 87 тестов до шага; 102,81 с, 4 коррекции, 800 IDs, фазовые/healing/gate guards,

@@ -1,0 +1,242 @@
+{
+  "status": "PASS_SAVED_FORCING_DIAGNOSIS",
+  "new_planetary_steps": 0,
+  "inputs": {
+    "forced25": {
+      "path": "/workspace/genesis-forced-coupled-25-01/candidate.json",
+      "sha256": "e6ad0ed1372b18a73c3852f639edafd959776e6cb0d3a747aa75bcffe8c365a5"
+    },
+    "unforced50": {
+      "path": "/workspace/genesis-cutcell-mechanical-02/candidate.json",
+      "sha256": "5a0cfcd3edfd57f4f05b59e8b408b09c25ac2a704068609e22029ab865230f2e"
+    },
+    "unforced25": {
+      "path": "/workspace/genesis-coupled-split-25-01/step_1.json",
+      "sha256": "5a0a1f53c9a01237f626b03c7119f98475d8392e0e84349b11bfd1e50c50b9ed"
+    }
+  },
+  "canonical": {
+    "path": "analysis/genesis_volume_creation_validation/evidence/actual_continuation/direct_after_second.json",
+    "sha256": "62579a0bad128830a66e2f44579cf2b1f5d3835b691225b8d431102f3e4486d7"
+  },
+  "results": {
+    "forced25": {
+      "dt_years": 25.000000000052758,
+      "cohorts": 800,
+      "newborn_count": 0,
+      "z_dt_over_tau": {
+        "min": 0.006878957247677241,
+        "median": 0.007922124555886773,
+        "max": 0.008147744034683706
+      },
+      "tau_years": {
+        "min": 3068.333994493637,
+        "median": 3155.8229254066823,
+        "max": 3634.2717507794214
+      },
+      "temperature_increment_k": {
+        "min": -1.6176962974648177,
+        "median": -0.4958953244592976,
+        "max": -0.4392724494682625
+      },
+      "numerical_memory_j": 3.1652797243878694e+17,
+      "physical_maxwell_BE_j": 4.992730377966656e+17,
+      "ratio_N_over_Q": 0.6339777005296577,
+      "local_N_over_Q": {
+        "min": 0.04294926927793909,
+        "median": 6.1136139905310865,
+        "max": 59.06492703470217
+      },
+      "local_N_over_elastic": {
+        "min": 0.0006602394351605699,
+        "median": 0.09624702784024057,
+        "max": 0.9413831672800315
+      },
+      "change_norm_terms_j": {
+        "deformation": 2.6825618806958864e+17,
+        "cooling": 5.931354865907482e+17,
+        "relaxation": 1781486305032409.5
+      },
+      "signed_cross_terms_j": {
+        "deformation__cooling": -5.3651909799076294e+17,
+        "deformation__relaxation": -90984913035759.44,
+        "cooling__relaxation": -1.0035105622783438e+16
+      },
+      "exact_frozen_forcing": {
+        "elastic_after_j": 3.5052725376083657e+19,
+        "elastic_difference_j": 3270058148499456.0,
+        "physical_heat_j": 4.942223521688694e+17,
+        "physical_heat_difference_j": -5050685627796224.0,
+        "thermal_work_j": 1.1169794399525527e+18,
+        "internal_work_j": -4518557666312524.0,
+        "material_energy_residual_j": -242.93902587890625,
+        "endpoint_momentum_signed_coupling_defect_j": -31186003455820.0,
+        "endpoint_thermal_work_j": 1.437565980770558e+18,
+        "max_face_stress_difference_pa": 3435.745103782043,
+        "face_stress_relative_l2": 0.0003367780163002792,
+        "local_memory_relative_energy_norm": {
+          "min": 9.565286443467567e-05,
+          "median": 0.0012189186145115023,
+          "max": 0.003845505781179187
+        },
+        "max_memory_coefficient_difference": 7.11007527928849e-08
+      },
+      "caveat": "Constant total deformation/temperature rates and frozen endpoint rheology/damage only. Does not solve alternative momentum, thermal feedback or planetary evolution.",
+      "damage_predictor_probe": {
+        "max_absolute_difference": 4.068092622766528e-07,
+        "max_original": 0.0400266912248807,
+        "max_with_exponential_stress": 0.04002709531303761,
+        "activation_threshold": 0.65,
+        "note": "Reevaluate inherited damage law using exponential predictor stress at saved displacement/temperature; do not accept or re-solve final state."
+      },
+      "adaptive_cost_estimate": {
+        "0.05": {
+          "max_step_years": 1.9716781819901918,
+          "steps_for_25_years": 13,
+          "basis": "Frozen observed rate scaling N~dt^2,Q~dt; estimate, not a convergence proof"
+        },
+        "0.01": {
+          "max_step_years": 0.39433563639803837,
+          "steps_for_25_years": 64,
+          "basis": "Frozen observed rate scaling N~dt^2,Q~dt; estimate, not a convergence proof"
+        }
+      }
+    },
+    "unforced50": {
+      "dt_years": 49.99999999999449,
+      "cohorts": 800,
+      "newborn_count": 0,
+      "z_dt_over_tau": {
+        "min": 0.013979042487333634,
+        "median": 0.015919875253146337,
+        "max": 0.01636360588380682
+      },
+      "tau_years": {
+        "min": 3055.561247015473,
+        "median": 3140.832948875305,
+        "max": 3576.782890909684
+      },
+      "temperature_increment_k": {
+        "min": 0.012325468539302163,
+        "median": 0.01960388436566518,
+        "max": 0.07040402657298728
+      },
+      "numerical_memory_j": 8207145387958360.0,
+      "physical_maxwell_BE_j": 9.639595621065804e+17,
+      "ratio_N_over_Q": 0.008513993439748601,
+      "local_N_over_Q": {
+        "min": 0.0027708963895306865,
+        "median": 0.020590840473749795,
+        "max": 0.5906625749954368
+      },
+      "local_N_over_elastic": {
+        "min": 7.965156812172168e-05,
+        "median": 0.0006460834841954675,
+        "max": 0.019330550744194226
+      },
+      "change_norm_terms_j": {
+        "deformation": 514251805030154.94,
+        "cooling": 1144667487440060.8,
+        "relaxation": 6962194579239451.0
+      },
+      "signed_cross_terms_j": {
+        "deformation__cooling": -1020363650013730.8,
+        "deformation__relaxation": 125999669770720.4,
+        "cooling__relaxation": 480395496491718.2
+      },
+      "exact_frozen_forcing": {
+        "elastic_after_j": 3.341189416341925e+19,
+        "elastic_difference_j": -7195282237108224.0,
+        "physical_heat_j": 9.784292041176074e+17,
+        "physical_heat_difference_j": 1.4469642011027072e+16,
+        "thermal_work_j": -3.4364697355957784e+16,
+        "internal_work_j": -8710466803078370.0,
+        "material_energy_residual_j": -441.0811462402344,
+        "endpoint_momentum_signed_coupling_defect_j": 67455452567538.57,
+        "endpoint_thermal_work_j": -3.3485972129634496e+16,
+        "max_face_stress_difference_pa": 2056.392312437296,
+        "face_stress_relative_l2": 0.00011422637682864541,
+        "local_memory_relative_energy_norm": {
+          "min": 6.180177009257941e-05,
+          "median": 0.0002005572502465833,
+          "max": 0.0011252070001309096
+        },
+        "max_memory_coefficient_difference": 4.2358777981564306e-08
+      },
+      "caveat": "Constant total deformation/temperature rates and frozen endpoint rheology/damage only. Does not solve alternative momentum, thermal feedback or planetary evolution."
+    },
+    "unforced25": {
+      "dt_years": 25.000000000052758,
+      "cohorts": 800,
+      "newborn_count": 0,
+      "z_dt_over_tau": {
+        "min": 0.0069867032144674095,
+        "median": 0.007958511740131137,
+        "max": 0.008180465742757315
+      },
+      "tau_years": {
+        "min": 3056.060716614679,
+        "median": 3141.3956572288416,
+        "max": 3578.2255568384676
+      },
+      "temperature_increment_k": {
+        "min": -0.004437339998958123,
+        "median": 0.00023051852122080158,
+        "max": 0.02765986268650522
+      },
+      "numerical_memory_j": 1985129804681730.0,
+      "physical_maxwell_BE_j": 4.891957428494494e+17,
+      "ratio_N_over_Q": 0.004057945788977678,
+      "local_N_over_Q": {
+        "min": 0.001676769792342732,
+        "median": 0.0074104350891532255,
+        "max": 0.2568269856012815
+      },
+      "local_N_over_elastic": {
+        "min": 2.3430504416593558e-05,
+        "median": 0.00011818277742940249,
+        "max": 0.004201905863943272
+      },
+      "change_norm_terms_j": {
+        "deformation": 52119258617368.234,
+        "cooling": 156097182638740.53,
+        "relaxation": 1766069797253445.8
+      },
+      "signed_cross_terms_j": {
+        "deformation__cooling": -102702471331411.4,
+        "deformation__relaxation": 31939127871665.105,
+        "cooling__relaxation": 81606909631920.44
+      },
+      "exact_frozen_forcing": {
+        "elastic_after_j": 3.392818145472517e+19,
+        "elastic_difference_j": -1814056023269376.0,
+        "physical_heat_j": 4.928334142081978e+17,
+        "physical_heat_difference_j": 3637671358748416.0,
+        "thermal_work_j": -1.168455024899666e+16,
+        "internal_work_j": -4407023193444276.0,
+        "material_energy_residual_j": 209.3955535888672,
+        "endpoint_momentum_signed_coupling_defect_j": 16783595871759.379,
+        "endpoint_thermal_work_j": -1.153866301928968e+16,
+        "max_face_stress_difference_pa": 497.2829780317843,
+        "face_stress_relative_l2": 2.7593047830079332e-05,
+        "local_memory_relative_energy_norm": {
+          "min": 1.6831263864333163e-05,
+          "median": 4.156938925185351e-05,
+          "max": 0.00026369455681202116
+        },
+        "max_memory_coefficient_difference": 1.0788492637659255e-08
+      },
+      "caveat": "Constant total deformation/temperature rates and frozen endpoint rheology/damage only. Does not solve alternative momentum, thermal feedback or planetary evolution."
+    }
+  },
+  "full_report": {
+    "path": "/workspace/genesis-forced-memory-diagnosis-final.json",
+    "sha256": "3969b130d1150cae2dd89147e9329a367866575d1c5e3edd516286a784653c4c"
+  },
+  "tests": {
+    "new": 20,
+    "scoped_total": 54,
+    "status": "PASS"
+  },
+  "prototype_admission": "NOT_ADMITTED_SIGNED_COUPLING_DEFECT"
+}
