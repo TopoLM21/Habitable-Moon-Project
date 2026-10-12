@@ -1,0 +1,453 @@
+{
+  "scope": "Prescribed 1D local prospective cohesive kernel; not calibrated Genesis, not bulk stress or evolution",
+  "base_commit": "632e0fbe4e1aa84941eac2df0b519235e88f52e1",
+  "parameters": {
+    "Gc_j_m2": 1000000,
+    "T_pa": 4000000,
+    "k_pa_m": 1000000000,
+    "compression_k_pa_m": 2000000000
+  },
+  "predeclared_levels": [
+    8,
+    32,
+    128
+  ],
+  "predeclared_epsilon_scenarios": [
+    0.0001,
+    2e-06,
+    1e-08
+  ],
+  "mixed_criterion": "E <= epsilon * physical_scale + epsilon * abs(observable); diagnostic proposal only",
+  "scale_policy": "sum of area*peak traction for force; sum of area*Gc for work; peak separation for gap; fixed before results",
+  "cases": [
+    {
+      "case": "ordinary",
+      "patches": [
+        {
+          "old_gap_m": 0.0,
+          "new_gap_m": 0.0123,
+          "axis": 0,
+          "area_m2": 1.0,
+          "prescribed_not_predicted": true,
+          "traction_pa": 3933064.5161290313,
+          "force_n": 3933064.5161290313,
+          "oracle_force_n": "549101384567147724609375/139611588448485376",
+          "oracle_work_j": "6586889381397623919927556942672145921875/160961202614579656484445386205822976",
+          "force_error_n": 9.449785112120561e-10,
+          "stored_energy_change_j": 24188.346774193542,
+          "dissipation_increment_j": 16733.870967741936,
+          "reported_work_j": 40922.21774193548,
+          "independent_oracle_vs_energy_error_j": 7.003027638072883e-12,
+          "quadrature_work_j": [
+            40636.65196572581,
+            40904.251748361894,
+            40921.12809211977
+          ]
+        }
+      ],
+      "reference_work_j": "6586889381397623919927556942672145921875/160961202614579656484445386205822976",
+      "reference_force_n": "549101384567147724609375/139611588448485376",
+      "net_force_n": 3933064.5161290313,
+      "net_force_error_n": 9.449785112120561e-10,
+      "work_scale_j": 1000000.0,
+      "force_scale_n": 4000000.0,
+      "traction_scale_pa": 4000000,
+      "levels": [
+        {
+          "subintervals_per_patch": 8,
+          "work_j": 40636.65196572581,
+          "true_error_j": 285.5657762096741,
+          "relative_true_error": 0.0069782575815053515,
+          "independent_energy_balance_residual_j": -285.5657762096671,
+          "work_sign_matches_oracle": true,
+          "diagnostics_only": {
+            "pure_allowance": 0.08184443548387096,
+            "mixed_allowance": 2.081844435483871,
+            "pure_pass": false,
+            "mixed_pass": false,
+            "physical_scale": 1000000.0,
+            "absolute_term": 2.0,
+            "relative_term": 0.08184443548387096
+          }
+        },
+        {
+          "subintervals_per_patch": 32,
+          "work_j": 40904.251748361894,
+          "true_error_j": 17.96599357359055,
+          "relative_true_error": 0.0004390278573582708,
+          "independent_energy_balance_residual_j": -17.965993573583546,
+          "work_sign_matches_oracle": true,
+          "diagnostics_only": {
+            "pure_allowance": 0.08184443548387096,
+            "mixed_allowance": 2.081844435483871,
+            "pure_pass": false,
+            "mixed_pass": false,
+            "physical_scale": 1000000.0,
+            "absolute_term": 2.0,
+            "relative_term": 0.08184443548387096
+          }
+        },
+        {
+          "subintervals_per_patch": 128,
+          "work_j": 40921.12809211977,
+          "true_error_j": 1.089649815715984,
+          "relative_true_error": 2.6627340252856178e-05,
+          "independent_energy_balance_residual_j": -1.089649815708981,
+          "work_sign_matches_oracle": true,
+          "diagnostics_only": {
+            "pure_allowance": 0.08184443548387096,
+            "mixed_allowance": 2.081844435483871,
+            "pure_pass": false,
+            "mixed_pass": true,
+            "physical_scale": 1000000.0,
+            "absolute_term": 2.0,
+            "relative_term": 0.08184443548387096
+          }
+        }
+      ],
+      "assumed_budget_scenarios": [
+        {
+          "epsilon": 0.0001,
+          "assumed_force_error_n": 400.0,
+          "assumed_work_error_j": 100.0,
+          "force_sign_resolved": true,
+          "work_sign_resolved": true
+        },
+        {
+          "epsilon": 2e-06,
+          "assumed_force_error_n": 8.0,
+          "assumed_work_error_j": 2.0,
+          "force_sign_resolved": true,
+          "work_sign_resolved": true
+        },
+        {
+          "epsilon": 1e-08,
+          "assumed_force_error_n": 0.04,
+          "assumed_work_error_j": 0.01,
+          "force_sign_resolved": true,
+          "work_sign_resolved": true
+        }
+      ],
+      "force_discretization_note": "Endpoint force is independent of path-work quadrature; no claim of coupled force convergence"
+    },
+    {
+      "case": "cancellation",
+      "patches": [
+        {
+          "old_gap_m": 0.0,
+          "new_gap_m": 0.001,
+          "axis": 1,
+          "area_m2": 1.0,
+          "prescribed_not_predicted": true,
+          "traction_pa": 1000000.0,
+          "force_n": 1000000.0,
+          "oracle_force_n": "2251799813685248046875/2251799813685248",
+          "oracle_work_j": "2596148429267413922351639221501953125/5192296858534827628530496329220096",
+          "force_error_n": 2.0816681711721685e-11,
+          "stored_energy_change_j": 500.0,
+          "dissipation_increment_j": 0.0,
+          "reported_work_j": 500.0,
+          "independent_oracle_vs_energy_error_j": 2.0816681711721685e-14,
+          "quadrature_work_j": [
+            500.0,
+            500.0,
+            500.0
+          ]
+        },
+        {
+          "old_gap_m": -0.0014142135623730952,
+          "new_gap_m": -0.00099999999,
+          "axis": 1,
+          "area_m2": 1.0,
+          "prescribed_not_predicted": true,
+          "traction_pa": -999999.9900000001,
+          "force_n": -999999.9900000001,
+          "oracle_force_n": "-17592185868494140625/17592186044416",
+          "oracle_work_j": "-649037120297595811910773518642578125/1298074214633706907132624082305024",
+          "force_error_n": 4.632738637155853e-11,
+          "stored_energy_change_j": -500.0000100000001,
+          "dissipation_increment_j": 0.0,
+          "reported_work_j": -500.0000100000001,
+          "independent_oracle_vs_energy_error_j": 7.488528938619485e-14,
+          "quadrature_work_j": [
+            -500.0000100000001,
+            -500.0000100000001,
+            -500.00001000000026
+          ]
+        }
+      ],
+      "reference_work_j": "-51922969325291454853068359375/5192296858534827628530496329220096",
+      "reference_force_n": "22517998046875/2251799813685248",
+      "net_force_n": 0.009999999892897904,
+      "net_force_error_n": 6.714406808328022e-11,
+      "work_scale_j": 2000000.0,
+      "force_scale_n": 8000000.0,
+      "traction_scale_pa": 4000000,
+      "levels": [
+        {
+          "subintervals_per_patch": 8,
+          "work_j": -1.0000000088439265e-05,
+          "true_error_j": 5.4068607674473166e-14,
+          "relative_true_error": 5.406860690395295e-09,
+          "independent_energy_balance_residual_j": 0.0,
+          "work_sign_matches_oracle": true,
+          "diagnostics_only": {
+            "pure_allowance": 2.0000000285015745e-11,
+            "mixed_allowance": 4.00000000002,
+            "pure_pass": true,
+            "mixed_pass": true,
+            "physical_scale": 2000000.0,
+            "absolute_term": 4.0,
+            "relative_term": 2.0000000285015745e-11
+          }
+        },
+        {
+          "subintervals_per_patch": 32,
+          "work_j": -1.0000000088439265e-05,
+          "true_error_j": 5.4068607674473166e-14,
+          "relative_true_error": 5.406860690395295e-09,
+          "independent_energy_balance_residual_j": 0.0,
+          "work_sign_matches_oracle": true,
+          "diagnostics_only": {
+            "pure_allowance": 2.0000000285015745e-11,
+            "mixed_allowance": 4.00000000002,
+            "pure_pass": true,
+            "mixed_pass": true,
+            "physical_scale": 2000000.0,
+            "absolute_term": 4.0,
+            "relative_term": 2.0000000285015745e-11
+          }
+        },
+        {
+          "subintervals_per_patch": 128,
+          "work_j": -1.0000000258969521e-05,
+          "true_error_j": 1.1646164890795088e-13,
+          "relative_true_error": 1.1646164724828073e-08,
+          "independent_energy_balance_residual_j": -1.7053025658242404e-13,
+          "work_sign_matches_oracle": true,
+          "diagnostics_only": {
+            "pure_allowance": 2.0000000285015745e-11,
+            "mixed_allowance": 4.00000000002,
+            "pure_pass": true,
+            "mixed_pass": true,
+            "physical_scale": 2000000.0,
+            "absolute_term": 4.0,
+            "relative_term": 2.0000000285015745e-11
+          }
+        }
+      ],
+      "assumed_budget_scenarios": [
+        {
+          "epsilon": 0.0001,
+          "assumed_force_error_n": 800.0,
+          "assumed_work_error_j": 200.0,
+          "force_sign_resolved": false,
+          "work_sign_resolved": false
+        },
+        {
+          "epsilon": 2e-06,
+          "assumed_force_error_n": 16.0,
+          "assumed_work_error_j": 4.0,
+          "force_sign_resolved": false,
+          "work_sign_resolved": false
+        },
+        {
+          "epsilon": 1e-08,
+          "assumed_force_error_n": 0.08,
+          "assumed_work_error_j": 0.02,
+          "force_sign_resolved": false,
+          "work_sign_resolved": false
+        }
+      ],
+      "force_discretization_note": "Endpoint force is independent of path-work quadrature; no claim of coupled force convergence"
+    },
+    {
+      "case": "near_peak",
+      "patches": [
+        {
+          "old_gap_m": 0.0,
+          "new_gap_m": 0.004000004,
+          "axis": 0,
+          "area_m2": 1.0,
+          "prescribed_not_predicted": true,
+          "traction_pa": 3999999.9677419355,
+          "force_n": 3999999.9677419355,
+          "oracle_force_n": "558446349290341876953125/139611588448485376",
+          "oracle_work_j": "1287692196295868515493984583339224046875/160961202614579656484445386205822976",
+          "force_error_n": 2.7724654113710804e-11,
+          "stored_energy_change_j": 8000.007935483806,
+          "dissipation_increment_j": 0.00806451612828488,
+          "reported_work_j": 8000.015999999934,
+          "independent_oracle_vs_energy_error_j": 1.9610654715524819e-13,
+          "quadrature_work_j": [
+            8000.014991942476,
+            8000.015747991619,
+            8000.015937003904
+          ]
+        }
+      ],
+      "reference_work_j": "1287692196295868515493984583339224046875/160961202614579656484445386205822976",
+      "reference_force_n": "558446349290341876953125/139611588448485376",
+      "net_force_n": 3999999.9677419355,
+      "net_force_error_n": 2.7724654113710804e-11,
+      "work_scale_j": 1000000.0,
+      "force_scale_n": 4000000.0,
+      "traction_scale_pa": 4000000,
+      "levels": [
+        {
+          "subintervals_per_patch": 8,
+          "work_j": 8000.014991942476,
+          "true_error_j": 0.0010080574586169145,
+          "relative_true_error": 1.260069303132547e-07,
+          "independent_energy_balance_residual_j": -0.001008057458420808,
+          "work_sign_matches_oracle": true,
+          "diagnostics_only": {
+            "pure_allowance": 0.01600003199999987,
+            "mixed_allowance": 2.016000032,
+            "pure_pass": true,
+            "mixed_pass": true,
+            "physical_scale": 1000000.0,
+            "absolute_term": 2.0,
+            "relative_term": 0.01600003199999987
+          }
+        },
+        {
+          "subintervals_per_patch": 32,
+          "work_j": 8000.015747991619,
+          "true_error_j": 0.00025200831552467335,
+          "relative_true_error": 3.1500976438631556e-08,
+          "independent_energy_balance_residual_j": -0.0002520083153285668,
+          "work_sign_matches_oracle": true,
+          "diagnostics_only": {
+            "pure_allowance": 0.01600003199999987,
+            "mixed_allowance": 2.016000032,
+            "pure_pass": true,
+            "mixed_pass": true,
+            "physical_scale": 1000000.0,
+            "absolute_term": 2.0,
+            "relative_term": 0.01600003199999987
+          }
+        },
+        {
+          "subintervals_per_patch": 128,
+          "work_j": 8000.015937003904,
+          "true_error_j": 6.299603066110779e-05,
+          "relative_true_error": 7.87448808366237e-09,
+          "independent_energy_balance_residual_j": -6.299603046500124e-05,
+          "work_sign_matches_oracle": true,
+          "diagnostics_only": {
+            "pure_allowance": 0.01600003199999987,
+            "mixed_allowance": 2.016000032,
+            "pure_pass": true,
+            "mixed_pass": true,
+            "physical_scale": 1000000.0,
+            "absolute_term": 2.0,
+            "relative_term": 0.01600003199999987
+          }
+        }
+      ],
+      "assumed_budget_scenarios": [
+        {
+          "epsilon": 0.0001,
+          "assumed_force_error_n": 400.0,
+          "assumed_work_error_j": 100.0,
+          "force_sign_resolved": true,
+          "work_sign_resolved": true
+        },
+        {
+          "epsilon": 2e-06,
+          "assumed_force_error_n": 8.0,
+          "assumed_work_error_j": 2.0,
+          "force_sign_resolved": true,
+          "work_sign_resolved": true
+        },
+        {
+          "epsilon": 1e-08,
+          "assumed_force_error_n": 0.04,
+          "assumed_work_error_j": 0.01,
+          "force_sign_resolved": true,
+          "work_sign_resolved": true
+        }
+      ],
+      "force_discretization_note": "Endpoint force is independent of path-work quadrature; no claim of coupled force convergence"
+    }
+  ],
+  "threshold_scenarios": [
+    {
+      "epsilon": 0.0001,
+      "prescribed_gap_center_m": 0.004000004,
+      "assumed_gap_error_m": 4.0000000000000003e-07,
+      "peak_separation_m": 0.004,
+      "gap_margin_m": 3.9999999996293e-09,
+      "interval_m": [
+        0.0039996039999999995,
+        0.004000404
+      ],
+      "damages": [
+        0.0,
+        0.00010180423390135989
+      ],
+      "tractions_pa": [
+        3999603.9999999995,
+        3999996.741935484
+      ],
+      "softening_decision_resolved": false,
+      "scenario_only": true
+    },
+    {
+      "epsilon": 2e-06,
+      "prescribed_gap_center_m": 0.004000004,
+      "assumed_gap_error_m": 8e-09,
+      "peak_separation_m": 0.004,
+      "gap_margin_m": 3.9999999996293e-09,
+      "interval_m": [
+        0.003999996,
+        0.004000012
+      ],
+      "damages": [
+        0.0,
+        3.0241844757583625e-06
+      ],
+      "tractions_pa": [
+        3999995.9999999995,
+        3999999.9032258065
+      ],
+      "softening_decision_resolved": false,
+      "scenario_only": true
+    },
+    {
+      "epsilon": 1e-08,
+      "prescribed_gap_center_m": 0.004000004,
+      "assumed_gap_error_m": 4.0000000000000004e-11,
+      "peak_separation_m": 0.004,
+      "gap_margin_m": 3.9999999996293e-09,
+      "interval_m": [
+        0.00400000396,
+        0.0040000040399999996
+      ],
+      "damages": [
+        9.979828829371189e-07,
+        1.0181441328468183e-06
+      ],
+      "tractions_pa": [
+        3999999.9680645163,
+        3999999.9674193547
+      ],
+      "softening_decision_resolved": true,
+      "scenario_only": true
+    }
+  ],
+  "constitutive_points": 694,
+  "constitutive_api_calls": 22,
+  "radial_calls": 0,
+  "new_angular_integrations": 0,
+  "seconds": 0.005490832001669332,
+  "free_bytes_before": 8265756672,
+  "free_bytes_before_output": 8265756672,
+  "working_tolerance_changed": false,
+  "source_pins": {
+    "/workspace/Habitable-Moon-Project/analysis/genesis_local_accuracy_sensitivity/study.py": "0feda9b2219335899174c800c3b15b4565cc198539ff5a72c1c197080aa5e0a0",
+    "tectonics/genesis_volume_creation_law.py": "895962779c5bbce91ef37c8008a481c4db93a12d3d5e9dc6d553f67cd80eab96",
+    "tests/test_genesis_volume_creation_law.py": "86360fa38bf433493dedc6055bd333441c303d6a2fb0980d799bc4613f98bfc5"
+  }
+}

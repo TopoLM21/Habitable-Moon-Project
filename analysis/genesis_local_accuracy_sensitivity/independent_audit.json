@@ -1,0 +1,40 @@
+{
+  "cases": [
+    {
+      "case": "ordinary",
+      "work_reference_j": "6586889381397623919927556942672145921875/160961202614579656484445386205822976",
+      "exact_uniform_grid_trapezoid_errors_j": [
+        "1470880344456819224307723616837952703125/5150758483666549007502252358586335232",
+        "47761803260211994107236760405126609375/2658455991569831745807614120560689152",
+        "1436805896322685258637398679652233796875/1318594171818636545920576603798101819392"
+      ],
+      "maximum_oracle_vs_energy_error_j": 7.003027638072883e-12
+    },
+    {
+      "case": "cancellation",
+      "work_reference_j": "-51922969325291454853068359375/5192296858534827628530496329220096",
+      "exact_uniform_grid_trapezoid_errors_j": [
+        "0",
+        "0",
+        "0"
+      ],
+      "maximum_oracle_vs_energy_error_j": 7.488528938619485e-14
+    },
+    {
+      "case": "near_peak",
+      "work_reference_j": "1287692196295868515493984583339224046875/160961202614579656484445386205822976",
+      "exact_uniform_grid_trapezoid_errors_j": [
+        "1298065128020928374507316849015625/1287689620916637251875563089646583808",
+        "1298033974239781642856868413640625/5150758483666549007502252358586335232",
+        "1297909359115194716255074672140625/20603033934666196030009009434345340928"
+      ],
+      "maximum_oracle_vs_energy_error_j": 2.0071838686835034e-13
+    }
+  ],
+  "independent_piecewise_traction_area_check": true,
+  "independent_trapezoid_kink_error_check": true,
+  "additional_constitutive_kernel_calls": 0,
+  "additional_radial_calls": 0,
+  "scope": "Local scalar prescribed paths; analytical roundoff cross-check, not certified global mechanics",
+  "input_sha256": "77dab64893c54b84d168b0ba6e15fb88fe6b1208d135b7d06e4dfc6b69676f76"
+}
