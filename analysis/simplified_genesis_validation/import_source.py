@@ -33,6 +33,14 @@ def build():
         translate=np.tile(np.vstack((np.eye(3),np.zeros((3,3)))),(3,1))
         forces.append(translate.T@F);dragforces.append(translate.T@D@J);momentummaps.append(translate.T@M@J)
         Is.append(J.T@M@J);Ds.append(J.T@D@J);taus.append(J.T@F);Ls.append(J.T@M@a.v0[a.blocks[f]['dofs']]);masses.append(sum(c['mass_kg'] for c in cohorts))
+    phase_cells=[]
+    solid=set(a.solid_nodes.ravel()) if hasattr(a,'solid_nodes') else set(a.solid_group)|set(a.solid_second)
+    for node in range(a.n-2):
+        if node in solid:continue
+        cuts=[c for i,c in enumerate(a.cuts) if a.map[i]==node];f=cuts[0]['face'];lo=min(c['q_lo'] for c in cuts);hi=max(c['q_hi'] for c in cuts)
+        tri=a.X[a.faces[f]];lam,_=q.conical_scales(tri,a.g['column_mass_kg'][f],a.g['density_kg_m3'],np.array([lo,hi]));J=np.concatenate([np.vstack((-cross_matrix(x),-cross_matrix(x))) for x in tri])
+        M=local_consistent_mass_matrix(a.m[node],float(lam[0]),float(lam[1]))
+        phase_cells.append(dict(id=f'simplified:face:{f}:q:{float(lo).hex()}:{float(hi).hex()}',node=node,face=f,q_lo=lo,q_hi=hi,mass_kg=float(a.m[node]),volume_m3=float(a.m[node]/a.g['density_kg_m3']),inertia=(J.T@M@J).tolist()))
     I=np.sum(Is,axis=0);L=np.sum(Ls,axis=0);omega=np.linalg.solve(I,L)
     residual_kinetic=float(.5*a.v0@a.M@a.v0-.5*omega@I@omega)
     assert residual_kinetic>=-1e-8
@@ -44,7 +52,7 @@ def build():
         shell=a.shell,faults=a.parameters['faults'],radius_km=a.gp.radius_km,regularization_km=a.parameters['onset']['regularization_km'],solidus=a.gp.solidus_k,liquidus=a.gp.liquidus_k,
         thermal_parameters=asdict(a.gp),tidal_parameters=asdict(a.tides),source_mode='genesis',
         selector=dict(radius_km=a.gp.radius_km,min_child_area_km2=3.1e6,min_band_span_km=1000.),max_step_years=25.,max_rotation_rad=1e-3,
-        passive_reserve_j=a.reserve,passive_kinetic_projection_j=residual_kinetic,source_pins=report['input_sha256'],source_material_catalogue=[{k:c[k] for k in ['id','material_id','owner_id','face_index','mass_kg','q_lo','live_q_hi']} for c in a.g['cohorts']],
+        phase_cells=phase_cells,phase_policy='linear enthalpy phase; attached whole-cell solidus admission at endpoint; zero newborn stress; quiescent melt angular capture',passive_reserve_j=a.reserve,passive_kinetic_projection_j=residual_kinetic,source_pins=report['input_sha256'],source_material_catalogue=[{k:c[k] for k in ['id','material_id','owner_id','face_index','mass_kg','q_lo','live_q_hi']} for c in a.g['cohorts']],
         approximation='constrained thermal strain; rigid rotational dynamics; passive unresolved reserve; effective cut; fixed chart limited to 1e-3 rad, no contact/remesh',original_fault_history=p['state']['fault_history'])
     s=dict(format=VERSION,time_myr=a.time,energy=a.E0.tolist(),memory=a.old.reshape(80,2,6).tolist(),damage=a.history.damage.tolist(),candidate_age=a.history.fault_candidate_age_myr.tolist(),consumed=[False]*80,owner=[0]*80,omega=[omega.tolist()],rotation=[np.eye(3).tolist()],membrane_established=a.history.membrane_established,passive_reserve_j=a.reserve,events=[],orbit=asdict(a.orbit),steps=0)
     return SimplifiedGenesis(cfg,s)

@@ -19,6 +19,7 @@ from .genesis_starter_topology import select_starter_cut,split_starter_band
 from .plates import Plate,PlateSystem
 from .mesh import SphereMesh
 from .genesis_transfer_bridge import encoded,digest
+from .simplified_genesis_phase import promote
 
 VERSION='simplified-genesis-0.1'
 
@@ -67,6 +68,20 @@ class SimplifiedGenesis:
         for name,shape in [('omega',(len(ids),3)),('rotation',(len(ids),3,3))]:
             if np.asarray(s[name]).shape!=shape or not np.isfinite(s[name]).all():raise ValueError('DOMAIN_SHAPE')
         if s['passive_reserve_j']!=self.config['passive_reserve_j']:raise ValueError('PASSIVE_RESERVE_CHANGED')
+        catalog=self.config.get('phase_cells',[]);cells={x['id']:x for x in catalog};seen=set()
+        if len(cells)!=len(catalog) or len({x['node'] for x in catalog})!=len(catalog):raise ValueError('DUPLICATE_PHASE_SUPPORT')
+        for c in catalog:
+            if c['mass_kg']!=self.mass[c['node']] or c['node'] in self.solid_nodes or not 0<=c['face']<n:raise ValueError('PHASE_SUPPORT_MASS')
+        for f in range(n):
+            rows=sorted((x for x in catalog if x['face']==f),key=lambda x:x['q_lo'])
+            if any(b['q_lo']<a['q_hi'] for a,b in zip(rows,rows[1:])):raise ValueError('OVERLAPPING_PHASE_SUPPORT')
+        for x in s.get('born_material',[]):
+            if x['cell_id'] in seen or x['cell_id'] not in cells:raise ValueError('MATERIAL_IDENTITY')
+            c=cells[x['cell_id']]
+            if any(x[k]!=c[k] for k in ['node','face','mass_kg','volume_m3','inertia']):raise ValueError('MATERIAL_INVENTORY')
+            if np.asarray(x['memory']).shape!=(6,) or not np.isfinite(x['memory']).all():raise ValueError('BIRTH_MEMORY')
+            if x['birth_time_myr']>s['time_myr']:raise ValueError('BIRTH_CLOCK')
+            seen.add(x['cell_id'])
         if self.config['source_mode']=='genesis' and s['orbit']['time_myr']!=s['time_myr']:raise ValueError('CLOCK')
 
     def temperature(self,E):
@@ -79,7 +94,9 @@ class SimplifiedGenesis:
         coeff=np.linalg.solve(self.P,T[self.solid_nodes][...,None])[...,0];ends=np.einsum('fij,fj->fi',np.array(self.config['profile_limits']),coeff)
         if not np.isfinite(T).all() or np.min(T)<=0 or np.max(ends)>=self.config['solidus'] or np.min(ends)<=0:raise ValueError('PHASE_FRONT_REQUIRES_NEXT_MODEL')
         nonsolid=np.ones(len(T),bool);nonsolid[self.solid_nodes.ravel()]=False;nonsolid[-2:]=False
-        if np.any(T[nonsolid]<=self.config['solidus']):raise ValueError('NEW_SOLID_REQUIRES_NEXT_MODEL')
+        supported={x['node'] for x in self.config.get('phase_cells',[])}
+        if any(T[i]<=self.config['solidus'] and i not in supported for i in np.flatnonzero(nonsolid)):raise ValueError('UNMAPPED_SOLIDIFICATION_UNSUPPORTED')
+        if any(T[x['node']]>self.config['solidus'] for x in self.state.get('born_material',[])):raise ValueError('LOAD_BEARING_REMELT_UNSUPPORTED')
         if self.config['source_mode']=='genesis' and T[-1]<647.096:raise ValueError('SURFACE_PHASE_REQUIRES_NEXT_MODEL')
 
     def constitutive(self,T,damage,old,oldT,dt):
@@ -98,10 +115,29 @@ class SimplifiedGenesis:
         sigma=np.einsum('fij,fj->fi',C,mean)[:,[0,1,3]]
         return new,sigma,Q,W,energy(new),energy(old),energy(new-old)
 
+    def material_inertia(self):
+        value=self.face_inertia.copy()
+        for x in self.state.get('born_material',[]):value[x['face']]+=np.array(x['inertia'])
+        return value
+
+    def born_response(self,T,damage,oldT,dt):
+        rows=[];heat=np.zeros(len(T));tot={k:np.zeros(self.nf) for k in ['U','Uold','Uinitial','N','Q','W','dU','volume']};stress=np.zeros((self.nf,3))
+        p=self.shell
+        for entry in self.state.get('born_material',[]):
+            x=deepcopy(entry);f=x['face'];i=x['node'];V=x['volume_m3'];old=np.array(x['memory'])
+            C=self.C[f]*self.scale(damage)[f]*(not self.state['consumed'][f]);C0=self.C[f]*self.scale(self.state['damage'])[f]*(not self.state['consumed'][f])
+            eta=np.clip(p['viscosity_reference_pa_s']*np.exp(np.clip(p['activation_energy_j_mol']/8.314462618*(1/T[i]-1/p['viscosity_reference_temperature_k']),-60,60)),p['viscosity_min_pa_s'],p['viscosity_max_pa_s'])
+            ratio=dt*p['young_modulus_pa']/eta;theta=p['linear_expansion_per_k']*(T[i]-oldT[i])*np.array([1.,1.,1.,0.,0.,0.]);new=(old-theta)/(1+ratio)
+            U=.5*V*new@C@new;Uold=.5*V*old@C@old;Uinitial=.5*V*old@C0@old;N=.5*V*(new-old)@C@(new-old);Q=ratio*V*new@C@new;W=-V*new@C@theta;dU=Uold-Uinitial
+            heat[i]+=Q-W-dU;stress[f]+=V*(C@new)[[0,1,3]]
+            for key,value in dict(U=U,Uold=Uold,Uinitial=Uinitial,N=N,Q=Q,W=W,dU=dU,volume=V).items():tot[key][f]+=value
+            x['memory']=new.tolist();rows.append(x)
+        return rows,heat,tot,stress
+
     def advance(self,years):
         """Transactional physical-model step. Fixed parameters; no retry/dt sweep."""
         if not np.isfinite(years) or not 0<years<=self.config['max_step_years']:raise ValueError('STEP_RANGE')
-        s=self.state;nexts=deepcopy(s);target=s['time_myr']+years/1e6;dt=(target-s['time_myr'])*SECONDS_PER_MYR
+        s=self.state;nexts=deepcopy(s);inertia=self.material_inertia();target=s['time_myr']+years/1e6;dt=(target-s['time_myr'])*SECONDS_PER_MYR
         E0=np.array(s['energy']);oldT=self.temperature(E0);old=np.array(s['memory']);oldD=np.array(s['damage']);owner=np.array(s['owner'])
         if self.config['source_mode']=='genesis':
             sourced,orbit,ports=apply_ports(dict(time_myr=s['time_myr'],mass_kg=self.mass.tolist(),energy_j=E0.tolist()),GenesisParameters(**self.config['thermal_parameters']),TidalParameters(**self.config['tidal_parameters']),TidalOrbitState(**s['orbit']),target)
@@ -114,7 +150,7 @@ class SimplifiedGenesis:
         # net force is supported by a zero-work radial/centering reaction.
         omega=[];rotation=[];rotledger={};dragface=np.zeros(self.nf);reactions=[]
         for k in range(len(s['omega'])):
-            ids=owner==k;I=self.face_inertia[ids].sum(axis=0);D=self.face_drag[ids].sum(axis=0);tau=self.face_torque[ids].sum(axis=0)
+            ids=owner==k;I=inertia[ids].sum(axis=0);D=self.face_drag[ids].sum(axis=0);tau=self.face_torque[ids].sum(axis=0)
             w,L=rotational_step(I,D,tau,np.array(s['omega'][k]),dt)
             pose=Rotation.from_rotvec(dt*w).as_matrix()@np.array(s['rotation'][k])
             if Rotation.from_matrix(pose).magnitude()>self.config['max_rotation_rad']:raise ValueError('FINITE_CONTACT_REMESH_LIMIT')
@@ -134,6 +170,8 @@ class SimplifiedGenesis:
         oldU=self.constitutive(oldT,oldD,old,oldT,0.)[4]
         for iteration in range(8):
             _,pred,_,_,_,_,_=self.constitutive(T,oldD,old,oldT,dt)
+            _,_,bp,bs=self.born_response(T,oldD,oldT,dt)
+            pred=(pred*self.G[:,0,0,None]+bs)/(self.G[:,0,0]+bp['volume'])[:,None]
             tensile=np.array([principal_tensile(pred+t) for t in tide]);load=np.mean(np.maximum(tensile/self.shell['tensile_strength_pa']-1,0)**2,axis=0)/self.shell['damage_timescale_myr']
             # Positive source-style regularization; hot-water branch has no wet weakening.
             load=self.smoother.apply(load,np.ones(self.nf,bool))
@@ -145,6 +183,10 @@ class SimplifiedGenesis:
             # passive-reserve change and no numerical sink returned as heat.
             dU=Uold-oldU;E=base.copy()
             for f,ids in enumerate(self.solid_nodes):E[ids]+=Q[f]-W[f]-dU[f]/2
+            born,extra_heat,bt,bs=self.born_response(T,damage,oldT,dt)
+            E+=extra_heat
+            sigma=(sigma*self.G[:,0,0,None]+bs)/(self.G[:,0,0]+bt['volume'])[:,None]
+            U+=bt['U'];Uold+=bt['Uold'];N+=bt['N'];Q+=bt['Q'][:,None]/2;W+=bt['W'][:,None]/2;dU+=bt['dU']
             Tnew=self.temperature(E)
             if np.max(abs(Tnew-T))<1e-8:break
             T=Tnew
@@ -165,25 +207,41 @@ class SimplifiedGenesis:
             newowner=output.cell_plate;newomega=[];newrotation=[]
             # Each child's own inertia inherits the parent's angular velocity;
             # sum(I_child omega_parent) = I_parent omega_parent, no kick.
-            Lbefore=sum((self.face_inertia[owner==k].sum(axis=0)@omega[k] for k in range(len(omega))),np.zeros(3))
+            Lbefore=sum((inertia[owner==k].sum(axis=0)@omega[k] for k in range(len(omega))),np.zeros(3))
             for k in range(len(output.plates)):
                 parents=np.unique(owner[newowner==k]);assert len(parents)==1;parent=int(parents[0])
                 newomega.append(omega[parent]);newrotation.append(rotation[parent])
-            Lafter=sum((self.face_inertia[newowner==k].sum(axis=0)@newomega[k] for k in range(len(newomega))),np.zeros(3))
+            Lafter=sum((inertia[newowner==k].sum(axis=0)@newomega[k] for k in range(len(newomega))),np.zeros(3))
             split_momentum_error=float(np.linalg.norm(Lafter-Lbefore)/max(np.linalg.norm(Lbefore),1.))
             # Effective fracture: release ONLY active elastic energy on cut cells.
             fracture=float(U[cut].sum());new[cut]=0.
             for f in cut:E[self.solid_nodes[f]]+=U[f]/2
+            for row in born:
+                if row['face'] in cut:row['memory']=[0.]*6
             U[cut]=0.;sigma[cut]=0.;consumed=np.array(s['consumed'],bool);consumed[cut]=True
             nexts['consumed']=consumed.tolist();nexts['owner']=newowner.tolist();omega=newomega;rotation=newrotation
             nexts['events'].append(dict(kind='effective_split',time_myr=target,cut=cut.tolist(),parents=list(event.parents),children=list(event.children),elastic_release_j=fracture,angular_momentum_relative=split_momentum_error))
+        nexts.update(time_myr=target,born_material=born)
+        omega,phase_report,new_inertia=promote(self.config,s,nexts,oldT,self.temperature(E),E,inertia,omega)
+        omega=omega.tolist()
+        new_volume=np.zeros(self.nf)
+        old_ids={x['cell_id'] for x in s.get('born_material',[])}
+        for row in nexts['born_material']:
+            if row['cell_id'] not in old_ids:new_volume[row['face']]+=row['volume_m3']
+        sigma*=((self.G[:,0,0]+bt['volume'])/(self.G[:,0,0]+bt['volume']+new_volume))[:,None]
+        phase_report['load_bearing_mass_total_kg']=float(sum(self.config['face_mass_kg'])+sum(x['mass_kg'] for x in nexts['born_material']))
+        phase_report['thermal_silicate_mass_kg']=float(sum(self.mass[:-2]))
+        phase_report['not_load_bearing_mass_kg']=phase_report['thermal_silicate_mass_kg']-phase_report['load_bearing_mass_total_kg']
+        if phase_report['not_load_bearing_mass_kg'] < -1e-12*phase_report['thermal_silicate_mass_kg']:raise ValueError('DOUBLE_COUNTED_MATERIAL_MASS')
         Tnew=self.temperature(E);self.phase_guard(Tnew)
-        ledger=dict(maxwell=float(Q.sum()),thermal_work=float(W.sum()),damage_energy_change=float(dU.sum()),numerical_memory=float(N.sum()),elastic_before=float(oldU.sum()),elastic_after=float(U.sum()),fracture_heat=fracture,source_energy=float(ports['net_thermal_input_j']),**rotledger)
+        if any(Tnew[x['node']]>self.config['solidus'] for x in nexts['born_material']):raise ValueError('CAPTURE_REHEATS_NEW_SOLID')
+        rotledger['kinetic_after']-=phase_report['capture_heat_j']
+        ledger=dict(maxwell=float(Q.sum()),thermal_work=float(W.sum()),damage_energy_change=float(dU.sum()),numerical_memory=float(N.sum()),elastic_before=float(oldU.sum()+bt['Uinitial'].sum()),elastic_after=float(U.sum()),fracture_heat=fracture,source_energy=float(ports['net_thermal_input_j']),**rotledger)
         change=float(np.sum(E.astype(np.longdouble)-E0.astype(np.longdouble)))
         balance=change+ledger['elastic_after']-ledger['elastic_before']+ledger['kinetic_after']-ledger['kinetic_before']-ledger['source_energy']-ledger['external_work']+ledger['numerical_memory']+ledger['numerical_rotation']
         allowance=float(np.sum(32*(np.spacing(E)+np.spacing(E0))))+1e-8*max(abs(ledger['thermal_work']),ledger['maxwell'],abs(ledger['external_work']),1.)
         if abs(balance)>allowance:raise ValueError('SIMPLIFIED_WHOLE_ENERGY_BALANCE')
-        ledger.update(whole_balance_j=balance,whole_allowance_j=allowance,moment_balance_relative=float(np.max(abs(memory_residual)/memory_scale)))
+        ledger.update(phase=phase_report,whole_balance_j=balance,whole_allowance_j=allowance,moment_balance_relative=float(np.max(abs(memory_residual)/memory_scale)))
         if reactions:ledger['center_constraint_reaction_n']=reactions
         nexts.update(time_myr=target,energy=E.tolist(),memory=new.tolist(),damage=damage.tolist(),candidate_age=age.tolist(),omega=omega,rotation=rotation,stress_pa=sigma.tolist(),last_ledger=ledger,steps=s['steps']+1)
         self.state=nexts
