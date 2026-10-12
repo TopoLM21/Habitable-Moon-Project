@@ -1,3 +1,10 @@
+**Uncut spatial control PASS:**
+[независимая полная матрица, критерий и разделение четырёх старых controls](analysis/genesis_uncut_spatial_control/README.md).
+71 тест PASS; новых шагов нет. Четыре старых шар/Γ контроля относятся к
+будущей локальной вставке разлома и не блокируют текущий intact BE оператор.
+Следующий ограниченный результат — карта global energy ledger на сохранённых
+данных; физическое замыкание тепла остаётся открытым.
+
 **Явный runtime BE50/BE25 подключён к VolumeSlipModel и CLI:**
 [инструкция, формат restart и ограничения](analysis/genesis_volume_runtime_validation/README.md).
 156 тестов и реальный CLI inspect PASS; оба BE restart побайтово совпали.

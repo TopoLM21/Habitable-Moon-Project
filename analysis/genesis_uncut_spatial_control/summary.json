@@ -1,0 +1,60 @@
+{
+  "status": "PASS",
+  "criterion_relative": 1e-11,
+  "cases": [
+    {
+      "case": "thick",
+      "status": "PASS",
+      "errors": {
+        "stiffness_frobenius": 7.815040524919787e-16,
+        "volume": 1.4233628520835337e-16,
+        "symmetry": 6.720238765562e-17,
+        "rigid_nullspace": 5.08031379733532e-17,
+        "six_affine_energies": 1.5079465686765485e-14
+      },
+      "nodes": 64,
+      "ndof": 18
+    },
+    {
+      "case": "rotated_skew",
+      "status": "PASS",
+      "errors": {
+        "stiffness_frobenius": 4.619626707635266e-16,
+        "volume": 1.9251434782611407e-16,
+        "symmetry": 1.7351837319538116e-16,
+        "rigid_nullspace": 9.270868102765161e-17,
+        "six_affine_energies": 5.9257069334548214e-15
+      },
+      "nodes": 64,
+      "ndof": 18
+    },
+    {
+      "case": "planet_scale_thin",
+      "status": "PASS",
+      "errors": {
+        "stiffness_frobenius": 3.5126772124590086e-15,
+        "volume": 3.601114060627422e-15,
+        "symmetry": 7.072730500367073e-17,
+        "rigid_nullspace": 4.9261211759396325e-17,
+        "six_affine_energies": 6.87407427536024e-15
+      },
+      "nodes": 64,
+      "ndof": 18
+    }
+  ],
+  "total_oracle_nodes": 192,
+  "new_Genesis_steps": 0,
+  "scope": "Uncut element stiffness and affine consistency only; no mesh convergence or thermal closure",
+  "seconds": 0.0353067510004621,
+  "peak_rss_kib": 46796,
+  "sources": {
+    "/workspace/Habitable-Moon-Project/analysis/genesis_uncut_spatial_control/run.py": "511c57464520dc064e6fe0b7123a09fab924637839899432b68a2a826863df11",
+    "tectonics/genesis_volume_operator.py": "a8aba94cdea6ba243daa078e4684ddf3e58e1e07ed9a967ba66dac83ae434f78"
+  },
+  "tests_passed": 71,
+  "negative_controls": [
+    "centroid_underintegration_detected",
+    "missing_radial_variance_detected"
+  ],
+  "original_report_sha256": "75b5f1a6e1e8019ebb8df0a93f94826ed799f842f66bb5fe4b17038856dde8d1"
+}
