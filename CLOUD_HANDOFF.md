@@ -1,3 +1,9 @@
+**Front/birth adapter готов; реальный профиль BLOCKED_REMELT.**
+[Сохранённые ID/память, mass partition и guard](analysis/genesis_reservoir_birth_validation/README.md).
+72 теста PASS. Newborn=0; 3,002e17 кг предлагается исключить из live материала
+80 старых когорт. Все 800 записи сохранены, BE/loading остановлен без потери
+памяти. Следующий шаг — conservative remelt outflows, thermal step не повторять.
+
 **Один реальный isolated thermal step выполнен:**
 [проводимости, баланс, фазы и изменение потоков при миграции](analysis/genesis_reservoir_step_validation/README.md).
 50 лет, 2640 обменов, 79 тестов PASS; canonical/default/mechanics прежние.

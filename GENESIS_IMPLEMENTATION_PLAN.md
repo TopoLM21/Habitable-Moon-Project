@@ -352,3 +352,23 @@ thermal work; drag/damage не распределять произвольно. 
 состояние не считается продвинутой механикой. Затем реальные Maxwell и
 точность встречных записей; thermal work/drag/damage пока без произвольных
 распределений. Spatial convergence коры остаётся открытой.
+
+
+## Тепло→front/birth: адаптер реализован, реальный remelt блокирует BE
+
+[Критерий, сохранённый профиль и guard](analysis/genesis_reservoir_birth_validation/README.md).
+72 теста PASS. Старый surface-connected solidus criterion и append/retirement
+law сохранены. Рост без retirement даёт loading request с неизменной старой
+памятью; полное/частичное/нулевое рождение и remelt проверены manufactured.
+
+На уже сохранённом thermal step newborn mass=0, retirement=3,002372e17 кг,
+80 сокращаемых старых когорт, все 800 ID/formed records сохранены. Уменьшение
+общей melt mass 5,025770e17 кг НЕ является newborn mass: нагрев поверхности
+отодвинул связанный solidus front. Предложение BLOCKED_REMELT; parent mechanics
+не продвинута, новый latent source отсутствует, removed energy не подставлена 0.
+
+Следующий результат: консервативные removed radial moments и memory/kinetic
+outflows именно этих 80 интервалов с независимым балансом. До допуска remelt
+существующий BE guard остаётся закрытым. Thermal step не повторялся;
+14,6749% изменение граничного потока при миграции и отключённые external sources
+означают новый isolated контроль, а не прежний физический прогноз.
