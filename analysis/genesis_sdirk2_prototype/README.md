@@ -1,3 +1,9 @@
+**Final disposition: NOT SUITABLE under unchanged strict passivity.**
+[Final diagnosis, repaired thin-block solve, one saved-operator comparison and practical alternative](FINAL_DECISION.md).
+The earlier nonlinear-solve blocker below has been repaired in a restricted diagnostic
+helper; the negative numerical-energy incompatibility remains. Development is stopped.
+The following records the preceding prototype stage, not a new admission request.
+
 # Coupled SDIRK2 prototype — verified properties, admission blocked
 
 Base: `33085fe0c2b5d333bc8e7d0acecc8d98be1b5691`. No production hook,

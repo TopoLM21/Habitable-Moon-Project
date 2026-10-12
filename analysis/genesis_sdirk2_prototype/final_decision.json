@@ -1,0 +1,112 @@
+{
+  "decision": "NOT_SUITABLE_UNDER_UNCHANGED_STRICT_PASSIVITY",
+  "new_planetary_steps": 0,
+  "source": {
+    "cohort_id": 1,
+    "mass_kg": 3.916381244759399e+17,
+    "source_sha256": "4ac5efaeb55948a226379bbc184f298248a2e09a67a423699748790e0d3a0539",
+    "canonical_sha256": "62579a0bad128830a66e2f44579cf2b1f5d3835b691225b8d431102f3e4486d7",
+    "operator_dimension": 18,
+    "memory_dimension": 36,
+    "relaxation_per_s": 8.721322078204633e-12,
+    "scope": "isolated real-geometry/coefficient patch with manufactured states and forcing; not global planet"
+  },
+  "setup_seconds": 0.3822502999973949,
+  "assembly": {
+    "mass_relative_assembly_difference": 6.134158593533459e-23,
+    "drag_relative_assembly_difference": 1.698797648404406e-16,
+    "note": "Diagnostic reassembly only; original float64 matrices used unchanged in both solves. Relative matrix error is not a forward-solution bound."
+  },
+  "sdirk_stage_details": [
+    {
+      "linear": {
+        "scaled_condition": 29761631991.58966,
+        "backward_errors": [
+          4.5073369493916716e-17,
+          2.8484016913222225e-20
+        ]
+      },
+      "original_scaled_residual": 8.009135144500896e-14,
+      "thermal_residual": 8.009135144500896e-14,
+      "momentum_residual": 7.609436096936239e-18,
+      "memory_residual": 5.293955920339376e-18
+    },
+    {
+      "linear": {
+        "scaled_condition": 29761631991.58966,
+        "backward_errors": [
+          6.521264503230455e-17,
+          3.5938067015953164e-20
+        ]
+      },
+      "original_scaled_residual": 1.1360691725183001e-14,
+      "thermal_residual": 1.1360691725183001e-14,
+      "momentum_residual": 2.4204391963946925e-17,
+      "memory_residual": 5.293955920339376e-18
+    }
+  ],
+  "be_stage_detail": {
+    "linear": {
+      "scaled_condition": 101602461015.18814,
+      "backward_errors": [
+        5.830786976337392e-17,
+        5.1615418443877e-20
+      ]
+    },
+    "original_scaled_residual": 1.2159905711526906e-13,
+    "thermal_residual": 1.2159905711526906e-13,
+    "momentum_residual": 2.6485888345221243e-17,
+    "memory_residual": 2.1175823681357505e-17
+  },
+  "one_saved_operator_comparison": {
+    "scope": "one 12.5s manufactured step on unchanged saved cohort operators, not actual trajectory forcing",
+    "be_errors": {
+      "temperature_k": 0.0006500246288162475,
+      "velocity_max_m_s": 0.003237373149731833,
+      "memory_max": 6.500246337739251e-09,
+      "scaled_l2": 748.804278665556
+    },
+    "sdirk_errors": {
+      "temperature_k": 1.9621503306371295e-05,
+      "velocity_max_m_s": 0.0003377941222169396,
+      "memory_max": 1.9621502963275575e-10,
+      "scaled_l2": 78.13183330510574
+    },
+    "error_reduction": 9.583856502399813,
+    "be_seconds": 0.000544332004210446,
+    "sdirk_seconds": 0.0017762139978003688,
+    "cost_ratio": 3.2631077799233363,
+    "sdirk_audit_seconds": 0.0002584410030976869,
+    "accuracy_metric": "same explicit state scales; not planetary admission"
+  },
+  "energy": {
+    "stage_rate_energy_norms": [
+      462557473503.5779,
+      455475221814.32526
+    ],
+    "absolute_signed_numerical_bound_j": 6152715199714.747,
+    "signed_numerical_j": -47465714281.09545,
+    "physical_drag_j": 7720660517128418.0,
+    "physical_maxwell_j": 2775.3142673386774,
+    "source_heat_j": 5.8583668998652084e+19,
+    "external_work_j": 7720657866360020.0,
+    "residual_j": -115771783.09545135,
+    "stored_energy_8ulp_allowance_j": 2147483648.0,
+    "negative_over_drag": 6.147882577635935e-06,
+    "negative_over_abs_source": 8.102209215026727e-10
+  },
+  "impulse_backward_residual": 4.837154234053383e-17,
+  "previous_unforced_example": {
+    "signed_numerical_j": -0.0036775269889165497,
+    "absolute_bound_j": 0.005631060858862663,
+    "negative_over_maxwell": 0.04451245049453092,
+    "negative_over_drag_plus_maxwell": 0.041879303608130775,
+    "explanation": "No external force and zero thermal expansion/B: negative defect exists in scalar decay. Structural lack of algebraic stability, not coupling error."
+  },
+  "conclusion": "Thin-block solve repaired; negative numerical energy is structural and cannot be removed by scaling/refinement without changing scheme or acceptance. Stop development of this prototype.",
+  "practical_alternative": "Keep audited BE plus invariant cache and event/error-limited growth. Larger dt only where output tests pass; roughly first-order work versus second-order, no guaranteed kyr step.",
+  "code_sha256": {
+    "analysis/genesis_sdirk2_prototype/decision.py": "62b03900b0da1042a4dc7d8aed7581726110303731dbd60bf58b8f78d6a151af",
+    "analysis/genesis_sdirk2_prototype/thin_diagnosis.py": "496af91c235d9913ec7522a3d58e7613a768eb924f7a42fa78ed2f3f9a466057"
+  }
+}
