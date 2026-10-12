@@ -25,11 +25,13 @@ from analysis.genesis_cutcell_mechanical_trial.audit import audit_feedback
 from analysis.genesis_be_candidate.adapter import preparation_view
 
 
-def advance(model,parent,root,packet,radial_moments):
+def advance(model,parent,root,packet,radial_moments,*,orbit_after=None):
     r=root['runtime_state'];report={'correctors':[]}
     template=SimpleNamespace(after_ids=tuple(c.id for c in parent.mechanics.cohorts),radial_moments=radial_moments)
     report['before_gate']=gate(parent.fault_history,model.fault_parameters)
-    t=packet['time_myr'];dt=(t-parent.time_myr)*SECONDS_PER_MYR
+    t=packet['time_myr'];end_orbit=replace(parent.thermal.orbit,time_myr=t) if orbit_after is None else orbit_after
+    if end_orbit.time_myr!=t:raise ValueError('Endpoint orbit clock mismatch')
+    dt=(t-parent.time_myr)*SECONDS_PER_MYR
     assert 0 < t-parent.time_myr <=5e-5+1e-14
     ids=list(template.after_ids); index={x['material_id']:i for i,x in enumerate(packet['fixed_cut_geometry']) if x['material_id'] is not None};idx=np.array([index[i] for i in ids])
     m=np.array(packet['mass_kg']);base=np.array(packet['energy_j']);T=np.array(packet['temperature_k']);initial_T=T.copy()
@@ -63,7 +65,7 @@ def advance(model,parent,root,packet,radial_moments):
         print('corrector '+str(iteration+1)+' predictor/final',flush=True)
         pred=mechanical(T,parent.fault_history)
         driver,X=pred[5:7]
-        faults,evolution=evaluate_volume_fault_evolution(parent.fault_history,model.source_packet,after_time_myr=t,physical_vertices_m=X,face_stress_pa=driver['stress_pa'],face_mean_temperature_k=driver['mean_temperature_k'],retained_fraction=np.ones(80),active_material=driver['active_material'],surface_temperature_k=float(T[-1]),ocean_fraction=0.,orbit_before=parent.thermal.orbit,orbit_after=replace(parent.thermal.orbit,time_myr=t),weak_plane_slip_available=True)
+        faults,evolution=evaluate_volume_fault_evolution(parent.fault_history,model.source_packet,after_time_myr=t,physical_vertices_m=X,face_stress_pa=driver['stress_pa'],face_mean_temperature_k=driver['mean_temperature_k'],retained_fraction=np.ones(80),active_material=driver['active_material'],surface_temperature_k=float(T[-1]),ocean_fraction=0.,orbit_before=parent.thermal.orbit,orbit_after=end_orbit,weak_plane_slip_available=True)
         gate(faults,model.fault_parameters)
         healing_guard(parent.fault_history.damage,faults.damage)
         final=mechanical(T,faults);s,inputs,loading,e0,e1=final[:5]
@@ -88,6 +90,9 @@ def advance(model,parent,root,packet,radial_moments):
     result=dict(format='genesis-cutcell-BE-feedback-0.1',parent_sha256=PARENT_SHA,thermal_sha256=packet['sha256'],scheme='fixed_conduction_then_endpoint_mechanical_feedback',state=s,inputs=inputs,predictor=pred[0],predictor_inputs=pred[1],predictor_driver=driver_payload,
         thermal=dict(time_myr=t,mass_kg=m.tolist(),energy_j=E.tolist(),temperature_k=nextT.tolist(),mechanical_loading_temperature_k=T.tolist(),phase_fraction=np.clip((nextT[:-1]-gp.solidus_k)/(gp.liquidus_k-gp.solidus_k),0,1).tolist()),
         exchanges=exchanges,storage=dict(interface_drag_energy_j=L['physical_drag_j'],damage_energy_j=-L['damage_energy_change_j'],thermal_feedback='unknown; no heat applied',numerical_sink_j=L['numerical_kinetic_j']+L['numerical_memory_j']),correctors=report['correctors'],unresolved=['prescribed external work boundary','drag thermal partition','damage thermal partition','conduction/mechanics splitting accuracy','closure sensitivity','frozen orbital parameters in damage driver'])
+    if orbit_after is not None:
+        result['orbit_after']=asdict(end_orbit)
+        result['unresolved'].remove('frozen orbital parameters in damage driver')
     return json.loads(dumps(seal(result)))
 
 

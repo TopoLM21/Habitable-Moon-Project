@@ -49,7 +49,7 @@ def audit_step(root,thermal,p,source):
     pred=mechanical_audit(r,p['predictor'],p['predictor_inputs'],source);final=mechanical_audit(r,s,p['inputs'],source)
     assert s['mechanics']['accepted_steps']==r['mechanics']['state']['accepted_steps']+1
     assert s['fault_history']['accepted_steps']==old['accepted_steps']+1
-    expected,_=independent_damage_law(old,p['predictor_driver'],source,r['thermal']['orbit'],r['thermal']['orbit'],p['thermal']['time_myr'])
+    expected,_=independent_damage_law(old,p['predictor_driver'],source,r['thermal']['orbit'],p.get('orbit_after',r['thermal']['orbit']),p['thermal']['time_myr'])
     tensile=tensile_principal(face_driver(s,source)['stress_pa'])
     for k,v in expected.items():
         if k=='peak_tensile_pa':v=np.maximum(v,tensile)

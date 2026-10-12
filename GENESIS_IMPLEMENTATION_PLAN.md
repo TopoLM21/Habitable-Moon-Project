@@ -1,3 +1,11 @@
+**Инженерный forced pipeline существующего сценария работает.**
+[Один coupled25 с реальными источниками и restart](analysis/genesis_forced_coupled_validation/README.md).
+87 тестов; исходные source coefficients, fixed-grid closure и canonical прежние.
+Orbit debit/heat не удвоен, источники и стоки имеют явные boundary ports.
+Этапы 2/6 остаются частичными: численная BE memory loss в forced шаге63,4%
+Maxwell требует честной оговорки точности; unresolved return/healing, source
+splitting/profile и spatial/physical-fracture admission не закрыты.
+
 **Связанное последовательное исполнение проверено: BE50 vs 2×25 PASS.**
 [Два шага, restart, сравнение и ограничения](analysis/genesis_coupled_split_control/README.md).
 800 existing IDs; 81 тест; canonical/default unchanged. Runner готов для

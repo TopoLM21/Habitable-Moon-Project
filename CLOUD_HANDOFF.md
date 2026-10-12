@@ -1,3 +1,16 @@
+**Реальные thermal ports подключены: один forced coupled25 PASS. Restore CLOSED.**
+[Источники, budget, runbook и ограничения](analysis/genesis_forced_coupled_validation/README.md).
+87 тестов до шага; 102,81 с, 4 коррекции, 800 IDs, фазовые/healing/gate guards,
+independent source/mechanical/local heat audit и typed orbit/memory restart PASS.
+Радиогенный/орбитальный нагрев → deep; star/OLR → surface node, coefficients
+прежние. Tide debit единственный; internal mantle transport не дублируется.
+Surface 1377,794→1374,518 K. Canonical/default не менялись, новых шагов ровно1.
+Новая значимая limitation: BE numerical memory loss =63,4% physical Maxwell,
+никогда не heat. Pipeline operational, forced time/splitting accuracy не доказана.
+Старая разность Wthermal9,90% =3,316e15 J / max6,99e−7 K: тепловой результат
+не блокирует. Unresolved drag/damage heat return, funded healing и spatial
+admission OPEN. Новое дробление/длительная эволюция не запускались.
+
 **Полная coupled chain: saved BE50 vs 2×25 лет PASS. Restore CLOSED.**
 [Runner, runbook, comparison и guards](analysis/genesis_coupled_split_control/README.md).
 Ровно два новых связанных шага, 4 коррекции каждый; второй из decoded restart
