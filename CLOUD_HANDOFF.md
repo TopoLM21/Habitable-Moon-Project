@@ -1,3 +1,15 @@
+**Активная задача: завершение implicit enthalpy на фиксированных cut-cells. Restore CLOSED.**
+Правильная база — `e5440e38578b07cfc7d2acdcee730955b8821f66`; `10ea182` —
+исторический ancestor передачи, не целевой checkout. Цепочка текущей работы:
+`6da7f01 → b3cf737 → e4ecf3c → 0976e44 → c96f946 → 5172882 → bfb4923 → e5440e3`.
+Сохранён один 50-летний implicit thermal step: 3360 cut-cells, 800 старых IDs,
+массы и механическая память сохранены. Повторять расчёт для оформления не нужно.
+Read-only audit PASS (3440 пар, solver calls=0), 58 тестов PASS.
+Thermal input готов для существующего prepare_volume_loading; память ещё не
+продвинута. Следующий шаг — bounded mechanical trial и взаимный тепловой баланс.
+[Результат и ограничения](analysis/genesis_implicit_cutcell_validation/README.md).
+Ниже — исторические записи; прежние front blockers уточняются новым closure.
+
 **Cut-cell initialization FEASIBLE: выбран явный численный closure.**
 [Идентифицируемость, sensitivity и следующий implicit step](analysis/genesis_cutcell_feasibility/README.md).
 3360 cells, 800 старых IDs/mean T/память сохранены, 42 теста PASS. Уникальный

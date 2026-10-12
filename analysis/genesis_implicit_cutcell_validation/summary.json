@@ -1,0 +1,54 @@
+{
+  "status": "PASS",
+  "isolated_thermal_steps": 1,
+  "dt_years": 50,
+  "cutcells": 3360,
+  "reservoirs": 3362,
+  "Newton_iterations": 1,
+  "old_material_ids": 800,
+  "old_material_mixed_count": 0,
+  "mixed_old_material": [],
+  "mechanical_admission": "READY_THERMAL_LOADING_ONLY",
+  "minimum_temperature_k": 1377.910052198294,
+  "maximum_temperature_k": 2306.394134464767,
+  "maximum_principle_pass": true,
+  "old_material_liquid_mass_kg": 0.0,
+  "column_liquid_mass_delta_kg": -5.0157976440897786e+17,
+  "global_energy_residual_j": 1611775455789056.0,
+  "global_endpoint_roundoff_allowance_j": 9363261707255808.0,
+  "max_local_balance_over_allowance": 0.028269678950571694,
+  "numerical_heat_added_j": 0.0,
+  "mass_unchanged": true,
+  "retirements_applied": 0,
+  "canonical_advanced": false,
+  "restart_byte_identical": true,
+  "seconds": 0.5118041730020195,
+  "peak_rss_kib": 190672,
+  "candidate_input_sha256": "6006521e7b3e22ce23894e63248d0145ee15d3065333c949701c730c6cab47ad",
+  "after_sha256": "632354594ccda5aaffeb8933d9ed95be96cb53037a2ce67d18cf407562d6f2e8",
+  "old_material_temperature_range_k": [
+    1382.8683644924533,
+    1399.7674089832938
+  ],
+  "connected_fully_solid_cutcell_prefix_matches_accepted": true,
+  "connected_prefix_q_range": [
+    0.0017020296528029732,
+    0.0017417157325678753
+  ],
+  "existing_prepare_volume_loading": "PASS",
+  "loading_temperature_count": 800,
+  "loading_remelt_removed_j": 0.0,
+  "maximum_loading_thermal_strain": 7.037929946409349e-07,
+  "code_sha256": {
+    "tectonics/genesis_implicit_enthalpy.py": "b8e9d3a879f097cab2c50c1e885f684cb6ca3b8e067b7ea560b152beed8b87d7",
+    "tectonics/genesis_cutcell_loading.py": "6778dd387b19779c49d532dfb660642d9e63c5a466fa10d028014fdf24acd98a",
+    "analysis/genesis_implicit_cutcell_validation/run.py": "370e176b188c30c996aca93da5c5159e0fa0b16e56ac1a315abb29c0d8750ac1",
+    "analysis/genesis_implicit_cutcell_validation/audit_saved.py": "95cc159215ac0a20236f4625d07b4ce6732522ed345d58fbe413e0dd1fd7c38c"
+  },
+  "regression_tests_passed": 58,
+  "independent_readback": {
+    "status": "PASS",
+    "solver_calls": 0,
+    "paired_fluxes": 3440
+  }
+}

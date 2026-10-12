@@ -1,3 +1,11 @@
+**Текущее уточнение: fixed cut-cell implicit thermal input готов.**
+Один isolated 50-летний шаг: 3360 cells, 800 старых IDs/память/массы сохранены,
+58 тестов и независимый readback PASS; retirement=0, canonical advancement=0.
+[Результат, численный closure и ограничения](analysis/genesis_implicit_cutcell_validation/README.md).
+Следующий bounded шаг — механический trial от сохранённых температур, затем
+замыкание взаимной thermal work/physical dissipation. Это не закрытие этапа 2,
+не допуск разломов и не восстановление единственного истинного профиля.
+
 # План Genesis → подробная тектоника
 
 Состояние на 11 октября 2026 года. Ветка: `fix/genesis-mantle-convection`.
