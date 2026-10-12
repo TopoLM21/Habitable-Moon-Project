@@ -217,3 +217,26 @@ def read_bundle(directory):
     if encoded(rebuilt) != raw['transfer.json']:
         raise ValueError('derived transfer mismatch')
     return rebuilt
+
+
+def assess_starter_entry(model, state):
+    """Distinguish native Starter continuation from direct mature admission.
+
+    One connected shell is supported by Starter. A conical Genesis data packet
+    is not a StarterState: converting its constitutive memory is a physical
+    closure problem, not an owner-count or file-format restriction.
+    This assessment does not construct, initialize or advance any state.
+    """
+    from .genesis_starter import StarterState
+    if not isinstance(state, StarterState):
+        return dict(target='Starter', admitted=False,
+                    code='VOLUME_TO_STARTER_MEMORY_CLOSURE_REQUIRED',
+                    single_owner_is_blocker=False,
+                    reason='Native thermal/solidification and effective stress history must be supplied without dropping conical residual memory.')
+    model._validate(state)
+    stopped = state.stopped_reason
+    return dict(target='Starter', admitted=stopped is None,
+                code='NATIVE_STARTER_READY' if stopped is None else 'NATIVE_STARTER_STOPPED',
+                single_owner_is_blocker=False, owner_count=len(state.system.plates),
+                time_myr=state.time_myr, stopped_reason=stopped,
+                reason='First partition belongs to the mature handoff gate; Starter supports a single connected shell.')

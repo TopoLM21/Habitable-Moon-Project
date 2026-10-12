@@ -1,0 +1,142 @@
+{
+  "status": "PASS_OLD_STARTER_BRANCH_ONLY",
+  "one_new_mature_step": true,
+  "step_myr": 0.0001,
+  "start_time_myr": 0.8937499999999998,
+  "final_time_myr": 0.8938499999999998,
+  "source_pins": {
+    "partition/starter_checkpoint.npz": "b8623f2e5a0864a8fe539c6b505657933b68b27739e127386a0fd3db5fd03d3c",
+    "partition/parameters.json": "ec966e7c9603bb6d5ce514d7907baaf7f8e73e0d5fec79b6d8c4374f0231bcef",
+    "partition/partial_checkpoint.npz": "3844a2272a268e023c6448653cf6f7a7e814032d6d173063a75286d5b7f624bb",
+    "partition/molten_checkpoint.npz": "0fd9ee1d2d595cf33fd422bf65a79a5c269d9f6349fcea53fb3c5383871228d5",
+    "partition/report.json": "9b27572b682bc2d115583f733a92ed646598e6d2f032d52b8e5d9249250592df"
+  },
+  "source_traction_pa": 50000.0,
+  "source_starter_seed": 20260927,
+  "source_partition_event": {
+    "time_myr": 0.8937499999999998,
+    "kind": "split",
+    "parents": [
+      0
+    ],
+    "children": [
+      0,
+      1
+    ],
+    "affected_cells": 320,
+    "detail": "rift_cells=158; rift_span=16610 km; rift_area=172468323 km2; child_areas_km2=171302320,179957509"
+  },
+  "partition_reexecuted": false,
+  "partial_starter_gate": {
+    "target": "Starter",
+    "admitted": true,
+    "code": "NATIVE_STARTER_READY",
+    "single_owner_is_blocker": false,
+    "owner_count": 1,
+    "time_myr": 0.65,
+    "stopped_reason": null,
+    "reason": "First partition belongs to the mature handoff gate; Starter supports a single connected shell."
+  },
+  "volume_starter_gate": {
+    "target": "Starter",
+    "admitted": false,
+    "code": "VOLUME_TO_STARTER_MEMORY_CLOSURE_REQUIRED",
+    "single_owner_is_blocker": false,
+    "reason": "Native thermal/solidification and effective stress history must be supplied without dropping conical residual memory."
+  },
+  "all_runner_checks": {
+    "material_ledger": true,
+    "clocks_agree": true,
+    "fracture_damage_matches_material": true,
+    "thermal_energy": true,
+    "liquid_water_matches_condensation": true,
+    "positive_remaining_material": true,
+    "slab_material_inventory": true
+  },
+  "material_ledger": {
+    "format": "genesis-starter-material-ledger-0.1",
+    "initial_time_myr": 0.8937499999999998,
+    "final_time_myr": 0.8938499999999998,
+    "reference_density_kg_m3": 3000.0,
+    "new_lithosphere_records": 1,
+    "new_continental_records": 1,
+    "initial_upper_components_km3": {
+      "oceanic_bedrock": 351259828.40332437,
+      "continental_bedrock": 0.0,
+      "surface_sediment": 0.0,
+      "plume_extrusive": 0.0,
+      "plume_dyke": 0.0,
+      "plume_underplate": 0.0
+    },
+    "final_upper_components_km3": {
+      "oceanic_bedrock": 351259828.40332437,
+      "continental_bedrock": 0.0,
+      "surface_sediment": 0.0,
+      "plume_extrusive": 0.0,
+      "plume_dyke": 0.0,
+      "plume_underplate": 0.0
+    },
+    "source_components_km3": {
+      "lithosphere_oceanic_creation": 0.0,
+      "continental_cycle_oceanic_creation": 0.0,
+      "continental_generation": 0.0,
+      "plume_extrusive_generation": 0.0,
+      "plume_dyke_generation": 0.0,
+      "plume_underplate_generation": 0.0
+    },
+    "sink_components_km3": {
+      "oceanic_subduction": 0.0,
+      "oceanic_rift_recycling": 0.0,
+      "continental_rift_recycling": 0.0,
+      "continental_cycle_oceanic_recycling": 0.0,
+      "oceanic_replacement_by_juvenile_crust": 0.0,
+      "continental_cycle_recycling": 0.0,
+      "deep_sediment_recycling": 0.0,
+      "plume_extrusive_recycling": 0.0,
+      "plume_dyke_recycling": 0.0,
+      "plume_underplate_recycling": 0.0
+    },
+    "generated_volume_km3": 0.0,
+    "recycled_volume_km3": 0.0,
+    "initial_upper_volume_km3": 351259828.40332437,
+    "final_upper_volume_km3": 351259828.40332437,
+    "observed_upper_change_km3": 0.0,
+    "predicted_upper_change_km3": 0.0,
+    "volume_residual_km3": 0.0,
+    "volume_tolerance_km3": 9.983404777452858e-06,
+    "relative_volume_residual": 0.0,
+    "initial_upper_reference_mass_kg": 1.0537794852099731e+21,
+    "final_upper_reference_mass_kg": 1.0537794852099731e+21,
+    "mantle_reference_mass_change_kg": -0.0,
+    "reference_mass_residual_kg": 0.0,
+    "balanced": true,
+    "density_convention": "One reference density for equivalent-rock volume; not a species-density mass budget.",
+    "thermal_energy_changed_by_audit_j": 0.0
+  },
+  "mean_speed_km_myr": 0.019877890630519555,
+  "transport_commits": 0,
+  "new_fracture_events": [],
+  "mature_changed_fields": [
+    "crust_age_myr",
+    "crust_thickness_km",
+    "tidal_damage",
+    "intraplate_stress",
+    "elevation_m",
+    "mantle_lithosphere_density_anomaly_kg_m3",
+    "transport_residual_quaternions",
+    "transport_hold_age_myr"
+  ],
+  "restart_equal_npz_fields": {
+    "starter": 10,
+    "fracture": 8,
+    "mature": 63
+  },
+  "mature_metadata_equal": true,
+  "restart_coupling_constructed": true,
+  "original_birth_cohorts_and_interval_prefix_preserved": true,
+  "source_files_unchanged": true,
+  "continuation_sha256": "937c3c297a2009f3950b614062e5d4fc236e43c52bab324d0922f5f07b39905d",
+  "physical_handoff_certified": false,
+  "readback_seconds": 0.12167934500030242,
+  "artifact_bytes": 6058890
+}
