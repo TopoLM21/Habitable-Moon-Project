@@ -1,0 +1,723 @@
+{
+  "dynamics_parameters": {
+    "basal_drag_pa_s_m": 100000000000000.0,
+    "continental_buoyancy_reference_km": 35.0,
+    "continental_buoyancy_resistance_gain": 0.65,
+    "continental_collision_resistance": 2.5,
+    "craton_collision_resistance_gain": 0.6,
+    "force_model": "legacy_effective",
+    "force_speed_scale_deg_per_myr": 0.85,
+    "gpe_drive_weight": 0.3,
+    "gpe_reference_thickness_km": 40.0,
+    "gravity_m_s2": 9.81,
+    "mantle_memory_fraction": 0.22,
+    "mantle_projection": "legacy_area_mean",
+    "max_speed_deg_per_myr": 1.2,
+    "min_active_speed_deg_per_myr": 0.005,
+    "remove_net_rotation": true,
+    "ridge_gpe_calibration_gain": 1.014,
+    "ridge_gpe_exponent": 1.0,
+    "ridge_gpe_max_factor": 2.4,
+    "ridge_gpe_min_factor": 0.2,
+    "ridge_gpe_reference_density_anomaly_kg_m3": 64.0,
+    "ridge_gpe_reference_mantle_thickness_km": 93.5,
+    "ridge_gpe_saturation_ratio": 0.2,
+    "ridge_push_weight": 0.7,
+    "slab_age_gain": 0.9,
+    "slab_age_reference_myr": 80.0,
+    "slab_buoyancy_calibration_gain": 1.85,
+    "slab_buoyancy_exponent": 0.75,
+    "slab_buoyancy_reference_density_anomaly_kg_m3": 60.0,
+    "slab_buoyancy_reference_thickness_km": 100.0,
+    "slab_pull_weight": 1.25,
+    "slab_thermal_exponent": 0.25,
+    "slab_thermal_reference_km": 140.0,
+    "tidal_resistance_reduction": 0.65,
+    "tidal_ridge_enhancement": 0.35,
+    "transform_resistance": 0.55,
+    "velocity_relaxation_myr": 18.0,
+    "young_slab_bend_radius_thickness_ratio": 3.0,
+    "young_slab_buoyancy_model": "uniform_thermal_mass_v1",
+    "young_slab_force_model": "disabled_pending_closure",
+    "young_slab_mantle_depth_km": null,
+    "young_slab_mantle_shear_length_fraction": 0.5,
+    "young_slab_mantle_viscosity_pa_s": null,
+    "young_slab_viscosity_contrast": 100.0,
+    "young_velocity_response_model": "relaxed"
+  },
+  "eccentricity": 0.00047,
+  "format": "synthetic-geological-handoff-1",
+  "gravity_m_s2": 9.0,
+  "import_report": {
+    "archived_source_enthalpy_j": 4.594661151400898e+24,
+    "archived_source_mass_kg": 3.84e+18,
+    "cell_count": 1280,
+    "chemical_crust_volume_km3": 1280000.0,
+    "continental_volume_km3": 0.0,
+    "format": "experimental_genesis_mature_import",
+    "mesh_subdivisions": 3,
+    "new_zero_memories": [
+      "subduction",
+      "felsic_potential",
+      "sediments",
+      "cratons",
+      "plumes",
+      "plate_transport"
+    ],
+    "oceanic_volume_km3": 1280000.0,
+    "physical_handoff_certified": false,
+    "plate_count": 3,
+    "radius_km": 5287.0,
+    "source_metadata": {
+      "composition": "all_solid_nodes_basalt_reference_density_3000",
+      "scenario": "synthetic-geological-handoff-1"
+    },
+    "time_myr": 5e-05,
+    "topology_parameters": {
+      "collision_contact_max_divergence_km_per_myr": 8.0,
+      "collision_coupling_max_step_fraction": 0.08,
+      "collision_coupling_start_myr": 20.0,
+      "collision_coupling_timescale_myr": 100.0,
+      "collision_initial_max_relative_speed_km_per_myr": 65.0,
+      "collision_min_continental_fraction": 0.25,
+      "collision_min_convergent_fraction": 0.5,
+      "collision_rift_suppression_max": 0.75,
+      "collision_rift_suppression_one_ring_fraction": 0.45,
+      "collision_rift_suppression_start_myr": 32.0,
+      "connected_collision_contacts": true,
+      "disconnect_min_child_area_km2": null,
+      "disconnect_min_child_cells": 180,
+      "max_events_per_step": 2,
+      "merge_enabled": true,
+      "merge_kinematics_rule": "area_weighted",
+      "merge_min_continental_boundary_km": 900.0,
+      "min_plate_area_km2": null,
+      "min_plate_cells": 90,
+      "min_plate_persistence_myr": 0.0,
+      "repair_fragmented_plates": true,
+      "split_cooldown_myr": 12.0,
+      "split_differential_speed_deg_per_myr": 0.08,
+      "split_enabled": true,
+      "split_late_seam_threshold": 0.34,
+      "split_late_stress_threshold": 0.42,
+      "split_max_thinned_continent_km": 24.0,
+      "split_min_child_area_km2": null,
+      "split_min_child_cells": 180,
+      "split_min_extension_age_myr": 24.0,
+      "split_min_postrift_damage": 0.035,
+      "split_min_postrift_extension": 0.55,
+      "split_min_rift_cells": 8,
+      "split_min_rift_span_km": null,
+      "split_young_ocean_age_myr": 16.0,
+      "weld_max_normal_divergence_km_per_myr": 1.5,
+      "weld_max_relative_speed_km_per_myr": 8.0,
+      "weld_min_collision_age_myr": 160.0,
+      "weld_quiet_persistence_myr": 80.0
+    },
+    "unsupported_state": [
+      "Source column mass and enthalpy are archived, not evolved by the mature solver.",
+      "Contact opening, stress, cohesive/frictional memory and deformation are not represented.",
+      "A scalar thermal state cannot retain the depth-resolved enthalpy and melt profile.",
+      "Steam and ice are not represented by the mature liquid-water inventory.",
+      "Young-moon thermal, orbital and mechanical applicability needs independent validation."
+    ],
+    "version": 1,
+    "water_volume_km3": 0.0
+  },
+  "inactive_modules": [
+    "thermal evolution",
+    "topography",
+    "continental cycle",
+    "plumes",
+    "topology changes"
+  ],
+  "inactive_surface_mass_kg": 1e+20,
+  "initial_total_reference_mass_kg": 4.0001038400000004e+24,
+  "interior_reference_mass_kg": 3.9995441616978464e+24,
+  "mapping": {
+    "H": {
+      "active": "scalar deep temperature, frozen in this kernel subset",
+      "archived_total_j": 4.752123408223197e+30,
+      "heat_from_retired_memory_j": 0.0,
+      "material_exchange_enthalpy_closed": false
+    },
+    "Maxwellmemory": {
+      "released_as_heat_j": 0.0,
+      "status": "complete frozen source archive; no active constitutive consumer"
+    },
+    "composition": {
+      "active": "explicit manufactured basalt, reference density; no elemental chemistry",
+      "damage_mapping": "source scalar D reused as mature tidal weakening; constitutive meaning changes",
+      "real_composition_inferred": false
+    },
+    "energy": {
+      "archived_passive_reserve_j": 12345.0,
+      "coupled_energy_closed": false,
+      "retired_elastic_j": 1540605458250624.8,
+      "source_kinetic_j": 0.0
+    },
+    "mass": {
+      "active_basalt_kg": 3.84e+18,
+      "active_interior_kg": 4e+24,
+      "archive_is_duplicate_not_inventory": true,
+      "density_kg_m3": 3000.0,
+      "inactive_surface_kg": 1e+20
+    },
+    "momentum": {
+      "SI_momentum_conserved": false,
+      "mature_shell_proxy": {
+        "angular_momentum_kg_m2_s": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "kinetic_energy_j": 0.0,
+        "linear_momentum_kg_m_s": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "omega_mapping": "rad/s to rad/Myr exactly",
+      "source_angular_kg_m2_s": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    }
+  },
+  "period_hours": 24.0,
+  "radius_km": 5287.0,
+  "source_sha256": "e2e8aea709f74303ca3f8694d3dc85dc57f5f171a66774d6c1bd65bec15cea8f",
+  "steps": [
+    {
+      "SI_force_work_available": false,
+      "coupled_enthalpy_closed": false,
+      "dt_myr": 10.0,
+      "dynamics": {
+        "continental_collision_length_km": 0.0,
+        "mantle_rms_speed_deg_per_myr": 1.323189349012301,
+        "max_axis_turn_deg": 0.0,
+        "max_ridge_push_factor": 1.0,
+        "max_speed_deg_per_myr": 0.14724352967155022,
+        "mean_axis_turn_deg": 0.0,
+        "mean_collision_drag_factor": 1.0,
+        "mean_continental_plate_speed_deg_per_myr": 0.0,
+        "mean_gpe_drive": 0.0,
+        "mean_plate_mantle_slip_deg_per_myr": 0.9484893088910246,
+        "mean_ridge_push_factor": 1.0,
+        "mean_speed_deg_per_myr": 0.09814758727893598,
+        "min_continental_plate_speed_deg_per_myr": 0.0,
+        "min_ridge_push_factor": 1.0,
+        "near_stationary_continental_plates": 0,
+        "net_rotation_deg_per_myr_before_removal": 8.545093211333037e-17,
+        "ridge_boundary_length_km": 0.0,
+        "slab_boundary_length_km": 0.0,
+        "time_myr": 5e-05,
+        "transform_boundary_length_km": 0.0
+      },
+      "heat_from_retired_memory_j": 0.0,
+      "interior_reference_mass_kg": 4e+24,
+      "kinematics_after": {
+        "angular_momentum_kg_m2_s": [
+          -5356454767265.951,
+          11798590304582.377,
+          -5341389222629.013
+        ],
+        "kinetic_energy_j": 0.16842461272610829,
+        "linear_momentum_kg_m_s": [
+          7351104.78537505,
+          711061637.9960544,
+          0.0
+        ]
+      },
+      "kinematics_before": {
+        "angular_momentum_kg_m2_s": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "kinetic_energy_j": 0.0,
+        "linear_momentum_kg_m_s": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "material": {
+        "balanced": true,
+        "density_convention": "One reference density for equivalent-rock volume; not a species-density mass budget.",
+        "final_time_myr": 10.00005,
+        "final_upper_components_km3": {
+          "continental_bedrock": 0.0,
+          "oceanic_bedrock": 1280000.0,
+          "plume_dyke": 0.0,
+          "plume_extrusive": 0.0,
+          "plume_underplate": 0.0,
+          "surface_sediment": 0.0
+        },
+        "final_upper_reference_mass_kg": 3.84e+18,
+        "final_upper_volume_km3": 1280000.0,
+        "format": "genesis-starter-material-ledger-0.1",
+        "generated_volume_km3": 0.0,
+        "initial_time_myr": 5e-05,
+        "initial_upper_components_km3": {
+          "continental_bedrock": 0.0,
+          "oceanic_bedrock": 1280000.0,
+          "plume_dyke": 0.0,
+          "plume_extrusive": 0.0,
+          "plume_underplate": 0.0,
+          "surface_sediment": 0.0
+        },
+        "initial_upper_reference_mass_kg": 3.84e+18,
+        "initial_upper_volume_km3": 1280000.0,
+        "mantle_reference_mass_change_kg": -0.0,
+        "new_continental_records": 0,
+        "new_lithosphere_records": 1,
+        "observed_upper_change_km3": 0.0,
+        "predicted_upper_change_km3": 0.0,
+        "recycled_volume_km3": 0.0,
+        "reference_density_kg_m3": 3000.0,
+        "reference_mass_residual_kg": 0.0,
+        "relative_volume_residual": 0.0,
+        "sink_components_km3": {
+          "continental_cycle_oceanic_recycling": 0.0,
+          "continental_cycle_recycling": 0.0,
+          "continental_rift_recycling": 0.0,
+          "deep_sediment_recycling": 0.0,
+          "oceanic_replacement_by_juvenile_crust": 0.0,
+          "oceanic_rift_recycling": 0.0,
+          "oceanic_subduction": 0.0,
+          "plume_dyke_recycling": 0.0,
+          "plume_extrusive_recycling": 0.0,
+          "plume_underplate_recycling": 0.0
+        },
+        "source_components_km3": {
+          "continental_cycle_oceanic_creation": 0.0,
+          "continental_generation": 0.0,
+          "lithosphere_oceanic_creation": 0.0,
+          "plume_dyke_generation": 0.0,
+          "plume_extrusive_generation": 0.0,
+          "plume_underplate_generation": 0.0
+        },
+        "thermal_energy_changed_by_audit_j": 0.0,
+        "volume_residual_km3": 0.0,
+        "volume_tolerance_km3": 1e-06
+      },
+      "material_source_sha256": "24ce3a71f18b05e7471f8c052363c243f6b03748b58b9588adcd14c4e1bd4f08",
+      "relative_omega_rad_per_myr": 0.00513377410353388,
+      "time_myr": 10.00005,
+      "transport_commits": 0,
+      "transported_oceanic_volume_km3": 0.0,
+      "transported_winning_cells": 0,
+      "unclosed_angular_momentum_change_kg_m2_s": [
+        -5356454767265.951,
+        11798590304582.377,
+        -5341389222629.013
+      ],
+      "unclosed_kinetic_change_j": 0.16842461272610829,
+      "unclosed_linear_momentum_change_kg_m_s": [
+        7351104.78537505,
+        711061637.9960544,
+        0.0
+      ]
+    },
+    {
+      "SI_force_work_available": false,
+      "coupled_enthalpy_closed": false,
+      "dt_myr": 10.0,
+      "dynamics": {
+        "continental_collision_length_km": 0.0,
+        "mantle_rms_speed_deg_per_myr": 1.323189349012301,
+        "max_axis_turn_deg": 80.46593092013417,
+        "max_ridge_push_factor": 0.2,
+        "max_speed_deg_per_myr": 0.27220927895265373,
+        "mean_axis_turn_deg": 27.031428688917938,
+        "mean_collision_drag_factor": 0.852168616908083,
+        "mean_continental_plate_speed_deg_per_myr": 0.0,
+        "mean_gpe_drive": 0.0,
+        "mean_plate_mantle_slip_deg_per_myr": 0.8655458528280106,
+        "mean_ridge_push_factor": 0.1999999999999999,
+        "mean_speed_deg_per_myr": 0.18177766838668208,
+        "min_continental_plate_speed_deg_per_myr": 0.0,
+        "min_ridge_push_factor": 0.2,
+        "near_stationary_continental_plates": 0,
+        "net_rotation_deg_per_myr_before_removal": 0.0010755580055869555,
+        "ridge_boundary_length_km": 24157.95889683916,
+        "slab_boundary_length_km": 25830.363975779386,
+        "time_myr": 10.00005,
+        "transform_boundary_length_km": 31309.695560808672
+      },
+      "heat_from_retired_memory_j": 0.0,
+      "interior_reference_mass_kg": 3.999838794109477e+24,
+      "kinematics_after": {
+        "angular_momentum_kg_m2_s": [
+          -793265986796873.9,
+          1.2894615868280932e+16,
+          -1181791795240527.2
+        ],
+        "kinetic_energy_j": 28.383266383957913,
+        "linear_momentum_kg_m_s": [
+          289196383.34957397,
+          53614927327.137985,
+          154735312.67803648
+        ]
+      },
+      "kinematics_before": {
+        "angular_momentum_kg_m2_s": [
+          -5356454767265.951,
+          11798590304582.377,
+          -5341389222629.013
+        ],
+        "kinetic_energy_j": 0.16842461272610829,
+        "linear_momentum_kg_m_s": [
+          7351104.78537505,
+          711061637.9960544,
+          0.0
+        ]
+      },
+      "material": {
+        "balanced": true,
+        "density_convention": "One reference density for equivalent-rock volume; not a species-density mass budget.",
+        "final_time_myr": 20.00005,
+        "final_upper_components_km3": {
+          "continental_bedrock": 0.0,
+          "oceanic_bedrock": 55015296.84102721,
+          "plume_dyke": 0.0,
+          "plume_extrusive": 0.0,
+          "plume_underplate": 0.0,
+          "surface_sediment": 0.0
+        },
+        "final_upper_reference_mass_kg": 1.6504589052308164e+20,
+        "final_upper_volume_km3": 55015296.84102721,
+        "format": "genesis-starter-material-ledger-0.1",
+        "generated_volume_km3": 53763296.841027215,
+        "initial_time_myr": 10.00005,
+        "initial_upper_components_km3": {
+          "continental_bedrock": 0.0,
+          "oceanic_bedrock": 1280000.0,
+          "plume_dyke": 0.0,
+          "plume_extrusive": 0.0,
+          "plume_underplate": 0.0,
+          "surface_sediment": 0.0
+        },
+        "initial_upper_reference_mass_kg": 3.84e+18,
+        "initial_upper_volume_km3": 1280000.0,
+        "mantle_reference_mass_change_kg": -1.6120589052308164e+20,
+        "new_continental_records": 0,
+        "new_lithosphere_records": 1,
+        "observed_upper_change_km3": 53735296.84102721,
+        "predicted_upper_change_km3": 53735296.841027215,
+        "recycled_volume_km3": 28000.0,
+        "reference_density_kg_m3": 3000.0,
+        "reference_mass_residual_kg": -22351.741790771484,
+        "relative_volume_residual": -1.354274360902406e-16,
+        "sink_components_km3": {
+          "continental_cycle_oceanic_recycling": 0.0,
+          "continental_cycle_recycling": 0.0,
+          "continental_rift_recycling": 0.0,
+          "deep_sediment_recycling": 0.0,
+          "oceanic_replacement_by_juvenile_crust": 0.0,
+          "oceanic_rift_recycling": 0.0,
+          "oceanic_subduction": 28000.0,
+          "plume_dyke_recycling": 0.0,
+          "plume_extrusive_recycling": 0.0,
+          "plume_underplate_recycling": 0.0
+        },
+        "source_components_km3": {
+          "continental_cycle_oceanic_creation": 0.0,
+          "continental_generation": 0.0,
+          "lithosphere_oceanic_creation": 53763296.841027215,
+          "plume_dyke_generation": 0.0,
+          "plume_extrusive_generation": 0.0,
+          "plume_underplate_generation": 0.0
+        },
+        "thermal_energy_changed_by_audit_j": 0.0,
+        "volume_residual_km3": -7.450580596923828e-09,
+        "volume_tolerance_km3": 1.5636287810430988e-06
+      },
+      "material_source_sha256": "16d9aa3e53ffa74f79a6ad2836ca99177ad698b8a91eb699b5cd9697885b6852",
+      "relative_omega_rad_per_myr": 0.009485838615349646,
+      "time_myr": 20.00005,
+      "transport_commits": 2,
+      "transported_oceanic_volume_km3": 589000.0,
+      "transported_winning_cells": 589,
+      "unclosed_angular_momentum_change_kg_m2_s": [
+        -787909532029607.9,
+        1.288281727797635e+16,
+        -1176450406017898.2
+      ],
+      "unclosed_kinetic_change_j": 28.214841771231804,
+      "unclosed_linear_momentum_change_kg_m_s": [
+        281845278.5641989,
+        52903865689.14193,
+        154735312.67803648
+      ]
+    },
+    {
+      "SI_force_work_available": false,
+      "coupled_enthalpy_closed": false,
+      "dt_myr": 10.0,
+      "dynamics": {
+        "continental_collision_length_km": 0.0,
+        "mantle_rms_speed_deg_per_myr": 1.323189349012301,
+        "max_axis_turn_deg": 33.079457723906245,
+        "max_ridge_push_factor": 0.2,
+        "max_speed_deg_per_myr": 0.3387612633715662,
+        "mean_axis_turn_deg": 11.190922785645,
+        "mean_collision_drag_factor": 0.9083531043313323,
+        "mean_continental_plate_speed_deg_per_myr": 0.0,
+        "mean_gpe_drive": 0.0,
+        "mean_plate_mantle_slip_deg_per_myr": 0.8276169450478895,
+        "mean_ridge_push_factor": 0.19999999999999987,
+        "mean_speed_deg_per_myr": 0.22615163815074166,
+        "min_continental_plate_speed_deg_per_myr": 0.0,
+        "min_ridge_push_factor": 0.2,
+        "near_stationary_continental_plates": 0,
+        "net_rotation_deg_per_myr_before_removal": 0.0008025291956647052,
+        "ridge_boundary_length_km": 32554.190070217737,
+        "slab_boundary_length_km": 33399.119324867395,
+        "time_myr": 20.00005,
+        "transform_boundary_length_km": 15863.11786614305
+      },
+      "heat_from_retired_memory_j": 0.0,
+      "interior_reference_mass_kg": 3.999716047706954e+24,
+      "kinematics_after": {
+        "angular_momentum_kg_m2_s": [
+          5192875688834147.0,
+          1.4820419499994798e+16,
+          -793747959880318.2
+        ],
+        "kinetic_energy_j": 95.77281605070966,
+        "linear_momentum_kg_m_s": [
+          689901480.5131623,
+          131576232828.27841,
+          427930863.53404856
+        ]
+      },
+      "kinematics_before": {
+        "angular_momentum_kg_m2_s": [
+          -793265986796873.9,
+          1.2894615868280932e+16,
+          -1181791795240527.2
+        ],
+        "kinetic_energy_j": 28.383266383957913,
+        "linear_momentum_kg_m_s": [
+          289196383.34957397,
+          53614927327.137985,
+          154735312.67803648
+        ]
+      },
+      "material": {
+        "balanced": true,
+        "density_convention": "One reference density for equivalent-rock volume; not a species-density mass budget.",
+        "final_time_myr": 30.00005,
+        "final_upper_components_km3": {
+          "continental_bedrock": 0.0,
+          "oceanic_bedrock": 95930764.34867726,
+          "plume_dyke": 0.0,
+          "plume_extrusive": 0.0,
+          "plume_underplate": 0.0,
+          "surface_sediment": 0.0
+        },
+        "final_upper_reference_mass_kg": 2.8779229304603178e+20,
+        "final_upper_volume_km3": 95930764.34867726,
+        "format": "genesis-starter-material-ledger-0.1",
+        "generated_volume_km3": 40937467.507650055,
+        "initial_time_myr": 20.00005,
+        "initial_upper_components_km3": {
+          "continental_bedrock": 0.0,
+          "oceanic_bedrock": 55015296.84102721,
+          "plume_dyke": 0.0,
+          "plume_extrusive": 0.0,
+          "plume_underplate": 0.0,
+          "surface_sediment": 0.0
+        },
+        "initial_upper_reference_mass_kg": 1.6504589052308164e+20,
+        "initial_upper_volume_km3": 55015296.84102721,
+        "mantle_reference_mass_change_kg": -1.2274640252295017e+20,
+        "new_continental_records": 0,
+        "new_lithosphere_records": 1,
+        "observed_upper_change_km3": 40915467.507650055,
+        "predicted_upper_change_km3": 40915467.507650055,
+        "recycled_volume_km3": 22000.0,
+        "reference_density_kg_m3": 3000.0,
+        "reference_mass_residual_kg": 0.0,
+        "relative_volume_residual": 0.0,
+        "sink_components_km3": {
+          "continental_cycle_oceanic_recycling": 0.0,
+          "continental_cycle_recycling": 0.0,
+          "continental_rift_recycling": 0.0,
+          "deep_sediment_recycling": 0.0,
+          "oceanic_replacement_by_juvenile_crust": 0.0,
+          "oceanic_rift_recycling": 0.0,
+          "oceanic_subduction": 22000.0,
+          "plume_dyke_recycling": 0.0,
+          "plume_extrusive_recycling": 0.0,
+          "plume_underplate_recycling": 0.0
+        },
+        "source_components_km3": {
+          "continental_cycle_oceanic_creation": 0.0,
+          "continental_generation": 0.0,
+          "lithosphere_oceanic_creation": 40937467.507650055,
+          "plume_dyke_generation": 0.0,
+          "plume_extrusive_generation": 0.0,
+          "plume_underplate_generation": 0.0
+        },
+        "thermal_energy_changed_by_audit_j": 0.0,
+        "volume_residual_km3": 0.0,
+        "volume_tolerance_km3": 2.726516309754665e-06
+      },
+      "material_source_sha256": "759c4e3b544b36a7a8679f41dfe871cad4ceb530fd532aa952fb56f0ab39dcb3",
+      "relative_omega_rad_per_myr": 0.011812229508004965,
+      "time_myr": 30.00005,
+      "transport_commits": 2,
+      "transported_oceanic_volume_km3": 22170967.51661236,
+      "transported_winning_cells": 468,
+      "unclosed_angular_momentum_change_kg_m2_s": [
+        5986141675631021.0,
+        1925803631713866.0,
+        388043835360209.0
+      ],
+      "unclosed_kinetic_change_j": 67.38954966675175,
+      "unclosed_linear_momentum_change_kg_m_s": [
+        400705097.1635883,
+        77961305501.14043,
+        273195550.8560121
+      ]
+    },
+    {
+      "SI_force_work_available": false,
+      "coupled_enthalpy_closed": false,
+      "dt_myr": 10.0,
+      "dynamics": {
+        "continental_collision_length_km": 0.0,
+        "mantle_rms_speed_deg_per_myr": 1.323189349012301,
+        "max_axis_turn_deg": 38.82575009743866,
+        "max_ridge_push_factor": 0.2,
+        "max_speed_deg_per_myr": 0.3767278931337475,
+        "mean_axis_turn_deg": 13.08126098755785,
+        "mean_collision_drag_factor": 0.945463098542493,
+        "mean_continental_plate_speed_deg_per_myr": 0.0,
+        "mean_gpe_drive": 0.0,
+        "mean_plate_mantle_slip_deg_per_myr": 0.8028074642037991,
+        "mean_ridge_push_factor": 0.19999999999999987,
+        "mean_speed_deg_per_myr": 0.251532649887366,
+        "min_continental_plate_speed_deg_per_myr": 0.0,
+        "min_ridge_push_factor": 0.2,
+        "near_stationary_continental_plates": 0,
+        "net_rotation_deg_per_myr_before_removal": 0.0004782694618994033,
+        "ridge_boundary_length_km": 34164.496299639126,
+        "slab_boundary_length_km": 38973.976812348534,
+        "time_myr": 30.00005,
+        "transform_boundary_length_km": 10299.705421649203
+      },
+      "heat_from_retired_memory_j": 0.0,
+      "interior_reference_mass_kg": 3.9995441616978464e+24,
+      "kinematics_after": {
+        "angular_momentum_kg_m2_s": [
+          -2204529988655770.2,
+          4.585327492118309e+16,
+          3.088977275003986e+16
+        ],
+        "kinetic_energy_j": 183.52876946913773,
+        "linear_momentum_kg_m_s": [
+          6630811122.263614,
+          231712683826.2041,
+          886619504.4859843
+        ]
+      },
+      "kinematics_before": {
+        "angular_momentum_kg_m2_s": [
+          5192875688834147.0,
+          1.4820419499994798e+16,
+          -793747959880318.2
+        ],
+        "kinetic_energy_j": 95.77281605070966,
+        "linear_momentum_kg_m_s": [
+          689901480.5131623,
+          131576232828.27841,
+          427930863.53404856
+        ]
+      },
+      "material": {
+        "balanced": true,
+        "density_convention": "One reference density for equivalent-rock volume; not a species-density mass budget.",
+        "final_time_myr": 40.00005,
+        "final_upper_components_km3": {
+          "continental_bedrock": 0.0,
+          "oceanic_bedrock": 153226100.71789727,
+          "plume_dyke": 0.0,
+          "plume_extrusive": 0.0,
+          "plume_underplate": 0.0,
+          "surface_sediment": 0.0
+        },
+        "final_upper_reference_mass_kg": 4.596783021536918e+20,
+        "final_upper_volume_km3": 153226100.71789727,
+        "format": "genesis-starter-material-ledger-0.1",
+        "generated_volume_km3": 57325336.369220026,
+        "initial_time_myr": 30.00005,
+        "initial_upper_components_km3": {
+          "continental_bedrock": 0.0,
+          "oceanic_bedrock": 95930764.34867726,
+          "plume_dyke": 0.0,
+          "plume_extrusive": 0.0,
+          "plume_underplate": 0.0,
+          "surface_sediment": 0.0
+        },
+        "initial_upper_reference_mass_kg": 2.8779229304603178e+20,
+        "initial_upper_volume_km3": 95930764.34867726,
+        "mantle_reference_mass_change_kg": -1.7188600910766008e+20,
+        "new_continental_records": 0,
+        "new_lithosphere_records": 1,
+        "observed_upper_change_km3": 57295336.36922,
+        "predicted_upper_change_km3": 57295336.369220026,
+        "recycled_volume_km3": 30000.0,
+        "reference_density_kg_m3": 3000.0,
+        "reference_mass_residual_kg": -67055.22537231445,
+        "relative_volume_residual": -1.458742452235537e-16,
+        "sink_components_km3": {
+          "continental_cycle_oceanic_recycling": 0.0,
+          "continental_cycle_recycling": 0.0,
+          "continental_rift_recycling": 0.0,
+          "deep_sediment_recycling": 0.0,
+          "oceanic_replacement_by_juvenile_crust": 0.0,
+          "oceanic_rift_recycling": 0.0,
+          "oceanic_subduction": 30000.0,
+          "plume_dyke_recycling": 0.0,
+          "plume_extrusive_recycling": 0.0,
+          "plume_underplate_recycling": 0.0
+        },
+        "source_components_km3": {
+          "continental_cycle_oceanic_creation": 0.0,
+          "continental_generation": 0.0,
+          "lithosphere_oceanic_creation": 57325336.369220026,
+          "plume_dyke_generation": 0.0,
+          "plume_extrusive_generation": 0.0,
+          "plume_underplate_generation": 0.0
+        },
+        "thermal_energy_changed_by_audit_j": 0.0,
+        "volume_residual_km3": -2.2351741790771484e-08,
+        "volume_tolerance_km3": 4.354947711757895e-06
+      },
+      "material_source_sha256": "e8ffb9ca90410beb981a451d3942377c0a111a55e70a889386078c9a6db5c99f",
+      "relative_omega_rad_per_myr": 0.013144773208306976,
+      "time_myr": 40.00005,
+      "transport_commits": 2,
+      "transported_oceanic_volume_km3": 69675244.15916929,
+      "transported_winning_cells": 609,
+      "unclosed_angular_momentum_change_kg_m2_s": [
+        -7397405677489917.0,
+        3.103285542118829e+16,
+        3.168352070992018e+16
+      ],
+      "unclosed_kinetic_change_j": 87.75595341842806,
+      "unclosed_linear_momentum_change_kg_m_s": [
+        5940909641.750451,
+        100136450997.92569,
+        458688640.95193577
+      ]
+    }
+  ],
+  "subdivisions": 3
+}
