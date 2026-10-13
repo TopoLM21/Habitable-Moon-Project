@@ -36,6 +36,8 @@ def observe(model, elapsed):
         X=np.asarray(c['nodal']['X']);du=(np.asarray(s['nodal_displacement'])-np.asarray(c['nodal']['initial_displacement'])).reshape(-1,6)[:,:3]
         radial=np.einsum('ni,ni->n',du,X)/np.sum(X*X,axis=1)
         extra.update(radial_strain_mean=float(radial.mean()),radial_strain_min=float(radial.min()),radial_strain_max=float(radial.max()),nodal_momentum_relative=L.get('momentum_relative'))
+        if 'basal' in L:
+            b=L['basal'];extra.update(basal_area_m2=b['area_m2'],basal_depth_mean_m=b['depth_mean_m'],basal_heat_j=b['heat_j'],mantle_driver_work_j=b['mantle_driver_work_j'])
         if 'stress_pa' in s:
             from tectonics.genesis_shell import principal_tensile
             tensile=principal_tensile(np.asarray(s['stress_pa']))

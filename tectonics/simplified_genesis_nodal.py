@@ -78,9 +78,12 @@ def blocks(m,T,D,oldT):
     return out
 
 
-def mechanical(m,T,D,oldT,dt,M):
+def mechanical(m,T,D,oldT,dt,M,basal=None):
     o=operators(m);b=blocks(m,T,D,oldT)
-    r=step(M,o['D'],o['F'],np.asarray(m.state['nodal_velocity']),dt,b)
+    if basal is None and m.config['nodal'].get('moving_basal'):
+        from .simplified_genesis_basal import assemble
+        basal=assemble(m)
+    r=step(M,o['D'] if basal is None else basal['D'],o['F'] if basal is None else basal['F'],np.asarray(m.state['nodal_velocity']),dt,b)
     if r['ledger']['momentum_relative']>1e-8 or r['ledger']['balance_relative']>5e-10:raise ValueError('NODAL_OPERATOR_BALANCE')
     sigma=np.zeros((m.nf,3));vol=m.G[:,0,0].copy();heat=np.zeros(len(T));dU=0.;exchange=np.zeros(2)
     for f in range(m.nf):
@@ -100,8 +103,14 @@ def mechanical(m,T,D,oldT,dt,M):
     for val,key in zip(exchange,('maxwell','thermal_work')):
         if abs(val-r['ledger'][key])>1e3+3e-8*abs(val):raise ValueError('NODAL_NODE_WORK_IDENTITY')
     # Basal drag heat goes to the same live thermal supports as the inherited model.
-    for f,ids in enumerate(o['dofs']):
-        heat[m.solid_nodes[f]]+=dt*(r['velocity'][ids]@o['face_D'][f]@r['velocity'][ids])/2
+    if basal is None:
+        for f,ids in enumerate(o['dofs']):
+            heat[m.solid_nodes[f]]+=dt*(r['velocity'][ids]@o['face_D'][f]@r['velocity'][ids])/2
+    else:
+        from .simplified_genesis_basal import budget
+        exchange=budget(basal,r['velocity'],dt)
+        np.add.at(heat,basal['geometry']['thermal_nodes'],[x['heat_j'] for x in exchange['rows']])
+        r['basal_budget']={k:v for k,v in exchange.items() if k!='rows'}
     r.update(stress=sigma/vol[:,None],heat=heat,damage_energy_change=float(dU),born=born,blocks=b)
     return r
 
@@ -120,6 +129,10 @@ def advance(m,years):
     s=m.state;c=m.config;o=operators(m);nexts=deepcopy(s);M=material_mass(m)
     target=s['time_myr']+years/1e6;dt=(target-s['time_myr'])*SECONDS_PER_MYR
     E0=np.asarray(s['energy']);oldT=m.temperature(E0);oldD=np.asarray(s['damage'])
+    basal=None
+    if c['nodal'].get('moving_basal'):
+        from .simplified_genesis_basal import assemble
+        basal=assemble(m)
     sourced,orbit,ports=apply_ports(dict(time_myr=s['time_myr'],mass_kg=m.mass.tolist(),energy_j=E0.tolist()),GenesisParameters(**c['thermal_parameters']),TidalParameters(**c['tidal_parameters']),TidalOrbitState(**s['orbit']),target,allow_condensation=m.water_parameters is not None)
     thermal=solve(m.mass,np.asarray(sourced['energy_j'])/m.mass,m.cp,m.latent,np.full(len(E0),c['solidus']),np.full(len(E0),c['liquidus']),m.offset,c['edges'],dt,water_parameters=m.water_parameters)
     base=m.mass*thermal['specific_h'];T=m.temperature(base)
@@ -127,13 +140,13 @@ def advance(m,years):
     nu=m.shell['poisson_ratio'];plane=np.array([[1.,nu,0.],[nu,1.,0.],[0.,0.,(1-nu)/2]])/(1-nu**2)
     tide=np.einsum('ij,pfj->pfi',plane,tidal_strain_cycle(m.mesh,tp))*m.shell['young_modulus_pa']*m.scale(oldD)[None,:,None]
     for iteration in range(8):
-        pred=mechanical(m,T,oldD,oldT,dt,M)
+        pred=mechanical(m,T,oldD,oldT,dt,M,basal)
         tensile=np.array([principal_tensile(pred['stress']+t) for t in tide])
         load=np.mean(np.maximum(tensile/m.shell['tensile_strength_pa']-1,0)**2,axis=0)/m.shell['damage_timescale_myr']
         load=m.smoother.apply(load,np.ones(m.nf,bool));hot=np.clip((T[m.solid_nodes].mean(axis=1)-700)/650,0,1)
         heal=1/m.shell['cold_healing_timescale_myr']+hot**4/m.shell['hot_healing_timescale_myr'];rr=load+heal
         D=load/rr+(oldD-load/rr)*np.exp(-rr*years/1e6)
-        r=mechanical(m,T,D,oldT,dt,M);E=base+r['heat'];Tnew=m.temperature(E)
+        r=mechanical(m,T,D,oldT,dt,M,basal);E=base+r['heat'];Tnew=m.temperature(E)
         if np.max(abs(Tnew-T))<1e-8:break
         T=Tnew
     else:raise ValueError('NODAL_THERMAL_CORRECTOR_LIMIT')
@@ -177,6 +190,10 @@ def advance(m,years):
     finalT=m.temperature(E);m.phase_guard(finalT)
     if any(finalT[x['node']]>c['solidus'] for x in newborn):raise ValueError('CAPTURE_REHEATS_NEW_SOLID')
     L=deepcopy(r['ledger']);L['elastic_before']-=r['damage_energy_change'];L['kinetic_after']-=capture_heat
+    if basal is not None:
+        L['nodal_core_external_work_j']=L['external_work']
+        L['external_work']=r['basal_budget']['physical_external_work_j']
+        L['basal']=r['basal_budget']
     change=float(np.sum(E.astype(np.longdouble)-E0.astype(np.longdouble)))
     balance=change+L['elastic_after']-L['elastic_before']+L['kinetic_after']-L['kinetic_before']-ports['net_thermal_input_j']-L['external_work']+L['numerical_memory']+L['numerical_kinetic']
     allowance=float(np.sum(32*(np.spacing(E)+np.spacing(E0))))+1e-8*max(abs(L['thermal_work']),L['maxwell'],abs(L['external_work']),1.)
