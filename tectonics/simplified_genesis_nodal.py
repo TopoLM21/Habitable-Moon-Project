@@ -16,6 +16,7 @@ from .genesis_implicit_enthalpy import solve
 from .genesis_shell import principal_tensile
 from .genesis_starter_topology import select_starter_cut
 from .plates import Plate,PlateSystem
+from .experimental_edge_weakening import scale as effective_scale
 from .simplified_genesis_phase import promote
 
 
@@ -27,6 +28,12 @@ def validate(m):
     if len(s['omega'])!=1 or s['events'] or any(s['consumed']):raise ValueError('NODAL_SINGLE_BODY_ONLY')
     if np.asarray(c['nodal']['M']).shape!=(n,n):raise ValueError('NODAL_MASS_SHAPE')
     if c['passive_kinetic_projection_j']!=0:raise ValueError('NODAL_KINETIC_DOUBLE_COUNT')
+    if 'experimental_edge_fracture_reserve_j' in s:
+        reserve=s['experimental_edge_fracture_reserve_j']
+        if not np.isfinite(reserve) or reserve<0:raise ValueError('EDGE_RESERVE_INVALID')
+    if c.get('experimental_geological_edge_fatigue'):
+        from .experimental_edge_weakening import face_damage
+        face_damage(m.mesh,s.get('experimental_edge_fatigue',{}).get('damage',np.zeros(len(m.mesh.shared_edges))))
 
 
 def operators(m):
@@ -70,11 +77,11 @@ def blocks(m,T,D,oldT):
         ids=m.solid_nodes[f];P=m.P[f];w=m.weights[f]
         R=np.linalg.solve(m.G[f],P.T@((w*rate(m,T[ids]))[:,None]*P))
         theta=np.linalg.solve(P,T[ids]-oldT[ids])[:,None]*alpha*unit
-        out.append(dict(H=np.kron(m.G[f],m.C[f]*m.scale(D)[f]),L=o['L'][f],R=np.kron(R,np.eye(6)),old=np.asarray(m.state['memory'][f]).ravel(),theta=theta.ravel(),dofs=o['dofs'][f]))
+        out.append(dict(H=np.kron(m.G[f],m.C[f]*effective_scale(m,D)[f]),L=o['L'][f],R=np.kron(R,np.eye(6)),old=np.asarray(m.state['memory'][f]).ravel(),theta=theta.ravel(),dofs=o['dofs'][f]))
     catalog={x['id']:x for x in m.config['phase_cells']}
     for x in m.state.get('born_material',[]):
         f=x['face'];i=x['node'];L,_=birth_operator(m,catalog[x['cell_id']])
-        out.append(dict(H=x['volume_m3']*m.C[f]*m.scale(D)[f],L=L,R=np.eye(6)*rate(m,T[i]),old=np.asarray(x['memory']),theta=alpha*(T[i]-oldT[i])*unit,dofs=o['dofs'][f]))
+        out.append(dict(H=x['volume_m3']*m.C[f]*effective_scale(m,D)[f],L=L,R=np.eye(6)*rate(m,T[i]),old=np.asarray(x['memory']),theta=alpha*(T[i]-oldT[i])*unit,dofs=o['dofs'][f]))
     return out
 
 
@@ -87,16 +94,16 @@ def mechanical(m,T,D,oldT,dt,M,basal=None):
     if r['ledger']['momentum_relative']>1e-8 or r['ledger']['balance_relative']>5e-10:raise ValueError('NODAL_OPERATOR_BALANCE')
     sigma=np.zeros((m.nf,3));vol=m.G[:,0,0].copy();heat=np.zeros(len(T));dU=0.;exchange=np.zeros(2)
     for f in range(m.nf):
-        ids=m.solid_nodes[f];e=m.P[f]@r['memory'][f].reshape(2,6);C=m.C[f]*m.scale(D)[f];stress=e@C
+        ids=m.solid_nodes[f];e=m.P[f]@r['memory'][f].reshape(2,6);C=m.C[f]*effective_scale(m,D)[f];stress=e@C
         Q=dt*m.weights[f]*rate(m,T[ids])*np.einsum('ni,ni->n',stress,e)
         W=-m.weights[f]*m.shell['linear_expansion_per_k']*(T[ids]-oldT[ids])*stress[:,:3].sum(axis=1)
-        old=m.P[f]@np.asarray(m.state['memory'][f]);delta=.5*m.weights[f]*np.einsum('ni,ij,nj->n',old,m.C[f]*(m.scale(D)[f]-m.scale(m.state['damage'])[f]),old)
+        old=m.P[f]@np.asarray(m.state['memory'][f]);delta=.5*m.weights[f]*np.einsum('ni,ij,nj->n',old,m.C[f]*(effective_scale(m,D)[f]-effective_scale(m,m.state['damage'])[f]),old)
         heat[ids]+=Q-W-delta;exchange+=[Q.sum(),W.sum()];dU+=delta.sum()
         sigma[f]=np.einsum('n,ni->i',m.weights[f],stress)[[0,1,3]]
     born=deepcopy(m.state.get('born_material',[]))
     for j,x in enumerate(born,m.nf):
-        f=x['face'];i=x['node'];old=np.asarray(x['memory']);new=r['memory'][j];C=m.C[f]*m.scale(D)[f]
-        delta=.5*x['volume_m3']*old@(m.C[f]*(m.scale(D)[f]-m.scale(m.state['damage'])[f]))@old
+        f=x['face'];i=x['node'];old=np.asarray(x['memory']);new=r['memory'][j];C=m.C[f]*effective_scale(m,D)[f]
+        delta=.5*x['volume_m3']*old@(m.C[f]*(effective_scale(m,D)[f]-effective_scale(m,m.state['damage'])[f]))@old
         row=r['rows'][j];heat[i]+=row['maxwell']-row['thermal_work']-delta
         exchange+=[row['maxwell'],row['thermal_work']];dU+=delta
         sigma[f]+=x['volume_m3']*(C@new)[[0,1,3]];vol[f]+=x['volume_m3'];x['memory']=new.tolist()
@@ -140,7 +147,7 @@ def advance(m,years):
     base=m.mass*thermal['specific_h'];T=m.temperature(base)
     tp=replace(TidalParameters(**c['tidal_parameters']),eccentricity=orbit.eccentricity,semimajor_axis_km=orbit.semimajor_axis_km)
     nu=m.shell['poisson_ratio'];plane=np.array([[1.,nu,0.],[nu,1.,0.],[0.,0.,(1-nu)/2]])/(1-nu**2)
-    tide=np.einsum('ij,pfj->pfi',plane,tidal_strain_cycle(m.mesh,tp))*m.shell['young_modulus_pa']*m.scale(oldD)[None,:,None]
+    tide=np.einsum('ij,pfj->pfi',plane,tidal_strain_cycle(m.mesh,tp))*m.shell['young_modulus_pa']*effective_scale(m,oldD)[None,:,None]
     for iteration in range(8):
         pred=mechanical(m,T,oldD,oldT,dt,M,basal)
         tensile=np.array([principal_tensile(pred['stress']+t) for t in tide])

@@ -180,8 +180,9 @@ class ThermalGeologicalContinuation(GeologicalContinuation):
             inactive_modules=['continental differentiation','topography','plumes','topology changes'],import_report=bundle.report)
         if nodal_projection is not None:
             record['experimental_nodal_retirement']=nodal_projection
+            record['mapping']['energy']['source_edge_fracture_reserve_j']=float(s.get('experimental_edge_fracture_reserve_j',0.))
             record['mapping']['momentum']['approximation']='shared nodal SI momenta -> fitted quasi-static region rotations; signed change recorded, no impulse conservation claim'
-            record['mapping']['energy']['signed_active_mechanical_model_change_j']=proxy['kinetic_energy_j']-K-elastic-float(s['passive_reserve_j'])
+            record['mapping']['energy']['signed_active_mechanical_model_change_j']=proxy['kinetic_energy_j']-K-elastic-float(s['passive_reserve_j'])-float(s.get('experimental_edge_fracture_reserve_j',0.))
             record['mapping']['Maxwellmemory']['status']='full nodal and moment source archived; active mechanics retired at approved geological model change'
         return cls(bundle.checkpoint,record,source)
 
