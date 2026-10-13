@@ -1,0 +1,44 @@
+{
+  "scope": "Static normalization and orientation probes, prescribed tensor is diagnostic only",
+  "constant_world_stress_pa": [
+    [
+      2000000.0,
+      1000000.0,
+      500000.0
+    ],
+    [
+      1000000.0,
+      -1000000.0,
+      300000.0
+    ],
+    [
+      500000.0,
+      300000.0,
+      -1000000.0
+    ]
+  ],
+  "checks": [
+    {
+      "level": 2,
+      "spherical_area_relative_error": 0.0,
+      "faceted_volume_to_spherical_volume": 0.9661607485985877,
+      "radial_weight_pair_max_difference": 0.0,
+      "hydrostatic_shear_max_pa": 6.07705821103332e-10,
+      "constant_tensor_max_damage": 0.0038642800200562187
+    },
+    {
+      "level": 3,
+      "spherical_area_relative_error": 0.0,
+      "faceted_volume_to_spherical_volume": 0.9913938426297546,
+      "radial_weight_pair_max_difference": 0.0,
+      "hydrostatic_shear_max_pa": 5.857508739769853e-10,
+      "constant_tensor_max_damage": 0.003915230368315281
+    }
+  ],
+  "constant_world_tensor_damage_grid_metric": {
+    "absolute_rms": 0.0003114026503322483,
+    "reference_rms": 0.0026748676957619507,
+    "relative_l2": 0.11641796370924565
+  },
+  "child_areas_sum_to_parent": true
+}
