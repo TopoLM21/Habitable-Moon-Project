@@ -1,3 +1,25 @@
+# Текущая передача: три экспериментальных этапа завершены
+
+13.10.2026. Ветка feat/genesis-geological-handoff; restoration CLOSED.
+- [Сетка](analysis/genesis_geological_handoff/SPATIAL_CONTROL_RESULT.md):320/1280,
+  fixed-scale поля,27.9s; area-weighted grid difference21.11%, transfer effect.0248%.
+  Пространственного допуска нет; новая физическая регуляризация не подставлена.
+- [Newborn](analysis/genesis_geological_handoff/NEWBORN_MAPPING_RESULT.md): явный
+  parcel mapping2/3/4слоёв, масса/H/ID/composition, native creation/recycling,
+  реальные80профилей→240nodes, manufactured boundary/restart PASS, no mapping heat.
+  Fixed receiving thermal bins/mixing остаются явным приближением.
+- [Адаптивный шаг](analysis/genesis_geological_handoff/ADAPTIVE_EDGE_RESULT.md):
+  25лет,43принятых интервала/1отказ, h=.125→2; immutable rejection, local error guards.
+  Max difference к fixed.125:traction.8602%, D.003554. 42.98s против fixed.25 23.77s:
+  реального speedup короткого старта нет; late2year trials проходят,4year отказан.
+  Оценка100лет≈77–111s плюс overhead; такой пилот не запускался.
+29различных адресных тестов PASS. Исходные source/checkpoints/default/canonical
+сохранены. Главный блокер — пространственная объективность и физическая
+локализация; полный контакт не требуется выбранному coarse handoff.
+No push/paid/archive actions. Доступ к среде проверен командой19:10:50UTC.
+
+---
+
 # Текущая передача: short-time verification закрыта по заранее заданному критерию
 
 13.10.2026; [конечный отчёт](analysis/genesis_geological_handoff/EDGE_SHORT_ACCURACY_RESULT.md).

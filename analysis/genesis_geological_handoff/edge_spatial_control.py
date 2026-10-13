@@ -37,5 +37,9 @@ def main():
         restricted_fine_coarse_rms=float(np.sqrt(np.mean((fine-coarse)**2))),restricted_fine_coarse_relative_l2=float(np.linalg.norm(fine-coarse)/np.linalg.norm(fine)),
         same_fine_grid_transfer_relative_l2=float(np.linalg.norm(transfer-profiles[1])/np.linalg.norm(profiles[1])),
         max_projection_width='one incident face; halves with mesh refinement, no physical regularization length',seconds=time.monotonic()-start)
+    from tectonics.mesh import build_icosphere
+    areas=build_icosphere(3).areas_unit_sphere.reshape(-1,4);weights=areas.sum(axis=1);weights/=weights.sum()
+    restricted=(profiles[1].reshape(-1,4)*areas).sum(axis=1)/areas.sum(axis=1)
+    result['area_weighted_restricted_relative_l2']=float(np.sqrt(np.sum(weights*(restricted-coarse)**2)/np.sum(weights*restricted**2)))
     (ROOT/'edge_spatial_control.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps({k:v for k,v in result.items() if k!='runs'}),flush=True)
 if __name__=='__main__':main()
