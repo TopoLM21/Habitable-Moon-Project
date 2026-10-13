@@ -127,6 +127,8 @@ def capture(M,newM,v):
 
 def advance(m,years):
     s=m.state;c=m.config;o=operators(m);nexts=deepcopy(s);M=material_mass(m)
+    if s.get('experimental_edge_fatigue',{}).get('partition_owner') is not None:
+        raise ValueError('EXPERIMENTAL_GEOLOGICAL_HANDOFF_PENDING')
     target=s['time_myr']+years/1e6;dt=(target-s['time_myr'])*SECONDS_PER_MYR
     E0=np.asarray(s['energy']);oldT=m.temperature(E0);oldD=np.asarray(s['damage'])
     basal=None
@@ -155,7 +157,9 @@ def advance(m,years):
     eligible=(D>=m.faults['activation_damage'])&(age>=m.faults['activation_persistence_myr'])
     if not m.faults['enabled'] or not s['membrane_established']:eligible[:]=False
     owner=np.asarray(s['owner']);system=PlateSystem(owner,(Plate(0,0,np.array([0.,0.,1.]),0.),))
-    cut=select_starter_cut(m.mesh,system,eligible,D,**c['selector'])
+    # The explicit option replaces only the onset selector. Existing mechanical
+    # and thermal guards remain active; a certified event stops this nodal mode.
+    cut=None if c.get('experimental_geological_edge_fatigue') else select_starter_cut(m.mesh,system,eligible,D,**c['selector'])
     if cut is not None:
         m.validate_cut_localization(owner,D,cut)
         raise ValueError('NODAL_PARTITION_REQUIRES_HANDOFF')
@@ -215,6 +219,10 @@ def advance(m,years):
     omega=np.linalg.solve(J.T@newM@J,J.T@newM@v)
     nexts.update(energy=E.tolist(),memory=[e.reshape(2,6).tolist() for e in r['memory'][:m.nf]],damage=D.tolist(),candidate_age=age.tolist(),nodal_displacement=u.tolist(),nodal_velocity=v.tolist(),omega=[omega.tolist()],orbit=asdict(orbit),stress_pa=r['stress'].tolist(),last_ledger=L,steps=s['steps']+1)
     m.state=nexts
-    try:m.validate()
+    try:
+        if c.get('experimental_geological_edge_fatigue'):
+            from .experimental_genesis_edge_rule import update
+            update(m,s,years)
+        m.validate()
     except Exception:m.state=s;raise
     return deepcopy(nexts)

@@ -36,12 +36,13 @@ def topology_mesh(model):
     return mesh, level
 
 
-def eligibility(model):
+def eligibility(model, *, experimental_nodal_retirement=False, partition_owner=None):
     """Read-only readiness inspection; does not demand unknown chemical fractions."""
     c,s = model.config,model.state; reasons=[]
-    if c.get('mechanical_mode')=='shared_nodal_moments':
+    if c.get('mechanical_mode')=='shared_nodal_moments' and not experimental_nodal_retirement:
         reasons.append('Shared nodal deformation and momentum require an explicit handoff map')
-    if len(np.unique(s['owner'])) < 2: reasons.append('No multiple domains from the selector yet')
+    owner=s['owner'] if partition_owner is None else partition_owner
+    if len(np.unique(owner)) < 2: reasons.append('No multiple domains from the selector yet')
     if not np.allclose(s['rotation'],np.eye(3)[None],rtol=0,atol=1e-14):
         reasons.append('Finite domain rotations need a conservative spatial remap')
     if c.get('edge_strips'): reasons.append('Independent edge geometry needs a spatial remap')
@@ -81,7 +82,7 @@ def eligibility(model):
             if water_temperature(s['energy'][-1]/c['mass'][-1],p) < 273.16:
                 reasons.append('Existing Genesis has no ice EOS')
         except ValueError as e: reasons.append(str(e))
-    return dict(eligible=not reasons, reasons=reasons, domains=len(np.unique(s['owner'])),
+    return dict(eligible=not reasons, reasons=reasons, domains=len(np.unique(owner)),
         time_myr=s['time_myr'], composition='undifferentiated silicate; elemental fractions unknown',
         continental_material_inferred=False, chemistry_required_for_this_mode=False,
         optional_future_fields=['elemental fractions','differentiation/depletion laws','continental generation'],
@@ -101,12 +102,18 @@ class ThermalGeologicalContinuation(GeologicalContinuation):
     FORMAT = 'geological-source-enthalpy-2'
 
     @classmethod
-    def from_source(cls, model, mantle_omega=None):
-        readiness=eligibility(model)
+    def from_source(cls, model, mantle_omega=None, *, experimental_nodal_retirement=False, fracture_edges=None):
+        partition_owner=None;nodal_projection=None
+        if experimental_nodal_retirement:
+            from .experimental_nodal_handoff import prepare_nodal_retirement
+            nodal_projection=prepare_nodal_retirement(model,fracture_edges)
+            partition_owner=nodal_projection['owner']
+        readiness=eligibility(model,experimental_nodal_retirement=experimental_nodal_retirement,partition_owner=partition_owner)
         if not readiness['eligible']: raise ValueError('; '.join(readiness['reasons']))
         c,s=model.config,model.state; mesh,level=topology_mesh(model)
-        owner=np.array(s['owner'],dtype=np.int32); plates=[]
-        for i,w in enumerate(np.array(s['omega'])*SECONDS_PER_MYR):
+        owner=np.array(s['owner'] if partition_owner is None else partition_owner,dtype=np.int32); plates=[]
+        rotations=np.array(s['omega'] if nodal_projection is None else nodal_projection['omega_rad_s'])
+        for i,w in enumerate(rotations*SECONDS_PER_MYR):
             speed=float(np.linalg.norm(w)); axis=w/speed if speed else np.array([0.,0.,1.])
             plates.append(Plate(i,int(np.flatnonzero(owner==i)[0]),axis,speed))
         mass=np.array(c['mass']); E=np.array(s['energy']); nodes=np.array(c['solid_nodes'])
@@ -134,13 +141,16 @@ class ThermalGeologicalContinuation(GeologicalContinuation):
             next_plume_birth_time_myr=s['time_myr']+1e6,
             source_metadata={'composition':'undifferentiated silicate; noncontinental native carrier, not chemical basalt proof',
                              'geometry':readiness['geometry_contract']})
-        source=dict(config=deepcopy(c),state=deepcopy(s)); I=model.material_inertia(); w=np.asarray(s['omega'])[owner]
+        source=dict(config=deepcopy(c),state=deepcopy(s)); I=model.material_inertia(); w=rotations[owner]
         L=np.einsum('fij,fj->i',I,w); K=float(.5*np.einsum('fi,fij,fj->',w,I,w))
         P=None
         if 'face_linear_momentum_map' in c:
             P=np.einsum('fij,fj->i',np.asarray(c['face_linear_momentum_map']),w).tolist()
         proxy=kinematics(bundle.checkpoint,mesh,c['radius_km'])
         elastic=float(np.sum(model.constitutive(T,s['damage'],np.asarray(s['memory']),T,0)[4]))
+        if nodal_projection is not None:
+            L=np.array(nodal_projection['angular_momentum_kg_m2_s']);P=nodal_projection['linear_momentum_kg_m_s']
+            K=nodal_projection['kinetic_j'];elastic=nodal_projection['elastic_j']
         record=dict(format=cls.FORMAT,subdivisions=level,radius_km=c['radius_km'],
             dynamics_parameters=asdict(DynamicsParameters()),gravity_m_s2=p.surface_gravity_m_s2,
             period_hours=2*np.pi/mean_motion_rad_s(tides)/3600,eccentricity=s['orbit']['eccentricity'],
@@ -168,6 +178,11 @@ class ThermalGeologicalContinuation(GeologicalContinuation):
                     'mapping_heat_j':0.,'total_mechanical_energy_conserved':False},
                 Maxwellmemory={'status':'exact frozen source; active detailed constitutive memory retired','heat_j':0.}),
             inactive_modules=['continental differentiation','topography','plumes','topology changes'],import_report=bundle.report)
+        if nodal_projection is not None:
+            record['experimental_nodal_retirement']=nodal_projection
+            record['mapping']['momentum']['approximation']='shared nodal SI momenta -> fitted quasi-static region rotations; signed change recorded, no impulse conservation claim'
+            record['mapping']['energy']['signed_active_mechanical_model_change_j']=proxy['kinetic_energy_j']-K-elastic-float(s['passive_reserve_j'])
+            record['mapping']['Maxwellmemory']['status']='full nodal and moment source archived; active mechanics retired at approved geological model change'
         return cls(bundle.checkpoint,record,source)
 
     def step(self,dt_myr):

@@ -1,3 +1,21 @@
+# Текущая передача: приближённый nodal handoff проверен; реальный split не получен
+
+13.10.2026; ветка `feat/genesis-geological-handoff`.
+[Исправление прежнего барьера и результаты](analysis/genesis_geological_handoff/NODAL_RETIREMENT_RESULT.md).
+Актуальная задача — geological handoff; не возвращаться к restoration/10ea182/tighter centers.
+Путь ThermalGeologicalContinuation из8d7912b сохраняет активную массу/H и
+архивирует механику без нагрева; полный контактный solver не требуется.
+Добавлен явный nodal velocity/momentum/energy map с signed model-change ledger.
+Manufactured closed-boundary fixture: inventory/noheat/restart PASS.
+Реальный пилот20×25лет .8684→.8689Myr: одна оболочка, Dedge=1 у84/120 связей;
+DIFFUSE_NETWORK_FAILURE, граница не допущена, split/actual handoff отсутствуют.
+Это incubation-only индикатор, не ослабление узловой жёсткости перед переходом.
+Прежний endpoint .8991Myr и исходный source неизменны, новый пилот отдельно.
+Реальный барьер — локализация допустимой границы; newborn parcel map остаётся
+отдельным ограничением позднего source. Defaults/история сохранены; no push/restore.
+
+---
+
 # Текущая передача: отдельный edge-fracture прототип; реальный переход заблокирован
 
 13.10.2026: [правило, испытания, отрицательный естественный опыт и блокер](analysis/genesis_geological_handoff/EDGE_FRACTURE_RESULT.md).
