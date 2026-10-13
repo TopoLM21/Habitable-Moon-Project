@@ -1,0 +1,251 @@
+{
+  "seconds": 0.035857383998518344,
+  "parameters": {
+    "length_m": 128000.0,
+    "ell_m": 8000.0,
+    "shear_modulus_pa": 20000000000.0,
+    "shear_reference_pa": 1000000.0,
+    "time_reference_s": 31557600.0,
+    "maxwell_time_reference_units": 100.0,
+    "plastic_viscosity_Gt_units": 0.1,
+    "residual_strength_fraction": 0.4,
+    "critical_plastic_shear_units": 5.0,
+    "strength_perturbation_fraction": 0.001,
+    "imposed_shear_rate_units": 1.0,
+    "end_time_units": 12.0
+  },
+  "n": 128,
+  "dt": 0.025,
+  "reference": {
+    "time_label": 4.0,
+    "tau_units": 0.8,
+    "kappa_units": 2.5,
+    "gamma_units": 4.0,
+    "role": "Mathematical probe, not a time-evolved state; original spatial c0 retained."
+  },
+  "base_unsaturated_margin": 2.474317319735156,
+  "base_yield_margin": 0.10172733580928262,
+  "modes": [
+    {
+      "mode": 1,
+      "wavelength_m": 128000.0,
+      "filter_factor": 0.8664147782537596,
+      "homogeneous_continuous_rate_per_year": 1.0396977339045115,
+      "homogeneous_BE_gain": 1.0266860797640496,
+      "analytic_heterogeneous_gain": 1.0266860799634063,
+      "coupling_relative_norm": 1.3991540698709168e-05,
+      "probes": [
+        {
+          "epsilon": 0.001,
+          "gain_projection": 1.0266860799633943,
+          "kappa_max_error": 3.544109450359656e-13,
+          "tau_derivative_error": 2.7019571747100707e-15,
+          "gamma_max_error": 6.192824031359123e-13,
+          "inferred_continuous_rate": 1.0396977414691655
+        },
+        {
+          "epsilon": 0.0005,
+          "gain_projection": 1.0266860799634587,
+          "kappa_max_error": 7.642775301519578e-13,
+          "tau_derivative_error": 5.82131084059679e-14,
+          "gamma_max_error": 1.3287149158713873e-12,
+          "inferred_continuous_rate": 1.0396977414716124
+        },
+        {
+          "epsilon": 0.00025,
+          "gain_projection": 1.0266860799634285,
+          "kappa_max_error": 1.3238299345630367e-12,
+          "tau_derivative_error": 5.82131084059679e-14,
+          "gamma_max_error": 2.8181901257084974e-12,
+          "inferred_continuous_rate": 1.0396977414704622
+        }
+      ]
+    },
+    {
+      "mode": 2,
+      "wavelength_m": 64000.0,
+      "filter_factor": 0.6186759769276886,
+      "homogeneous_continuous_rate_per_year": 0.7424111723132263,
+      "homogeneous_BE_gain": 1.0189112779078686,
+      "analytic_heterogeneous_gain": 1.018911277997545,
+      "coupling_relative_norm": 9.170122684116604e-06,
+      "probes": [
+        {
+          "epsilon": 0.001,
+          "gain_projection": 1.0189112779975071,
+          "kappa_max_error": 3.714251128883461e-13,
+          "tau_derivative_error": 1.0276238180162266e-14,
+          "gamma_max_error": 7.338574192772285e-13,
+          "inferred_continuous_rate": 0.7424111757668994
+        },
+        {
+          "epsilon": 0.0005,
+          "gain_projection": 1.0189112779975273,
+          "kappa_max_error": 8.061884493315574e-13,
+          "tau_derivative_error": 4.523491305109556e-14,
+          "gamma_max_error": 1.1497469643018121e-12,
+          "inferred_continuous_rate": 0.742411175767681
+        },
+        {
+          "epsilon": 0.00025,
+          "gain_projection": 1.0189112779975789,
+          "kappa_max_error": 1.2325696019388488e-12,
+          "tau_derivative_error": 4.523491305109556e-14,
+          "gamma_max_error": 2.2664092824697946e-12,
+          "inferred_continuous_rate": 0.7424111757696661
+        }
+      ]
+    },
+    {
+      "mode": 3,
+      "wavelength_m": 42666.666666666664,
+      "filter_factor": 0.4192157210449045,
+      "homogeneous_continuous_rate_per_year": 0.5030588652538854,
+      "homogeneous_BE_gain": 1.012736653796497,
+      "analytic_heterogeneous_gain": 1.0127366538378308,
+      "coupling_relative_norm": 5.925613600038503e-06,
+      "probes": [
+        {
+          "epsilon": 0.001,
+          "gain_projection": 1.0127366538378257,
+          "kappa_max_error": 4.3466966137550855e-13,
+          "tau_derivative_error": 2.65195463872381e-14,
+          "gamma_max_error": 1.01063601931628e-12,
+          "inferred_continuous_rate": 0.503058866865711
+        },
+        {
+          "epsilon": 0.0005,
+          "gain_projection": 1.0127366538379141,
+          "kappa_max_error": 7.179812300250887e-13,
+          "tau_derivative_error": 2.65195463872381e-14,
+          "gamma_max_error": 1.7209011993202239e-12,
+          "inferred_continuous_rate": 0.5030588668691571
+        },
+        {
+          "epsilon": 0.00025,
+          "gain_projection": 1.0127366538377855,
+          "kappa_max_error": 1.49785739367303e-12,
+          "tau_derivative_error": 8.450275607527755e-14,
+          "gamma_max_error": 3.1730174043786974e-12,
+          "inferred_continuous_rate": 0.5030588668641434
+        }
+      ]
+    },
+    {
+      "mode": 8,
+      "wavelength_m": 16000.0,
+      "filter_factor": 0.09308023097182373,
+      "homogeneous_continuous_rate_per_year": 0.11169627716618848,
+      "homogeneous_BE_gain": 1.0028002263004794,
+      "analytic_heterogeneous_gain": 1.0028002263022957,
+      "coupling_relative_norm": 1.2965354890248844e-06,
+      "probes": [
+        {
+          "epsilon": 0.001,
+          "gain_projection": 1.0028002263023432,
+          "kappa_max_error": 3.6126657221302594e-13,
+          "tau_derivative_error": 3.902063381411168e-17,
+          "gamma_max_error": 8.629763570411342e-13,
+          "inferred_continuous_rate": 0.11169627724032516
+        },
+        {
+          "epsilon": 0.0005,
+          "gain_projection": 1.0028002263024471,
+          "kappa_max_error": 6.812328479099961e-13,
+          "tau_derivative_error": 3.902063381411168e-17,
+          "gamma_max_error": 9.25814980234918e-13,
+          "inferred_continuous_rate": 0.11169627724445963
+        },
+        {
+          "epsilon": 0.00025,
+          "gain_projection": 1.0028002263021327,
+          "kappa_max_error": 1.3967715872809094e-12,
+          "tau_derivative_error": 3.902063381411168e-17,
+          "gamma_max_error": 2.0795587474253807e-12,
+          "inferred_continuous_rate": 0.11169627723195408
+        }
+      ]
+    },
+    {
+      "mode": 16,
+      "wavelength_m": 8000.0,
+      "filter_factor": 0.025980550123313774,
+      "homogeneous_continuous_rate_per_year": 0.03117666014797653,
+      "homogeneous_BE_gain": 1.0007800244676428,
+      "analytic_heterogeneous_gain": 1.0007800244677758,
+      "coupling_relative_norm": 3.61087081733311e-07,
+      "probes": [
+        {
+          "epsilon": 0.001,
+          "gain_projection": 1.0007800244679348,
+          "kappa_max_error": 3.929079284148429e-13,
+          "tau_derivative_error": 1.5675047542664964e-17,
+          "gamma_max_error": 8.598677325721837e-13,
+          "inferred_continuous_rate": 0.031176660159637493
+        },
+        {
+          "epsilon": 0.0005,
+          "gain_projection": 1.0007800244675191,
+          "kappa_max_error": 6.069589275625731e-13,
+          "tau_derivative_error": 1.5675047542664964e-17,
+          "gamma_max_error": 9.837686221203512e-13,
+          "inferred_continuous_rate": 0.031176660143037438
+        },
+        {
+          "epsilon": 0.00025,
+          "gain_projection": 1.000780024467473,
+          "kappa_max_error": 1.025068918636407e-12,
+          "tau_derivative_error": 1.5675047542664964e-17,
+          "gamma_max_error": 2.441158386545794e-12,
+          "inferred_continuous_rate": 0.031176660141194468
+        }
+      ]
+    },
+    {
+      "mode": 32,
+      "wavelength_m": 4000.0,
+      "filter_factor": 0.007751937984496126,
+      "homogeneous_continuous_rate_per_year": 0.00930232558139535,
+      "homogeneous_BE_gain": 1.0002326122354037,
+      "analytic_heterogeneous_gain": 1.0002326122354153,
+      "coupling_relative_norm": 1.0767865825002335e-07,
+      "probes": [
+        {
+          "epsilon": 0.001,
+          "gain_projection": 1.0002326122351475,
+          "kappa_max_error": 3.8957725934096743e-13,
+          "tau_derivative_error": 9.666279317976729e-18,
+          "gamma_max_error": 4.2221781626494703e-13,
+          "inferred_continuous_rate": 0.009302325571156622
+        },
+        {
+          "epsilon": 0.0005,
+          "gain_projection": 1.0002326122357659,
+          "kappa_max_error": 6.760147996942578e-13,
+          "tau_derivative_error": 9.666279317976729e-18,
+          "gamma_max_error": 1.049160758270773e-12,
+          "inferred_continuous_rate": 0.009302325595879068
+        },
+        {
+          "epsilon": 0.00025,
+          "gain_projection": 1.0002326122357315,
+          "kappa_max_error": 1.088795720249891e-12,
+          "tau_derivative_error": 9.666279317976729e-18,
+          "gamma_max_error": 2.3319124409226788e-12,
+          "inferred_continuous_rate": 0.009302325594502392
+        }
+      ]
+    }
+  ],
+  "A_neutral_error": 2.2187460202438558e-13,
+  "reference_unchanged": true,
+  "preserved_hashes": {
+    "/workspace/Habitable-Moon-Project/analysis/genesis_geological_handoff/shear_late_result.json": "0694cf2225e1e3b794188867447e2b99179b43c7d0425f2c7d03e5437476f83b",
+    "/workspace/Habitable-Moon-Project/analysis/genesis_geological_handoff/shear_diagnostic_result.json": "63ce224b40bc15fbee9749b09f15f3e5b343f12260b57721b1689afc3b170fa7",
+    "/workspace/Habitable-Moon-Project/analysis/genesis_geological_handoff/shear_diagnostic_restart.json": "cd59f95075fab7a4d2099515763755680a0afb52b20413bf37e6e1d9efa7e49a",
+    "/workspace/Habitable-Moon-Project/analysis/genesis_geological_handoff/shear_late_restart_B.json": "cd242465639dcda64f7c976658769426add9639b5e92ecd1b777756339cdbae8",
+    "/workspace/Habitable-Moon-Project/analysis/genesis_geological_handoff/shear_late_restart_A.json": "1d5d2f9c5c117a538ca08a1fe8a59bbb4284f48604ba0fd989e439a07e4a4bed",
+    "/workspace/genesis-moving-basal-source-01.json": "94fbbb3cb88a15147d33ab04c8f791470dd92e3d73cf8cba4afc0f361cd583fc",
+    "/workspace/genesis-moving-basal-pilot-01/checkpoint.json": "7dd22796ca517d8866505b7bf374847f03300117fc5eda0c012f27712035648b"
+  }
+}
