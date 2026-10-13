@@ -1,3 +1,29 @@
+# Текущая передача: реальный Genesis дошёл до водного фазового события
+
+13.10.2026. `feat/genesis-geological-handoff`, продолжение `8d7912b`.
+[Реальный прогон, история и точный следующий шаг](analysis/genesis_geological_handoff/REAL_PROGRESSION.md).
+Источник: сохранённый real phase-pilot final0,868475Myr, не синтетика.
+229×25лет →0,874200Myr, +5725лет за17,40с. Следующий шаг отклонён прежним
+`UNSUPPORTED_WATER_PHASE under radiative forcing`; неподдержанный endpoint не принят.
+Tsolid mean1383,88→700,46K; Twater1368,00→647,54K; Tdeep1645,273→1645,279K.
+Damage max0,0426→0,8744; все80граней выше0,65, но persistence максимум3975лет
+из прежних50000, eligible0, domains1. Разделение и mature handoff НЕ состоялись.
+Разрешённая кристаллическая масса +1,486e20кг, новых несущих ячеек0.
+Все принятые energy/phase audits PASS, нагрузка/пороги/config unchanged.
+Последний checkpoint: `/workspace/genesis-real-progression-01/checkpoint.json`;
+штатная проверка чтения PASS; численный replay последнего шага не выполнялся.
+
+Следующий конкретный блок: подключить существующую конденсацию к simplified
+ports + H→T + conduction + phase_guard, затем продолжить этот checkpoint.
+Только переключение порта недостаточно; повреждение/alpha/источники не замораживать.
+Общее вращение≈2,14e−13rad (~1,13мкм) также требует согласованной системы координат
+при будущем handoff, не reset или смягчения guard ради PASS.
+Фиксированная опорная тепловая сетка остаётся приближением; временная точность
+не сертифицирована. Физика и defaults в этом поручении не менялись.
+Restore CLOSED, canonical/прежние ветки/архивы прежние, no push/paid.
+
+---
+
 # Текущая передача: активное тепло geological handoff
 
 13.10.2026. `feat/genesis-geological-handoff`, продолжение `3a65aba`.
