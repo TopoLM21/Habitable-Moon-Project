@@ -4,7 +4,7 @@ from .experimental_edge_fracture import Parameters,certify
 from .experimental_edge_weakening import MODE,enabled,scale as effective_scale,commit_damage
 
 
-def update(model,previous,years):
+def update(model,previous,years,*,commit_solver=None):
     from .simplified_genesis_nodal import operators
     s=model.state;spec=model.config['experimental_geological_edge_fatigue']
     if spec not in [dict(shear_strength_pa=1e6,damage_time_years=100.,mode=mode) for mode in ('incubation_then_geological_retirement',MODE)]:
@@ -36,7 +36,7 @@ def update(model,previous,years):
     d=np.minimum(1,old+years*rate);owner,reason=certify(model.mesh,d>=1,Parameters())
     release=None
     if enabled(model):
-        release=commit_damage(model,d)
+        release=(commit_damage if commit_solver is None else commit_solver)(model,d)
         if 'stress_pa' in s:s['stress_pa']=(np.array(s['stress_pa'])*(release['scale_after']/release['scale_before'])[:,None]).tolist()
         ledger=s.get('last_ledger')
         if ledger is not None:

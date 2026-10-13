@@ -132,8 +132,11 @@ def capture(M,newM,v):
     return new,max(loss,0.),error
 
 
-def advance(m,years):
+def advance(m,years,*,mechanical_solver=None,state_finalizer=None,edge_commit_solver=None):
     s=m.state;c=m.config;o=operators(m);nexts=deepcopy(s);M=material_mass(m)
+    if c.get('experimental_angular_memory') and any(x is None for x in (mechanical_solver,state_finalizer,edge_commit_solver)):
+        raise ValueError('ANGULAR_REQUIRES_COUPLED_DRIVER')
+    compute=mechanical if mechanical_solver is None else mechanical_solver
     if s.get('experimental_edge_fatigue',{}).get('partition_owner') is not None:
         raise ValueError('EXPERIMENTAL_GEOLOGICAL_HANDOFF_PENDING')
     target=s['time_myr']+years/1e6;dt=(target-s['time_myr'])*SECONDS_PER_MYR
@@ -149,13 +152,13 @@ def advance(m,years):
     nu=m.shell['poisson_ratio'];plane=np.array([[1.,nu,0.],[nu,1.,0.],[0.,0.,(1-nu)/2]])/(1-nu**2)
     tide=np.einsum('ij,pfj->pfi',plane,tidal_strain_cycle(m.mesh,tp))*m.shell['young_modulus_pa']*effective_scale(m,oldD)[None,:,None]
     for iteration in range(8):
-        pred=mechanical(m,T,oldD,oldT,dt,M,basal)
+        pred=compute(m,T,oldD,oldT,dt,M,basal)
         tensile=np.array([principal_tensile(pred['stress']+t) for t in tide])
         load=np.mean(np.maximum(tensile/m.shell['tensile_strength_pa']-1,0)**2,axis=0)/m.shell['damage_timescale_myr']
         load=m.smoother.apply(load,np.ones(m.nf,bool));hot=np.clip((T[m.solid_nodes].mean(axis=1)-700)/650,0,1)
         heal=1/m.shell['cold_healing_timescale_myr']+hot**4/m.shell['hot_healing_timescale_myr'];rr=load+heal
         D=load/rr+(oldD-load/rr)*np.exp(-rr*years/1e6)
-        r=mechanical(m,T,D,oldT,dt,M,basal);E=base+r['heat'];Tnew=m.temperature(E)
+        r=compute(m,T,D,oldT,dt,M,basal);E=base+r['heat'];Tnew=m.temperature(E)
         if np.max(abs(Tnew-T))<1e-8:break
         T=Tnew
     else:raise ValueError('NODAL_THERMAL_CORRECTOR_LIMIT')
@@ -227,9 +230,10 @@ def advance(m,years):
     nexts.update(energy=E.tolist(),memory=[e.reshape(2,6).tolist() for e in r['memory'][:m.nf]],damage=D.tolist(),candidate_age=age.tolist(),nodal_displacement=u.tolist(),nodal_velocity=v.tolist(),omega=[omega.tolist()],orbit=asdict(orbit),stress_pa=r['stress'].tolist(),last_ledger=L,steps=s['steps']+1)
     m.state=nexts
     try:
+        if state_finalizer is not None:state_finalizer(m,s,r)
         if c.get('experimental_geological_edge_fatigue'):
             from .experimental_genesis_edge_rule import update
-            update(m,s,years)
+            update(m,s,years,commit_solver=edge_commit_solver)
         m.validate()
     except Exception:m.state=s;raise
     return deepcopy(nexts)
