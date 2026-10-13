@@ -70,3 +70,20 @@ def test_staggered_persistence_in_diffuse_damage_is_not_a_belt(water_source):
     with pytest.raises(ValueError,match='DIFFUSE_DAMAGE_NOT_A_LOCALIZED_BELT'):
         m.advance(25.)
     assert encoded(m.state)==before
+
+
+@pytest.mark.parametrize('uniform',[False,True])
+def test_localization_admission_closed_belt_and_uniform_damage(water_source,uniform):
+    from tectonics.genesis_starter_topology import select_starter_cut
+    from tectonics.plates import Plate,PlateSystem
+    m=water_source.with_condensation();owner=np.zeros(m.nf,dtype=int)
+    weak=abs(m.mesh.centroids[:,0])<.12
+    damage=np.full(m.nf,.9) if uniform else np.where(weak,.9,.04)
+    system=PlateSystem(owner,(Plate(0,0,np.array([0.,0.,1.]),0.),))
+    cut=select_starter_cut(m.mesh,system,weak,damage,**m.config['selector'])
+    assert cut is not None and np.all(weak[cut])
+    if uniform:
+        with pytest.raises(ValueError,match='DIFFUSE_DAMAGE_NOT_A_LOCALIZED_BELT'):
+            m.validate_cut_localization(owner,damage,cut)
+    else:
+        m.validate_cut_localization(owner,damage,cut)

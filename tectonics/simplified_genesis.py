@@ -65,6 +65,13 @@ class SimplifiedGenesis:
             self.water_parameters=p
         self.validate()
 
+    def validate_cut_localization(self,owner,damage,cut):
+        """Necessary admission check, not a physical localization criterion."""
+        if self.water_parameters is not None and cut is not None:
+            parent_cells=owner==owner[int(cut[0])]
+            if np.all(damage[parent_cells]>=self.faults['activation_damage']):
+                raise ValueError('DIFFUSE_DAMAGE_NOT_A_LOCALIZED_BELT')
+
     def with_condensation(self):
         """Explicit opt-in; all inventories, physical coefficients and history unchanged."""
         c=deepcopy(self.config);c['water_eos']='genesis_condensation'
@@ -241,10 +248,7 @@ class SimplifiedGenesis:
             # In the opt-in continuation, persistence can rank cells but cannot
             # turn globally superthreshold damage into a localized weak belt.
             # Keep the inherited damage threshold; do not invent a contrast cutoff.
-            if self.water_parameters is not None:
-                parent_cells=owner==owner[int(cut[0])]
-                if np.all(damage[parent_cells]>=self.faults['activation_damage']):
-                    raise ValueError('DIFFUSE_DAMAGE_NOT_A_LOCALIZED_BELT')
+            self.validate_cut_localization(owner,damage,cut)
             output,event=split_starter_band(self.mesh,system,cut,**args,time_myr=target)
             if output is None:raise ValueError('SELECTED_SPLIT_FAILED')
             newowner=output.cell_plate;newomega=[];newrotation=[]
