@@ -58,6 +58,9 @@ class SimplifiedGenesis:
 
     def validate(self):
         s=self.state;n=self.nf
+        if 'edge_strips' in self.config:
+            from .simplified_genesis_edges import validate
+            validate(self)
         if s['format']!=VERSION:raise ValueError('SIMPLIFIED_VERSION')
         for name,shape in [('energy',(len(self.mass),)),('memory',(n,2,6)),('damage',(n,)),('candidate_age',(n,)),('consumed',(n,)),('owner',(n,))]:
             a=np.asarray(s[name]);
@@ -138,6 +141,9 @@ class SimplifiedGenesis:
     def advance(self,years):
         """Transactional physical-model step. Fixed parameters; no retry/dt sweep."""
         if not np.isfinite(years) or not 0<years<=self.config['max_step_years']:raise ValueError('STEP_RANGE')
+        if 'edge_strips' in self.config:
+            from .simplified_genesis_edges import advance
+            return advance(self,years)
         s=self.state;nexts=deepcopy(s);inertia=self.material_inertia();target=s['time_myr']+years/1e6;dt=(target-s['time_myr'])*SECONDS_PER_MYR
         E0=np.array(s['energy']);oldT=self.temperature(E0);old=np.array(s['memory']);oldD=np.array(s['damage']);owner=np.array(s['owner'])
         if self.config['source_mode']=='genesis':

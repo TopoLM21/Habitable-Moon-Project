@@ -44,3 +44,28 @@ def irregular_three_domain_synthetic():
     torque=np.array(model.config['face_torque']);torque[:,2]+=2e18
     model.config['face_torque']=torque.tolist()
     return SimplifiedGenesis(model.config,model.state)
+
+
+def deformable_edge_synthetic():
+    """Manufactured compressive background with two tensile damage belts.
+
+    Consistent vertex-lumped mass/inertia and isotropic elasticity are supplied
+    before evolution, never substituted into an existing accepted checkpoint.
+    """
+    from tectonics.simplified_genesis_edges import physical_face_inertia
+    from tectonics.genesis_volume_operator import isotropic_elasticity
+    from tectonics.genesis_shell import Membrane
+    from tectonics.genesis_material import move_mesh
+    reference=build_icosphere(3);basis=Membrane(reference,.25).vertex_basis
+    mesh=move_mesh(reference,basis,np.random.default_rng(17).uniform(-.02,.02,(reference.vertex_count,2)))
+    model=synthetic(mesh);c=model.config;s=model.state
+    memory=np.zeros_like(s['memory']);x=mesh.centroids[:,0]
+    memory[(abs(x-.35)<.1)|(abs(x+.35)<.1),0,:2]=.03;s['memory']=memory.tolist()
+    torque=np.array(c['face_torque']);torque[:,2]+=2e18;c['face_torque']=torque.tolist()
+    inertia=physical_face_inertia(model.mesh,c['face_mass_kg'],c['radius_km']*1000)
+    c['face_inertia']=inertia.tolist();c['face_drag']=(1000*inertia).tolist()
+    c['C']=np.tile(isotropic_elasticity(c['shell']['young_modulus_pa'],c['shell']['poisson_ratio']),(model.nf,1,1)).tolist()
+    memory=np.array(s['memory']);memory[:,:,0]-=.003;memory[:,:,1]-=.003;memory[:,:,2]+=.002;s['memory']=memory.tolist()
+    c['edge_prescribed_compressive_pressure_pa']=1e9
+    c['shell']['linear_expansion_per_k']=0.
+    return SimplifiedGenesis(c,s)
