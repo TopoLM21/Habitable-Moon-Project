@@ -1,0 +1,5192 @@
+{
+  "declaration": {
+    "base_commit": "8c588d60cf8a1384b06c326860a6cf2b32599d64",
+    "sequence": [
+      0.5,
+      0.25
+    ],
+    "conditional_final_dt": 0.125,
+    "criterion": {
+      "traction_max_vector_difference_over_fine_max": 0.05,
+      "damage_max_absolute_difference": 0.02,
+      "saturated_masks_equal": true,
+      "topology_status_equal": true,
+      "scope": "all common temporal nodes, fixed25year experiment; no universal physical accuracy claim"
+    },
+    "horizon_years": 25.0,
+    "budget_seconds": 180.0,
+    "parameters": {
+      "shear_strength_pa": 1000000.0,
+      "damage_time_years": 100.0,
+      "mode": "weakening_then_geological_retirement"
+    }
+  },
+  "source_sha256": "94fbbb3cb88a15147d33ab04c8f791470dd92e3d73cf8cba4afc0f361cd583fc",
+  "originals_unchanged": true,
+  "target_time_myr": 0.8684250000000006,
+  "runs": [
+    {
+      "dt_years": 0.5,
+      "status": "COMPLETED",
+      "accepted_steps": 50,
+      "start_time_myr": 0.8684000000000005,
+      "end_time_myr": 0.8684250000000006,
+      "checkpoint": "/workspace/genesis-edge-short-accuracy-01/dt-0.5.json",
+      "checkpoint_sha256": "eb2560cadc755593dde84329cd968e188db00ad0229ea0783a827031836aab4b",
+      "trace": "/workspace/genesis-edge-short-accuracy-01/dt-0.5-fields.npz",
+      "trace_sha256": "b17ad6917b32d1e2313c42f65f5dd5f42502cb3282360464bb1de0e8d5d10ddf",
+      "restart_exact": true,
+      "previous_halfyear_endpoint_exact": true,
+      "mass_exact": true,
+      "domains": 1,
+      "newborn": 0,
+      "max_energy_fraction": 0.04887459225617084,
+      "seconds": 12.884319976998086,
+      "rows": [
+        {
+          "years": 0.5,
+          "time_myr": 0.8684005000000005,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.1419294041806871,
+          "mean_damage": 0.023804222828663447,
+          "max_shear_pa": 4694391.85374011,
+          "reserve_j": 2.3067859930777943e+18,
+          "energy_fraction": 0.01736014412946449
+        },
+        {
+          "years": 1.0,
+          "time_myr": 0.8684010000000004,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.21014678131775447,
+          "mean_damage": 0.03996404563409463,
+          "max_shear_pa": 3996393.7151170676,
+          "reserve_j": 4.162388029826997e+18,
+          "energy_fraction": 0.009951427011673768
+        },
+        {
+          "years": 1.5,
+          "time_myr": 0.8684015000000004,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.2550211936485687,
+          "mean_damage": 0.05225584269237994,
+          "max_shear_pa": 3568649.9861561544,
+          "reserve_j": 5.59942097711985e+18,
+          "energy_fraction": 0.0025277592614023187
+        },
+        {
+          "years": 2.0,
+          "time_myr": 0.8684020000000003,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.2879976472912463,
+          "mean_damage": 0.06215454754084386,
+          "max_shear_pa": 3275078.2810208807,
+          "reserve_j": 6.739667544549971e+18,
+          "energy_fraction": 0.010123077896807393
+        },
+        {
+          "years": 2.5,
+          "time_myr": 0.8684025000000003,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.31375568842345425,
+          "mean_damage": 0.07041616973519096,
+          "max_shear_pa": 3058703.7346526636,
+          "reserve_j": 7.679827823048724e+18,
+          "energy_fraction": 0.017666091291972708
+        },
+        {
+          "years": 3.0,
+          "time_myr": 0.8684030000000003,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.33468556601416155,
+          "mean_damage": 0.07748238209973105,
+          "max_shear_pa": 2887285.85306094,
+          "reserve_j": 8.474995335163806e+18,
+          "energy_fraction": 0.025233120987677736
+        },
+        {
+          "years": 3.5,
+          "time_myr": 0.8684035000000002,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.3521734926721133,
+          "mean_damage": 0.0836364566680088,
+          "max_shear_pa": 2751585.903958598,
+          "reserve_j": 9.160446165265669e+18,
+          "energy_fraction": 0.03286785652571832
+        },
+        {
+          "years": 4.0,
+          "time_myr": 0.8684040000000002,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.3670938510994369,
+          "mean_damage": 0.0890717652448482,
+          "max_shear_pa": 2639610.911194823,
+          "reserve_j": 9.760151683931185e+18,
+          "energy_fraction": 0.025373778364094463
+        },
+        {
+          "years": 4.5,
+          "time_myr": 0.8684045000000001,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.3800324668660998,
+          "mean_damage": 0.09392625266980402,
+          "max_shear_pa": 2547174.4727217625,
+          "reserve_j": 1.0291125552128614e+19,
+          "energy_fraction": 0.04802595389051429
+        },
+        {
+          "years": 5.0,
+          "time_myr": 0.8684050000000001,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.39140017526055837,
+          "mean_damage": 0.0983018833067483,
+          "max_shear_pa": 2468290.5706493026,
+          "reserve_j": 1.076587958486513e+19,
+          "energy_fraction": 0.025493026120055922
+        },
+        {
+          "years": 5.5,
+          "time_myr": 0.8684055,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4014956236692848,
+          "mean_damage": 0.10227625900630552,
+          "max_shear_pa": 2398322.2219928573,
+          "reserve_j": 1.1193879111604797e+19,
+          "energy_fraction": 0.0030529824996977577
+        },
+        {
+          "years": 6.0,
+          "time_myr": 0.868406,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.41054230221840865,
+          "mean_damage": 0.10590983806611735,
+          "max_shear_pa": 2335752.729238495,
+          "reserve_j": 1.1582452652783854e+19,
+          "energy_fraction": 0.010598496245410469
+        },
+        {
+          "years": 6.5,
+          "time_myr": 0.8684065,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.41871152058578864,
+          "mean_damage": 0.10925065550632153,
+          "max_shear_pa": 2279400.059628779,
+          "reserve_j": 1.1937385306883783e+19,
+          "energy_fraction": 0.01192562838914493
+        },
+        {
+          "years": 7.0,
+          "time_myr": 0.8684069999999999,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4261372703965813,
+          "mean_damage": 0.11233745927109405,
+          "max_shear_pa": 2228312.04682519,
+          "reserve_j": 1.2263850586731475e+19,
+          "energy_fraction": 0.025693433155789154
+        },
+        {
+          "years": 7.5,
+          "time_myr": 0.8684074999999999,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4329261781625479,
+          "mean_damage": 0.11520162696331762,
+          "max_shear_pa": 2181738.3846619623,
+          "reserve_j": 1.2565722778411518e+19,
+          "energy_fraction": 0.011780156007568874
+        },
+        {
+          "years": 8.0,
+          "time_myr": 0.8684079999999998,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.43916436840556716,
+          "mean_damage": 0.11786906536133115,
+          "max_shear_pa": 2139399.175774734,
+          "reserve_j": 1.2845790478011075e+19,
+          "energy_fraction": 0.010796038002288365
+        },
+        {
+          "years": 8.5,
+          "time_myr": 0.8684084999999998,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4449223178641595,
+          "mean_damage": 0.12036164241416163,
+          "max_shear_pa": 2101877.8404410114,
+          "reserve_j": 1.3106200463425053e+19,
+          "energy_fraction": 0.0033020529677824898
+        },
+        {
+          "years": 9.0,
+          "time_myr": 0.8684089999999998,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.45025836473436953,
+          "mean_damage": 0.12269811635496912,
+          "max_shear_pa": 2067087.789196024,
+          "reserve_j": 1.3349148671729807e+19,
+          "energy_fraction": 0.01083974547134282
+        },
+        {
+          "years": 9.5,
+          "time_myr": 0.8684094999999997,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4552212944035078,
+          "mean_damage": 0.12489449296630811,
+          "max_shear_pa": 2034761.4816092195,
+          "reserve_j": 1.3576499411282102e+19,
+          "energy_fraction": 0.018387482477257713
+        },
+        {
+          "years": 10.0,
+          "time_myr": 0.8684099999999997,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.45985227773864823,
+          "mean_damage": 0.1269645329339672,
+          "max_shear_pa": 2004605.0718680867,
+          "reserve_j": 1.3789847714885693e+19,
+          "energy_fraction": 0.025982597980169646
+        },
+        {
+          "years": 10.5,
+          "time_myr": 0.8684104999999996,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4641863461737351,
+          "mean_damage": 0.1289201477920336,
+          "max_shear_pa": 1976385.685418652,
+          "reserve_j": 1.3990567808080712e+19,
+          "energy_fraction": 0.01848708640525411
+        },
+        {
+          "years": 11.0,
+          "time_myr": 0.8684109999999996,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4682535296730621,
+          "mean_damage": 0.1307717021432215,
+          "max_shear_pa": 1949911.5847563406,
+          "reserve_j": 1.4179851234171204e+19,
+          "energy_fraction": 0.010980336539307873
+        },
+        {
+          "years": 11.5,
+          "time_myr": 0.8684114999999996,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.47207974547192283,
+          "mean_damage": 0.1325282467577295,
+          "max_shear_pa": 1926531.2043539772,
+          "reserve_j": 1.4358737167214557e+19,
+          "energy_fraction": 0.03358862956784969
+        },
+        {
+          "years": 12.0,
+          "time_myr": 0.8684119999999995,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.47568749995796417,
+          "mean_damage": 0.13419774154624237,
+          "max_shear_pa": 1904714.5926616902,
+          "reserve_j": 1.4528136750534767e+19,
+          "energy_fraction": 0.026096489379412873
+        },
+        {
+          "years": 12.5,
+          "time_myr": 0.8684124999999995,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.47909644864362544,
+          "mean_damage": 0.1357872276472227,
+          "max_shear_pa": 1884025.0817696974,
+          "reserve_j": 1.468885281377956e+19,
+          "energy_fraction": 0.011444886892565776
+        },
+        {
+          "years": 13.0,
+          "time_myr": 0.8684129999999994,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.48232384709827186,
+          "mean_damage": 0.1373029361634698,
+          "max_shear_pa": 1864372.4467600451,
+          "reserve_j": 1.4841595977709062e+19,
+          "energy_fraction": 0.026136574249508455
+        },
+        {
+          "years": 13.5,
+          "time_myr": 0.8684134999999994,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.48538491719212634,
+          "mean_damage": 0.1387504186109628,
+          "max_shear_pa": 1845676.1315972495,
+          "reserve_j": 1.4986997908393202e+19,
+          "energy_fraction": 0.03371325611747266
+        },
+        {
+          "years": 14.0,
+          "time_myr": 0.8684139999999994,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.48829314691316483,
+          "mean_damage": 0.1401346509732663,
+          "max_shear_pa": 1827863.96373485,
+          "reserve_j": 1.5125622301965003e+19,
+          "energy_fraction": 0.026232458293435935
+        },
+        {
+          "years": 14.5,
+          "time_myr": 0.8684144999999993,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.49106053760359114,
+          "mean_damage": 0.14146010460950678,
+          "max_shear_pa": 1810871.0710446013,
+          "reserve_j": 1.5257974047799558e+19,
+          "energy_fraction": 0.003649288899947806
+        },
+        {
+          "years": 15.0,
+          "time_myr": 0.8684149999999993,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4936978092234613,
+          "mean_damage": 0.14273080864293047,
+          "max_shear_pa": 1794638.964527085,
+          "reserve_j": 1.5384506918491384e+19,
+          "energy_fraction": 0.011189199998659938
+        },
+        {
+          "years": 15.5,
+          "time_myr": 0.8684154999999992,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4962145718453546,
+          "mean_damage": 0.143950406129039,
+          "max_shear_pa": 1779114.757667197,
+          "reserve_j": 1.5505630059952509e+19,
+          "energy_fraction": 0.018790283949318348
+        },
+        {
+          "years": 16.0,
+          "time_myr": 0.8684159999999992,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.49861946978135596,
+          "mean_damage": 0.14512220510754795,
+          "max_shear_pa": 1764250.4990471897,
+          "reserve_j": 1.5621713497797016e+19,
+          "energy_fraction": 0.02627277615229448
+        },
+        {
+          "years": 16.5,
+          "time_myr": 0.8684164999999991,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5009203033784254,
+          "mean_damage": 0.1462492181231176,
+          "max_shear_pa": 1750002.599326755,
+          "reserve_j": 1.5733092832257757e+19,
+          "energy_fraction": 0.04887459225617084
+        },
+        {
+          "years": 17.0,
+          "time_myr": 0.8684169999999991,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5031241324748391,
+          "mean_damage": 0.147334195734162,
+          "max_shear_pa": 1736331.3372413462,
+          "reserve_j": 1.58400732598488e+19,
+          "energy_fraction": 0.003690186329411474
+        },
+        {
+          "years": 17.5,
+          "time_myr": 0.8684174999999991,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5052373647060944,
+          "mean_damage": 0.14837965544469692,
+          "max_shear_pa": 1723200.4320777592,
+          "reserve_j": 1.5942933033409956e+19,
+          "energy_fraction": 0.03388582681380567
+        },
+        {
+          "years": 18.0,
+          "time_myr": 0.868417999999999,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5072658312237018,
+          "mean_damage": 0.1493879067862869,
+          "max_shear_pa": 1710576.6723257215,
+          "reserve_j": 1.6041926451261377e+19,
+          "energy_fraction": 0.011343549620668004
+        },
+        {
+          "years": 18.5,
+          "time_myr": 0.868418499999999,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5092148519009964,
+          "mean_damage": 0.15036107314614297,
+          "max_shear_pa": 1698429.5920014465,
+          "reserve_j": 1.613728644963379e+19,
+          "energy_fraction": 0.018805135704425775
+        },
+        {
+          "years": 19.0,
+          "time_myr": 0.8684189999999989,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5110892917143005,
+          "mean_damage": 0.15130111083269904,
+          "max_shear_pa": 1686731.1875892063,
+          "reserve_j": 1.6229226859334472e+19,
+          "energy_fraction": 0.04141273041907448
+        },
+        {
+          "years": 19.5,
+          "time_myr": 0.8684194999999989,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5128936096815517,
+          "mean_damage": 0.15220982578576792,
+          "max_shear_pa": 1675455.6697231971,
+          "reserve_j": 1.631794437701542e+19,
+          "energy_fraction": 0.03387192296856464
+        },
+        {
+          "years": 20.0,
+          "time_myr": 0.8684199999999989,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5146319014958983,
+          "mean_damage": 0.15308888827023678,
+          "max_shear_pa": 1664579.2446909314,
+          "reserve_j": 1.6403620292862267e+19,
+          "energy_fraction": 0.026361517927013883
+        },
+        {
+          "years": 20.5,
+          "time_myr": 0.8684204999999988,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5163079367952179,
+          "mean_damage": 0.15393984583684228,
+          "max_shear_pa": 1654671.530118657,
+          "reserve_j": 1.6486422009587313e+19,
+          "energy_fraction": 0.03386485337902419
+        },
+        {
+          "years": 21.0,
+          "time_myr": 0.8684209999999988,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5179251918496774,
+          "mean_damage": 0.154764134788246,
+          "max_shear_pa": 1645086.9381154699,
+          "reserve_j": 1.6566504381953974e+19,
+          "energy_fraction": 0.011313360533836768
+        },
+        {
+          "years": 21.5,
+          "time_myr": 0.8684214999999987,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5194868783204104,
+          "mean_damage": 0.15556309035139868,
+          "max_shear_pa": 1635803.0470296273,
+          "reserve_j": 1.664401090142404e+19,
+          "energy_fraction": 0.018853477010868064
+        },
+        {
+          "years": 22.0,
+          "time_myr": 0.8684219999999987,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5209959686370075,
+          "mean_damage": 0.15633795572643908,
+          "max_shear_pa": 1626805.147068242,
+          "reserve_j": 1.6719074746701634e+19,
+          "energy_fraction": 0.04140421058550782
+        },
+        {
+          "years": 22.5,
+          "time_myr": 0.8684224999999987,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5224552184550504,
+          "mean_damage": 0.1570898901568856,
+          "max_shear_pa": 1618079.8433995468,
+          "reserve_j": 1.679181971778994e+19,
+          "energy_fraction": 0.033872963687913885
+        },
+        {
+          "years": 23.0,
+          "time_myr": 0.8684229999999986,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.523867186583634,
+          "mean_damage": 0.1578199761446498,
+          "max_shear_pa": 1609623.3716740066,
+          "reserve_j": 1.6862361068553499e+19,
+          "energy_fraction": 0.026350411445954174
+        },
+        {
+          "years": 23.5,
+          "time_myr": 0.8684234999999986,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.525234252713804,
+          "mean_damage": 0.1585292259156503,
+          "max_shear_pa": 1601413.7040247784,
+          "reserve_j": 1.6930806250590728e+19,
+          "energy_fraction": 0.033825564575731146
+        },
+        {
+          "years": 24.0,
+          "time_myr": 0.8684239999999985,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5265586332297588,
+          "mean_damage": 0.15921858722690865,
+          "max_shear_pa": 1593439.6017842148,
+          "reserve_j": 1.6997255579388998e+19,
+          "energy_fraction": 0.041358237852273105
+        },
+        {
+          "years": 24.5,
+          "time_myr": 0.8684244999999985,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5278423953436964,
+          "mean_damage": 0.15988894859345196,
+          "max_shear_pa": 1585714.0297751122,
+          "reserve_j": 1.7061802832194548e+19,
+          "energy_fraction": 0.0037844809553906336
+        },
+        {
+          "years": 25.0,
+          "time_myr": 0.8684250000000006,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5290874697659963,
+          "mean_damage": 0.16054114400543001,
+          "max_shear_pa": 1578353.9714106808,
+          "reserve_j": 1.712453578598964e+19,
+          "energy_fraction": 0.026045808658520287
+        }
+      ]
+    },
+    {
+      "dt_years": 0.25,
+      "status": "COMPLETED",
+      "accepted_steps": 100,
+      "start_time_myr": 0.8684000000000005,
+      "end_time_myr": 0.8684250000000006,
+      "checkpoint": "/workspace/genesis-edge-short-accuracy-01/dt-0.25.json",
+      "checkpoint_sha256": "2285617bb083ebee71d55ffb3bf7176c8e1f5e3d4c4843233d09aed4393b4a94",
+      "trace": "/workspace/genesis-edge-short-accuracy-01/dt-0.25-fields.npz",
+      "trace_sha256": "de4ee23e31c4a2a29d8504bfd783d2f8e88106179230d48f10deb3bc24062062",
+      "restart_exact": true,
+      "previous_halfyear_endpoint_exact": null,
+      "mass_exact": true,
+      "domains": 1,
+      "newborn": 0,
+      "max_energy_fraction": 0.05459078138078811,
+      "seconds": 23.773591564000526,
+      "rows": [
+        {
+          "years": 0.25,
+          "time_myr": 0.8684002500000005,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.0709769590466392,
+          "mean_damage": 0.011904467168658091,
+          "max_shear_pa": 5481426.786556097,
+          "reserve_j": 1.0407291359574536e+18,
+          "energy_fraction": 0.014349416388352163
+        },
+        {
+          "years": 0.5,
+          "time_myr": 0.8684005000000006,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.12117602470419805,
+          "mean_damage": 0.021809740444837543,
+          "max_shear_pa": 4918018.638267173,
+          "reserve_j": 2.1155037880561807e+18,
+          "energy_fraction": 0.01629433783045299
+        },
+        {
+          "years": 0.75,
+          "time_myr": 0.8684007500000006,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.15954619021355482,
+          "mean_damage": 0.030228125380450336,
+          "max_shear_pa": 4508430.619781752,
+          "reserve_j": 3.0637456608279434e+18,
+          "energy_fraction": 0.03321954674779527
+        },
+        {
+          "years": 1.0,
+          "time_myr": 0.8684010000000006,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.19031313232189992,
+          "mean_damage": 0.03754240677972313,
+          "max_shear_pa": 4193180.6545813098,
+          "reserve_j": 3.927838040013005e+18,
+          "energy_fraction": 0.005066259377397111
+        },
+        {
+          "years": 1.25,
+          "time_myr": 0.8684012500000007,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.2157992638750612,
+          "mean_damage": 0.04399476473076366,
+          "max_shear_pa": 3940918.4065483655,
+          "reserve_j": 4.68632738730825e+18,
+          "energy_fraction": 0.021974995582214198
+        },
+        {
+          "years": 1.5,
+          "time_myr": 0.8684015000000007,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.23741754961790812,
+          "mean_damage": 0.049760467967822505,
+          "max_shear_pa": 3733243.576408252,
+          "reserve_j": 5.358404022450384e+18,
+          "energy_fraction": 0.006225506673299906
+        },
+        {
+          "years": 1.75,
+          "time_myr": 0.8684017500000007,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.2560903899047759,
+          "mean_damage": 0.054965654366192156,
+          "max_shear_pa": 3558518.9467687155,
+          "reserve_j": 5.960486344866119e+18,
+          "energy_fraction": 0.025752121147994852
+        },
+        {
+          "years": 2.0,
+          "time_myr": 0.8684020000000008,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.27245212830538573,
+          "mean_damage": 0.059704099059211466,
+          "max_shear_pa": 3408964.6229128023,
+          "reserve_j": 6.504921939370311e+18,
+          "energy_fraction": 0.0426993707645475
+        },
+        {
+          "years": 2.25,
+          "time_myr": 0.8684022500000008,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.28695692072117795,
+          "mean_damage": 0.06404764729691469,
+          "max_shear_pa": 3279151.0424134885,
+          "reserve_j": 7.000888416243777e+18,
+          "energy_fraction": 0.0004954655954453664
+        },
+        {
+          "years": 2.5,
+          "time_myr": 0.8684025000000009,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.2999405296953226,
+          "mean_damage": 0.06805268591655311,
+          "max_shear_pa": 3165156.4107224643,
+          "reserve_j": 7.455440212866684e+18,
+          "energy_fraction": 0.031440711522928474
+        },
+        {
+          "years": 2.75,
+          "time_myr": 0.8684027500000009,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.3116577969609993,
+          "mean_damage": 0.07176435186320067,
+          "max_shear_pa": 3064067.074148625,
+          "reserve_j": 7.874296670331655e+18,
+          "energy_fraction": 0.003293549792456942
+        },
+        {
+          "years": 3.0,
+          "time_myr": 0.8684030000000009,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.32230643340324816,
+          "mean_damage": 0.07521936287964198,
+          "max_shear_pa": 2973726.0681399037,
+          "reserve_j": 8.262085722445838e+18,
+          "energy_fraction": 0.020193304922878155
+        },
+        {
+          "years": 3.25,
+          "time_myr": 0.868403250000001,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.33204270509191475,
+          "mean_damage": 0.07844800707771886,
+          "max_shear_pa": 2894342.0823226837,
+          "reserve_j": 8.622606055896235e+18,
+          "energy_fraction": 0.022085611773726657
+        },
+        {
+          "years": 3.5,
+          "time_myr": 0.868403500000001,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.34099211018539255,
+          "mean_damage": 0.08147557143633123,
+          "max_shear_pa": 2823155.5598462843,
+          "reserve_j": 8.959014384811551e+18,
+          "energy_fraction": 0.008979355596828652
+        },
+        {
+          "years": 3.75,
+          "time_myr": 0.868403750000001,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.3492568462349892,
+          "mean_damage": 0.0843233907963823,
+          "max_shear_pa": 2758049.2024182407,
+          "reserve_j": 9.273962334636177e+18,
+          "energy_fraction": 0.04090940357650541
+        },
+        {
+          "years": 4.0,
+          "time_myr": 0.8684040000000011,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.3569211566413526,
+          "mean_damage": 0.08700962616356742,
+          "max_shear_pa": 2698235.296759869,
+          "reserve_j": 9.569698495643847e+18,
+          "energy_fraction": 0.027800434103577954
+        },
+        {
+          "years": 4.25,
+          "time_myr": 0.8684042500000011,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.3640552378154989,
+          "mean_damage": 0.08954984100943625,
+          "max_shear_pa": 2644334.2703009145,
+          "reserve_j": 9.848145836077234e+18,
+          "energy_fraction": 0.01467691726896241
+        },
+        {
+          "years": 4.5,
+          "time_myr": 0.8684045000000011,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.3707181465070312,
+          "mean_damage": 0.09195748641816923,
+          "max_shear_pa": 2594766.830331102,
+          "reserve_j": 1.0110961326302183e+19,
+          "energy_fraction": 0.0165202131219096
+        },
+        {
+          "years": 4.75,
+          "time_myr": 0.8684047500000012,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.3769599981150537,
+          "mean_damage": 0.0942442634015567,
+          "max_shear_pa": 2548604.1657449496,
+          "reserve_j": 1.0359582488210567e+19,
+          "energy_fraction": 0.01844064168009808
+        },
+        {
+          "years": 5.0,
+          "time_myr": 0.8684050000000012,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.38282365290084047,
+          "mean_damage": 0.09642042368879954,
+          "max_shear_pa": 2506278.9354397785,
+          "reserve_j": 1.0595264180457791e+19,
+          "energy_fraction": 0.03534611999977605
+        },
+        {
+          "years": 5.25,
+          "time_myr": 0.8684052500000012,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.38834602619988373,
+          "mean_damage": 0.09849499194854665,
+          "max_shear_pa": 2466912.0675139595,
+          "reserve_j": 1.081910798703906e+19,
+          "energy_fraction": 0.007199879228068153
+        },
+        {
+          "years": 5.5,
+          "time_myr": 0.8684055000000013,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.3935591184396684,
+          "mean_damage": 0.10047596084671487,
+          "max_shear_pa": 2429882.49057214,
+          "reserve_j": 1.103208593009944e+19,
+          "energy_fraction": 0.009053398760481285
+        },
+        {
+          "years": 5.75,
+          "time_myr": 0.8684057500000013,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.39849083353457926,
+          "mean_damage": 0.10237044246637025,
+          "max_shear_pa": 2394963.3936493243,
+          "reserve_j": 1.1235059776394275e+19,
+          "energy_fraction": 0.02601863580738482
+        },
+        {
+          "years": 6.0,
+          "time_myr": 0.8684060000000013,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.40316563548104234,
+          "mean_damage": 0.104184792334989,
+          "max_shear_pa": 2363574.7166198976,
+          "reserve_j": 1.1428796886359523e+19,
+          "energy_fraction": 0.0279158793515381
+        },
+        {
+          "years": 6.25,
+          "time_myr": 0.8684062500000014,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4076050798541623,
+          "mean_damage": 0.10592471205177659,
+          "max_shear_pa": 2333926.846604304,
+          "reserve_j": 1.161398332387237e+19,
+          "energy_fraction": 0.04482612889262063
+        },
+        {
+          "years": 6.5,
+          "time_myr": 0.8684065000000014,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.41182824758320646,
+          "mean_damage": 0.10759533017846516,
+          "max_shear_pa": 2305731.1642028233,
+          "reserve_j": 1.1791234776160993e+19,
+          "energy_fraction": 0.016636220315100144
+        },
+        {
+          "years": 6.75,
+          "time_myr": 0.8684067500000014,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4158521016655227,
+          "mean_damage": 0.10920127811398758,
+          "max_shear_pa": 2278877.0170020154,
+          "reserve_j": 1.1961277408149797e+19,
+          "energy_fraction": 0.018535602819256657
+        },
+        {
+          "years": 7.0,
+          "time_myr": 0.8684070000000015,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4196917826105957,
+          "mean_damage": 0.11074669558172925,
+          "max_shear_pa": 2253274.1251296075,
+          "reserve_j": 1.2124667846497071e+19,
+          "energy_fraction": 0.0204368245096385
+        },
+        {
+          "years": 7.25,
+          "time_myr": 0.8684072500000015,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4233608546567182,
+          "mean_damage": 0.11223532383658635,
+          "max_shear_pa": 2228823.784574412,
+          "reserve_j": 1.228162554276418e+19,
+          "energy_fraction": 0.007324901845444443
+        },
+        {
+          "years": 7.5,
+          "time_myr": 0.8684075000000016,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4268715122214335,
+          "mean_damage": 0.11367064668400317,
+          "max_shear_pa": 2205444.574569274,
+          "reserve_j": 1.2432920449339689e+19,
+          "energy_fraction": 0.009179937619804634
+        },
+        {
+          "years": 7.75,
+          "time_myr": 0.8684077500000016,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.43023475408555406,
+          "mean_damage": 0.11505573046212803,
+          "max_shear_pa": 2183063.4049819377,
+          "reserve_j": 1.2578542273116735e+19,
+          "energy_fraction": 0.003968897451187286
+        },
+        {
+          "years": 8.0,
+          "time_myr": 0.8684080000000016,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.43346053118865085,
+          "mean_damage": 0.11639350468141356,
+          "max_shear_pa": 2161613.8389433064,
+          "reserve_j": 1.2718836079193233e+19,
+          "energy_fraction": 0.04303981711284925
+        },
+        {
+          "years": 8.25,
+          "time_myr": 0.8684082500000017,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4365578724291275,
+          "mean_damage": 0.11768666052856164,
+          "max_shear_pa": 2141035.4137356873,
+          "reserve_j": 1.2854117994418047e+19,
+          "energy_fraction": 0.029899230539520257
+        },
+        {
+          "years": 8.5,
+          "time_myr": 0.8684085000000017,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4395349924217635,
+          "mean_damage": 0.11893767569446136,
+          "max_shear_pa": 2121272.947668274,
+          "reserve_j": 1.2984678288093196e+19,
+          "energy_fraction": 0.016732813717747073
+        },
+        {
+          "years": 8.75,
+          "time_myr": 0.8684087500000017,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.442399384166973,
+          "mean_damage": 0.1201488360633459,
+          "max_shear_pa": 2102275.9651212245,
+          "reserve_j": 1.3110784056890757e+19,
+          "energy_fraction": 0.018628808937782057
+        },
+        {
+          "years": 9.0,
+          "time_myr": 0.8684090000000018,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4451578990778195,
+          "mean_damage": 0.12132225472755005,
+          "max_shear_pa": 2084724.6095157617,
+          "reserve_j": 1.3232681573281397e+19,
+          "energy_fraction": 0.020518660346134227
+        },
+        {
+          "years": 9.25,
+          "time_myr": 0.8684092500000018,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4478168163627375,
+          "mean_damage": 0.12245988871390791,
+          "max_shear_pa": 2067894.4176355347,
+          "reserve_j": 1.335059834666459e+19,
+          "energy_fraction": 0.022402581183100324
+        },
+        {
+          "years": 9.5,
+          "time_myr": 0.8684095000000018,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4503819034049182,
+          "mean_damage": 0.12356355374426838,
+          "max_shear_pa": 2051647.446164985,
+          "reserve_j": 1.3464744938207003e+19,
+          "energy_fraction": 0.009300895734045533
+        },
+        {
+          "years": 9.75,
+          "time_myr": 0.8684097500000019,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4528584684931475,
+          "mean_damage": 0.1246349373007507,
+          "max_shear_pa": 2035952.1317417335,
+          "reserve_j": 1.3575316563732998e+19,
+          "energy_fraction": 0.01116855541884459
+        },
+        {
+          "years": 10.0,
+          "time_myr": 0.8684100000000019,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.45525140702815836,
+          "mean_damage": 0.12567561022384197,
+          "max_shear_pa": 2020784.000828029,
+          "reserve_j": 1.3682494513557998e+19,
+          "energy_fraction": 0.028068984839930318
+        },
+        {
+          "years": 10.25,
+          "time_myr": 0.8684102500000019,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.457565242141504,
+          "mean_damage": 0.12668703703639414,
+          "max_shear_pa": 2006128.0008900028,
+          "reserve_j": 1.3786447413670191e+19,
+          "energy_fraction": 0.029973768187810095
+        },
+        {
+          "years": 10.5,
+          "time_myr": 0.868410500000002,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.45980416051151934,
+          "mean_damage": 0.12767058506303094,
+          "max_shear_pa": 1991940.6030862532,
+          "reserve_j": 1.388733234895929e+19,
+          "energy_fraction": 0.001794801602864968
+        },
+        {
+          "years": 10.75,
+          "time_myr": 0.868410750000002,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4619720440360859,
+          "mean_damage": 0.1286275310048959,
+          "max_shear_pa": 1978198.395419843,
+          "reserve_j": 1.3985295866113855e+19,
+          "energy_fraction": 0.018713420986190946
+        },
+        {
+          "years": 11.0,
+          "time_myr": 0.868411000000002,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.46407249791917815,
+          "mean_damage": 0.1295590694684348,
+          "max_shear_pa": 1964879.5464845463,
+          "reserve_j": 1.4080474871243407e+19,
+          "energy_fraction": 0.035621287096575395
+        },
+        {
+          "years": 11.25,
+          "time_myr": 0.8684112500000021,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4661088756432429,
+          "mean_damage": 0.13046631843556727,
+          "max_shear_pa": 1951963.6718645042,
+          "reserve_j": 1.4172997435133952e+19,
+          "energy_fraction": 0.007436658200803646
+        },
+        {
+          "years": 11.5,
+          "time_myr": 0.8684115000000021,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4680843012289623,
+          "mean_damage": 0.13135032570888763,
+          "max_shear_pa": 1939431.7140259747,
+          "reserve_j": 1.426298351724092e+19,
+          "energy_fraction": 0.03940757091016575
+        },
+        {
+          "years": 11.75,
+          "time_myr": 0.8684117500000021,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4700016891251824,
+          "mean_damage": 0.13221207610099914,
+          "max_shear_pa": 1927265.8341237616,
+          "reserve_j": 1.4350545618001283e+19,
+          "energy_fraction": 0.0038197638304875475
+        },
+        {
+          "years": 12.0,
+          "time_myr": 0.8684120000000022,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.47186376202260555,
+          "mean_damage": 0.13305249632101016,
+          "max_shear_pa": 1915449.3143536975,
+          "reserve_j": 1.4435789367757976e+19,
+          "energy_fraction": 0.013137568551400507
+        },
+        {
+          "years": 12.25,
+          "time_myr": 0.8684122500000022,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.47367306684353233,
+          "mean_damage": 0.13387245936838124,
+          "max_shear_pa": 1903966.4696605136,
+          "reserve_j": 1.4518814059495305e+19,
+          "energy_fraction": 0.030044300945872425
+        },
+        {
+          "years": 12.5,
+          "time_myr": 0.8684125000000023,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4754319891251098,
+          "mean_damage": 0.1346727878520862,
+          "max_shear_pa": 1893510.640575245,
+          "reserve_j": 1.459971313165129e+19,
+          "energy_fraction": 0.031913387197196864
+        },
+        {
+          "years": 12.75,
+          "time_myr": 0.8684127500000023,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4771427659840765,
+          "mean_damage": 0.13545425564422,
+          "max_shear_pa": 1883376.1903180238,
+          "reserve_j": 1.4678574606475536e+19,
+          "energy_fraction": 0.018781270707139197
+        },
+        {
+          "years": 13.0,
+          "time_myr": 0.8684130000000023,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4788074978259874,
+          "mean_damage": 0.13621759206836792,
+          "max_shear_pa": 1873495.2653943808,
+          "reserve_j": 1.4755481488717697e+19,
+          "energy_fraction": 0.020664121607019966
+        },
+        {
+          "years": 13.25,
+          "time_myr": 0.8684132500000024,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4804281589406073,
+          "mean_damage": 0.13696348694289937,
+          "max_shear_pa": 1863857.9302688395,
+          "reserve_j": 1.4830512128843573e+19,
+          "energy_fraction": 0.007521566171130898
+        },
+        {
+          "years": 13.5,
+          "time_myr": 0.8684135000000024,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4820066071069724,
+          "mean_damage": 0.13769259347813134,
+          "max_shear_pa": 1854454.7769341264,
+          "reserve_j": 1.4903740554469171e+19,
+          "energy_fraction": 0.05453534265149177
+        },
+        {
+          "years": 13.75,
+          "time_myr": 0.8684137500000024,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4835445923160418,
+          "mean_damage": 0.13840553076938794,
+          "max_shear_pa": 1845305.6893920335,
+          "reserve_j": 1.4975236773264611e+19,
+          "energy_fraction": 0.02633470946713061
+        },
+        {
+          "years": 14.0,
+          "time_myr": 0.8684140000000025,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.48504376470547506,
+          "mean_damage": 0.1391028860599486,
+          "max_shear_pa": 1836386.5171050848,
+          "reserve_j": 1.5045067050199955e+19,
+          "energy_fraction": 0.013156686727872333
+        },
+        {
+          "years": 14.25,
+          "time_myr": 0.8684142500000025,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.48650568178954445,
+          "mean_damage": 0.13978521634608623,
+          "max_shear_pa": 1827674.467530259,
+          "reserve_j": 1.5113294161674838e+19,
+          "energy_fraction": 0.030119631729098532
+        },
+        {
+          "years": 14.5,
+          "time_myr": 0.8684145000000025,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.48793181505723265,
+          "mean_damage": 0.14045305053580345,
+          "max_shear_pa": 1819162.0009049282,
+          "reserve_j": 1.517997762878623e+19,
+          "energy_fraction": 0.03197878960487761
+        },
+        {
+          "years": 14.75,
+          "time_myr": 0.8684147500000026,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4893235560029447,
+          "mean_damage": 0.14110689094790524,
+          "max_shear_pa": 1810841.9496373667,
+          "reserve_j": 1.5245173931737555e+19,
+          "energy_fraction": 0.0038036572657130178
+        },
+        {
+          "years": 15.0,
+          "time_myr": 0.8684150000000026,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.49068222164678027,
+          "mean_damage": 0.14174721499471357,
+          "max_shear_pa": 1802707.4952133172,
+          "reserve_j": 1.5308936707172667e+19,
+          "energy_fraction": 0.02073270369426323
+        },
+        {
+          "years": 15.25,
+          "time_myr": 0.8684152500000026,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.49200905959479985,
+          "mean_damage": 0.14237447722733176,
+          "max_shear_pa": 1794752.1468217587,
+          "reserve_j": 1.537131693002552e+19,
+          "energy_fraction": 0.022604492985227227
+        },
+        {
+          "years": 15.5,
+          "time_myr": 0.8684155000000027,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4933052526840405,
+          "mean_damage": 0.14298911085806398,
+          "max_shear_pa": 1786969.7215511177,
+          "reserve_j": 1.5432363081307044e+19,
+          "energy_fraction": 0.009447650596021736
+        },
+        {
+          "years": 15.75,
+          "time_myr": 0.8684157500000027,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4945719232520749,
+          "mean_damage": 0.14359152904689082,
+          "max_shear_pa": 1779354.3260217928,
+          "reserve_j": 1.5492121303101639e+19,
+          "energy_fraction": 0.011342467531815054
+        },
+        {
+          "years": 16.0,
+          "time_myr": 0.8684160000000027,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.495810137066558,
+          "mean_damage": 0.14418212609344033,
+          "max_shear_pa": 1771900.339333791,
+          "reserve_j": 1.5550635541914122e+19,
+          "energy_fraction": 0.028225179252759462
+        },
+        {
+          "years": 16.25,
+          "time_myr": 0.8684162500000028,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.49702090694639384,
+          "mean_damage": 0.14476127854261917,
+          "max_shear_pa": 1764602.3972200349,
+          "reserve_j": 1.5607947681391743e+19,
+          "energy_fraction": 0.030156293626001744
+        },
+        {
+          "years": 16.5,
+          "time_myr": 0.8684165000000028,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.49820519610279557,
+          "mean_damage": 0.14532934621126248,
+          "max_shear_pa": 1757455.3773061188,
+          "reserve_j": 1.5664097665342818e+19,
+          "energy_fraction": 0.016969886286509285
+        },
+        {
+          "years": 16.75,
+          "time_myr": 0.8684167500000028,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4993639212255588,
+          "mean_damage": 0.14588667314243944,
+          "max_shear_pa": 1750454.3853866733,
+          "reserve_j": 1.5719123611882258e+19,
+          "energy_fraction": 0.018849622407776122
+        },
+        {
+          "years": 17.0,
+          "time_myr": 0.8684170000000029,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5004979553372545,
+          "mean_damage": 0.1464335884934132,
+          "max_shear_pa": 1743594.7426367698,
+          "reserve_j": 1.5773061919452998e+19,
+          "energy_fraction": 0.02074817434475507
+        },
+        {
+          "years": 17.25,
+          "time_myr": 0.8684172500000029,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5016081304357413,
+          "mean_damage": 0.14697040736268177,
+          "max_shear_pa": 1736871.9736842022,
+          "reserve_j": 1.5825947365400117e+19,
+          "energy_fraction": 0.007582948833707682
+        },
+        {
+          "years": 17.5,
+          "time_myr": 0.868417500000003,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5026952399433494,
+          "mean_damage": 0.147497431561018,
+          "max_shear_pa": 1730281.7954752236,
+          "reserve_j": 1.5877813197709961e+19,
+          "energy_fraction": 0.024528337068182436
+        },
+        {
+          "years": 17.75,
+          "time_myr": 0.868417750000003,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5037600409792735,
+          "mean_damage": 0.14801495033097148,
+          "max_shear_pa": 1723820.1068722892,
+          "reserve_j": 1.5928691220469017e+19,
+          "energy_fraction": 0.026391269906175067
+        },
+        {
+          "years": 18.0,
+          "time_myr": 0.868418000000003,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5048032564700962,
+          "mean_damage": 0.1485232410188856,
+          "max_shear_pa": 1717482.9789278186,
+          "reserve_j": 1.5978611873545837e+19,
+          "energy_fraction": 0.028278760771586458
+        },
+        {
+          "years": 18.25,
+          "time_myr": 0.8684182500000031,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5058255771119275,
+          "mean_damage": 0.14902256970311878,
+          "max_shear_pa": 1711266.6457827692,
+          "reserve_j": 1.602760430695319e+19,
+          "energy_fraction": 0.030129295061376286
+        },
+        {
+          "years": 18.5,
+          "time_myr": 0.8684185000000031,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5068276631963625,
+          "mean_damage": 0.149513191781829,
+          "max_shear_pa": 1705167.4961433455,
+          "reserve_j": 1.6075696450306216e+19,
+          "energy_fraction": 0.03203590851227106
+        },
+        {
+          "years": 18.75,
+          "time_myr": 0.8684187500000031,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5078101463113114,
+          "mean_damage": 0.1499953525233849,
+          "max_shear_pa": 1699182.0652930513,
+          "reserve_j": 1.6122915077755259e+19,
+          "energy_fraction": 0.018917517982690507
+        },
+        {
+          "years": 19.0,
+          "time_myr": 0.8684190000000032,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5087736309267354,
+          "mean_damage": 0.15046928758220124,
+          "max_shear_pa": 1693307.0276009373,
+          "reserve_j": 1.6169285868738544e+19,
+          "energy_fraction": 0.005748497976994069
+        },
+        {
+          "years": 19.25,
+          "time_myr": 0.8684192500000032,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5097186958744004,
+          "mean_damage": 0.15093522348255461,
+          "max_shear_pa": 1687539.1894901218,
+          "reserve_j": 1.6214833464869829e+19,
+          "energy_fraction": 0.02266050655388302
+        },
+        {
+          "years": 19.5,
+          "time_myr": 0.8684195000000032,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5106458957299358,
+          "mean_damage": 0.15139337807272038,
+          "max_shear_pa": 1681875.48283369,
+          "reserve_j": 1.625958152324894e+19,
+          "energy_fraction": 0.05459078138078811
+        },
+        {
+          "years": 19.75,
+          "time_myr": 0.8684197500000033,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5115557621047483,
+          "mean_damage": 0.15184396095157268,
+          "max_shear_pa": 1676312.9587476505,
+          "reserve_j": 1.6303552766458575e+19,
+          "energy_fraction": 0.011393972670945636
+        },
+        {
+          "years": 20.0,
+          "time_myr": 0.8684200000000033,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5124488048546705,
+          "mean_damage": 0.15228717386961474,
+          "max_shear_pa": 1670848.781753204,
+          "reserve_j": 1.634676902948862e+19,
+          "energy_fraction": 0.028288090488409738
+        },
+        {
+          "years": 20.25,
+          "time_myr": 0.8684202500000033,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5133255132116269,
+          "mean_damage": 0.15272321110624298,
+          "max_shear_pa": 1665480.2242826605,
+          "reserve_j": 1.638925130380906e+19,
+          "energy_fraction": 0.030179147996548267
+        },
+        {
+          "years": 20.5,
+          "time_myr": 0.8684205000000034,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5141863568440568,
+          "mean_damage": 0.15315225982490333,
+          "max_shear_pa": 1660282.8201113436,
+          "reserve_j": 1.6431019778794465e+19,
+          "energy_fraction": 0.032019183368610406
+        },
+        {
+          "years": 20.75,
+          "time_myr": 0.8684207500000034,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5150317868513441,
+          "mean_damage": 0.15357450040766574,
+          "max_shear_pa": 1655395.7445050154,
+          "reserve_j": 1.6472093880686381e+19,
+          "energy_fraction": 0.0038495562936953108
+        },
+        {
+          "years": 21.0,
+          "time_myr": 0.8684210000000034,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.515862236697064,
+          "mean_damage": 0.15399010677062092,
+          "max_shear_pa": 1650586.6368207298,
+          "reserve_j": 1.6512492309265089e+19,
+          "energy_fraction": 0.020760962842428256
+        },
+        {
+          "years": 21.25,
+          "time_myr": 0.8684212500000035,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5166781230854524,
+          "mean_damage": 0.15439924666139362,
+          "max_shear_pa": 1645853.5446396726,
+          "reserve_j": 1.655223307238843e+19,
+          "energy_fraction": 0.022664454141022007
+        },
+        {
+          "years": 21.5,
+          "time_myr": 0.8684215000000035,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.517479846785144,
+          "mean_damage": 0.15480208193996692,
+          "max_shear_pa": 1641194.5819684241,
+          "reserve_j": 1.6591333518543022e+19,
+          "energy_fraction": 0.03957614726362142
+        },
+        {
+          "years": 21.75,
+          "time_myr": 0.8684217500000035,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5182677934038954,
+          "mean_damage": 0.15519876884391978,
+          "max_shear_pa": 1636607.9263898358,
+          "reserve_j": 1.662981036754186e+19,
+          "energy_fraction": 0.011413943357955604
+        },
+        {
+          "years": 22.0,
+          "time_myr": 0.8684220000000036,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5190423341177063,
+          "mean_damage": 0.1555894582390969,
+          "max_shear_pa": 1632091.8163609686,
+          "reserve_j": 1.666767973949195e+19,
+          "energy_fraction": 0.0018123724647156683
+        },
+        {
+          "years": 22.25,
+          "time_myr": 0.8684222500000036,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5198038263574857,
+          "mean_damage": 0.15597429585665273,
+          "max_shear_pa": 1627644.5486493132,
+          "reserve_j": 1.670495718214617e+19,
+          "energy_fraction": 0.03019646577357112
+        },
+        {
+          "years": 22.5,
+          "time_myr": 0.8684225000000036,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5205526144561573,
+          "mean_damage": 0.15635342251734238,
+          "max_shear_pa": 1623264.475898979,
+          "reserve_j": 1.6741657696744983e+19,
+          "energy_fraction": 0.032070341336966034
+        },
+        {
+          "years": 22.75,
+          "time_myr": 0.8684227500000037,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.521289030258874,
+          "mean_damage": 0.15672697434386773,
+          "max_shear_pa": 1618950.0043191726,
+          "reserve_j": 1.6777795762445638e+19,
+          "energy_fraction": 0.03387875913978138
+        },
+        {
+          "years": 23.0,
+          "time_myr": 0.8684230000000037,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5220133936988062,
+          "mean_damage": 0.15709508296202707,
+          "max_shear_pa": 1614699.591487834,
+          "reserve_j": 1.6813385359429366e+19,
+          "energy_fraction": 0.020743044865551275
+        },
+        {
+          "years": 23.25,
+          "time_myr": 0.8684232500000038,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5227260133407788,
+          "mean_damage": 0.15745787569136482,
+          "max_shear_pa": 1610511.7442636914,
+          "reserve_j": 1.6848439990770358e+19,
+          "energy_fraction": 0.0076054069728559975
+        },
+        {
+          "years": 23.5,
+          "time_myr": 0.8684235000000038,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5234271868948608,
+          "mean_damage": 0.15781547572596602,
+          "max_shear_pa": 1606385.0168005193,
+          "reserve_j": 1.6882972703144284e+19,
+          "energy_fraction": 0.02453533730345853
+        },
+        {
+          "years": 23.75,
+          "time_myr": 0.8684237500000038,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5241172017018528,
+          "mean_damage": 0.15816800230599612,
+          "max_shear_pa": 1602320.979819513,
+          "reserve_j": 1.691699610644851e+19,
+          "energy_fraction": 0.011367118721162863
+        },
+        {
+          "years": 24.0,
+          "time_myr": 0.8684240000000039,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.524796335192476,
+          "mean_damage": 0.1585155708805442,
+          "max_shear_pa": 1598316.9280967438,
+          "reserve_j": 1.695052239240104e+19,
+          "energy_fraction": 0.01323316365110822
+        },
+        {
+          "years": 24.25,
+          "time_myr": 0.8684242500000039,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5254648553219299,
+          "mean_damage": 0.15885829326228845,
+          "max_shear_pa": 1594369.793217626,
+          "reserve_j": 1.6983563352180443e+19,
+          "energy_fraction": 0.015114252725147662
+        },
+        {
+          "years": 24.5,
+          "time_myr": 0.8684245000000039,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5261230209813689,
+          "mean_damage": 0.15919627777446835,
+          "max_shear_pa": 1590478.304890223,
+          "reserve_j": 1.7016130393164773e+19,
+          "energy_fraction": 0.0019838274832432654
+        },
+        {
+          "years": 24.75,
+          "time_myr": 0.868424750000004,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5267710823877343,
+          "mean_damage": 0.15952962939061396,
+          "max_shear_pa": 1586641.2313530475,
+          "reserve_j": 1.7048234554823356e+19,
+          "energy_fraction": 0.018851370525972414
+        },
+        {
+          "years": 25.0,
+          "time_myr": 0.8684250000000006,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5274092814445827,
+          "mean_damage": 0.1598584498629742,
+          "max_shear_pa": 1582857.3779522676,
+          "reserve_j": 1.7079886523380615e+19,
+          "energy_fraction": 0.006067948457709291
+        }
+      ]
+    },
+    {
+      "dt_years": 0.125,
+      "status": "COMPLETED",
+      "accepted_steps": 200,
+      "start_time_myr": 0.8684000000000005,
+      "end_time_myr": 0.8684250000000006,
+      "checkpoint": "/workspace/genesis-edge-short-accuracy-01/dt-0.125.json",
+      "checkpoint_sha256": "b8e21320eefbf454d30aeec4a64906d511e0f504322598372e8a1d2b9ba61a8a",
+      "trace": "/workspace/genesis-edge-short-accuracy-01/dt-0.125-fields.npz",
+      "trace_sha256": "3062a15b898dbd32bfd01c314812374657177ec396f46192d9f6f6cddd6bdedb",
+      "restart_exact": true,
+      "previous_halfyear_endpoint_exact": null,
+      "mass_exact": true,
+      "domains": 1,
+      "newborn": 0,
+      "max_energy_fraction": 0.06074855685931355,
+      "seconds": 47.236174238001695,
+      "rows": [
+        {
+          "years": 0.125,
+          "time_myr": 0.8684001250000005,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.035491544672975744,
+          "mean_damage": 0.005952822732626778,
+          "max_shear_pa": 5898523.448634724,
+          "reserve_j": 4.816274816878978e+17,
+          "energy_fraction": 0.036816694526394925
+        },
+        {
+          "years": 0.25,
+          "time_myr": 0.8684002500000005,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.06548331874382811,
+          "mean_damage": 0.011404165165044259,
+          "max_shear_pa": 5544942.588316238,
+          "reserve_j": 9.915589169066765e+17,
+          "energy_fraction": 0.014768021880896931
+        },
+        {
+          "years": 0.375,
+          "time_myr": 0.8684003750000006,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.09130169298703528,
+          "mean_damage": 0.016409183633647666,
+          "max_shear_pa": 5249500.70912276,
+          "reserve_j": 1.529915876011606e+18,
+          "energy_fraction": 0.022762510430985577
+        },
+        {
+          "years": 0.5,
+          "time_myr": 0.8684005000000006,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.11387249069085513,
+          "mean_damage": 0.02102226216412179,
+          "max_shear_pa": 4997989.281822431,
+          "reserve_j": 2.0367223604826604e+18,
+          "energy_fraction": 0.04579067963409014
+        },
+        {
+          "years": 0.625,
+          "time_myr": 0.8684006250000006,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.13385056798214937,
+          "mean_damage": 0.025298938674362597,
+          "max_shear_pa": 4780636.929144106,
+          "reserve_j": 2.517919207774034e+18,
+          "energy_fraction": 0.008653677131096615
+        },
+        {
+          "years": 0.75,
+          "time_myr": 0.8684007500000006,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.15171543951510974,
+          "mean_damage": 0.029282574213037035,
+          "max_shear_pa": 4590464.746646706,
+          "reserve_j": 2.9691393711003136e+18,
+          "energy_fraction": 0.03172398346006618
+        },
+        {
+          "years": 0.875,
+          "time_myr": 0.8684008750000006,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.16782823267501157,
+          "mean_damage": 0.03300925334111686,
+          "max_shear_pa": 4422335.610313603,
+          "reserve_j": 3.409232102565405e+18,
+          "energy_fraction": 0.00964129331361526
+        },
+        {
+          "years": 1.0,
+          "time_myr": 0.8684010000000006,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.18246733110435037,
+          "mean_damage": 0.03650672496608184,
+          "max_shear_pa": 4272372.8549165195,
+          "reserve_j": 3.823964259731675e+18,
+          "energy_fraction": 0.017630866520633524
+        },
+        {
+          "years": 1.125,
+          "time_myr": 0.8684011250000007,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.1958515891326524,
+          "mean_damage": 0.03979996292686178,
+          "max_shear_pa": 4137587.8543309546,
+          "reserve_j": 4.212590467403181e+18,
+          "energy_fraction": 0.025609814783162644
+        },
+        {
+          "years": 1.25,
+          "time_myr": 0.8684012500000007,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.20815598010458805,
+          "mean_damage": 0.04291038157040298,
+          "max_shear_pa": 4015634.9542846046,
+          "reserve_j": 4.5779669451168707e+18,
+          "energy_fraction": 0.0035036096193096383
+        },
+        {
+          "years": 1.375,
+          "time_myr": 0.8684013750000007,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.2195224464628382,
+          "mean_damage": 0.04585614068445351,
+          "max_shear_pa": 3904643.960712088,
+          "reserve_j": 4.922502153342919e+18,
+          "energy_fraction": 0.011533038641977028
+        },
+        {
+          "years": 1.5,
+          "time_myr": 0.8684015000000007,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.23006761084248828,
+          "mean_damage": 0.04865278738457552,
+          "max_shear_pa": 3803103.0976754576,
+          "reserve_j": 5.248247445019985e+18,
+          "energy_fraction": 0.03456135219467915
+        },
+        {
+          "years": 1.625,
+          "time_myr": 0.8684016250000007,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.2398883753958683,
+          "mean_damage": 0.05131373447106979,
+          "max_shear_pa": 3709775.3950607036,
+          "reserve_j": 5.556965489133e+18,
+          "energy_fraction": 0.0025881513512805766
+        },
+        {
+          "years": 1.75,
+          "time_myr": 0.8684017500000007,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.2490660650285687,
+          "mean_damage": 0.05385064954161023,
+          "max_shear_pa": 3623637.7446661433,
+          "reserve_j": 5.850230161266585e+18,
+          "energy_fraction": 0.020462694031414694
+        },
+        {
+          "years": 1.875,
+          "time_myr": 0.8684018750000008,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.2576695448228097,
+          "mean_damage": 0.05627375005500294,
+          "max_shear_pa": 3543835.6988855735,
+          "reserve_j": 6.129412801182051e+18,
+          "energy_fraction": 0.0016178311700851729
+        },
+        {
+          "years": 2.0,
+          "time_myr": 0.8684020000000008,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.26575760079891614,
+          "mean_damage": 0.05859203763395888,
+          "max_shear_pa": 3469649.4128555944,
+          "reserve_j": 6.395644204852475e+18,
+          "energy_fraction": 0.006368689580570584
+        },
+        {
+          "years": 2.125,
+          "time_myr": 0.8684021250000008,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.27338078263595483,
+          "mean_damage": 0.06081348959513563,
+          "max_shear_pa": 3400467.6327398955,
+          "reserve_j": 6.649916400930327e+18,
+          "energy_fraction": 0.014371737146189969
+        },
+        {
+          "years": 2.25,
+          "time_myr": 0.8684022500000008,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.2805828472826379,
+          "mean_damage": 0.06294521117757758,
+          "max_shear_pa": 3335767.568772654,
+          "reserve_j": 6.893143221747046e+18,
+          "energy_fraction": 0.022349123675636684
+        },
+        {
+          "years": 2.375,
+          "time_myr": 0.8684023750000008,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.28740190235457747,
+          "mean_damage": 0.06499355808058986,
+          "max_shear_pa": 3275099.1384103615,
+          "reserve_j": 7.12613924311154e+18,
+          "energy_fraction": 0.030394469288715944
+        },
+        {
+          "years": 2.5,
+          "time_myr": 0.8684025000000009,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.2938713208903237,
+          "mean_damage": 0.06696423930949061,
+          "max_shear_pa": 3218072.5086295903,
+          "reserve_j": 7.349633725526126e+18,
+          "energy_fraction": 0.02328513867030132
+        },
+        {
+          "years": 2.625,
+          "time_myr": 0.8684026250000009,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.30002047992466213,
+          "mean_damage": 0.0688624027583128,
+          "max_shear_pa": 3164348.146912205,
+          "reserve_j": 7.564282167577989e+18,
+          "energy_fraction": 0.04633929087561286
+        },
+        {
+          "years": 2.75,
+          "time_myr": 0.8684027500000009,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.3058753618637814,
+          "mean_damage": 0.0706927069323769,
+          "max_shear_pa": 3113628.80603983,
+          "reserve_j": 7.770675950807794e+18,
+          "energy_fraction": 0.005804287510480753
+        },
+        {
+          "years": 2.875,
+          "time_myr": 0.8684028750000009,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.3114590479750048,
+          "mean_damage": 0.07245938144834171,
+          "max_shear_pa": 3065653.0138799236,
+          "reserve_j": 7.969350445765406e+18,
+          "energy_fraction": 0.04726743320665353
+        },
+        {
+          "years": 3.0,
+          "time_myr": 0.8684030000000009,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.3167921262744126,
+          "mean_damage": 0.07416627837624659,
+          "max_shear_pa": 3020189.745439984,
+          "reserve_j": 8.160791867317445e+18,
+          "energy_fraction": 0.004857955639385626
+        },
+        {
+          "years": 3.125,
+          "time_myr": 0.8684031250000009,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.3218930309245974,
+          "mean_damage": 0.07581691605414115,
+          "max_shear_pa": 2977034.031755528,
+          "reserve_j": 8.34544310575243e+18,
+          "energy_fraction": 0.033153455648779605
+        },
+        {
+          "years": 3.25,
+          "time_myr": 0.868403250000001,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.32677832640783977,
+          "mean_damage": 0.07741451667399181,
+          "max_shear_pa": 2936003.317134774,
+          "reserve_j": 8.523708713387419e+18,
+          "energy_fraction": 0.011128326723819169
+        },
+        {
+          "years": 3.375,
+          "time_myr": 0.868403375000001,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.33146294684817107,
+          "mean_damage": 0.07896203868126522,
+          "max_shear_pa": 2896956.8905909597,
+          "reserve_j": 8.695959190365758e+18,
+          "energy_fraction": 0.01092836149402526
+        },
+        {
+          "years": 3.5,
+          "time_myr": 0.868403500000001,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.3359603986607927,
+          "mean_damage": 0.08046220483094763,
+          "max_shear_pa": 2859728.511978592,
+          "reserve_j": 8.862534685395846e+18,
+          "energy_fraction": 0.027106834252990864
+        },
+        {
+          "years": 3.625,
+          "time_myr": 0.868403625000001,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.3402829330261132,
+          "mean_damage": 0.0819175265859635,
+          "max_shear_pa": 2824201.8604300474,
+          "reserve_j": 9.023748205322185e+18,
+          "energy_fraction": 0.035044250629085505
+        },
+        {
+          "years": 3.75,
+          "time_myr": 0.868403750000001,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.34444169338704517,
+          "mean_damage": 0.08333032541987147,
+          "max_shear_pa": 2791494.0523886587,
+          "reserve_j": 9.179888410184791e+18,
+          "energy_fraction": 0.028058734845912325
+        },
+        {
+          "years": 3.875,
+          "time_myr": 0.868403875000001,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.3484468421571243,
+          "mean_damage": 0.08470275148013874,
+          "max_shear_pa": 2760134.4286464765,
+          "reserve_j": 9.331222056733034e+18,
+          "energy_fraction": 0.0059616181407039755
+        },
+        {
+          "years": 4.0,
+          "time_myr": 0.8684040000000011,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.35230767003391883,
+          "mean_damage": 0.0860367972169383,
+          "max_shear_pa": 2730036.0695450655,
+          "reserve_j": 9.477996142411016e+18,
+          "energy_fraction": 0.028994493453116697
+        },
+        {
+          "years": 4.125,
+          "time_myr": 0.8684041250000011,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.35603269068571997,
+          "mean_damage": 0.0873343124926713,
+          "max_shear_pa": 2701121.440261383,
+          "reserve_j": 9.620439793018032e+18,
+          "energy_fraction": 0.021950475556532744
+        },
+        {
+          "years": 4.25,
+          "time_myr": 0.8684042500000011,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.3596297230813495,
+          "mean_damage": 0.08859702018766055,
+          "max_shear_pa": 2673332.361759904,
+          "reserve_j": 9.758765930109757e+18,
+          "energy_fraction": 0.029927439097689086
+        },
+        {
+          "years": 4.375,
+          "time_myr": 0.8684043750000011,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.3631059633343292,
+          "mean_damage": 0.08982652640098619,
+          "max_shear_pa": 2646584.557216419,
+          "reserve_j": 9.893172748391518e+18,
+          "energy_fraction": 0.037913562651356564
+        },
+        {
+          "years": 4.5,
+          "time_myr": 0.8684045000000011,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.36646804761183405,
+          "mean_damage": 0.09102432948800135,
+          "max_shear_pa": 2620816.9232385694,
+          "reserve_j": 1.0023845028593404e+19,
+          "energy_fraction": 0.015849448562336048
+        },
+        {
+          "years": 4.625,
+          "time_myr": 0.8684046250000012,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.3697221073991754,
+          "mean_damage": 0.09219183148251793,
+          "max_shear_pa": 2596604.8380142567,
+          "reserve_j": 1.015095530739707e+19,
+          "energy_fraction": 0.02386385022075712
+        },
+        {
+          "years": 4.75,
+          "time_myr": 0.8684047500000012,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.3728738181992573,
+          "mean_damage": 0.09333034620943395,
+          "max_shear_pa": 2573389.545174024,
+          "reserve_j": 1.0274664922741574e+19,
+          "energy_fraction": 0.031842513970916045
+        },
+        {
+          "years": 4.875,
+          "time_myr": 0.8684048750000012,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.3759284425736358,
+          "mean_damage": 0.09444110588466534,
+          "max_shear_pa": 2550946.672502709,
+          "reserve_j": 1.039512495014089e+19,
+          "energy_fraction": 0.024794491358740157
+        },
+        {
+          "years": 5.0,
+          "time_myr": 0.8684050000000012,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.3788908682897967,
+          "mean_damage": 0.09552526714778728,
+          "max_shear_pa": 2529243.357038636,
+          "reserve_j": 1.051247704339641e+19,
+          "energy_fraction": 0.017740806639652173
+        },
+        {
+          "years": 5.125,
+          "time_myr": 0.8684051250000012,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.38176564222202636,
+          "mean_damage": 0.096583918061781,
+          "max_shear_pa": 2508241.0329665234,
+          "reserve_j": 1.0626854191202445e+19,
+          "energy_fraction": 0.010687378157654113
+        },
+        {
+          "years": 5.25,
+          "time_myr": 0.8684052500000012,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.3845570005560377,
+          "mean_damage": 0.09761808341668579,
+          "max_shear_pa": 2487897.621993234,
+          "reserve_j": 1.0738381399555985e+19,
+          "energy_fraction": 0.018680532781123617
+        },
+        {
+          "years": 5.375,
+          "time_myr": 0.8684053750000013,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.3872688957665702,
+          "mean_damage": 0.09862872950566083,
+          "max_shear_pa": 2468314.996383898,
+          "reserve_j": 1.0847176308541753e+19,
+          "energy_fraction": 0.02669518193052942
+        },
+        {
+          "years": 5.5,
+          "time_myr": 0.8684055000000013,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.3899050207695192,
+          "mean_damage": 0.0996167684586893,
+          "max_shear_pa": 2449713.980266055,
+          "reserve_j": 1.0953349750927102e+19,
+          "energy_fraction": 0.004561842120658764
+        },
+        {
+          "years": 5.625,
+          "time_myr": 0.8684056250000013,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.3924688305933671,
+          "mean_damage": 0.10058306218233352,
+          "max_shear_pa": 2431650.348577438,
+          "reserve_j": 1.1057006259034558e+19,
+          "energy_fraction": 0.04266036294095286
+        },
+        {
+          "years": 5.75,
+          "time_myr": 0.8684057500000013,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.3949635618668656,
+          "mean_damage": 0.10152842594785741,
+          "max_shear_pa": 2414099.7218323858,
+          "reserve_j": 1.1158244525534478e+19,
+          "energy_fraction": 0.02059990946375019
+        },
+        {
+          "years": 5.875,
+          "time_myr": 0.8684058750000013,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.39739225037949966,
+          "mean_damage": 0.10245363166480446,
+          "max_shear_pa": 2397044.7934889556,
+          "reserve_j": 1.1257157823093518e+19,
+          "energy_fraction": 0.013517762754507674
+        },
+        {
+          "years": 6.0,
+          "time_myr": 0.8684060000000013,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.3997577469369856,
+          "mean_damage": 0.1033594108726193,
+          "max_shear_pa": 2380458.677442315,
+          "reserve_j": 1.1353834387207623e+19,
+          "energy_fraction": 0.006525306737244455
+        },
+        {
+          "years": 6.125,
+          "time_myr": 0.8684061250000014,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4020627317048939,
+          "mean_damage": 0.1042464574790153,
+          "max_shear_pa": 2364320.6512759207,
+          "reserve_j": 1.1448357766025165e+19,
+          "energy_fraction": 0.029529764687332358
+        },
+        {
+          "years": 6.25,
+          "time_myr": 0.8684062500000014,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.40430972720859887,
+          "mean_damage": 0.10511543002149557,
+          "max_shear_pa": 2348611.69646301,
+          "reserve_j": 1.1540807140514128e+19,
+          "energy_fraction": 0.022453862115261833
+        },
+        {
+          "years": 6.375,
+          "time_myr": 0.8684063750000014,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4065011101364553,
+          "mean_damage": 0.10596695355287757,
+          "max_shear_pa": 2333313.8886714084,
+          "reserve_j": 1.1631257617935792e+19,
+          "energy_fraction": 0.04548164632011293
+        },
+        {
+          "years": 6.5,
+          "time_myr": 0.8684065000000014,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4086391220748132,
+          "mean_damage": 0.10680162237194961,
+          "max_shear_pa": 2318892.684757177,
+          "reserve_j": 1.171978050124745e+19,
+          "energy_fraction": 0.023420136035059005
+        },
+        {
+          "years": 6.625,
+          "time_myr": 0.8684066250000014,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.41072587928774035,
+          "mean_damage": 0.10762000210081775,
+          "max_shear_pa": 2305131.8078535553,
+          "reserve_j": 1.180644649665112e+19,
+          "energy_fraction": 0.031408936061076434
+        },
+        {
+          "years": 6.75,
+          "time_myr": 0.8684067500000014,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4127633816410377,
+          "mean_damage": 0.10842263096845726,
+          "max_shear_pa": 2291696.6123638107,
+          "reserve_j": 1.1891514364700641e+19,
+          "energy_fraction": 0.03938332893264458
+        },
+        {
+          "years": 6.875,
+          "time_myr": 0.8684068750000015,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4147535207769075,
+          "mean_damage": 0.10920998870692111,
+          "max_shear_pa": 2278574.991849916,
+          "reserve_j": 1.1974843381243482e+19,
+          "energy_fraction": 0.01733880702310229
+        },
+        {
+          "years": 7.0,
+          "time_myr": 0.8684070000000015,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4166980875369696,
+          "mean_damage": 0.109982566137027,
+          "max_shear_pa": 2265755.420852404,
+          "reserve_j": 1.2056491999820505e+19,
+          "energy_fraction": 0.025308140634396705
+        },
+        {
+          "years": 7.125,
+          "time_myr": 0.8684071250000015,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4185987788250015,
+          "mean_damage": 0.11074083177535159,
+          "max_shear_pa": 2253226.9635676467,
+          "reserve_j": 1.213651592988548e+19,
+          "energy_fraction": 0.04829698457244887
+        },
+        {
+          "years": 7.25,
+          "time_myr": 0.8684072500000015,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4204572038863041,
+          "mean_damage": 0.11148523314773637,
+          "max_shear_pa": 2240979.2217860157,
+          "reserve_j": 1.2215001405161642e+19,
+          "energy_fraction": 0.01121511938447084
+        },
+        {
+          "years": 7.375,
+          "time_myr": 0.8684073750000015,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.42227489007666985,
+          "mean_damage": 0.11221619241328452,
+          "max_shear_pa": 2229002.3004571083,
+          "reserve_j": 1.2292120006333075e+19,
+          "energy_fraction": 0.004171301499381963
+        },
+        {
+          "years": 7.5,
+          "time_myr": 0.8684075000000016,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4240532881677357,
+          "mean_damage": 0.11293409287408271,
+          "max_shear_pa": 2217288.1662027915,
+          "reserve_j": 1.236776173063523e+19,
+          "energy_fraction": 0.042228075025241334
+        },
+        {
+          "years": 7.625,
+          "time_myr": 0.8684076250000016,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.42579377726142215,
+          "mean_damage": 0.1136393269651852,
+          "max_shear_pa": 2205829.397113095,
+          "reserve_j": 1.2441972934096738e+19,
+          "energy_fraction": 0.02016762889598629
+        },
+        {
+          "years": 7.75,
+          "time_myr": 0.8684077500000016,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.42749766929369687,
+          "mean_damage": 0.11433227048785213,
+          "max_shear_pa": 2194614.312343829,
+          "reserve_j": 1.2514797944201974e+19,
+          "energy_fraction": 0.028151479376980877
+        },
+        {
+          "years": 7.875,
+          "time_myr": 0.8684078750000016,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.42916621320563186,
+          "mean_damage": 0.1150132835225418,
+          "max_shear_pa": 2183634.7586489497,
+          "reserve_j": 1.2586279173869056e+19,
+          "energy_fraction": 0.03614431177942621
+        },
+        {
+          "years": 8.0,
+          "time_myr": 0.8684080000000016,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.43080059880072863,
+          "mean_damage": 0.11568271128040572,
+          "max_shear_pa": 2172882.9534273916,
+          "reserve_j": 1.2656457227610614e+19,
+          "energy_fraction": 0.014067944690391609
+        },
+        {
+          "years": 8.125,
+          "time_myr": 0.8684081250000016,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4324019603161277,
+          "mean_damage": 0.11634088489818918,
+          "max_shear_pa": 2162351.463515447,
+          "reserve_j": 1.2725371000509663e+19,
+          "energy_fraction": 0.03707324393745874
+        },
+        {
+          "years": 8.25,
+          "time_myr": 0.8684082500000017,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.43397137973254246,
+          "mean_damage": 0.11698812218098761,
+          "max_shear_pa": 2152033.1854365016,
+          "reserve_j": 1.2793057770584127e+19,
+          "energy_fraction": 9.075043280185664e-06
+        },
+        {
+          "years": 8.375,
+          "time_myr": 0.8684083750000017,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.43550988984529426,
+          "mean_damage": 0.11762472829690711,
+          "max_shear_pa": 2141921.3269915977,
+          "reserve_j": 1.2859553285060798e+19,
+          "energy_fraction": 0.02301505913789733
+        },
+        {
+          "years": 8.5,
+          "time_myr": 0.8684085000000017,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4370184771166368,
+          "mean_damage": 0.11825099642731406,
+          "max_shear_pa": 2132009.3900849246,
+          "reserve_j": 1.2924891841032395e+19,
+          "energy_fraction": 0.0009203652166319055
+        },
+        {
+          "years": 8.625,
+          "time_myr": 0.8684086250000017,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.43849808432760823,
+          "mean_damage": 0.1188672083760341,
+          "max_shear_pa": 2122291.1546877497,
+          "reserve_j": 1.2989106360928983e+19,
+          "energy_fraction": 0.038948416197667333
+        },
+        {
+          "years": 8.75,
+          "time_myr": 0.8684087500000017,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.43994961304591185,
+          "mean_damage": 0.11947363514056684,
+          "max_shear_pa": 2112760.6638530195,
+          "reserve_j": 1.3052228463196924e+19,
+          "energy_fraction": 0.016939259326827077
+        },
+        {
+          "years": 8.875,
+          "time_myr": 0.8684088750000017,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4413739259247748,
+          "mean_damage": 0.12007053744811955,
+          "max_shear_pa": 2103412.2097004293,
+          "reserve_j": 1.3114288528544209e+19,
+          "energy_fraction": 0.02488202979508
+        },
+        {
+          "years": 9.0,
+          "time_myr": 0.8684090000000018,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.44277184884634446,
+          "mean_damage": 0.12065816625902297,
+          "max_shear_pa": 2094240.320298831,
+          "reserve_j": 1.3175315762080184e+19,
+          "energy_fraction": 0.00282790141490769
+        },
+        {
+          "years": 9.125,
+          "time_myr": 0.8684091250000018,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4441441729219396,
+          "mean_damage": 0.12123676323987938,
+          "max_shear_pa": 2085239.747379033,
+          "reserve_j": 1.3235338251649671e+19,
+          "energy_fraction": 0.025816970155996613
+        },
+        {
+          "years": 9.25,
+          "time_myr": 0.8684092500000018,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.44549165636035765,
+          "mean_damage": 0.1218065612085951,
+          "max_shear_pa": 2076604.952932513,
+          "reserve_j": 1.3294383022636323e+19,
+          "energy_fraction": 0.018810779350346585
+        },
+        {
+          "years": 9.375,
+          "time_myr": 0.8684093750000018,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.44681502621443736,
+          "mean_damage": 0.12236778455327571,
+          "max_shear_pa": 2068321.676612067,
+          "reserve_j": 1.3352476089487204e+19,
+          "energy_fraction": 0.011714447172689489
+        },
+        {
+          "years": 9.5,
+          "time_myr": 0.8684095000000018,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4481149800151736,
+          "mean_damage": 0.12292064962679942,
+          "max_shear_pa": 2060181.522942431,
+          "reserve_j": 1.3409642504189903e+19,
+          "energy_fraction": 0.01970153902706299
+        },
+        {
+          "years": 9.625,
+          "time_myr": 0.8684096250000019,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.44939218730187047,
+          "mean_damage": 0.12346536511874082,
+          "max_shear_pa": 2052180.6007455613,
+          "reserve_j": 1.3465906401914667e+19,
+          "energy_fraction": 0.027718411665289912
+        },
+        {
+          "years": 9.75,
+          "time_myr": 0.8684097500000019,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.45064729105608564,
+          "mean_damage": 0.12400213240618256,
+          "max_shear_pa": 2044315.1628118441,
+          "reserve_j": 1.3521291044017084e+19,
+          "energy_fraction": 0.005652486190112453
+        },
+        {
+          "years": 9.875,
+          "time_myr": 0.8684098750000019,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4518809090464573,
+          "mean_damage": 0.12453114588483392,
+          "max_shear_pa": 2036581.5991833622,
+          "reserve_j": 1.3575818858581221e+19,
+          "energy_fraction": 0.013614037347023947
+        },
+        {
+          "years": 10.0,
+          "time_myr": 0.8684100000000019,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.45309363509090755,
+          "mean_damage": 0.12505259328176407,
+          "max_shear_pa": 2028976.4308141686,
+          "reserve_j": 1.3629511478669117e+19,
+          "energy_fraction": 0.021634534812756057
+        },
+        {
+          "years": 10.125,
+          "time_myr": 0.8684101250000019,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4542860402421746,
+          "mean_damage": 0.12556665595095778,
+          "max_shear_pa": 2021496.3035830199,
+          "reserve_j": 1.3682389778429581e+19,
+          "energy_fraction": 0.00044818323903156315
+        },
+        {
+          "years": 10.25,
+          "time_myr": 0.8684102500000019,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4554586739021349,
+          "mean_damage": 0.1260735091528108,
+          "max_shear_pa": 2014137.9826356801,
+          "reserve_j": 1.3734473907207549e+19,
+          "energy_fraction": 0.022579034638292864
+        },
+        {
+          "years": 10.375,
+          "time_myr": 0.868410375000002,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.456612064869932,
+          "mean_damage": 0.12657332231859678,
+          "max_shear_pa": 2006898.3470355782,
+          "reserve_j": 1.3785783321784525e+19,
+          "energy_fraction": 0.01554779532893122
+        },
+        {
+          "years": 10.5,
+          "time_myr": 0.868410500000002,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.45774672232852376,
+          "mean_damage": 0.12706625918643558,
+          "max_shear_pa": 1999781.7033237955,
+          "reserve_j": 1.3836336816870801e+19,
+          "energy_fraction": 0.008481665663249925
+        },
+        {
+          "years": 10.625,
+          "time_myr": 0.868410625000002,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.458863136773892,
+          "mean_damage": 0.1275524779568434,
+          "max_shear_pa": 1992780.8350697185,
+          "reserve_j": 1.3886152553961236e+19,
+          "energy_fraction": 0.01645632558694853
+        },
+        {
+          "years": 10.75,
+          "time_myr": 0.868410750000002,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4599617808908242,
+          "mean_damage": 0.12803213171936925,
+          "max_shear_pa": 1985889.6005334237,
+          "reserve_j": 1.393524808865809e+19,
+          "energy_fraction": 0.024455087211206445
+        },
+        {
+          "years": 10.875,
+          "time_myr": 0.868410875000002,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.46104311037887036,
+          "mean_damage": 0.12850536867146226,
+          "max_shear_pa": 1979105.2984205943,
+          "reserve_j": 1.3983640396556925e+19,
+          "energy_fraction": 0.002378695423069204
+        },
+        {
+          "years": 11.0,
+          "time_myr": 0.868411000000002,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4621075647318026,
+          "mean_damage": 0.1289723323022235,
+          "max_shear_pa": 1972425.3180612063,
+          "reserve_j": 1.403134589778465e+19,
+          "energy_fraction": 0.010351563427304191
+        },
+        {
+          "years": 11.125,
+          "time_myr": 0.8684111250000021,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4631555679736467,
+          "mean_damage": 0.12943316140413363,
+          "max_shear_pa": 1965847.1355730454,
+          "reserve_j": 1.407838048027241e+19,
+          "energy_fraction": 0.03337844879723626
+        },
+        {
+          "years": 11.25,
+          "time_myr": 0.8684112500000021,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4641875293541271,
+          "mean_damage": 0.1298879902418599,
+          "max_shear_pa": 1959368.3102208117,
+          "reserve_j": 1.4124759521840237e+19,
+          "energy_fraction": 0.026311478187371888
+        },
+        {
+          "years": 11.375,
+          "time_myr": 0.8684113750000021,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4652038440061501,
+          "mean_damage": 0.13033694891465605,
+          "max_shear_pa": 1952986.4809592091,
+          "reserve_j": 1.4170497911164938e+19,
+          "energy_fraction": 0.03430503739309237
+        },
+        {
+          "years": 11.5,
+          "time_myr": 0.8684115000000021,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.46620489356775846,
+          "mean_damage": 0.13078016356359176,
+          "max_shear_pa": 1946699.3631490953,
+          "reserve_j": 1.4215610067697803e+19,
+          "energy_fraction": 0.002801984108341427
+        },
+        {
+          "years": 11.625,
+          "time_myr": 0.8684116250000021,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4671910467708102,
+          "mean_damage": 0.13121775652713402,
+          "max_shear_pa": 1940504.7454366488,
+          "reserve_j": 1.4260109960594088e+19,
+          "energy_fraction": 0.005212630708661265
+        },
+        {
+          "years": 11.75,
+          "time_myr": 0.8684117500000021,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4681626599984717,
+          "mean_damage": 0.13164984648923053,
+          "max_shear_pa": 1934400.4867861054,
+          "reserve_j": 1.4304011126712107e+19,
+          "energy_fraction": 0.02824485171614625
+        },
+        {
+          "years": 11.875,
+          "time_myr": 0.8684118750000022,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4691200778134641,
+          "mean_damage": 0.1320765486203229,
+          "max_shear_pa": 1928384.5136571669,
+          "reserve_j": 1.434732668773578e+19,
+          "energy_fraction": 0.021202144080697927
+        },
+        {
+          "years": 12.0,
+          "time_myr": 0.8684120000000022,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.47006363345886476,
+          "mean_damage": 0.1324979747116891,
+          "max_shear_pa": 1922454.8173189717,
+          "reserve_j": 1.4390069366470961e+19,
+          "energy_fraction": 0.029182132182277477
+        },
+        {
+          "years": 12.125,
+          "time_myr": 0.8684121250000022,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.47099364933313725,
+          "mean_damage": 0.13291423330348864,
+          "max_shear_pa": 1916609.451292803,
+          "reserve_j": 1.4432251502362546e+19,
+          "energy_fraction": 0.03714861822229488
+        },
+        {
+          "years": 12.25,
+          "time_myr": 0.8684122500000022,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.47191043744094774,
+          "mean_damage": 0.13332542980685996,
+          "max_shear_pa": 1910846.5289163888,
+          "reserve_j": 1.4473885066276219e+19,
+          "energy_fraction": 5.567073167884092e-05
+        },
+        {
+          "years": 12.375,
+          "time_myr": 0.8684123750000022,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.47281429982121614,
+          "mean_damage": 0.1337316666066566,
+          "max_shear_pa": 1905164.2210230432,
+          "reserve_j": 1.4514981674585962e+19,
+          "energy_fraction": 0.023052191692428222
+        },
+        {
+          "years": 12.5,
+          "time_myr": 0.8684125000000023,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4737055289537528,
+          "mean_damage": 0.13413304303264395,
+          "max_shear_pa": 1899560.7537293038,
+          "reserve_j": 1.4555552602605697e+19,
+          "energy_fraction": 0.016029007040597263
+        },
+        {
+          "years": 12.625,
+          "time_myr": 0.8684126250000023,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4745844081457381,
+          "mean_damage": 0.13452965543797685,
+          "max_shear_pa": 1894034.4063251743,
+          "reserve_j": 1.4595608797401072e+19,
+          "energy_fraction": 0.00898741266488149
+        },
+        {
+          "years": 12.75,
+          "time_myr": 0.8684127500000023,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4754512118992192,
+          "mean_damage": 0.13492159730354653,
+          "max_shear_pa": 1888583.509261382,
+          "reserve_j": 1.4635160890015087e+19,
+          "energy_fraction": 0.032014281701463185
+        },
+        {
+          "years": 12.875,
+          "time_myr": 0.8684128750000023,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4763062062607179,
+          "mean_damage": 0.13530895939005838,
+          "max_shear_pa": 1883317.1569217262,
+          "reserve_j": 1.4674219207139152e+19,
+          "energy_fraction": 0.03996033658737155
+        },
+        {
+          "years": 13.0,
+          "time_myr": 0.8684130000000023,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.47714964915397373,
+          "mean_damage": 0.13569182997144844,
+          "max_shear_pa": 1878373.2992946045,
+          "reserve_j": 1.471279378225923e+19,
+          "energy_fraction": 0.002860970231946992
+        },
+        {
+          "years": 13.125,
+          "time_myr": 0.8684131250000023,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.47798179069677665,
+          "mean_damage": 0.13607029493230965,
+          "max_shear_pa": 1873490.6787363857,
+          "reserve_j": 1.4750894366304874e+19,
+          "energy_fraction": 0.025925905200047773
+        },
+        {
+          "years": 13.25,
+          "time_myr": 0.8684132500000024,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4788028735027837,
+          "mean_damage": 0.1364444378514709,
+          "max_shear_pa": 1868668.1005772636,
+          "reserve_j": 1.4788530437827267e+19,
+          "energy_fraction": 0.018853182469404105
+        },
+        {
+          "years": 13.375,
+          "time_myr": 0.8684133750000024,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.47961313296915564,
+          "mean_damage": 0.13681434008199053,
+          "max_shear_pa": 1863904.4019108654,
+          "reserve_j": 1.482571121273083e+19,
+          "energy_fraction": 0.011804430933409209
+        },
+        {
+          "years": 13.5,
+          "time_myr": 0.8684135000000024,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.48041279755079547,
+          "mean_damage": 0.13718008082774655,
+          "max_shear_pa": 1859198.450527089,
+          "reserve_j": 1.486244565358146e+19,
+          "energy_fraction": 0.019807594206247222
+        },
+        {
+          "years": 13.625,
+          "time_myr": 0.8684136250000024,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.48120208902192313,
+          "mean_damage": 0.13754173721679494,
+          "max_shear_pa": 1854549.14388821,
+          "reserve_j": 1.489874247851307e+19,
+          "energy_fraction": 0.012742609752829898
+        },
+        {
+          "years": 13.75,
+          "time_myr": 0.8684137500000024,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4819812227256727,
+          "mean_damage": 0.13789938437165816,
+          "max_shear_pa": 1849955.4081461506,
+          "reserve_j": 1.4934610169752914e+19,
+          "energy_fraction": 0.02075653730025649
+        },
+        {
+          "years": 13.875,
+          "time_myr": 0.8684138750000024,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4827504078123565,
+          "mean_damage": 0.13825309547669445,
+          "max_shear_pa": 1845416.197199032,
+          "reserve_j": 1.4970056981784844e+19,
+          "energy_fraction": 0.028742430468008024
+        },
+        {
+          "years": 14.0,
+          "time_myr": 0.8684140000000025,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4835098474670014,
+          "mean_damage": 0.13860294184135727,
+          "max_shear_pa": 1840930.4917851482,
+          "reserve_j": 1.5005090949168677e+19,
+          "energy_fraction": 0.006674922092160561
+        },
+        {
+          "years": 14.125,
+          "time_myr": 0.8684141250000025,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.48425973912672365,
+          "mean_damage": 0.13894899290255872,
+          "max_shear_pa": 1836497.2986126079,
+          "reserve_j": 1.5039719894032693e+19,
+          "energy_fraction": 0.014617801340734185
+        },
+        {
+          "years": 14.25,
+          "time_myr": 0.8684142500000025,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4850002746884773,
+          "mean_damage": 0.13929131631451508,
+          "max_shear_pa": 1832115.6495230494,
+          "reserve_j": 1.5073951433255397e+19,
+          "energy_fraction": 0.02265717420038922
+        },
+        {
+          "years": 14.375,
+          "time_myr": 0.8684143750000025,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4857316407076752,
+          "mean_damage": 0.1396299780396813,
+          "max_shear_pa": 1827784.6006878424,
+          "reserve_j": 1.5107792985351682e+19,
+          "energy_fraction": 0.03064277221584199
+        },
+        {
+          "years": 14.5,
+          "time_myr": 0.8684145000000025,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4864540185881555,
+          "mean_damage": 0.13996504237413945,
+          "max_shear_pa": 1823503.231835275,
+          "reserve_j": 1.5141251777077772e+19,
+          "energy_fraction": 0.03859565009047709
+        },
+        {
+          "years": 14.625,
+          "time_myr": 0.8684146250000025,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.48716758476393573,
+          "mean_damage": 0.14029657196332135,
+          "max_shear_pa": 1819270.645507389,
+          "reserve_j": 1.5174334849768436e+19,
+          "energy_fraction": 0.0465750858316877
+        },
+        {
+          "years": 14.75,
+          "time_myr": 0.8684147500000026,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4878725108731723,
+          "mean_damage": 0.140624627867338,
+          "max_shear_pa": 1815085.9663451076,
+          "reserve_j": 1.5207049065419268e+19,
+          "energy_fraction": 0.024525385027622998
+        },
+        {
+          "years": 14.875,
+          "time_myr": 0.8684148750000026,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4885689639247182,
+          "mean_damage": 0.14094926962860002,
+          "max_shear_pa": 1810948.3404003428,
+          "reserve_j": 1.5239401112526123e+19,
+          "energy_fraction": 0.04751366420791173
+        },
+        {
+          "years": 15.0,
+          "time_myr": 0.8684150000000026,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.489257106457649,
+          "mean_damage": 0.1412705553550697,
+          "max_shear_pa": 1806856.934474004,
+          "reserve_j": 1.5271397511693107e+19,
+          "energy_fraction": 0.04048836708995415
+        },
+        {
+          "years": 15.125,
+          "time_myr": 0.8684151250000026,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4899370966941061,
+          "mean_damage": 0.14158854176596697,
+          "max_shear_pa": 1802810.935478649,
+          "reserve_j": 1.530304462101995e+19,
+          "energy_fraction": 0.033422003454697535
+        },
+        {
+          "years": 15.25,
+          "time_myr": 0.8684152500000026,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4906090886857864,
+          "mean_damage": 0.1419032842346579,
+          "max_shear_pa": 1798809.5498247948,
+          "reserve_j": 1.533434864127896e+19,
+          "energy_fraction": 0.026376669538096493
+        },
+        {
+          "years": 15.375,
+          "time_myr": 0.8684153750000027,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.49127323245438853,
+          "mean_damage": 0.1422148368299188,
+          "max_shear_pa": 1794852.0028298155,
+          "reserve_j": 1.5365315620891259e+19,
+          "energy_fraction": 0.0043303969335940695
+        },
+        {
+          "years": 15.5,
+          "time_myr": 0.8684155000000027,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4919296741263095,
+          "mean_damage": 0.1425232523556489,
+          "max_shear_pa": 1790937.5381484677,
+          "reserve_j": 1.5395951460711453e+19,
+          "energy_fraction": 0.027351074192135526
+        },
+        {
+          "years": 15.625,
+          "time_myr": 0.8684156250000027,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.49257855606186746,
+          "mean_damage": 0.14282858238910076,
+          "max_shear_pa": 1787082.6674569647,
+          "reserve_j": 1.5426261918629417e+19,
+          "energy_fraction": 0.03533179922783794
+        },
+        {
+          "years": 15.75,
+          "time_myr": 0.8684157500000027,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.49322001697931295,
+          "mean_damage": 0.14313087731769436,
+          "max_shear_pa": 1783269.9029042616,
+          "reserve_j": 1.5456252613997453e+19,
+          "energy_fraction": 0.0282971908384651
+        },
+        {
+          "years": 15.875,
+          "time_myr": 0.8684158750000027,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.49385419207387515,
+          "mean_damage": 0.14343018637447566,
+          "max_shear_pa": 1779497.7366512092,
+          "reserve_j": 1.5485929031890586e+19,
+          "energy_fraction": 0.008850301200449318
+        },
+        {
+          "years": 16.0,
+          "time_myr": 0.8684160000000027,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4944812131320774,
+          "mean_damage": 0.14372655767228035,
+          "max_shear_pa": 1775765.487757208,
+          "reserve_j": 1.551529652720744e+19,
+          "energy_fraction": 0.04424130275923554
+        },
+        {
+          "years": 16.125,
+          "time_myr": 0.8684161250000028,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.49510120864154233,
+          "mean_damage": 0.14402003823665735,
+          "max_shear_pa": 1772072.4908557096,
+          "reserve_j": 1.5544360328618705e+19,
+          "energy_fraction": 0.02217231503489194
+        },
+        {
+          "years": 16.25,
+          "time_myr": 0.8684162500000028,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4957143038964966,
+          "mean_damage": 0.1443106740376067,
+          "max_shear_pa": 1768418.0957037387,
+          "reserve_j": 1.5573125542369858e+19,
+          "energy_fraction": 0.03012644289581736
+        },
+        {
+          "years": 16.375,
+          "time_myr": 0.8684163750000028,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4963206210991727,
+          "mean_damage": 0.14459851002018081,
+          "max_shear_pa": 1764801.6667471633,
+          "reserve_j": 1.5601597155944479e+19,
+          "energy_fraction": 0.023141696066414055
+        },
+        {
+          "years": 16.5,
+          "time_myr": 0.8684165000000028,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.49692027945729556,
+          "mean_damage": 0.1448835901339989,
+          "max_shear_pa": 1761222.5827010213,
+          "reserve_j": 1.5629780041594196e+19,
+          "energy_fraction": 0.0310914487634901
+        },
+        {
+          "years": 16.625,
+          "time_myr": 0.8684166250000028,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.49751339527783217,
+          "mean_damage": 0.14516595736171903,
+          "max_shear_pa": 1757680.2361443643,
+          "reserve_j": 1.5657678959740944e+19,
+          "energy_fraction": 0.024062326891858242
+        },
+        {
+          "years": 16.75,
+          "time_myr": 0.8684167500000028,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.498100082057172,
+          "mean_damage": 0.14544565374651217,
+          "max_shear_pa": 1754174.0331289466,
+          "reserve_j": 1.568529856225701e+19,
+          "energy_fraction": 0.03206122404545324
+        },
+        {
+          "years": 16.875,
+          "time_myr": 0.8684168750000029,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4986804505678982,
+          "mean_damage": 0.1457227204185789,
+          "max_shear_pa": 1750703.392801279,
+          "reserve_j": 1.5712643395628007e+19,
+          "energy_fraction": 0.009991169167891004
+        },
+        {
+          "years": 17.0,
+          "time_myr": 0.8684170000000029,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4992546089423018,
+          "mean_damage": 0.14599719762074917,
+          "max_shear_pa": 1747267.747037484,
+          "reserve_j": 1.5739717904003717e+19,
+          "energy_fraction": 0.03298739912939879
+        },
+        {
+          "years": 17.125,
+          "time_myr": 0.8684171250000029,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.4998226627527814,
+          "mean_damage": 0.14626912473320194,
+          "max_shear_pa": 1743866.5400904056,
+          "reserve_j": 1.5766526432141472e+19,
+          "energy_fraction": 0.02593294756265509
+        },
+        {
+          "years": 17.25,
+          "time_myr": 0.8684172500000029,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5003847150892666,
+          "mean_damage": 0.14653854029734065,
+          "max_shear_pa": 1740499.228248596,
+          "reserve_j": 1.579307322824653e+19,
+          "energy_fraction": 0.01892788706928258
+        },
+        {
+          "years": 17.375,
+          "time_myr": 0.8684173750000029,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5009408666337929,
+          "mean_damage": 0.14680548203885874,
+          "max_shear_pa": 1737165.2795065902,
+          "reserve_j": 1.5819362446713702e+19,
+          "energy_fraction": 0.026897269693130412
+        },
+        {
+          "years": 17.5,
+          "time_myr": 0.868417500000003,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5014912157323529,
+          "mean_damage": 0.14706998689002818,
+          "max_shear_pa": 1733864.1732461038,
+          "reserve_j": 1.584539815077426e+19,
+          "energy_fraction": 0.03485137434239465
+        },
+        {
+          "years": 17.625,
+          "time_myr": 0.868417625000003,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.50203585846414,
+          "mean_damage": 0.14733209101124087,
+          "max_shear_pa": 1730595.3999277481,
+          "reserve_j": 1.5871184315051975e+19,
+          "energy_fraction": 0.012769501398510512
+        },
+        {
+          "years": 17.75,
+          "time_myr": 0.868417750000003,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5025748887082963,
+          "mean_damage": 0.1475918298118338,
+          "max_shear_pa": 1727358.4607927657,
+          "reserve_j": 1.5896724828031984e+19,
+          "energy_fraction": 0.03578518562017834
+        },
+        {
+          "years": 17.875,
+          "time_myr": 0.868417875000003,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5031083982082695,
+          "mean_damage": 0.14784923797022512,
+          "max_shear_pa": 1724152.867574512,
+          "reserve_j": 1.592202349444595e+19,
+          "energy_fraction": 0.0012970515459136296
+        },
+        {
+          "years": 18.0,
+          "time_myr": 0.868418000000003,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5036364766338814,
+          "mean_damage": 0.14810434945338896,
+          "max_shear_pa": 1720978.1422192485,
+          "reserve_j": 1.5947084037576892e+19,
+          "energy_fraction": 0.021682781499902815
+        },
+        {
+          "years": 18.125,
+          "time_myr": 0.868418125000003,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.504159211641202,
+          "mean_damage": 0.14835719753569432,
+          "max_shear_pa": 1717833.8166158784,
+          "reserve_j": 1.5971910101486834e+19,
+          "energy_fraction": 0.014712368584231198
+        },
+        {
+          "years": 18.25,
+          "time_myr": 0.8684182500000031,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5046766889303209,
+          "mean_damage": 0.14860781481713206,
+          "max_shear_pa": 1714719.4323343711,
+          "reserve_j": 1.5996505253170354e+19,
+          "energy_fraction": 0.007640248406383156
+        },
+        {
+          "years": 18.375,
+          "time_myr": 0.8684183750000031,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5051889923011037,
+          "mean_damage": 0.14885623324095487,
+          "max_shear_pa": 1711634.5403724557,
+          "reserve_j": 1.6020872984636905e+19,
+          "energy_fraction": 0.01563435776715326
+        },
+        {
+          "years": 18.5,
+          "time_myr": 0.8684185000000031,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5056962037070151,
+          "mean_damage": 0.14910248411075114,
+          "max_shear_pa": 1708578.700910345,
+          "reserve_j": 1.6045016714924698e+19,
+          "energy_fraction": 0.023586096656956677
+        },
+        {
+          "years": 18.625,
+          "time_myr": 0.8684186250000031,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5061984033070874,
+          "mean_damage": 0.1493465981069752,
+          "max_shear_pa": 1705551.4830731417,
+          "reserve_j": 1.606893979204878e+19,
+          "energy_fraction": 0.016547562118375346
+        },
+        {
+          "years": 18.75,
+          "time_myr": 0.8684187500000031,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5066956695161113,
+          "mean_damage": 0.149588605302954,
+          "max_shear_pa": 1702552.464700704,
+          "reserve_j": 1.6092645494885863e+19,
+          "energy_fraction": 0.009513534749982022
+        },
+        {
+          "years": 18.875,
+          "time_myr": 0.8684188750000031,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.507188079053118,
+          "mean_damage": 0.14982853518038997,
+          "max_shear_pa": 1699581.2321246176,
+          "reserve_j": 1.6116137034998305e+19,
+          "energy_fraction": 0.0174875164283676
+        },
+        {
+          "years": 19.0,
+          "time_myr": 0.8684190000000032,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5076757069882231,
+          "mean_damage": 0.1500664166443787,
+          "max_shear_pa": 1696637.379952113,
+          "reserve_j": 1.6139417558399537e+19,
+          "energy_fraction": 0.010463833599974577
+        },
+        {
+          "years": 19.125,
+          "time_myr": 0.8684191250000032,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5081586267878963,
+          "mean_damage": 0.1503022780379598,
+          "max_shear_pa": 1693720.510856583,
+          "reserve_j": 1.6162490147263195e+19,
+          "energy_fraction": 0.03348461869271407
+        },
+        {
+          "years": 19.25,
+          "time_myr": 0.8684192500000032,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5086369103587197,
+          "mean_damage": 0.15053614715621763,
+          "max_shear_pa": 1690830.2353745203,
+          "reserve_j": 1.6185357821578037e+19,
+          "energy_fraction": 0.003621093745250103
+        },
+        {
+          "years": 19.375,
+          "time_myr": 0.8684193750000032,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5091106280896941,
+          "mean_damage": 0.15076805125994835,
+          "max_shear_pa": 1687966.1717086348,
+          "reserve_j": 1.6208023540750666e+19,
+          "energy_fraction": 0.03443804214918577
+        },
+        {
+          "years": 19.5,
+          "time_myr": 0.8684195000000032,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5095798488931489,
+          "mean_damage": 0.15099801708890995,
+          "max_shear_pa": 1685127.9455369138,
+          "reserve_j": 1.6230490205158023e+19,
+          "energy_fraction": 0.012290646550421397
+        },
+        {
+          "years": 19.625,
+          "time_myr": 0.8684196250000032,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5100446402443115,
+          "mean_damage": 0.15122607087466902,
+          "max_shear_pa": 1682315.1898274568,
+          "reserve_j": 1.625276065765148e+19,
+          "energy_fraction": 0.020341834647459582
+        },
+        {
+          "years": 19.75,
+          "time_myr": 0.8684197500000033,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.510505068219587,
+          "mean_damage": 0.15145223835305974,
+          "max_shear_pa": 1679527.5446587948,
+          "reserve_j": 1.6274837685014321e+19,
+          "energy_fraction": 0.0282977366737663
+        },
+        {
+          "years": 19.875,
+          "time_myr": 0.8684198750000033,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5109611975335969,
+          "mean_damage": 0.15167654477626874,
+          "max_shear_pa": 1676764.6570456137,
+          "reserve_j": 1.6296724019374305e+19,
+          "energy_fraction": 0.03631467250739535
+        },
+        {
+          "years": 20.0,
+          "time_myr": 0.8684200000000033,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5114130915750263,
+          "mean_damage": 0.15189901492455882,
+          "max_shear_pa": 1674026.180769613,
+          "reserve_j": 1.631842233957295e+19,
+          "energy_fraction": 0.014188848517408825
+        },
+        {
+          "years": 20.125,
+          "time_myr": 0.8684201250000033,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5118608124413219,
+          "mean_damage": 0.1521196731176446,
+          "max_shear_pa": 1671311.7762153477,
+          "reserve_j": 1.6339935272493079e+19,
+          "energy_fraction": 0.037236171382319744
+        },
+        {
+          "years": 20.25,
+          "time_myr": 0.8684202500000033,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5123044209722865,
+          "mean_damage": 0.15233854322573231,
+          "max_shear_pa": 1668621.1102108983,
+          "reserve_j": 1.6361265394346162e+19,
+          "energy_fraction": 0.00013455820847542058
+        },
+        {
+          "years": 20.375,
+          "time_myr": 0.8684203750000034,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5127439767826102,
+          "mean_damage": 0.15255564868023513,
+          "max_shear_pa": 1665953.8558731454,
+          "reserve_j": 1.638241523192084e+19,
+          "energy_fraction": 0.023188066492256812
+        },
+        {
+          "years": 20.5,
+          "time_myr": 0.8684205000000034,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5131795382933781,
+          "mean_damage": 0.15277101248417596,
+          "max_shear_pa": 1663309.6924575886,
+          "reserve_j": 1.6403387263794051e+19,
+          "energy_fraction": 0.031137845504862052
+        },
+        {
+          "years": 20.625,
+          "time_myr": 0.8684206250000034,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5136111627625926,
+          "mean_damage": 0.15298465722228788,
+          "max_shear_pa": 1660688.3052124542,
+          "reserve_j": 1.6424183921506048e+19,
+          "energy_fraction": 0.039089653236657675
+        },
+        {
+          "years": 20.75,
+          "time_myr": 0.8684207500000034,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.514038906314745,
+          "mean_damage": 0.153196605070823,
+          "max_shear_pa": 1658143.3630844841,
+          "reserve_j": 1.6444807590700595e+19,
+          "energy_fraction": 0.016981847034895022
+        },
+        {
+          "years": 20.875,
+          "time_myr": 0.8684208750000034,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5144628239694753,
+          "mean_damage": 0.15340687780707912,
+          "max_shear_pa": 1655715.5820537123,
+          "reserve_j": 1.6465260612231545e+19,
+          "energy_fraction": 0.025018268671873886
+        },
+        {
+          "years": 21.0,
+          "time_myr": 0.8684210000000034,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5148829696693474,
+          "mean_damage": 0.153615496818655,
+          "max_shear_pa": 1653307.149678996,
+          "reserve_j": 1.6485545283236964e+19,
+          "energy_fraction": 0.03301435995435681
+        },
+        {
+          "years": 21.125,
+          "time_myr": 0.8684211250000035,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5152993963067776,
+          "mean_damage": 0.15382248311244193,
+          "max_shear_pa": 1650917.8230994293,
+          "reserve_j": 1.6505663858181941e+19,
+          "energy_fraction": 0.010949601894523832
+        },
+        {
+          "years": 21.25,
+          "time_myr": 0.8684212500000035,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5157121557501425,
+          "mean_damage": 0.15402785732336147,
+          "max_shear_pa": 1648547.3636112043,
+          "reserve_j": 1.6525618549871129e+19,
+          "energy_fraction": 0.03396650002391932
+        },
+        {
+          "years": 21.375,
+          "time_myr": 0.8684213750000035,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5161212988690985,
+          "mean_damage": 0.1542316397228576,
+          "max_shear_pa": 1646195.53657754,
+          "reserve_j": 1.6545411530432076e+19,
+          "energy_fraction": 0.0032207547014856445
+        },
+        {
+          "years": 21.5,
+          "time_myr": 0.8684215000000035,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5165268755591389,
+          "mean_damage": 0.15443385022715136,
+          "max_shear_pa": 1643862.1113410008,
+          "reserve_j": 1.656504493227033e+19,
+          "energy_fraction": 0.01982027207720862
+        },
+        {
+          "years": 21.625,
+          "time_myr": 0.8684216250000035,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5169289347654172,
+          "mean_damage": 0.15463450840526563,
+          "max_shear_pa": 1641546.8611380488,
+          "reserve_j": 1.6584520848997265e+19,
+          "energy_fraction": 0.027817448932994492
+        },
+        {
+          "years": 21.75,
+          "time_myr": 0.8684217500000035,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5173275245058615,
+          "mean_damage": 0.15483363348682838,
+          "max_shear_pa": 1639249.5630158752,
+          "reserve_j": 1.660384133633155e+19,
+          "energy_fraction": 0.005760528903525807
+        },
+        {
+          "years": 21.875,
+          "time_myr": 0.8684218750000036,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5177226918936051,
+          "mean_damage": 0.1550312443696606,
+          "max_shear_pa": 1636969.9977513235,
+          "reserve_j": 1.662300841297515e+19,
+          "energy_fraction": 0.013762343469940869
+        },
+        {
+          "years": 22.0,
+          "time_myr": 0.8684220000000036,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5181144831587569,
+          "mean_damage": 0.15522735962715684,
+          "max_shear_pa": 1634707.9497719265,
+          "reserve_j": 1.6642024061464687e+19,
+          "energy_fraction": 0.0217381115781854
+        },
+        {
+          "years": 22.125,
+          "time_myr": 0.8684221250000036,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5185029436695348,
+          "mean_damage": 0.15542199751546437,
+          "max_shear_pa": 1632463.2070789665,
+          "reserve_j": 1.6660890228999002e+19,
+          "energy_fraction": 0.014680790101076415
+        },
+        {
+          "years": 22.25,
+          "time_myr": 0.8684222500000036,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.518888117952784,
+          "mean_damage": 0.1556151759804681,
+          "max_shear_pa": 1630235.5611724795,
+          "reserve_j": 1.6679608828243681e+19,
+          "energy_fraction": 0.0076461612790913345
+        },
+        {
+          "years": 22.375,
+          "time_myr": 0.8684223750000036,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5192700497139011,
+          "mean_damage": 0.15580691266458696,
+          "max_shear_pa": 1628024.806978174,
+          "reserve_j": 1.6698181738113305e+19,
+          "energy_fraction": 0.06074855685931355
+        },
+        {
+          "years": 22.5,
+          "time_myr": 0.8684225000000036,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5196487818561839,
+          "mean_damage": 0.15599722491338788,
+          "max_shear_pa": 1625830.742776176,
+          "reserve_j": 1.6716610804532144e+19,
+          "energy_fraction": 0.02361146385766693
+        },
+        {
+          "years": 22.625,
+          "time_myr": 0.8684226250000037,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5200243564996271,
+          "mean_damage": 0.15618612978202362,
+          "max_shear_pa": 1623653.1701315986,
+          "reserve_j": 1.6734897841174022e+19,
+          "energy_fraction": 0.016544073291770885
+        },
+        {
+          "years": 22.75,
+          "time_myr": 0.8684227500000037,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5203968149991823,
+          "mean_damage": 0.15637364404149898,
+          "max_shear_pa": 1621491.8938268188,
+          "reserve_j": 1.6753044630181986e+19,
+          "energy_fraction": 0.0395746654317606
+        },
+        {
+          "years": 22.875,
+          "time_myr": 0.8684228750000037,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5207661979625006,
+          "mean_damage": 0.15655978418477215,
+          "max_shear_pa": 1619346.7217954502,
+          "reserve_j": 1.677105292286845e+19,
+          "energy_fraction": 0.03254969051986577
+        },
+        {
+          "years": 23.0,
+          "time_myr": 0.8684230000000037,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5211325452671732,
+          "mean_damage": 0.1567445664326952,
+          "max_shear_pa": 1617217.4650579637,
+          "reserve_j": 1.6788924440396431e+19,
+          "energy_fraction": 0.04049641784927335
+        },
+        {
+          "years": 23.125,
+          "time_myr": 0.8684231250000037,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5214958960774903,
+          "mean_damage": 0.1569280067397991,
+          "max_shear_pa": 1615103.937658882,
+          "reserve_j": 1.6806660874442494e+19,
+          "energy_fraction": 0.04848345139252801
+        },
+        {
+          "years": 23.25,
+          "time_myr": 0.8684232500000038,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5218562888607302,
+          "mean_damage": 0.15711012079992848,
+          "max_shear_pa": 1613005.956605527,
+          "reserve_j": 1.6824263887841944e+19,
+          "energy_fraction": 0.011371285112171357
+        },
+        {
+          "years": 23.375,
+          "time_myr": 0.8684233750000038,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5222137614029971,
+          "mean_damage": 0.15729092405173015,
+          "max_shear_pa": 1610923.3418082732,
+          "reserve_j": 1.6841735115216873e+19,
+          "energy_fraction": 0.004367236235612981
+        },
+        {
+          "years": 23.5,
+          "time_myr": 0.8684235000000038,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5225683508246206,
+          "mean_damage": 0.15747043168400018,
+          "max_shear_pa": 1608855.916022243,
+          "reserve_j": 1.6859076163587572e+19,
+          "energy_fraction": 0.027345764657201208
+        },
+        {
+          "years": 23.625,
+          "time_myr": 0.8684236250000038,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5229200935951318,
+          "mean_damage": 0.15764865864089378,
+          "max_shear_pa": 1606803.5047904279,
+          "reserve_j": 1.6876288612967811e+19,
+          "energy_fraction": 0.020330470596551176
+        },
+        {
+          "years": 23.75,
+          "time_myr": 0.8684237500000038,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5232690255478298,
+          "mean_damage": 0.15782561962700212,
+          "max_shear_pa": 1604765.936388183,
+          "reserve_j": 1.6893374016944544e+19,
+          "energy_fraction": 0.013251489066650446
+        },
+        {
+          "years": 23.875,
+          "time_myr": 0.8684238750000038,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5236151818939516,
+          "mean_damage": 0.15800132911230047,
+          "max_shear_pa": 1602743.041769059,
+          "reserve_j": 1.6910333903242445e+19,
+          "energy_fraction": 0.021229505256448275
+        },
+        {
+          "years": 24.0,
+          "time_myr": 0.8684240000000039,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5239585972364579,
+          "mean_damage": 0.1581758013369706,
+          "max_shear_pa": 1600734.6545119195,
+          "reserve_j": 1.6927169774273798e+19,
+          "energy_fraction": 0.029247388269811297
+        },
+        {
+          "years": 24.125,
+          "time_myr": 0.8684241250000039,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5242993055834472,
+          "mean_damage": 0.15834905031610255,
+          "max_shear_pa": 1598740.6107693368,
+          "reserve_j": 1.694388310767417e+19,
+          "energy_fraction": 0.03722094738187519
+        },
+        {
+          "years": 24.25,
+          "time_myr": 0.8684242500000039,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5246373403612109,
+          "mean_damage": 0.15852108984427785,
+          "max_shear_pa": 1596762.8215409606,
+          "reserve_j": 1.696047535682429e+19,
+          "energy_fraction": 0.015128186612684131
+        },
+        {
+          "years": 24.375,
+          "time_myr": 0.8684243750000039,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5249727344269387,
+          "mean_damage": 0.15869193350003918,
+          "max_shear_pa": 1594799.243404802,
+          "reserve_j": 1.6976947951358566e+19,
+          "energy_fraction": 0.008099644551908808
+        },
+        {
+          "years": 24.5,
+          "time_myr": 0.8684245000000039,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5253055200810874,
+          "mean_damage": 0.1588615946502487,
+          "max_shear_pa": 1592849.5002991417,
+          "reserve_j": 1.6993302297660645e+19,
+          "energy_fraction": 0.031128575871333334
+        },
+        {
+          "years": 24.625,
+          "time_myr": 0.868424625000004,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5256357290794225,
+          "mean_damage": 0.1590300864543387,
+          "max_shear_pa": 1590913.4387117082,
+          "reserve_j": 1.7009539779346379e+19,
+          "energy_fraction": 0.006005113792603511
+        },
+        {
+          "years": 24.75,
+          "time_myr": 0.868424750000004,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5259633926447423,
+          "mean_damage": 0.1591974218684581,
+          "max_shear_pa": 1588990.907452867,
+          "reserve_j": 1.702566175773461e+19,
+          "energy_fraction": 0.032082363099921504
+        },
+        {
+          "years": 24.875,
+          "time_myr": 0.868424875000004,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5262885414782965,
+          "mean_damage": 0.15936361364951718,
+          "max_shear_pa": 1587081.7576111245,
+          "reserve_j": 1.7041669572306108e+19,
+          "energy_fraction": 0.024999118299790818
+        },
+        {
+          "years": 25.0,
+          "time_myr": 0.8684250000000006,
+          "saturated": 0,
+          "reason": "NOT_SEPARATING",
+          "max_damage": 0.5266112057620687,
+          "mean_damage": 0.15952867435461318,
+          "max_shear_pa": 1585185.8425616026,
+          "reserve_j": 1.7057564540715704e+19,
+          "energy_fraction": 0.01831922186946541
+        }
+      ]
+    }
+  ],
+  "comparisons": [
+    {
+      "coarse_dt": 0.5,
+      "fine_dt": 0.25,
+      "criterion_pass": false,
+      "worst_damage": {
+        "years": 0.5,
+        "damage_normalized_difference": 0.02075337947648906,
+        "traction_normalized_difference": 0.045470912646662795,
+        "saturated_masks_equal": true,
+        "topology_status_equal": true,
+        "reserve_relative_difference": 0.09041922122832603
+      },
+      "worst_traction": {
+        "years": 1.0,
+        "damage_normalized_difference": 0.019833648995854547,
+        "traction_normalized_difference": 0.046930232172570696,
+        "saturated_masks_equal": true,
+        "topology_status_equal": true,
+        "reserve_relative_difference": 0.05971478136945175
+      },
+      "max_reserve_relative_difference": 0.09041922122832603,
+      "common_time_count": 50,
+      "rows": [
+        {
+          "years": 0.5,
+          "damage_normalized_difference": 0.02075337947648906,
+          "traction_normalized_difference": 0.045470912646662795,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.09041922122832603
+        },
+        {
+          "years": 1.0,
+          "damage_normalized_difference": 0.019833648995854547,
+          "traction_normalized_difference": 0.046930232172570696,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.05971478136945175
+        },
+        {
+          "years": 1.5,
+          "damage_normalized_difference": 0.01760364403066056,
+          "traction_normalized_difference": 0.04408888811672179,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.04497924263636437
+        },
+        {
+          "years": 2.0,
+          "damage_normalized_difference": 0.01554551898586054,
+          "traction_normalized_difference": 0.04070851700835492,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.03608738234949275
+        },
+        {
+          "years": 2.5,
+          "damage_normalized_difference": 0.01381515872813166,
+          "traction_normalized_difference": 0.03751737147655571,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.030097164456471648
+        },
+        {
+          "years": 3.0,
+          "damage_normalized_difference": 0.01237913261091339,
+          "traction_normalized_difference": 0.0346592009276614,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.02576947515075399
+        },
+        {
+          "years": 3.5,
+          "damage_normalized_difference": 0.011181382486720737,
+          "traction_normalized_difference": 0.03208257698591369,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.022483698742086063
+        },
+        {
+          "years": 4.0,
+          "damage_normalized_difference": 0.010172694458084275,
+          "traction_normalized_difference": 0.02981446101634764,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.01990169161275387
+        },
+        {
+          "years": 4.5,
+          "damage_normalized_difference": 0.009314320359068595,
+          "traction_normalized_difference": 0.027788451673747466,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.017818703881080047
+        },
+        {
+          "years": 5.0,
+          "damage_normalized_difference": 0.008576522359717897,
+          "traction_normalized_difference": 0.025989173354702185,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.01610298728766263
+        },
+        {
+          "years": 5.5,
+          "damage_normalized_difference": 0.00793650522961642,
+          "traction_normalized_difference": 0.024380795638010863,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.01466569264692987
+        },
+        {
+          "years": 6.0,
+          "damage_normalized_difference": 0.007376666737366311,
+          "traction_normalized_difference": 0.02293274178662948,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.013444614332740587
+        },
+        {
+          "years": 6.5,
+          "damage_normalized_difference": 0.00688327300258218,
+          "traction_normalized_difference": 0.02162132364860662,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.01239484528102775
+        },
+        {
+          "years": 7.0,
+          "damage_normalized_difference": 0.006445487785985582,
+          "traction_normalized_difference": 0.020443693968922344,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.011479303350533848
+        },
+        {
+          "years": 7.5,
+          "damage_normalized_difference": 0.006054665941114423,
+          "traction_normalized_difference": 0.01938029591371092,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.01068150718191735
+        },
+        {
+          "years": 8.0,
+          "damage_normalized_difference": 0.005703837216916308,
+          "traction_normalized_difference": 0.01841529322834675,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.00998160507984894
+        },
+        {
+          "years": 8.5,
+          "damage_normalized_difference": 0.005387325442395952,
+          "traction_normalized_difference": 0.017535609000141218,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.009358889965205442
+        },
+        {
+          "years": 9.0,
+          "damage_normalized_difference": 0.005100465656550035,
+          "traction_normalized_difference": 0.016724554400062246,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.008801473669824695
+        },
+        {
+          "years": 9.5,
+          "damage_normalized_difference": 0.004839390998589599,
+          "traction_normalized_difference": 0.015973287610381835,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.008299783886584422
+        },
+        {
+          "years": 10.0,
+          "damage_normalized_difference": 0.004600870710489868,
+          "traction_normalized_difference": 0.015281873234850318,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.007846025534402333
+        },
+        {
+          "years": 10.5,
+          "damage_normalized_difference": 0.004382185662215765,
+          "traction_normalized_difference": 0.01464317957086232,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.007433786167662269
+        },
+        {
+          "years": 11.0,
+          "damage_normalized_difference": 0.004181031753883957,
+          "traction_normalized_difference": 0.014051662895167289,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.0070577422875667956
+        },
+        {
+          "years": 11.5,
+          "damage_normalized_difference": 0.003995444242960555,
+          "traction_normalized_difference": 0.013502287896214446,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.006713437609872527
+        },
+        {
+          "years": 12.0,
+          "damage_normalized_difference": 0.0038237379353586176,
+          "traction_normalized_difference": 0.01299071656603461,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.006397113481237606
+        },
+        {
+          "years": 12.5,
+          "damage_normalized_difference": 0.003664459518515628,
+          "traction_normalized_difference": 0.012508511527781402,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.0061055776455649635
+        },
+        {
+          "years": 13.0,
+          "damage_normalized_difference": 0.003516349272284447,
+          "traction_normalized_difference": 0.012052795106558826,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.005836101590938241
+        },
+        {
+          "years": 13.5,
+          "damage_normalized_difference": 0.003378310085153935,
+          "traction_normalized_difference": 0.01162634296295532,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.005586339457517204
+        },
+        {
+          "years": 14.0,
+          "damage_normalized_difference": 0.003249382207689777,
+          "traction_normalized_difference": 0.0112260055500104,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.005354263393859497
+        },
+        {
+          "years": 14.5,
+          "damage_normalized_difference": 0.0031287225463584867,
+          "traction_normalized_difference": 0.010849798059725753,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.005138111591509993
+        },
+        {
+          "years": 15.0,
+          "damage_normalized_difference": 0.0030155875766810225,
+          "traction_normalized_difference": 0.010495695929509634,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.0049363461855133055
+        },
+        {
+          "years": 15.5,
+          "damage_normalized_difference": 0.0029093191613140945,
+          "traction_normalized_difference": 0.010161822477037534,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.004747618900582512
+        },
+        {
+          "years": 16.0,
+          "damage_normalized_difference": 0.0028093327147979408,
+          "traction_normalized_difference": 0.009846508526663305,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.004570742828568944
+        },
+        {
+          "years": 16.5,
+          "damage_normalized_difference": 0.0027151072756298467,
+          "traction_normalized_difference": 0.009548264358524043,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.004404669096745502
+        },
+        {
+          "years": 17.0,
+          "damage_normalized_difference": 0.0026261771375846177,
+          "traction_normalized_difference": 0.00926575610471763,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.00424846746548032
+        },
+        {
+          "years": 17.5,
+          "damage_normalized_difference": 0.0025421247627449572,
+          "traction_normalized_difference": 0.008997785789335978,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.0041013101041764855
+        },
+        {
+          "years": 18.0,
+          "damage_normalized_difference": 0.002462574753605673,
+          "traction_normalized_difference": 0.008743274370969969,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.003962457954208368
+        },
+        {
+          "years": 18.5,
+          "damage_normalized_difference": 0.002387188704633836,
+          "traction_normalized_difference": 0.008501247272330618,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.0038312492101330283
+        },
+        {
+          "years": 19.0,
+          "damage_normalized_difference": 0.002315660787565066,
+          "traction_normalized_difference": 0.00827082198043973,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.0037070895451120126
+        },
+        {
+          "years": 19.5,
+          "damage_normalized_difference": 0.0022477139516159372,
+          "traction_normalized_difference": 0.00805119737887297,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.0035894437801508704
+        },
+        {
+          "years": 20.0,
+          "damage_normalized_difference": 0.002183096641227844,
+          "traction_normalized_difference": 0.007841644535400098,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.0034778287544830113
+        },
+        {
+          "years": 20.5,
+          "damage_normalized_difference": 0.0021215799511611344,
+          "traction_normalized_difference": 0.007641138990698125,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.003371807199961401
+        },
+        {
+          "years": 21.0,
+          "damage_normalized_difference": 0.00208833984163459,
+          "traction_normalized_difference": 0.0074471548015604865,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.0032709824584493414
+        },
+        {
+          "years": 21.5,
+          "damage_normalized_difference": 0.002065678263226678,
+          "traction_normalized_difference": 0.007261685538061636,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.003174993910052129
+        },
+        {
+          "years": 22.0,
+          "damage_normalized_difference": 0.0020442316102363134,
+          "traction_normalized_difference": 0.007084193276267565,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.0030835130031871805
+        },
+        {
+          "years": 22.5,
+          "damage_normalized_difference": 0.0020239188360366978,
+          "traction_normalized_difference": 0.006914184419437056,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.0029962397961768145
+        },
+        {
+          "years": 23.0,
+          "damage_normalized_difference": 0.0020046655964660043,
+          "traction_normalized_difference": 0.00675120521454224,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.0029128999352094234
+        },
+        {
+          "years": 23.5,
+          "damage_normalized_difference": 0.0019864035863760288,
+          "traction_normalized_difference": 0.006594837803331827,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.002833242005866391
+        },
+        {
+          "years": 24.0,
+          "damage_normalized_difference": 0.001969069952499569,
+          "traction_normalized_difference": 0.006444666231155564,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.0027570352055290566
+        },
+        {
+          "years": 24.5,
+          "damage_normalized_difference": 0.0019526067726647889,
+          "traction_normalized_difference": 0.006300361050025982,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.002684067292298168
+        },
+        {
+          "years": 25.0,
+          "damage_normalized_difference": 0.0019369605962566427,
+          "traction_normalized_difference": 0.006161599672662881,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.002614142813414173
+        }
+      ]
+    },
+    {
+      "coarse_dt": 0.25,
+      "fine_dt": 0.125,
+      "criterion_pass": true,
+      "worst_damage": {
+        "years": 1.0,
+        "damage_normalized_difference": 0.007845801217549547,
+        "traction_normalized_difference": 0.0185358824765009,
+        "saturated_masks_equal": true,
+        "topology_status_equal": true,
+        "reserve_relative_difference": 0.027163899353133184
+      },
+      "worst_traction": {
+        "years": 1.25,
+        "damage_normalized_difference": 0.007643283770473158,
+        "traction_normalized_difference": 0.018606409435646093,
+        "saturated_masks_equal": true,
+        "topology_status_equal": true,
+        "reserve_relative_difference": 0.023669992267410993
+      },
+      "max_reserve_relative_difference": 0.04958880225107681,
+      "common_time_count": 100,
+      "rows": [
+        {
+          "years": 0.25,
+          "damage_normalized_difference": 0.00549364030281109,
+          "traction_normalized_difference": 0.011454729352111484,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.04958880225107681
+        },
+        {
+          "years": 0.5,
+          "damage_normalized_difference": 0.007303534013342924,
+          "traction_normalized_difference": 0.016000563911532477,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.03868049425983169
+        },
+        {
+          "years": 0.75,
+          "damage_normalized_difference": 0.007830750698445077,
+          "traction_normalized_difference": 0.017870549788989217,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.03186320273425572
+        },
+        {
+          "years": 1.0,
+          "damage_normalized_difference": 0.007845801217549547,
+          "traction_normalized_difference": 0.0185358824765009,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.027163899353133184
+        },
+        {
+          "years": 1.25,
+          "damage_normalized_difference": 0.007643283770473158,
+          "traction_normalized_difference": 0.018606409435646093,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.023669992267410993
+        },
+        {
+          "years": 1.5,
+          "damage_normalized_difference": 0.00734993877541984,
+          "traction_normalized_difference": 0.018369084308988735,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.020989211843455584
+        },
+        {
+          "years": 1.75,
+          "damage_normalized_difference": 0.007024324876207189,
+          "traction_normalized_difference": 0.017970559574043452,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.01884646937987538
+        },
+        {
+          "years": 2.0,
+          "damage_normalized_difference": 0.006694527506469594,
+          "traction_normalized_difference": 0.017490179191415333,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.017086274817308483
+        },
+        {
+          "years": 2.25,
+          "damage_normalized_difference": 0.006374073438540073,
+          "traction_normalized_difference": 0.016972563343678092,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.015630778446153105
+        },
+        {
+          "years": 2.5,
+          "damage_normalized_difference": 0.0060692088049988935,
+          "traction_normalized_difference": 0.01644341380343549,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.014396157862000688
+        },
+        {
+          "years": 2.75,
+          "damage_normalized_difference": 0.005782435097217931,
+          "traction_normalized_difference": 0.01591767515999826,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.013334839874913289
+        },
+        {
+          "years": 3.0,
+          "damage_normalized_difference": 0.005514307128835549,
+          "traction_normalized_difference": 0.015403983314997052,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.012412258120937754
+        },
+        {
+          "years": 3.25,
+          "damage_normalized_difference": 0.005264378684074977,
+          "traction_normalized_difference": 0.014907183399158851,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.01160261874663634
+        },
+        {
+          "years": 3.5,
+          "damage_normalized_difference": 0.005031711524599858,
+          "traction_normalized_difference": 0.014429565667744403,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.010886242236624353
+        },
+        {
+          "years": 3.75,
+          "damage_normalized_difference": 0.0048151528479440375,
+          "traction_normalized_difference": 0.013966007704734268,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.010247828758682336
+        },
+        {
+          "years": 4.0,
+          "damage_normalized_difference": 0.00461348660743377,
+          "traction_normalized_difference": 0.01351867764238299,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.00967528914920018
+        },
+        {
+          "years": 4.25,
+          "damage_normalized_difference": 0.004425514734149427,
+          "traction_normalized_difference": 0.013093669138481364,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.009158935321084341
+        },
+        {
+          "years": 4.5,
+          "damage_normalized_difference": 0.004250098895197174,
+          "traction_normalized_difference": 0.012690036289320413,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.008690906280003026
+        },
+        {
+          "years": 4.75,
+          "damage_normalized_difference": 0.004086179915796406,
+          "traction_normalized_difference": 0.01230012226910233,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.008264752778559236
+        },
+        {
+          "years": 5.0,
+          "damage_normalized_difference": 0.003932784611043794,
+          "traction_normalized_difference": 0.0119296740205806,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.007875131305365017
+        },
+        {
+          "years": 5.25,
+          "damage_normalized_difference": 0.0037890256438460335,
+          "traction_normalized_difference": 0.011578190453586521,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.007517574993789331
+        },
+        {
+          "years": 5.5,
+          "damage_normalized_difference": 0.003654097670149181,
+          "traction_normalized_difference": 0.011241517761068347,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.0071883196431003545
+        },
+        {
+          "years": 5.75,
+          "damage_normalized_difference": 0.0035272716677136606,
+          "traction_normalized_difference": 0.01092021525982342,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.006884169878515639
+        },
+        {
+          "years": 6.0,
+          "damage_normalized_difference": 0.003407888544056714,
+          "traction_normalized_difference": 0.010614973509005195,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.0066023949791236165
+        },
+        {
+          "years": 6.25,
+          "damage_normalized_difference": 0.0032953526455634097,
+          "traction_normalized_difference": 0.010324736070320542,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.0063406469293951755
+        },
+        {
+          "years": 6.5,
+          "damage_normalized_difference": 0.003189125508393287,
+          "traction_normalized_difference": 0.010046390966084446,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.006096895322053056
+        },
+        {
+          "years": 6.75,
+          "damage_normalized_difference": 0.0030887200244850144,
+          "traction_normalized_difference": 0.009776839895176767,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.005866623989980927
+        },
+        {
+          "years": 7.0,
+          "damage_normalized_difference": 0.0029936950736261236,
+          "traction_normalized_difference": 0.009520246951597816,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.005654700113232025
+        },
+        {
+          "years": 7.25,
+          "damage_normalized_difference": 0.0029036507704141012,
+          "traction_normalized_difference": 0.009275713785760645,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.0054542881652379005
+        },
+        {
+          "years": 7.5,
+          "damage_normalized_difference": 0.0028182240536978043,
+          "traction_normalized_difference": 0.009042421308961103,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.005268432568769508
+        },
+        {
+          "years": 7.75,
+          "damage_normalized_difference": 0.0027370847918571917,
+          "traction_normalized_difference": 0.00881960645519477,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.005093516427430143
+        },
+        {
+          "years": 8.0,
+          "damage_normalized_difference": 0.002659932387922226,
+          "traction_normalized_difference": 0.008606616696555026,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.004928618685372511
+        },
+        {
+          "years": 8.25,
+          "damage_normalized_difference": 0.002586492696585063,
+          "traction_normalized_difference": 0.008402826039454497,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.004772918635161568
+        },
+        {
+          "years": 8.5,
+          "damage_normalized_difference": 0.0025165153051266986,
+          "traction_normalized_difference": 0.008207659641542978,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.00462568258180689
+        },
+        {
+          "years": 8.75,
+          "damage_normalized_difference": 0.0024497711210611506,
+          "traction_normalized_difference": 0.00802058886660648,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.0044862525858278615
+        },
+        {
+          "years": 9.0,
+          "damage_normalized_difference": 0.0023860502314750343,
+          "traction_normalized_difference": 0.00784112686673174,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.004354036915480743
+        },
+        {
+          "years": 9.25,
+          "damage_normalized_difference": 0.002325160002379867,
+          "traction_normalized_difference": 0.007668087896158415,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.004228501911863737
+        },
+        {
+          "years": 9.5,
+          "damage_normalized_difference": 0.0022669233897446017,
+          "traction_normalized_difference": 0.007499753053539063,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.004109165028067137
+        },
+        {
+          "years": 9.75,
+          "damage_normalized_difference": 0.0022111774370618398,
+          "traction_normalized_difference": 0.007338043900461281,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.003995588848730462
+        },
+        {
+          "years": 10.0,
+          "damage_normalized_difference": 0.0021577719372508075,
+          "traction_normalized_difference": 0.007182579738385138,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.0038873759321308974
+        },
+        {
+          "years": 10.25,
+          "damage_normalized_difference": 0.002106568239369111,
+          "traction_normalized_difference": 0.007033008424834527,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.0037841643454117036
+        },
+        {
+          "years": 10.5,
+          "damage_normalized_difference": 0.0020574381829955857,
+          "traction_normalized_difference": 0.006888978553127897,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.0036856237863701403
+        },
+        {
+          "years": 10.75,
+          "damage_normalized_difference": 0.0020102631452617037,
+          "traction_normalized_difference": 0.006750169182734901,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.0035914522036029936
+        },
+        {
+          "years": 11.0,
+          "damage_normalized_difference": 0.0019649331873755616,
+          "traction_normalized_difference": 0.006616348816374052,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.003501372841682593
+        },
+        {
+          "years": 11.25,
+          "damage_normalized_difference": 0.0019213462891157773,
+          "traction_normalized_difference": 0.006487255530330707,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.003415131650144427
+        },
+        {
+          "years": 11.5,
+          "damage_normalized_difference": 0.0018794076612038135,
+          "traction_normalized_difference": 0.006362645423999285,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.0033324950049638535
+        },
+        {
+          "years": 11.75,
+          "damage_normalized_difference": 0.001839029126710745,
+          "traction_normalized_difference": 0.0062422910998128816,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.003253247699330642
+        },
+        {
+          "years": 12.0,
+          "damage_normalized_difference": 0.0018001285637407882,
+          "traction_normalized_difference": 0.006125980293303421,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.003177191167232492
+        },
+        {
+          "years": 12.25,
+          "damage_normalized_difference": 0.0017626294025845923,
+          "traction_normalized_difference": 0.00601351463652085,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.0031041419089177197
+        },
+        {
+          "years": 12.5,
+          "damage_normalized_difference": 0.001726460171357025,
+          "traction_normalized_difference": 0.00590470854007513,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.0030339300919215227
+        },
+        {
+          "years": 12.75,
+          "damage_normalized_difference": 0.0016915540848573274,
+          "traction_normalized_difference": 0.005799388180886988,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.002966398305198614
+        },
+        {
+          "years": 13.0,
+          "damage_normalized_difference": 0.0016578486720136842,
+          "traction_normalized_difference": 0.005695959946925877,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.0029014004471359734
+        },
+        {
+          "years": 13.25,
+          "damage_normalized_difference": 0.001625285437823587,
+          "traction_normalized_difference": 0.005595071286017469,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.002838800730931494
+        },
+        {
+          "years": 13.5,
+          "damage_normalized_difference": 0.0015938095561769394,
+          "traction_normalized_difference": 0.005497364344193571,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.002778472793120744
+        },
+        {
+          "years": 13.75,
+          "damage_normalized_difference": 0.0015633695903691236,
+          "traction_normalized_difference": 0.0054026923139525295,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.002720298892968664
+        },
+        {
+          "years": 14.0,
+          "damage_normalized_difference": 0.001533917238473681,
+          "traction_normalized_difference": 0.005310917301320417,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.0026641691920896607
+        },
+        {
+          "years": 14.25,
+          "damage_normalized_difference": 0.0015054071010671688,
+          "traction_normalized_difference": 0.005221909658483163,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.002609981105063446
+        },
+        {
+          "years": 14.5,
+          "damage_normalized_difference": 0.0014777964690771417,
+          "traction_normalized_difference": 0.00513554737545061,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.0025576387130081106
+        },
+        {
+          "years": 14.75,
+          "damage_normalized_difference": 0.0014510451297723992,
+          "traction_normalized_difference": 0.005051715524759927,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.0025070522330977777
+        },
+        {
+          "years": 15.0,
+          "damage_normalized_difference": 0.001425115189131243,
+          "traction_normalized_difference": 0.004970305753900653,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.0024581375378917958
+        },
+        {
+          "years": 15.25,
+          "damage_normalized_difference": 0.0013999709090134482,
+          "traction_normalized_difference": 0.004891215820782215,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.00241081571910029
+        },
+        {
+          "years": 15.5,
+          "damage_normalized_difference": 0.0013755785577310164,
+          "traction_normalized_difference": 0.004814349168035204,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.002365012691064211
+        },
+        {
+          "years": 15.75,
+          "damage_normalized_difference": 0.001351906272761938,
+          "traction_normalized_difference": 0.004739521550790339,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.0023206588297930656
+        },
+        {
+          "years": 16.0,
+          "damage_normalized_difference": 0.0013289239344806414,
+          "traction_normalized_difference": 0.0046667429304476605,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.002277688643894867
+        },
+        {
+          "years": 16.25,
+          "damage_normalized_difference": 0.0013066030498972148,
+          "traction_normalized_difference": 0.004595933434574234,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.0022360404741581723
+        },
+        {
+          "years": 16.5,
+          "damage_normalized_difference": 0.0012849166455000116,
+          "traction_normalized_difference": 0.004527015335092781,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.002195656218916439
+        },
+        {
+          "years": 16.75,
+          "damage_normalized_difference": 0.0012638391683867933,
+          "traction_normalized_difference": 0.004459914946171611,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.002156481082651483
+        },
+        {
+          "years": 17.0,
+          "damage_normalized_difference": 0.0012433463949527157,
+          "traction_normalized_difference": 0.004394562364168222,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.002118463345572336
+        },
+        {
+          "years": 17.25,
+          "damage_normalized_difference": 0.0012234153464746322,
+          "traction_normalized_difference": 0.004330891227424898,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.0020815541521577016
+        },
+        {
+          "years": 17.5,
+          "damage_normalized_difference": 0.0012040242109965238,
+          "traction_normalized_difference": 0.004268838494165092,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.0020457073168664804
+        },
+        {
+          "years": 17.75,
+          "damage_normalized_difference": 0.0011851522709772633,
+          "traction_normalized_difference": 0.004208344236918998,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.002010879145411389
+        },
+        {
+          "years": 18.0,
+          "damage_normalized_difference": 0.0011667798362147153,
+          "traction_normalized_difference": 0.004149351452063047,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.0019770282701623413
+        },
+        {
+          "years": 18.25,
+          "damage_normalized_difference": 0.0011488881816066332,
+          "traction_normalized_difference": 0.004091805883186215,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.001944115498394355
+        },
+        {
+          "years": 18.5,
+          "damage_normalized_difference": 0.0011314594893474528,
+          "traction_normalized_difference": 0.004035655857138053,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.0019121036722249574
+        },
+        {
+          "years": 18.75,
+          "damage_normalized_difference": 0.0011144767952000478,
+          "traction_normalized_difference": 0.003980852131702034,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.0018809575392072688
+        },
+        {
+          "years": 19.0,
+          "damage_normalized_difference": 0.0010979239385123796,
+          "traction_normalized_difference": 0.003927347753929624,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.0018506436326422395
+        },
+        {
+          "years": 19.25,
+          "damage_normalized_difference": 0.0010817855156807221,
+          "traction_normalized_difference": 0.003875097928300451,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.0018211301607737671
+        },
+        {
+          "years": 19.5,
+          "damage_normalized_difference": 0.0010660468367869047,
+          "traction_normalized_difference": 0.0038240598939052665,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.001792386904104145
+        },
+        {
+          "years": 19.75,
+          "damage_normalized_difference": 0.0010506938851613246,
+          "traction_normalized_difference": 0.0037741928099374548,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.0017643851201474166
+        },
+        {
+          "years": 20.0,
+          "damage_normalized_difference": 0.0010357132796441348,
+          "traction_normalized_difference": 0.0037254576488517186,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.0017370974549989712
+        },
+        {
+          "years": 20.25,
+          "damage_normalized_difference": 0.0010210922393404376,
+          "traction_normalized_difference": 0.003677817096590822,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.0017104978611599054
+        },
+        {
+          "years": 20.5,
+          "damage_normalized_difference": 0.0010068185506786342,
+          "traction_normalized_difference": 0.0036312354593469325,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.0016845615211076165
+        },
+        {
+          "years": 20.75,
+          "damage_normalized_difference": 0.0009928805365990723,
+          "traction_normalized_difference": 0.003585561851099845,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.0016592647761483103
+        },
+        {
+          "years": 21.0,
+          "damage_normalized_difference": 0.0009792670277165572,
+          "traction_normalized_difference": 0.00354036535969312,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.0016345850601329377
+        },
+        {
+          "years": 21.25,
+          "damage_normalized_difference": 0.000968253001575492,
+          "traction_normalized_difference": 0.00349616248471604,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.0016105008376529903
+        },
+        {
+          "years": 21.5,
+          "damage_normalized_difference": 0.0009629073298918489,
+          "traction_normalized_difference": 0.0034529214925770367,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.001586991546366378
+        },
+        {
+          "years": 21.75,
+          "damage_normalized_difference": 0.0009577053237499467,
+          "traction_normalized_difference": 0.003410611983899875,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.0015640375431368236
+        },
+        {
+          "years": 22.0,
+          "damage_normalized_difference": 0.0009526421487003334,
+          "traction_normalized_difference": 0.003369204824057229,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.0015416200536971228
+        },
+        {
+          "years": 22.25,
+          "damage_normalized_difference": 0.0009477131734071387,
+          "traction_normalized_difference": 0.0033286720779991535,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.00151972112556783
+        },
+        {
+          "years": 22.5,
+          "damage_normalized_difference": 0.0009429139593628566,
+          "traction_normalized_difference": 0.003288986949083955,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.0014983235839915458
+        },
+        {
+          "years": 22.75,
+          "damage_normalized_difference": 0.0009382402512123633,
+          "traction_normalized_difference": 0.003250123721606997,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.0014774109906601771
+        },
+        {
+          "years": 23.0,
+          "damage_normalized_difference": 0.0009336879676450915,
+          "traction_normalized_difference": 0.0032120577067953,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.0014569676050288313
+        },
+        {
+          "years": 23.25,
+          "damage_normalized_difference": 0.0009292531928170034,
+          "traction_normalized_difference": 0.003174765191994399,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.001436978348032545
+        },
+        {
+          "years": 23.5,
+          "damage_normalized_difference": 0.0009249321682667788,
+          "traction_normalized_difference": 0.003138223392859865,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.001417428768032051
+        },
+        {
+          "years": 23.75,
+          "damage_normalized_difference": 0.0009207212852948565,
+          "traction_normalized_difference": 0.0031024104083256935,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.0013983050088320777
+        },
+        {
+          "years": 24.0,
+          "damage_normalized_difference": 0.0009166170777735738,
+          "traction_normalized_difference": 0.003067305178175276,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.001379593779624809
+        },
+        {
+          "years": 24.25,
+          "damage_normalized_difference": 0.0009126162153613726,
+          "traction_normalized_difference": 0.0030328835068735944,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.0013612823267281876
+        },
+        {
+          "years": 24.5,
+          "damage_normalized_difference": 0.0009087154970952027,
+          "traction_normalized_difference": 0.0029991253538877716,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.0013433584069925356
+        },
+        {
+          "years": 24.75,
+          "damage_normalized_difference": 0.0009049118453364202,
+          "traction_normalized_difference": 0.002966016810408951,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.0013258102627635513
+        },
+        {
+          "years": 25.0,
+          "damage_normalized_difference": 0.0009012023000967706,
+          "traction_normalized_difference": 0.002933539784890764,
+          "saturated_masks_equal": true,
+          "topology_status_equal": true,
+          "reserve_relative_difference": 0.0013086265985762032
+        }
+      ]
+    }
+  ],
+  "seconds": 84.65328109599795
+}
