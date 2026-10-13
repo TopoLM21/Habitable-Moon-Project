@@ -1,0 +1,56 @@
+{
+  "active_physics": {
+    "activation_energy_j_mol": 0.0,
+    "alpha": 0.0,
+    "conduction": false,
+    "damage_frozen": true,
+    "material_sink": false,
+    "mechanical_maxwell_and_drag_heat": true,
+    "phase_birth": false,
+    "temperature_dependent_relaxation_implemented": true,
+    "thermal_ports": false
+  },
+  "committed_steps": 0,
+  "diagnostic_pressure_pa": 0.0,
+  "equality_solver": {
+    "enforced_condition": "J q = 0 on every contact",
+    "failure_before_geometry_and_energy": true,
+    "nonnegative_reaction_fit_relative": 0.060964320576237685,
+    "normal_rank": 190,
+    "normal_rows": 190
+  },
+  "finite_geometry_unaccepted": {
+    "independent_material_vertices_required": true,
+    "maximum_neighbor_overlap_km2": 8.063057322831976e-08,
+    "positive_neighbor_overlaps": 10,
+    "sum_triangle_area_deficit_km2": 3.6704365773861625,
+    "swept_nopenetration_proved": false,
+    "void_filling_required_for_this_diagnostic": false
+  },
+  "new_planetary_steps": 0,
+  "original_artificial_pressure_pa": 1000000000.0,
+  "reduced_model_work": {
+    "basal_heat_j": 889727418226846.2,
+    "contact_work_j": -0.0009942056836359204,
+    "full_thermal_damage_balance_checked": false,
+    "maxwell_heat_j": 1040033072.7672181,
+    "relative": 7.317165217175897e-13,
+    "residual_j": -608.1161932943164,
+    "scale_j": 831081676093440.0
+  },
+  "seconds": 1.3951684780004143,
+  "source": "/workspace/simplified-genesis-edges-01/edge_step_1.json",
+  "source_sha256": "e24c19964f20d0704e6cc457e399aef6b0e6bcbfee04c0493daaa7ee92b44c7c",
+  "status": "LINEAR_UNILATERAL_OPENING_DIAGNOSED_NOT_A_FINITE_STEP",
+  "unilateral_solver": {
+    "closed_rows": 131,
+    "complementarity_relative": 2.5781311281671626e-17,
+    "enforced_condition": "J q >= 0; lambda >= 0; lambda*(J q) = 0",
+    "maximum_first_order_opening_m": 0.5879198175549917,
+    "minimum_first_order_gap_m": -2.200510583776448e-15,
+    "minimum_multiplier_j": 0.0,
+    "opening_rows": 59,
+    "relative_difference_from_closed_candidate": 0.2114899012001886,
+    "stationarity_relative": 7.13329600846057e-16
+  }
+}
