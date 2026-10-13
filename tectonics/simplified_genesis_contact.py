@@ -7,6 +7,7 @@ Only motions with a whole-time geometric certificate are committed. General
 noncommuting contact paths stop rather than silently sample their endpoints.
 """
 import numpy as np
+from fractions import Fraction
 from scipy.linalg import block_diag,null_space
 from scipy.optimize import nnls
 from scipy.spatial import ConvexHull
@@ -55,6 +56,57 @@ def boundary_rows(mesh,owner,poses):
             x=poses[a]@point;r=np.cross(x,n);row=np.zeros(3*count);row[3*a:3*a+3]=-r;row[3*b:3*b+3]=r
             rows.append(row);contacts.append(dict(owners=[a,b],point_unit=x.tolist(),normal_a_to_b=n.tolist()))
     return np.asarray(rows).reshape(-1,3*count),contacts
+
+
+def packing_rigidity(mesh,owner,poses):
+    """Sufficient, witnessed obstruction to relative motion, not a lock rule.
+
+    In a completely filled fixed-area tiling, nonnegative normal gap rates
+    integrate to zero. On an edge this forces relative angular velocity to be
+    parallel to its great-circle normal. Two nonparallel shared edge planes
+    therefore lock a pair. A connected graph of such pairs leaves only common
+    rotation. Finite nearby motions must preserve those same overlapping edge
+    planes; subdivision cannot bypass this local geometric obstruction.
+
+    Missing witnesses mean unknown, never permission to freeze the domains.
+    Fraction predicates refer to the exact binary coordinates of saved vertices.
+    The floating gate only selects well-separated witnesses for this sufficient
+    certificate; it is not a friction/geometry acceptance coefficient.
+    """
+    owner=np.asarray(owner,int);poses=np.asarray(poses,float);count=len(poses)
+    if not np.array_equal(poses,np.repeat(poses[:1],count,axis=0)):
+        return dict(status='unknown_noncommon_placement',common_rotation_only=False)
+    reference_partition(mesh)
+    groups={}
+    for a,b,u,v in mesh.shared_edges:
+        if owner[a]==owner[b]:continue
+        pair=tuple(sorted((int(owner[a]),int(owner[b]))))
+        groups.setdefault(pair,[]).append((int(u),int(v)))
+    parent=list(range(count));witnesses=[]
+    def root(a):
+        while parent[a]!=a:a=parent[a]
+        return a
+    def cross(a,b):
+        return [a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]]
+    def exact_normal(edge):
+        return cross(*[[Fraction(float(x)) for x in mesh.vertices[i]] for i in edge])
+    for pair,edges in sorted(groups.items()):
+        if root(pair[0])==root(pair[1]):continue
+        normals=np.array([np.cross(*mesh.vertices[list(edge)]) for edge in edges])
+        normals/=np.linalg.norm(normals,axis=1)[:,None]
+        scores=np.sum(np.cross(normals[0],normals)**2,axis=1);j=int(np.argmax(scores))
+        if scores[j]<=ROUND:continue
+        exact=cross(exact_normal(edges[0]),exact_normal(edges[j]))
+        if not any(exact):continue
+        parent[root(pair[1])]=root(pair[0])
+        witnesses.append(dict(owners=list(pair),edges=[list(edges[0]),list(edges[j])],
+                              sine_between_planes=float(np.sqrt(scores[j])),
+                              exact_cross=[str(x) for x in exact]))
+    components=[[k for k in range(count) if root(k)==r] for r in sorted({root(k) for k in range(count)})]
+    locked=len(components)==1
+    return dict(status='geometrically_rigid_filled_partition' if locked else 'relative_mobility_not_excluded',
+                common_rotation_only=locked,components=components,witnesses=witnesses,
+                relative_dof=0 if locked else None,subdivision_can_unlock=False if locked else None)
 
 
 def hemisphere_axis(mesh,owner):
@@ -110,6 +162,9 @@ def closed_partition_step(mesh,owner,poses,inertias,drags,torques,old_omega,dt,r
     count=len(I);B=block_diag(*[x+dt*y for x,y in zip(I,D)]);rhs=np.concatenate([x@w+dt*f for x,w,f in zip(I,old,tau)])
     free=np.linalg.solve(B,rhs);J,contacts=boundary_rows(mesh,owner,poses)
     axis=hemisphere_axis(mesh,owner) if count==2 else None
+    mobility=packing_rigidity(mesh,owner,poses)
+    if count==2 and axis is None and not mobility['common_rotation_only']:
+        raise ContactPathUnsupported('PAIR_RELATIVE_MOBILITY_NOT_CERTIFIED')
     # Exact common coordinates remove roundoff drift between locked copies.
     if count==1 or (count==2 and axis is None):
         w=np.linalg.solve(I.sum(axis=0)+dt*D.sum(axis=0),np.sum(np.einsum('kij,kj->ki',I,old)+dt*tau,axis=0));new=np.repeat(w[None,:],count,axis=0)
@@ -143,5 +198,5 @@ def closed_partition_step(mesh,owner,poses,inertias,drags,torques,old_omega,dt,r
     if abs(balance)>1e-10*max(abs(K0)+abs(K1)+abs(work)+abs(drag)+N,1.):raise ValueError('CONTACT_WORK_BALANCE')
     for item,value in zip(contacts,multipliers):item['normal_impulse_n_s']=float(value/radius_m)
     ledger=dict(kinetic_before=K0,kinetic_after=K1,external_work=work,drag=drag,numerical_rotation=N,rotation_balance=balance,momentum_relative=float(error))
-    proof=dict(law='unbonded_frictionless_hard_contact',normal_impulses=contacts,contact_work_j=contact_work,net_internal_angular_impulse=angular_pair_sum.tolist(),whole_step=certificate,free_relative_omega_norm=float(np.linalg.norm(free.reshape(count,3)-free.reshape(count,3)[0])),accepted_relative_omega_norm=float(np.linalg.norm(new-new[0])))
+    proof=dict(law='unbonded_frictionless_hard_contact',normal_impulses=contacts,contact_work_j=contact_work,net_internal_angular_impulse=angular_pair_sum.tolist(),whole_step=certificate,mobility=mobility,free_relative_omega_norm=float(np.linalg.norm(free.reshape(count,3)-free.reshape(count,3)[0])),accepted_relative_omega_norm=float(np.linalg.norm(new-new[0])))
     return new,end,ledger,proof

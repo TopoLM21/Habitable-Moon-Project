@@ -1,0 +1,154 @@
+{
+  "accepted_relative_omega": 0.0,
+  "artifacts": {
+    "after_two_splits.json": "1250192b7ba68d280cb5b857915b0ef3d5366cc96271bc056ff76a8830aa6aff",
+    "common_motion_endpoint.json": "68b9cbef6ff4fcfff1f52f7dff4830b4464bbed4578bd372fcbc4ca0254ff2d6"
+  },
+  "common_omega_rad_s": [
+    0.0,
+    0.0,
+    2.0000000000000063e-14
+  ],
+  "contact_work_j": 0.02846753852750372,
+  "free_relative_omega": 9.694688758838618e-15,
+  "initial_damage": 0.0,
+  "momentum_relative": 1.1788581585124678e-16,
+  "new_real_intervals": 0,
+  "normal_constraint_singular_values": [
+    10.57465974748044,
+    9.78422403940864,
+    9.648676211840195,
+    6.089733380274537,
+    5.628648276790753,
+    5.530103476798115,
+    1.6191441384889446e-15,
+    5.950254161574528e-16,
+    5.477001358816019e-16
+  ],
+  "output_bytes": 8948784,
+  "owners_after_each_split": [
+    1,
+    2,
+    3
+  ],
+  "positive_relative_motion_scenario": false,
+  "restart_exact": true,
+  "rigidity": {
+    "common_rotation_only": true,
+    "components": [
+      [
+        0,
+        1,
+        2
+      ]
+    ],
+    "relative_dof": 0,
+    "status": "geometrically_rigid_filled_partition",
+    "subdivision_can_unlock": false,
+    "witnesses": [
+      {
+        "edges": [
+          [
+            55,
+            207
+          ],
+          [
+            621,
+            622
+          ]
+        ],
+        "exact_cross": [
+          "646169849019974617354448344301227049544999541511591501872221353/52656145834278593348959013841835216159447547700274555627155488768",
+          "-66337146269328957832560524184714128055647540328567867608517323/6582018229284824168619876730229402019930943462534319453394436096",
+          "548439879957333045901663348168349233044827212345584079229499717/26328072917139296674479506920917608079723773850137277813577744384"
+        ],
+        "owners": [
+          0,
+          1
+        ],
+        "sine_between_planes": 0.9938252398690974
+      },
+      {
+        "edges": [
+          [
+            14,
+            168
+          ],
+          [
+            18,
+            246
+          ]
+        ],
+        "exact_cross": [
+          "-333963467918036037478612910185181561264199692238757220337250239/26328072917139296674479506920917608079723773850137277813577744384",
+          "195505619419454087290889850047894735030894756598425079155715223/13164036458569648337239753460458804039861886925068638906788872192",
+          "-26829453723747698662431035262217173273354711823/2923003274661805836407369665432566039311865085952"
+        ],
+        "owners": [
+          0,
+          2
+        ],
+        "sine_between_planes": 1.0
+      }
+    ]
+  },
+  "rotation_balance_j": -0.02846753852750372,
+  "seconds": 1.462324026000033,
+  "split_times_myr": [
+    2.5e-05,
+    5e-05
+  ],
+  "status": "BLOCKED_BY_RIGID_FULL_SPHERE_PACKING",
+  "subdivision_diagnostics": [
+    {
+      "candidate_step_seconds": 788940000.0,
+      "depth": 0,
+      "executed_free_steps": 0,
+      "free_candidate_contact_free_prefix_seconds": 0.0,
+      "minimum_initial_normal_velocity_m_s": -3.364377915260185e-08
+    },
+    {
+      "candidate_step_seconds": 49308750.0,
+      "depth": 4,
+      "executed_free_steps": 0,
+      "free_candidate_contact_free_prefix_seconds": 0.0,
+      "minimum_initial_normal_velocity_m_s": -3.3643779151962177e-08
+    },
+    {
+      "candidate_step_seconds": 192612.3046875,
+      "depth": 12,
+      "executed_free_steps": 0,
+      "free_candidate_contact_free_prefix_seconds": 0.0,
+      "minimum_initial_normal_velocity_m_s": -3.364377897797355e-08
+    },
+    {
+      "candidate_step_seconds": 47.02448844909668,
+      "depth": 24,
+      "executed_free_steps": 0,
+      "free_candidate_contact_free_prefix_seconds": 0.0,
+      "minimum_initial_normal_velocity_m_s": -3.3643063715543e-08
+    },
+    {
+      "candidate_step_seconds": 0.000717536750016734,
+      "depth": 40,
+      "executed_free_steps": 0,
+      "free_candidate_contact_free_prefix_seconds": 0.0,
+      "minimum_initial_normal_velocity_m_s": -1.405538947055081e-08
+    }
+  ],
+  "whole_allowance_j": 2242376865792.0,
+  "whole_balance_j": -7155144474.434717,
+  "whole_interval_certificate": {
+    "all_domain_pairs": true,
+    "endpoint_sampling": false,
+    "initial": {
+      "axis": null,
+      "kind": "common_rotation_of_partition"
+    },
+    "kind": "common_isometry_all_pairs_all_time",
+    "time_interval_seconds": [
+      0.0,
+      788940000.0000001
+    ]
+  }
+}

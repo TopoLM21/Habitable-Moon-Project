@@ -28,3 +28,19 @@ def hemisphere_synthetic():
     f=np.array([[4,i,(i+1)%4] for i in range(4)]+[[5,(i+1)%4,i] for i in range(4)])
     for _ in range(3):v,f=_subdivide(v,f)
     return synthetic(mesh_view(v,f),axis=2,width=.2)
+
+
+def irregular_three_domain_synthetic():
+    """Two manufactured stress rings; damage/selector choose successive cuts.
+
+    Starts with one owner and D=0; no daughter ownership or separating kick.
+    This is a negative mobility control, not an admissible moving-plate example.
+    """
+    model=synthetic();memory=np.zeros_like(model.state['memory'])
+    x=model.mesh.centroids[:,0];weak=(abs(x-.35)<.1)|(abs(x+.35)<.1)
+    memory[weak,0,:2]=.03;model.state['memory']=memory.tolist()
+    # Common imposed torque demonstrates a moving whole sphere, not a global
+    # zero-velocity clamp. The original x-dependent differential torque remains.
+    torque=np.array(model.config['face_torque']);torque[:,2]+=2e18
+    model.config['face_torque']=torque.tolist()
+    return SimplifiedGenesis(model.config,model.state)

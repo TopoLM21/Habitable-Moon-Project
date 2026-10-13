@@ -1,7 +1,7 @@
 """Opt-in effective Genesis: constrained thermal moments and rotating domains.
 
 This is a new model, not continuation of the resolved volume equations.
-Material topology is fixed between cuts; small rotations have no contact/remesh.
+Material topology is fixed between cuts; contact requires a whole-path certificate.
 """
 from copy import deepcopy
 from dataclasses import asdict,replace
