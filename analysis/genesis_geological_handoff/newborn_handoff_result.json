@@ -1,0 +1,275 @@
+{
+  "source_sha256": "7dd22796ca517d8866505b7bf374847f03300117fc5eda0c012f27712035648b",
+  "manufactured_boundary": true,
+  "source_unchanged": true,
+  "newborn_profiles": 80,
+  "mapped_nodes": 240,
+  "initial_mass_H_exact": true,
+  "mapping": {
+    "mass": {
+      "active_solid_kg": 1.3172243565124662e+21,
+      "active_deep_kg": 1.9883968205916015e+24,
+      "active_other_interior_kg": 4.083395505188629e+22,
+      "active_water_kg": 1.1267196205563112e+21,
+      "total_kg": 2.0316747196205566e+24,
+      "archive_double_counted": false
+    },
+    "composition": {
+      "active": "undifferentiated silicate, noncontinental carrier",
+      "chemical_fractions": null,
+      "continental_fraction": 0.0,
+      "differentiation_active": false
+    },
+    "H": {
+      "active_total_j": 4.3741446509157975e+30,
+      "mapping_change_j": 0.0,
+      "model": "inherited EOS/ports/fixed reference graph",
+      "source_archive_is_not_active_inventory": true
+    },
+    "momentum": {
+      "source_angular_kg_m2_s": [
+        -38244154504.0,
+        40265104690.31299,
+        -376836972288.0
+      ],
+      "source_linear_kg_m_s": [
+        1854299389.389935,
+        67222945.97996895,
+        2270320354.575102
+      ],
+      "mapped_shell_proxy": {
+        "angular_momentum_kg_m2_s": [
+          52215224322.59477,
+          185358700564.46887,
+          -672244476047.5508
+        ],
+        "linear_momentum_kg_m_s": [
+          1888364.305674261,
+          -163907.17646059726,
+          340503.0492735737
+        ],
+        "kinetic_energy_j": 3.7156351992614645e-09
+      },
+      "mapping_angular_change_kg_m2_s": [
+        90459378826.59477,
+        145093595874.15588,
+        -295407503759.5508
+      ],
+      "mapping_linear_change_kg_m_s": [
+        -1852411025.0842607,
+        -67386853.15642954,
+        -2269979851.5258284
+      ],
+      "approximation": "shared nodal SI momenta -> fitted quasi-static region rotations; signed change recorded, no impulse conservation claim"
+    },
+    "energy": {
+      "source_kinetic_j": 1030.9710575519064,
+      "mapped_kinetic_proxy_j": 3.7156351992614645e-09,
+      "signed_model_change_kinetic_j": -1030.9710575481906,
+      "retired_elastic_j": 1.4282795829306923e+22,
+      "source_passive_reserve_j": 2.5483709014207944e+18,
+      "prior_passive_kinetic_projection_j": 0.0,
+      "mapping_heat_j": 0.0,
+      "total_mechanical_energy_conserved": false,
+      "source_edge_fracture_reserve_j": 0.0,
+      "signed_active_mechanical_model_change_j": -1.4285344200208343e+22
+    },
+    "Maxwellmemory": {
+      "status": "full nodal and moment source archived; active mechanics retired at approved geological model change",
+      "heat_j": 0.0
+    }
+  },
+  "restart_exact": true,
+  "steps": [
+    {
+      "time_myr": 0.8991002500000653,
+      "active_enthalpy_before_j": 4.3741446509157975e+30,
+      "active_enthalpy_after_j": 4.374144639411049e+30,
+      "created_mass_kg": 0.0,
+      "recycled_mass_kg": 0.0,
+      "created_enthalpy_j": 0.0,
+      "recycled_enthalpy_j": 0.0,
+      "donor_specific_enthalpy_j_kg": 2137902.815957974,
+      "transport_residual_j": 0.0,
+      "transport_allowance_j": 1.868719654646579e+16,
+      "ports": {
+        "dt_seconds": 7889400.001102764,
+        "area_m2": 351259828403324.3,
+        "ports": [
+          {
+            "name": "radiogenic",
+            "recipient": 2720,
+            "energy_into_thermal_j": 8.00782303291959e+19,
+            "scope": "external nuclear energy; no nuclear inventory state"
+          },
+          {
+            "name": "tidal",
+            "recipient": 2720,
+            "energy_into_thermal_j": 1.8431884138107062e+18,
+            "scope": "paired orbital dissipation"
+          },
+          {
+            "name": "stellar_absorbed",
+            "recipient": 2721,
+            "energy_into_thermal_j": 6.227673081528108e+23,
+            "scope": "external radiation"
+          },
+          {
+            "name": "giant_absorbed",
+            "recipient": 2721,
+            "energy_into_thermal_j": 0.0,
+            "scope": "external radiation; zero if coefficient is zero"
+          },
+          {
+            "name": "OLR",
+            "recipient": 2721,
+            "energy_into_thermal_j": -6.34353979077094e+23,
+            "scope": "outgoing radiation"
+          }
+        ],
+        "net_thermal_input_j": -1.150474950554021e+22,
+        "orbital_debit_j": 1.8431884138107062e+18,
+        "orbit_before": {
+          "time_myr": 0.8991000000000653,
+          "semimajor_axis_km": 773185.950405056,
+          "eccentricity": 4.15136434909517e-05,
+          "dissipated_energy_j": 4.681937707431062e+25
+        },
+        "orbit_after": {
+          "time_myr": 0.8991002500000653,
+          "semimajor_axis_km": 773185.9504050548,
+          "eccentricity": 4.1513625341776226e-05,
+          "dissipated_energy_j": 4.681937891749903e+25
+        },
+        "source_surface_endpoint_k": 283.49268906508075,
+        "source_stage_clock": "dose integrated over interval; state clock advanced by subsequent conduction",
+        "maximum_local_energy_residual_j": 184378769553664.0,
+        "endpoint_roundoff_allowance_j": 9012125142497764.0,
+        "routing": "legacy mantle source -> deep; legacy radiation -> surface water/atmosphere",
+        "new_source_coefficients": false,
+        "water_phase_model": "existing Genesis condensation",
+        "audit_includes_port_dose_and_root_lattice_roundoff": true
+      },
+      "local_max_residual_j": 389276115937280.0,
+      "max_local_residual_over_allowance": 0.022021300980401944,
+      "global_residual_j": 577308281813248.0,
+      "global_allowance_j": 1.2850994518105725e+17,
+      "deep_before_k": 1645.3050799774865,
+      "deep_after_k": 1645.3050802303894,
+      "surface_before_k": 283.4951326930057,
+      "surface_after_k": 283.49474390113744,
+      "max_temperature_change_k": 0.003432950370324761,
+      "max_carrier_melt_fraction": 0.0,
+      "total_mass_residual_kg": 0.0,
+      "mass_roundoff_allowance_kg": 8802861056.0,
+      "mechanical_heat_j": 0.0,
+      "inactive_memory_heat_j": 0.0,
+      "conduction_iterations": 2,
+      "parcel_transport": {
+        "recycled_mass": 0.0,
+        "recycled_H": 0.0,
+        "created_mass": 0.0,
+        "created_H": 0.0,
+        "donor_h": 2137902.815957974,
+        "moved_profiles": 0,
+        "recycled_parts": 0
+      }
+    },
+    {
+      "time_myr": 0.8991005000000654,
+      "active_enthalpy_before_j": 4.374144639411049e+30,
+      "active_enthalpy_after_j": 4.374144627909774e+30,
+      "created_mass_kg": 0.0,
+      "recycled_mass_kg": 0.0,
+      "created_enthalpy_j": 0.0,
+      "recycled_enthalpy_j": 0.0,
+      "donor_specific_enthalpy_j_kg": 2137902.81643006,
+      "transport_residual_j": 0.0,
+      "transport_allowance_j": 1.868719654646579e+16,
+      "ports": {
+        "dt_seconds": 7889400.001102764,
+        "area_m2": 351259828403324.3,
+        "ports": [
+          {
+            "name": "radiogenic",
+            "recipient": 2720,
+            "energy_into_thermal_j": 8.007823032341402e+19,
+            "scope": "external nuclear energy; no nuclear inventory state"
+          },
+          {
+            "name": "tidal",
+            "recipient": 2720,
+            "energy_into_thermal_j": 1.8431868021794752e+18,
+            "scope": "paired orbital dissipation"
+          },
+          {
+            "name": "stellar_absorbed",
+            "recipient": 2721,
+            "energy_into_thermal_j": 6.227673081528108e+23,
+            "scope": "external radiation"
+          },
+          {
+            "name": "giant_absorbed",
+            "recipient": 2721,
+            "energy_into_thermal_j": 0.0,
+            "scope": "external radiation; zero if coefficient is zero"
+          },
+          {
+            "name": "OLR",
+            "recipient": 2721,
+            "energy_into_thermal_j": -6.343505057381144e+23,
+            "scope": "outgoing radiation"
+          }
+        ],
+        "net_thermal_input_j": -1.1501276168178014e+22,
+        "orbital_debit_j": 1.8431868021794752e+18,
+        "orbit_before": {
+          "time_myr": 0.8991002500000653,
+          "semimajor_axis_km": 773185.9504050548,
+          "eccentricity": 4.1513625341776226e-05,
+          "dissipated_energy_j": 4.681937891749903e+25
+        },
+        "orbit_after": {
+          "time_myr": 0.8991005000000654,
+          "semimajor_axis_km": 773185.9504050536,
+          "eccentricity": 4.151360719260868e-05,
+          "dissipated_energy_j": 4.681938076068584e+25
+        },
+        "source_surface_endpoint_k": 283.4923010056291,
+        "source_stage_clock": "dose integrated over interval; state clock advanced by subsequent conduction",
+        "maximum_local_energy_residual_j": 185996182665472.0,
+        "endpoint_roundoff_allowance_j": 9012125142497764.0,
+        "routing": "legacy mantle source -> deep; legacy radiation -> surface water/atmosphere",
+        "new_source_coefficients": false,
+        "water_phase_model": "existing Genesis condensation",
+        "audit_includes_port_dose_and_root_lattice_roundoff": true
+      },
+      "local_max_residual_j": 1513888630099968.0,
+      "max_local_residual_over_allowance": 0.022832159195465117,
+      "global_residual_j": 1704044119046400.0,
+      "global_allowance_j": 1.2850994518105725e+17,
+      "deep_before_k": 1645.3050802303896,
+      "deep_after_k": 1645.3050804832926,
+      "surface_before_k": 283.4947439011374,
+      "surface_after_k": 283.4943558786854,
+      "max_temperature_change_k": 0.0034329111633724096,
+      "max_carrier_melt_fraction": 0.0,
+      "total_mass_residual_kg": 0.0,
+      "mass_roundoff_allowance_kg": 8802861056.0,
+      "mechanical_heat_j": 0.0,
+      "inactive_memory_heat_j": 0.0,
+      "conduction_iterations": 2,
+      "parcel_transport": {
+        "recycled_mass": 0.0,
+        "recycled_H": 0.0,
+        "created_mass": 0.0,
+        "created_H": 0.0,
+        "donor_h": 2137902.81643006,
+        "moved_profiles": 0,
+        "recycled_parts": 0
+      }
+    }
+  ],
+  "output": "/workspace/genesis-newborn-handoff-01",
+  "seconds": 2.3861249089968624
+}

@@ -20,6 +20,7 @@ def prepare_nodal_retirement(model,fracture_edges):
     elastic=sum(.5*b['old']@b['H']@b['old'] for b in bb)
     points=X[model.mesh.faces].mean(axis=1);velocity=v.reshape(-1,6)[model.mesh.faces,:3].mean(axis=1)
     weights=np.array(model.config['face_mass_kg']);omegas=[];errors=[]
+    for born in model.state.get('born_material',[]):weights[born['face']]+=born['mass_kg']
     for p in range(owner.max()+1):
         ids=owner==p;r=points[ids];u=velocity[ids];w=weights[ids]
         normal=np.eye(3)*np.sum(w*np.sum(r*r,axis=1))-np.einsum('f,fi,fj->ij',w,r,r)

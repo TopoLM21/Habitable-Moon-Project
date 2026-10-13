@@ -36,7 +36,7 @@ def topology_mesh(model):
     return mesh, level
 
 
-def eligibility(model, *, experimental_nodal_retirement=False, partition_owner=None):
+def eligibility(model, *, experimental_nodal_retirement=False, partition_owner=None, experimental_parcel_mapping=False):
     """Read-only readiness inspection; does not demand unknown chemical fractions."""
     c,s = model.config,model.state; reasons=[]
     if c.get('mechanical_mode')=='shared_nodal_moments' and not experimental_nodal_retirement:
@@ -46,7 +46,13 @@ def eligibility(model, *, experimental_nodal_retirement=False, partition_owner=N
     if not np.allclose(s['rotation'],np.eye(3)[None],rtol=0,atol=1e-14):
         reasons.append('Finite domain rotations need a conservative spatial remap')
     if c.get('edge_strips'): reasons.append('Independent edge geometry needs a spatial remap')
-    if s.get('born_material'): reasons.append('Variable-size newborn solid profiles need a parcel mapping')
+    parcel_nodes=None
+    if s.get('born_material') and not experimental_parcel_mapping: reasons.append('Variable-size newborn solid profiles need a parcel mapping')
+    if experimental_parcel_mapping:
+        try:
+            from .experimental_geological_parcels import layout
+            parcel_nodes=layout(model)
+        except (ValueError,KeyError) as e:reasons.append(str(e))
     try:
         mesh,_ = topology_mesh(model)
         displacement = float(np.max(np.linalg.norm(mesh.centroids-model.mesh.centroids,axis=1))*c['radius_km'])
@@ -88,8 +94,8 @@ def eligibility(model, *, experimental_nodal_retirement=False, partition_owner=N
         optional_future_fields=['elemental fractions','differentiation/depletion laws','continental generation'],
         canonical_face_relocation_max_km=displacement,
         geometry_contract='same face IDs/adjacency; preserve extensive mass/H, replace footprint geometry explicitly',
-        source_thermal_node_count=len(c['mass']), mapped_solid_node_count=int(nodes.size),
-        interior_nodes_retained=len(c['mass'])-nodes.size-1,
+        source_thermal_node_count=len(c['mass']), mapped_solid_node_count=int(nodes.size if parcel_nodes is None else sum(map(len,parcel_nodes))),
+        interior_nodes_retained=len(c['mass'])-(nodes.size if parcel_nodes is None else sum(map(len,parcel_nodes)))-1,
         new_physical_parameters_required=[],
         mantle_forcing='project existing face torque through existing face drag; not recovered 3-D fluid velocity')
 
@@ -102,13 +108,13 @@ class ThermalGeologicalContinuation(GeologicalContinuation):
     FORMAT = 'geological-source-enthalpy-2'
 
     @classmethod
-    def from_source(cls, model, mantle_omega=None, *, experimental_nodal_retirement=False, fracture_edges=None):
+    def from_source(cls, model, mantle_omega=None, *, experimental_nodal_retirement=False, fracture_edges=None, experimental_parcel_mapping=False):
         partition_owner=None;nodal_projection=None
         if experimental_nodal_retirement:
             from .experimental_nodal_handoff import prepare_nodal_retirement
             nodal_projection=prepare_nodal_retirement(model,fracture_edges)
             partition_owner=nodal_projection['owner']
-        readiness=eligibility(model,experimental_nodal_retirement=experimental_nodal_retirement,partition_owner=partition_owner)
+        readiness=eligibility(model,experimental_nodal_retirement=experimental_nodal_retirement,partition_owner=partition_owner,experimental_parcel_mapping=experimental_parcel_mapping)
         if not readiness['eligible']: raise ValueError('; '.join(readiness['reasons']))
         c,s=model.config,model.state; mesh,level=topology_mesh(model)
         owner=np.array(s['owner'] if partition_owner is None else partition_owner,dtype=np.int32); plates=[]
@@ -118,6 +124,11 @@ class ThermalGeologicalContinuation(GeologicalContinuation):
             plates.append(Plate(i,int(np.flatnonzero(owner==i)[0]),axis,speed))
         mass=np.array(c['mass']); E=np.array(s['energy']); nodes=np.array(c['solid_nodes'])
         face_mass=mass[nodes].sum(axis=1); face_H=E[nodes].sum(axis=1); T=model.temperature(E)
+        parcel_state=None
+        if experimental_parcel_mapping:
+            from .experimental_geological_parcels import layout,initialize
+            parcel_nodes=layout(model);parcel_state=initialize(model,parcel_nodes)
+            face_mass=np.array([total(mass[row]) for row in parcel_nodes]);face_H=np.array([total(E[row]) for row in parcel_nodes])
         p=GenesisParameters(**c['thermal_parameters']); tides=TidalParameters(**c['tidal_parameters'])
         T[-1]=water_temperature(E[-1]/mass[-1],p)
         forcing='explicit supplied scenario field'
@@ -178,6 +189,7 @@ class ThermalGeologicalContinuation(GeologicalContinuation):
                     'mapping_heat_j':0.,'total_mechanical_energy_conserved':False},
                 Maxwellmemory={'status':'exact frozen source; active detailed constitutive memory retired','heat_j':0.}),
             inactive_modules=['continental differentiation','topography','plumes','topology changes'],import_report=bundle.report)
+        if parcel_state is not None:record['material_parcels']=parcel_state
         if nodal_projection is not None:
             record['experimental_nodal_retirement']=nodal_projection
             record['mapping']['energy']['source_edge_fracture_reserve_j']=float(s.get('experimental_edge_fracture_reserve_j',0.))
@@ -196,33 +208,44 @@ class ThermalGeologicalContinuation(GeologicalContinuation):
         c=self.source['config']; inv=self.record['thermal_inventory']
         nodes=np.asarray(c['solid_nodes']); mass=np.array(inv['mass_kg']); E=np.array(inv['energy_j'])
         oldmass=mass.copy(); oldE=E.copy(); inherited=source_index>=0; newborn=~inherited
-        sources=source_index[inherited]
-        if len(np.unique(sources)) != len(sources): raise ValueError('Thermal parcel duplication')
-        survived=np.zeros(self.mesh.cell_count,bool); survived[sources]=True
-        loss_nodes=nodes[~survived].ravel()
-        recycled_mass=total(mass[loss_nodes]); recycled_H=total(E[loss_nodes])
-        generated_mass=new.state.oceanic_volume_km3[newborn]*DENSITY*1e9
-        # Draw first from the old donor. Recycling returns its own H, never donor temperature.
-        donor_h=float(E[-2]/mass[-2]); created_mass=total(generated_mass)
-        if created_mass >= mass[-2]: raise ValueError('Deep donor exhausted before recycling')
-        created_H=created_mass*donor_h
-        mass[nodes[inherited]]=oldmass[nodes[sources]]; E[nodes[inherited]]=oldE[nodes[sources]]
-        shares=oldmass[nodes[newborn]]/oldmass[nodes[newborn]].sum(axis=1)[:,None]
-        mass[nodes[newborn]]=generated_mass[:,None]*shares
-        E[nodes[newborn]]=mass[nodes[newborn]]*donor_h
-        mass[-2]=oldmass[-2]-created_mass+recycled_mass
-        E[-2]=oldE[-2]-created_H+recycled_H
+        parcels=self.record.get('material_parcels')
+        if parcels is not None:
+            from .experimental_geological_parcels import transport
+            generated=new.state.oceanic_volume_km3*DENSITY*1e9
+            transfer=transport(parcels,mass,E,source_index,generated,new.state.time_myr)
+            recycled_mass=transfer['recycled_mass'];recycled_H=transfer['recycled_H']
+            created_mass=transfer['created_mass'];created_H=transfer['created_H'];donor_h=transfer['donor_h']
+            face_nodes=parcels['nodes'];nodes=np.array([i for row in face_nodes for i in row])
+        else:
+            sources=source_index[inherited]
+            if len(np.unique(sources)) != len(sources): raise ValueError('Thermal parcel duplication')
+            survived=np.zeros(self.mesh.cell_count,bool); survived[sources]=True
+            loss_nodes=nodes[~survived].ravel()
+            recycled_mass=total(mass[loss_nodes]); recycled_H=total(E[loss_nodes])
+            generated_mass=new.state.oceanic_volume_km3[newborn]*DENSITY*1e9
+            # Draw first from the old donor. Recycling returns its own H, never donor temperature.
+            donor_h=float(E[-2]/mass[-2]); created_mass=total(generated_mass)
+            if created_mass >= mass[-2]: raise ValueError('Deep donor exhausted before recycling')
+            created_H=created_mass*donor_h
+            mass[nodes[inherited]]=oldmass[nodes[sources]]; E[nodes[inherited]]=oldE[nodes[sources]]
+            shares=oldmass[nodes[newborn]]/oldmass[nodes[newborn]].sum(axis=1)[:,None]
+            mass[nodes[newborn]]=generated_mass[:,None]*shares
+            E[nodes[newborn]]=mass[nodes[newborn]]*donor_h
+            mass[-2]=oldmass[-2]-created_mass+recycled_mass
+            E[-2]=oldE[-2]-created_H+recycled_H
         # Independently compare donor transfers to native geological counters.
         budget=audit['material']
         for actual,expected in [(created_mass,budget['generated_volume_km3']*DENSITY*1e9),
                                 (recycled_mass,budget['recycled_volume_km3']*DENSITY*1e9)]:
             if not math.isclose(actual,expected,rel_tol=2e-14,abs_tol=1.):
                 raise ValueError('Native/thermal material transaction mismatch')
-        if not np.allclose(mass[nodes].sum(axis=1),new.state.oceanic_volume_km3*DENSITY*1e9,rtol=2e-14,atol=1.):
+        mapped_face_mass=np.array([total(mass[row]) for row in face_nodes]) if parcels is not None else mass[nodes].sum(axis=1)
+        if not np.allclose(mapped_face_mass,new.state.oceanic_volume_km3*DENSITY*1e9,rtol=2e-14,atol=1.):
             raise ValueError('Native/thermal face masses differ')
         # Node-local transport roundoff cannot hide behind the huge interior reservoir.
-        local_residual=E[nodes[inherited]]-oldE[nodes[sources]]
-        if np.any(local_residual): raise ValueError('Inherited parcel H changed during transport')
+        if parcels is None:
+            local_residual=E[nodes[inherited]]-oldE[nodes[sources]]
+            if np.any(local_residual): raise ValueError('Inherited parcel H changed during transport')
         transport_residual=math.fsum([*E,*(-oldE)])
         transport_allowance=16*total(abs(np.spacing(x)) for x in np.r_[E,oldE])
         if abs(transport_residual)>transport_allowance: raise ValueError('Transport enthalpy balance')
@@ -267,6 +290,10 @@ class ThermalGeologicalContinuation(GeologicalContinuation):
             max_carrier_melt_fraction=float(np.max(phase(T[nodes],c['solidus'],c['liquidus']))),
             total_mass_residual_kg=mass_residual,mass_roundoff_allowance_kg=mass_allowance,mechanical_heat_j=0.,
             inactive_memory_heat_j=0.,conduction_iterations=thermal['iterations'])
+        if parcels is not None:
+            from .experimental_geological_parcels import sync_thermal
+            sync_thermal(parcels,mass,final)
+            thermal_row['parcel_transport']=transfer
         self.record['thermal_inventory']=dict(time_myr=target,mass_kg=mass.tolist(),energy_j=final.tolist(),orbit=asdict(orbit))
         # Match native scalar clock/temperature to the active source reservoir, not a second EOS.
         new.thermal=replace(new.thermal,time_myr=target,system_age_myr=p.system_age_at_start_myr+target,mantle_temperature_k=float(T[-2]))
