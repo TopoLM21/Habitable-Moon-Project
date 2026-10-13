@@ -33,6 +33,10 @@ class Driven:
             tri=X[vertices];normal=np.cross(tri[1]-tri[0],tri[2]-tri[0]);area=np.linalg.norm(normal)/2;normal/=2*area
             t=tri[1]-tri[0];t/=np.linalg.norm(t);frame=np.column_stack((t,np.cross(normal,t),normal))
             b0,b1=audit.independent_strain_operators(tri,frame,N)
+            # Frozen reduced-integration path: averaging before B.T C B loses
+            # angular strain variance (local rank 11 rather than 12). New
+            # passive controls use integrated_vector_operator.first_step;
+            # do not silently reinterpret existing memory/checkpoint evidence.
             b0=np.einsum('p,pij->ij',wa,b0);b1=np.einsum('p,pij->ij',wa,b1)
             B.extend([b0+b1/l for l in lam]);volume=np.linalg.det(tri.T)*(1-inner**3)/6
             weights.extend([volume/2]*2);cc=audit.isotropic_matrix(CONFIG['young_pa'],CONFIG['poisson'],D[f],.02)

@@ -1,0 +1,145 @@
+{
+  "code_base": "510aef4bbf33cba9ee7d157a9706d4a09660a9ef",
+  "source_sha256": "94fbbb3cb88a15147d33ab04c8f791470dd92e3d73cf8cba4afc0f361cd583fc",
+  "analytic": [
+    {
+      "faces": 80,
+      "rotated_grid": false,
+      "affine_strain_relative_max": 1.164670302474663e-15,
+      "rigid_strain_scaled_max": 3.638588843608457e-15,
+      "fields": {
+        "0": {
+          "energy_norm_strain_error": 0.3155864825773338,
+          "reduced_energy_loss_fraction": 0.014607669342746155
+        },
+        "1": {
+          "energy_norm_strain_error": 0.2537228671302045,
+          "reduced_energy_loss_fraction": 2.220446049250313e-16
+        }
+      },
+      "local_rank_reduced": 11,
+      "local_rank_full": 12,
+      "spurious_mode_reduced_to_full_energy": 1.793619119546565e-30
+    },
+    {
+      "faces": 320,
+      "rotated_grid": false,
+      "affine_strain_relative_max": 2.541098841762901e-15,
+      "rigid_strain_scaled_max": 7.8369605862336e-15,
+      "fields": {
+        "0": {
+          "energy_norm_strain_error": 0.15862949364403955,
+          "reduced_energy_loss_fraction": 0.003588621365237188
+        },
+        "1": {
+          "energy_norm_strain_error": 0.12563387025731793,
+          "reduced_energy_loss_fraction": -4.440892098500626e-16
+        }
+      },
+      "local_rank_reduced": 11,
+      "local_rank_full": 12,
+      "spurious_mode_reduced_to_full_energy": 3.83205884406601e-30
+    },
+    {
+      "faces": 1280,
+      "rotated_grid": false,
+      "affine_strain_relative_max": 6.246867986000465e-15,
+      "rigid_strain_scaled_max": 1.7913052768533944e-14,
+      "fields": {
+        "0": {
+          "energy_norm_strain_error": 0.07938560865059974,
+          "reduced_energy_loss_fraction": 0.0008924833193656445
+        },
+        "1": {
+          "energy_norm_strain_error": 0.06263814201433804,
+          "reduced_energy_loss_fraction": 0.0
+        }
+      },
+      "local_rank_reduced": 11,
+      "local_rank_full": 12,
+      "spurious_mode_reduced_to_full_energy": 2.773410602997812e-29
+    },
+    {
+      "faces": 320,
+      "rotated_grid": true,
+      "affine_strain_relative_max": 2.752857078576476e-15,
+      "rigid_strain_scaled_max": 8.278664279988954e-15,
+      "fields": {
+        "0": {
+          "energy_norm_strain_error": 0.16347080246356743,
+          "reduced_energy_loss_fraction": 0.0035798101125115167
+        },
+        "1": {
+          "energy_norm_strain_error": 0.13099785913299933,
+          "reduced_energy_loss_fraction": 3.3306690738754696e-16
+        }
+      },
+      "local_rank_reduced": 11,
+      "local_rank_full": 12,
+      "spurious_mode_reduced_to_full_energy": 5.6738313606824636e-30
+    }
+  ],
+  "probes": [
+    {
+      "level": 2,
+      "integrated": false,
+      "momentum": 1.2190441950855941e-14,
+      "energy_relative": 2.203876030876323e-15,
+      "elastic_j": 3.271033833150108e+20,
+      "work_j": 6.542073963328614e+20,
+      "operator_arrays_bytes": 1387520
+    },
+    {
+      "level": 2,
+      "integrated": true,
+      "momentum": 1.3511040204482613e-14,
+      "energy_relative": 6.186980593576455e-16,
+      "elastic_j": 3.177766729488545e+20,
+      "work_j": 6.35553957302292e+20,
+      "operator_arrays_bytes": 2503680
+    },
+    {
+      "level": 3,
+      "integrated": false,
+      "momentum": 6.567219113989204e-14,
+      "energy_relative": 3.887749847741629e-15,
+      "elastic_j": 3.539977437845375e+20,
+      "work_j": 7.079961694549145e+20,
+      "operator_arrays_bytes": 5550080
+    },
+    {
+      "level": 3,
+      "integrated": true,
+      "momentum": 6.823609888605703e-14,
+      "energy_relative": 4.661795148125557e-15,
+      "elastic_j": 3.514522560944938e+20,
+      "work_j": 7.029051890702567e+20,
+      "operator_arrays_bytes": 10014720
+    },
+    {
+      "level": 4,
+      "integrated": true,
+      "momentum": 3.6465085938681025e-13,
+      "energy_relative": 9.090557858001895e-16,
+      "elastic_j": 3.6046157945850056e+20,
+      "work_j": 7.209238533398963e+20,
+      "operator_arrays_bytes": 40058880
+    }
+  ],
+  "stress_comparisons": {
+    "integrated_2_3": {
+      "absolute_rms": 191924.7998974187,
+      "reference_rms": 2172421.3771088487,
+      "relative_l2": 0.08834602804030608
+    },
+    "integrated_3_4": {
+      "absolute_rms": 89161.90648974093,
+      "reference_rms": 2209762.657810003,
+      "relative_l2": 0.04034908734411564
+    },
+    "quadrature_change_2": 0.04719561069563987,
+    "quadrature_change_3": 0.012054646228760181
+  },
+  "seconds": 13.491653892000613,
+  "scope": "Analytic kinematic fields, then at most five passive first-step solves; no damage advancement"
+}
