@@ -32,4 +32,5 @@ def step(M,D,F,v0,dt,blocks):
     totals['momentum_relative']=float(np.linalg.norm(residual)/max(np.linalg.norm(force),np.linalg.norm(F),1.))
     totals['balance_relative']=abs(totals['balance'])/max(max(abs(x) for x in totals.values()),1.)
     if min(totals[k] for k in ['maxwell','numerical_memory','numerical_kinetic','drag']) < -1e-12: raise ValueError('negative dissipation')
-    return dict(velocity=v,displacement_increment=du,memory=np.array(mem),internal_force=force,rows=rows,ledger=totals)
+    memory=np.array(mem) if len({len(e) for e in mem})==1 else mem
+    return dict(velocity=v,displacement_increment=du,memory=memory,internal_force=force,rows=rows,ledger=totals)

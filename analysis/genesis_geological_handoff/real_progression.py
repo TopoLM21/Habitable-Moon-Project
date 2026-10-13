@@ -31,7 +31,16 @@ def observe(model, elapsed):
     L=s.get('last_ledger',{}); P=L.get('phase',{})
     p=GenesisParameters(**c['thermal_parameters'])
     liquid=model.mass[-1]-vapor_column_kg_m2(T[-1],p)*p.area_m2
-    return dict(liquid_water_mass_kg=float(liquid),persistent_covers_all_faces=bool(persistent.all()),time_myr=s['time_myr'],wall_seconds=elapsed,steps=s['steps'],domains=len(s['omega']),
+    extra={}
+    if c.get('mechanical_mode')=='shared_nodal_moments':
+        X=np.asarray(c['nodal']['X']);du=(np.asarray(s['nodal_displacement'])-np.asarray(c['nodal']['initial_displacement'])).reshape(-1,6)[:,:3]
+        radial=np.einsum('ni,ni->n',du,X)/np.sum(X*X,axis=1)
+        extra.update(radial_strain_mean=float(radial.mean()),radial_strain_min=float(radial.min()),radial_strain_max=float(radial.max()),nodal_momentum_relative=L.get('momentum_relative'))
+        if 'stress_pa' in s:
+            from tectonics.genesis_shell import principal_tensile
+            tensile=principal_tensile(np.asarray(s['stress_pa']))
+            extra.update(tensile_mean_pa=float(tensile.mean()),tensile_std_pa=float(tensile.std()),tensile_max_pa=float(tensile.max()))
+    return dict(**extra,liquid_water_mass_kg=float(liquid),persistent_covers_all_faces=bool(persistent.all()),time_myr=s['time_myr'],wall_seconds=elapsed,steps=s['steps'],domains=len(s['omega']),
         solid_min_k=float(T[nodes].min()),solid_mean_k=float(T[nodes].mean()),solid_max_k=float(T[nodes].max()),
         deep_k=float(T[-2]),water_k=float(T[-1]),
         resolved_crystal_mass_kg=float(crystals[:-2].sum()),deep_crystal_mass_kg=float(crystals[-2]),

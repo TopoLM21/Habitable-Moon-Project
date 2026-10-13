@@ -85,6 +85,9 @@ class SimplifiedGenesis:
 
     def validate(self):
         s=self.state;n=self.nf
+        if self.config.get('mechanical_mode')=='shared_nodal_moments':
+            from .simplified_genesis_nodal import validate
+            validate(self)
         if 'edge_strips' in self.config:
             from .simplified_genesis_edges import validate
             validate(self)
@@ -171,6 +174,9 @@ class SimplifiedGenesis:
     def advance(self,years):
         """Transactional physical-model step. Fixed parameters; no retry/dt sweep."""
         if not np.isfinite(years) or not 0<years<=self.config['max_step_years']:raise ValueError('STEP_RANGE')
+        if self.config.get('mechanical_mode')=='shared_nodal_moments':
+            from .simplified_genesis_nodal import advance
+            return advance(self,years)
         if 'edge_strips' in self.config:
             from .simplified_genesis_edges import advance
             return advance(self,years)

@@ -39,6 +39,8 @@ def topology_mesh(model):
 def eligibility(model):
     """Read-only readiness inspection; does not demand unknown chemical fractions."""
     c,s = model.config,model.state; reasons=[]
+    if c.get('mechanical_mode')=='shared_nodal_moments':
+        reasons.append('Shared nodal deformation and momentum require an explicit handoff map')
     if len(np.unique(s['owner'])) < 2: reasons.append('No multiple domains from the selector yet')
     if not np.allclose(s['rotation'],np.eye(3)[None],rtol=0,atol=1e-14):
         reasons.append('Finite domain rotations need a conservative spatial remap')
