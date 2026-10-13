@@ -9,9 +9,9 @@ import json
 from pathlib import Path
 import numpy as np
 from scipy.spatial.transform import Rotation
-from .genesis import GenesisParameters,SECONDS_PER_MYR
+from .genesis import GenesisParameters,SECONDS_PER_MYR,vapor_column_kg_m2
 from .genesis_tides import TidalParameters,TidalOrbitState,tidal_strain_cycle
-from .genesis_thermal_ports import apply_ports
+from .genesis_thermal_ports import apply_ports,water_temperature
 from .genesis_implicit_enthalpy import solve,invert
 from .genesis_onset_support import NonlocalLoading
 from .genesis_shell import principal_tensile
@@ -54,7 +54,27 @@ class SimplifiedGenesis:
             setattr(self,name,np.array(config[name]))
         self.solid_nodes=self.solid_nodes.astype(int);self.shell=config['shell'];self.faults=config['faults']
         self.smoother=NonlocalLoading(self.mesh,config['radius_km'],config['regularization_km'])
+        mode=config.get('water_eos','hot_vapor')
+        if mode not in ('hot_vapor','genesis_condensation'):raise ValueError('WATER_EOS_MODE')
+        self.water_parameters=None
+        if mode=='genesis_condensation':
+            if config['source_mode']!='genesis':raise ValueError('CONDENSATION_REQUIRES_GENESIS_PORTS')
+            p=GenesisParameters(**config['thermal_parameters']);p.validate()
+            if self.cp[-1]!=p.water_heat_capacity_j_kg_k or self.latent[-1]!=0 or self.offset[-1]!=p.water_latent_heat_j_kg:
+                raise ValueError('WATER_EOS_PARAMETERS')
+            self.water_parameters=p
         self.validate()
+
+    def with_condensation(self):
+        """Explicit opt-in; all inventories, physical coefficients and history unchanged."""
+        c=deepcopy(self.config);c['water_eos']='genesis_condensation'
+        result=type(self)(c,self.state)
+        if self.water_parameters is None:
+            T=self.temperature(self.state['energy'])[-1]
+            if T<647.096:raise ValueError('Cannot reinterpret a cold legacy vapor-only checkpoint')
+            if not np.isclose(T,result.temperature(result.state['energy'])[-1],rtol=0,atol=1e-10):
+                raise ValueError('Water EOS opt-in changes source temperature')
+        return result
 
     def validate(self):
         s=self.state;n=self.nf
@@ -89,7 +109,9 @@ class SimplifiedGenesis:
         if self.config['source_mode']=='genesis' and s['orbit']['time_myr']!=s['time_myr']:raise ValueError('CLOCK')
 
     def temperature(self,E):
-        return invert(np.asarray(E)/self.mass,self.cp,self.latent,np.full(len(E),self.config['solidus']),np.full(len(E),self.config['liquidus']),self.offset)
+        T=invert(np.asarray(E)/self.mass,self.cp,self.latent,np.full(len(E),self.config['solidus']),np.full(len(E),self.config['liquidus']),self.offset)
+        if self.water_parameters is not None:T[-1]=water_temperature(float(E[-1])/self.mass[-1],self.water_parameters)
+        return T
 
     def scale(self,damage):
         return self.shell['residual_stiffness']+(1-self.shell['residual_stiffness'])*(1-np.asarray(damage))**2
@@ -101,7 +123,8 @@ class SimplifiedGenesis:
         supported={x['node'] for x in self.config.get('phase_cells',[])}
         if any(T[i]<=self.config['solidus'] and i not in supported for i in np.flatnonzero(nonsolid)):raise ValueError('UNMAPPED_SOLIDIFICATION_UNSUPPORTED')
         if any(T[x['node']]>self.config['solidus'] for x in self.state.get('born_material',[])):raise ValueError('LOAD_BEARING_REMELT_UNSUPPORTED')
-        if self.config['source_mode']=='genesis' and T[-1]<647.096:raise ValueError('SURFACE_PHASE_REQUIRES_NEXT_MODEL')
+        if self.config['source_mode']=='genesis' and self.water_parameters is None and T[-1]<647.096:raise ValueError('SURFACE_PHASE_REQUIRES_NEXT_MODEL')
+        if self.water_parameters is not None and T[-1]<273.16:raise ValueError('ICE_EOS_UNSUPPORTED')
 
     def constitutive(self,T,damage,old,oldT,dt):
         p=self.shell;nodes=T[self.solid_nodes]
@@ -147,11 +170,11 @@ class SimplifiedGenesis:
         s=self.state;nexts=deepcopy(s);inertia=self.material_inertia();target=s['time_myr']+years/1e6;dt=(target-s['time_myr'])*SECONDS_PER_MYR
         E0=np.array(s['energy']);oldT=self.temperature(E0);old=np.array(s['memory']);oldD=np.array(s['damage']);owner=np.array(s['owner'])
         if self.config['source_mode']=='genesis':
-            sourced,orbit,ports=apply_ports(dict(time_myr=s['time_myr'],mass_kg=self.mass.tolist(),energy_j=E0.tolist()),GenesisParameters(**self.config['thermal_parameters']),TidalParameters(**self.config['tidal_parameters']),TidalOrbitState(**s['orbit']),target)
+            sourced,orbit,ports=apply_ports(dict(time_myr=s['time_myr'],mass_kg=self.mass.tolist(),energy_j=E0.tolist()),GenesisParameters(**self.config['thermal_parameters']),TidalParameters(**self.config['tidal_parameters']),TidalOrbitState(**s['orbit']),target,allow_condensation=self.water_parameters is not None)
             Esource=np.array(sourced['energy_j']);nexts['orbit']=asdict(orbit)
         else:
             Esource=E0+dt*np.array(self.config['synthetic_power_w']);ports=dict(net_thermal_input_j=float(np.sum(Esource-E0)))
-        thermal=solve(self.mass,Esource/self.mass,self.cp,self.latent,np.full(len(E0),self.config['solidus']),np.full(len(E0),self.config['liquidus']),self.offset,self.config['edges'],dt)
+        thermal=solve(self.mass,Esource/self.mass,self.cp,self.latent,np.full(len(E0),self.config['solidus']),np.full(len(E0),self.config['liquidus']),self.offset,self.config['edges'],dt,water_parameters=self.water_parameters)
         base=self.mass*thermal['specific_h'];T=self.temperature(base)
         # Angular dynamics on the saved material chart. Sphere fixes translation;
         # net force is supported by a zero-work radial/centering reaction.
@@ -186,7 +209,7 @@ class SimplifiedGenesis:
             _,_,bp,bs=self.born_response(T,oldD,oldT,dt)
             pred=(pred*self.G[:,0,0,None]+bs)/(self.G[:,0,0]+bp['volume'])[:,None]
             tensile=np.array([principal_tensile(pred+t) for t in tide]);load=np.mean(np.maximum(tensile/self.shell['tensile_strength_pa']-1,0)**2,axis=0)/self.shell['damage_timescale_myr']
-            # Positive source-style regularization; hot-water branch has no wet weakening.
+            # Preserve the existing tensile damage law; no new wet weakening or pore-pressure law.
             load=self.smoother.apply(load,np.ones(self.nf,bool))
             hot=np.clip((T[self.solid_nodes].mean(axis=1)-700)/650,0,1)
             heal=1/self.shell['cold_healing_timescale_myr']+hot**4/self.shell['hot_healing_timescale_myr'];rate=load+heal;eq=load/rate
@@ -215,6 +238,13 @@ class SimplifiedGenesis:
         system=PlateSystem(owner,plates);args=self.config['selector'];cut=select_starter_cut(self.mesh,system,eligible,damage,**args)
         fracture=0.;split_momentum_error=0.
         if cut is not None:
+            # In the opt-in continuation, persistence can rank cells but cannot
+            # turn globally superthreshold damage into a localized weak belt.
+            # Keep the inherited damage threshold; do not invent a contrast cutoff.
+            if self.water_parameters is not None:
+                parent_cells=owner==owner[int(cut[0])]
+                if np.all(damage[parent_cells]>=self.faults['activation_damage']):
+                    raise ValueError('DIFFUSE_DAMAGE_NOT_A_LOCALIZED_BELT')
             output,event=split_starter_band(self.mesh,system,cut,**args,time_myr=target)
             if output is None:raise ValueError('SELECTED_SPLIT_FAILED')
             newowner=output.cell_plate;newomega=[];newrotation=[]
@@ -255,6 +285,23 @@ class SimplifiedGenesis:
         allowance=float(np.sum(32*(np.spacing(E)+np.spacing(E0))))+1e-8*max(abs(ledger['thermal_work']),ledger['maxwell'],abs(ledger['external_work']),1.)
         if abs(balance)>allowance:raise ValueError('SIMPLIFIED_WHOLE_ENERGY_BALANCE')
         ledger.update(phase=phase_report,whole_balance_j=balance,whole_allowance_j=allowance,moment_balance_relative=float(np.max(abs(memory_residual)/memory_scale)))
+        if self.water_parameters is not None:
+            p=self.water_parameters
+            vapor0=self.mass[-1]*vapor_column_kg_m2(oldT[-1],p)/p.water_column_kg_m2
+            vapor1=self.mass[-1]*vapor_column_kg_m2(Tnew[-1],p)/p.water_column_kg_m2
+            water_change=float(E[-1]-E0[-1])
+            sensible=self.mass[-1]*p.water_heat_capacity_j_kg_k*(Tnew[-1]-oldT[-1])
+            latent=p.water_latent_heat_j_kg*(vapor1-vapor0)
+            water_residual=water_change-sensible-latent
+            water_allowance=64*(abs(np.spacing(E[-1]))+abs(np.spacing(E0[-1])))
+            if abs(water_residual)>water_allowance:raise ValueError('WATER_ENTHALPY_IDENTITY')
+            ledger['water']=dict(eos='existing Genesis condensation',temperature_before_k=float(oldT[-1]),temperature_after_k=float(Tnew[-1]),
+                total_mass_kg=float(self.mass[-1]),vapor_mass_kg=float(vapor1),liquid_mass_kg=float(self.mass[-1]-vapor1),
+                sensible_change_j=float(sensible),latent_inventory_change_j=float(latent),enthalpy_change_j=water_change,
+                residual_j=float(water_residual),roundoff_allowance_j=float(water_allowance),added_latent_heat_j=0.,
+                conduction_residual_over_tolerance=float(np.max(abs(thermal['residual_k'])/thermal['tolerance_k'])),
+                wet_weakening_added=False)
+            ledger['water_ports']=ports
         if reactions:ledger['center_constraint_reaction_n']=reactions
         nexts.update(time_myr=target,energy=E.tolist(),memory=new.tolist(),damage=damage.tolist(),candidate_age=age.tolist(),omega=omega,rotation=rotation,stress_pa=sigma.tolist(),last_ledger=ledger,contact=contact,steps=s['steps']+1)
         self.state=nexts

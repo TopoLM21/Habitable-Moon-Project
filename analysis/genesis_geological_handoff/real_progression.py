@@ -15,6 +15,7 @@ from tectonics.genesis_implicit_enthalpy import phase
 from tectonics.genesis_geological_thermal import ThermalGeologicalContinuation, eligibility
 from tectonics.simplified_genesis import SimplifiedGenesis
 from tectonics.mesh import connected_components
+from tectonics.genesis import GenesisParameters,vapor_column_kg_m2
 
 
 def sha(path):return hashlib.sha256(Path(path).read_bytes()).hexdigest()
@@ -28,7 +29,9 @@ def observe(model, elapsed):
     areas=model.mesh.physical_cell_areas_km2(c['radius_km'])
     crystals=model.mass*(1-phase(T,c['solidus'],c['liquidus']))
     L=s.get('last_ledger',{}); P=L.get('phase',{})
-    return dict(time_myr=s['time_myr'],wall_seconds=elapsed,steps=s['steps'],domains=len(s['omega']),
+    p=GenesisParameters(**c['thermal_parameters'])
+    liquid=model.mass[-1]-vapor_column_kg_m2(T[-1],p)*p.area_m2
+    return dict(liquid_water_mass_kg=float(liquid),persistent_covers_all_faces=bool(persistent.all()),time_myr=s['time_myr'],wall_seconds=elapsed,steps=s['steps'],domains=len(s['omega']),
         solid_min_k=float(T[nodes].min()),solid_mean_k=float(T[nodes].mean()),solid_max_k=float(T[nodes].max()),
         deep_k=float(T[-2]),water_k=float(T[-1]),
         resolved_crystal_mass_kg=float(crystals[:-2].sum()),deep_crystal_mass_kg=float(crystals[-2]),
@@ -77,16 +80,21 @@ def checkpoint(model,root):
     temp=root/'checkpoint.pending.json';model.save(temp);temp.replace(root/'checkpoint.json')
 
 
-def run(source,output,budget_seconds=280.):
+def run(source,output,budget_seconds=280.,*,condensation=False,step_years=None):
     if not 5<budget_seconds<=280:raise ValueError('Budget must be >5 and <=280 seconds')
     source=Path(source);root=Path(output);root.mkdir(parents=True,exist_ok=False)
     start=time.monotonic();source_hash=sha(source);model=SimplifiedGenesis.load(source)
     if model.config['source_mode']!='genesis':raise ValueError('A real inherited Genesis source is required')
+    original_config=deepcopy(model.config)
+    if condensation:model=model.with_condensation()
     config_hash=hashlib.sha256(encoded(model.config)).hexdigest()
     first=observe(model,0.);last_before=None;history=[first];phase_rows=[];count=0
-    years=float(model.config['max_step_years']);deadline=start+budget_seconds
+    years=float(model.config['max_step_years'] if step_years is None else step_years)
+    if not 0<years<=model.config['max_step_years']:raise ValueError('Step exceeds inherited bounds')
+    deadline=start+budget_seconds
     report=dict(source_file=str(source),source_sha256=source_hash,config_sha256=config_hash,
-        budget_seconds=budget_seconds,step_years=years,
+        budget_seconds=budget_seconds,step_years=years,condensation_opt_in=condensation,
+        only_authorized_config_change=all(model.config[k]==v for k,v in original_config.items() if k!='water_eos'),
         step_policy='stored max_step_years; existing phase/contact/corrector/energy guards; stop on refusal, no threshold edits or blind retries',
         temporal_error_certified=False,canonical_advanced=False,fixed_reference_thermal_graph=True,
         status='RUNNING',handoff_performed=False,initial=first)
@@ -107,7 +115,7 @@ def run(source,output,budget_seconds=280.):
                 row=observe(model,time.monotonic()-start);row['step_seconds']=time.monotonic()-step_start
                 row['independent_phase']=audit;history.append(row)
                 stream.write(json.dumps(row)+'\n');stream.flush()
-                if count%20==0:
+                if count%100==0:
                     checkpoint(model,root)
                     print(json.dumps({'progress':row}),flush=True)
                 if len(model.state['omega'])>len(before['omega']):
@@ -153,5 +161,6 @@ def run(source,output,budget_seconds=280.):
 
 if __name__=='__main__':
     p=argparse.ArgumentParser();p.add_argument('--source',required=True);p.add_argument('--output',required=True)
-    p.add_argument('--budget-seconds',type=float,default=280.);args=p.parse_args()
-    run(args.source,args.output,args.budget_seconds)
+    p.add_argument('--budget-seconds',type=float,default=280.)
+    p.add_argument('--condensation',action='store_true');p.add_argument('--step-years',type=float);args=p.parse_args()
+    run(args.source,args.output,args.budget_seconds,condensation=args.condensation,step_years=args.step_years)
