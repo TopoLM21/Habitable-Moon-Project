@@ -18,8 +18,9 @@ def test_complete_synthetic_evolution_birth_motion_restart(tmp_path):
     m.save(tmp_path/'one.json');restored=SimplifiedGenesis.load(tmp_path/'one.json')
     m.advance(25.);restored.advance(25.)
     assert encoded(m.state)==encoded(restored.state)
-    assert np.linalg.norm(np.diff(m.state['omega'],axis=0))>1e-16
-    assert np.linalg.norm(np.array(m.state['rotation'][0])-m.state['rotation'][1])>1e-8
+    # Filled irregular rigid domains lock by normal reactions, not friction.
+    assert np.linalg.norm(np.diff(m.state['omega'],axis=0))==0
+    assert np.array_equal(m.state['rotation'][0],m.state['rotation'][1])
     assert np.min(m.temperature(m.state['energy']))<1000.
     assert abs(m.state['last_ledger']['whole_balance_j'])<=m.state['last_ledger']['whole_allowance_j']
     assert not m.mature_compatibility()['direct_native_mature']

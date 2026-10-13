@@ -20,6 +20,7 @@ from .plates import Plate,PlateSystem
 from .mesh import SphereMesh
 from .genesis_transfer_bridge import encoded,digest
 from .simplified_genesis_phase import promote
+from .simplified_genesis_contact import closed_partition_step
 
 VERSION='simplified-genesis-0.1'
 
@@ -148,17 +149,23 @@ class SimplifiedGenesis:
         base=self.mass*thermal['specific_h'];T=self.temperature(base)
         # Angular dynamics on the saved material chart. Sphere fixes translation;
         # net force is supported by a zero-work radial/centering reaction.
-        omega=[];rotation=[];rotledger={};dragface=np.zeros(self.nf);reactions=[]
-        for k in range(len(s['omega'])):
-            ids=owner==k;I=inertia[ids].sum(axis=0);D=self.face_drag[ids].sum(axis=0);tau=self.face_torque[ids].sum(axis=0)
-            w,L=rotational_step(I,D,tau,np.array(s['omega'][k]),dt)
-            pose=Rotation.from_rotvec(dt*w).as_matrix()@np.array(s['rotation'][k])
-            if Rotation.from_matrix(pose).magnitude()>self.config['max_rotation_rad']:raise ValueError('FINITE_CONTACT_REMESH_LIMIT')
+        grouped_I=np.array([inertia[owner==k].sum(axis=0) for k in range(len(s['omega']))])
+        grouped_D=np.array([self.face_drag[owner==k].sum(axis=0) for k in range(len(s['omega']))])
+        grouped_tau=np.array([self.face_torque[owner==k].sum(axis=0) for k in range(len(s['omega']))])
+        angular,poses,rotledger,contact=closed_partition_step(self.mesh,owner,s['rotation'],grouped_I,grouped_D,grouped_tau,s['omega'],dt,self.config['radius_km']*1000.)
+        omega=angular.tolist();rotation=poses.tolist();dragface=np.zeros(self.nf);reactions=[]
+        for k,w in enumerate(angular):
+            ids=owner==k
+            if Rotation.from_matrix(poses[k]).magnitude()>self.config['max_rotation_rad']:raise ValueError('FINITE_CONTACT_REMESH_LIMIT')
             if 'face_force' in self.config:
                 def group(name):return np.array(self.config[name])[ids].sum(axis=0)
-                reactions.append(constrained_force_reaction(group('face_linear_momentum_map'),group('face_force'),group('face_drag_force'),np.array(s['omega'][k]),w,dt).tolist())
-            omega.append(w.tolist());rotation.append(pose.tolist());dragface[ids]=dt*np.einsum('i,fij,j->f',w,self.face_drag[ids],w)
-            for key,value in L.items():rotledger[key]=max(rotledger.get(key,0.),value) if key=='momentum_relative' else rotledger.get(key,0.)+value
+                contact_force=np.zeros(3)
+                for row in contact['normal_impulses']:
+                    a,b=row['owners'];force=np.array(row['normal_a_to_b'])*row['normal_impulse_n_s']/dt
+                    if k==a:contact_force-=force
+                    if k==b:contact_force+=force
+                reactions.append((constrained_force_reaction(group('face_linear_momentum_map'),group('face_force'),group('face_drag_force'),np.array(s['omega'][k]),w,dt)-contact_force).tolist())
+            dragface[ids]=dt*np.einsum('i,fij,j->f',w,self.face_drag[ids],w)
         heat=np.zeros_like(base)
         for f,ids in enumerate(self.solid_nodes):heat[ids]+=dragface[f]/2
         base=base+heat
@@ -238,12 +245,12 @@ class SimplifiedGenesis:
         rotledger['kinetic_after']-=phase_report['capture_heat_j']
         ledger=dict(maxwell=float(Q.sum()),thermal_work=float(W.sum()),damage_energy_change=float(dU.sum()),numerical_memory=float(N.sum()),elastic_before=float(oldU.sum()+bt['Uinitial'].sum()),elastic_after=float(U.sum()),fracture_heat=fracture,source_energy=float(ports['net_thermal_input_j']),**rotledger)
         change=float(np.sum(E.astype(np.longdouble)-E0.astype(np.longdouble)))
-        balance=change+ledger['elastic_after']-ledger['elastic_before']+ledger['kinetic_after']-ledger['kinetic_before']-ledger['source_energy']-ledger['external_work']+ledger['numerical_memory']+ledger['numerical_rotation']
+        balance=change+ledger['elastic_after']-ledger['elastic_before']+ledger['kinetic_after']-ledger['kinetic_before']-ledger['source_energy']-ledger['external_work']+ledger['numerical_memory']+ledger['numerical_rotation']-contact['contact_work_j']
         allowance=float(np.sum(32*(np.spacing(E)+np.spacing(E0))))+1e-8*max(abs(ledger['thermal_work']),ledger['maxwell'],abs(ledger['external_work']),1.)
         if abs(balance)>allowance:raise ValueError('SIMPLIFIED_WHOLE_ENERGY_BALANCE')
         ledger.update(phase=phase_report,whole_balance_j=balance,whole_allowance_j=allowance,moment_balance_relative=float(np.max(abs(memory_residual)/memory_scale)))
         if reactions:ledger['center_constraint_reaction_n']=reactions
-        nexts.update(time_myr=target,energy=E.tolist(),memory=new.tolist(),damage=damage.tolist(),candidate_age=age.tolist(),omega=omega,rotation=rotation,stress_pa=sigma.tolist(),last_ledger=ledger,steps=s['steps']+1)
+        nexts.update(time_myr=target,energy=E.tolist(),memory=new.tolist(),damage=damage.tolist(),candidate_age=age.tolist(),omega=omega,rotation=rotation,stress_pa=sigma.tolist(),last_ledger=ledger,contact=contact,steps=s['steps']+1)
         self.state=nexts
         try:self.validate()
         except Exception:
