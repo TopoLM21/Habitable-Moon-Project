@@ -1,0 +1,1112 @@
+{
+  "active_thermal_inventory_snapshot": {
+    "node_count": 2562,
+    "path": "/workspace/genesis-geological-thermal-final/direct/record.json",
+    "sha256": "8deb93361b39d7f52e4654bff9af5fb6bb7d4aed670b7c6aae2a4ee41d3f4cf3"
+  },
+  "dynamics_parameters": {
+    "basal_drag_pa_s_m": 100000000000000.0,
+    "continental_buoyancy_reference_km": 35.0,
+    "continental_buoyancy_resistance_gain": 0.65,
+    "continental_collision_resistance": 2.5,
+    "craton_collision_resistance_gain": 0.6,
+    "force_model": "legacy_effective",
+    "force_speed_scale_deg_per_myr": 0.85,
+    "gpe_drive_weight": 0.3,
+    "gpe_reference_thickness_km": 40.0,
+    "gravity_m_s2": 9.81,
+    "mantle_memory_fraction": 0.22,
+    "mantle_projection": "legacy_area_mean",
+    "max_speed_deg_per_myr": 1.2,
+    "min_active_speed_deg_per_myr": 0.005,
+    "remove_net_rotation": true,
+    "ridge_gpe_calibration_gain": 1.014,
+    "ridge_gpe_exponent": 1.0,
+    "ridge_gpe_max_factor": 2.4,
+    "ridge_gpe_min_factor": 0.2,
+    "ridge_gpe_reference_density_anomaly_kg_m3": 64.0,
+    "ridge_gpe_reference_mantle_thickness_km": 93.5,
+    "ridge_gpe_saturation_ratio": 0.2,
+    "ridge_push_weight": 0.7,
+    "slab_age_gain": 0.9,
+    "slab_age_reference_myr": 80.0,
+    "slab_buoyancy_calibration_gain": 1.85,
+    "slab_buoyancy_exponent": 0.75,
+    "slab_buoyancy_reference_density_anomaly_kg_m3": 60.0,
+    "slab_buoyancy_reference_thickness_km": 100.0,
+    "slab_pull_weight": 1.25,
+    "slab_thermal_exponent": 0.25,
+    "slab_thermal_reference_km": 140.0,
+    "tidal_resistance_reduction": 0.65,
+    "tidal_ridge_enhancement": 0.35,
+    "transform_resistance": 0.55,
+    "velocity_relaxation_myr": 18.0,
+    "young_slab_bend_radius_thickness_ratio": 3.0,
+    "young_slab_buoyancy_model": "uniform_thermal_mass_v1",
+    "young_slab_force_model": "disabled_pending_closure",
+    "young_slab_mantle_depth_km": null,
+    "young_slab_mantle_shear_length_fraction": 0.5,
+    "young_slab_mantle_viscosity_pa_s": null,
+    "young_slab_viscosity_contrast": 100.0,
+    "young_velocity_response_model": "relaxed"
+  },
+  "eccentricity": 7.538356065228103e-20,
+  "eligibility": {
+    "canonical_face_relocation_max_km": 0.0,
+    "chemistry_required_for_this_mode": false,
+    "composition": "undifferentiated silicate; elemental fractions unknown",
+    "continental_material_inferred": false,
+    "domains": 3,
+    "eligible": true,
+    "geometry_contract": "same face IDs/adjacency; preserve extensive mass/H, replace footprint geometry explicitly",
+    "interior_nodes_retained": 1,
+    "mantle_forcing": "project existing face torque through existing face drag; not recovered 3-D fluid velocity",
+    "mapped_solid_node_count": 2560,
+    "new_physical_parameters_required": [],
+    "optional_future_fields": [
+      "elemental fractions",
+      "differentiation/depletion laws",
+      "continental generation"
+    ],
+    "reasons": [],
+    "source_thermal_node_count": 2562,
+    "time_myr": 5e-05
+  },
+  "format": "geological-source-enthalpy-2",
+  "gravity_m_s2": 7.12,
+  "import_report": {
+    "archived_source_enthalpy_j": 4.5946611602076487e+24,
+    "archived_source_mass_kg": 3.84e+18,
+    "cell_count": 1280,
+    "chemical_crust_volume_km3": 1280000.0,
+    "continental_volume_km3": 0.0,
+    "format": "experimental_genesis_mature_import",
+    "mesh_subdivisions": 3,
+    "new_zero_memories": [
+      "subduction",
+      "felsic_potential",
+      "sediments",
+      "cratons",
+      "plumes",
+      "plate_transport"
+    ],
+    "oceanic_volume_km3": 1280000.0,
+    "physical_handoff_certified": false,
+    "plate_count": 3,
+    "radius_km": 5287.0,
+    "source_metadata": {
+      "composition": "undifferentiated silicate; noncontinental native carrier, not chemical basalt proof",
+      "geometry": "same face IDs/adjacency; preserve extensive mass/H, replace footprint geometry explicitly"
+    },
+    "time_myr": 5e-05,
+    "topology_parameters": {
+      "collision_contact_max_divergence_km_per_myr": 8.0,
+      "collision_coupling_max_step_fraction": 0.08,
+      "collision_coupling_start_myr": 20.0,
+      "collision_coupling_timescale_myr": 100.0,
+      "collision_initial_max_relative_speed_km_per_myr": 65.0,
+      "collision_min_continental_fraction": 0.25,
+      "collision_min_convergent_fraction": 0.5,
+      "collision_rift_suppression_max": 0.75,
+      "collision_rift_suppression_one_ring_fraction": 0.45,
+      "collision_rift_suppression_start_myr": 32.0,
+      "connected_collision_contacts": true,
+      "disconnect_min_child_area_km2": null,
+      "disconnect_min_child_cells": 180,
+      "max_events_per_step": 2,
+      "merge_enabled": true,
+      "merge_kinematics_rule": "area_weighted",
+      "merge_min_continental_boundary_km": 900.0,
+      "min_plate_area_km2": null,
+      "min_plate_cells": 90,
+      "min_plate_persistence_myr": 0.0,
+      "repair_fragmented_plates": true,
+      "split_cooldown_myr": 12.0,
+      "split_differential_speed_deg_per_myr": 0.08,
+      "split_enabled": true,
+      "split_late_seam_threshold": 0.34,
+      "split_late_stress_threshold": 0.42,
+      "split_max_thinned_continent_km": 24.0,
+      "split_min_child_area_km2": null,
+      "split_min_child_cells": 180,
+      "split_min_extension_age_myr": 24.0,
+      "split_min_postrift_damage": 0.035,
+      "split_min_postrift_extension": 0.55,
+      "split_min_rift_cells": 8,
+      "split_min_rift_span_km": null,
+      "split_young_ocean_age_myr": 16.0,
+      "weld_max_normal_divergence_km_per_myr": 1.5,
+      "weld_max_relative_speed_km_per_myr": 8.0,
+      "weld_min_collision_age_myr": 160.0,
+      "weld_quiet_persistence_myr": 80.0
+    },
+    "unsupported_state": [
+      "Source column mass and enthalpy are archived, not evolved by the mature solver.",
+      "Contact opening, stress, cohesive/frictional memory and deformation are not represented.",
+      "A scalar thermal state cannot retain the depth-resolved enthalpy and melt profile.",
+      "Steam and ice are not represented by the mature liquid-water inventory.",
+      "Young-moon thermal, orbital and mechanical applicability needs independent validation."
+    ],
+    "version": 1,
+    "water_volume_km3": 0.0
+  },
+  "inactive_modules": [
+    "continental differentiation",
+    "topography",
+    "plumes",
+    "topology changes"
+  ],
+  "inactive_surface_mass_kg": 0.0,
+  "interior_reference_mass_kg": 3.9995441616978464e+24,
+  "love_h2": 0.6,
+  "mantle_forcing": "explicit supplied scenario field",
+  "mapping": {
+    "H": {
+      "active_total_j": 4.7526147044675424e+30,
+      "mapping_change_j": 0.0,
+      "model": "inherited EOS/ports/fixed reference graph",
+      "source_archive_is_not_active_inventory": true
+    },
+    "Maxwellmemory": {
+      "heat_j": 0.0,
+      "status": "exact frozen source; active detailed constitutive memory retired"
+    },
+    "composition": {
+      "active": "undifferentiated silicate, noncontinental carrier",
+      "chemical_fractions": null,
+      "continental_fraction": 0.0,
+      "differentiation_active": false
+    },
+    "energy": {
+      "mapped_kinetic_proxy_j": 0.0,
+      "mapping_heat_j": 0.0,
+      "prior_passive_kinetic_projection_j": 0.0,
+      "retired_elastic_j": 1540603417070450.0,
+      "signed_model_change_kinetic_j": 0.0,
+      "source_kinetic_j": 0.0,
+      "source_passive_reserve_j": 12345.0,
+      "total_mechanical_energy_conserved": false
+    },
+    "mass": {
+      "active_deep_kg": 4e+24,
+      "active_other_interior_kg": -51380224.0,
+      "active_solid_kg": 3.84e+18,
+      "active_water_kg": 1e+20,
+      "archive_double_counted": false,
+      "total_kg": 4.00010384e+24
+    },
+    "momentum": {
+      "approximation": "inertial constrained rotations -> effective quasi-static velocities; no SI impulse closure",
+      "mapped_shell_proxy": {
+        "angular_momentum_kg_m2_s": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "kinetic_energy_j": 0.0,
+        "linear_momentum_kg_m_s": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "mapping_angular_change_kg_m2_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "mapping_linear_change_kg_m_s": null,
+      "source_angular_kg_m2_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "source_linear_kg_m_s": null
+    }
+  },
+  "native_thermal_diagnostics": "reference flux=sum absolute source graph exchanges/area; activity=1; initial thickness=mass-weighted carrier depth; these do not add heat",
+  "period_hours": 47.13222141382267,
+  "primary_mass_jupiter": 5.0,
+  "radius_km": 5287.0,
+  "source_sha256": "ee6f63cebb57f79b43163b421f60b0fc55fff3a174cce575ab014a7e8747a050",
+  "steps": [
+    {
+      "SI_force_work_available": false,
+      "coupled_enthalpy_closed": true,
+      "dt_myr": 10.0,
+      "dynamics": {
+        "continental_collision_length_km": 0.0,
+        "mantle_rms_speed_deg_per_myr": 1.323189349012301,
+        "max_axis_turn_deg": 0.0,
+        "max_ridge_push_factor": 1.0,
+        "max_speed_deg_per_myr": 0.14724352967155022,
+        "mean_axis_turn_deg": 0.0,
+        "mean_collision_drag_factor": 1.0,
+        "mean_continental_plate_speed_deg_per_myr": 0.0,
+        "mean_gpe_drive": 0.0,
+        "mean_plate_mantle_slip_deg_per_myr": 0.9484893088910246,
+        "mean_ridge_push_factor": 1.0,
+        "mean_speed_deg_per_myr": 0.09814758727893598,
+        "min_continental_plate_speed_deg_per_myr": 0.0,
+        "min_ridge_push_factor": 1.0,
+        "near_stationary_continental_plates": 0,
+        "net_rotation_deg_per_myr_before_removal": 8.545093211333037e-17,
+        "ridge_boundary_length_km": 0.0,
+        "slab_boundary_length_km": 0.0,
+        "time_myr": 5e-05,
+        "transform_boundary_length_km": 0.0
+      },
+      "heat_from_retired_memory_j": 0.0,
+      "interior_reference_mass_kg": 4e+24,
+      "kinematics_after": {
+        "angular_momentum_kg_m2_s": [
+          -5356454767265.957,
+          11798590304582.373,
+          -5341389222629.013
+        ],
+        "kinetic_energy_j": 0.16842461272610829,
+        "linear_momentum_kg_m_s": [
+          7351104.785375065,
+          711061637.9960544,
+          0.0
+        ]
+      },
+      "kinematics_before": {
+        "angular_momentum_kg_m2_s": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "kinetic_energy_j": 0.0,
+        "linear_momentum_kg_m_s": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "material": {
+        "balanced": true,
+        "density_convention": "One reference density for equivalent-rock volume; not a species-density mass budget.",
+        "final_time_myr": 10.00005,
+        "final_upper_components_km3": {
+          "continental_bedrock": 0.0,
+          "oceanic_bedrock": 1280000.0,
+          "plume_dyke": 0.0,
+          "plume_extrusive": 0.0,
+          "plume_underplate": 0.0,
+          "surface_sediment": 0.0
+        },
+        "final_upper_reference_mass_kg": 3.84e+18,
+        "final_upper_volume_km3": 1280000.0,
+        "format": "genesis-starter-material-ledger-0.1",
+        "generated_volume_km3": 0.0,
+        "initial_time_myr": 5e-05,
+        "initial_upper_components_km3": {
+          "continental_bedrock": 0.0,
+          "oceanic_bedrock": 1280000.0,
+          "plume_dyke": 0.0,
+          "plume_extrusive": 0.0,
+          "plume_underplate": 0.0,
+          "surface_sediment": 0.0
+        },
+        "initial_upper_reference_mass_kg": 3.84e+18,
+        "initial_upper_volume_km3": 1280000.0,
+        "mantle_reference_mass_change_kg": -0.0,
+        "new_continental_records": 0,
+        "new_lithosphere_records": 1,
+        "observed_upper_change_km3": 0.0,
+        "predicted_upper_change_km3": 0.0,
+        "recycled_volume_km3": 0.0,
+        "reference_density_kg_m3": 3000.0,
+        "reference_mass_residual_kg": 0.0,
+        "relative_volume_residual": 0.0,
+        "sink_components_km3": {
+          "continental_cycle_oceanic_recycling": 0.0,
+          "continental_cycle_recycling": 0.0,
+          "continental_rift_recycling": 0.0,
+          "deep_sediment_recycling": 0.0,
+          "oceanic_replacement_by_juvenile_crust": 0.0,
+          "oceanic_rift_recycling": 0.0,
+          "oceanic_subduction": 0.0,
+          "plume_dyke_recycling": 0.0,
+          "plume_extrusive_recycling": 0.0,
+          "plume_underplate_recycling": 0.0
+        },
+        "source_components_km3": {
+          "continental_cycle_oceanic_creation": 0.0,
+          "continental_generation": 0.0,
+          "lithosphere_oceanic_creation": 0.0,
+          "plume_dyke_generation": 0.0,
+          "plume_extrusive_generation": 0.0,
+          "plume_underplate_generation": 0.0
+        },
+        "thermal_energy_changed_by_audit_j": 0.0,
+        "volume_residual_km3": 0.0,
+        "volume_tolerance_km3": 1e-06
+      },
+      "material_source_sha256": "24ce3a71f18b05e7471f8c052363c243f6b03748b58b9588adcd14c4e1bd4f08",
+      "mechanical_energy_closed": false,
+      "relative_omega_rad_per_myr": 0.00513377410353388,
+      "thermal": {
+        "active_enthalpy_after_j": 4.75852209146559e+30,
+        "active_enthalpy_before_j": 4.7526147044675424e+30,
+        "conduction_iterations": 1,
+        "created_enthalpy_j": 0.0,
+        "created_mass_kg": 0.0,
+        "deep_after_k": 991.333098954111,
+        "deep_before_k": 990.0000111826535,
+        "donor_specific_enthalpy_j_kg": 1188000.0134191841,
+        "global_allowance_j": 3.047605391300493e+17,
+        "global_residual_j": -7615931688681472.0,
+        "inactive_memory_heat_j": 0.0,
+        "local_max_residual_j": 1077344609337344.0,
+        "mass_roundoff_allowance_kg": 17180413952.0,
+        "max_carrier_melt_fraction": 0.0,
+        "max_local_residual_over_allowance": 0.06974462985282961,
+        "max_temperature_change_k": 632.2287583878564,
+        "mechanical_heat_j": 0.0,
+        "ports": {
+          "area_m2": 351259828403324.3,
+          "audit_includes_port_dose_and_root_lattice_roundoff": true,
+          "dt_seconds": 315576000000000.0,
+          "endpoint_roundoff_allowance_j": 1.1888073593813424e+17,
+          "maximum_local_energy_residual_j": 8610756593451008.0,
+          "net_thermal_input_j": 5.907386998055554e+27,
+          "new_source_coefficients": false,
+          "orbit_after": {
+            "dissipated_energy_j": 9.6382727247673e+25,
+            "eccentricity": 2.786616777786043e-08,
+            "semimajor_axis_km": 773185.9490725613,
+            "time_myr": 10.00005
+          },
+          "orbit_before": {
+            "dissipated_energy_j": 8.557069068941641e+21,
+            "eccentricity": 0.00019999112158466104,
+            "semimajor_axis_km": 773185.9799972541,
+            "time_myr": 5e-05
+          },
+          "orbital_debit_j": 9.637417017860406e+25,
+          "ports": [
+            {
+              "energy_into_thermal_j": 6.302420534971838e+27,
+              "name": "radiogenic",
+              "recipient": 2560,
+              "scope": "external nuclear energy; no nuclear inventory state"
+            },
+            {
+              "energy_into_thermal_j": 9.637417017860406e+25,
+              "name": "tidal",
+              "recipient": 2560,
+              "scope": "paired orbital dissipation"
+            },
+            {
+              "energy_into_thermal_j": 2.491069232263047e+31,
+              "name": "stellar_absorbed",
+              "recipient": 2561,
+              "scope": "external radiation"
+            },
+            {
+              "energy_into_thermal_j": 0.0,
+              "name": "giant_absorbed",
+              "recipient": 2561,
+              "scope": "external radiation; zero if coefficient is zero"
+            },
+            {
+              "energy_into_thermal_j": -2.4911183730337564e+31,
+              "name": "OLR",
+              "recipient": 2561,
+              "scope": "outgoing radiation"
+            }
+          ],
+          "routing": "legacy mantle source -> deep; legacy radiation -> surface water/atmosphere",
+          "source_stage_clock": "dose integrated over interval; state clock advanced by subsequent conduction",
+          "source_surface_endpoint_k": 282.19059791114273,
+          "water_phase_model": "existing Genesis condensation"
+        },
+        "recycled_enthalpy_j": 0.0,
+        "recycled_mass_kg": 0.0,
+        "surface_after_k": 282.19059791114273,
+        "surface_before_k": 914.4193562989991,
+        "time_myr": 10.00005,
+        "total_mass_residual_kg": 0.0,
+        "transport_allowance_j": 1.8016619007574016e+16,
+        "transport_residual_j": 0.0
+      },
+      "thermal_source": "active inherited reservoirs/ports; no archived H substitute",
+      "time_myr": 10.00005,
+      "transport_commits": 0,
+      "transported_oceanic_volume_km3": 0.0,
+      "transported_winning_cells": 0,
+      "unclosed_angular_momentum_change_kg_m2_s": [
+        -5356454767265.957,
+        11798590304582.373,
+        -5341389222629.013
+      ],
+      "unclosed_kinetic_change_j": 0.16842461272610829,
+      "unclosed_linear_momentum_change_kg_m_s": [
+        7351104.785375065,
+        711061637.9960544,
+        0.0
+      ]
+    },
+    {
+      "SI_force_work_available": false,
+      "coupled_enthalpy_closed": true,
+      "dt_myr": 10.0,
+      "dynamics": {
+        "continental_collision_length_km": 0.0,
+        "mantle_rms_speed_deg_per_myr": 1.323189349012301,
+        "max_axis_turn_deg": 80.47078488403842,
+        "max_ridge_push_factor": 0.2,
+        "max_speed_deg_per_myr": 0.2721918988470311,
+        "mean_axis_turn_deg": 27.03296866973874,
+        "mean_collision_drag_factor": 0.8520409643208624,
+        "mean_continental_plate_speed_deg_per_myr": 0.0,
+        "mean_gpe_drive": 0.0,
+        "mean_plate_mantle_slip_deg_per_myr": 0.8655574747783019,
+        "mean_ridge_push_factor": 0.1999999999999999,
+        "mean_speed_deg_per_myr": 0.1817657682259962,
+        "min_continental_plate_speed_deg_per_myr": 0.0,
+        "min_ridge_push_factor": 0.2,
+        "near_stationary_continental_plates": 0,
+        "net_rotation_deg_per_myr_before_removal": 0.0010752461482356106,
+        "ridge_boundary_length_km": 24157.95889683916,
+        "slab_boundary_length_km": 25830.363975779386,
+        "time_myr": 10.00005,
+        "transform_boundary_length_km": 31309.695560808672
+      },
+      "heat_from_retired_memory_j": 0.0,
+      "interior_reference_mass_kg": 3.999838794109477e+24,
+      "kinematics_after": {
+        "angular_momentum_kg_m2_s": [
+          -793010477828644.0,
+          1.289369404470703e+16,
+          -1181697361953620.0
+        ],
+        "kinetic_energy_j": 28.379609899575662,
+        "linear_momentum_kg_m_s": [
+          289214303.5764391,
+          53611475959.834656,
+          154712374.66551358
+        ]
+      },
+      "kinematics_before": {
+        "angular_momentum_kg_m2_s": [
+          -5356454767265.957,
+          11798590304582.373,
+          -5341389222629.013
+        ],
+        "kinetic_energy_j": 0.16842461272610829,
+        "linear_momentum_kg_m_s": [
+          7351104.785375065,
+          711061637.9960544,
+          0.0
+        ]
+      },
+      "material": {
+        "balanced": true,
+        "density_convention": "One reference density for equivalent-rock volume; not a species-density mass budget.",
+        "final_time_myr": 20.00005,
+        "final_upper_components_km3": {
+          "continental_bedrock": 0.0,
+          "oceanic_bedrock": 55015296.84102721,
+          "plume_dyke": 0.0,
+          "plume_extrusive": 0.0,
+          "plume_underplate": 0.0,
+          "surface_sediment": 0.0
+        },
+        "final_upper_reference_mass_kg": 1.6504589052308164e+20,
+        "final_upper_volume_km3": 55015296.84102721,
+        "format": "genesis-starter-material-ledger-0.1",
+        "generated_volume_km3": 53763296.841027215,
+        "initial_time_myr": 10.00005,
+        "initial_upper_components_km3": {
+          "continental_bedrock": 0.0,
+          "oceanic_bedrock": 1280000.0,
+          "plume_dyke": 0.0,
+          "plume_extrusive": 0.0,
+          "plume_underplate": 0.0,
+          "surface_sediment": 0.0
+        },
+        "initial_upper_reference_mass_kg": 3.84e+18,
+        "initial_upper_volume_km3": 1280000.0,
+        "mantle_reference_mass_change_kg": -1.6120589052308164e+20,
+        "new_continental_records": 0,
+        "new_lithosphere_records": 1,
+        "observed_upper_change_km3": 53735296.84102721,
+        "predicted_upper_change_km3": 53735296.841027215,
+        "recycled_volume_km3": 28000.0,
+        "reference_density_kg_m3": 3000.0,
+        "reference_mass_residual_kg": -22351.741790771484,
+        "relative_volume_residual": -1.354274360902406e-16,
+        "sink_components_km3": {
+          "continental_cycle_oceanic_recycling": 0.0,
+          "continental_cycle_recycling": 0.0,
+          "continental_rift_recycling": 0.0,
+          "deep_sediment_recycling": 0.0,
+          "oceanic_replacement_by_juvenile_crust": 0.0,
+          "oceanic_rift_recycling": 0.0,
+          "oceanic_subduction": 28000.0,
+          "plume_dyke_recycling": 0.0,
+          "plume_extrusive_recycling": 0.0,
+          "plume_underplate_recycling": 0.0
+        },
+        "source_components_km3": {
+          "continental_cycle_oceanic_creation": 0.0,
+          "continental_generation": 0.0,
+          "lithosphere_oceanic_creation": 53763296.841027215,
+          "plume_dyke_generation": 0.0,
+          "plume_extrusive_generation": 0.0,
+          "plume_underplate_generation": 0.0
+        },
+        "thermal_energy_changed_by_audit_j": 0.0,
+        "volume_residual_km3": -7.450580596923828e-09,
+        "volume_tolerance_km3": 1.5636287810430988e-06
+      },
+      "material_source_sha256": "16d9aa3e53ffa74f79a6ad2836ca99177ad698b8a91eb699b5cd9697885b6852",
+      "mechanical_energy_closed": false,
+      "relative_omega_rad_per_myr": 0.009485227774106209,
+      "thermal": {
+        "active_enthalpy_after_j": 4.7648063355611873e+30,
+        "active_enthalpy_before_j": 4.75852209146559e+30,
+        "conduction_iterations": 1,
+        "created_enthalpy_j": 1.9187040840265902e+26,
+        "created_mass_kg": 1.6128989052308164e+20,
+        "deep_after_k": 992.6423167585539,
+        "deep_before_k": 991.3330989541112,
+        "donor_specific_enthalpy_j_kg": 1189599.7187449334,
+        "global_allowance_j": 3.0475978412738016e+17,
+        "global_residual_j": 5088544856004096.0,
+        "inactive_memory_heat_j": 0.0,
+        "local_max_residual_j": 501211722209280.0,
+        "mass_roundoff_allowance_kg": 17180872480.0,
+        "max_carrier_melt_fraction": 0.0,
+        "max_local_residual_over_allowance": 0.08481839608754506,
+        "max_temperature_change_k": 1.30921780444271,
+        "mechanical_heat_j": 0.0,
+        "ports": {
+          "area_m2": 351259828403324.3,
+          "audit_includes_port_dose_and_root_lattice_roundoff": true,
+          "dt_seconds": 315576000000000.06,
+          "endpoint_roundoff_allowance_j": 1.188801861823224e+17,
+          "maximum_local_energy_residual_j": 5714831944450048.0,
+          "net_thermal_input_j": 6.284244095592256e+27,
+          "new_source_coefficients": false,
+          "orbit_after": {
+            "dissipated_energy_j": 9.638272911875886e+25,
+            "eccentricity": 3.882788315786866e-12,
+            "semimajor_axis_km": 773185.9490725608,
+            "time_myr": 20.00005
+          },
+          "orbit_before": {
+            "dissipated_energy_j": 9.6382727247673e+25,
+            "eccentricity": 2.786616777786043e-08,
+            "semimajor_axis_km": 773185.9490725613,
+            "time_myr": 10.00005
+          },
+          "orbital_debit_j": 1.8710858515915187e+18,
+          "ports": [
+            {
+              "energy_into_thermal_j": 6.284244690285991e+27,
+              "name": "radiogenic",
+              "recipient": 2560,
+              "scope": "external nuclear energy; no nuclear inventory state"
+            },
+            {
+              "energy_into_thermal_j": 1.8710858515915187e+18,
+              "name": "tidal",
+              "recipient": 2560,
+              "scope": "paired orbital dissipation"
+            },
+            {
+              "energy_into_thermal_j": 2.4910692322630473e+31,
+              "name": "stellar_absorbed",
+              "recipient": 2561,
+              "scope": "external radiation"
+            },
+            {
+              "energy_into_thermal_j": 0.0,
+              "name": "giant_absorbed",
+              "recipient": 2561,
+              "scope": "external radiation; zero if coefficient is zero"
+            },
+            {
+              "energy_into_thermal_j": -2.491069232322704e+31,
+              "name": "OLR",
+              "recipient": 2561,
+              "scope": "outgoing radiation"
+            }
+          ],
+          "routing": "legacy mantle source -> deep; legacy radiation -> surface water/atmosphere",
+          "source_stage_clock": "dose integrated over interval; state clock advanced by subsequent conduction",
+          "source_surface_endpoint_k": 282.1892062521428,
+          "water_phase_model": "existing Genesis condensation"
+        },
+        "recycled_enthalpy_j": 9.992638525268893e+22,
+        "recycled_mass_kg": 8.4e+16,
+        "surface_after_k": 282.1892062521428,
+        "surface_before_k": 282.19059791114273,
+        "time_myr": 20.00005,
+        "total_mass_residual_kg": 147482624.0,
+        "transport_allowance_j": 1.801545054158848e+16,
+        "transport_residual_j": -167512778997760.0
+      },
+      "thermal_source": "active inherited reservoirs/ports; no archived H substitute",
+      "time_myr": 20.00005,
+      "transport_commits": 2,
+      "transported_oceanic_volume_km3": 589000.0,
+      "transported_winning_cells": 589,
+      "unclosed_angular_momentum_change_kg_m2_s": [
+        -787654023061378.0,
+        1.2881895454402448e+16,
+        -1176355972730991.0
+      ],
+      "unclosed_kinetic_change_j": 28.211185286849553,
+      "unclosed_linear_momentum_change_kg_m_s": [
+        281863198.791064,
+        52900414321.8386,
+        154712374.66551358
+      ]
+    },
+    {
+      "SI_force_work_available": false,
+      "coupled_enthalpy_closed": true,
+      "dt_myr": 10.0,
+      "dynamics": {
+        "continental_collision_length_km": 0.0,
+        "mantle_rms_speed_deg_per_myr": 1.323189349012301,
+        "max_axis_turn_deg": 33.05543983995726,
+        "max_ridge_push_factor": 0.2,
+        "max_speed_deg_per_myr": 0.3387204944366196,
+        "mean_axis_turn_deg": 11.182815246986431,
+        "mean_collision_drag_factor": 0.908157533280107,
+        "mean_continental_plate_speed_deg_per_myr": 0.0,
+        "mean_gpe_drive": 0.0,
+        "mean_plate_mantle_slip_deg_per_myr": 0.827644745103298,
+        "mean_ridge_push_factor": 0.19999999999999987,
+        "mean_speed_deg_per_myr": 0.226123773721298,
+        "min_continental_plate_speed_deg_per_myr": 0.0,
+        "min_ridge_push_factor": 0.2,
+        "near_stationary_continental_plates": 0,
+        "net_rotation_deg_per_myr_before_removal": 0.0008023375761798766,
+        "ridge_boundary_length_km": 32554.190070217737,
+        "slab_boundary_length_km": 33399.119324867395,
+        "time_myr": 20.00005,
+        "transform_boundary_length_km": 15863.11786614305
+      },
+      "heat_from_retired_memory_j": 0.0,
+      "interior_reference_mass_kg": 3.999716047706954e+24,
+      "kinematics_after": {
+        "angular_momentum_kg_m2_s": [
+          5192327199475845.0,
+          1.4818898679192056e+16,
+          -794445288373964.8
+        ],
+        "kinetic_energy_j": 95.74940389074462,
+        "linear_momentum_kg_m_s": [
+          689947954.4516072,
+          131560153789.00096,
+          427653133.81417894
+        ]
+      },
+      "kinematics_before": {
+        "angular_momentum_kg_m2_s": [
+          -793010477828644.0,
+          1.289369404470703e+16,
+          -1181697361953620.0
+        ],
+        "kinetic_energy_j": 28.379609899575662,
+        "linear_momentum_kg_m_s": [
+          289214303.5764391,
+          53611475959.834656,
+          154712374.66551358
+        ]
+      },
+      "material": {
+        "balanced": true,
+        "density_convention": "One reference density for equivalent-rock volume; not a species-density mass budget.",
+        "final_time_myr": 30.00005,
+        "final_upper_components_km3": {
+          "continental_bedrock": 0.0,
+          "oceanic_bedrock": 95930764.34867726,
+          "plume_dyke": 0.0,
+          "plume_extrusive": 0.0,
+          "plume_underplate": 0.0,
+          "surface_sediment": 0.0
+        },
+        "final_upper_reference_mass_kg": 2.8779229304603178e+20,
+        "final_upper_volume_km3": 95930764.34867726,
+        "format": "genesis-starter-material-ledger-0.1",
+        "generated_volume_km3": 40937467.507650055,
+        "initial_time_myr": 20.00005,
+        "initial_upper_components_km3": {
+          "continental_bedrock": 0.0,
+          "oceanic_bedrock": 55015296.84102721,
+          "plume_dyke": 0.0,
+          "plume_extrusive": 0.0,
+          "plume_underplate": 0.0,
+          "surface_sediment": 0.0
+        },
+        "initial_upper_reference_mass_kg": 1.6504589052308164e+20,
+        "initial_upper_volume_km3": 55015296.84102721,
+        "mantle_reference_mass_change_kg": -1.2274640252295017e+20,
+        "new_continental_records": 0,
+        "new_lithosphere_records": 1,
+        "observed_upper_change_km3": 40915467.507650055,
+        "predicted_upper_change_km3": 40915467.507650055,
+        "recycled_volume_km3": 22000.0,
+        "reference_density_kg_m3": 3000.0,
+        "reference_mass_residual_kg": 0.0,
+        "relative_volume_residual": 0.0,
+        "sink_components_km3": {
+          "continental_cycle_oceanic_recycling": 0.0,
+          "continental_cycle_recycling": 0.0,
+          "continental_rift_recycling": 0.0,
+          "deep_sediment_recycling": 0.0,
+          "oceanic_replacement_by_juvenile_crust": 0.0,
+          "oceanic_rift_recycling": 0.0,
+          "oceanic_subduction": 22000.0,
+          "plume_dyke_recycling": 0.0,
+          "plume_extrusive_recycling": 0.0,
+          "plume_underplate_recycling": 0.0
+        },
+        "source_components_km3": {
+          "continental_cycle_oceanic_creation": 0.0,
+          "continental_generation": 0.0,
+          "lithosphere_oceanic_creation": 40937467.507650055,
+          "plume_dyke_generation": 0.0,
+          "plume_extrusive_generation": 0.0,
+          "plume_underplate_generation": 0.0
+        },
+        "thermal_energy_changed_by_audit_j": 0.0,
+        "volume_residual_km3": 0.0,
+        "volume_tolerance_km3": 2.726516309754665e-06
+      },
+      "material_source_sha256": "759c4e3b544b36a7a8679f41dfe871cad4ceb530fd532aa952fb56f0ab39dcb3",
+      "mechanical_energy_closed": false,
+      "relative_omega_rad_per_myr": 0.01181078561774054,
+      "thermal": {
+        "active_enthalpy_after_j": 4.771072456824954e+30,
+        "active_enthalpy_before_j": 4.7648063355611873e+30,
+        "conduction_iterations": 1,
+        "created_enthalpy_j": 1.4629054532047838e+26,
+        "created_mass_kg": 1.2281240252295017e+20,
+        "deep_after_k": 993.9477585093866,
+        "deep_before_k": 992.6423167585539,
+        "donor_specific_enthalpy_j_kg": 1191170.7801102647,
+        "global_allowance_j": 3.016108767763572e+17,
+        "global_residual_j": -4835286562789560.0,
+        "inactive_memory_heat_j": 0.0,
+        "local_max_residual_j": 456083115636736.0,
+        "mass_roundoff_allowance_kg": 17181691280.0,
+        "max_carrier_melt_fraction": 0.0,
+        "max_local_residual_over_allowance": 0.08716407322496249,
+        "max_temperature_change_k": 1.354761236787681,
+        "mechanical_heat_j": 0.0,
+        "ports": {
+          "area_m2": 351259828403324.3,
+          "audit_includes_port_dose_and_root_lattice_roundoff": true,
+          "dt_seconds": 315576000000000.0,
+          "endpoint_roundoff_allowance_j": 1.157296632362709e+17,
+          "maximum_local_energy_residual_j": 5227851372560384.0,
+          "net_thermal_input_j": 6.266121263771317e+27,
+          "new_source_coefficients": false,
+          "orbit_after": {
+            "dissipated_energy_j": 9.63827291187589e+25,
+            "eccentricity": 5.410160889503077e-16,
+            "semimajor_axis_km": 773185.9490725608,
+            "time_myr": 30.00005
+          },
+          "orbit_before": {
+            "dissipated_energy_j": 9.638272911875886e+25,
+            "eccentricity": 3.882788315786866e-12,
+            "semimajor_axis_km": 773185.9490725608,
+            "time_myr": 20.00005
+          },
+          "orbital_debit_j": 36326758583.66679,
+          "ports": [
+            {
+              "energy_into_thermal_j": 6.266121263766813e+27,
+              "name": "radiogenic",
+              "recipient": 2560,
+              "scope": "external nuclear energy; no nuclear inventory state"
+            },
+            {
+              "energy_into_thermal_j": 36326758583.66679,
+              "name": "tidal",
+              "recipient": 2560,
+              "scope": "paired orbital dissipation"
+            },
+            {
+              "energy_into_thermal_j": 2.491069232263047e+31,
+              "name": "stellar_absorbed",
+              "recipient": 2561,
+              "scope": "external radiation"
+            },
+            {
+              "energy_into_thermal_j": 0.0,
+              "name": "giant_absorbed",
+              "recipient": 2561,
+              "scope": "external radiation; zero if coefficient is zero"
+            },
+            {
+              "energy_into_thermal_j": -2.4910692322630464e+31,
+              "name": "OLR",
+              "recipient": 2561,
+              "scope": "outgoing radiation"
+            }
+          ],
+          "routing": "legacy mantle source -> deep; legacy radiation -> surface water/atmosphere",
+          "source_stage_clock": "dose integrated over interval; state clock advanced by subsequent conduction",
+          "source_surface_endpoint_k": 282.1892062504533,
+          "water_phase_model": "existing Genesis condensation"
+        },
+        "recycled_enthalpy_j": 7.861727000881827e+22,
+        "recycled_mass_kg": 6.6e+16,
+        "surface_after_k": 282.1892062504533,
+        "surface_before_k": 282.1892062521428,
+        "time_myr": 30.00005,
+        "total_mass_residual_kg": -40994816.0,
+        "transport_allowance_j": 1.801630911561728e+16,
+        "transport_residual_j": -366504452030464.0
+      },
+      "thermal_source": "active inherited reservoirs/ports; no archived H substitute",
+      "time_myr": 30.00005,
+      "transport_commits": 2,
+      "transported_oceanic_volume_km3": 22170967.51661236,
+      "transported_winning_cells": 468,
+      "unclosed_angular_momentum_change_kg_m2_s": [
+        5985337677304489.0,
+        1925204634485026.0,
+        387252073579655.25
+      ],
+      "unclosed_kinetic_change_j": 67.36979399116896,
+      "unclosed_linear_momentum_change_kg_m_s": [
+        400733650.87516814,
+        77948677829.1663,
+        272940759.14866537
+      ]
+    },
+    {
+      "SI_force_work_available": false,
+      "coupled_enthalpy_closed": true,
+      "dt_myr": 10.0,
+      "dynamics": {
+        "continental_collision_length_km": 0.0,
+        "mantle_rms_speed_deg_per_myr": 1.323189349012301,
+        "max_axis_turn_deg": 38.78767914154915,
+        "max_ridge_push_factor": 0.2,
+        "max_speed_deg_per_myr": 0.37665852011820444,
+        "mean_axis_turn_deg": 13.068350685445614,
+        "mean_collision_drag_factor": 0.9451854897307316,
+        "mean_continental_plate_speed_deg_per_myr": 0.0,
+        "mean_gpe_drive": 0.0,
+        "mean_plate_mantle_slip_deg_per_myr": 0.8028554104521493,
+        "mean_ridge_push_factor": 0.19999999999999987,
+        "mean_speed_deg_per_myr": 0.2514846414184231,
+        "min_continental_plate_speed_deg_per_myr": 0.0,
+        "min_ridge_push_factor": 0.2,
+        "near_stationary_continental_plates": 0,
+        "net_rotation_deg_per_myr_before_removal": 0.00047825682381861156,
+        "ridge_boundary_length_km": 34164.496299639126,
+        "slab_boundary_length_km": 38973.976812348534,
+        "time_myr": 30.00005,
+        "transform_boundary_length_km": 10299.705421649203
+      },
+      "heat_from_retired_memory_j": 0.0,
+      "interior_reference_mass_kg": 3.9995441616978464e+24,
+      "kinematics_after": {
+        "angular_momentum_kg_m2_s": [
+          -2203248669575056.2,
+          4.584455441026386e+16,
+          3.0880816274901012e+16
+        ],
+        "kinetic_energy_j": 183.45959403047917,
+        "linear_momentum_kg_m_s": [
+          6630041092.927613,
+          231668916291.5252,
+          885751591.6621054
+        ]
+      },
+      "kinematics_before": {
+        "angular_momentum_kg_m2_s": [
+          5192327199475845.0,
+          1.4818898679192056e+16,
+          -794445288373964.8
+        ],
+        "kinetic_energy_j": 95.74940389074462,
+        "linear_momentum_kg_m_s": [
+          689947954.4516072,
+          131560153789.00096,
+          427653133.81417894
+        ]
+      },
+      "material": {
+        "balanced": true,
+        "density_convention": "One reference density for equivalent-rock volume; not a species-density mass budget.",
+        "final_time_myr": 40.00005,
+        "final_upper_components_km3": {
+          "continental_bedrock": 0.0,
+          "oceanic_bedrock": 153226100.71789727,
+          "plume_dyke": 0.0,
+          "plume_extrusive": 0.0,
+          "plume_underplate": 0.0,
+          "surface_sediment": 0.0
+        },
+        "final_upper_reference_mass_kg": 4.596783021536918e+20,
+        "final_upper_volume_km3": 153226100.71789727,
+        "format": "genesis-starter-material-ledger-0.1",
+        "generated_volume_km3": 57325336.369220026,
+        "initial_time_myr": 30.00005,
+        "initial_upper_components_km3": {
+          "continental_bedrock": 0.0,
+          "oceanic_bedrock": 95930764.34867726,
+          "plume_dyke": 0.0,
+          "plume_extrusive": 0.0,
+          "plume_underplate": 0.0,
+          "surface_sediment": 0.0
+        },
+        "initial_upper_reference_mass_kg": 2.8779229304603178e+20,
+        "initial_upper_volume_km3": 95930764.34867726,
+        "mantle_reference_mass_change_kg": -1.7188600910766008e+20,
+        "new_continental_records": 0,
+        "new_lithosphere_records": 1,
+        "observed_upper_change_km3": 57295336.36922,
+        "predicted_upper_change_km3": 57295336.369220026,
+        "recycled_volume_km3": 30000.0,
+        "reference_density_kg_m3": 3000.0,
+        "reference_mass_residual_kg": -67055.22537231445,
+        "relative_volume_residual": -1.458742452235537e-16,
+        "sink_components_km3": {
+          "continental_cycle_oceanic_recycling": 0.0,
+          "continental_cycle_recycling": 0.0,
+          "continental_rift_recycling": 0.0,
+          "deep_sediment_recycling": 0.0,
+          "oceanic_replacement_by_juvenile_crust": 0.0,
+          "oceanic_rift_recycling": 0.0,
+          "oceanic_subduction": 30000.0,
+          "plume_dyke_recycling": 0.0,
+          "plume_extrusive_recycling": 0.0,
+          "plume_underplate_recycling": 0.0
+        },
+        "source_components_km3": {
+          "continental_cycle_oceanic_creation": 0.0,
+          "continental_generation": 0.0,
+          "lithosphere_oceanic_creation": 57325336.369220026,
+          "plume_dyke_generation": 0.0,
+          "plume_extrusive_generation": 0.0,
+          "plume_underplate_generation": 0.0
+        },
+        "thermal_energy_changed_by_audit_j": 0.0,
+        "volume_residual_km3": -2.2351741790771484e-08,
+        "volume_tolerance_km3": 4.354947711757895e-06
+      },
+      "material_source_sha256": "e8ffb9ca90410beb981a451d3942377c0a111a55e70a889386078c9a6db5c99f",
+      "mechanical_energy_closed": false,
+      "relative_omega_rad_per_myr": 0.013142299964605187,
+      "thermal": {
+        "active_enthalpy_after_j": 4.7773205069291977e+30,
+        "active_enthalpy_before_j": 4.771072456824954e+30,
+        "conduction_iterations": 1,
+        "created_enthalpy_j": 2.0512220252393832e+26,
+        "created_mass_kg": 1.7197600910766008e+20,
+        "deep_after_k": 995.2494358791838,
+        "deep_before_k": 993.9477585093867,
+        "donor_specific_enthalpy_j_kg": 1192737.310211264,
+        "global_allowance_j": 3.016128023805863e+17,
+        "global_residual_j": -3561221357306561.5,
+        "inactive_memory_heat_j": 0.0,
+        "local_max_residual_j": 338801861214208.0,
+        "mass_roundoff_allowance_kg": 17182542832.0,
+        "max_carrier_melt_fraction": 0.0,
+        "max_local_residual_over_allowance": 0.08445095670947557,
+        "max_temperature_change_k": 1.3525093609405303,
+        "mechanical_heat_j": 0.0,
+        "ports": {
+          "area_m2": 351259828403324.3,
+          "audit_includes_port_dose_and_root_lattice_roundoff": true,
+          "dt_seconds": 315576000000000.0,
+          "endpoint_roundoff_allowance_j": 1.157296632362709e+17,
+          "maximum_local_energy_residual_j": 4503599627370496.0,
+          "net_thermal_input_j": 6.248050104247617e+27,
+          "new_source_coefficients": false,
+          "orbit_after": {
+            "dissipated_energy_j": 9.63827291187589e+25,
+            "eccentricity": 7.538356065228103e-20,
+            "semimajor_axis_km": 773185.9490725608,
+            "time_myr": 40.00005
+          },
+          "orbit_before": {
+            "dissipated_energy_j": 9.63827291187589e+25,
+            "eccentricity": 5.410160889503077e-16,
+            "semimajor_axis_km": 773185.9490725608,
+            "time_myr": 30.00005
+          },
+          "orbital_debit_j": 705.2767718133143,
+          "ports": [
+            {
+              "energy_into_thermal_j": 6.248050104243114e+27,
+              "name": "radiogenic",
+              "recipient": 2560,
+              "scope": "external nuclear energy; no nuclear inventory state"
+            },
+            {
+              "energy_into_thermal_j": 705.2767718133143,
+              "name": "tidal",
+              "recipient": 2560,
+              "scope": "paired orbital dissipation"
+            },
+            {
+              "energy_into_thermal_j": 2.491069232263047e+31,
+              "name": "stellar_absorbed",
+              "recipient": 2561,
+              "scope": "external radiation"
+            },
+            {
+              "energy_into_thermal_j": 0.0,
+              "name": "giant_absorbed",
+              "recipient": 2561,
+              "scope": "external radiation; zero if coefficient is zero"
+            },
+            {
+              "energy_into_thermal_j": -2.4910692322630464e+31,
+              "name": "OLR",
+              "recipient": 2561,
+              "scope": "outgoing radiation"
+            }
+          ],
+          "routing": "legacy mantle source -> deep; legacy radiation -> surface water/atmosphere",
+          "source_stage_clock": "dose integrated over interval; state clock advanced by subsequent conduction",
+          "source_surface_endpoint_k": 282.1892062504533,
+          "water_phase_model": "existing Genesis condensation"
+        },
+        "recycled_enthalpy_j": 1.0734635590857977e+23,
+        "recycled_mass_kg": 9e+16,
+        "surface_after_k": 282.1892062504533,
+        "surface_before_k": 282.1892062504533,
+        "time_myr": 40.00005,
+        "total_mass_residual_kg": 27455488.0,
+        "transport_allowance_j": 1.801720203260723e+16,
+        "transport_residual_j": 415607883825152.0
+      },
+      "thermal_source": "active inherited reservoirs/ports; no archived H substitute",
+      "time_myr": 40.00005,
+      "transport_commits": 2,
+      "transported_oceanic_volume_km3": 69675244.15916929,
+      "transported_winning_cells": 609,
+      "unclosed_angular_momentum_change_kg_m2_s": [
+        -7395575869050901.0,
+        3.10256557310718e+16,
+        3.1675261563274976e+16
+      ],
+      "unclosed_kinetic_change_j": 87.71019013973455,
+      "unclosed_linear_momentum_change_kg_m_s": [
+        5940093138.476006,
+        100108762502.52425,
+        458098457.8479265
+      ]
+    }
+  ],
+  "subdivisions": 3,
+  "thermal_geometry_approximation": "fixed inherited Eulerian conductances; no evolving thickness reconstruction"
+}

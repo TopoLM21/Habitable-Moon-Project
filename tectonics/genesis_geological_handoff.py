@@ -45,6 +45,8 @@ def kinematics(cp, mesh, radius):
 
 
 class GeologicalContinuation:
+    FORMAT = VERSION
+
     def __init__(self, checkpoint, record, source):
         self.checkpoint = checkpoint
         self.record = deepcopy(record)
@@ -127,7 +129,9 @@ class GeologicalContinuation:
             mantle_flow=new.mantle_flow)
         history = EccentricityHistory(np.array([0., 1e9]), np.full(2, self.record['eccentricity']))
         new.state, _, _, diag = advance_lithosphere(self.mesh,new.system,new.state,dt_myr,r,
-            self.record['gravity_m_s2'],self.record['period_hours'],history,transport_state=new.transport_state)
+            self.record['gravity_m_s2'],self.record['period_hours'],history,transport_state=new.transport_state,
+            primary_mass_jupiter=self.record.get('primary_mass_jupiter', 1.),
+            love_h2=self.record.get('love_h2', .6))
         new.system.cell_plate = new.state.cell_plate.copy()
         row = asdict(diag); source_index = row.pop('material_source_index')
         new.lithosphere_rows.append(row)
@@ -149,11 +153,15 @@ class GeologicalContinuation:
             unclosed_linear_momentum_change_kg_m_s=(np.array(after['linear_momentum_kg_m_s'])-before['linear_momentum_kg_m_s']).tolist(),
             SI_force_work_available=False, coupled_enthalpy_closed=False, heat_from_retired_memory_j=0.,
             dynamics=asdict(dynamics))
+        self._after_material_step(old, new, source_index, audit)
         # Inactive native substates retain their own timestamps, visibly frozen.
         self.checkpoint = new
         self.record['interior_reference_mass_kg'] = interior
         self.record['steps'].append(audit)
         return deepcopy(audit)
+
+    def _after_material_step(self, old, new, source_index, audit):
+        """Optional transactional extension; the legacy experiment keeps this empty."""
 
     def save(self, path):
         root = Path(path); root.mkdir(parents=True, exist_ok=False)
@@ -171,7 +179,7 @@ class GeologicalContinuation:
         if set(sums) != names or any(sha((root/n).read_bytes()) != sums[n] for n in names):
             raise ValueError('Geological restart checksum mismatch')
         record = json.loads((root/'record.json').read_bytes()); source = json.loads((root/'source.json').read_bytes())
-        if record['format'] != VERSION or record['source_sha256'] != sha(encoded(source)):
+        if record['format'] != cls.FORMAT or record['source_sha256'] != sha(encoded(source)):
             raise ValueError('Geological source/version mismatch')
         cp = load_checkpoint(root/'mature', PlateTopologyManager(PlateTopologyParameters()))
         return cls(cp,record,source)
