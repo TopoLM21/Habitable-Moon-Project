@@ -138,3 +138,7 @@ PYTHONDONTWRITEBYTECODE=1`, Python `/workspace/habitable-moon-venv/bin/python`:
 Материальная история, checkpoints, newborn, adaptive, физические пороги,
 публикации и восстановленные архивы не менялись. Исходный SHA256 остаётся
 `94fbbb3cb88a15147d33ab04c8f791470dd92e3d73cf8cba4afc0f361cd583fc`.
+
+Следующий этап выполнен: [ANGULAR_MAXWELL_RESULT.md](ANGULAR_MAXWELL_RESULT.md).
+Отдельный versioned многошаговый режим с полной угловой памятью проверен
+на известной инициализации; прямой restart старого source не заявлен.
