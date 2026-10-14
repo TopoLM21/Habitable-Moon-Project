@@ -1022,6 +1022,7 @@ class PlateTopologyManager:
         boundaries: list[BoundaryRecord],
         radius_km: float,
         dt_myr: float,
+        *, connectivity_trace: dict | None = None,
     ) -> tuple[PlateSystem, TopologyDiagnostics, list[TopologyEvent]]:
         before = len(system.plates)
         events: list[TopologyEvent] = []
@@ -1125,6 +1126,8 @@ class PlateTopologyManager:
             self._remap_collision_memory(old_current, current)
 
         repair = None
+        if connectivity_trace is not None:
+            connectivity_trace.clear()
         if self.params.repair_fragmented_plates:
             repair = repair_plate_connectivity(
                 mesh, current.cell_plate, radius_km,
@@ -1138,6 +1141,9 @@ class PlateTopologyManager:
                     _repaired_angular_velocities(mesh, current, repair.cell_plate, radius_km),
                 )
                 state.cell_plate = current.cell_plate.copy()
+                if connectivity_trace is not None:
+                    from .geological_contact import repair_audit
+                    connectivity_trace.update(repair_audit(mesh,old_current,current,repair,radius_km,self.params.min_plate_area_km2))
                 self._remap_collision_memory(old_current, current)
                 split_n += repair.promoted_components
                 events.append(TopologyEvent(

@@ -20,7 +20,7 @@ def snap(e):
 def run(root,dt,duration=500.,resume=None):
     root=Path(root);root.mkdir(parents=True,exist_ok=False);start=time.monotonic()
     e=UnifiedGeologicalGenesis.load(resume or '/workspace/unified-geological-genesis-02/1.0/initial')
-    if resume is None:e.enable_mature_cycle()
+    if resume is None:e.enable_mature_cycle(continental_displacement='retire_displaced_basalt')
     saved=e.save(root/'initial');history=[snap(e)];last=0;resumed=UnifiedGeologicalGenesis.load(saved);resumed.step(dt)
     target=e.source['original_time_myr']+duration
     count=round((target-e.checkpoint.state.time_myr)/dt)

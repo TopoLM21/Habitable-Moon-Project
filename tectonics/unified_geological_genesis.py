@@ -5,7 +5,7 @@ Maxwell mechanics is archived, not equilibrated or silently turned into heat.
 Ocean temperature is a declared liquid thermostat; its heat export is measured.
 """
 from copy import deepcopy
-from dataclasses import asdict,dataclass
+from dataclasses import fields, asdict,dataclass
 from pathlib import Path
 from types import SimpleNamespace
 import json,math
@@ -145,17 +145,19 @@ class UnifiedGeologicalGenesis(GeologicalContinuation):
         if not self.record.get('geometry_diagnostics'):return {}
         self._material_trace={}
         return dict(material_trace=self._material_trace,transport_parameters=SubgridTransportParameters(
-            connected_footprint=self.record.get('connected_footprint',False)),continental_displacement=self.record.get('continental_displacement'))
+            connected_footprint=self.record.get('connected_footprint',False)),continental_displacement=self.record.get('continental_displacement'),gap_attachment=self.record.get('gap_attachment'))
 
-    def enable_mature_cycle(self,*,connected_footprint=True):
+    def enable_mature_cycle(self,*,continental_displacement,connected_footprint=True):
         """Explicit scenario upgrade; old saved/default experiments stay unchanged."""
+        if continental_displacement not in (None, 'retire_displaced_basalt', 'retire_added_continental_area'):
+            raise ValueError('Choose an explicit continental displacement mode')
         from .continental import ContinentalCycleParameters
         from .subduction_memory import SubductionMemoryParameters
         from .late_tectonics import LateTectonicsParameters
         self.record.update(mature_cycle=True,geometry_diagnostics=True,connected_footprint=connected_footprint,
             continental_parameters=asdict(ContinentalCycleParameters()),subduction_parameters=asdict(SubductionMemoryParameters()),
             late_parameters=asdict(LateTectonicsParameters()),
-            continental_displacement='retire_displaced_basalt',
+            continental_displacement=continental_displacement,
             composition_model='native effective arc maturation; separate mafic/felsic provenance, common reference density/EOS; no elemental chemistry',
             slab_inventory='legacy length/depth memory is a force diagnostic, not additional mass; recycled material/H resides in explicit deep reservoir')
 
@@ -306,7 +308,16 @@ class UnifiedGeologicalGenesis(GeologicalContinuation):
                 new.thermal.tectonic_activity_factor,LateTectonicsParameters(**self.record.get('late_parameters',{})),
                 last_split_time_myr=new.manager.last_split_time_myr)
             new.late_rows.append(asdict(late))
-        system,topology,events=new.manager.update(self.mesh,new.state,new.system,boundaries,self.record['radius_km'],audit['dt_myr'])
+        contact_trace = {} if self.record.get('contact_diagnostics') else None
+        if contact_trace is not None:
+            from .geological_contact import contact_inventory
+            audit['contact_inventory'] = contact_inventory(self.mesh,old.state,new.state,self._material_trace,self.record['radius_km'])
+            material_before = {field.name:getattr(new.state,field.name).copy() for field in fields(new.state) if field.name!='cell_plate' and isinstance(getattr(new.state,field.name),np.ndarray)}
+        system,topology,events=new.manager.update(self.mesh,new.state,new.system,boundaries,self.record['radius_km'],audit['dt_myr'],connectivity_trace=contact_trace)
+        if contact_trace is not None:
+            if any(not np.array_equal(value,getattr(new.state,name)) for name,value in material_before.items()):
+                raise ValueError('Connectivity changed physical material fields')
+            audit['contact_repair'] = contact_trace
         if topology.topology_changed:self.install_system(new,system)
         else:new.system=system
         new.topology_rows.append(asdict(topology))

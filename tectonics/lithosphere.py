@@ -506,6 +506,29 @@ def effective_continental_thickness_km(
     return out
 
 
+def continental_basalt_retention(areas, old_fraction, source, new_fraction, basalt_volume, mode):
+    """Fraction retained under an explicitly selected displacement hypothesis.
+
+    The legacy mode compares fractions on different raster cells. The area mode
+    compares the incoming winner's extensive continental footprint with the
+    final target footprint, so rigid remapping alone cannot retire basalt.
+    Neither mode is a default physical process. An impossible inherited column
+    is refused by the area mode instead of inventing a material sink.
+    """
+    inherited = source >= 0
+    previous = np.zeros(len(source))
+    previous[inherited] = old_fraction[source[inherited]]
+    if mode == 'retire_added_continental_area':
+        previous[inherited] *= areas[source[inherited]] / areas[inherited]
+        if np.any((previous >= 1.) & (basalt_volume > 0.)):
+            raise ValueError('Inherited continental area fills target with basalt remaining; raster packing needs resolution')
+    elif mode != 'retire_displaced_basalt':
+        raise ValueError('Unknown continental displacement rule')
+    available = np.maximum(1. - new_fraction, 0.)
+    before = 1. - previous
+    return np.minimum(1., np.divide(available,before,out=np.zeros(len(source)),where=before>0.))
+
+
 def effective_oceanic_thickness_km(
     fraction: Array, volume_km3: Array, areas_km2: Array,
 ) -> Array:
@@ -922,10 +945,13 @@ def advance_lithosphere(
     young_subduction_sink=None,
     material_trace=None,
     continental_displacement=None,
+    gap_attachment=None,
 ) -> tuple[LithosphereState, Array, Array, LithosphereStepDiagnostics]:
     if dt_myr <= 0.0:
         raise ValueError("dt_myr must be positive")
-    if continental_displacement not in (None,'retire_displaced_basalt'):raise ValueError('Unknown continental displacement rule')
+    if gap_attachment not in (None, 'adjacent_front'):
+        raise ValueError('Unknown newborn gap attachment rule')
+    if continental_displacement not in (None,'retire_displaced_basalt','retire_added_continental_area'):raise ValueError('Unknown continental displacement rule')
     if young_subduction_sink is not None and (transport_state is None or state.oceanic_volume_km3 is None):
         raise ValueError("Young accepted-material sink requires conservative tracked ocean volume")
     n = mesh.cell_count
@@ -1146,6 +1172,9 @@ def advance_lithosphere(
         survivor_cells = np.flatnonzero(~gap_mask)
         near = survivor_cells[np.asarray(near_local, dtype=np.int32)]
         new_plate[gap_mask] = new_plate[near]
+        if gap_attachment == 'adjacent_front':
+            from .geological_contact import adjacent_gap_owners
+            new_plate[:] = adjacent_gap_owners(mesh,new_plate,gap_mask)
         new_type[gap_mask] = int(CrustType.OCEANIC)
         new_age[gap_mask] = 0.0
         new_thickness[gap_mask] = float(oceanic_thickness_km)
@@ -1208,12 +1237,9 @@ def advance_lithosphere(
             transfers=None if material_trace is None else material_trace.setdefault('continental_spreading',[]),
         )
         # Rebuild the *visible* crust raster from the independent material
-        if new_ocean_volume is not None and continental_displacement=='retire_displaced_basalt':
-            previous_fraction=np.zeros(n)
-            previous_fraction[inherited]=old_cont_fraction[winner_sources]
-            available=np.maximum(1.-new_cont_fraction,0.)
-            previous_available=1.-previous_fraction
-            fraction=np.minimum(1.,np.divide(available,previous_available,out=np.zeros(n),where=previous_available>0))
+        if new_ocean_volume is not None and continental_displacement is not None:
+            fraction=continental_basalt_retention(areas,old_cont_fraction,material_source_index,
+                new_cont_fraction,new_ocean_volume,continental_displacement)
             displaced=new_ocean_volume*(1.-fraction)
             new_ocean_volume*=fraction
             oceanic_continental_displacement_volume=float(np.sum(displaced))
