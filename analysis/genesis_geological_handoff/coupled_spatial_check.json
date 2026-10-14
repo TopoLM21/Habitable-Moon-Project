@@ -1,0 +1,269 @@
+{
+  "code_base": "77ef6c3d80565d2d43035724d159eabd5d66a3a0",
+  "scope": "80/320 nested coplanar physical geometry, coupled.125year dt.0625, fixed laws",
+  "primary_transfer": {
+    "mass_matrix_restriction_relative": 2.9294163147378957e-16,
+    "mass_sum_relative": 0.0,
+    "enthalpy_sum_relative": 0.0,
+    "kinetic_before_j": 5014.979534255348,
+    "kinetic_after_j": 5014.979534255348,
+    "restricted_force_relative": 0.09843375411899764,
+    "drag_restriction_relative": 2.457198865945174e-16,
+    "scalar_nodes_before": 2722,
+    "scalar_nodes_after": 10882,
+    "source_cohorts": 800,
+    "fragments": 3200,
+    "initial_fields": {
+      "world_stress_relative": 3.5939773390246186e-16,
+      "temperature_max_difference_k": 0.0,
+      "thermal_H_relative_l2": 0.0,
+      "old_damage_max_difference": 0.0,
+      "face_damage_max_difference": 0.0
+    },
+    "elastic_relative": 0.0,
+    "source_sha256": "ae107b4a2a5725c0e9b7eece15de71f234460de7e7d5f5ae6ef59616510ba590"
+  },
+  "alternative_transfer": {
+    "mass_matrix_restriction_relative": 2.9294163147378957e-16,
+    "mass_sum_relative": 0.0,
+    "enthalpy_sum_relative": 0.0,
+    "kinetic_before_j": 5014.979534255348,
+    "kinetic_after_j": 5014.979534255348,
+    "restricted_force_relative": 0.09843375411899764,
+    "drag_restriction_relative": 2.457198865945174e-16,
+    "scalar_nodes_before": 2722,
+    "scalar_nodes_after": 10882,
+    "source_cohorts": 800,
+    "fragments": 3200,
+    "initial_difference_same_fine": {
+      "world_stress_relative": 0.013850962018883634,
+      "temperature_max_difference_k": 0.0,
+      "thermal_H_relative_l2": 0.0,
+      "old_damage_max_difference": 0.0,
+      "face_damage_max_difference": 0.0
+    },
+    "elastic_relative_transfer": 0.0
+  },
+  "runs": {
+    "coarse_full": {
+      "faces": 80,
+      "reduced_diagnostic": false,
+      "rows": [
+        {
+          "years": 0.0625,
+          "seconds": 0.22008674600510858,
+          "whole_allowance_fraction": 0.05403796964488715,
+          "mechanical_balance": 8.491652178878037e-18,
+          "momentum": 1.9306054372321853e-15,
+          "births": 0,
+          "edge_saturated": 0,
+          "certificate": "NOT_SEPARATING"
+        },
+        {
+          "years": 0.125,
+          "seconds": 0.20677764099673368,
+          "whole_allowance_fraction": 0.02599113325430068,
+          "mechanical_balance": 1.841311725371487e-17,
+          "momentum": 2.321650033163082e-15,
+          "births": 0,
+          "edge_saturated": 0,
+          "certificate": "NOT_SEPARATING"
+        }
+      ]
+    },
+    "fine_full": {
+      "faces": 320,
+      "reduced_diagnostic": false,
+      "rows": [
+        {
+          "years": 0.0625,
+          "seconds": 1.0570926379878074,
+          "whole_allowance_fraction": 0.054037976403310505,
+          "mechanical_balance": 2.70080254750092e-17,
+          "momentum": 2.974806594644525e-15,
+          "births": 0,
+          "edge_saturated": 0,
+          "certificate": "NOT_SEPARATING"
+        },
+        {
+          "years": 0.125,
+          "seconds": 1.2012491319910623,
+          "whole_allowance_fraction": 0.02599112546278217,
+          "mechanical_balance": 9.217189634776386e-17,
+          "momentum": 2.0939749729726143e-15,
+          "births": 0,
+          "edge_saturated": 0,
+          "certificate": "NOT_SEPARATING"
+        }
+      ]
+    },
+    "coarse_reduced": {
+      "faces": 80,
+      "reduced_diagnostic": true,
+      "rows": [
+        {
+          "years": 0.0625,
+          "seconds": 0.21771284300484695,
+          "whole_allowance_fraction": 0.05403795903056792,
+          "mechanical_balance": 6.415761880904688e-17,
+          "momentum": 2.9502363185525494e-15,
+          "births": 0,
+          "edge_saturated": 0,
+          "certificate": "NOT_SEPARATING"
+        },
+        {
+          "years": 0.125,
+          "seconds": 0.20792588200129103,
+          "whole_allowance_fraction": 0.02599110120572699,
+          "mechanical_balance": 7.263412490470334e-18,
+          "momentum": 2.1368928952917793e-15,
+          "births": 0,
+          "edge_saturated": 0,
+          "certificate": "NOT_SEPARATING"
+        }
+      ]
+    },
+    "fine_reduced": {
+      "faces": 320,
+      "reduced_diagnostic": true,
+      "rows": [
+        {
+          "years": 0.0625,
+          "seconds": 1.1610345340013737,
+          "whole_allowance_fraction": 0.05403798681659858,
+          "mechanical_balance": 1.527145802868814e-16,
+          "momentum": 3.916897222148517e-15,
+          "births": 0,
+          "edge_saturated": 0,
+          "certificate": "NOT_SEPARATING"
+        },
+        {
+          "years": 0.125,
+          "seconds": 1.0609341989911627,
+          "whole_allowance_fraction": 0.025991095302302303,
+          "mechanical_balance": 4.536077727586959e-17,
+          "momentum": 3.1617579328589194e-15,
+          "births": 0,
+          "edge_saturated": 0,
+          "certificate": "NOT_SEPARATING"
+        }
+      ]
+    },
+    "fine_alternative": {
+      "faces": 320,
+      "rows": [
+        {
+          "years": 0.0625,
+          "seconds": 1.0245585049997317,
+          "whole_allowance_fraction": 0.054037985233560994,
+          "births": 0
+        },
+        {
+          "years": 0.125,
+          "seconds": 0.980690334996325,
+          "whole_allowance_fraction": 0.025992843493489005,
+          "births": 0
+        }
+      ]
+    }
+  },
+  "comparisons": {
+    "0.0625": {
+      "corrected": {
+        "world_stress_relative": 0.001815134116696908,
+        "temperature_max_difference_k": 3.269633452873677e-10,
+        "thermal_H_relative_l2": 1.3563062956050947e-19,
+        "old_damage_max_difference": 1.08127590402185e-07,
+        "face_damage_max_difference": 0.001966773274877603
+      },
+      "reduced": {
+        "world_stress_relative": 0.0021786593993377173,
+        "temperature_max_difference_k": 3.653894964372739e-10,
+        "thermal_H_relative_l2": 2.4846690890725816e-19,
+        "old_damage_max_difference": 1.0865162947820695e-07,
+        "face_damage_max_difference": 0.0019676053547266568
+      },
+      "same_fine_initialization": {
+        "world_stress_relative": 0.013488658435908043,
+        "temperature_max_difference_k": 8.601546142017469e-10,
+        "thermal_H_relative_l2": 3.7059597518901683e-19,
+        "old_damage_max_difference": 3.1923706456105094e-09,
+        "face_damage_max_difference": 9.29087715252127e-05
+      },
+      "integration_change_coarse": {
+        "world_stress_relative": 0.0004549485152031149,
+        "temperature_max_difference_k": 1.5302248357329518e-10,
+        "thermal_H_relative_l2": 1.1779086429736195e-19,
+        "old_damage_max_difference": 5.846642198159557e-10,
+        "face_damage_max_difference": 1.5453209187173134e-06
+      },
+      "integration_change_fine": {
+        "world_stress_relative": 0.0005266867306268845,
+        "temperature_max_difference_k": 1.4551915228366852e-10,
+        "thermal_H_relative_l2": 3.897361064552887e-20,
+        "old_damage_max_difference": 3.8837252858137106e-10,
+        "face_damage_max_difference": 5.986114853098745e-06
+      }
+    },
+    "0.125": {
+      "corrected": {
+        "world_stress_relative": 0.0026480711815189046,
+        "temperature_max_difference_k": 6.52562448522076e-10,
+        "thermal_H_relative_l2": 3.4789480849159145e-19,
+        "old_damage_max_difference": 2.162724773574487e-07,
+        "face_damage_max_difference": 0.003758797686204726
+      },
+      "reduced": {
+        "world_stress_relative": 0.0028911255200897742,
+        "temperature_max_difference_k": 7.294147508218884e-10,
+        "thermal_H_relative_l2": 4.915312122719441e-19,
+        "old_damage_max_difference": 2.173104716035601e-07,
+        "face_damage_max_difference": 0.0037603830658350275
+      },
+      "same_fine_initialization": {
+        "world_stress_relative": 0.01345340152441027,
+        "temperature_max_difference_k": 1.7223555914824829e-09,
+        "thermal_H_relative_l2": 7.373885593624552e-19,
+        "old_damage_max_difference": 6.379432981873379e-09,
+        "face_damage_max_difference": 0.00018569957613265992
+      },
+      "integration_change_coarse": {
+        "world_stress_relative": 0.00045328056293967656,
+        "temperature_max_difference_k": 3.0468072509393096e-10,
+        "thermal_H_relative_l2": 2.3404692220942614e-19,
+        "old_damage_max_difference": 1.1655802850674135e-09,
+        "face_damage_max_difference": 3.0245678619544164e-06
+      },
+      "integration_change_fine": {
+        "world_stress_relative": 0.0005260486564890555,
+        "temperature_max_difference_k": 2.901288098655641e-10,
+        "thermal_H_relative_l2": 7.754766595002362e-20,
+        "old_damage_max_difference": 7.768631710147744e-10,
+        "face_damage_max_difference": 1.1994135413001539e-05
+      }
+    }
+  },
+  "spatial_gate_passed": true,
+  "restart_exact": true,
+  "longer_pilot_run": false,
+  "files": {
+    "fine_alternative_final.json": {
+      "bytes": 120211788,
+      "sha256": "3807c1cb4f67e45527ceab327e8691e13173d9cc5bd40f472ccf7f9310ec9f79"
+    },
+    "fields.npz": {
+      "bytes": 575112,
+      "sha256": "11604b3276ccd29b3bb1c74ea6e91c6ffac2a4c2a31983d5cf917170b9937ddc"
+    },
+    "fine_initial.json": {
+      "bytes": 120143528,
+      "sha256": "ed7b79c8b2b91c8387c7c762be0e51ed9942e1fd6775571543e802612b4625aa"
+    },
+    "fine_final.json": {
+      "bytes": 120213193,
+      "sha256": "4aee22f7ca3026306abd48d809a88967588e8865c8ffa2a2d144a1f76dfef5aa"
+    }
+  },
+  "output": "/workspace/genesis-coupled-spatial-01",
+  "seconds": 64.35949510100181
+}
