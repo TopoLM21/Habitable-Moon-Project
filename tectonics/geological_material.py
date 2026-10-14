@@ -18,7 +18,7 @@ def coalesce_node(parts):
     between bins, birth IDs or different compositions is introduced.
     """
     groups={}
-    for p in parts:groups.setdefault((p['id'],p.get('material_phase')),[]).append(p)
+    for p in parts:groups.setdefault((p['id'],p.get('material_phase'),p.get('surface_patch')),[]).append(p)
     return [dict(rows[0],mass_kg=math.fsum(p['mass_kg'] for p in rows),energy_j=math.fsum(p['energy_j'] for p in rows),
         **({'mass_coordinate_point_assignment':True} if any(p.get('mass_coordinate_point_assignment') for p in rows) else {})) for rows in groups.values()]
 
@@ -27,23 +27,28 @@ def transport_cycle(parcel,mass,energy,old,lith,final,trace,cycle,time):
     profiles=[[[],[]] for _ in range(n)]
     generated=[];retired=[];processes={};donor_h=float(energy[-2]/mass[-2])
     oldM=float(mass[-2]);oldH=float(energy[-2]);parcel['generation']+=1;generation=parcel['generation']
-    original=[]
-    for f,row in enumerate(nodes):
-        parts=[dict(p) for i in row for p in before[str(i)]]
-        for p in parts:p.setdefault('material_phase','mafic')
-        groups=[[p for p in parts if p['material_phase']==phase] for phase in ('mafic','felsic')]
-        for phase,vol in enumerate((old.oceanic_volume_km3[f],old.continental_volume_km3[f])):
-            if not math.isclose(math.fsum(p['mass_kg'] for p in groups[phase]),vol*CONVERSION,rel_tol=3e-13,abs_tol=1.):
-                raise ValueError('Composition provenance differs from native inventory')
-        original.append(groups)
-    winner=trace['winner_source'];survived=set(map(int,winner[winner>=0]))
-    for f,src in enumerate(winner):
-        if src>=0:profiles[f][0]=list(original[src][0])
-    for src in range(n):
-        if src not in survived:retired.extend(original[src][0])
-    processes['oceanic_subduction']=math.fsum(p['mass_kg'] for p in retired)
-    for pid,row in trace['rigid_transport'].items():
-        for src,dst in zip(row['source'],row['target']):profiles[int(dst)][1].extend(original[int(src)][1])
+    if 'fractional_profiles' in trace:
+        profiles=trace['fractional_profiles']
+        generated=list(trace['fractional_generated']);retired=list(trace['fractional_retired'])
+        processes['fractional_subduction']=math.fsum(p['mass_kg'] for p in retired)
+    else:
+        original=[]
+        for f,row in enumerate(nodes):
+            parts=[dict(p) for i in row for p in before[str(i)]]
+            for p in parts:p.setdefault('material_phase','mafic')
+            groups=[[p for p in parts if p['material_phase']==phase] for phase in ('mafic','felsic')]
+            for phase,vol in enumerate((old.oceanic_volume_km3[f],old.continental_volume_km3[f])):
+                if not math.isclose(math.fsum(p['mass_kg'] for p in groups[phase]),vol*CONVERSION,rel_tol=3e-13,abs_tol=1.):
+                    raise ValueError('Composition provenance differs from native inventory')
+            original.append(groups)
+        winner=trace['winner_source'];survived=set(map(int,winner[winner>=0]))
+        for f,src in enumerate(winner):
+            if src>=0:profiles[f][0]=list(original[src][0])
+        for src in range(n):
+            if src not in survived:retired.extend(original[src][0])
+        processes['oceanic_subduction']=math.fsum(p['mass_kg'] for p in retired)
+        for pid,row in trace['rigid_transport'].items():
+            for src,dst in zip(row['source'],row['target']):profiles[int(dst)][1].extend(original[int(src)][1])
 
     def remove(f,k,amount):
         parts=profiles[f][k];total=math.fsum(p['mass_kg'] for p in parts)

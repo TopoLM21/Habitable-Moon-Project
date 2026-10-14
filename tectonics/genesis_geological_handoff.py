@@ -128,10 +128,7 @@ class GeologicalContinuation:
             new.baseline, r, dt_myr, 5., 1., DynamicsParameters(**self.record['dynamics_parameters']),
             mantle_flow=new.mantle_flow,**self._dynamics_options(new))
         history = EccentricityHistory(np.array([0., 1e9]), np.full(2, self.record['eccentricity']))
-        new.state, _, _, diag = advance_lithosphere(self.mesh,new.system,new.state,dt_myr,r,
-            self.record['gravity_m_s2'],self.record['period_hours'],history,transport_state=new.transport_state,
-            primary_mass_jupiter=self.record.get('primary_mass_jupiter', 1.),
-            love_h2=self.record.get('love_h2', .6),**self._lithosphere_options())
+        new.state, _, _, diag = self._advance_lithosphere(new,dt_myr,r,history)
         new.system.cell_plate = new.state.cell_plate.copy()
         row = asdict(diag); source_index = row.pop('material_source_index')
         new.lithosphere_rows.append(row)
@@ -160,6 +157,12 @@ class GeologicalContinuation:
         self.record['interior_reference_mass_kg'] = interior
         self.record['steps'].append(audit)
         return deepcopy(audit)
+
+    def _advance_lithosphere(self,new,dt_myr,r,history):
+        return advance_lithosphere(self.mesh,new.system,new.state,dt_myr,r,
+            self.record['gravity_m_s2'],self.record['period_hours'],history,transport_state=new.transport_state,
+            primary_mass_jupiter=self.record.get('primary_mass_jupiter', 1.),
+            love_h2=self.record.get('love_h2', .6),**self._lithosphere_options())
 
     def _after_material_step(self, old, new, source_index, audit):
         """Optional transactional extension; the legacy experiment keeps this empty."""

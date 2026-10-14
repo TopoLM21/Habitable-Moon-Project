@@ -946,6 +946,7 @@ def advance_lithosphere(
     material_trace=None,
     continental_displacement=None,
     gap_attachment=None,
+    precomputed_transport=None,
 ) -> tuple[LithosphereState, Array, Array, LithosphereStepDiagnostics]:
     if dt_myr <= 0.0:
         raise ValueError("dt_myr must be positive")
@@ -968,7 +969,7 @@ def advance_lithosphere(
     if conservative_transport:
         # Local import avoids a module cycle: transport needs LithosphereState.
         from .transport import build_transport_map
-        tmap = build_transport_map(
+        tmap = precomputed_transport if precomputed_transport is not None else build_transport_map(
             mesh, initial_system, state, dt_myr, transport_state, transport_parameters,
             trace=None if material_trace is None else material_trace.setdefault('rigid_transport',{}),
         )

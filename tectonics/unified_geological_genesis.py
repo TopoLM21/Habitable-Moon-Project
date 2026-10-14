@@ -161,6 +161,33 @@ class UnifiedGeologicalGenesis(GeologicalContinuation):
             composition_model='native effective arc maturation; separate mafic/felsic provenance, common reference density/EOS; no elemental chemistry',
             slab_inventory='legacy length/depth memory is a force diagnostic, not additional mass; recycled material/H resides in explicit deep reservoir')
 
+    def enable_fractional_transport(self):
+        from .geological_fractional import enable
+        enable(self)
+
+    def _advance_lithosphere(self,new,dt_myr,r,history):
+        if 'fractional_surface' not in self.record:
+            return super()._advance_lithosphere(new,dt_myr,r,history)
+        from .geological_fractional import project
+        from .lithosphere import advance_lithosphere
+        from .transport import TransportMap,TransportDiagnostics
+        options=self._lithosphere_options()
+        pre,extra=project(self,new.system,dt_myr)
+        self._fractional_pre=deepcopy(pre)
+        self._material_trace.update(extra)
+        new.state=pre;new.system.cell_plate=pre.cell_plate.copy()
+        n=self.mesh.cell_count;pc=len(new.system.plates)
+        covered=np.zeros((pc,n),dtype=bool);source=np.full((pc,n),-1,dtype=np.int32)
+        covered[pre.cell_plate,np.arange(n)]=True;source[pre.cell_plate,np.arange(n)]=np.arange(n)
+        native=TransportMap(covered,source,tuple(np.flatnonzero(pre.cell_plate==p) for p in range(pc)),new.transport_state,
+            TransportDiagnostics(0,new.transport_state.cumulative_commit_count,0.,0.,0.,0.,0.))
+        result=advance_lithosphere(self.mesh,new.system,pre,dt_myr,r,self.record['gravity_m_s2'],self.record['period_hours'],history,
+            transport_state=new.transport_state,primary_mass_jupiter=self.record.get('primary_mass_jupiter',1.),love_h2=self.record.get('love_h2',.6),
+            precomputed_transport=native,**options)
+        diag=result[3];diag.oceanic_created_volume_km3+=extra['fractional_created_volume']
+        diag.oceanic_subducted_volume_km3+=extra['fractional_retired_volume']
+        return result
+
     def _dynamics_options(self,checkpoint):
         if not self.record.get('mature_cycle'):return {}
         from .subduction_memory import SubductionMemoryParameters
@@ -223,6 +250,9 @@ class UnifiedGeologicalGenesis(GeologicalContinuation):
         return dt
 
     def install_system(self,cp,system):
+        if 'fractional_surface' in self.record:
+            from .geological_fractional import remap_owners
+            remap_owners(self,cp.system,system)
         if self.record.get('mature_cycle'):
             from .subduction_memory import remap_subduction_memory
             cp.subduction_memory=remap_subduction_memory(self.mesh,cp.system,system,cp.subduction_memory)
@@ -262,7 +292,7 @@ class UnifiedGeologicalGenesis(GeologicalContinuation):
     def _after_material_step(self,old,new,source_index,audit):
         if self.record.get('geometry_diagnostics'):
             from .geological_geometry import transport_geometry
-            audit['geometry']=transport_geometry(self.mesh,old.system,new.system,self._material_trace,self.record['radius_km'])
+            audit['geometry']=(self._material_trace['fractional_geometry'] if 'fractional_surface' in self.record else transport_geometry(self.mesh,old.system,new.system,self._material_trace,self.record['radius_km']))
         p=GeologicalGenesisParameters(**self.record['parameters']);inv=self.record['thermal_inventory']
         mass=np.array(inv['mass_kg']);energy=np.array(inv['energy_j']);M0=math.fsum(mass);H0=math.fsum(energy)
         if self.record.get('mature_cycle'):
@@ -282,7 +312,12 @@ class UnifiedGeologicalGenesis(GeologicalContinuation):
         if abs(mass_error)>3e-14*M0 or abs(transport_H)>3e-14*max(abs(H0),1):raise ValueError('Material/enthalpy transport imbalance')
         if not math.isclose(mass[-2],audit['interior_reference_mass_kg'],rel_tol=3e-14):raise ValueError('Independent interior ledger mismatch')
         for name,new_value in [('fracture_damage',0.),('material_strength',1.)]:
-            previous=np.array(self.record[name]);out=np.full(len(source_index),new_value);good=source_index>=0;out[good]=previous[source_index[good]];self.record[name]=out.tolist()
+            previous=np.array(self.record[name])
+            if 'fractional_surface' in self.record:
+                weights=self._material_trace['fractional_source_weights'];out=weights@previous+(1-weights.sum(1))*new_value
+            else:
+                out=np.full(len(source_index),new_value);good=source_index>=0;out[good]=previous[source_index[good]]
+            self.record[name]=out.tolist()
         bins=self.record['material_parcels']['nodes'];areas=self.mesh.physical_cell_areas_km2(self.record['radius_km'])*1e6
         surface_volume=new.state.oceanic_volume_km3+new.state.continental_volume_km3
         thickness=surface_volume/(areas/1e6)*1000;edges=[]
@@ -299,6 +334,9 @@ class UnifiedGeologicalGenesis(GeologicalContinuation):
         if not np.allclose([sum(mass[row]) for row in bins],surface_volume*DENSITY*1e9,rtol=2e-13):raise ValueError('Parcel carrier mass mismatch')
         self.record['thermal_inventory']=dict(mass_kg=mass.tolist(),energy_j=E.tolist());self.record['cumulative_exported_heat_j']+=export
         sync_thermal(self.record['material_parcels'],mass,E)
+        if 'fractional_surface' in self.record:
+            from .geological_fractional import bind_new_parts
+            bind_new_parts(self)
         new.thermal.time_myr=new.state.time_myr;new.thermal.system_age_myr+=audit['dt_myr'];new.thermal.mantle_temperature_k=float(out['temperature_k'][-2])
         new.mantle_flow,_=advance_mantle_flow(self.mesh,new.mantle_flow,audit['dt_myr'],1.,MantleFlowParameters())
         boundaries=classify_boundaries(self.mesh,new.system,self.record['radius_km'],5.,1.)
@@ -311,7 +349,7 @@ class UnifiedGeologicalGenesis(GeologicalContinuation):
         contact_trace = {} if self.record.get('contact_diagnostics') else None
         if contact_trace is not None:
             from .geological_contact import contact_inventory
-            audit['contact_inventory'] = contact_inventory(self.mesh,old.state,new.state,self._material_trace,self.record['radius_km'])
+            audit['contact_inventory'] = (dict(fractional=True,**self._material_trace['fractional_geometry']) if 'fractional_surface' in self.record else contact_inventory(self.mesh,old.state,new.state,self._material_trace,self.record['radius_km']))
             material_before = {field.name:getattr(new.state,field.name).copy() for field in fields(new.state) if field.name!='cell_plate' and isinstance(getattr(new.state,field.name),np.ndarray)}
         system,topology,events=new.manager.update(self.mesh,new.state,new.system,boundaries,self.record['radius_km'],audit['dt_myr'],connectivity_trace=contact_trace)
         if contact_trace is not None:
@@ -328,7 +366,11 @@ class UnifiedGeologicalGenesis(GeologicalContinuation):
             row=asdict(event);self.record['events'].append(row);new.events.append(deepcopy(row))
         new.system=canonicalize_plate_seeds(self.mesh,new.system)
         boundaries=classify_boundaries(self.mesh,new.system,self.record['radius_km'],5.,1.)
-        new.topo,relief,_=advance_topography(self.mesh,new.state,boundaries,old.topo,audit['dt_myr'],self.record['radius_km'],TopographyParameters(),previous_lithosphere=old.state,transport_source_index=source_index)
+        previous_topo=old.topo;previous_state=old.state
+        if 'fractional_surface' in self.record:
+            previous_topo=deepcopy(old.topo);previous_state=self._fractional_pre
+            previous_topo.elevation_m=self._material_trace['fractional_source_weights']@old.topo.elevation_m
+        new.topo,relief,_=advance_topography(self.mesh,new.state,boundaries,previous_topo,audit['dt_myr'],self.record['radius_km'],TopographyParameters(),previous_lithosphere=previous_state,transport_source_index=source_index)
         new.hydrosphere,water=advance_hydrosphere(self.mesh,new.state,new.topo,old.hydrosphere,self.record['radius_km'],HydrosphereParameters(),TopographyParameters())
         if new.hydrosphere.water_volume_km3!=self.record['water_volume_km3'] or abs(water.relative_volume_error)>1e-6:raise ValueError('Water inventory/sea level balance')
         if not self.record.get('mature_cycle') and (np.any(new.state.continental_fraction) or np.any(new.state.continental_volume_km3)):raise ValueError('Unexpected continental material')
