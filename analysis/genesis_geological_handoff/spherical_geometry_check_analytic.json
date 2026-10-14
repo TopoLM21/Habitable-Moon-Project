@@ -1,0 +1,288 @@
+{
+  "audit": {
+    "1": {
+      "setup_seconds": 1.5396392249967903,
+      "faces": 80,
+      "ndof": 252,
+      "blocks": 4000,
+      "radius_m": 5286809.090927882,
+      "old_load_bearing_mass_kg": 7.261865842435559e+19,
+      "new_load_bearing_mass_kg": 7.26186584243556e+19,
+      "old_moment_volume_mass_relative": -1.1280847343845288e-16,
+      "source_elastic_energy_not_imported_j": 3.1893236255915614e+19,
+      "thickness_min_m": 68.13386991638629,
+      "thickness_max_m": 69.62957640530041,
+      "rigid_rotation_dimensionless_strain_error": 8.046588607403739e-16,
+      "max_raw_area_quadrature_relative": 5.592677654320255e-09,
+      "initialization": "zero perturbation velocity/memory only; source damage/material/rates retained and frozen; no claim of geological-state transfer",
+      "source_mass_matrix_relative": 0.06347040093989544,
+      "source_force_relative": 0.2170818504336082
+    },
+    "2": {
+      "setup_seconds": 2.139943061003578,
+      "faces": 320,
+      "ndof": 972,
+      "blocks": 16000,
+      "radius_m": 5286809.090927882,
+      "old_load_bearing_mass_kg": 7.261865842435559e+19,
+      "new_load_bearing_mass_kg": 7.261865842435559e+19,
+      "old_moment_volume_mass_relative": -1.1280847343845288e-16,
+      "source_elastic_energy_not_imported_j": 3.1893236255915614e+19,
+      "thickness_min_m": 68.13386991638629,
+      "thickness_max_m": 69.62957640530041,
+      "rigid_rotation_dimensionless_strain_error": 1.5568399696933322e-15,
+      "max_raw_area_quadrature_relative": 5.9393601148372e-12,
+      "initialization": "zero perturbation velocity/memory only; source damage/material/rates retained and frozen; no claim of geological-state transfer"
+    }
+  },
+  "resultants": {
+    "coarse_n": [
+      103015404752077.31,
+      -70998839108128.25,
+      -113303977767984.88
+    ],
+    "fine_n": [
+      103015408207339.12,
+      -70998838353579.78,
+      -113303966386773.52
+    ],
+    "coarse_nm": [
+      4.942636558922547e+17,
+      2.4025520470962995e+17,
+      -4.026467157194834e+17
+    ],
+    "fine_nm": [
+      4.7943891889074995e+17,
+      2.3109331711439667e+17,
+      -3.975988873765847e+17
+    ],
+    "force_difference_n": 11918059.80818104,
+    "moment_difference_nm": 1.8143692635482044e+16
+  },
+  "patch": {
+    "coarse": {
+      "rotation_solution_relative": 8.00379589098598e-09,
+      "rotation_load_work_relative": 2.8770250071197268e-12,
+      "translation_load_work_relative": 1.367155327889594e-13,
+      "rotation_spurious_elastic_j": 1.0703522381513462e-14,
+      "rotation_external_j": 38330572249.37456,
+      "random_mass_positive": true
+    },
+    "fine": {
+      "rotation_solution_relative": 1.5032833657476253e-09,
+      "rotation_load_work_relative": 4.614017501403112e-13,
+      "translation_load_work_relative": 1.5889656554388434e-13,
+      "rotation_spurious_elastic_j": 4.580835388436405e-16,
+      "rotation_external_j": 38330573070.01094,
+      "random_mass_positive": true
+    }
+  },
+  "runs": {
+    "coarse": [
+      {
+        "years": 0.0625,
+        "seconds": 0.2884872870054096,
+        "elastic_before": 0.0,
+        "elastic_after": 7658.979458699528,
+        "maxwell": 0.28360231418878307,
+        "thermal_work": 0.0,
+        "numerical_memory": 7658.979458699528,
+        "internal_work": 15318.242519713243,
+        "kinetic_before": 0.0,
+        "kinetic_after": 0.0011383567870496638,
+        "drag": 1304272595726.4658,
+        "external_work": 1304272611044.7097,
+        "numerical_kinetic": 0.0011383567870496638,
+        "balance": 0.001220703125,
+        "momentum_relative": 5.865797403038235e-16,
+        "balance_relative": 9.359263659015492e-16
+      },
+      {
+        "years": 0.125,
+        "seconds": 0.2859933089930564,
+        "elastic_before": 7658.979458699528,
+        "elastic_after": 30620.00534315811,
+        "maxwell": 1.1338199772117865,
+        "thermal_work": 0.0,
+        "numerical_memory": 7651.032157202819,
+        "internal_work": 30613.191861638614,
+        "kinetic_before": 0.0011383567870496638,
+        "kinetic_after": 0.0011383641038483442,
+        "drag": 1304272565113.5613,
+        "external_work": 1304272595726.7534,
+        "numerical_kinetic": 9.293582897565687e-13,
+        "balance": -0.000244140625,
+        "momentum_relative": 9.374163506054356e-16,
+        "balance_relative": 1.8718527537869677e-16
+      }
+    ],
+    "fine": [
+      {
+        "years": 0.0625,
+        "seconds": 1.1605196930031525,
+        "elastic_before": 0.0,
+        "elastic_after": 6983.2814018087565,
+        "maxwell": 0.258582081351614,
+        "thermal_work": 0.0,
+        "numerical_memory": 6983.2814018087565,
+        "internal_work": 13966.821385698864,
+        "kinetic_before": 0.0,
+        "kinetic_after": 0.0011382976858962154,
+        "drag": 1304272594007.2432,
+        "external_work": 1304272607974.0667,
+        "numerical_kinetic": 0.0011382976858962154,
+        "balance": 0.000244140625,
+        "momentum_relative": 4.605538436756118e-16,
+        "balance_relative": 1.8718527362099928e-16
+      },
+      {
+        "years": 0.125,
+        "seconds": 1.197959750003065,
+        "elastic_before": 6983.2814018087565,
+        "elastic_after": 27712.38308793602,
+        "maxwell": 1.0261544600783115,
+        "thermal_work": 0.0,
+        "numerical_memory": 6892.918799606192,
+        "internal_work": 27623.046640193537,
+        "kinetic_before": 0.0011382976858962154,
+        "kinetic_after": 0.0011383325184511513,
+        "drag": 1304272566384.4592,
+        "external_work": 1304272594007.5063,
+        "numerical_kinetic": 1.256091384939332e-10,
+        "balance": -0.00048828125,
+        "momentum_relative": 9.486950184474321e-16,
+        "balance_relative": 3.743705512508759e-16
+      }
+    ],
+    "fine_half_step": [
+      {
+        "years": 0.03125,
+        "seconds": 1.193860990999383,
+        "elastic_before": 0.0,
+        "elastic_after": 1774.7082338555401,
+        "maxwell": 0.03285760250600447,
+        "thermal_work": 0.0,
+        "numerical_memory": 1774.7082338555401,
+        "internal_work": 3549.4493253135865,
+        "kinetic_before": 0.0,
+        "kinetic_after": 0.001138276664549483,
+        "drag": 652136303952.8035,
+        "external_work": 652136307502.2554,
+        "numerical_kinetic": 0.001138276664549483,
+        "balance": -0.0003662109375,
+        "momentum_relative": 4.539041606275041e-16,
+        "balance_relative": 5.615558178360334e-16
+      },
+      {
+        "years": 0.0625,
+        "seconds": 1.1780704900011187,
+        "elastic_before": 1774.7082338555401,
+        "elastic_after": 7010.7896890242555,
+        "maxwell": 0.1298003423396138,
+        "thermal_work": 0.0,
+        "numerical_memory": 1736.3179782005116,
+        "internal_work": 6972.529233711566,
+        "kinetic_before": 0.001138276664549483,
+        "kinetic_after": 0.0011383031195528106,
+        "drag": 652136296980.312,
+        "external_work": 652136303952.8413,
+        "numerical_kinetic": 1.406380819415476e-10,
+        "balance": -0.0001220703125,
+        "momentum_relative": 9.73672325677619e-16,
+        "balance_relative": 1.8718527363081355e-16
+      },
+      {
+        "years": 0.09375,
+        "seconds": 1.1435801309999079,
+        "elastic_before": 7010.7896890242555,
+        "elastic_after": 15665.898137409205,
+        "maxwell": 0.29004420133375564,
+        "thermal_work": 0.0,
+        "numerical_memory": 1724.7372555843494,
+        "internal_work": 10380.135748170633,
+        "kinetic_before": 0.0011383031195528106,
+        "kinetic_after": 0.0011383218397593448,
+        "drag": 652136290072.942,
+        "external_work": 652136300453.0779,
+        "numerical_kinetic": 4.163826506742768e-11,
+        "balance": -0.0001220703125,
+        "momentum_relative": 9.747638294442727e-16,
+        "balance_relative": 1.8718527463536456e-16
+      },
+      {
+        "years": 0.125,
+        "seconds": 1.2996440809947671,
+        "elastic_before": 15665.898137409205,
+        "elastic_after": 27738.998196016597,
+        "maxwell": 0.5135700051365257,
+        "thermal_work": 0.0,
+        "numerical_memory": 1721.067582254483,
+        "internal_work": 13794.681210867011,
+        "kinetic_before": 0.0011383218397593448,
+        "kinetic_after": 0.0011383362591603572,
+        "drag": 652136283185.7606,
+        "external_work": 652136296980.4415,
+        "numerical_kinetic": 1.2429998599335878e-11,
+        "balance": 0.0003662109375,
+        "momentum_relative": 9.646190801756137e-16,
+        "balance_relative": 5.615558268963876e-16
+      }
+    ]
+  },
+  "comparisons": {
+    "0.0625": {
+      "coarse_rms_pa": 0.1735022602244722,
+      "fine_restricted_rms_pa": 0.16757008098920437,
+      "absolute_difference_pa": 0.04523140413919356,
+      "symmetric_relative": 0.2606963395213093,
+      "temporal_absolute_pa": 0.003298907194829231,
+      "temporal_relative": 0.01962957345665815
+    },
+    "0.125": {
+      "coarse_rms_pa": 0.34691167600483974,
+      "fine_restricted_rms_pa": 0.33551712550931473,
+      "absolute_difference_pa": 0.10602559745205503,
+      "symmetric_relative": 0.30562706528959804,
+      "temporal_absolute_pa": 0.0022240461922021755,
+      "temporal_relative": 0.0066044749945726065
+    }
+  },
+  "quadrature_check": {
+    "force_relative": 6.741137788771279e-07,
+    "stress_absolute_pa": 0.00011417242920334996,
+    "stress_relative": 0.0006579397813233938
+  },
+  "restart_exact": true,
+  "seconds": 20.000690140994266,
+  "output": "/workspace/genesis-spherical-geometry-analytic-01",
+  "files": {
+    "fine_half_step_final.json": {
+      "bytes": 3610597,
+      "sha256": "9a774fee18cd9a289954bd13a0e4e02763ade4586e306e1dfc93a7eb298bcad8"
+    },
+    "fields.npz": {
+      "bytes": 103087,
+      "sha256": "bea680403e3cbea0cb6036f0850fd313b891ca21f629b992d5e08c2d6d9b96e3"
+    },
+    "coarse_initial.json": {
+      "bytes": 443861,
+      "sha256": "86e1a31fe886573f9ecd4d4c809ecb206da833b903ffb8f4f28115c45027bc75"
+    },
+    "fine_initial.json": {
+      "bytes": 1773221,
+      "sha256": "ec89738fc15f2a11582abbaa0c619066e61dc8d686dacd5c803270793f78c544"
+    },
+    "fine_restart.json": {
+      "bytes": 3621775,
+      "sha256": "394e9ad37011ff19ee16553e41af436d429a088c84c547e7b7be072c79e437de"
+    },
+    "coarse_final.json": {
+      "bytes": 902688,
+      "sha256": "0d0b94b06743e04c64a8126134c57a6f55e8b61d131f519143cbf856245404a0"
+    },
+    "fine_final.json": {
+      "bytes": 3610247,
+      "sha256": "dee7bf99b5bb4d787d33473fa9bec58baafe6fd2fce4b5b59bd39dc61414ed51"
+    }
+  }
+}

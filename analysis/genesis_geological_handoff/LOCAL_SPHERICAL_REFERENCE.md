@@ -121,3 +121,9 @@ work1.02e-8. Решения воспроизводят известные коэ
 `-m pytest -q tests/test_local_spherical_drag_reference.py`.
 Defaults, canonical, старые checkpoints и архивы не изменены;
 публикации и удаления не было.
+
+Отдельный согласованный путь реализован и проверен:
+[SPHERICAL_GEOMETRY_RESULT.md](SPHERICAL_GEOMETRY_RESULT.md).
+Операторы и Maxwell restart согласованы; это новый load-perturbation start,
+не перенос полного Genesis. Остаточная spatial stress error30.6% и перенос
+исторической энергии остаются явными ограничениями.
