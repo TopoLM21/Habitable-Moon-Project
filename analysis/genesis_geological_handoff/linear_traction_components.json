@@ -1,0 +1,94 @@
+{
+  "components": {
+    "coarse_tangent": {
+      "stress_rms_pa": 0.22774238930138277,
+      "power_w": 464982.49406324356,
+      "force_norm_n": 1.6702965103743998e+16,
+      "residual": {
+        "relative_residual": 1.8450029558791694e-16,
+        "scaled_relative_residual": 1.8048334379514985e-16
+      }
+    },
+    "coarse_normal": {
+      "stress_rms_pa": 0.5088369780858882,
+      "power_w": 99015.8381101768,
+      "force_norm_n": 1806966627699104.2,
+      "residual": {
+        "relative_residual": 1.8502414061105473e-15,
+        "scaled_relative_residual": 1.234009889646e-15
+      }
+    },
+    "coarse_full": {
+      "stress_rms_pa": 0.3848100458730325,
+      "power_w": 598021.9746496956,
+      "force_norm_n": 1.7562366434495684e+16,
+      "residual": {
+        "relative_residual": 2.9587292762230744e-16,
+        "scaled_relative_residual": 2.9593848149680565e-16
+      }
+    },
+    "fine_tangent": {
+      "stress_rms_pa": 0.22643725935685435,
+      "power_w": 464982.49410386075,
+      "force_norm_n": 9284379801257986.0,
+      "residual": {
+        "relative_residual": 2.1165594543755715e-16,
+        "scaled_relative_residual": 2.0904474070059e-16
+      }
+    },
+    "fine_normal": {
+      "stress_rms_pa": 2.860599550311799,
+      "power_w": 649141.911626692,
+      "force_norm_n": 1185466717835722.8,
+      "residual": {
+        "relative_residual": 6.187619753450689e-15,
+        "scaled_relative_residual": 3.849069366373909e-15
+      }
+    },
+    "fine_full": {
+      "stress_rms_pa": 2.807998394526855,
+      "power_w": 1148148.060198362,
+      "force_norm_n": 9578080934451488.0,
+      "residual": {
+        "relative_residual": 7.731271687213266e-16,
+        "scaled_relative_residual": 7.551123015247057e-16
+      }
+    }
+  },
+  "comparisons": {
+    "tangent": {
+      "absolute_difference_pa": 0.005067911449647651,
+      "symmetric_relative": 0.022252824628712545
+    },
+    "normal": {
+      "absolute_difference_pa": 2.778993205295745,
+      "symmetric_relative": 0.9714722932795123
+    },
+    "full": {
+      "absolute_difference_pa": 2.778860099151887,
+      "symmetric_relative": 0.989623108249719
+    }
+  },
+  "known_tangent_solution": {
+    "coarse": {
+      "pure_drag_known_velocity_m_s_norm": 2.8111121119520016e-11,
+      "full_system_tangent_velocity_error": 1.1112843576478997,
+      "superposition_relative": 3.0598100534012147e-13
+    },
+    "fine": {
+      "pure_drag_known_velocity_m_s_norm": 5.065675419132651e-11,
+      "full_system_tangent_velocity_error": 1.188639518209304,
+      "superposition_relative": 2.614759577035419e-14
+    }
+  },
+  "analytic_patch": {
+    "coarse": {
+      "analytic_affine_strain_relative": 1.6588754759437382e-15
+    },
+    "fine": {
+      "analytic_affine_strain_relative": 2.8671105092121115e-14
+    }
+  },
+  "seconds": 13.356868631992256,
+  "interpretation": "Exact force split on unchanged physical geometry, no rescaling or new trajectory; normal component was retained by original dead-traction closure."
+}
