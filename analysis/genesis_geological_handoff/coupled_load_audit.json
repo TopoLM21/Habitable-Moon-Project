@@ -1,0 +1,210 @@
+{
+  "code_base": "3f24fd1efc5c1f988ba90e4864399bda1d93ae9c",
+  "source_hashes": {
+    "/workspace/genesis-angular-coupled-01/initial.json": "ae107b4a2a5725c0e9b7eece15de71f234460de7e7d5f5ae6ef59616510ba590",
+    "/workspace/genesis-coupled-spatial-01/fine_initial.json": "ed7b79c8b2b91c8387c7c762be0e51ed9942e1fd6775571543e802612b4625aa"
+  },
+  "load_diagnostics": {
+    "coarse": {
+      "force_n": [
+        100112618997212.75,
+        -68978754471005.75,
+        -110062550486185.62
+      ],
+      "moment_nm": [
+        4.7477841459963494e+17,
+        1.8541978523743027e+17,
+        -3.815924308828488e+17
+      ],
+      "sum_nodal_force_norm_n": 1.1389288953220245e+17,
+      "sum_nodal_moment_norm_nm": 5.8504737716778694e+23,
+      "generalized_force_euclidean_n": 1.7562366434495684e+16
+    },
+    "fine_native": {
+      "force_n": [
+        103595850270995.89,
+        -71388898010702.4,
+        -113811970778482.98
+      ],
+      "moment_nm": [
+        5.4248605880687e+17,
+        3.406987869359964e+17,
+        -4.670908665234719e+17
+      ],
+      "sum_nodal_force_norm_n": 1.269996817954325e+17,
+      "sum_nodal_moment_norm_nm": 6.460297808553489e+23,
+      "generalized_force_euclidean_n": 1.0434563098439562e+16,
+      "force_difference_n": 5656840506580.83,
+      "moment_difference_nm": 1.8975214346507555e+17,
+      "force_difference_over_absolute_sum": 4.966807436193281e-05,
+      "moment_difference_over_absolute_sum": 3.2433637149809176e-07
+    },
+    "fine_shared": {
+      "force_n": [
+        100112618997201.6,
+        -68978754471018.19,
+        -110062550486192.92
+      ],
+      "moment_nm": [
+        4.747784145733878e+17,
+        1.8541978522157056e+17,
+        -3.8159243087210086e+17
+      ],
+      "sum_nodal_force_norm_n": 1.1683340766470302e+17,
+      "sum_nodal_moment_norm_nm": 5.8796823825735324e+23,
+      "generalized_force_euclidean_n": 9578080934451488.0,
+      "force_difference_n": 18.231777342818912,
+      "moment_difference_nm": 32495564.82254746,
+      "force_difference_over_absolute_sum": 1.6007827545427233e-16,
+      "moment_difference_over_absolute_sum": 5.554347577773687e-17
+    },
+    "native_restriction_relative": 0.09843375411899764,
+    "shared_restriction_relative": 1.6467673956855771e-16,
+    "pattern_resampling_component_relative": 0.09844175688971124,
+    "coupling_resmoothing_component_relative": 0.0009824697312077833,
+    "coupling_max_difference": 0.00016799697244974238,
+    "note": "Generalized Euclidean norm after dual restriction, not net force or pointwise traction norm; components need not add as norms."
+  },
+  "runs": {
+    "coarse_shared": [
+      {
+        "seconds": 0.22703840900794603,
+        "whole_allowance_fraction": 0.05403796964488715,
+        "external_work_j": 1506109587057.9348,
+        "births": 0,
+        "certificate": "NOT_SEPARATING"
+      },
+      {
+        "seconds": 0.3652882349997526,
+        "whole_allowance_fraction": 0.02599113323017977,
+        "external_work_j": 1509014050832.991,
+        "births": 0,
+        "certificate": "NOT_SEPARATING"
+      }
+    ],
+    "fine_shared": [
+      {
+        "seconds": 1.0692799279931933,
+        "whole_allowance_fraction": 0.05403797389381923,
+        "external_work_j": 3982635395901.8003,
+        "births": 0,
+        "certificate": "NOT_SEPARATING"
+      },
+      {
+        "seconds": 0.9853041599999415,
+        "whole_allowance_fraction": 0.025991110732258085,
+        "external_work_j": 3984612880063.239,
+        "births": 0,
+        "certificate": "NOT_SEPARATING"
+      }
+    ],
+    "coarse_half": [
+      {
+        "seconds": 0.25309436400129925,
+        "whole_allowance_fraction": 0.05403796682606538,
+        "external_work_j": 458177633324.2155,
+        "births": 0,
+        "certificate": "NOT_SEPARATING"
+      },
+      {
+        "seconds": 0.22356901101011317,
+        "whole_allowance_fraction": 0.025991119549819103,
+        "external_work_j": 459629888728.2527,
+        "births": 0,
+        "certificate": "NOT_SEPARATING"
+      }
+    ],
+    "fine_half": [
+      {
+        "seconds": 1.0129970280104317,
+        "whole_allowance_fraction": 0.05403796927324898,
+        "external_work_j": 1425180241739.2146,
+        "births": 0,
+        "certificate": "NOT_SEPARATING"
+      },
+      {
+        "seconds": 0.9842448950075777,
+        "whole_allowance_fraction": 0.025991129342424528,
+        "external_work_j": 1426173746440.7478,
+        "births": 0,
+        "certificate": "NOT_SEPARATING"
+      }
+    ],
+    "fine_native_half": [
+      {
+        "seconds": 1.0814685340010328,
+        "whole_allowance_fraction": 0.05403796379276972,
+        "external_work_j": 198766415038.8832,
+        "births": 0,
+        "certificate": "NOT_SEPARATING"
+      },
+      {
+        "seconds": 1.032676664995961,
+        "whole_allowance_fraction": 0.02599113820316187,
+        "external_work_j": 202198709575.21298,
+        "births": 0,
+        "certificate": "NOT_SEPARATING"
+      }
+    ]
+  },
+  "comparisons": {
+    "0.0625": {
+      "shared_load_total": {
+        "world_stress_relative": 0.0018151418477970807,
+        "temperature_max_difference_k": 6.762093107681721e-10,
+        "thermal_H_relative_l2": 3.0520685382894106e-19,
+        "old_damage_max_difference": 1.0812792261560844e-07,
+        "face_damage_max_difference": 0.001966773773944752
+      },
+      "half_load_total": {
+        "world_stress_relative": 0.0018151404113477092,
+        "temperature_max_difference_k": 4.2314240999985486e-10,
+        "thermal_H_relative_l2": 2.1607945385242905e-19,
+        "old_damage_max_difference": 1.081277798131719e-07,
+        "face_damage_max_difference": 0.001966773276694648
+      },
+      "shared_load_response_rms_pa_coarse": 0.3834674143351216,
+      "shared_load_response_rms_pa_fine": 2.792450161970507,
+      "shared_load_response_difference_relative": 0.9897092157566697,
+      "native_load_response_difference_relative": 1.0521869368327608,
+      "native_load_response_rms_pa_fine": 1.0223241260910971,
+      "full_stress_rms_pa_fine": 12440531.582017673,
+      "half_load_stress_rms_pa_fine": 12440531.294448642,
+      "fine_load_sampling_effect_rms_pa": 1.9064855568778818,
+      "coarse_freezing_effect_rms_pa": 0.0,
+      "initialization_effect_rms_pa": 167806.21055546292,
+      "native_total_grid_difference_rms_pa": 22581.233304365636
+    },
+    "0.125": {
+      "shared_load_total": {
+        "world_stress_relative": 0.0026480945417739783,
+        "temperature_max_difference_k": 1.3774297258350998e-09,
+        "thermal_H_relative_l2": 6.550108592502284e-19,
+        "old_damage_max_difference": 2.1627343284313927e-07,
+        "face_damage_max_difference": 0.003758799053442289
+      },
+      "half_load_total": {
+        "world_stress_relative": 0.0026480889848818855,
+        "temperature_max_difference_k": 8.665210771141574e-10,
+        "thermal_H_relative_l2": 4.882946289497977e-19,
+        "old_damage_max_difference": 2.1627303666005293e-07,
+        "face_damage_max_difference": 0.0037587977075674156
+      },
+      "shared_load_response_rms_pa_coarse": 0.5315606453944411,
+      "shared_load_response_rms_pa_fine": 3.2532469403282818,
+      "shared_load_response_difference_relative": 0.9673187174091857,
+      "native_load_response_difference_relative": 1.0715360600437083,
+      "native_load_response_rms_pa_fine": 1.1340541477596762,
+      "full_stress_rms_pa_fine": 12352112.420747537,
+      "half_load_stress_rms_pa_fine": 12352111.851916919,
+      "fine_load_sampling_effect_rms_pa": 2.337293987388796,
+      "coarse_freezing_effect_rms_pa": 1.2737017713808518e-07,
+      "initialization_effect_rms_pa": 166178.3374341772,
+      "native_total_grid_difference_rms_pa": 32709.272932263266
+    }
+  },
+  "seconds": 25.147297534000245,
+  "output": "/workspace/genesis-coupled-load-audit-03",
+  "fields_sha256": "11d2969dc0680794f3f359b3652eaa19a750361edb8858ae8681dd4b0462d056",
+  "scope": "Frozen initial P1 transmitted traction and half-traction paired controls; reported response is twice full-minus-half, not a zero-memory evolution; no altered-law trajectory checkpoints; native physical amplitudes unchanged"
+}
