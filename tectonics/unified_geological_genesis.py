@@ -175,6 +175,7 @@ class UnifiedGeologicalGenesis(GeologicalContinuation):
         pre,extra=project(self,new.system,dt_myr)
         self._fractional_pre=deepcopy(pre)
         self._material_trace.update(extra)
+        new.cycle.felsic_potential=extra['fractional_source_weights']@new.cycle.felsic_potential
         new.state=pre;new.system.cell_plate=pre.cell_plate.copy()
         n=self.mesh.cell_count;pc=len(new.system.plates)
         covered=np.zeros((pc,n),dtype=bool);source=np.full((pc,n),-1,dtype=np.int32)

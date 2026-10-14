@@ -4,7 +4,7 @@ Source polygons remain authoritative. A receiving raster cell may contain
 several pieces/owners; it does not acquire or retire material by winning an ID.
 No basalt displacement, subduction, deformation or thermal solver is invoked.
 """
-from dataclasses import dataclass
+from dataclasses import dataclass,replace
 import math
 import numpy as np
 from .spherical_polygons import (
@@ -53,13 +53,14 @@ def _cap(vertices):
     return centre,radius
 
 
-def transfer_rigid_patches(mesh, patches, omega_by_owner, elapsed_myr, radius_km):
+def transfer_rigid_patches(mesh, patches, omega_by_owner, elapsed_myr, radius_km, *, roundoff_correction=False):
     """Intersect prescribed rigid poses with mesh; preserve every source identity.
 
     elapsed_myr refers to each patch's fixed reference pose. Do not replace
     reference patches with raster averages between steps (that diffuses material).
-    No column/row renormalization or positive-area cutoff is used. The routine
-    refuses a measured conservation failure instead of hiding it with a scale.
+    Default mode refuses a measured source-area failure without correction.
+    Explicit roundoff_correction uses a boundary-tube area budget and records
+    conservative material weights separately from the measured geometric areas.
     """
     if not np.isfinite(elapsed_myr) or elapsed_myr < 0 or not np.isfinite(radius_km) or radius_km <= 0:
         raise ValueError('Finite nonnegative elapsed time and positive radius required')
@@ -73,9 +74,18 @@ def transfer_rigid_patches(mesh, patches, omega_by_owner, elapsed_myr, radius_km
     for patch in sorted(patches,key=lambda p:p.identity):
         if patch.owner not in omega_by_owner or not np.isfinite(patch.mass_kg) or patch.mass_kg<0 or not np.isfinite(patch.enthalpy_j):
             raise ValueError('Invalid material inventory or missing prescribed motion')
-        ref=normalize_polygon(patch.reference_vertices)
+        try:ref=normalize_polygon(patch.reference_vertices)
+        except ValueError:
+            if not roundoff_correction:raise
+            from .geological_roundoff import convex_roundoff
+            ref=convex_roundoff(patch.reference_vertices,radius_km)
         area=polygon_area(ref)*radius_km**2
         moved=rotate_polygon(ref,omega_by_owner[patch.owner],elapsed_myr)
+        if roundoff_correction:
+            try:normalize_polygon(moved)
+            except ValueError:
+                from .geological_roundoff import convex_roundoff
+                moved=convex_roundoff(moved,radius_km)
         centre,radius=_cap(moved)
         # Convex spherical caps contain their minor arcs. The margin protects
         # candidate selection at floating-point equality; it does not trim area.
@@ -83,18 +93,31 @@ def transfer_rigid_patches(mesh, patches, omega_by_owner, elapsed_myr, radius_km
         own=[]
         for target in candidate:
             calls+=1
-            clipped=intersect_convex(moved,targets[target],diagnostics=diagnostics)
+            if roundoff_correction:
+                from .geological_planar import intersection
+                clipped=intersection(moved,targets[target],mesh.centroids[target])
+            else:clipped=intersect_convex(moved,targets[target],diagnostics=diagnostics)
             if not len(clipped):
                 continue
             a=polygon_area(clipped)*radius_km**2
             own.append(AreaPiece(patch.identity,patch.owner,int(target),clipped,a,
                 patch.mass_kg*(a/area),patch.enthalpy_j*(a/area),patch.composition))
+        if roundoff_correction and own:
+            from .geological_roundoff import area_budget
+            largest=max(own,key=lambda p:p.area_km2)
+            own=[p for p in own if p is largest or p.area_km2>area_budget(p.vertices,radius_km,stages=2)]
         total=math.fsum(p.area_km2 for p in own)
         error=(total-area)/area
-        if abs(error)>1e-10:
+        correction_budget=0.
+        if roundoff_correction:
+            from .geological_roundoff import area_budget,conservative_weights
+            correction_budget=area_budget(ref,radius_km,stages=2+3*len(candidate))
+            weights,_=conservative_weights([p.area_km2 for p in own],area,correction_budget)
+            own=[replace(p,mass_kg=patch.mass_kg*w,enthalpy_j=patch.enthalpy_j*w) for p,w in zip(own,weights)]
+        if not roundoff_correction and abs(error)>1e-10:
             raise ValueError(f'Geometric source area failed for {patch.identity}: {error}')
         source_rows.append(dict(identity=patch.identity,owner=patch.owner,area_km2=area,
-            area_residual_km2=total-area,area_relative_residual=error,
+            area_residual_km2=total-area,area_relative_residual=error,roundoff_budget_km2=correction_budget,uncorrected_mass_residual_kg=patch.mass_kg*error,
             mass_residual_kg=math.fsum(p.mass_kg for p in own)-patch.mass_kg,
             H_residual_j=math.fsum(p.enthalpy_j for p in own)-patch.enthalpy_j))
         pieces.extend(own)
@@ -102,6 +125,9 @@ def transfer_rigid_patches(mesh, patches, omega_by_owner, elapsed_myr, radius_km
         ambiguous_plane_predicates=diagnostics.ambiguous_plane_predicates,
         lower_dimensional_results=diagnostics.lower_dimensional_results,
         max_source_area_relative_residual=max((abs(r['area_relative_residual']) for r in source_rows),default=0),
+        total_roundoff_area_budget_km2=math.fsum(r['roundoff_budget_km2'] for r in source_rows),
+        total_absolute_mass_correction_kg=math.fsum(abs(r['uncorrected_mass_residual_kg']) for r in source_rows) if roundoff_correction else 0.,
+        total_absolute_area_correction_km2=math.fsum(abs(r['area_residual_km2']) for r in source_rows) if roundoff_correction else 0.,
         total_area_residual_km2=math.fsum(r['area_residual_km2'] for r in source_rows),
         total_mass_residual_kg=math.fsum(r['mass_residual_kg'] for r in source_rows),
         total_H_residual_j=math.fsum(r['H_residual_j'] for r in source_rows)))

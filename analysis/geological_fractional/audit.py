@@ -80,6 +80,8 @@ if __name__=='__main__':
     initial=U.load(sys.argv[2]);before={}
     for parts in initial.record['material_parcels']['node_parts'].values():
         for p in parts:before.setdefault(p['id'],[]).append(p['mass_kg'])
+    for event in initial.record['material_parcels']['recycled_history']:
+        for p in event['parts']:before.setdefault(p['id'],[]).append(p['mass_kg'])
     result['initial_identity_count']=len(before)
     result['max_original_identity_mass_relative_error']=max(abs(result['identity_mass_kg'].get(k,0)-math.fsum(v))/math.fsum(v) for k,v in before.items())
     del result['identity_mass_kg']

@@ -1,0 +1,673 @@
+{
+  "mid_interval_restart": {
+    "young05": {
+      "source": "/workspace/geological-fractional-final-02/young05",
+      "exact": true,
+      "seconds": 49.19411869798205,
+      "mid_time_myr": 1.3684000000000005
+    },
+    "cont05": {
+      "source": "/workspace/geological-fractional-final-02/cont05",
+      "exact": true,
+      "seconds": 76.95265982800629,
+      "mid_time_myr": 201.3684
+    }
+  },
+  "base_commit": "ab88bcc4e0dd8daea64009e939e4e3ae23f1f8b1",
+  "raw_root": "/workspace/geological-fractional-final-02",
+  "runs": {
+    "young1": {
+      "source": "/workspace/unified-geological-genesis-02/1.0/initial",
+      "dt_myr": 1.0,
+      "initial": {
+        "continental_area_fraction": 0.0,
+        "continental_volume_km3": 0.0,
+        "land_area_fraction": 0.0,
+        "largest_plate_fraction": 0.9999999999999949,
+        "max_floor_m": 0.0,
+        "mean_floor_m": 0.0,
+        "mean_speed_km_per_myr": 0.0,
+        "min_floor_m": 0.0,
+        "moving_area_fraction": 0.0,
+        "owner_components": 1,
+        "plates": 1,
+        "sea_level_m": 3205.7087888345122,
+        "time_myr": 0.8684000000000005,
+        "water_relative_volume_error": -4.1529700472059845e-09,
+        "water_volume_km3": 1126719620.5563114
+      },
+      "final": {
+        "continental_area_fraction": 0.0,
+        "continental_volume_km3": 0.0,
+        "land_area_fraction": 0.0,
+        "largest_plate_fraction": 0.5443517349884692,
+        "max_floor_m": -620.2258240044059,
+        "mean_floor_m": -620.2305023242861,
+        "mean_speed_km_per_myr": 0.01875888403685854,
+        "min_floor_m": -620.2306918715868,
+        "moving_area_fraction": 0.0,
+        "owner_components": 2,
+        "plates": 2,
+        "sea_level_m": 2586.2298881291053,
+        "time_myr": 1.8684000000000005,
+        "water_relative_volume_error": 3.704262329816509e-10,
+        "water_volume_km3": 1126719620.5563114
+      },
+      "advance_elapsed_seconds": 15.930452872009482,
+      "total_elapsed_seconds": 34.07313267199788,
+      "restart_exact": true,
+      "events": {
+        "geological_weak_band_split": 1
+      },
+      "incremental_mass_relative_error": 0.0,
+      "incremental_H_relative_error": 5.668539364360837e-16,
+      "global_balances": {
+        "H_relative_residual": 5.146193214699837e-16,
+        "mass_relative_residual": 0.0,
+        "water_mass_kg": 1.1267196205563112e+21,
+        "water_volume_km3": 1126719620.5563114
+      },
+      "generated_volume_km3": 2301.7590246864916,
+      "recycled_volume_km3": 22.483426460191005,
+      "max_cell_area_relative_error": 1.3090913158990798e-11,
+      "source_plus_contact_area_closure_km2": 1.8277269670718916e-07,
+      "source_mass_weight_correction_kg": 14627.860224815407,
+      "source_area_budget_km2": 0.01854096103459322,
+      "contact_area_budget_km2": 0.005130328354473016,
+      "within_cell_consolidation_area_km2": 7.007388411422922e-05,
+      "within_cell_consolidation_mass_kg": 14392255.98322322,
+      "unresolved_gap_area_km2": 7.997121234541241e-05,
+      "max_gap_grid": 9.805489753489383e-13,
+      "audit": {
+        "audit_grid_size_rad": 1e-12,
+        "engine": "GEOS saved-coordinate readback 3.14.1",
+        "shapely_version": "2.2.0",
+        "invalid_polygons": [],
+        "raw_invalid_polygons": [],
+        "pairwise_intrusion_sum_km2": 8.280498314783556e-06,
+        "max_pairwise_intrusion_km2": 3.819953419919979e-06,
+        "gap_sum_km2": 0.0001537987380560026,
+        "outside_cell_sum_km2": 3.115031163729943e-05,
+        "max_cell_area_error_km2": 1.6235746443271637e-05,
+        "initial_identity_count": 640,
+        "max_identity_mass_relative_error": 1.5161975048439948e-16,
+        "polygon_edge_components_by_owner": {
+          "0": {
+            "count": 7,
+            "component_areas_steradians": [
+              6.84053100652589,
+              4.075690207469927e-12,
+              1.5748592891990365e-12,
+              1.4398904145319137e-12,
+              1.3668729360952602e-12,
+              2.624547890633919e-13,
+              1.7411768802867484e-13
+            ]
+          },
+          "1": {
+            "count": 10,
+            "component_areas_steradians": [
+              5.725839607806667,
+              5.146478264098165e-12,
+              3.269924096094107e-12,
+              2.4326802967800535e-12,
+              1.497534999429701e-12,
+              1.411790002784178e-12,
+              6.139950379583605e-13,
+              4.177903719124096e-13,
+              1.1913064554584262e-13,
+              5.921427744866317e-23
+            ]
+          }
+        },
+        "polygon_edge_tolerance_rad": 1e-09
+      },
+      "total_polygon_edge_components": 17,
+      "secondary_component_area_km2": 0.0006653560824436676
+    },
+    "young05": {
+      "source": "/workspace/unified-geological-genesis-02/1.0/initial",
+      "dt_myr": 0.5,
+      "initial": {
+        "continental_area_fraction": 0.0,
+        "continental_volume_km3": 0.0,
+        "land_area_fraction": 0.0,
+        "largest_plate_fraction": 0.9999999999999949,
+        "max_floor_m": 0.0,
+        "mean_floor_m": 0.0,
+        "mean_speed_km_per_myr": 0.0,
+        "min_floor_m": 0.0,
+        "moving_area_fraction": 0.0,
+        "owner_components": 1,
+        "plates": 1,
+        "sea_level_m": 3205.7087888345122,
+        "time_myr": 0.8684000000000005,
+        "water_relative_volume_error": -4.1529700472059845e-09,
+        "water_volume_km3": 1126719620.5563114
+      },
+      "final": {
+        "continental_area_fraction": 0.0,
+        "continental_volume_km3": 0.0,
+        "land_area_fraction": 0.0,
+        "largest_plate_fraction": 0.5443517349884692,
+        "max_floor_m": -616.9135557716735,
+        "mean_floor_m": -616.9190092993432,
+        "mean_speed_km_per_myr": 0.01875887181119305,
+        "min_floor_m": -616.9192302549131,
+        "moving_area_fraction": 0.0,
+        "owner_components": 2,
+        "plates": 2,
+        "sea_level_m": 2589.5373680798375,
+        "time_myr": 1.8684000000000005,
+        "water_relative_volume_error": 5.110774140312644e-10,
+        "water_volume_km3": 1126719620.5563114
+      },
+      "advance_elapsed_seconds": 50.06235363500309,
+      "total_elapsed_seconds": 103.19750044599641,
+      "restart_exact": true,
+      "events": {
+        "geological_weak_band_split": 1
+      },
+      "incremental_mass_relative_error": -1.3212521345451106e-16,
+      "incremental_H_relative_error": 8.087413506597375e-16,
+      "global_balances": {
+        "H_relative_residual": 7.719289822049756e-16,
+        "mass_relative_residual": -1.3212521345451106e-16,
+        "water_mass_kg": 1.1267196205563112e+21,
+        "water_volume_km3": 1126719620.5563114
+      },
+      "generated_volume_km3": 1896.0862352567324,
+      "recycled_volume_km3": 18.515050478358425,
+      "max_cell_area_relative_error": 1.9477360912614787e-11,
+      "source_plus_contact_area_closure_km2": 1.154805797710084e-06,
+      "source_mass_weight_correction_kg": 92411.25212175751,
+      "source_area_budget_km2": 0.029092496467748752,
+      "contact_area_budget_km2": 0.014344707313001972,
+      "within_cell_consolidation_area_km2": 0.00015046295660256373,
+      "within_cell_consolidation_mass_kg": 30898876.25840504,
+      "unresolved_gap_area_km2": 0.00023185286535213668,
+      "max_gap_grid": 8.86757334228605e-12,
+      "audit": {
+        "audit_grid_size_rad": 1e-12,
+        "engine": "GEOS saved-coordinate readback 3.14.1",
+        "shapely_version": "2.2.0",
+        "invalid_polygons": [],
+        "raw_invalid_polygons": [],
+        "pairwise_intrusion_sum_km2": 5.011213336005632e-05,
+        "max_pairwise_intrusion_km2": 5.81198713643582e-06,
+        "gap_sum_km2": 0.000282426956668296,
+        "outside_cell_sum_km2": 6.798458587017546e-05,
+        "max_cell_area_error_km2": 2.4420209228992462e-05,
+        "initial_identity_count": 640,
+        "max_identity_mass_relative_error": 3.0116511795536124e-16,
+        "polygon_edge_components_by_owner": {
+          "0": {
+            "count": 34,
+            "component_areas_steradians": [
+              6.840524534528051,
+              4.341479755518975e-08,
+              3.5445061227675804e-09,
+              2.3291991169284618e-12,
+              1.2784396319768298e-12,
+              9.342725158148995e-13,
+              8.542025582565001e-13,
+              8.108857452554998e-13,
+              7.727848147485483e-13,
+              1.8154173998302189e-13,
+              1.5569951177366315e-13,
+              1.0329386848201399e-13,
+              1.5434699016127056e-14,
+              1.1251884330919663e-14,
+              4.872924712940511e-15,
+              4.513284464128719e-15,
+              4.126472276047449e-15,
+              3.917209619068406e-15,
+              1.971415450782916e-15,
+              1.7617413128678406e-15,
+              8.76986391832298e-16,
+              7.830259786866522e-16,
+              7.521537856076788e-16,
+              5.032942112398313e-16,
+              2.9333320639989658e-18,
+              1.5136558748124493e-18,
+              1.4061110524850208e-20,
+              9.168106361120065e-21,
+              2.858716633395597e-21,
+              5.966406797311306e-22,
+              2.615508127660793e-22,
+              1.0566243212403068e-22,
+              6.445039700839529e-23,
+              3.925502490422143e-23
+            ]
+          },
+          "1": {
+            "count": 58,
+            "component_areas_steradians": [
+              5.72584308702085,
+              1.2717455258462665e-06,
+              1.1585188013770687e-06,
+              3.821646367164449e-07,
+              1.333972814396704e-07,
+              3.231183920389099e-12,
+              3.05310586152815e-12,
+              1.939854586241175e-12,
+              1.4431673132009983e-12,
+              1.3713056627300015e-12,
+              2.478509552814568e-13,
+              1.8399188945642678e-13,
+              7.067336416864405e-14,
+              3.1322868220969577e-14,
+              1.4748925778701183e-14,
+              9.37104085986747e-15,
+              6.97165187439095e-15,
+              6.624491172588526e-15,
+              3.4175320417959994e-15,
+              1.1973159226469151e-15,
+              3.414034165496621e-16,
+              1.0090350964167804e-16,
+              5.0239491350069474e-17,
+              2.4506045302215548e-18,
+              9.615983736863649e-20,
+              8.721354782842853e-20,
+              6.443578372840796e-20,
+              3.779035271342219e-20,
+              3.0103507262980665e-20,
+              2.3766802721833417e-20,
+              2.352356475579223e-20,
+              2.3277639316634137e-20,
+              2.155563821593277e-20,
+              2.111199665817386e-20,
+              1.4882998120363556e-20,
+              1.1177797174080373e-20,
+              1.0947740324659874e-20,
+              1.0071782094663399e-20,
+              9.407804029335108e-21,
+              4.846976313407446e-21,
+              4.025359049839675e-21,
+              3.919331560453797e-21,
+              3.6508460437871954e-21,
+              3.515375831002386e-21,
+              1.8931631322457693e-21,
+              1.8377625397960246e-21,
+              1.6610032785181711e-21,
+              1.1591495559508477e-21,
+              1.1352909055885235e-21,
+              9.491146284841412e-22,
+              8.784800582754254e-22,
+              7.967501194277186e-22,
+              4.3331064792372515e-22,
+              4.131626653365683e-22,
+              1.9632277636366902e-22,
+              1.6282021101450298e-22,
+              8.196905719025369e-23,
+              6.844176446578612e-23
+            ]
+          }
+        },
+        "polygon_edge_tolerance_rad": 1e-09
+      },
+      "total_polygon_edge_components": 92,
+      "secondary_component_area_km2": 83.6559795144322
+    },
+    "cont1": {
+      "source": "/workspace/geological-contact-area/dt1/accepted",
+      "dt_myr": 1.0,
+      "initial": {
+        "continental_area_fraction": 0.04096856466297738,
+        "continental_volume_km3": 408401742.1687861,
+        "land_area_fraction": 0.0474848556247008,
+        "largest_plate_fraction": 0.2886593461347777,
+        "max_floor_m": -16.40341373985045,
+        "mean_floor_m": -4808.7633776281355,
+        "mean_speed_km_per_myr": 38.41241938172601,
+        "min_floor_m": -9403.205750571153,
+        "moving_area_fraction": 1.0,
+        "owner_components": 8,
+        "plates": 8,
+        "sea_level_m": -1642.0713238709304,
+        "time_myr": 200.8684,
+        "water_relative_volume_error": 3.699193986545961e-09,
+        "water_volume_km3": 1126719620.5563114
+      },
+      "final": {
+        "continental_area_fraction": 0.04096856466297738,
+        "continental_volume_km3": 408846603.35265535,
+        "land_area_fraction": 0.046564367912469457,
+        "largest_plate_fraction": 0.2886593461347777,
+        "max_floor_m": -189.5931963690685,
+        "mean_floor_m": -4791.256484603514,
+        "mean_speed_km_per_myr": 38.48817341759593,
+        "min_floor_m": -9016.808363498374,
+        "moving_area_fraction": 1.0,
+        "owner_components": 8,
+        "plates": 8,
+        "sea_level_m": -1626.410390986764,
+        "time_myr": 201.8684,
+        "water_relative_volume_error": -1.9739794103083356e-09,
+        "water_volume_km3": 1126719620.5563114
+      },
+      "advance_elapsed_seconds": 14.48741362799774,
+      "total_elapsed_seconds": 30.42951625099522,
+      "restart_exact": true,
+      "events": {},
+      "incremental_mass_relative_error": 0.0,
+      "incremental_H_relative_error": 7.032428585267079e-17,
+      "global_balances": {
+        "H_relative_residual": 3.846779427988128e-14,
+        "mass_relative_residual": 5.285008538180442e-16,
+        "water_mass_kg": 1.1267196205563112e+21,
+        "water_volume_km3": 1126719620.5563114
+      },
+      "generated_volume_km3": 22087722.353408106,
+      "recycled_volume_km3": 16286666.692337899,
+      "max_cell_area_relative_error": 2.131736586063348e-12,
+      "source_plus_contact_area_closure_km2": 1.3595254313020222e-06,
+      "source_mass_weight_correction_kg": 1300909.8274398241,
+      "source_area_budget_km2": 0.00893408803710881,
+      "contact_area_budget_km2": 0.0048737593989869555,
+      "within_cell_consolidation_area_km2": 1.8960908704059476e-06,
+      "within_cell_consolidation_mass_kg": 39817908.2785249,
+      "unresolved_gap_area_km2": 6.53133972159517e-05,
+      "max_gap_grid": 7.815970093361102e-13,
+      "audit": {
+        "audit_grid_size_rad": 1e-12,
+        "engine": "GEOS saved-coordinate readback 3.14.1",
+        "shapely_version": "2.2.0",
+        "invalid_polygons": [],
+        "raw_invalid_polygons": [],
+        "pairwise_intrusion_sum_km2": 7.836870744389176e-05,
+        "max_pairwise_intrusion_km2": 6.049790988550845e-06,
+        "gap_sum_km2": 0.000175360932728741,
+        "outside_cell_sum_km2": 0.00012459227661738132,
+        "max_cell_area_error_km2": 2.210610546171665e-06,
+        "initial_identity_count": 1715,
+        "max_identity_mass_relative_error": 3.80502947485978e-16,
+        "polygon_edge_components_by_owner": {
+          "0": {
+            "count": 2,
+            "component_areas_steradians": [
+              3.6277939643234793,
+              7.975464032874516e-05
+            ]
+          },
+          "1": {
+            "count": 2,
+            "component_areas_steradians": [
+              2.2332732271782705,
+              2.7118550994824413e-05
+            ]
+          },
+          "2": {
+            "count": 1,
+            "component_areas_steradians": [
+              1.2109354304836137
+            ]
+          },
+          "3": {
+            "count": 4,
+            "component_areas_steradians": [
+              1.2135688168452936,
+              7.996559113516e-05,
+              2.75097269817914e-05,
+              3.460735577522926e-06
+            ]
+          },
+          "4": {
+            "count": 1,
+            "component_areas_steradians": [
+              1.5377881160604083
+            ]
+          },
+          "5": {
+            "count": 1,
+            "component_areas_steradians": [
+              0.9093286483164535
+            ]
+          },
+          "6": {
+            "count": 1,
+            "component_areas_steradians": [
+              1.2098252942123082
+            ]
+          },
+          "7": {
+            "count": 3,
+            "component_areas_steradians": [
+              0.6236192772584586,
+              1.5296254528003787e-05,
+              4.73418111415556e-06
+            ]
+          }
+        },
+        "polygon_edge_tolerance_rad": 1e-09
+      },
+      "total_polygon_edge_components": 15,
+      "secondary_component_area_km2": 6648.182516656164
+    },
+    "cont05": {
+      "source": "/workspace/geological-contact-area/dt1/accepted",
+      "dt_myr": 0.5,
+      "initial": {
+        "continental_area_fraction": 0.04096856466297738,
+        "continental_volume_km3": 408401742.1687861,
+        "land_area_fraction": 0.0474848556247008,
+        "largest_plate_fraction": 0.2886593461347777,
+        "max_floor_m": -16.40341373985045,
+        "mean_floor_m": -4808.7633776281355,
+        "mean_speed_km_per_myr": 38.41241938172601,
+        "min_floor_m": -9403.205750571153,
+        "moving_area_fraction": 1.0,
+        "owner_components": 8,
+        "plates": 8,
+        "sea_level_m": -1642.0713238709304,
+        "time_myr": 200.8684,
+        "water_relative_volume_error": 3.699193986545961e-09,
+        "water_volume_km3": 1126719620.5563114
+      },
+      "final": {
+        "continental_area_fraction": 0.04096856466297738,
+        "continental_volume_km3": 408852114.3572218,
+        "land_area_fraction": 0.046560446523157564,
+        "largest_plate_fraction": 0.2886593461347777,
+        "max_floor_m": -182.4067418383887,
+        "mean_floor_m": -4787.187947824712,
+        "mean_speed_km_per_myr": 38.48458919028592,
+        "min_floor_m": -9013.730387280806,
+        "moving_area_fraction": 1.0,
+        "owner_components": 8,
+        "plates": 8,
+        "sea_level_m": -1622.0701313565428,
+        "time_myr": 201.8684,
+        "water_relative_volume_error": 3.760543539445794e-09,
+        "water_volume_km3": 1126719620.5563114
+      },
+      "advance_elapsed_seconds": 80.96400072099641,
+      "total_elapsed_seconds": 161.64965205200133,
+      "restart_exact": true,
+      "events": {},
+      "incremental_mass_relative_error": 0.0,
+      "incremental_H_relative_error": 2.482033618329557e-16,
+      "global_balances": {
+        "H_relative_residual": 3.8596449110248773e-14,
+        "mass_relative_residual": 5.285008538180442e-16,
+        "water_mass_kg": 1.1267196205563112e+21,
+        "water_volume_km3": 1126719620.5563114
+      },
+      "generated_volume_km3": 22161092.609628446,
+      "recycled_volume_km3": 16736764.463378508,
+      "max_cell_area_relative_error": 1.0539063180806258e-11,
+      "source_plus_contact_area_closure_km2": 2.039989853036364e-05,
+      "source_mass_weight_correction_kg": 3515745.8700861195,
+      "source_area_budget_km2": 0.02366000669681209,
+      "contact_area_budget_km2": 0.02317666665485739,
+      "within_cell_consolidation_area_km2": 6.006020571510129e-06,
+      "within_cell_consolidation_mass_kg": 70851076.06190862,
+      "unresolved_gap_area_km2": 0.00027344282060186835,
+      "max_gap_grid": 3.637978807091713e-12,
+      "audit": {
+        "audit_grid_size_rad": 1e-12,
+        "engine": "GEOS saved-coordinate readback 3.14.1",
+        "shapely_version": "2.2.0",
+        "invalid_polygons": [],
+        "raw_invalid_polygons": [],
+        "pairwise_intrusion_sum_km2": 0.0002076325958283566,
+        "max_pairwise_intrusion_km2": 9.21387295965571e-06,
+        "gap_sum_km2": 0.00041148128738869953,
+        "outside_cell_sum_km2": 0.00017884087097537037,
+        "max_cell_area_error_km2": 1.3771234080195427e-05,
+        "initial_identity_count": 1715,
+        "max_identity_mass_relative_error": 3.761965614344362e-16,
+        "polygon_edge_components_by_owner": {
+          "0": {
+            "count": 6,
+            "component_areas_steradians": [
+              3.6322978044688665,
+              2.4231395586333024e-05,
+              1.5896181718882117e-05,
+              6.465259415255274e-06,
+              1.537329874139556e-06,
+              3.037987888477907e-10
+            ]
+          },
+          "1": {
+            "count": 11,
+            "component_areas_steradians": [
+              2.2347453655550065,
+              4.920821657902868e-06,
+              2.3478401448011802e-06,
+              1.9056394315040121e-06,
+              1.3698715865352184e-06,
+              1.270205284669482e-06,
+              5.736354187946185e-07,
+              1.2360157116007827e-07,
+              1.1584988093325173e-07,
+              1.3580569295039971e-08,
+              3.506713226497349e-09
+            ]
+          },
+          "2": {
+            "count": 5,
+            "component_areas_steradians": [
+              1.2146849512809366,
+              2.5858017017257395e-06,
+              9.416471069658336e-07,
+              5.830836074961129e-07,
+              3.601637594682525e-08
+            ]
+          },
+          "3": {
+            "count": 11,
+            "component_areas_steradians": [
+              1.2120626091844362,
+              3.43842961690074e-05,
+              1.560550814406401e-05,
+              1.1616141498700017e-05,
+              1.1473805641061084e-05,
+              3.6138438679693763e-06,
+              8.61374338201408e-07,
+              8.105133802441756e-07,
+              4.2471149567126696e-07,
+              8.668775144930643e-08,
+              5.5609138475643936e-08
+            ]
+          },
+          "4": {
+            "count": 1,
+            "component_areas_steradians": [
+              1.5372693759653822
+            ]
+          },
+          "5": {
+            "count": 4,
+            "component_areas_steradians": [
+              0.9047557066147468,
+              4.5180089241513025e-06,
+              8.32178191180396e-07,
+              8.037311198080909e-08
+            ]
+          },
+          "6": {
+            "count": 4,
+            "component_areas_steradians": [
+              1.2078341480508594,
+              4.648169430942078e-06,
+              2.0478661090325905e-06,
+              1.2393756497729159e-06
+            ]
+          },
+          "7": {
+            "count": 6,
+            "component_areas_steradians": [
+              0.6225568544076348,
+              3.808255435045569e-06,
+              2.225120071204871e-06,
+              4.873979498954762e-07,
+              4.411080566684669e-08,
+              1.3910243421736444e-08
+            ]
+          }
+        },
+        "polygon_edge_tolerance_rad": 1e-09
+      },
+      "total_polygon_edge_components": 48,
+      "secondary_component_area_km2": 4578.565304147661
+    }
+  },
+  "native_controls": {
+    "native1": {
+      "final": {
+        "continental_area_fraction": 0.04096856466297738,
+        "continental_volume_km3": 408864759.41300994,
+        "land_area_fraction": 0.04453278092706203,
+        "largest_plate_fraction": 0.2886593461347777,
+        "max_floor_m": 35.405269299130794,
+        "mean_floor_m": -4791.116046848991,
+        "mean_speed_km_per_myr": 38.48817341759593,
+        "min_floor_m": -9368.94650501677,
+        "moving_area_fraction": 1.0,
+        "owner_components": 8,
+        "plates": 8,
+        "sea_level_m": -1626.6803836001523,
+        "time_myr": 201.8684,
+        "water_relative_volume_error": 6.676210845458841e-09,
+        "water_volume_km3": 1126719620.5563114
+      },
+      "restart_exact": true,
+      "seconds": 1.049204857001314,
+      "generated_volume_km3": 23579712.25462617,
+      "recycled_volume_km3": 21693700.052769367
+    },
+    "native05": {
+      "final": {
+        "continental_area_fraction": 0.04096856466297738,
+        "continental_volume_km3": 408865672.4311394,
+        "land_area_fraction": 0.0474848556247008,
+        "largest_plate_fraction": 0.2886593461347777,
+        "max_floor_m": 79.40196442286953,
+        "mean_floor_m": -4825.4478875265095,
+        "mean_speed_km_per_myr": 38.34781711715241,
+        "min_floor_m": -9368.07103229335,
+        "moving_area_fraction": 1.0,
+        "owner_components": 8,
+        "plates": 8,
+        "sea_level_m": -1662.410187221997,
+        "time_myr": 201.8684,
+        "water_relative_volume_error": -5.122462308686557e-09,
+        "water_volume_km3": 1126719620.5563114
+      },
+      "restart_exact": true,
+      "seconds": 1.7561023299931549,
+      "generated_volume_km3": 8020103.608309958,
+      "recycled_volume_km3": 7258616.762084814
+    }
+  },
+  "implementation_sha256": {
+    "tectonics/geological_area_transport.py": "857e028f720229c174d5219be71f19fa7612c5f35714e64456dd573c475c7f39",
+    "tectonics/geological_fractional.py": "3f6855ff0bb2080525e3f302ceb0ed946b462083335c19be5bd5bcfa8e094d36",
+    "tectonics/geological_planar.py": "ff5f35ca59b0165dadf7e673d3feae1b7b5622c5c6121395d0de2af42844dc9c",
+    "tectonics/geological_roundoff.py": "21ed710390fa979eb01463cd4d90395b09cc7a266e4660e1f10816f3b4514b5d",
+    "tectonics/unified_geological_genesis.py": "d6646326488311951d52b6b342c98f5e60f594dcbe2cea4b89d8bc5e7ae39abb",
+    "requirements-cloud.txt": "cbef8cdf1dcf29550faa9fb1e9cec6b747ef6a74eb25f00b64d1ae64c6dbc65c"
+  },
+  "tests": "89 passed in 23.73s"
+}
