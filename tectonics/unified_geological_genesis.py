@@ -318,6 +318,9 @@ class UnifiedGeologicalGenesis(GeologicalContinuation):
             if any(not np.array_equal(value,getattr(new.state,name)) for name,value in material_before.items()):
                 raise ValueError('Connectivity changed physical material fields')
             audit['contact_repair'] = contact_trace
+            for transfer_event in contact_trace.get('fragment_transfers',[]):
+                self.record['events'].append(deepcopy(transfer_event))
+                new.events.append(deepcopy(transfer_event))
         if topology.topology_changed:self.install_system(new,system)
         else:new.system=system
         new.topology_rows.append(asdict(topology))

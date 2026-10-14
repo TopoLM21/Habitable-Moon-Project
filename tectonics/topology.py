@@ -1144,6 +1144,8 @@ class PlateTopologyManager:
                 if connectivity_trace is not None:
                     from .geological_contact import repair_audit
                     connectivity_trace.update(repair_audit(mesh,old_current,current,repair,radius_km,self.params.min_plate_area_km2))
+                    for transfer in connectivity_trace['fragment_transfers']:
+                        transfer['time_myr']=float(state.time_myr)
                 self._remap_collision_memory(old_current, current)
                 split_n += repair.promoted_components
                 events.append(TopologyEvent(

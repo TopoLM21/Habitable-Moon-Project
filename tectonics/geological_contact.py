@@ -94,7 +94,23 @@ def repair_audit(mesh, before, after, repair, radius, threshold):
     for pid in np.unique(after.cell_plate):
         cells=np.flatnonzero(after.cell_plate==pid);parents=np.unique(before.cell_plate[cells])
         if len(parents)==1:pure_errors.append(np.linalg.norm(new_w[pid]-old_w[parents[0]]))
-    return dict(detached_components=components,reassigned_cells=int(changed.sum()),
+    transfers=[]
+    for parent in np.unique(before.cell_plate[changed]):
+        for child in np.unique(after.cell_plate[changed & (before.cell_plate==parent)]):
+            selected=np.flatnonzero(changed & (before.cell_plate==parent) & (after.cell_plate==child))
+            for cells in connected_components(selected,mesh.neighbors):
+                cells=np.array(cells,dtype=int)
+                v0=np.cross(old_w[parent],radius*mesh.centroids[cells])
+                v1=np.cross(new_w[child],radius*mesh.centroids[cells])
+                dv=v1-v0
+                transfers.append(dict(kind='contact_fragment_transfer',parent=int(parent),child=int(child),
+                    cells=cells.tolist(),area_km2=float(areas[cells].sum()),
+                    omega_before_rad_per_myr=old_w[parent].tolist(),omega_after_rad_per_myr=new_w[child].tolist(),
+                    velocity_change_km_per_myr=dv.tolist(),max_speed_change_km_per_myr=float(np.max(np.linalg.norm(dv,axis=1))),
+                    area_weighted_kinetic_proxy_change_km4_per_myr2=float(.5*np.sum(areas[cells]*(np.sum(v1*v1,axis=1)-np.sum(v0*v0,axis=1)))),
+                    mechanical_work_closed=False,material_fields_changed=False,
+                    rule='existing small-fragment threshold and thin-shell momentum pickup; diagnostic event, not a new capture law'))
+    return dict(fragment_transfers=transfers,detached_components=components,reassigned_cells=int(changed.sum()),
         reassigned_area_km2=float(areas[changed].sum()),promoted=repair.promoted_components,
         thin_shell_momentum_relative_residual=float(np.linalg.norm(L1-L0)/max(np.linalg.norm(L0),1e-30)),
         max_pure_child_omega_error=float(max(pure_errors,default=0)),

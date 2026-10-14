@@ -1,0 +1,150 @@
+{
+  "crumb": 229,
+  "diagnostics": {
+    "time_myr": 500.0,
+    "plate_count_before": 2,
+    "plate_count_after": 3,
+    "split_events": 1,
+    "merge_events": 0,
+    "absorbed_small_plates": 0,
+    "active_collision_pairs": 0,
+    "mature_collision_pairs": 0,
+    "quiet_weld_pairs": 0,
+    "max_collision_age_myr": 0.0,
+    "max_quiet_weld_age_myr": 0.0,
+    "min_plate_cells": 60,
+    "mean_plate_cells": 106.66666666666667,
+    "max_plate_cells": 200,
+    "min_plate_area_km2": 65158223.87907919,
+    "mean_plate_area_km2": 117086609.46777463,
+    "max_plate_area_km2": 220943380.64516547,
+    "topology_changed": true,
+    "disconnected_components_before_repair": 4,
+    "connectivity_reassigned_cells": 1,
+    "connectivity_promoted_components": 1
+  },
+  "contact_trace": {
+    "fragment_transfers": [
+      {
+        "kind": "contact_fragment_transfer",
+        "parent": 0,
+        "child": 1,
+        "cells": [
+          229
+        ],
+        "area_km2": 1036945.251726402,
+        "omega_before_rad_per_myr": [
+          0.0,
+          0.0,
+          0.003
+        ],
+        "omega_after_rad_per_myr": [
+          -1.2104258438319896e-06,
+          1.0805440178208734e-07,
+          0.003994712153127226
+        ],
+        "velocity_change_km_per_myr": [
+          [
+            0.4674066051747685,
+            5.179645455157608,
+            6.1098513392492245e-06
+          ]
+        ],
+        "max_speed_change_km_per_myr": 5.200691874715633,
+        "area_weighted_kinetic_proxy_change_km4_per_myr2": 98625294.15595637,
+        "mechanical_work_closed": false,
+        "material_fields_changed": false,
+        "rule": "existing small-fragment threshold and thin-shell momentum pickup; diagnostic event, not a new capture law",
+        "time_myr": 500.0
+      }
+    ],
+    "detached_components": [
+      {
+        "parent": 0,
+        "cells": [
+          5,
+          13,
+          102,
+          103,
+          108,
+          97,
+          111,
+          109,
+          110,
+          98,
+          105,
+          107,
+          242,
+          243,
+          254,
+          249,
+          255,
+          252,
+          253,
+          245,
+          250,
+          85,
+          251,
+          248,
+          84,
+          96,
+          8,
+          99,
+          11,
+          20,
+          23,
+          9,
+          10,
+          87,
+          86,
+          93,
+          90,
+          247,
+          244,
+          246,
+          165,
+          173,
+          170,
+          171,
+          241,
+          168,
+          169,
+          180,
+          240,
+          104,
+          260,
+          263,
+          261,
+          262,
+          106,
+          269,
+          266,
+          101,
+          183,
+          100
+        ],
+        "area_km2": 65158223.879079156,
+        "area_over_threshold": 6.515822387907916,
+        "promoted": true
+      },
+      {
+        "parent": 0,
+        "cells": [
+          229
+        ],
+        "area_km2": 1036945.251726402,
+        "area_over_threshold": 0.1036945251726402,
+        "promoted": false
+      }
+    ],
+    "reassigned_cells": 1,
+    "reassigned_area_km2": 1036945.251726402,
+    "promoted": 1,
+    "thin_shell_momentum_relative_residual": 1.305098745755646e-16,
+    "max_pure_child_omega_error": 0.0,
+    "connected_domains": true,
+    "max_ownership_velocity_change_km_per_myr": 5.200691874715634
+  },
+  "material_volume_exact_unchanged": true,
+  "note": "existing pickup observed, not approved as a new mechanism; angular momentum proxy is uniform thin shell"
+}
