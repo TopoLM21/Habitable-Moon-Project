@@ -132,8 +132,10 @@ def capture(M,newM,v):
     return new,max(loss,0.),error
 
 
-def advance(m,years,*,mechanical_solver=None,state_finalizer=None,edge_commit_solver=None):
-    s=m.state;c=m.config;o=operators(m);nexts=deepcopy(s);M=material_mass(m)
+def advance(m,years,*,mechanical_solver=None,state_finalizer=None,edge_commit_solver=None,geometry_provider=None):
+    s=m.state;c=m.config;o=operators(m);nexts=deepcopy(s)
+    if c.get('experimental_spherical_geometry') and geometry_provider is None:raise ValueError('SPHERICAL_REQUIRES_GEOMETRY_PROVIDER')
+    M=material_mass(m) if geometry_provider is None else geometry_provider.material_mass()
     if c.get('experimental_angular_memory') and any(x is None for x in (mechanical_solver,state_finalizer,edge_commit_solver)):
         raise ValueError('ANGULAR_REQUIRES_COUPLED_DRIVER')
     compute=mechanical if mechanical_solver is None else mechanical_solver
@@ -144,7 +146,7 @@ def advance(m,years,*,mechanical_solver=None,state_finalizer=None,edge_commit_so
     basal=None
     if c['nodal'].get('moving_basal'):
         from .simplified_genesis_basal import assemble
-        basal=assemble(m)
+        basal=assemble(m) if geometry_provider is None else geometry_provider.basal()
     sourced,orbit,ports=apply_ports(dict(time_myr=s['time_myr'],mass_kg=m.mass.tolist(),energy_j=E0.tolist()),GenesisParameters(**c['thermal_parameters']),TidalParameters(**c['tidal_parameters']),TidalOrbitState(**s['orbit']),target,allow_condensation=m.water_parameters is not None)
     thermal=solve(m.mass,np.asarray(sourced['energy_j'])/m.mass,m.cp,m.latent,np.full(len(E0),c['solidus']),np.full(len(E0),c['liquidus']),m.offset,c['edges'],dt,water_parameters=m.water_parameters)
     base=m.mass*thermal['specific_h'];T=m.temperature(base)
@@ -185,6 +187,7 @@ def advance(m,years,*,mechanical_solver=None,state_finalizer=None,edge_commit_so
     nexts.update(time_myr=target,born_material=r['born'])
     # Reuse phase ID/mass/enthalpy accounting, with zero angular capture;
     # actual capture is performed below in all shared nodal degrees of freedom.
+    if geometry_provider is not None:geometry_provider.prepare_phase(Tnew)
     _,phase_report,_=promote(c,s,nexts,oldT,Tnew,E,m.material_inertia(),np.zeros((1,3)))
     oldids={x['cell_id'] for x in s.get('born_material',[])};newborn=[x for x in nexts['born_material'] if x['cell_id'] not in oldids]
     oldvol=m.G[:,0,0].copy();newvol=np.zeros(m.nf)
@@ -193,7 +196,7 @@ def advance(m,years,*,mechanical_solver=None,state_finalizer=None,edge_commit_so
     r['stress']*= (oldvol/(oldvol+newvol))[:,None]
     newM=M.copy();catalog={x['id']:x for x in c['phase_cells']}
     for x in newborn:
-        _,local=birth_operator(m,catalog[x['cell_id']]);idx=o['dofs'][x['face']];newM[np.ix_(idx,idx)]+=local
+        _,local=(birth_operator(m,catalog[x['cell_id']]) if geometry_provider is None else geometry_provider.birth_operator(catalog[x['cell_id']]));idx=o['dofs'][x['face']];newM[np.ix_(idx,idx)]+=local
     capture_heat=0.;capture_error=0.
     if newborn:
         v,capture_heat,capture_error=capture(M,newM,v);total=sum(x['mass_kg'] for x in newborn)

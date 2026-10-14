@@ -157,3 +157,11 @@ damage/birth events и измерить coupled стоимость, вместо
 Риск локальных stress/onset errors остаётся видимым и ограничивает выводы.
 Старые checkpoints/defaults/canonical сохранены. Код и числа аудита:
 `spherical_practical_audit.py/json`; runner отказывается перезаписывать отчёт.
+
+Рекомендованный интеграционный шаг выполнен:
+[SPHERICAL_COUPLED_RESULT.md](SPHERICAL_COUPLED_RESULT.md).
+История перенесена с явным ledger, native thermal/phase подключены,
+короткий пилот и controlled birth/restarts прошли. Контроль шага выявил
+35.4% разность интегрального drag heat начального перехода: это отдельное
+оставшееся ограничение сверх пространственной ошибки, не причина скрыто
+объявлять полный stress/T достаточным критерием.

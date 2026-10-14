@@ -3,8 +3,9 @@ import numpy as np
 from scipy.linalg import solve
 
 
-def step(M,D,F,v0,dt,blocks):
+def step(M,D,F,v0,dt,blocks,*,refinement_steps=0,drag_action=None):
     if not np.isfinite(dt) or dt<=0: raise ValueError('positive dt')
+    apply_drag=(lambda v:D@v) if drag_action is None else drag_action
     A=M/dt+D;rhs=M@v0/dt+F;prepared=[]
     for b in blocks:
         H,L,R,e,theta,idx=(b[k] for k in ('H','L','R','old','theta','dofs'))
@@ -16,6 +17,18 @@ def step(M,D,F,v0,dt,blocks):
         np.add.at(rhs,idx,-L.T@HS@(e-theta));prepared.append((b,S))
     scale=1/np.sqrt(np.diag(A))
     v=scale*solve(A*scale[:,None]*scale[None,:],scale*rhs,assume_a='pos')
+    # Optional residual correction for ill-conditioned geometric representations.
+    # The default path and all physical equations remain unchanged.
+    if refinement_steps not in range(6):raise ValueError('refinement_steps')
+    for _ in range(refinement_steps):
+        internal=np.zeros_like(v)
+        for b,S in prepared:
+            H,L,e,theta,idx=(b[k] for k in ('H','L','old','theta','dofs'))
+            trial=S@(e+dt*(L@v[idx])-theta)
+            np.add.at(internal,idx,L.T@H@trial)
+        residual=M@(v-v0)/dt+apply_drag(v)+internal-F
+        if np.linalg.norm(residual)/max(np.linalg.norm(internal),np.linalg.norm(F),1.)<1e-10:break
+        v-=scale*solve(A*scale[:,None]*scale[None,:],scale*residual,assume_a='pos')
     du=dt*v;mem=[];force=np.zeros_like(v);rows=[]
     for b,S in prepared:
         H,L,R,e,theta,idx=(b[k] for k in ('H','L','R','old','theta','dofs'))
@@ -26,9 +39,9 @@ def step(M,D,F,v0,dt,blocks):
             numerical_memory=float(.5*de@H@de),internal_work=float(new@H@inc)))
     totals={k:sum(r[k] for r in rows) for k in rows[0]}
     K0=float(.5*v0@M@v0);K1=float(.5*v@M@v)
-    totals.update(kinetic_before=K0,kinetic_after=K1,drag=float(dt*v@D@v),external_work=float(F@du),numerical_kinetic=float(.5*(v-v0)@M@(v-v0)))
+    totals.update(kinetic_before=K0,kinetic_after=K1,drag=float(dt*v@D@v) if drag_action is None else float(dt*v@apply_drag(v)),external_work=float(F@du),numerical_kinetic=float(.5*(v-v0)@M@(v-v0)))
     totals['balance']=K1-K0+totals['elastic_after']-totals['elastic_before']-totals['external_work']-totals['thermal_work']+totals['maxwell']+totals['numerical_memory']+totals['numerical_kinetic']+totals['drag']
-    residual=M@(v-v0)/dt+D@v+force-F
+    residual=M@(v-v0)/dt+apply_drag(v)+force-F
     totals['momentum_relative']=float(np.linalg.norm(residual)/max(np.linalg.norm(force),np.linalg.norm(F),1.))
     totals['balance_relative']=abs(totals['balance'])/max(max(abs(x) for x in totals.values()),1.)
     if min(totals[k] for k in ['maxwell','numerical_memory','numerical_kinetic','drag']) < -1e-12: raise ValueError('negative dissipation')
