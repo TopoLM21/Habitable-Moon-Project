@@ -1,0 +1,156 @@
+{
+  "source_code": "537e37ec79dfc750e1c3c3670ba964afb8261116",
+  "read_only": true,
+  "inputs": {
+    "fine_half_step_final.json": "04987d11e695dd0286d95dda3372bf8df87074c690ea6bf1ae6675eb7773098e",
+    "coarse_initial.json": "67da6dab619299cf4994e54f456168c65e5937b7c81f2503fa384e8f3416ddc2",
+    "fine_initial.json": "39d2d878eee0d0db2a638b8813879d5e1384739cdf7cc1d5e18d9e0ffd655843",
+    "fine_restart.json": "36e50065d6dd609a0129f544b8ca74179bcef5469dee379e60e0a9eb2493c960",
+    "coarse_final.json": "03e2f1cd82c249cbf808135594a8f22717962a2f5970e471f278d20f4371308d",
+    "fine_final.json": "3c2f15e51d622d13c72c96447789b98d85be9c40be22bea6aea4a9d835fc39a7"
+  },
+  "pointwise_quadrature": {
+    "coarse": {
+      "total_rms_pa": 0.3470295850974457,
+      "radial_normal_rms_pa": 0.13386750092859415,
+      "mixed_shear_frobenius_rms_pa": 0.21888987168707733,
+      "tangential_tensor_rms_pa": 0.2336584028038644,
+      "squared_norm_fractions": [
+        0.14880492656939207,
+        0.39784905546282195,
+        0.4533460179677859
+      ]
+    },
+    "fine": {
+      "total_rms_pa": 0.33738543637931107,
+      "radial_normal_rms_pa": 0.036236595075847575,
+      "mixed_shear_frobenius_rms_pa": 0.2181857425470809,
+      "tangential_tensor_rms_pa": 0.2547760263591262,
+      "squared_norm_fractions": [
+        0.01153565083819638,
+        0.41821544953154494,
+        0.5702488996302587
+      ]
+    },
+    "difference": {
+      "total_rms_pa": 0.11246250847279429,
+      "radial_normal_rms_pa": 0.10162648040655342,
+      "mixed_shear_frobenius_rms_pa": 0.004697946935713077,
+      "tangential_tensor_rms_pa": 0.04793541057255025,
+      "squared_norm_fractions": [
+        0.8165790578662673,
+        0.0017450210960415226,
+        0.18167592103769126
+      ]
+    }
+  },
+  "pointwise_symmetric_relative": 0.3240718177996694,
+  "mean_tensor_rms_difference_pa": 0.10622884444792922,
+  "unresolved_within_parent_difference_rms_pa": 0.036922194128342176,
+  "maximum_point_frobenius_difference_pa": 0.2352885369006354,
+  "maximum_parent_mean_frobenius_difference_pa": 0.2144508646863914,
+  "maximum_parent_mean_principal_difference_bound_pa": 0.19221815522634153,
+  "top_eight_fraction": 0.30423833709429576,
+  "top_faces": [
+    {
+      "face": 75,
+      "rms_difference_pa": 0.21665527675811613,
+      "fraction": 0.05273295170041674,
+      "centroid": [
+        0.35677854164312595,
+        -1.2878038848989468e-05,
+        -0.9341889916163433
+      ]
+    },
+    {
+      "face": 27,
+      "rms_difference_pa": 0.21701628820914728,
+      "fraction": 0.05265816633418957,
+      "centroid": [
+        -0.3567775972644821,
+        1.2563189936655898e-05,
+        0.9341893522901817
+      ]
+    },
+    {
+      "face": 73,
+      "rms_difference_pa": 0.19837889495855923,
+      "fraction": 0.03678924941112439,
+      "centroid": [
+        0.17654262531765044,
+        -0.2946707659660194,
+        -0.9391495307622483
+      ]
+    },
+    {
+      "face": 24,
+      "rms_difference_pa": 0.19830372240903588,
+      "fraction": 0.0365403159395693,
+      "centroid": [
+        -0.17654161259963963,
+        0.29467060008243756,
+        0.9391497731819856
+      ]
+    },
+    {
+      "face": 26,
+      "rms_difference_pa": 0.18620889982364722,
+      "fraction": 0.032264655179942626,
+      "centroid": [
+        -0.17659386793298076,
+        -0.2946313358977943,
+        0.9391522675879296
+      ]
+    },
+    {
+      "face": 74,
+      "rms_difference_pa": 0.1853110728616066,
+      "fraction": 0.03213912171430248,
+      "centroid": [
+        0.17659489604609063,
+        0.29463085992563026,
+        -0.939152223587824
+      ]
+    },
+    {
+      "face": 40,
+      "rms_difference_pa": 0.1806932015213442,
+      "fraction": 0.03088499021689219,
+      "centroid": [
+        0.5803928411875254,
+        -0.762571850787432,
+        0.2857067067552013
+      ]
+    },
+    {
+      "face": 12,
+      "rms_difference_pa": 0.17829974286173758,
+      "fraction": 0.030228886597858495,
+      "centroid": [
+        -0.5803928168988656,
+        0.7625714426167863,
+        -0.2857078455302778
+      ]
+    }
+  ],
+  "external_work": {
+    "coarse_j": 2608544871406.5977,
+    "fine_j": 2608545201981.573,
+    "relative_difference": 1.2672771602148861e-07
+  },
+  "fine_energy": {
+    "elastic_j": 27712.38308793602,
+    "kinetic_j": 0.0011383325184511513,
+    "heat_buffer_j": 2608545160392.9873,
+    "numerical_j": 13876.20133971276
+  },
+  "cost": {
+    "previous_final_series_seconds": 25.47175915200205,
+    "step_seconds_fine": [
+      1.1280101159936748,
+      1.1811818099959055
+    ],
+    "audit_seconds": 4.345264973002486
+  },
+  "convergence": "Only80/320 pair, quadrature order5/7 and temporal pair; no spatial order or asymptotic convergence established."
+}
