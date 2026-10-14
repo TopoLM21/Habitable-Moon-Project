@@ -12,10 +12,12 @@ def invert(h,cp,L,ts,tl,offset):
     return np.where(x<=cp*ts,x/cp,np.where(x>=cp*tl+L,(x-L)/cp,(x+L*ts/(tl-ts))/(cp+L/(tl-ts))))
 
 
-def solve(mass,h0,cp,latent,solidus,liquidus,offset,edges,dt_seconds,*,water_parameters=None):
+def solve(mass,h0,cp,latent,solidus,liquidus,offset,edges,dt_seconds,*,water_parameters=None,fixed_temperature=None):
     """Optional last-node water EOS reuses Genesis condensation; default unchanged."""
     mass,h0,cp,L,ts,tl,off=[np.asarray(x,dtype=float) for x in (mass,h0,cp,latent,solidus,liquidus,offset)]
     n=len(mass)
+    fixed={} if fixed_temperature is None else dict(fixed_temperature)
+    if any(not isinstance(i,(int,np.integer)) or not 0<=i<n or not np.isfinite(t) or t<0 for i,t in fixed.items()):raise ValueError('Invalid fixed temperature')
     if any(x.shape!=(n,) or not np.isfinite(x).all() for x in (mass,h0,cp,L,ts,tl,off)):raise ValueError('Finite complete fields')
     if np.any(mass<=0) or np.any(cp<=0) or np.any(L<0) or np.any(tl<=ts) or np.any(h0<0) or not np.isfinite(dt_seconds) or dt_seconds<=0:raise ValueError('Physical solver bounds')
     rows=[];cols=[];values=[];seen=set()
@@ -36,13 +38,19 @@ def solve(mass,h0,cp,latent,solidus,liquidus,offset,edges,dt_seconds,*,water_par
         if water_parameters is not None:
             out[-1]=mass[-1]*(water_specific_enthalpy(x[-1],water_parameters)-h0[-1])
         flux=dt_seconds*G*(x[ii]-x[jj]);np.add.at(out,ii,flux);np.add.at(out,jj,-flux)
-        return out/scale
+        out=out/scale
+        for i,t in fixed.items():out[i]=x[i]-t
+        return out
     for iteration in range(40):
         r=residual(T)
         if np.max(np.abs(r)/tol)<=1:break
         capacity=mass*(cp+L/(tl-ts)*((T>ts)&(T<tl)))
         if water_parameters is not None:capacity[-1]=mass[-1]*water_capacity(T[-1],water_parameters)
         J=diags(1/scale)@(diags(capacity)+dt_seconds*A)
+        if fixed:
+            J=J.tolil()
+            for i in fixed:J.rows[i]=[i];J.data[i]=[1.]
+            J=J.tocsr()
         direction=spsolve(J,-r);alpha=1.;norm=np.linalg.norm(r)
         for backtrack in range(30):
             trial=T+alpha*direction
@@ -51,7 +59,8 @@ def solve(mass,h0,cp,latent,solidus,liquidus,offset,edges,dt_seconds,*,water_par
         else:raise ValueError('Newton line search failed')
         T=trial
     else:raise ValueError('Newton budget exhausted')
-    if T.min()<T0.min()-1e-8 or T.max()>T0.max()+1e-8:raise ValueError('Maximum principle')
+    lower=min([float(T0.min()),*fixed.values()]);upper=max([float(T0.max()),*fixed.values()])
+    if T.min()<lower-1e-8 or T.max()>upper+1e-8:raise ValueError('Maximum principle')
     h=cp*T+L*phase(T,ts,tl)+off
     if water_parameters is not None:h[-1]=water_specific_enthalpy(T[-1],water_parameters)
     exchanges=dt_seconds*G*(T[ii]-T[jj])
