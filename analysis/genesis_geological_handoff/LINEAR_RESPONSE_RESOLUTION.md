@@ -168,3 +168,9 @@ Setup и вся первая серия:13.94s; предварительно и�
 Resultants воспроизводит функция `projected_resultants()` второго модуля.
 Runners отказываются перезаписывать готовые отчёты. Сохранённая исходная
 история, параметры, checkpoints и defaults не изменены; публикации не было.
+
+Окончательный локальный geometry reference:
+[LOCAL_SPHERICAL_REFERENCE.md](LOCAL_SPHERICAL_REFERENCE.md).
+При одинаковом force/torque/work ложный transverse kernel плоского
+projector исчезает на согласованной сфере. Поэтому обогащение пространства
+само по себе недостаточно: сначала нужен общий physical mapping.
