@@ -1,3 +1,13 @@
+**Текущий этап: одобренный экспериментальный уравновешенный старт проверен.**
+[Метод, ledger, годовая temporal пара и ограничения](analysis/genesis_geological_handoff/EQUILIBRATED_START_RESULT.md).
+Новая compatible correction сохраняет массу/H/слои/состав/damage, меняет
+mechanical initial data с явным ΔE−2.74655e19J и heat0. Прежние законы,
+beta/traction/пороги и default/canonical не менялись. 1year dt.25/.125,
+restart и thermal perturbation проходят;12 адресных тестов PASS.
+Следующая работа — bounded adaptive pilot от нового checkpoint, пока не запускался.
+Прежние restore,10ea182, точные коэффициенты2e−6 и четыре старых angular controls
+ниже являются историей, а не активным заданием. Restore CLOSED.
+
 **Source100 исправлен; та же exploratory100/2×50 пара завершена, но отклонена.**
 [Диагноз и измерения](analysis/genesis_exploratory_100/SOURCE_PRECISION.md).
 Причина source-остатка — температурная остановка root solver: ошибка2,1e-11K

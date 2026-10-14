@@ -1,4 +1,31 @@
-# Текущая передача: три экспериментальных этапа завершены
+# Текущая передача: одобренный уравновешенный старт проверен
+
+14.10.2026; база23f12c22, ветка feat/genesis-geological-handoff.
+[Результат и цена приближения](analysis/genesis_geological_handoff/EQUILIBRATED_START_RESULT.md),
+[протокол](analysis/genesis_geological_handoff/EQUILIBRATED_START_PROTOCOL.md).
+Новая compatible-memory/velocity инициализация при прежних Maxwell/beta/тяге:
+6.13s, Δmechanical−2.74655e19J (86.12% исходной активной энергии), heat0,
+mass/H/material history/damage/config неизменны. Сила и момент проходят
+раздельные1e−8; derivative frozen force3.15e−14. Это разрешённая потеря
+неизвестных быстрых стартовых подробностей, не точное продолжение старого старта.
+
+1year dt.25/.125 проходит заранее заданную temporal пару, initial/midrun restart
+exact; controlled+.001K response ненулевой, balances PASS. Реальный год
+27.37/54.34s; численная потеря8.40/4.20% physical dissipation остаётся явной.
+12 адресных тестов PASS. Нового edge damage, births или split нет.
+Checkpoint `/workspace/genesis-spherical-equilibrated-01/initial.json`,
+SHA256 d48a9a6c50681c9b37a38149ce036fa8f750453d5022b5c746a7f3dab0e892ee.
+Старые checkpoints/defaults/canonical не менялись; no push/paid/deletion.
+
+Следующий этап — ограниченный адаптивный pilot нового старта с временными
+ошибками работы/тепла/изменений stress и событиями. Он пока не запускался.
+Archive restoration CLOSED,10ea182, коэффициенты2e−6 и четыре прежних контроля
+ниже — **исторический контекст, не текущее поручение**. Не переключать HEAD
+назад и не повторять архивные аудиты. Пространственное ограничение остаётся.
+
+---
+
+# Предыдущая передача: три экспериментальных этапа завершены
 
 13.10.2026. Ветка feat/genesis-geological-handoff; restoration CLOSED.
 - [Сетка](analysis/genesis_geological_handoff/SPATIAL_CONTROL_RESULT.md):320/1280,

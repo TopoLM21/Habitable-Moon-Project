@@ -1,0 +1,39 @@
+{
+  "code_base": "23f12c22effc1650a0c4e7449443aa25cf632fe8",
+  "status": "PASS",
+  "unique_tests_passed": 12,
+  "checks": [
+    {
+      "command": "python -m pytest -q -p no:cacheprovider tests/test_equilibrated_start.py tests/test_spherical_coupled.py",
+      "result": "10 passed; 1 fixture scalar-cast failure, corrected with ndarray.item()",
+      "seconds": 38.29,
+      "log": "/workspace/equilibrated-start-tests.log"
+    },
+    {
+      "command": "python -m pytest -q -p no:cacheprovider tests/test_equilibrated_start.py::test_compatible_projection_gauge_energy_and_self_stress",
+      "result": "1 passed",
+      "seconds": 0.44
+    },
+    {
+      "command": "python -m pytest -q -p no:cacheprovider tests/test_equilibrated_start.py::test_real_frozen_constitutive_tangent_has_no_fast_force_change",
+      "result": "1 passed",
+      "seconds": 14.36,
+      "log": "/workspace/equilibrated-start-frozen-test.log"
+    }
+  ],
+  "source_sha256": {
+    "analysis/genesis_geological_handoff/equilibrated_start.py": "d33e435c99a4104ba6704b4cb16681ce3e0ee5214dd2da32d725c1049e0de5a0",
+    "analysis/genesis_geological_handoff/equilibrated_start_check.py": "347c5bdd5e4a2d7fdc3359f1e8281774f7e5fc07ba8f8e02949d878e21c85760",
+    "analysis/genesis_geological_handoff/equilibrated_start_check.json": "740e1fdf70d6e7db2b97ff735b7788722d23e92dfa2472cf9ffd90c90b975f44",
+    "tests/test_equilibrated_start.py": "515ba734e9940f78358435318fe934777952216489c9b1364ae1d68fb3e0f818"
+  },
+  "output_readback": "All five outputs independently read and matched exact bytes and SHA256 from equilibrated_start_check.json",
+  "log_sha256": {
+    "/workspace/equilibrated-start-tests.log": "1e0ec2394b2796401f0dbf28f1de8e67cf5cb5b31e65a5373b7cba9b0cba0ff1",
+    "/workspace/equilibrated-start-frozen-test.log": "c5321f42558408e3f00e4efb9fd7233126de0a2cb6ceace1a34438ab027fdd1a",
+    "/workspace/equilibrated-start-run.log": "599da56f4acc4b4616b803720287c69281bba09117c883c3472aab827ec77244"
+  },
+  "canonical_or_default_changes": false,
+  "archive_work": false,
+  "push": false
+}
