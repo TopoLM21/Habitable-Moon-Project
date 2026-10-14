@@ -140,6 +140,48 @@ class UnifiedGeologicalGenesis(GeologicalContinuation):
                  min_floor_m=float(cp.topo.elevation_m.min()),max_floor_m=float(cp.topo.elevation_m.max()))
         return d
 
+    def _lithosphere_options(self):
+        from .transport import SubgridTransportParameters
+        if not self.record.get('geometry_diagnostics'):return {}
+        self._material_trace={}
+        return dict(material_trace=self._material_trace,transport_parameters=SubgridTransportParameters(
+            connected_footprint=self.record.get('connected_footprint',False)),continental_displacement=self.record.get('continental_displacement'))
+
+    def enable_mature_cycle(self,*,connected_footprint=True):
+        """Explicit scenario upgrade; old saved/default experiments stay unchanged."""
+        from .continental import ContinentalCycleParameters
+        from .subduction_memory import SubductionMemoryParameters
+        from .late_tectonics import LateTectonicsParameters
+        self.record.update(mature_cycle=True,geometry_diagnostics=True,connected_footprint=connected_footprint,
+            continental_parameters=asdict(ContinentalCycleParameters()),subduction_parameters=asdict(SubductionMemoryParameters()),
+            late_parameters=asdict(LateTectonicsParameters()),
+            continental_displacement='retire_displaced_basalt',
+            composition_model='native effective arc maturation; separate mafic/felsic provenance, common reference density/EOS; no elemental chemistry',
+            slab_inventory='legacy length/depth memory is a force diagnostic, not additional mass; recycled material/H resides in explicit deep reservoir')
+
+    def _dynamics_options(self,checkpoint):
+        if not self.record.get('mature_cycle'):return {}
+        from .subduction_memory import SubductionMemoryParameters
+        return dict(subduction_memory=checkpoint.subduction_memory,
+            subduction_memory_params=SubductionMemoryParameters(**self.record['subduction_parameters']))
+
+    def _after_lithosphere(self,old,new,source_index,dt_myr):
+        if not self.record.get('mature_cycle'):return
+        from .continental import advance_continental_cycle,ContinentalCycleParameters
+        from .subduction_memory import advance_subduction_memory,SubductionMemoryParameters
+        from .lithosphere import refresh_mechanical_lithosphere
+        self._post_lithosphere=deepcopy(new.state)
+        boundaries=classify_boundaries(self.mesh,new.system,self.record['radius_km'],5.,1.)
+        self._cycle_trace={}
+        new.state,new.cycle,diag=advance_continental_cycle(self.mesh,new.state,boundaries,new.cycle,dt_myr,
+            self.record['radius_km'],ContinentalCycleParameters(**self.record['continental_parameters']),
+            previous_lithosphere=old.state,plate_system=new.system,transport_source_index=source_index,material_trace=self._cycle_trace)
+        new.cycle_rows.append(asdict(diag))
+        refresh_mechanical_lithosphere(new.state,dt_myr)
+        new.subduction_memory,diag=advance_subduction_memory(self.mesh,new.state,boundaries,self.record['radius_km'],dt_myr,
+            new.subduction_memory,SubductionMemoryParameters(**self.record['subduction_parameters']))
+        new.subduction_memory_rows.append(asdict(diag))
+
     def rates(self):
         p=GeologicalGenesisParameters(**self.record['parameters']);cp=self.checkpoint;n=self.mesh.centroids;r=self.record['radius_km']
         v=np.cross(cp.mantle_flow.cell_omega_rad_per_myr,r*n)
@@ -153,7 +195,7 @@ class UnifiedGeologicalGenesis(GeologicalContinuation):
             strain[i]=np.linalg.norm(symmetric)
         inv=self.record['thermal_inventory'];T=temperature(np.array(inv['mass_kg']),inv['energy_j']);nodes=np.array(self.source['config']['solid_nodes'])
         hot=np.clip((T[nodes].mean(1)-300)/1100,0,1)
-        thickness=cp.state.oceanic_volume_km3/self.mesh.physical_cell_areas_km2(r)
+        thickness=(cp.state.oceanic_volume_km3+cp.state.continental_volume_km3)/self.mesh.physical_cell_areas_km2(r)
         strength=np.maximum(p.min_strength_fraction,np.sqrt(thickness/p.reference_thickness_km))*(1-.7*hot)
         strength*=np.array(self.record['material_strength'])*(1-.5*cp.state.tidal_damage)
         return strain/(p.critical_strain*strength)
@@ -179,6 +221,9 @@ class UnifiedGeologicalGenesis(GeologicalContinuation):
         return dt
 
     def install_system(self,cp,system):
+        if self.record.get('mature_cycle'):
+            from .subduction_memory import remap_subduction_memory
+            cp.subduction_memory=remap_subduction_memory(self.mesh,cp.system,system,cp.subduction_memory)
         cp.transport_state=remap_transport_state(cp.system,system,cp.transport_state)
         cp.system=system;cp.state.cell_plate=system.cell_plate.copy()
 
@@ -192,6 +237,9 @@ class UnifiedGeologicalGenesis(GeologicalContinuation):
         self.checkpoint.manager._remap_collision_memory(old,new)
         self.install_system(self.checkpoint,new);d[cut]=0.;self.record['fracture_damage']=d.tolist()
         row=asdict(event);row.update(kind='geological_weak_band_split',cut=cut.tolist(),rule='connected eligible band; inherited velocities, no separating kick',damage_consumption='phenomenological release on cut, no fictitious heat')
+        if self.record.get('geometry_diagnostics'):
+            from .geological_geometry import split_geometry
+            row['geometry']=split_geometry(self.mesh,old,new,cut,self.record['radius_km'])
         self.record['events'].append(row);self.checkpoint.events.append(deepcopy(row));return True
 
     def step(self,dt_myr):
@@ -210,18 +258,32 @@ class UnifiedGeologicalGenesis(GeologicalContinuation):
         return dict(time_myr=self.checkpoint.state.time_myr,accepted_substeps=len(self.record['steps'])-first,events=len(self.record['events'])-events,plates=len(self.checkpoint.system.plates))
 
     def _after_material_step(self,old,new,source_index,audit):
+        if self.record.get('geometry_diagnostics'):
+            from .geological_geometry import transport_geometry
+            audit['geometry']=transport_geometry(self.mesh,old.system,new.system,self._material_trace,self.record['radius_km'])
         p=GeologicalGenesisParameters(**self.record['parameters']);inv=self.record['thermal_inventory']
         mass=np.array(inv['mass_kg']);energy=np.array(inv['energy_j']);M0=math.fsum(mass);H0=math.fsum(energy)
-        transfer=transport(self.record['material_parcels'],mass,energy,source_index,new.state.oceanic_volume_km3*DENSITY*1e9,new.state.time_myr)
+        if self.record.get('mature_cycle'):
+            from .geological_material import transport_cycle
+            transfer=transport_cycle(self.record['material_parcels'],mass,energy,old.state,self._post_lithosphere,new.state,
+                self._material_trace,self._cycle_trace,new.state.time_myr)
+        else:transfer=transport(self.record['material_parcels'],mass,energy,source_index,new.state.oceanic_volume_km3*DENSITY*1e9,new.state.time_myr)
+        residuals={}
         for actual,key in [(transfer['created_mass'],'generated_volume_km3'),(transfer['recycled_mass'],'recycled_volume_km3')]:
-            if not math.isclose(actual,audit['material'][key]*DENSITY*1e9,rel_tol=2e-13,abs_tol=1.):raise ValueError('Native/parcel mass mismatch')
+            expected=audit['material'][key]*DENSITY*1e9;residuals[key]=actual-expected
+            # Mature counters are differences of cumulative volumes. Their
+            # roundoff scales with inventory, not with a tiny step's production.
+            tolerance=(audit['material']['volume_tolerance_km3']*DENSITY*1e9 if self.record.get('mature_cycle') else 1.)
+            if not math.isclose(actual,expected,rel_tol=2e-13,abs_tol=tolerance):raise ValueError('Native/parcel mass mismatch')
+        audit['native_transfer_residual_kg']=residuals
         mass_error=math.fsum(mass)-M0;transport_H=math.fsum(energy)-H0
         if abs(mass_error)>3e-14*M0 or abs(transport_H)>3e-14*max(abs(H0),1):raise ValueError('Material/enthalpy transport imbalance')
         if not math.isclose(mass[-2],audit['interior_reference_mass_kg'],rel_tol=3e-14):raise ValueError('Independent interior ledger mismatch')
         for name,new_value in [('fracture_damage',0.),('material_strength',1.)]:
             previous=np.array(self.record[name]);out=np.full(len(source_index),new_value);good=source_index>=0;out[good]=previous[source_index[good]];self.record[name]=out.tolist()
         bins=self.record['material_parcels']['nodes'];areas=self.mesh.physical_cell_areas_km2(self.record['radius_km'])*1e6
-        thickness=new.state.oceanic_volume_km3/(areas/1e6)*1000;edges=[]
+        surface_volume=new.state.oceanic_volume_km3+new.state.continental_volume_km3
+        thickness=surface_volume/(areas/1e6)*1000;edges=[]
         for f,row in enumerate(bins):
             h=max(thickness[f],1.);G=p.conductivity_w_m_k*areas[f]
             edges.extend([(len(mass)-2,row[-1],G/(p.mantle_boundary_layer_km*1000)),(row[-1],row[0],G/(h/2)),(row[0],len(mass)-1,G/(h/4))])
@@ -232,12 +294,18 @@ class UnifiedGeologicalGenesis(GeologicalContinuation):
         residual=math.fsum([*E,*(-energy),export]);allowance=64*math.fsum(abs(np.spacing(x)) for x in np.r_[E,energy])+1e-9*abs(export)
         if abs(residual)>allowance:raise ValueError('Open thermal balance')
         if mass[-1]!=self.record['water_mass_kg']:raise ValueError('Water mass changed')
-        if not np.allclose([sum(mass[row]) for row in bins],new.state.oceanic_volume_km3*DENSITY*1e9,rtol=2e-13):raise ValueError('Parcel carrier mass mismatch')
+        if not np.allclose([sum(mass[row]) for row in bins],surface_volume*DENSITY*1e9,rtol=2e-13):raise ValueError('Parcel carrier mass mismatch')
         self.record['thermal_inventory']=dict(mass_kg=mass.tolist(),energy_j=E.tolist());self.record['cumulative_exported_heat_j']+=export
         sync_thermal(self.record['material_parcels'],mass,E)
         new.thermal.time_myr=new.state.time_myr;new.thermal.system_age_myr+=audit['dt_myr'];new.thermal.mantle_temperature_k=float(out['temperature_k'][-2])
         new.mantle_flow,_=advance_mantle_flow(self.mesh,new.mantle_flow,audit['dt_myr'],1.,MantleFlowParameters())
         boundaries=classify_boundaries(self.mesh,new.system,self.record['radius_km'],5.,1.)
+        if self.record.get('mature_cycle'):
+            from .late_tectonics import advance_late_tectonics,LateTectonicsParameters
+            late=advance_late_tectonics(self.mesh,new.state,new.system,boundaries,audit['dt_myr'],self.record['radius_km'],
+                new.thermal.tectonic_activity_factor,LateTectonicsParameters(**self.record.get('late_parameters',{})),
+                last_split_time_myr=new.manager.last_split_time_myr)
+            new.late_rows.append(asdict(late))
         system,topology,events=new.manager.update(self.mesh,new.state,new.system,boundaries,self.record['radius_km'],audit['dt_myr'])
         if topology.topology_changed:self.install_system(new,system)
         else:new.system=system
@@ -249,7 +317,7 @@ class UnifiedGeologicalGenesis(GeologicalContinuation):
         new.topo,relief,_=advance_topography(self.mesh,new.state,boundaries,old.topo,audit['dt_myr'],self.record['radius_km'],TopographyParameters(),previous_lithosphere=old.state,transport_source_index=source_index)
         new.hydrosphere,water=advance_hydrosphere(self.mesh,new.state,new.topo,old.hydrosphere,self.record['radius_km'],HydrosphereParameters(),TopographyParameters())
         if new.hydrosphere.water_volume_km3!=self.record['water_volume_km3'] or abs(water.relative_volume_error)>1e-6:raise ValueError('Water inventory/sea level balance')
-        if np.any(new.state.continental_fraction) or np.any(new.state.continental_volume_km3):raise ValueError('Unexpected continental material')
+        if not self.record.get('mature_cycle') and (np.any(new.state.continental_fraction) or np.any(new.state.continental_volume_km3)):raise ValueError('Unexpected continental material')
         audit.update(coupled_enthalpy_closed=True,thermal=dict(transport_H_residual_j=transport_H,mass_residual_kg=mass_error,global_residual_j=residual,allowance_j=allowance,exported_heat_j=export,
             mantle_temperature_k=float(out['temperature_k'][-2]),ocean_temperature_k=float(out['temperature_k'][-1]),silicate_melt_mass_kg=float(mass[:-1]@out['melt_fraction'][:-1]),
             silicate_solid_mass_kg=float(mass[:-1]@(1-out['melt_fraction'][:-1])),created_H_j=transfer['created_H'],recycled_H_j=transfer['recycled_H']),

@@ -160,6 +160,7 @@ def _gravitational_collapse(
     areas: Array,
     params: ContinentalCycleParameters,
     dt_myr: float,
+    transfers=None,
 ) -> float:
     """Conservatively move excess continental material within a plate.
 
@@ -232,6 +233,7 @@ def _gravitational_collapse(
             )
             remaining -= amount
             actually_moved += amount
+            if transfers is not None:transfers.append((int(src),int(dst),float(amount)))
         if actually_moved > 0.0:
             state.crust_thickness_km[src] -= actually_moved / (
                 float(areas[src]) * source_fraction
@@ -254,6 +256,7 @@ def advance_continental_cycle(
     plate_system: PlateSystem | None = None,
     transport_source_index: Array | None = None,
     volcanic_arc_forcing: Array | None = None,
+    material_trace=None,
 ) -> tuple[LithosphereState, ContinentalCycleState, ContinentalCycleDiagnostics]:
     if dt_myr <= 0.0:
         raise ValueError("dt_myr must be positive")
@@ -265,6 +268,11 @@ def advance_continental_cycle(
     material_fraction, material_volume = continental_material_fields(state, areas)
     state.continental_fraction = material_fraction
     state.continental_volume_km3 = material_volume
+    def snapshot(name):
+        if material_trace is not None:
+            if state.oceanic_volume_km3 is None:raise ValueError('Material trace requires tracked basalt')
+            material_trace.setdefault('stages',[]).append((name,state.oceanic_volume_km3.copy(),material_volume.copy()))
+    snapshot('initial')
     oceanic_before = 0.0
     oceanic_juvenile_replaced = oceanic_recycled = oceanic_generated = 0.0
     if state.oceanic_volume_km3 is not None:
@@ -371,6 +379,7 @@ def advance_continental_cycle(
         juvenile_volume = float(np.sum(material_volume[mature] - old_material_volume))
         potential[mature] = 0.0
 
+    snapshot('juvenile_arc')
     # Continental volcanic arcs add lower/middle-crustal volume.
     cont = state.crust_type == int(CrustType.CONTINENTAL)
     thicken = cont & (continental_arc_intensity > 0.0)
@@ -386,10 +395,12 @@ def advance_continental_cycle(
         # fractional footprint.
         arc_thickening_volume = float(np.sum(areas[thicken] * material_fraction[thicken] * delta))
 
+    snapshot('arc_thickening')
     # Slow v0.9.8-style gravitational collapse conservatively spreads
     # over-thickened continental crust within the same plate.
     collapse_redistributed_volume = _gravitational_collapse(
-        mesh, state, areas, params, dt_myr
+        mesh, state, areas, params, dt_myr,
+        transfers=None if material_trace is None else material_trace.setdefault('collapse_transfers',[]),
     )
     # Gravitational collapse changes only lateral thickness distribution and is
     # conservative. Sync visible continental material volume to that field.
@@ -397,6 +408,7 @@ def advance_continental_cycle(
         vis = state.crust_type == int(CrustType.CONTINENTAL)
         material_volume[vis] = areas[vis] * material_fraction[vis] * state.crust_thickness_km[vis]
 
+    snapshot('collapse')
     # Tectonic/subduction erosion removes damaged continental forearc volume.
     erosion_cells = (
         (state.crust_type == int(CrustType.CONTINENTAL))
@@ -426,6 +438,8 @@ def advance_continental_cycle(
         if len(recycle):
             if state.oceanic_volume_km3 is not None:
                 oceanic_recycled = float(np.sum(state.oceanic_volume_km3[recycle]))
+                state.oceanic_volume_km3[recycle] = 0.0
+                snapshot('erosion_basalt_retirement')
                 state.oceanic_volume_km3[recycle] = areas[recycle] * float(oceanic_thickness_km)
                 oceanic_generated = float(np.sum(state.oceanic_volume_km3[recycle]))
             recycled_area = float(np.sum(areas[recycle] * material_fraction[recycle]))
@@ -450,6 +464,7 @@ def advance_continental_cycle(
                 state.craton_strength[recycle] = 0.0
             potential[recycle] = 0.0
 
+    snapshot('erosion_and_replacement')
     # Dense lower crust in very thick orogens/arcs can delaminate.  This removes
     # volume without necessarily destroying the continental surface area.
     cont = state.crust_type == int(CrustType.CONTINENTAL)
@@ -465,6 +480,7 @@ def advance_continental_cycle(
         material_volume[idx] = np.maximum(0.0, material_volume[idx] - delam_removed)
         delam_volume = float(np.sum(delam_removed))
 
+    snapshot('delamination')
     # Potential has no meaning under already continental crust.
     potential[state.crust_type == int(CrustType.CONTINENTAL)] = 0.0
     state.continental_fraction = material_fraction

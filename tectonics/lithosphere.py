@@ -137,6 +137,7 @@ class LithosphereStepDiagnostics:
     oceanic_created_volume_km3: float = 0.0
     oceanic_subducted_volume_km3: float = 0.0
     oceanic_rift_recycled_volume_km3: float = 0.0
+    oceanic_continental_displacement_volume_km3: float = 0.0
     oceanic_volume_balance_error_km3: float = 0.0
 
 
@@ -780,6 +781,7 @@ def _redistribute_continental_footprint_overflow(
     fraction: Array,
     volume: Array,
     preferred_sources: Array,
+    transfers=None,
 ) -> tuple[float, float, float, Array]:
     """Spread >100% continental footprint locally without losing area/volume.
 
@@ -853,11 +855,14 @@ def _redistribute_continental_footprint_overflow(
                     continue
                 da = min(capacity, remaining_area)
                 dv = da * material_h
-                frac[dst] += da / float(area[dst])
+                # Exact capacity fill is exactly 1; adding the quotient can
+                # overshoot by one ULP and fail the independent basalt bounds.
+                frac[dst] = 1.0 if da == capacity else frac[dst] + da / float(area[dst])
                 vol[dst] += dv
                 remaining_area -= da
                 remaining_volume -= dv
                 moved_volume += dv
+                if transfers is not None:transfers.append((int(src),int(dst),float(dv)))
                 if donor[dst] < 0:
                     donor[dst] = int(src)
             frontier = next_frontier
@@ -870,6 +875,10 @@ def _redistribute_continental_footprint_overflow(
             frac[src] += remaining_area / float(area[src])
             vol[src] += remaining_volume
 
+    # Roundoff-only overflow can also arise from the original area-weighted
+    # arrival sum. Never clip real unresolved overflow or any material volume.
+    near_full=(frac>1.)&(frac<=1.+16*np.finfo(float).eps)
+    frac[near_full]=1.
     eff = effective_continental_thickness_km(frac, vol, area)
     post_max = float(np.max(eff[frac > 1e-12])) if np.any(frac > 1e-12) else 0.0
     return float(moved_volume), raw_max, post_max, donor
@@ -911,9 +920,12 @@ def advance_lithosphere(
     transport_state=None,
     transport_parameters=None,
     young_subduction_sink=None,
+    material_trace=None,
+    continental_displacement=None,
 ) -> tuple[LithosphereState, Array, Array, LithosphereStepDiagnostics]:
     if dt_myr <= 0.0:
         raise ValueError("dt_myr must be positive")
+    if continental_displacement not in (None,'retire_displaced_basalt'):raise ValueError('Unknown continental displacement rule')
     if young_subduction_sink is not None and (transport_state is None or state.oceanic_volume_km3 is None):
         raise ValueError("Young accepted-material sink requires conservative tracked ocean volume")
     n = mesh.cell_count
@@ -931,7 +943,8 @@ def advance_lithosphere(
         # Local import avoids a module cycle: transport needs LithosphereState.
         from .transport import build_transport_map
         tmap = build_transport_map(
-            mesh, initial_system, state, dt_myr, transport_state, transport_parameters
+            mesh, initial_system, state, dt_myr, transport_state, transport_parameters,
+            trace=None if material_trace is None else material_trace.setdefault('rigid_transport',{}),
         )
         covered, source = tmap.covered, tmap.source
         transport_diag = tmap.diagnostics
@@ -940,6 +953,8 @@ def advance_lithosphere(
     multiplicity = np.sum(covered, axis=0)
     gap_mask = multiplicity == 0
     overlap_mask = multiplicity > 1
+    if material_trace is not None:
+        material_trace.update(covered=covered.copy(),source=source.copy())
 
     new_plate = np.empty(n, dtype=np.int32)
     new_type = np.empty(n, dtype=np.int8)
@@ -1160,6 +1175,7 @@ def advance_lithosphere(
     new_ocean_volume = None
     oceanic_created_volume = oceanic_subducted_volume = 0.0
     oceanic_rift_recycled_volume = 0.0
+    oceanic_continental_displacement_volume = 0.0
     young_acceptance_snapshot = None
     if old_ocean_volume is not None:
         if young_subduction_sink is not None:
@@ -1175,6 +1191,7 @@ def advance_lithosphere(
         oceanic_subducted_volume = float(np.sum(old_ocean_volume[~survived]))
         new_ocean_volume[gap_mask] = areas[gap_mask] * float(oceanic_thickness_km)
         oceanic_created_volume = float(np.sum(new_ocean_volume[gap_mask]))
+        if material_trace is not None:material_trace['basalt_before_displacement']=new_ocean_volume.copy()
 
     collision_redistributed = 0.0
     collision_raw_max = float(np.max(new_thickness[new_type == int(CrustType.CONTINENTAL)])) if np.any(new_type == int(CrustType.CONTINENTAL)) else 0.0
@@ -1188,7 +1205,20 @@ def advance_lithosphere(
         collision_redistributed, collision_raw_max, collision_post_max, donor = _redistribute_continental_footprint_overflow(
             mesh, areas, new_cont_fraction, new_cont_volume,
             np.asarray(collision_targets, dtype=np.int32),
+            transfers=None if material_trace is None else material_trace.setdefault('continental_spreading',[]),
         )
+        # Rebuild the *visible* crust raster from the independent material
+        if new_ocean_volume is not None and continental_displacement=='retire_displaced_basalt':
+            previous_fraction=np.zeros(n)
+            previous_fraction[inherited]=old_cont_fraction[winner_sources]
+            available=np.maximum(1.-new_cont_fraction,0.)
+            previous_available=1.-previous_fraction
+            fraction=np.minimum(1.,np.divide(available,previous_available,out=np.zeros(n),where=previous_available>0))
+            displaced=new_ocean_volume*(1.-fraction)
+            new_ocean_volume*=fraction
+            oceanic_continental_displacement_volume=float(np.sum(displaced))
+            oceanic_subducted_volume+=oceanic_continental_displacement_volume
+        if material_trace is not None:material_trace['basalt_after_displacement']=None if new_ocean_volume is None else new_ocean_volume.copy()
         # Rebuild the *visible* crust raster from the independent material
         # layer.  Fractional fringe cells remain material-bearing without
         # forcing the entire plate-ownership raster to become continental.
@@ -1384,6 +1414,7 @@ def advance_lithosphere(
     )
     rifted_area = float(np.sum(areas[breakup] * new_cont_fraction[breakup]))
     breakup_recycled_volume = float(np.sum(new_cont_volume[breakup])) if np.any(breakup) else 0.0
+    if material_trace is not None:material_trace['rift_replaced_faces']=np.flatnonzero(breakup).tolist()
     if np.any(breakup):
         if new_ocean_volume is not None:
             # Existing basalt in a mixed rift cell is replaced along with its
@@ -1508,6 +1539,7 @@ def advance_lithosphere(
         oceanic_created_volume_km3=oceanic_created_volume,
         oceanic_subducted_volume_km3=oceanic_subducted_volume,
         oceanic_rift_recycled_volume_km3=oceanic_rift_recycled_volume,
+        oceanic_continental_displacement_volume_km3=oceanic_continental_displacement_volume,
         oceanic_volume_balance_error_km3=(0.0 if new_ocean_volume is None else float(
             np.sum(new_ocean_volume) - np.sum(old_ocean_volume) - oceanic_created_volume
             + oceanic_subducted_volume + oceanic_rift_recycled_volume
@@ -1518,6 +1550,8 @@ def advance_lithosphere(
         events = raster_acceptance_events(mesh,state,*young_acceptance_snapshot,
             tmap,initial_system,radius_km)
         young_subduction_sink(events,new_state)
+    if material_trace is not None:
+        material_trace.update(owner=new_plate.copy(),winner_source=material_source_index.copy())
     return new_state, strain, weakening, diag
 
 

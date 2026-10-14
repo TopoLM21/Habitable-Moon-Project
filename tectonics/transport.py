@@ -34,6 +34,7 @@ Array = np.ndarray
 
 @dataclass(slots=True)
 class SubgridTransportParameters:
+    connected_footprint: bool = False
     min_changed_fraction: float = 0.18
     min_p75_cell_spacing_fraction: float = 0.30
     continental_preference_min_cells: int = 24
@@ -215,6 +216,55 @@ def _fit_rotation(source_points: Array, target_points: Array, max_pairs: int) ->
     return r
 
 
+def _connected_assignment(mesh,rotated_sources,params):
+    """Repair only disconnected raster footprints near one rigid rotation.
+
+    Start at the historical distance-optimal bijection. Join components along
+    shortest local mesh paths, then exchange redundant boundary cells while
+    preserving connectivity and exact parcel count. Refuse remote projections.
+    """
+    import heapq
+    from dataclasses import replace
+    from scipy.optimize import linear_sum_assignment
+    from .mesh import connected_components
+    count=len(rotated_sources)
+    if count>2048:raise ValueError('Connected assignment needs sparse implementation above 2048 cells')
+    original=_optimal_assignment(mesh,rotated_sources,replace(params,connected_footprint=False))
+    components=connected_components(original,mesh.neighbors)
+    if len(components)==1:return original
+    distance,_=cKDTree(rotated_sources).query(mesh.centroids)
+    selected=set(map(int,original));spacing=_median_cell_spacing_rad(mesh)
+    while len(components)>1:
+        main=set(max(components,key=len));other=selected-main
+        queue=[(0.,i) for i in main];heapq.heapify(queue);best={i:0. for i in main};parent={}
+        while queue:
+            cost,cell=heapq.heappop(queue)
+            if cost!=best[cell]:continue
+            if cell in other:break
+            for nb in mesh.neighbors[cell]:
+                trial=cost+(.01*spacing if nb in selected else float(distance[nb])+.05*spacing)
+                if trial<best.get(nb,float('inf')):
+                    best[nb]=trial;parent[nb]=cell;heapq.heappush(queue,(trial,nb))
+        while cell not in main:selected.add(cell);cell=parent[cell]
+        components=connected_components(selected,mesh.neighbors)
+    while len(selected)>count:
+        candidates=sorted((i for i in selected if any(j not in selected for j in mesh.neighbors[i])),key=lambda i:(-distance[i],i))
+        for i in candidates:
+            remainder=selected-{i}
+            if len(connected_components(remainder,mesh.neighbors))==1:
+                trial_targets=np.array(sorted(remainder),dtype=np.int32)
+                angle=np.arccos(np.clip(rotated_sources@mesh.centroids[trial_targets].T,-1,1))
+                try:linear_sum_assignment(np.where(angle<=1.5*spacing,angle,np.inf))
+                except ValueError:continue
+                selected=remainder;break
+        else:raise ValueError('Connected footprint count cannot be restored locally')
+    targets=np.array(sorted(selected),dtype=np.int32)
+    angle=np.arccos(np.clip(rotated_sources@mesh.centroids[targets].T,-1,1))
+    cost=np.where(angle<=1.5*spacing,angle,np.inf)
+    row,col=linear_sum_assignment(cost)
+    return targets[col[np.argsort(row)]]
+
+
 def _optimal_assignment(mesh: SphereMesh, rotated_sources: Array, params: SubgridTransportParameters, tree: cKDTree | None = None) -> Array:
     """Return one unique target cell for each rotated source point."""
     m = len(rotated_sources)
@@ -223,6 +273,8 @@ def _optimal_assignment(mesh: SphereMesh, rotated_sources: Array, params: Subgri
         return np.empty(0, dtype=np.int32)
     if m > n:
         raise ValueError("plate has more source cells than mesh targets")
+    if params.connected_footprint:
+        return _connected_assignment(mesh,rotated_sources,params)
     execution = current_execution()
     if tree is None:
         tree = cKDTree(mesh.centroids)
@@ -286,6 +338,7 @@ def build_transport_map(
     dt_myr: float,
     transport_state: PlateTransportState,
     params: SubgridTransportParameters | None = None,
+    *, trace: dict | None = None,
 ) -> TransportMap:
     """Accumulate motion and build the current discrete conservative map.
 
@@ -326,6 +379,7 @@ def build_transport_map(
     commits = 0
 
     owner = np.asarray(lithosphere.cell_plate, dtype=np.int32)
+    if trace is not None:trace.clear()
     crust = np.asarray(lithosphere.crust_type, dtype=np.int8)
 
     def prepare_plate(item):
@@ -364,6 +418,13 @@ def build_transport_map(
             q_fit = quaternion_from_matrix(represented_r)
             residual = quaternion_multiply(q_total, quaternion_conjugate(q_fit))
             hold_age = 0.0
+        if trace is not None:
+            from .mesh import connected_components
+            desired=rotate_by_quaternion(mesh.centroids[src_cells],q_total)
+            error=np.arccos(np.clip(np.sum(desired*mesh.centroids[target],axis=1),-1,1))
+            trace[pid]=dict(source=src_cells.copy(),target=target.copy(),quaternion=q_total.copy(),
+                committed=commit,components=len(connected_components(target,mesh.neighbors)),
+                max_assignment_error_rad=float(error.max()),p75_displacement_rad=p75)
         return pid, src_cells, target, residual, hold_age, changed, commit
 
     items = enumerate(system.plates)

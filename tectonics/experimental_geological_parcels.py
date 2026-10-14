@@ -46,15 +46,27 @@ def remap(parts,weights):
     for index,p in enumerate(parts):
         stop=total if index==len(parts)-1 else start+p['mass_kg']
         overlaps=np.maximum(0,np.minimum(stop,ends[1:])-np.maximum(start,ends[:-1]));ids=np.flatnonzero(overlaps>0)
-        if not len(ids):raise ValueError('PARCEL_UNRESOLVED_MASS_INTERVAL')
+        if not len(ids):
+            # A positive fragment can be smaller than one ULP of the cumulative
+            # mass coordinate. Keep its entire identity/mass/H in the containing
+            # bin rather than deleting it or rejecting a conservative remap.
+            j=min(max(int(np.searchsorted(ends,start,side='right')-1),0),len(w)-1)
+            out[j].append(dict(p,mass_coordinate_point_assignment=True));start=stop
+            continue
         fractions=overlaps[ids]/overlaps[ids].sum();usedM=[];usedH=[]
         for j,fraction in zip(ids,fractions):
             last=j==ids[-1];mass=p['mass_kg']-math.fsum(usedM) if last else p['mass_kg']*fraction
             energy=p['energy_j']-math.fsum(usedH) if last else p['energy_j']*fraction
             out[j].append(dict(p,mass_kg=mass,energy_j=energy));usedM.append(mass);usedH.append(energy)
         start=stop
-    for identity in {p['id'] for p in parts}:
-        before=[p for p in parts if p['id']==identity];after=[p for row in out for p in row if p['id']==identity]
+    # Linear-time audit: arc histories legitimately contain many birth IDs.
+    # Repeatedly scanning all pieces for every ID was quadratic in history.
+    before_by_id={};after_by_id={}
+    for p in parts:before_by_id.setdefault(p['id'],[]).append(p)
+    for row in out:
+        for p in row:after_by_id.setdefault(p['id'],[]).append(p)
+    for identity,before in before_by_id.items():
+        after=after_by_id.get(identity,[])
         for key in ('mass_kg','energy_j'):
             if not math.isclose(math.fsum(p[key] for p in before),math.fsum(p[key] for p in after),rel_tol=2e-14):
                 raise ValueError('PARCEL_IDENTITY_CONSERVATION')

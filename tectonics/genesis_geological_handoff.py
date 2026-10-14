@@ -126,15 +126,16 @@ class GeologicalContinuation:
         before = kinematics(old, self.mesh, r)
         new.system, dynamics, _, _ = update_plate_dynamics(self.mesh, new.state, new.system,
             new.baseline, r, dt_myr, 5., 1., DynamicsParameters(**self.record['dynamics_parameters']),
-            mantle_flow=new.mantle_flow)
+            mantle_flow=new.mantle_flow,**self._dynamics_options(new))
         history = EccentricityHistory(np.array([0., 1e9]), np.full(2, self.record['eccentricity']))
         new.state, _, _, diag = advance_lithosphere(self.mesh,new.system,new.state,dt_myr,r,
             self.record['gravity_m_s2'],self.record['period_hours'],history,transport_state=new.transport_state,
             primary_mass_jupiter=self.record.get('primary_mass_jupiter', 1.),
-            love_h2=self.record.get('love_h2', .6))
+            love_h2=self.record.get('love_h2', .6),**self._lithosphere_options())
         new.system.cell_plate = new.state.cell_plate.copy()
         row = asdict(diag); source_index = row.pop('material_source_index')
         new.lithosphere_rows.append(row)
+        self._after_lithosphere(old,new,source_index,dt_myr)
         budget = continuation_material_ledger(old,new,DENSITY)
         interior = self.record['interior_reference_mass_kg'] + budget['mantle_reference_mass_change_kg']
         if not budget['balanced'] or not np.isfinite(interior) or interior < 0:
@@ -162,6 +163,15 @@ class GeologicalContinuation:
 
     def _after_material_step(self, old, new, source_index, audit):
         """Optional transactional extension; the legacy experiment keeps this empty."""
+
+    def _lithosphere_options(self):
+        return {}
+
+    def _dynamics_options(self,checkpoint):
+        return {}
+
+    def _after_lithosphere(self,old,new,source_index,dt_myr):
+        pass
 
     def save(self, path):
         root = Path(path); root.mkdir(parents=True, exist_ok=False)
