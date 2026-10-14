@@ -1,4 +1,15 @@
-**Текущий этап: одобренный экспериментальный уравновешенный старт проверен.**
+**Текущий этап: щадящий velocity-only старт сохраняет память; temporal control FAIL.**
+[Результат](analysis/genesis_geological_handoff/VELOCITY_ONLY_RESULT.md).
+Вся память/displacement/H/mass/damage/config сохранены точно; fast velocity
+коррекция ΔK−18.75kJ без нагрева. Прежние84 tensile/418 shear превышений
+сохранены.17 тестов PASS, restart exact. Одна.0625year пара не проходит
+drag heat35.4%/edge damage error; ускорения нет. Дальнейшего pilot не было.
+Для ускорения нужен отдельный подтверждённый способ обращения с быстрым
+упругим переходом, не удаляющий медленные напряжения. Пока не реализован.
+Прежний stationary-force старт ниже — ослабленный сценарий, не основной source.
+Archive restoration CLOSED, старые coefficient/space controls — исторический контекст.
+
+**Предыдущий этап: техническая проверка теперь отдельно ослабленного старта.**
 [Метод, ledger, годовая temporal пара и ограничения](analysis/genesis_geological_handoff/EQUILIBRATED_START_RESULT.md).
 Новая compatible correction сохраняет массу/H/слои/состав/damage, меняет
 mechanical initial data с явным ΔE−2.74655e19J и heat0. Прежние законы,

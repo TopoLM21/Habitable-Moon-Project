@@ -1,4 +1,33 @@
-# Текущая передача: одобренный уравновешенный старт проверен
+# Текущая передача: память сохранена, velocity-only control не дал ускорения
+
+14.10.2026; база72dd1ab5d31023254604a2c8c8d5acb3a35d2fee.
+[Результат и честный temporal FAIL](analysis/genesis_geological_handoff/VELOCITY_ONLY_RESULT.md),
+[протокол](analysis/genesis_geological_handoff/VELOCITY_ONLY_PROTOCOL.md).
+Сохранены побайтно вся память/displacement/H/mass/material history/damage/config.
+Изменены только970 доказанно fast-drag velocity компонент и omega;2 прочие
+скорости сохранены. Cutoff связан с упругим временем, не с желаемой энергией/dt.
+ΔU=heat=0, ΔK−18754.46J. Прежние84/320 tensile и418/480 shear превышений
+сохранены точно. Полного равновесия нет: остаточная динамика явно записана.
+
+17 уникальных тестов PASS, initial/midrun restart exact. Единственная.0625year
+пара dt.03125/.015625: native balances PASS, temporal FAIL — drag35.4%,
+edge damage difference2.16e−4. Real solves15.29/28.45s: ускорения нет.
+Новая fine trajectory практически совпала с сохранённой исходной fine.
+Большего шага, повторной серии или adaptive pilot после отказа не было.
+Initial `/workspace/genesis-spherical-velocity-only-01/initial.json`,
+SHA256689861e9712abdcdf665af1d4381d9b323851dd873e1e7f55613c261597fcede.
+
+Прежний stationary-force checkpoint снял медленную совместимую память,
+поэтому сохраняется **только как ослабленный сценарий**, не основной source.
+Его helper теперь требует явного opt-in; новый helper отказывает от такого
+source. Следующий отдельный вопрос — доказанное обращение с быстрым упругим
+переходом при сохранении медленной памяти. Пока не реализовано.
+Старые checkpoints/физические defaults/canonical не менялись; no push/paid/deletion.
+Archive restoration CLOSED; старые коэффициенты2e−6/контроли исторические.
+
+---
+
+# Предыдущая передача: технически проверенный, но физически ослабленный старт
 
 14.10.2026; база23f12c22, ветка feat/genesis-geological-handoff.
 [Результат и цена приближения](analysis/genesis_geological_handoff/EQUILIBRATED_START_RESULT.md),

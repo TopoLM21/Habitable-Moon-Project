@@ -1,0 +1,524 @@
+{
+  "code_base": "72dd1ab5d31023254604a2c8c8d5acb3a35d2fee",
+  "source_sha256": "a2e18177f1737fffc20d4edcf8e86a0f755b08f4891f1f8d6ec74756aa9cfdfc",
+  "weakened_scenario_sha256": "d48a9a6c50681c9b37a38149ce036fa8f750453d5022b5c746a7f3dab0e892ee",
+  "initialization": {
+    "version": "spherical-fast-drag-velocity-only/v1",
+    "seconds": 2.5536491820093943,
+    "method": "Fast drag velocity terminal projection; all memory and positions exactly preserved",
+    "separation_ratio": 100.0,
+    "global_shear_crossing_seconds": 1869.169279516896,
+    "max_elastic_frequency_per_s": 0.3143988913459418,
+    "cutoff_rate_per_s": 31.43988913459418,
+    "selected_modes": 970,
+    "preserved_velocity_modes": 2,
+    "selected_rate_minmax_per_s": [
+      29790.846344485366,
+      489865225.3332903
+    ],
+    "excluded_rate_max_per_s": 0.013704566731700878,
+    "selected_decay_time_max_s": 3.356735785336665e-05,
+    "projector_dense_factored_error": 2.1988586249821294e-12,
+    "mass_whitening_error": 1.1720433052705916e-14,
+    "fast_force_relative": 2.5022927979023393e-12,
+    "slow_velocity_mass_norm_change": 4.2251908630869667e-13,
+    "generalized_force_residual_norm_n": 1540086561422460.2,
+    "surface_acceleration_before_max_m_s2": 87.98613620657888,
+    "surface_acceleration_after_max_m_s2": 0.0037798885557190696,
+    "equilibrium_claim": false,
+    "memory_spectral_filter": false,
+    "thermal_heat_j": 0.0,
+    "elastic_change_j": 0.0,
+    "time_advanced_years": 0.0,
+    "protected_sha256": "60270f316da5a7e0099d99b071fc9e473f0325e3052823f0159805bf03fb7e8e",
+    "kinetic_before_j": 64579.65746542539,
+    "kinetic_after_j": 45825.19823969655,
+    "signed_initialization_exchange_j": -18754.459225728846,
+    "momentum_before": {
+      "linear_kg_m_s": [
+        2118602992.7790642,
+        -1064382200.1243057,
+        -775257772.6430836
+      ],
+      "angular_kg_m2_s": [
+        -1492542160711859.8,
+        -753061780814202.8,
+        -164713067319666.78
+      ]
+    },
+    "momentum_after": {
+      "linear_kg_m_s": [
+        3115356235.7083282,
+        -1726369025.5286865,
+        -2182401874.8137207
+      ],
+      "angular_kg_m2_s": [
+        17844862558.750393,
+        7286719749.834805,
+        -2880075730.8496366
+      ]
+    },
+    "momentum_change": {
+      "linear_kg_m_s": [
+        996753242.9287872,
+        -661986825.404335,
+        -1407144102.170929
+      ],
+      "angular_kg_m2_s": [
+        1492560005574741.2,
+        753069067534238.9,
+        164710187238773.03
+      ]
+    },
+    "balance_before": {
+      "relative": 4673.028595290835,
+      "residual_norm_n": 5.042565943329316e+19,
+      "external": {
+        "force_n": [
+          102722874387442.03,
+          -70768699054817.2,
+          -112889394705839.5
+        ],
+        "torque_nm": [
+          5.613908320405994e+17,
+          2.5573061589333846e+17,
+          -4.623320048440738e+17
+        ]
+      },
+      "internal": {
+        "force_n": [
+          -0.21875,
+          -1.34375,
+          -8.4296875
+        ],
+        "torque_nm": [
+          28313340.87368018,
+          -3949555.8946198965,
+          1412223.2889684648
+        ]
+      },
+      "drag": {
+        "force_n": [
+          5.590157532418886e+17,
+          -3.619215917787158e+17,
+          -3.924119007251824e+17
+        ],
+        "torque_nm": [
+          -7.22028988750918e+23,
+          -3.49990442153146e+23,
+          -8.372542226450903e+22
+        ]
+      },
+      "residual": {
+        "force_n": [
+          5.589130303675125e+17,
+          -3.618508230796712e+17,
+          -3.922990113304781e+17
+        ],
+        "torque_nm": [
+          -7.220295501417577e+23,
+          -3.499906978837947e+23,
+          -8.372495993249695e+22
+        ]
+      },
+      "rigid_relative": 4682.161840918528,
+      "force_relative": 4593.471366102449,
+      "torque_relative": 1046472.3276104273,
+      "deformed_torques_nm": {
+        "external": [
+          5.613903628554573e+17,
+          2.55747927247932e+17,
+          -4.6232438548237645e+17
+        ],
+        "internal": [
+          71731165948606.52,
+          15405593358474.834,
+          -8733720754306.129
+        ],
+        "drag": [
+          -7.220291107356489e+23,
+          -3.4999000346744325e+23,
+          -8.372548875751614e+22
+        ],
+        "residual": [
+          -7.220296720542762e+23,
+          -3.499902591999504e+23,
+          -8.372502644189383e+22
+        ]
+      }
+    },
+    "balance_after": {
+      "relative": 0.1427223485350915,
+      "residual_norm_n": 1540086561422460.2,
+      "external": {
+        "force_n": [
+          102722874387442.03,
+          -70768699054817.2,
+          -112889394705839.5
+        ],
+        "torque_nm": [
+          5.613908320405994e+17,
+          2.5573061589333846e+17,
+          -4.623320048440738e+17
+        ]
+      },
+      "internal": {
+        "force_n": [
+          -0.21875,
+          -1.34375,
+          -8.4296875
+        ],
+        "torque_nm": [
+          28313340.87368018,
+          -3949555.8946198965,
+          1412223.2889684648
+        ]
+      },
+      "drag": {
+        "force_n": [
+          89106116936766.75,
+          -71774126700813.38,
+          -129151783026124.62
+        ],
+        "torque_nm": [
+          5.6137141041558394e+17,
+          2.5572193877916176e+17,
+          -4.6232783415587584e+17
+        ]
+      },
+      "residual": {
+        "force_n": [
+          -13616757450677.688,
+          -1005427646005.3281,
+          -16262388320296.844
+        ],
+        "torque_nm": [
+          -19421605751840.4,
+          -8677085377180.337,
+          4170684692508.261
+        ]
+      },
+      "rigid_relative": 0.12621491394756798,
+      "force_relative": 0.12621496135586122,
+      "torque_relative": 2.811835025177962e-05,
+      "deformed_torques_nm": {
+        "external": [
+          5.613903628554573e+17,
+          2.55747927247932e+17,
+          -4.6232438548237645e+17
+        ],
+        "internal": [
+          71731165948606.52,
+          15405593358474.834,
+          -8733720754306.129
+        ],
+        "drag": [
+          5.612889527644425e+17,
+          2.557190806432466e+17,
+          -4.623089726985702e+17
+        ],
+        "residual": [
+          -29678931394589.5,
+          -13440987164297.408,
+          6679053592239.797
+        ]
+      }
+    }
+  },
+  "inventory_before": {
+    "elastic_j": 3.1893236255915622e+19,
+    "volumetric_j": 9.490743118945286e+18,
+    "deviatoric_j": 2.2402493136970334e+19,
+    "point_tensile_mean_pa": 6962845.430347653,
+    "point_tensile_max_pa": 24421759.223014038,
+    "point_shear_mean_pa": 5678856.624985376,
+    "point_shear_max_pa": 12163305.868929546,
+    "tidal_face_peak_max_pa": 17881998.610224113,
+    "faces_above_tensile": 84,
+    "tensile_margin_min_pa": -5881998.610224113,
+    "edge_shear_max_pa": 6701971.231791939,
+    "edges_above_shear": 418,
+    "shear_margin_min_pa": -5701971.231791939
+  },
+  "inventory_after": {
+    "elastic_j": 3.1893236255915622e+19,
+    "volumetric_j": 9.490743118945286e+18,
+    "deviatoric_j": 2.2402493136970334e+19,
+    "point_tensile_mean_pa": 6962845.430347653,
+    "point_tensile_max_pa": 24421759.223014038,
+    "point_shear_mean_pa": 5678856.624985376,
+    "point_shear_max_pa": 12163305.868929546,
+    "tidal_face_peak_max_pa": 17881998.610224113,
+    "faces_above_tensile": 84,
+    "tensile_margin_min_pa": -5881998.610224113,
+    "edge_shear_max_pa": 6701971.231791939,
+    "edges_above_shear": 418,
+    "shear_margin_min_pa": -5701971.231791939
+  },
+  "pre_continuation_memory_gate": true,
+  "runs": {
+    "coarse": [
+      {
+        "seconds": 8.477172044003964,
+        "whole_allowance_fraction": 0.034108103727962,
+        "mechanical_balance_relative": 2.2261774444638192e-17,
+        "momentum_relative": 3.7359049093646256e-10,
+        "maxwell_j": 558275442628029.06,
+        "drag_j": 7364264630388038.0,
+        "numerical_memory_j": 6.0949285013459e+17,
+        "numerical_kinetic_j": 329783885656.28186,
+        "thermal_work_j": 174346026673258.78,
+        "external_work_j": 5488573537769.044,
+        "elastic_j": 3.116729045775218e+19,
+        "kinetic_j": 329835222873.061,
+        "edge_release_j": 1.087081527387463e+17,
+        "edge_damage_max": 0.010157150777399981,
+        "old_damage_max": 0.03959173345283286,
+        "births": 0,
+        "certificate": "NOT_SEPARATING",
+        "years": 0.03125
+      },
+      {
+        "seconds": 6.814833230004297,
+        "whole_allowance_fraction": 0.01956805350943855,
+        "mechanical_balance_relative": 1.0301890453855568e-14,
+        "momentum_relative": 3.3196197212595726e-11,
+        "maxwell_j": 556289829623521.75,
+        "drag_j": 1477207787374957.0,
+        "numerical_memory_j": 296727247080333.0,
+        "numerical_kinetic_j": 325923633485.24994,
+        "thermal_work_j": 174782334436457.0,
+        "external_work_j": 334240836226.1337,
+        "elastic_j": 3.1043261649116266e+19,
+        "kinetic_j": 11672180.514348311,
+        "edge_release_j": 1.2187253560155475e+17,
+        "edge_damage_max": 0.019858747987568415,
+        "old_damage_max": 0.03959189083730347,
+        "births": 0,
+        "certificate": "NOT_SEPARATING",
+        "years": 0.0625
+      }
+    ],
+    "fine": [
+      {
+        "seconds": 8.166486247995635,
+        "whole_allowance_fraction": 0.0019618893047086043,
+        "mechanical_balance_relative": 2.0976234897384656e-16,
+        "momentum_relative": 7.653056764396249e-10,
+        "maxwell_j": 279153012454014.47,
+        "drag_j": 1.083927940901724e+16,
+        "numerical_memory_j": 6.046784679283772e+17,
+        "numerical_kinetic_j": 1309554984910.7737,
+        "thermal_work_j": 87402254554573.75,
+        "external_work_j": 5318473588300.386,
+        "elastic_j": 3.1230019374394077e+19,
+        "kinetic_j": 1309657293682.0974,
+        "edge_release_j": 4.750935129462688e+16,
+        "edge_damage_max": 0.005078644306570298,
+        "old_damage_max": 0.03959165407720258,
+        "births": 0,
+        "certificate": "NOT_SEPARATING",
+        "years": 0.015625
+      },
+      {
+        "seconds": 6.893329653001274,
+        "whole_allowance_fraction": 0.017125870855680923,
+        "mechanical_balance_relative": 5.2145341687339526e-17,
+        "momentum_relative": 6.368431336770962e-12,
+        "maxwell_j": 278711961392483.62,
+        "drag_j": 1340053402613229.0,
+        "numerical_memory_j": 238880615490993.88,
+        "numerical_kinetic_j": 1287063486638.9153,
+        "thermal_work_j": 86594935650391.19,
+        "external_work_j": 196331593661.7778,
+        "elastic_j": 3.116768870198398e+19,
+        "kinetic_j": 98306843.35636584,
+        "edge_release_j": 6.0559242248991656e+16,
+        "edge_damage_max": 0.010045567334792718,
+        "old_damage_max": 0.03959173398025531,
+        "births": 0,
+        "certificate": "NOT_SEPARATING",
+        "years": 0.03125
+      },
+      {
+        "seconds": 6.851206128005288,
+        "whole_allowance_fraction": 0.03229630180803984,
+        "mechanical_balance_relative": 1.0927181982353574e-16,
+        "momentum_relative": 9.574135761279362e-12,
+        "maxwell_j": 278159280731507.88,
+        "drag_j": 870257169755008.0,
+        "numerical_memory_j": 97042706899834.58,
+        "numerical_kinetic_j": 80072583.13464767,
+        "thermal_work_j": 86946875816033.34,
+        "external_work_j": 156006013153.40094,
+        "elastic_j": 3.110628605674925e+19,
+        "kinetic_j": 940524.2521129579,
+        "edge_release_j": 6.024370182376595e+16,
+        "edge_damage_max": 0.014898951857825107,
+        "old_damage_max": 0.03959181297617655,
+        "births": 0,
+        "certificate": "NOT_SEPARATING",
+        "years": 0.046875
+      },
+      {
+        "seconds": 6.542174374000751,
+        "whole_allowance_fraction": 0.002342649772348851,
+        "mechanical_balance_relative": 4.0920186399364075e-17,
+        "momentum_relative": 9.138685263437886e-12,
+        "maxwell_j": 277611961593278.94,
+        "drag_j": 637026487147450.9,
+        "numerical_memory_j": 48366727641516.44,
+        "numerical_kinetic_j": 6798.385210405606,
+        "thermal_work_j": 87285999686203.42,
+        "external_work_j": 155912482928.8961,
+        "elastic_j": 3.104455020008639e+19,
+        "kinetic_j": 790275.7414271149,
+        "edge_release_j": 6.08597158325343e+16,
+        "edge_damage_max": 0.01964320166043455,
+        "old_damage_max": 0.03959189132589894,
+        "births": 0,
+        "certificate": "NOT_SEPARATING",
+        "years": 0.0625
+      }
+    ]
+  },
+  "comparisons": {
+    "0.03125": {
+      "stress_error_rms_pa": 12977.647912042843,
+      "fine_stress_change_rms_pa": 2032513.3690049741,
+      "stress_increment_relative": 0.006385024625149751,
+      "temperature_error_max_k": 6.521668183268048e-07,
+      "fine_temperature_change_max_k": 0.004108815562631207,
+      "temperature_increment_relative": 0.00015872379969013978,
+      "old_damage_error_max": 5.573932149172123e-10,
+      "edge_damage_error_max": 0.00011158344260726351,
+      "velocity_relative": 19.63425671731131,
+      "field_gate": false,
+      "maxwell_j": {
+        "coarse": 558275442628029.06,
+        "fine": 557864973846498.1,
+        "relative_difference": 0.0007357851823905365
+      },
+      "drag_j": {
+        "coarse": 7364264630388038.0,
+        "fine": 1.2179332811630468e+16,
+        "relative_difference": 0.39534745094118406
+      },
+      "numerical_memory_j": {
+        "coarse": 6.0949285013459e+17,
+        "fine": 6.049173485438682e+17,
+        "relative_difference": 0.007563845873714399
+      },
+      "numerical_kinetic_j": {
+        "coarse": 329783885656.28186,
+        "fine": 2596618471549.689,
+        "relative_difference": 0.8729948626378432
+      },
+      "heat_gate": false,
+      "temporal_gate": false
+    },
+    "0.0625": {
+      "stress_error_rms_pa": 8870.320056895245,
+      "fine_stress_change_rms_pa": 2039890.2007437635,
+      "stress_increment_relative": 0.004348430152594018,
+      "temperature_error_max_k": 1.1275735687377164e-06,
+      "fine_temperature_change_max_k": 0.008217597901420959,
+      "temperature_increment_relative": 0.00013721449774790518,
+      "old_damage_error_max": 5.451377474430252e-10,
+      "edge_damage_error_max": 0.00021554632713386562,
+      "velocity_relative": 0.2752218428317349,
+      "field_gate": false,
+      "maxwell_j": {
+        "coarse": 1114565272251550.8,
+        "fine": 1113636216171284.9,
+        "relative_difference": 0.0008342545498924218
+      },
+      "drag_j": {
+        "coarse": 8841472417762995.0,
+        "fine": 1.3686616468532928e+16,
+        "relative_difference": 0.3540059781692184
+      },
+      "numerical_memory_j": {
+        "coarse": 6.097895773816703e+17,
+        "fine": 6.050627579784096e+17,
+        "relative_difference": 0.007812114265722728
+      },
+      "numerical_kinetic_j": {
+        "coarse": 655707519141.5317,
+        "fine": 2596698550931.209,
+        "relative_difference": 0.7474841587190062
+      },
+      "heat_gate": false,
+      "temporal_gate": false
+    }
+  },
+  "original_pilot_baseline": {
+    "coarse": {
+      "seconds": 14.758692378003616,
+      "maxwell_j": 1114565272251551.2,
+      "drag_j": 8841472417719110.0,
+      "numerical_memory_j": 6.097895773816539e+17
+    },
+    "fine": {
+      "seconds": 28.500042494008085,
+      "maxwell_j": 1113636216171285.8,
+      "drag_j": 1.3686616468474782e+16,
+      "numerical_memory_j": 6.050627579784032e+17
+    }
+  },
+  "final_vs_original_pilot": {
+    "stress_error_rms_pa": 4.437608700556081e-07,
+    "fine_stress_change_rms_pa": 2039890.200743851,
+    "stress_increment_relative": 2.1754154703708543e-13,
+    "temperature_error_max_k": 0.0,
+    "fine_temperature_change_max_k": 0.008217597901420959,
+    "temperature_increment_relative": 0.0,
+    "old_damage_error_max": 6.938893903907228e-18,
+    "edge_damage_error_max": 3.209238430557093e-17,
+    "velocity_relative": 9.656357126477348e-12,
+    "field_gate": true
+  },
+  "final_inventory": {
+    "elastic_j": 3.1044550200086385e+19,
+    "volumetric_j": 8.96558971150463e+18,
+    "deviatoric_j": 2.2078960488581755e+19,
+    "point_tensile_mean_pa": 5974386.934103899,
+    "point_tensile_max_pa": 23058268.929779124,
+    "point_shear_mean_pa": 5678912.207829615,
+    "point_shear_max_pa": 12517991.052996483,
+    "tidal_face_peak_max_pa": 16474048.448976375,
+    "faces_above_tensile": 46,
+    "tensile_margin_min_pa": -4474048.448976375,
+    "edge_shear_max_pa": 6449013.580432095,
+    "edges_above_shear": 418,
+    "shear_margin_min_pa": -5449013.580432095
+  },
+  "initial_restart_exact": true,
+  "midrun_restart_exact": true,
+  "temporal_gate": false,
+  "solve_seconds": 50.66578721201222,
+  "wall_seconds": 92.46647667800426,
+  "output": "/workspace/genesis-spherical-velocity-only-01",
+  "files": {
+    "fields.npz": {
+      "bytes": 3194366,
+      "sha256": "799699bc9d8dabd8eae50bd188f4d1b71f4a26eecf0709e2110c93d52f52aa9e"
+    },
+    "coarse_final.json": {
+      "bytes": 56730855,
+      "sha256": "2e9ba53537059637b93b7321376ac609907e41e50d70e7ca52ff8a13d446b721"
+    },
+    "fine_final.json": {
+      "bytes": 56731150,
+      "sha256": "03f476cbefdc08f6ec9cabea6ea4b3f1f3a67fb1eb521dc3d652a82dddb5dee8"
+    },
+    "initial.json": {
+      "bytes": 56662980,
+      "sha256": "689861e9712abdcdf665af1d4381d9b323851dd873e1e7f55613c261597fcede"
+    },
+    "restart_before.json": {
+      "bytes": 56731080,
+      "sha256": "65a4598b51934148a2ff293e1e1b521ce026966bfde3068f1449fb5293006a85"
+    }
+  }
+}

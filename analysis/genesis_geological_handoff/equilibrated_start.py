@@ -1,6 +1,8 @@
 """Explicit, opt-in compatible elastic equilibration; no fictitious time or heat.
 
-This changes initial data, not the subsequent Maxwell/thermal equations.
+WEAKENED SCENARIO ONLY: audit found removal of slow, fracture-driving memory.
+Use velocity_only_start for conservative initialization. This changes initial
+data, not the subsequent Maxwell/thermal equations.
 Velocity balances the prescribed loads through existing drag and elastic force.
 A mass-gauged compatible displacement preserves the incompatible part of the
 inherited memory. The default permits creep and sets the frozen constitutive
@@ -118,7 +120,7 @@ def equilibrium_balance(a):
                                     [('external',F),('internal',internal),('drag',drag),('residual',residual)]})
 
 
-def equilibrate(a, *, max_iterations=12, max_seconds=90, mode='slow_force'):
+def equilibrate(a, *, max_iterations=12, max_seconds=90, mode='slow_force', allow_weakened_scenario=False):
     """Transactional elastic projection at unchanged thermal time.
 
     e1=e0+L du and u1=u0+du. Recompute moving basal geometry each iteration;
@@ -128,6 +130,8 @@ def equilibrate(a, *, max_iterations=12, max_seconds=90, mode='slow_force'):
     rather than imposing a static elastic body. No relaxation interval, heat,
     damage evolution, phase event or time step is executed.
     """
+    if not allow_weakened_scenario:
+        raise ValueError('EXPLICIT_WEAKENED_SCENARIO_REQUIRED')
     if 'equilibrated_start' in a.origin:
         raise ValueError('ALREADY_EQUILIBRATED')
     if mode not in ('slow_force', 'static_rigid'):

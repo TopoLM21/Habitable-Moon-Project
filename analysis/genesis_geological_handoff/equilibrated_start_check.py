@@ -49,7 +49,7 @@ def main():
     OUT.mkdir()
     a=SphericalCoupled.load(START)
     a.origin['equilibration_input']=dict(path=str(START),sha256=SOURCE_SHA,code_base='23f12c22effc1650a0c4e7449443aa25cf632fe8')
-    ledger=equilibrate(a)
+    ledger=equilibrate(a,allow_weakened_scenario=True)
     a.save(OUT/'initial.json')
     fresh=SphericalCoupled.load(OUT/'initial.json')
     assert encoded(fresh.model.state)==encoded(a.model.state)

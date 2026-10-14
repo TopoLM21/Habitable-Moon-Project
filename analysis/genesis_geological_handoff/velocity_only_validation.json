@@ -1,0 +1,38 @@
+{
+  "base": "72dd1ab5d31023254604a2c8c8d5acb3a35d2fee",
+  "initial_memory_preservation": "PASS",
+  "technical_checks": "PASS",
+  "temporal_accuracy": "FAIL; no further evolution",
+  "unique_tests_passed": 17,
+  "tests": [
+    {
+      "command": "pytest -q -p no:cacheprovider tests/test_velocity_only_start.py tests/test_equilibrated_start.py tests/test_spherical_coupled.py",
+      "result": "16 passed,1 fast velocity cancellation failure; corrected reconstruction, tolerance unchanged",
+      "seconds": 67.38
+    },
+    {
+      "command": "pytest -q -p no:cacheprovider tests/test_velocity_only_start.py",
+      "result": "5 passed after direct target reconstruction",
+      "seconds": 25.81
+    }
+  ],
+  "source_sha256": {
+    "analysis/genesis_geological_handoff/velocity_only_start.py": "e58869b2b9a4e94588dd99c94a00bf88f603622b2a64e703569353ca30cf910d",
+    "analysis/genesis_geological_handoff/velocity_only_check.py": "6139a0f5b6ebff45c2b823d0d283a322bd7d815398b142f260ab2855dbb2747e",
+    "analysis/genesis_geological_handoff/velocity_only_check.json": "c9492ddc139098f857a72876fd824629cd06704012c36fe00c2e5df6b424b68f",
+    "analysis/genesis_geological_handoff/equilibrated_start.py": "7055ddda6d457d7e125e11d1e39ed7c2043c92c9cb267f535225b620b81ca37e",
+    "tests/test_velocity_only_start.py": "89c3b02ea357b56e13007699b4eb72388d1ca2f12844da528aea3f1a2b43fc7c",
+    "tests/test_equilibrated_start.py": "c473a1a43ecd7a250fb2ff8f416b3befaa107bd7a3ae84fbbbd654ab57d41825"
+  },
+  "log_sha256": {
+    "/workspace/velocity-only-tests.log": "bafa6f09d4c48db1cc7fa21a6ed82f03df8ac7e0ec73dd91838ae35ff3e1b21d",
+    "/workspace/velocity-only-tests-final.log": "8f9bba0209e04ea05c0c5d9e97544fed32aa4a535565c4bef8d8cdc522cb9901",
+    "/workspace/velocity-only-run.log": "1231bbde4ba85e8b8ed2ce6933f17e6ef5f62f8c71bb80ea583c872bb73c6efd"
+  },
+  "output_hashes_read_back": 5,
+  "original_and_weakened_checkpoint_unchanged": true,
+  "physical_default_changes": false,
+  "canonical_changes": false,
+  "push": false,
+  "archive_restore": false
+}

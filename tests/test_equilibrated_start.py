@@ -55,7 +55,7 @@ def test_uniform_rate_stationary_force_allows_creep_and_self_memory_decay(dt):
 def prepared():
     if not START.exists():pytest.skip('Local full spherical history required')
     a=SphericalCoupled.load(START);before=deepcopy(a.model.state);protected=protected_state(a)
-    ledger=equilibrate(a)
+    ledger=equilibrate(a,allow_weakened_scenario=True)
     return a,before,protected,ledger
 
 
@@ -80,7 +80,7 @@ def test_real_restart_and_no_accidental_second_projection(prepared,tmp_path):
     assert encoded(a.model.state)==encoded(b.model.state)
     assert encoded(a.model.config)==encoded(b.model.config)
     assert encoded(a.origin)==encoded(b.origin)
-    with pytest.raises(ValueError,match='ALREADY_EQUILIBRATED'):equilibrate(b)
+    with pytest.raises(ValueError,match='ALREADY_EQUILIBRATED'):equilibrate(b,allow_weakened_scenario=True)
     with pytest.raises(FileExistsError):a.save(path)
 
 
@@ -100,5 +100,5 @@ def test_failed_projection_is_transactional(prepared):
     a,before,_,_=prepared;b=deepcopy(a);b.model.state=deepcopy(before);b.origin.pop('equilibrated_start')
     state=encoded(b.model.state);origin=encoded(b.origin)
     with pytest.raises(ValueError,match='EQUILIBRATION_NOT_CONVERGED'):
-        equilibrate(b,max_iterations=1)
+        equilibrate(b,max_iterations=1,allow_weakened_scenario=True)
     assert encoded(b.model.state)==state and encoded(b.origin)==origin
