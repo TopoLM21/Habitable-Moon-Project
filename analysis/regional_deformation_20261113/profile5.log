@@ -1,0 +1,25 @@
+         693143 function calls (597090 primitive calls) in 1.043 seconds
+
+   Ordered by: cumulative time
+   List reduced from 303 to 16 due to restriction <16>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000    1.043    1.043 deformation_exchange.py:105(advance)
+        5    0.000    0.000    1.043    0.209 deformation_exchange.py:85(step)
+       85    0.007    0.000    0.923    0.011 regional_deformation.py:70(evaluate)
+        5    0.001    0.000    0.875    0.175 conforming_surface.py:213(advance)
+       24    0.001    0.000    0.780    0.032 conforming_surface.py:155(_heun)
+       85    0.001    0.000    0.563    0.007 linsolve.py:134(spsolve)
+       85    0.553    0.007    0.553    0.007 {built-in method scipy.sparse.linalg._dsolve._superlu.gssv}
+       85    0.009    0.000    0.124    0.001 conforming_surface.py:133(evaluate)
+ 79031/15    0.048    0.000    0.102    0.007 copy.py:118(deepcopy)
+    75/15    0.000    0.000    0.102    0.007 copy.py:247(_reconstruct)
+   197/15    0.001    0.000    0.102    0.007 copy.py:217(_deepcopy_dict)
+       85    0.009    0.000    0.101    0.001 regional_deformation.py:59(rate_operator)
+      170    0.003    0.000    0.099    0.001 conforming_surface.py:125(geometry)
+ 16020/20    0.024    0.000    0.093    0.005 copy.py:200(_deepcopy_tuple)
+      170    0.030    0.000    0.082    0.000 conforming_surface.py:26(spherical_measures)
+      340    0.000    0.000    0.055    0.000 _base.py:919(__matmul__)
+
+
+{'time_myr': 5.0, 'area_relative_error': 0.0, 'volume_m3': [3.455143927710239e+18, 1.7677900132812224e+18], 'mass_kg': 1.4800994036104215e+22, 'potential_j': 1.319465295241342e+27, 'heat_generated_j': 8.330975478178991e+24, 'external_work_j': 0.0, 'energy_residual_j': 1.3260142988828344e+18, 'integrated_defect_j': 1.3260142986479534e+18, 'crust_heat_increment_k': 0.4690549532155947, 'max_height_m': 34648.5704040547, 'material_regions': 12, 'vertices': 642, 'cells': 1280, 'mantle_temperature_k': 1860.0751998087046, 'crust_temperature_k': 388.21300456589177, 'pool_masses_kg': [2.015747005963896e+24, 9.67440299758867e+21, 5.126591038515545e+21], 'mass_residual_kg': -85983232.0, 'origin_mass_residual_kg': [0.0, 0.0, 0.0], 'created_kg': 0.0, 'recycled_kg': 0.0, 'advected_out_j': 0.0, 'advected_return_j': 0.0, 'surface_output_j': 2.9861191418997176e+27, 'radiogenic_input_j': 1.3855720633128535e+27, 'orbital_input_j': 0.0, 'accepted_steps': 11, 'rejected_steps': 0, 'combined_energy_residual_j': 1.3260142988157256e+18, 'thermal_energy_residual_j': 0.0, 'mechanical_heat_deposited_j': 8.330975478178991e+24, 'mechanical_energy_included': True, 'latent_heat_included': False, 'scope': 'welded fixed-base dilation and sensible heat; no automatic creation or fracture'}

@@ -1,0 +1,107 @@
+{
+  "case": "oblique_g2",
+  "source_commit": "9435de7c50e2ecd35b42e2d653e703d40082c36f",
+  "runtime_sha256": {
+    "tectonics/regional_deformation.py": "d0e59eb9034d87a001a8cfe5d423b21ed9e873a91976aca0cf12a8c104a736b0",
+    "tectonics/deformation_exchange.py": "0cb651b0518308c98ae0692bf2a026ea6be3627ba8dae5b9697d5df2ee6eb23b",
+    "tectonics/conforming_surface.py": "fea6159f2ed656c81ca48841d93450272bd8d2b15594c2e0387b3a62f66a6ca7",
+    "tectonics/material_exchange.py": "92c2930b89bd19a0ae21655b0e85e23c5ac6b2f69215b25620d7c21bf268e636"
+  },
+  "status": "complete",
+  "failure": null,
+  "scenario": "oblique",
+  "cells": 320,
+  "length_m": 1000000.0,
+  "dt_myr": 1.0,
+  "requested_end_myr": 100.0,
+  "initial": {
+    "time_myr": 0.0,
+    "area_relative_error": 0.0,
+    "volume_m3": [
+      0.0,
+      7.052138917527621e+18
+    ],
+    "mass_kg": 2.04512028608301e+22,
+    "potential_j": 1.4758933733721865e+27,
+    "heat_generated_j": 0.0,
+    "external_work_j": 0.0,
+    "energy_residual_j": 0.0,
+    "integrated_defect_j": 0.0,
+    "crust_heat_increment_k": 0.0,
+    "max_height_m": 24915.019763262808,
+    "material_regions": 8,
+    "vertices": 162,
+    "cells": 320
+  },
+  "final": {
+    "time_myr": 100.0,
+    "area_relative_error": 0.0,
+    "volume_m3": [
+      0.0,
+      7.052138917527621e+18
+    ],
+    "mass_kg": 2.04512028608301e+22,
+    "potential_j": 1.474242409392688e+27,
+    "heat_generated_j": 1.6509639858070085e+24,
+    "external_work_j": 0.0,
+    "energy_residual_j": 6308602157465600.0,
+    "integrated_defect_j": 6308602157465600.0,
+    "crust_heat_increment_k": 0.0672724890984724,
+    "max_height_m": 24603.93273675518,
+    "material_regions": 8,
+    "vertices": 162,
+    "cells": 320
+  },
+  "initial_strain": {
+    "dissipation_w": 551142631.8462367,
+    "basal_dissipation_w": 454974409.47214043,
+    "dilation_dissipation_w": 96168222.37409632,
+    "power_residual_w": 0.0,
+    "linear_relative_residual": 5.282955758743107e-16,
+    "positive_area_rate_m2_s": 0.0002444800767633299,
+    "negative_area_rate_m2_s": -0.0002444800767633299,
+    "area_strain_rate_rms_per_s": 1.6546325052008058e-18,
+    "speed_rms_mm_yr": 0.11357512138876599
+  },
+  "final_strain": {
+    "dissipation_w": 496333693.68969977,
+    "basal_dissipation_w": 409992356.17123884,
+    "dilation_dissipation_w": 86341337.51846094,
+    "power_residual_w": 5.960464477539063e-08,
+    "linear_relative_residual": 6.022551280955069e-16,
+    "positive_area_rate_m2_s": 0.00023374067799189672,
+    "negative_area_rate_m2_s": -0.00023374067799189675,
+    "area_strain_rate_rms_per_s": 1.5678161854832722e-18,
+    "speed_rms_mm_yr": 0.10781460710937965
+  },
+  "coverage": {
+    "samples": 2048,
+    "uncovered": 0,
+    "multiply_covered": 0
+  },
+  "exact_native_restart": true,
+  "integration_wall_s": 0.7742003259991179,
+  "wall_s": 0.8334140190017933,
+  "peak_rss_mib": 82.09375,
+  "parameters": {
+    "radius_m": 5287000.0,
+    "gravity_m_s2": 7.12,
+    "basal_drag_pa_s_m": 1e+17,
+    "felsic_density_kg_m3": 2800.0,
+    "basalt_density_kg_m3": 2900.0,
+    "heat_capacity_j_kg_k": 1200.0,
+    "min_area_fraction": 0.0001,
+    "max_height_radius": 0.02
+  },
+  "control": {
+    "max_step_myr": 1.0,
+    "initial_step_myr": 0.25,
+    "position_atol_rad": 1e-05,
+    "thickness_rtol": 0.001,
+    "energy_rtol": 0.0001,
+    "energy_atol_fraction": 1e-12,
+    "max_trials": 2000
+  },
+  "snapshot_bytes": 48388,
+  "scope": "dilation/drag gravity control; native case additionally uses existing sensible-heat reservoirs; no automatic creation, recycling, slip or fracture"
+}
