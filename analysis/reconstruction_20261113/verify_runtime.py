@@ -6,6 +6,7 @@ Refuses to overwrite any case directory. Maximum 120 seconds per subprocess.
 from copy import deepcopy
 import hashlib
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -45,14 +46,25 @@ def run_case(name, subdivisions, dt, end=100., resume=None):
                '--checkpoint', str(output/'restart')]
     if resume:
         command += ['--resume', str(OUT/resume/'restart')]
-    timed = ['/usr/bin/time', '-f', '{"max_rss_kib":%M,"user_s":%U,"system_s":%S,"wall_s":%e}',
-             '-o', str(HERE/f'{name}_resources.json'), *command]
     start = time.perf_counter()
     with (HERE/f'{name}.log').open('x') as log:
-        result = subprocess.run(timed, cwd=ROOT, stdout=log, stderr=subprocess.STDOUT, timeout=120)
+        process = subprocess.Popen(command, cwd=ROOT, stdout=log, stderr=subprocess.STDOUT)
+        while True:
+            pid, status, usage = os.wait4(process.pid, os.WNOHANG)
+            if pid:
+                process.returncode = os.waitstatus_to_exitcode(status)
+                break
+            if time.perf_counter()-start > 120:
+                process.kill()
+                process.wait()
+                raise TimeoutError(f"{name} exceeded 120s; no automatic retry")
+            time.sleep(.05)
     elapsed = time.perf_counter()-start
-    if result.returncode:
-        raise RuntimeError(f"{name} returned {result.returncode}; inspect its saved log")
+    resources = {'max_rss_kib': usage.ru_maxrss, 'user_s': usage.ru_utime,
+                 'system_s': usage.ru_stime, 'wall_s': elapsed}
+    (HERE/f'{name}_resources.json').write_text(json.dumps(resources, indent=2)+'\n')
+    if process.returncode:
+        raise RuntimeError(f"{name} returned {process.returncode}; inspect its saved log")
     cp = checkpoint(name)
     source = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
     item = {
@@ -81,7 +93,7 @@ def run_case(name, subdivisions, dt, end=100., resume=None):
 
 
 def compare_restart():
-    first, second = OUT/'grid2_dt4'/'restart', OUT/'restart_second'/'restart'
+    first, second = OUT/'measured_grid2_dt4'/'restart', OUT/'measured_restart_second'/'restart'
     with np.load(first/'state.npz') as a, np.load(second/'state.npz') as b:
         differences = [k for k in a.files if not np.array_equal(a[k], b[k])]
         key_match = set(a.files) == set(b.files)
@@ -97,9 +109,9 @@ def compare_restart():
 
 if __name__ == '__main__':
     for name, sub, dt, end, resume in [
-        ('grid2_dt4', 2, 4., 100., None), ('grid2_dt2', 2, 2., 100., None),
-        ('grid1_dt4', 1, 4., 100., None), ('grid3_dt4', 3, 4., 100., None),
-        ('restart_first', 2, 4., 48., None), ('restart_second', 2, 4., 100., 'restart_first'),
+        ('measured_grid2_dt4', 2, 4., 100., None), ('measured_grid2_dt2', 2, 2., 100., None),
+        ('measured_grid1_dt4', 1, 4., 100., None), ('measured_grid3_dt4', 3, 4., 100., None),
+        ('measured_restart_first', 2, 4., 48., None), ('measured_restart_second', 2, 4., 100., 'measured_restart_first'),
     ]:
         run_case(name, sub, dt, end, resume)
     compare_restart()

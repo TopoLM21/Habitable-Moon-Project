@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "/workspace/Habitable-Moon-Project/analysis/reconstruction_20261113/verify_runtime.py", line 104, in <module>
+    run_case(name, sub, dt, end, resume)
+  File "/workspace/Habitable-Moon-Project/analysis/reconstruction_20261113/verify_runtime.py", line 52, in run_case
+    result = subprocess.run(timed, cwd=ROOT, stdout=log, stderr=subprocess.STDOUT, timeout=120)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 548, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 1026, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 1955, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: '/usr/bin/time'
