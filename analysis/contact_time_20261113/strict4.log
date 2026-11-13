@@ -1,0 +1,17 @@
+Resumed checkpoint at t=0.0 Myr with 12 plates | sea=-0.0 m
+EXPERIMENTAL finite mantle/crust inventories: conservative sensible enthalpy; latent heat and mechanical work unclosed; topology disabled
+EXPERIMENTAL persistent active-area integration: exact spherical weights, locally refined history; receiver geometry still limited
+EXPERIMENTAL moving regional columns: fixed quadrature areas; conservative map is not contact geometry
+Traceback (most recent call last):
+  File "/workspace/Habitable-Moon-Project/run_long_evolution_v131.py", line 252, in <module>
+    main()
+  File "/workspace/Habitable-Moon-Project/run_long_evolution_v131.py", line 231, in main
+    base.main()
+  File "/workspace/Habitable-Moon-Project/run_long_evolution_v123.py", line 316, in main
+    state,cycle,lith_diag,cycle_diag=regional_inventory.runtime_step(proto.mesh,state,system,cycle,pre_lith_boundaries,subduction_memory,radius,dti,arcp,ccp,float(lc['oceanic_thickness_km']),**source_options)
+                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/Habitable-Moon-Project/tectonics/regional_area.py", line 320, in runtime_step
+    self.material_boundary_registry().require_shared_support(q,radius)
+  File "/workspace/Habitable-Moon-Project/tectonics/material_contacts.py", line 87, in require_shared_support
+    raise ValueError(f"Material contacts not geometrically closed: unmatched {diag['unmatched_bank_length_km']:.9g} km, multiply covered {diag['multiply_covered_bank_length_km']:.9g} km; a gap/overlap or deformable-surface law is required")
+ValueError: Material contacts not geometrically closed: unmatched 319077.226 km, multiply covered 0 km; a gap/overlap or deformable-surface law is required
