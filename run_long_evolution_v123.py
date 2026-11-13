@@ -31,6 +31,7 @@ from tectonics.simulation import build_prototype,load_config
 from tectonics.tides import eccentricity_history_from_config
 from tectonics.thermal import ThermalParameters,advance_thermal_state,initialize_thermal_state,diagnose_thermal_state
 from tectonics.thermal_budget import ThermalBudgetIntegrator, ThermalIntegrationParameters
+from tectonics.material_exchange import MaterialExchangeBudget, MaterialExchangeParameters, surface_volumes
 from tectonics.topography import TopographyParameters,advance_topography,equilibrium_elevation,initialize_topography,topography_components
 from tectonics.flexure import FlexureParameters
 from tectonics.sediment import SedimentParameters, initialize_sediment_budget, advance_sediments, continental_material_ledger_error_km3, sediment_thickness_m
@@ -171,6 +172,33 @@ def main():
     if saved_integration is not None and not integration_enabled:
         raise ValueError('Budgeted checkpoint requires thermal_integration.enabled; refusing to discard its history')
     thermal_integrator = None
+    material_cfg = dict(cfg.get('material_exchange', {}))
+    material_enabled = material_cfg.pop('enabled', False)
+    saved_material = cp.material_exchange if a.resume else None
+    if saved_material is not None and not material_enabled:
+        raise ValueError('Material checkpoint requires its finite inventory mode')
+    material_budget = None
+    if material_enabled:
+        if integration_enabled or saved_integration is not None:
+            raise ValueError('Two thermal owners are not allowed; select the material-exchange mode explicitly')
+        if cfg.get('plume_magmatism', {}).get('enabled', True):
+            raise ValueError('Finite inventory mode currently requires plume_magmatism.enabled=false')
+        if topp.allow_topology_changes:
+            raise ValueError('Finite inventory mode requires topology disabled until mechanical work and fracture energy are coupled')
+        if not cc0.analytic_maturation:
+            raise ValueError('Finite inventory mode requires analytic_maturation=true')
+        material_options = MaterialExchangeParameters(**material_cfg)
+        if a.resume:
+            if saved_material is None or state.oceanic_volume_km3 is None:
+                raise ValueError('Legacy checkpoint has no recoverable material enthalpy; start a new explicit inventory initialization')
+            material_budget = MaterialExchangeBudget.restore(saved_material, material_options)
+        else:
+            material_budget, state, thermal = MaterialExchangeBudget.initialize(
+                proto.mesh, state, thermal, mass, radius, grav, thp, material_options,
+                ocean_reference_km=float(lc['oceanic_thickness_km']))
+            thermal, init_diag = material_budget.thermal_state(thermal,mass,radius,grav,period,pmj,ecc,thp)
+            thermal_rows[-1] = {k:getattr(init_diag,k) for k in init_diag.__dataclass_fields__}
+        print('EXPERIMENTAL finite mantle/crust inventories: conservative sensible enthalpy; latent heat and mechanical work unclosed; topology disabled')
     if integration_enabled:
         integration_options = ThermalIntegrationParameters(**integration_cfg)
         thermal_integrator = (ThermalBudgetIntegrator.restore(saved_integration, integration_options)
@@ -201,7 +229,11 @@ def main():
     integration_clock = perf_counter()
     for dti in step_sizes(float(state.time_myr),end,dt):
         assert_plate_consistency(state,system,"step start")
-        thermal_step = advance_thermal_state if thermal_integrator is None else thermal_integrator.advance
+        if material_budget is not None:
+            before_generated = cycle.cumulative_generated_volume_km3
+            before_returned = cycle.cumulative_recycled_volume_km3 + sediment_budget.deep_recycled_sediment_volume_km3 + sediment_budget.cumulative_rift_recycled_volume_km3
+        thermal_step = (material_budget.advance if material_budget is not None else
+                        (advance_thermal_state if thermal_integrator is None else thermal_integrator.advance))
         thermal,thdiag=thermal_step(thermal,dti,mass,radius,grav,period,pmj,ecc,thp);thermal_rows.append({k:getattr(thdiag,k) for k in thdiag.__dataclass_fields__})
         activity=thermal.tectonic_activity_factor
         mantle_flow,mantle_diag=advance_mantle_flow(proto.mesh,mantle_flow,dti,activity,mantlep)
@@ -230,7 +262,7 @@ def main():
         # activity instead of remaining at formation-era speed forever.
         rift_activity_scale=float(max(activity,0.0)) ** float(rc.get('activity_scaling_exponent',0.75))
         state,_,_,lith_diag=advance_lithosphere(proto.mesh,system,state,dti,radius,grav,period,ecc,primary_mass_jupiter=pmj,love_h2=float(tc['love_h2']),reference_eccentricity=float(tc['eccentricity_rms']),oceanic_thickness_km=float(lc['oceanic_thickness_km']),continental_thickness_km=float(lc['continental_thickness_km']),max_continental_thickness_km=float(lc['max_continental_thickness_km']),collision_accretion_fraction=float(lc['collision_accretion_fraction']),tidal_damage_rate_per_myr=float(tc['damage_rate_per_myr'])*max(activity,.5),tidal_damage_relaxation_myr=float(tc['damage_relaxation_myr']),tidal_damage_background_fraction=float(tc.get('damage_background_fraction',0.10)),continental_extension_rate_per_myr=float(rc.get('extension_rate_per_myr',0.012))*rift_activity_scale,continental_extension_relaxation_myr=float(rc.get('extension_relaxation_myr',90.0)),continental_extension_min_duration_myr=float(rc.get('min_duration_myr',32.0)),continental_rift_extension_threshold=float(rc.get('extension_threshold',0.70)),continental_thinning_km_per_myr=float(rc.get('thinning_km_per_myr',0.16))*rift_activity_scale,continental_min_breakup_thickness_km=float(rc.get('min_breakup_thickness_km',19.0)),continental_breakup_min_extension_forcing=float(rc.get('breakup_min_extension_forcing',0.75)),continental_extension_requires_two_plate_flanks=bool(rc.get('extension_requires_two_plate_flanks',True)),tidal_thinning_boost_max_fraction=float(rc.get('tidal_thinning_boost_max_fraction',0.25)),continental_extension_suppression=collision_suppression,continental_extension_external_forcing=backarc_forcing,transport_state=transport_state,transport_parameters=transportp)
-        lithosphere_rows.append({k:getattr(lith_diag,k) for k in lith_diag.__dataclass_fields__ if k!='material_source_index'})
+        lithosphere_rows.append({k:getattr(lith_diag,k) for k in lith_diag.__dataclass_fields__ if k!='material_source_index' and getattr(lith_diag,k) is not None})
         lithosphere_rows[-1].update({
             'mean_ridge_push_factor':float(dyn_diag.mean_ridge_push_factor),
             'min_ridge_push_factor':float(dyn_diag.min_ridge_push_factor),
@@ -274,7 +306,16 @@ def main():
             raise RuntimeError(f'continental material ledger drift at t={state.time_myr:.1f} Myr: {_ledger:+.6g} km3')
         hydrosphere,last_hydro_diag=advance_hydrosphere(proto.mesh,state,topo,hydrosphere,radius,hydrop,topop)
         hydrosphere_rows.append({k:getattr(last_hydro_diag,k) for k in last_hydro_diag.__dataclass_fields__})
-        topo_rows.append({k:getattr(last_td,k) for k in last_td.__dataclass_fields__});relief_rows.append({k:getattr(last_relief,k) for k in last_relief.__dataclass_fields__});cycle_rows.append({k:getattr(cycle_diag,k) for k in cycle_diag.__dataclass_fields__})
+        if material_budget is not None:
+            born_f = cycle.cumulative_generated_volume_km3 - before_generated
+            return_f = cycle.cumulative_recycled_volume_km3 + sediment_budget.deep_recycled_sediment_volume_km3 + sediment_budget.cumulative_rift_recycled_volume_km3 - before_returned
+            born_o = lith_diag.oceanic_created_volume_km3 + cycle_diag.oceanic_created_volume_km3
+            return_o = lith_diag.oceanic_recycled_volume_km3 + cycle_diag.oceanic_recycled_volume_km3
+            material_budget.exchange([born_f,born_o], [return_f,return_o], surface_volumes(state), thp)
+            thermal, thdiag = material_budget.thermal_state(thermal,mass,radius,grav,period,pmj,ecc,thp)
+            thermal_rows[-1] = {k:getattr(thdiag,k) for k in thdiag.__dataclass_fields__}
+            material_budget.data['history'].append(material_budget.diagnostics(thp))
+        topo_rows.append({k:getattr(last_td,k) for k in last_td.__dataclass_fields__});relief_rows.append({k:getattr(last_relief,k) for k in last_relief.__dataclass_fields__});cycle_rows.append({k:getattr(cycle_diag,k) for k in cycle_diag.__dataclass_fields__ if getattr(cycle_diag,k) is not None})
         if frame_interval is not None and abs((state.time_myr/frame_interval)-round(state.time_myr/frame_interval))<1e-9:
             save_animation_frames()
     integration_wall_seconds = perf_counter() - integration_clock
@@ -291,6 +332,14 @@ def main():
                        'outer_dt_myr': dt, 'mesh_cells': proto.mesh.cell_count,
                        'integration_wall_seconds': integration_wall_seconds,
                        'scope': 'global loop only; excludes initialization, checkpoint and rendering'}, handle, indent=2)
+    if material_budget is not None:
+        cp.material_exchange = material_budget.checkpoint()
+        with (out/'material_exchange.json').open('w', encoding='utf-8') as handle:
+            json.dump(cp.material_exchange, handle, indent=2, allow_nan=False)
+        with (out/'runtime_stats.json').open('w', encoding='utf-8') as handle:
+            json.dump({'start_time_myr':integration_start_time,'end_time_myr':state.time_myr,
+                       'mesh_cells':proto.mesh.cell_count,'outer_dt_myr':dt,
+                       'integration_wall_seconds':integration_wall_seconds}, handle, indent=2)
     cp_path=Path(a.checkpoint) if a.checkpoint else checkpoints/f'checkpoint_{int(round(state.time_myr)):04d}_Myr'
     save_checkpoint(cp_path,cp);print('Checkpoint:',cp_path.resolve())
     if a.save_frame or a.finalize:

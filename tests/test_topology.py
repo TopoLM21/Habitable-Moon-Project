@@ -120,6 +120,24 @@ def test_tiny_plate_is_absorbed_by_manager():
     assert np.all(state.cell_plate==out.cell_plate)
 
 
+def test_inventory_control_keeps_nonempty_regions_without_pricing_heuristic_events(monkeypatch):
+    import tectonics.topology as module
+    mesh=build_icosphere(1)
+    owner=np.zeros(mesh.cell_count,dtype=np.int32);owner[0]=1
+    system=PlateSystem(owner.copy(),(
+        Plate(0,1,np.array([0.,0.,1.]),0.), Plate(1,0,np.array([0.,1.,0.]),0.)))
+    state=_state(owner)
+    def unpaid_event(*args,**kwargs):
+        raise AssertionError('An unpriced topology candidate must not be evaluated')
+    monkeypatch.setattr(module,'_attempt_split',unpaid_event)
+    monkeypatch.setattr(module,'_attempt_disconnected_split',unpaid_event)
+    manager=PlateTopologyManager(PlateTopologyParameters(allow_topology_changes=False,min_plate_cells=5))
+    result,diag,events=manager.update(mesh,state,system,[],5287.,4.)
+    assert len(result.plates)==2
+    assert np.array_equal(result.cell_plate,owner)
+    assert events==[] and not diag.topology_changed
+
+
 
 
 def test_zero_area_plate_is_explicitly_compacted_before_coupling():

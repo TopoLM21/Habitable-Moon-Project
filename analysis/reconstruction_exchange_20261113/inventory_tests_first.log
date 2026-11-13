@@ -1,0 +1,29 @@
+.........F........                                                       [100%]
+=================================== FAILURES ===================================
+__________________ test_two_box_time_and_tolerance_refinement __________________
+
+    def test_two_box_time_and_tolerance_refinement():
+        finals=[]
+        for tol in (1.,.1,.01):
+            options=MaterialExchangeParameters(temperature_atol_k=tol,temperature_rtol=tol/1e4,
+                                              exchange_rtol=tol/1e3,max_step_myr=20.,initial_step_myr=20.)
+            b,s,t,p,_=initialized(options)
+            # A finite hot addition creates a thermal transient, not a stress seed.
+            v=surface_volumes(s);born=v*.1;b.exchange(born,[0.,0.],v+born,p)
+            t=replace(t,mantle_temperature_k=float(b.temperatures(p)[0]))
+            advance(b,t,20.,p)
+            finals.append(b.temperatures(p))
+            assert abs(b.diagnostics(p)['energy_residual_j'])<1e15
+>       assert np.max(abs(finals[2]-finals[1]))<np.max(abs(finals[1]-finals[0]))
+E       assert np.float64(0.0674578839377773) < np.float64(0.0)
+E        +  where np.float64(0.0674578839377773) = <function max at 0x7f552e7b0ff0>(array([0.00016251, 0.06745788]))
+E        +    where <function max at 0x7f552e7b0ff0> = np.max
+E        +    and   array([0.00016251, 0.06745788]) = abs((array([1861.94014106,  437.36970392]) - array([1861.93997855,  437.4371618 ])))
+E        +  and   np.float64(0.0) = <function max at 0x7f552e7b0ff0>(array([0., 0.]))
+E        +    where <function max at 0x7f552e7b0ff0> = np.max
+E        +    and   array([0., 0.]) = abs((array([1861.93997855,  437.4371618 ]) - array([1861.93997855,  437.4371618 ])))
+
+tests/test_material_exchange.py:128: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_material_exchange.py::test_two_box_time_and_tolerance_refinement
+1 failed, 17 passed, 1 warning in 0.69s

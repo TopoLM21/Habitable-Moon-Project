@@ -1,0 +1,13 @@
+mkdir -p failed for path /home/agent/.config/matplotlib: [Errno 30] Read-only file system: '/home/agent/.config/matplotlib'
+Matplotlib created a temporary cache directory at /tmp/matplotlib-pqfffyrz because there was an issue with the default path (/home/agent/.config/matplotlib); it is highly recommended to set the MPLCONFIGDIR environment variable to a writable directory, in particular to speed up the import of Matplotlib and to better support multiprocessing.
+Fontconfig error: No writable cache directories
+Initialized hydrosphere: water=0.957 billion km3 | sea=+0.000 m | land=25.69%
+Traceback (most recent call last):
+  File "/workspace/Habitable-Moon-Project/run_long_evolution_v131.py", line 252, in <module>
+    main()
+  File "/workspace/Habitable-Moon-Project/run_long_evolution_v131.py", line 231, in main
+    base.main()
+  File "/workspace/Habitable-Moon-Project/run_long_evolution_v123.py", line 186, in main
+    if topp.enabled:
+       ^^^^^^^^^^^^
+AttributeError: 'PlateTopologyParameters' object has no attribute 'enabled'

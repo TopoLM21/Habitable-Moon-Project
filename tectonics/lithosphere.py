@@ -83,6 +83,9 @@ class LithosphereState:
     continental_lithosphere_age_myr: Array | None = None
     mantle_depletion_fraction: Array | None = None
     craton_strength: Array | None = None
+    # Opt-in material inventory. Unlike the display thickness, this is extensive
+    # basaltic volume, including mixed coasts and retained basaltic basement.
+    oceanic_volume_km3: Array | None = None
 
 
 @dataclass(slots=True)
@@ -129,6 +132,8 @@ class LithosphereStepDiagnostics:
     material_source_index: Array | None = None
     continental_breakup_recycled_volume_km3: float = 0.0
     rift_recycled_volume_km3: float = 0.0
+    oceanic_created_volume_km3: float | None = None
+    oceanic_recycled_volume_km3: float | None = None
 
 
 @dataclass(slots=True)
@@ -869,6 +874,8 @@ def advance_lithosphere(
     areas = mesh.physical_cell_areas_km2(radius_km)
     transport_diag = None
     conservative_transport = transport_state is not None
+    if state.oceanic_volume_km3 is not None and not conservative_transport:
+        raise ValueError('Explicit oceanic inventory requires conservative transport')
     if conservative_transport:
         # Local import avoids a module cycle: transport needs LithosphereState.
         from .transport import build_transport_map
@@ -1310,6 +1317,41 @@ def advance_lithosphere(
         new_thickness[~visible_cont] = float(oceanic_thickness_km)
         new_thickness[visible_cont] = effective_h[visible_cont]
 
+    new_ocean_volume = None
+    ocean_created = ocean_recycled = None
+    if state.oceanic_volume_km3 is not None:
+        old_ocean = np.asarray(state.oceanic_volume_km3, dtype=float)
+        if old_ocean.shape != (n,) or np.any(~np.isfinite(old_ocean)) or np.any(old_ocean < 0):
+            raise ValueError('Invalid oceanic material inventory')
+        if np.any(new_cont_fraction > 1 + 1e-10) or np.any(new_cont_fraction < -1e-10):
+            raise ValueError('Unresolved continental footprint in inventory mode')
+        new_ocean_volume = np.zeros(n)
+        retained = np.zeros(n)
+        available_area = areas * (1 - np.clip(new_cont_fraction, 0, 1))
+        fresh = gap_mask | breakup
+        destinations = np.flatnonzero((material_source_index >= 0) & ~fresh)
+        sources = material_source_index[destinations]
+        if len(np.unique(sources)) != len(sources):
+            raise ValueError('Oceanic source parcel used more than once')
+        # Target areas need not equal source areas: change thickness, never
+        # discard a fraction of an extensive parcel merely to fit a raster cell.
+        # Continental footprint redistribution may cover retained basaltic
+        # basement; that volume is not removed without an explicit process.
+        carried = old_ocean[sources]
+        new_ocean_volume[destinations] = carried
+        retained[sources] = carried
+        # Empty newly exposed oceanic footprint is a real, separately debited
+        # creation request. Existing basalt expands/thins at unchanged volume.
+        exposed = (new_ocean_volume == 0) & (available_area > 0)
+        created = np.where(exposed, available_area * float(oceanic_thickness_km), 0.)
+        new_ocean_volume += created
+        ocean_created = float(np.sum(created))
+        ocean_recycled = float(np.sum(old_ocean - retained))
+        ocean_visible = new_cont_fraction < .5
+        new_thickness[ocean_visible] = np.divide(
+            new_ocean_volume[ocean_visible], available_area[ocean_visible],
+            out=np.zeros(np.count_nonzero(ocean_visible)), where=available_area[ocean_visible] > 0)
+
     new_state = LithosphereState(
         time_myr=new_time,
         cell_plate=new_plate,
@@ -1330,6 +1372,7 @@ def advance_lithosphere(
         continental_lithosphere_age_myr=None if not track_craton_memory else new_cont_lith_age,
         mantle_depletion_fraction=None if not track_craton_memory else new_mantle_depletion,
         craton_strength=None if not track_craton_memory else new_craton_strength,
+        oceanic_volume_km3=new_ocean_volume,
     )
 
     ocean_mask = new_type == int(CrustType.OCEANIC)
@@ -1358,6 +1401,8 @@ def advance_lithosphere(
         continental_thinning_volume_km3=float(continental_thinning_volume),
         continental_breakup_recycled_volume_km3=float(breakup_recycled_volume),
         rift_recycled_volume_km3=float(continental_thinning_volume + breakup_recycled_volume),
+        oceanic_created_volume_km3=ocean_created,
+        oceanic_recycled_volume_km3=ocean_recycled,
         active_continental_rift_gap_cells=int(active_continental_rift_gap_cells),
         passive_margin_gap_cells_suppressed=int(passive_margin_gap_cells),
         mean_rift_extension_continental=float(np.mean(new_extension[cont_mask])) if np.any(cont_mask) else 0.0,

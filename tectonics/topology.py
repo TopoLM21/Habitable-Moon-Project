@@ -92,6 +92,10 @@ class PlateTopologyParameters:
     # topology event class.  Zero preserves legacy immediate cleanup.
     min_plate_persistence_myr: float = 0.0
     max_events_per_step: int = 2
+    # Experimental inventory controls cannot price these legacy heuristic
+    # events. Keep transport/collision memory and empty-ID compaction, but do
+    # not create, weld or absorb a nonempty material region when disabled.
+    allow_topology_changes: bool = True
 
 
 @dataclass(slots=True)
@@ -879,7 +883,8 @@ class PlateTopologyManager:
 
         # Topology invariant first: if one plate ID already occupies two large
         # disconnected surface domains, detach one before evaluating new welds.
-        disconnected, dev = _attempt_disconnected_split(mesh, state, current, self.params, radius_km)
+        disconnected, dev = (_attempt_disconnected_split(mesh, state, current, self.params, radius_km)
+                             if self.params.allow_topology_changes else (None, None))
         if disconnected is not None and dev is not None and len(events) < int(self.params.max_events_per_step):
             old_current = current
             current = disconnected
@@ -896,7 +901,7 @@ class PlateTopologyManager:
 
         # Final welding is a rare *second stage*: a mature collision must then
         # spend a long separate interval at genuinely low relative speed.
-        if self.params.merge_enabled and not events and len(events) < int(self.params.max_events_per_step):
+        if self.params.allow_topology_changes and self.params.merge_enabled and not events and len(events) < int(self.params.max_events_per_step):
             mature = [
                 (quiet_age, self.collision_age_myr.get(pair, 0.0), pair, active[pair])
                 for pair, quiet_age in self.quiet_weld_age_myr.items()
@@ -919,7 +924,7 @@ class PlateTopologyManager:
 
         # Breakup after merging, but not repeatedly within a short cooldown.
         if (
-            self.params.split_enabled
+            self.params.allow_topology_changes and self.params.split_enabled
             and len(events) < int(self.params.max_events_per_step)
             and float(state.time_myr) - float(self.last_split_time_myr) >= float(self.params.split_cooldown_myr)
         ):
@@ -933,7 +938,7 @@ class PlateTopologyManager:
                 self._remap_collision_memory(old_current, current)
 
         # Remove tiny plates/fragments.  One absorption per remaining event slot.
-        while len(events) < int(self.params.max_events_per_step) and len(current.plates) > 1:
+        while self.params.allow_topology_changes and len(events) < int(self.params.max_events_per_step) and len(current.plates) > 1:
             doomed = self._smallest_persistent_doomed_plate(mesh,current,radius_km)
             if doomed is None:
                 break

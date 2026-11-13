@@ -56,6 +56,9 @@ class ContinentalCycleDiagnostics:
     gravitational_collapse_redistributed_volume_km3: float
     mean_felsic_potential_oceanic: float
     max_felsic_potential: float
+    oceanic_created_volume_km3: float | None = None
+    oceanic_recycled_volume_km3: float | None = None
+    first_juvenile_event_time_myr: float | None = None
 
 
 @dataclass(slots=True, frozen=True)
@@ -82,6 +85,7 @@ class ContinentalCycleParameters:
     gravitational_collapse_target_km: float = 39.0
     gravitational_collapse_rate_per_myr: float = 0.020
     gravitational_collapse_neighbor_rings: int = 2
+    analytic_maturation: bool = False
 
 
 def initialize_continental_cycle(mesh: SphereMesh) -> ContinentalCycleState:
@@ -112,6 +116,7 @@ def _copy_lithosphere(state: LithosphereState) -> LithosphereState:
         continental_lithosphere_age_myr=None if state.continental_lithosphere_age_myr is None else np.asarray(state.continental_lithosphere_age_myr, dtype=np.float64).copy(),
         mantle_depletion_fraction=None if state.mantle_depletion_fraction is None else np.asarray(state.mantle_depletion_fraction, dtype=np.float64).copy(),
         craton_strength=None if state.craton_strength is None else np.asarray(state.craton_strength, dtype=np.float64).copy(),
+        oceanic_volume_km3=None if state.oceanic_volume_km3 is None else np.asarray(state.oceanic_volume_km3, dtype=np.float64).copy(),
     )
 
 
@@ -323,17 +328,44 @@ def advance_continental_cycle(
 
     # Felsic/island-arc maturation.  Potential decays away from active arcs.
     decay = np.exp(-float(dt_myr) / max(params.arc_potential_decay_myr, 1e-9))
+    old_potential = potential.copy()
     potential *= decay
-    potential += juvenile_intensity * params.arc_maturation_rate_per_myr * float(dt_myr)
+    source = juvenile_intensity * params.arc_maturation_rate_per_myr
+    tau = max(params.arc_potential_decay_myr, 1e-9)
+    potential += source * (tau * (-np.expm1(-float(dt_myr) / tau))
+                           if params.analytic_maturation else float(dt_myr))
 
     ocean_before = state.crust_type == int(CrustType.OCEANIC)
     mature = ocean_before & (potential >= params.juvenile_threshold)
     juvenile_area = float(np.sum(areas[mature]))
     juvenile_volume = 0.0
+    ocean_created = ocean_recycled = None
+    if state.oceanic_volume_km3 is not None:
+        ocean_created = ocean_recycled = 0.
+    event_fraction = np.full(len(areas), float(dt_myr))
+    first_event = None
     if np.any(mature):
+        if params.analytic_maturation:
+            equilibrium = source[mature] * tau
+            p0 = old_potential[mature]
+            crossing = np.zeros(len(p0))
+            below = p0 < params.juvenile_threshold
+            crossing[below] = -tau * np.log(
+                (equilibrium[below] - params.juvenile_threshold) / (equilibrium[below] - p0[below]))
+            event_fraction[mature] = float(dt_myr) - np.clip(crossing, 0, dt_myr)
+            first_event = float(state.time_myr - dt_myr + np.min(crossing))
+            if external_arc is not None:
+                continental_arc_intensity[mature] = external_arc[mature]
+            else:
+                continental_arc_intensity[mature] = juvenile_intensity[mature]
+        if state.oceanic_volume_km3 is not None:
+            ocean_recycled += float(np.sum(state.oceanic_volume_km3[mature]))
+            state.oceanic_volume_km3[mature] = 0.
         old_material_volume = material_volume[mature].copy()
         state.crust_type[mature] = int(CrustType.CONTINENTAL)
         state.crust_age_myr[mature] = float(params.juvenile_seed_age_myr)
+        if params.analytic_maturation:
+            state.crust_age_myr[mature] += event_fraction[mature]
         state.crust_thickness_km[mature] = float(params.juvenile_continental_thickness_km)
         material_fraction[mature] = 1.0
         material_volume[mature] = areas[mature] * float(params.juvenile_continental_thickness_km)
@@ -343,7 +375,7 @@ def advance_continental_cycle(
         if state.extension_age_myr is not None:
             state.extension_age_myr[mature] = 0.0
         if state.continental_lithosphere_age_myr is not None:
-            state.continental_lithosphere_age_myr[mature] = 0.0
+            state.continental_lithosphere_age_myr[mature] = event_fraction[mature] if params.analytic_maturation else 0.0
         if state.mantle_depletion_fraction is not None:
             state.mantle_depletion_fraction[mature] = 0.0
         if state.craton_strength is not None:
@@ -359,10 +391,10 @@ def advance_continental_cycle(
     thicken = cont & (continental_arc_intensity > 0.0)
     arc_thickening_volume = 0.0
     if np.any(thicken):
-        delta = np.minimum(
-            params.max_arc_thickening_km_per_step,
-            continental_arc_intensity[thicken] * params.continental_arc_thickening_km_per_myr * float(dt_myr),
-        )
+        requested = continental_arc_intensity[thicken] * params.continental_arc_thickening_km_per_myr * event_fraction[thicken]
+        if params.analytic_maturation and np.any(requested > params.max_arc_thickening_km_per_step):
+            raise ValueError('Arc thickness increment exceeds numerical step bound; reduce timestep')
+        delta = np.minimum(params.max_arc_thickening_km_per_step, requested)
         state.crust_thickness_km[thicken] += delta
         material_volume[thicken] += areas[thicken] * material_fraction[thicken] * delta
         # Mixed coastline cells only contain continental material over their
@@ -407,6 +439,10 @@ def advance_continental_cycle(
 
         recycle = idx[state.crust_thickness_km[idx] < params.recycle_below_thickness_km]
         if len(recycle):
+            if state.oceanic_volume_km3 is not None:
+                born = areas[recycle] * material_fraction[recycle] * float(oceanic_thickness_km)
+                state.oceanic_volume_km3[recycle] += born
+                ocean_created += float(np.sum(born))
             recycled_area = float(np.sum(areas[recycle] * material_fraction[recycle]))
             # Remaining thin felsic crust is assumed tectonically removed and
             # replaced by newly formed oceanic lithosphere at the surface.
@@ -448,6 +484,11 @@ def advance_continental_cycle(
     potential[state.crust_type == int(CrustType.CONTINENTAL)] = 0.0
     state.continental_fraction = material_fraction
     state.continental_volume_km3 = material_volume
+    if state.oceanic_volume_km3 is not None:
+        ocean = state.crust_type == int(CrustType.OCEANIC)
+        footprint = areas * (1 - material_fraction)
+        state.crust_thickness_km[ocean] = np.divide(state.oceanic_volume_km3[ocean], footprint[ocean],
+            out=np.zeros(np.count_nonzero(ocean)), where=footprint[ocean] > 0)
 
     new_cycle = ContinentalCycleState(
         time_myr=float(state.time_myr),
@@ -462,6 +503,9 @@ def advance_continental_cycle(
     cont_mask = state.crust_type == int(CrustType.CONTINENTAL)
     ocean_mask = ~cont_mask
     diag = ContinentalCycleDiagnostics(
+        oceanic_created_volume_km3=ocean_created,
+        oceanic_recycled_volume_km3=ocean_recycled,
+        first_juvenile_event_time_myr=first_event,
         time_myr=float(state.time_myr),
         dt_myr=float(dt_myr),
         continental_area_fraction=float(np.sum(areas * material_fraction) / total_area),
