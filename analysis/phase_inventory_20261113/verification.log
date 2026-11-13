@@ -1,0 +1,17 @@
+{"case": "no_initial_feedstock", "wall_s": 0.6446777780001867, "born_km3": 0.0, "returned_km3": 0.0, "mobile_kg": 0.0}
+Traceback (most recent call last):
+  File "/workspace/Habitable-Moon-Project/analysis/phase_inventory_20261113/verify.py", line 68, in <module>
+    for sub in (2, 3, 4): run('limited_g'+str(sub), sub=sub, save=sub == 3)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/Habitable-Moon-Project/analysis/phase_inventory_20261113/verify.py", line 33, in run
+    x.step(min(dt, 1.-x.coupled.thermal.time_myr)); history.append(x.diagnostics())
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/Habitable-Moon-Project/tectonics/strain_exchange.py", line 267, in step
+    work._exchange(area_before)
+  File "/workspace/Habitable-Moon-Project/tectonics/strain_exchange.py", line 241, in _exchange
+    self._transfer(old, target, born, returned)
+  File "/workspace/Habitable-Moon-Project/tectonics/phase_exchange.py", line 366, in _transfer
+    c.material.exchange([0., math.fsum(born)/1e9], [0., math.fsum(returned)/1e9],
+  File "/workspace/Habitable-Moon-Project/tectonics/phase_exchange.py", line 204, in exchange
+    raise ValueError('Request exceeds finite mobile liquid inventory')
+ValueError: Request exceeds finite mobile liquid inventory

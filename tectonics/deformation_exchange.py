@@ -35,6 +35,7 @@ class CoupledParameters:
 
 class DeformationExchange:
     VERSION = 1
+    MATERIAL_CLASS = MaterialExchangeBudget
 
     def __init__(self, surface, material, thermal, thermal_params, eccentricity,
                  options=CoupledParameters()):
@@ -210,7 +211,7 @@ class DeformationExchange:
         d=deepcopy(cp);obj=cls.__new__(cls)
         if d['data']['version']!=cls.VERSION:raise ValueError('Unsupported deformation/exchange restart')
         obj.data=d['data'];obj.surface=DeformingSurface.restore(d['surface'])
-        obj.material=MaterialExchangeBudget.restore(d['material'],MaterialExchangeParameters(**d['material']['options']))
+        obj.material=cls.MATERIAL_CLASS.restore(d['material'],MaterialExchangeParameters(**d['material']['options']))
         obj.thermal=ThermalState(**d['thermal']);obj.thermal_params=ThermalParameters(**d['thermal_parameters'])
         obj.options=CoupledParameters(**d['options'])
         obj.eccentricity=EccentricityHistory(**{k:np.array(v) for k,v in d['eccentricity'].items()})

@@ -160,6 +160,7 @@ def passive_projection(area, volume, lower, upper, pressure, compliance, rho, gr
 
 class StrainExchange:
     VERSION = 1
+    COUPLED_CLASS = DeformationExchange
 
     def __init__(self, coupled, zone_fraction, params=PressureParameters(), provenance=None):
         transfers = (math.fsum(coupled.material.data[k]) for k in ('created_kg', 'recycled_kg'))
@@ -209,6 +210,17 @@ class StrainExchange:
         if math.fsum([*surface_work, *(-x for x in self.data['source_work_j'])]) != 0:
             raise ValueError('Undeclared external mechanical work')
 
+    def _supply_quota(self, quota):
+        return quota
+
+    def _transfer(self, old, target, born, returned):
+        c = self.coupled
+        f = c.material.data['surface_volumes_km3'][0]
+        c.material.exchange([0., 0.], [0., math.fsum(returned)/1e9],
+                            [f, math.fsum(old-returned)/1e9], c.thermal_params)
+        c.material.exchange([0., math.fsum(born)/1e9], [0., 0.],
+                            [f, math.fsum(target)/1e9], c.thermal_params)
+
     def _exchange(self, area_before):
         c = self.coupled; s = c.surface; p = s.params; par = self.params
         area = s.geometry(s.vertices)[0]
@@ -216,20 +228,17 @@ class StrainExchange:
         # Finite actual area changes, never a jump between imposed Euler poles.
         strain = (area-area_before)/area_before
         quota = old*par.exchange_fraction*self.zone_fraction*strain
-        lower = old+np.minimum(quota, 0); upper = old+np.maximum(quota, 0)
+        available_quota = self._supply_quota(quota)
+        lower = old+np.minimum(available_quota, 0); upper = old+np.maximum(available_quota, 0)
         footprint = area*(1-s.arrays['felsic_fraction'])
         target, event = passive_projection(footprint, old, lower, upper,
             self.pressure(), par.compliance_m3_pa, p.basalt_density_kg_m3,
             p.gravity_m_s2, p.radius_m)
         born = np.maximum(target-old, 0); returned = np.maximum(old-target, 0)
         bv = math.fsum(born); rv = math.fsum(returned)
-        old_totals = c.material.data['surface_volumes_km3']
-        after_return = [old_totals[0], math.fsum(old-returned)/1e9]
-        final = [old_totals[0], math.fsum(target)/1e9]
         # The inherited single thermal/material owner carries donor enthalpy and
         # pool-averaged provenance. It rejects exhaustion instead of inventing stock.
-        c.material.exchange([0., 0.], [0., rv/1e9], after_return, c.thermal_params)
-        c.material.exchange([0., bv/1e9], [0., 0.], final, c.thermal_params)
+        self._transfer(old, target, born, returned)
         keep = np.divide(old-returned, old, out=np.ones_like(old), where=old > 0)
         s.arrays['basalt_age_moment_m3_myr'] *= keep
         s.arrays['basalt_volume_m3'] = target
@@ -291,7 +300,7 @@ class StrainExchange:
             raise ValueError('Unknown strain-exchange checkpoint')
         obj.data = d['data']; obj.params = PressureParameters(**d['parameters'])
         obj.zone_fraction = np.asarray(d['zone_fraction'])
-        obj.coupled = DeformationExchange.restore(d['coupled']); obj._validate()
+        obj.coupled = cls.COUPLED_CLASS.restore(d['coupled']); obj._validate()
         return obj
 
     def save(self, path):
