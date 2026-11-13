@@ -62,3 +62,40 @@ def test_raster_overlap_alone_cannot_recycle_or_create_basalt():
     assert d.oceanic_created_volume_km3==d.oceanic_recycled_volume_km3==0.
     assert math.fsum(n.oceanic_volume_km3)==pytest.approx(math.fsum(s.oceanic_volume_km3),rel=1e-15)
     assert math.fsum(n.oceanic_age_moment_km3_myr)==pytest.approx(math.fsum(s.oceanic_age_moment_km3_myr)+20*math.fsum(s.oceanic_volume_km3),rel=1e-15)
+
+
+def test_native_restart_keeps_integral_law_and_age_memory(tmp_path):
+    from tectonics.checkpoint import RunCheckpoint,save_checkpoint,load_checkpoint
+    from tectonics.continental import initialize_continental_cycle
+    from tectonics.material_exchange import MaterialExchangeBudget
+    from tectonics.topography import initialize_topography,TopographyParameters
+    from tectonics.topology import PlateTopologyManager,PlateTopologyParameters
+    from tectonics.thermal import initialize_thermal_state,ThermalParameters
+    mesh=build_icosphere(1);s=ocean(mesh)
+    # This fixture starts a NEW inventory; initialize() correctly refuses to
+    # overwrite an already-budgeted ocean() fixture's extensive fields.
+    s.oceanic_volume_km3=None;s.oceanic_age_moment_km3_myr=None
+    s.continental_fraction=np.zeros(mesh.cell_count);s.continental_volume_km3=np.zeros(mesh.cell_count)
+    system=PlateSystem(s.cell_plate.copy(),(Plate(0,0,np.array([0.,0.,1.]),.03),))
+    tp=ThermalParameters();thermal=initialize_thermal_state(.5,5287.,7.12,tp)
+    budget,s,thermal=MaterialExchangeBudget.initialize(mesh,s,thermal,.5,5287.,7.12,tp)
+    s.oceanic_age_moment_km3_myr=s.oceanic_volume_km3*s.crust_age_myr
+    manager=PlateTopologyManager(PlateTopologyParameters())
+    cp=RunCheckpoint(s,initialize_continental_cycle(mesh),thermal,
+        initialize_topography(mesh,s,[],TopographyParameters()),system,system,manager,0.,0.,[],[],[],[],[],[])
+    cp.material_exchange=budget.checkpoint()
+    cp.arc_integration={'version':1,'integral_ocean_fluxes':True,'initialization':'explicit synthetic age field'}
+    save_checkpoint(tmp_path/'native',cp)
+    restored=load_checkpoint(tmp_path/'native',PlateTopologyManager(PlateTopologyParameters()))
+    assert np.array_equal(restored.state.oceanic_age_moment_km3_myr,s.oceanic_age_moment_km3_myr)
+    assert restored.arc_integration==cp.arc_integration and restored.material_exchange==cp.material_exchange
+    # A damaged copy must not silently reconstruct lost history from display age.
+    with np.load(tmp_path/'native/state.npz') as z:arrays={k:z[k] for k in z.files if k!='oceanic_age_moment_km3_myr'}
+    broken=tmp_path/'broken';broken.mkdir()
+    np.savez_compressed(broken/'state.npz',**arrays)
+    (broken/'meta.json').write_text((tmp_path/'native/meta.json').read_text())
+    with pytest.raises(ValueError,match='missing material age moment'):
+        load_checkpoint(broken,PlateTopologyManager(PlateTopologyParameters()))
+    cp.state.oceanic_age_moment_km3_myr=None
+    with pytest.raises(ValueError,match='requires material age moment'):save_checkpoint(tmp_path/'invalid',cp)
+    assert not (tmp_path/'invalid').exists()

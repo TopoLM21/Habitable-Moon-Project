@@ -122,6 +122,8 @@ def _jsonable_rows(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
 
 def save_checkpoint(path: str | Path, cp: RunCheckpoint) -> Path:
+    if (cp.arc_integration or {}).get('integral_ocean_fluxes',False) and cp.state.oceanic_age_moment_km3_myr is None:
+        raise ValueError('Integral basalt checkpoint requires material age moment')
     root=Path(path)
     root.mkdir(parents=True, exist_ok=True)
     arrays = dict(

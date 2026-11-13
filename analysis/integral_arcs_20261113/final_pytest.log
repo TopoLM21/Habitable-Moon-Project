@@ -1,0 +1,62 @@
+.......F................................................................ [ 25%]
+........................................................................ [ 50%]
+........................................................................ [ 75%]
+.....................................................................    [100%]
+=================================== FAILURES ===================================
+____________ test_native_restart_keeps_integral_law_and_age_memory _____________
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-14/test_native_restart_keeps_inte0')
+
+    def test_native_restart_keeps_integral_law_and_age_memory(tmp_path):
+        import json
+        from tectonics.checkpoint import RunCheckpoint,save_checkpoint,load_checkpoint
+        from tectonics.continental import initialize_continental_cycle
+        from tectonics.material_exchange import MaterialExchangeBudget
+        from tectonics.topography import initialize_topography,TopographyParameters
+        from tectonics.topology import PlateTopologyManager,PlateTopologyParameters
+        from tectonics.thermal import initialize_thermal_state,ThermalParameters
+        mesh=build_icosphere(1);s=ocean(mesh)
+        s.continental_fraction=np.zeros(mesh.cell_count);s.continental_volume_km3=np.zeros(mesh.cell_count)
+        system=PlateSystem(s.cell_plate.copy(),(Plate(0,0,np.array([0.,0.,1.]),.03),))
+        tp=ThermalParameters();thermal=initialize_thermal_state(.5,5287.,7.12,tp)
+>       budget,s,thermal=MaterialExchangeBudget.initialize(mesh,s,thermal,.5,5287.,7.12,tp)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_boundary_exchange.py:79: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+cls = <class 'tectonics.material_exchange.MaterialExchangeBudget'>
+mesh = SphereMesh(vertices=array([[-0.52573111,  0.85065081,  0.        ],
+       [ 0.52573111,  0.85065081,  0.        ],
+  ..., 26, 29), (72, 75, 31, 39), (73, 75, 28, 39), (74, 75, 28, 31), (76, 79, 23, 41), (77, 79, 30, 41), (78, 79, 23, 30)))
+state = LithosphereState(time_myr=0.0, cell_plate=array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+   ....92498734e+09, 2.92498734e+09, 3.51913197e+09,
+       2.92498734e+09, 2.92498734e+09, 2.92498734e+09, 3.51913197e+09]))
+thermal = ThermalState(time_myr=0.0, system_age_myr=500.0, mantle_temperature_k=1850.0, reference_convective_flux_w_m2=0.05129179213003612, tectonic_activity_factor=1.0, thermal_lithosphere_thickness_km=121.8128620688458)
+mass_earth = 0.5, radius_km = 5287.0, gravity = 7.12
+params = ThermalParameters(system_age_at_start_myr=500.0, initial_mantle_temperature_k=1850.0, surface_temperature_k=288.0, man...tive_half_life_myr=2400.0, tidal_k2_over_q=0.0003, min_tectonic_activity_factor=0.35, max_tectonic_activity_factor=1.8)
+options = MaterialExchangeParameters(continental_rock_density_kg_m3=2800.0, basalt_density_kg_m3=2900.0, temperature_atol_k=1.0,...=0.0001, exchange_rtol=0.001, exchange_atol_j_per_myr=1e+19, initial_step_myr=0.25, max_step_myr=4.0, max_trials=10000)
+ocean_reference_km = 7.0
+
+    @classmethod
+    def initialize(cls, mesh, state, thermal, mass_earth, radius_km, gravity, params,
+                   options=MaterialExchangeParameters(), ocean_reference_km=7.):
+        areas = mesh.physical_cell_areas_km2(radius_km)
+        frac, fvol = continental_material_fields(state, areas)
+        if state.oceanic_volume_km3 is not None:
+>           raise ValueError('Fresh inventory initialization cannot overwrite material history')
+E           ValueError: Fresh inventory initialization cannot overwrite material history
+
+tectonics/material_exchange.py:96: ValueError
+=============================== warnings summary ===============================
+../../opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/anyio/pytest_plugin.py:14
+  /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/anyio/pytest_plugin.py:14: PytestRemovedIn10Warning: _pytest.python.CallSpec2 has been renamed to CallSpec.
+  The CallSpec2 alias will be removed in pytest 10.
+  Update imports to use CallSpec instead.
+  See https://docs.pytest.org/en/stable/deprecations.html#callspec2-renamed
+    from _pytest.python import CallSpec2
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_boundary_exchange.py::test_native_restart_keeps_integral_law_and_age_memory
+1 failed, 284 passed, 1 warning in 11.03s
