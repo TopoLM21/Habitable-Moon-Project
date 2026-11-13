@@ -191,33 +191,52 @@ class MaterialExchangeBudget:
         d=work.data
         if math.fsum(born) >= work.pool_masses()[0]:
             raise ValueError('Finite mantle inventory exhausted; no transfer committed')
-        if np.any(returned > work.pool_masses()[1:]+born):
+        available=work.pool_masses()[1:]+born
+        # A geometry operator can explicitly exhaust a pool. Its independently
+        # summed volume differs from the compensated mass inventory by a few
+        # ulps. Drain the actual stored components; never leave/drop a phantom
+        # remainder or relax the tolerance relative to that tiny remainder.
+        exhausted=target==0.
+        exhaustion_error=np.abs(returned-available)
+        exhaustion_bound=np.array([64*math.ulp(max(float(a),float(b),1.)) for a,b in zip(available,returned)])
+        if np.any(exhausted & (exhaustion_error>exhaustion_bound)):
+            raise ValueError('Empty target disagrees with requested complete material transfer')
+        if np.any((returned > available) & ~exhausted):
             raise ValueError('Recycling exceeds available crust; no transfer committed')
-        if math.fsum([*work.pool_masses()[1:],*born,*(-returned)])<=0:
+        if math.fsum(target)<=0 or math.fsum([*work.pool_masses()[1:],*born,*(-returned)])<=0:
             raise ValueError('Two-box domain requires a nonempty crust; no transfer committed')
         cp=params.mantle_heat_capacity_j_kg_k
 
-        def transfer(source, destination, amount):
-            if amount == 0: return
+        def transfer(source, destination, amount, complete=False):
+            if amount == 0 and not complete:return 0.
             pools=work.pool_masses()
             ts=work.temperatures(params)[0 if source==0 else 1]
-            origins=np.array([math.fsum([d['origin_hi'][source][j],d['origin_lo'][source][j]]) for j in range(3)])
-            moved=origins*(amount/pools[source])
-            # Arithmetic remainder belongs to the largest provenance component,
-            # not to an unrecorded source of mass.
-            j=int(np.argmax(origins)); moved[j]=math.fsum([amount,*(-np.delete(moved,j))])
-            for k,part in enumerate(moved):
-                for row,sign in ((source,-1.),(destination,1.)):
-                    pair=[d['origin_hi'][row][k],d['origin_lo'][row][k]]
-                    _add(pair,sign*float(part));d['origin_hi'][row][k],d['origin_lo'][row][k]=pair
+            if complete:
+                amount=float(pools[source])
+                for j in range(3):
+                    pair=[d['origin_hi'][destination][j],d['origin_lo'][destination][j]]
+                    for key in ('origin_hi','origin_lo'):_add(pair,d[key][source][j])
+                    d['origin_hi'][destination][j],d['origin_lo'][destination][j]=pair
+                    d['origin_hi'][source][j]=d['origin_lo'][source][j]=0.
+            else:
+                origins=np.array([math.fsum([d['origin_hi'][source][j],d['origin_lo'][source][j]]) for j in range(3)])
+                moved=origins*(amount/pools[source])
+                # Arithmetic remainder belongs to the largest provenance component,
+                # not to an unrecorded source of mass.
+                j=int(np.argmax(origins)); moved[j]=math.fsum([amount,*(-np.delete(moved,j))])
+                for k,part in enumerate(moved):
+                    for row,sign in ((source,-1.),(destination,1.)):
+                        pair=[d['origin_hi'][row][k],d['origin_lo'][row][k]]
+                        _add(pair,sign*float(part));d['origin_hi'][row][k],d['origin_lo'][row][k]=pair
             q=float(amount)*cp*ts
             if source==0:
                 _add(d['energy_m_j'],-q);_add(d['energy_c_j'],q);_add(d['advected_out_j'],q)
             else:
                 _add(d['energy_c_j'],-q);_add(d['energy_m_j'],q);_add(d['advected_return_j'],q)
+            return amount
 
         for i in range(2): transfer(0,i+1,float(born[i]))
-        for i in range(2): transfer(i+1,0,float(returned[i]))
+        for i in range(2): returned[i]=transfer(i+1,0,float(returned[i]),complete=bool(exhausted[i]))
         actual=work.pool_masses()[1:]
         if any(abs(a-b)>64*math.ulp(max(a,b,1.)) for a,b in zip(actual,target)):
             raise ValueError(f'Material requests disagree with geometric inventories: {actual-target} kg')
