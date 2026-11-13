@@ -29,10 +29,11 @@ def state(mesh,f):
         continental_volume_km3=a*f*35.)
 
 @pytest.mark.parametrize('sub',[1,2,3])
-def test_physical_source_integral_independent_of_receiver_mesh(sub):
+@pytest.mark.parametrize('order',[8,16,32])
+def test_physical_source_integral_independent_of_receiver_mesh(sub,order):
     mesh=build_icosphere(sub)
-    field,diag=integrate_sources(mesh,np.zeros(mesh.cell_count,int),[segment()],R,140.,320.,order=16)
-    assert math.fsum(field)==pytest.approx(physical_integral(),rel=2e-14)
+    field,diag=integrate_sources(mesh,np.zeros(mesh.cell_count,int),[segment()],R,140.,320.,order=order)
+    assert math.fsum(field)==pytest.approx(physical_integral(),rel=1e-7 if order==8 else 2e-14)
     assert abs(diag['deposition_residual_km2'])<1e-8
     assert diag['outside_overriding_integral_km2']==0
 

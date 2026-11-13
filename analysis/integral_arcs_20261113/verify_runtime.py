@@ -71,6 +71,8 @@ CASES={
     'same_first48':(2,4.,48.,'initial_same_g2'),
     'same_restart100':(2,4.,100.,'same_first48'),
 }
+FINAL_CASES={name.replace('same_','final_'):(sub,dt,end,resume.replace('same_first','final_first'))
+             for name,(sub,dt,end,resume) in CASES.items()}
 
 if __name__=='__main__':
     arg=sys.argv[1]
@@ -78,4 +80,7 @@ if __name__=='__main__':
     elif arg=='suite':
         for name,args in CASES.items():h.run_case(name,*args)
         h.compare(OUT/'same_g2_dt4/restart',OUT/'same_restart100/restart','restart_comparison')
-    else:h.run_case(arg,*CASES[arg])
+    elif arg=='final_suite':
+        for name,args in FINAL_CASES.items():h.run_case(name,*args)
+        h.compare(OUT/'final_g2_dt4/restart',OUT/'final_restart100/restart','final_restart_comparison')
+    else:h.run_case(arg,*(CASES|FINAL_CASES)[arg])

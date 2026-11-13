@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/workspace/Habitable-Moon-Project/analysis/integral_arcs_20261113/operator_diagnostics.py", line 65, in <module>
+    if __name__=='__main__':run()
+                            ^^^^^
+  File "/workspace/Habitable-Moon-Project/analysis/integral_arcs_20261113/operator_diagnostics.py", line 24, in run
+    fields={order:integrate_sources(mesh,np.zeros(n,int),[source],R,140.,320.,order=order)[0] for order in (8,16,32)}
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/Habitable-Moon-Project/tectonics/integral_arcs.py", line 115, in integrate_sources
+    if abs(error)>64*math.ulp(max(total,1.)):raise ValueError('Arc source deposition budget failed')
+                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: Arc source deposition budget failed

@@ -98,7 +98,7 @@ def integrate_sources(mesh,owner,segments,radius_km,sigma_km,outer_km,spacing_km
     if min(radius_km,sigma_km,outer_km,spacing_km)<=0 or not 2<=order<=32:
         raise ValueError('Invalid integral arc quadrature settings')
     receiver=SphereReceiver(mesh);owners=np.asarray(owner);field=np.zeros(mesh.cell_count)
-    total=excluded=0.;count=0
+    totals=[];exclusions=[];count=0;deposited_cells=[];deposited_weights=[]
     inputs=[]
     for segment in segments:
         if not math.isfinite(segment.amplitude) or segment.amplitude<0:raise ValueError('Invalid arc amplitude')
@@ -109,8 +109,19 @@ def integrate_sources(mesh,owner,segments,radius_km,sigma_km,outer_km,spacing_km
         inputs.append((points,weights,plate))
     for points,weights,plate in inputs:
         cells=receiver.locate(points);mask=owners[cells]==plate
-        field+=np.bincount(cells[mask],weights=weights[mask],minlength=mesh.cell_count)
-        total+=math.fsum(weights);excluded+=math.fsum(weights[~mask]);count+=len(points)
+        deposited_cells.append(cells[mask]);deposited_weights.append(weights[mask])
+        totals.append(math.fsum(weights));exclusions.append(math.fsum(weights[~mask]));count+=len(points)
+    # A coarse receiver may collect tens of thousands of positive quadrature
+    # weights. Naive bincount summation can fail the existing budget at high
+    # order. Sum each receiving inventory accurately; do not relax the guard
+    # or renormalize a residual into the source.
+    if deposited_cells:
+        cells=np.concatenate(deposited_cells);weights=np.concatenate(deposited_weights)
+        ordering=np.argsort(cells,kind='stable');cells=cells[ordering];weights=weights[ordering]
+        starts=np.r_[0,np.flatnonzero(np.diff(cells))+1,len(cells)]
+        for start,end in zip(starts[:-1],starts[1:]):
+            if end>start:field[cells[start]]=math.fsum(weights[start:end])
+    total=math.fsum(totals);excluded=math.fsum(exclusions)
     error=math.fsum([*field,excluded,-total])
     if abs(error)>64*math.ulp(max(total,1.)):raise ValueError('Arc source deposition budget failed')
     return field,{'source_integral_km2':total,'outside_overriding_integral_km2':excluded,
