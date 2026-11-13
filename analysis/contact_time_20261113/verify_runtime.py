@@ -22,4 +22,18 @@ if __name__=='__main__':
         h.BASE['regional_material']['active_area'].pop('source_time_rule')
         h.run_case('old_area20',2,4.,20.,'initial_same_g2')
         h.compare(OUT/'old_area20/restart',ROOT/'analysis/regional_area_20261113/saved_states/area20','old_area_comparison')
+    elif name in ('audit4','strict4'):
+        import hashlib
+        h.BASE['regional_material']['active_area']['contact_policy']='audit_material_banks' if name=='audit4' else 'require_shared_support'
+        initial=OUT/'initial_same_g2/restart'
+        before={n:hashlib.sha256((initial/n).read_bytes()).hexdigest() for n in ('meta.json','state.npz')}
+        try:h.run_case(name,2,4.,4.,'initial_same_g2')
+        except RuntimeError:
+            if name!='strict4' or 'Material contacts not geometrically closed' not in (HERE/f'{name}.log').read_text():raise
+            after={n:hashlib.sha256((initial/n).read_bytes()).hexdigest() for n in before}
+            assert before==after and not (OUT/name/'restart/meta.json').exists()
+            (HERE/'strict4_expected_failure.json').write_text(json.dumps(dict(expected_rejection=True,initial_hashes=before,
+                  initial_unchanged=True,no_completed_checkpoint=True,scope='physical shared-bank geometry unavailable; no tolerance relaxation'),indent=2)+'\n')
+        else:
+            if name=='strict4':raise AssertionError('Separated banks were accepted as a closed contact geometry')
     else:h.run_case(name,*CASES[name])

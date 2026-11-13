@@ -24,6 +24,7 @@ class ActiveAreaParameters:
     strip_rule:str='source_points'
     source_budget_rtol:float=1e-7
     source_time_rule:str='endpoint'
+    contact_policy:str='legacy_map'
 
     def __post_init__(self):
         if not 1<=self.max_edge_km<=3000:raise ValueError('Active-area edge size outside bounded numerical domain')
@@ -33,6 +34,7 @@ class ActiveAreaParameters:
         if self.strip_rule not in ('source_points','coarea'):raise ValueError('Invalid material strip integration rule')
         if not 0<self.source_budget_rtol<=1e-4:raise ValueError('Invalid material source integration tolerance')
         if self.source_time_rule not in ('endpoint','localized'):raise ValueError('Invalid source time rule')
+        if self.contact_policy not in ('legacy_map','audit_material_banks','require_shared_support'):raise ValueError('Invalid contact policy')
 
 
 def _centers(tri):
@@ -98,6 +100,7 @@ class AreaMaterialInventory:
         self.roots=np.array(roots,dtype=np.int64,copy=True);self.codes=np.array(codes,dtype=np.int64,copy=True)
         self.quaternions=np.array(quaternions,copy=True);self.history=list(history)
         self.mesh=build_icosphere(self.params.material_subdivisions);self.receiver=SphereReceiver(self.mesh)
+        self._contact_registry=None
         n=len(self.roots)
         if self.reference_triangles.shape!=(n,3,3) or len(leaves.arrays['area'])!=n or len(self.codes)!=n:raise ValueError('Incomplete material-area geometry')
         if not np.all(np.isfinite(self.reference_triangles)) or np.any(self.codes<1) or np.any(self.codes>=2**32):raise ValueError('Invalid material-area tree')
@@ -139,6 +142,7 @@ class AreaMaterialInventory:
         a.update(reference_triangles=self.reference_triangles.tolist(),roots=self.roots.tolist(),codes=self.codes.tolist(),quaternions=self.quaternions.tolist())
         ap=asdict(self.area_params)
         if ap['source_time_rule']=='endpoint':ap.pop('source_time_rule') # preserve previous native metadata
+        if ap['contact_policy']=='legacy_map':ap.pop('contact_policy')
         return dict(version=2,parameters=asdict(self.params),area_parameters=ap,time_myr=self.leaves.time_myr,
                     history=deepcopy(self.history),arrays=a,scope='persistent spherical material-area refinement; regional rigid motion and nonlocal receiver mapping remain limited')
 
@@ -307,6 +311,13 @@ class AreaMaterialInventory:
         self.coarse.time_myr=self.leaves.time_myr
 
     def runtime_step(self,mesh,state,system,cycle,boundaries,memory,radius,dt,arc_params,cycle_params,reference_thickness,*,memory_before=None,slab_params=None):
+        if self.area_params.contact_policy=='require_shared_support':
+            from .kinematics import angular_velocity_vectors
+            q=(Rotation.from_rotvec(angular_velocity_vectors(system)*dt)*Rotation.from_quat(self.quaternions)).as_quat()
+            # Validate before mutating any material inventory. Raster labels
+            # cannot authorize work or source exchange on separated banks.
+            self.material_boundary_registry().require_shared_support(self.quaternions,radius)
+            self.material_boundary_registry().require_shared_support(q,radius)
         if self.area_params.source_time_rule=='localized':
             return self._localized_step(mesh,state,system,cycle,boundaries,memory,radius,dt,arc_params,cycle_params,reference_thickness,memory_before,slab_params)
         from .volcanic_arc import integrated_arc_sources
@@ -336,6 +347,7 @@ class AreaMaterialInventory:
             juvenile_arc_area_created_km2=reaction['matured_area_km2'],arc_thickening_volume_km3=reaction['arc_thickening_km3'],
             delaminated_volume_km3=reaction['returned_felsic_km3'],max_felsic_potential=float(max(a['potential'])))
         self.history.append(dict(time_myr=self.leaves.time_myr,**reaction,**projection,**refinement,**integration))
+        self._record_contact_audit(radius)
         return state,cycle,LithosphereStepDiagnostics(**lith),ContinentalCycleDiagnostics(**cd)
 
     def _localized_step(self,mesh,state,system,cycle,boundaries,memory,radius,dt,arc_params,cycle_params,reference_thickness,memory_before,slab_params):
@@ -375,4 +387,17 @@ class AreaMaterialInventory:
                   delaminated_volume_km3=totals['returned_felsic_km3'],max_felsic_potential=float(max(a['potential'])))
         self.history.append(dict(time_myr=start+dt,**totals,**projection,leaves_before=initial,leaves_after=len(self.roots),
                                  source_time_rule='localized',source_intervals=records))
+        self._record_contact_audit(radius)
         return state,cycle,LithosphereStepDiagnostics(**lith),ContinentalCycleDiagnostics(**cd)
+
+    def material_boundary_registry(self):
+        if self._contact_registry is None:
+            from .material_contacts import MaterialBoundaryRegistry
+            self._contact_registry=MaterialBoundaryRegistry(self.mesh,self.coarse.arrays['owner'])
+        return self._contact_registry
+
+    def _record_contact_audit(self,radius):
+        if self.area_params.contact_policy!='legacy_map':
+            _,diag=self.material_boundary_registry().evaluate(self.quaternions,radius)
+            self.history[-1]['material_contacts']=diag
+            self.history[-1]['force_geometry']='legacy_receiver_proxy; material audit is not a physical contact dynamics solver'

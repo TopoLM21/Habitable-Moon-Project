@@ -1,0 +1,73 @@
+{
+  "case": "gate20_dt1",
+  "source_commit": "be47df224d0fe7f6d6b0c7aeae553b02d7720a40",
+  "mode": "inventory",
+  "subdivisions": 2,
+  "dt_myr": 1.0,
+  "end_myr": 20.0,
+  "parameters_sha256": "5372d72433f7d8f35a7c2345fb55d10582199781d2f74e6ac8c6053974f0516b",
+  "resources": {
+    "max_rss_kib": 221216,
+    "user_s": 93.975719,
+    "system_s": 5.069673,
+    "wall_s": 90.18025530599698,
+    "returncode": 0
+  },
+  "plate_count": 12,
+  "topology_events": [],
+  "continental_generated_km3": 1228186.3907937314,
+  "juvenile_area_km2": 0.0,
+  "arc_thickening_km3": 1228186.3907937312,
+  "transport_commits": 0,
+  "continental_ledger_error_km3": 4.76837158203125e-07,
+  "thickness_min_km": 1.8929266468784667,
+  "thickness_max_km": 35.204153755357964,
+  "temperature_k": 1858.4852030450647,
+  "full_energy_closure": false,
+  "runtime": {
+    "start_time_myr": 0.0,
+    "end_time_myr": 20.0,
+    "mesh_cells": 320,
+    "outer_dt_myr": 1.0,
+    "integration_wall_seconds": 80.70191199400142
+  },
+  "material_budget": {
+    "time_myr": 20.0,
+    "mantle_temperature_k": 1858.4852030450647,
+    "crust_temperature_k": 402.7297106414752,
+    "pool_masses_kg": [
+      2.015543160509299e+24,
+      9.677841919482893e+21,
+      5.326997571218455e+21
+    ],
+    "mass_residual_kg": -16777216.0,
+    "origin_mass_residual_kg": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "energy_residual_j": 0.0,
+    "created_kg": 8.165106559662699e+20,
+    "recycled_kg": 6.126652013691382e+20,
+    "advected_out_j": 1.8219984632814295e+27,
+    "advected_return_j": 2.9383020339868828e+26,
+    "surface_output_j": 1.2986279876852988e+28,
+    "radiogenic_input_j": 5.530303383146884e+27,
+    "orbital_input_j": 1.9194579795392835e+27,
+    "accepted_steps": 23,
+    "rejected_steps": 0,
+    "latent_chemical_mechanical_energy_included": false
+  },
+  "max_energy_residual_j": 0.0,
+  "max_origin_residual_kg": 0.0,
+  "ocean_created_km3": 280369563.4731198,
+  "ocean_recycled_km3": 211263862.54108214,
+  "max_unfilled_ocean_footprint_km2": 0.0,
+  "source_scope": "be47df2 plus inactive material-contact diagnostics in the working tree; contact_policy remained legacy_map",
+  "runtime_sha256": {
+    "tectonics/arc_time.py": "bc3dcfe351caa25712798891378e8f304329c3a3b1472be15fc43e23a7c0c864",
+    "tectonics/regional_area.py": "e42f8d59988a5a808a8483e98014b58e43c9688951b742af6b2a8da9c232483d",
+    "tectonics/material_contacts.py": "ec47a078c54bdd15d040b3d4f41d950de4859cda0ed5a128c80ff41819523998",
+    "run_long_evolution_v123.py": "18b7ad96e86d9a5ace75c5350452d941ca392a479f2f59a06aabd64b469ccb15"
+  }
+}
