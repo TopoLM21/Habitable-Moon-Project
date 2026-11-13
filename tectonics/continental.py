@@ -117,6 +117,7 @@ def _copy_lithosphere(state: LithosphereState) -> LithosphereState:
         mantle_depletion_fraction=None if state.mantle_depletion_fraction is None else np.asarray(state.mantle_depletion_fraction, dtype=np.float64).copy(),
         craton_strength=None if state.craton_strength is None else np.asarray(state.craton_strength, dtype=np.float64).copy(),
         oceanic_volume_km3=None if state.oceanic_volume_km3 is None else np.asarray(state.oceanic_volume_km3, dtype=np.float64).copy(),
+        oceanic_age_moment_km3_myr=None if state.oceanic_age_moment_km3_myr is None else np.asarray(state.oceanic_age_moment_km3_myr).copy(),
     )
 
 
@@ -250,6 +251,7 @@ def advance_continental_cycle(
     plate_system: PlateSystem | None = None,
     transport_source_index: Array | None = None,
     volcanic_arc_forcing: Array | None = None,
+    integral_arc_forcing: bool = False,
 ) -> tuple[LithosphereState, ContinentalCycleState, ContinentalCycleDiagnostics]:
     if dt_myr <= 0.0:
         raise ValueError("dt_myr must be positive")
@@ -284,7 +286,12 @@ def advance_continental_cycle(
 
     external_arc = None
     if volcanic_arc_forcing is not None:
-        external_arc = np.clip(np.asarray(volcanic_arc_forcing, dtype=np.float64), 0.0, 2.0)
+        external_arc = np.asarray(volcanic_arc_forcing, dtype=np.float64)
+        if integral_arc_forcing:
+            if np.any(~np.isfinite(external_arc)) or np.any(external_arc<0):
+                raise ValueError('Invalid integrated arc source')
+        else:
+            external_arc = np.clip(external_arc,0.0,2.0)
         if external_arc.shape != (mesh.cell_count,):
             raise ValueError("volcanic_arc_forcing must have shape (cell_count,)")
         # v0.21: one material-aware arc forcing field feeds the existing crust
@@ -292,6 +299,11 @@ def advance_continental_cycle(
         # continental footprint thickens. No extra mass source is introduced.
         juvenile_intensity = external_arc * (1.0 - np.clip(material_fraction, 0.0, 1.0))
         continental_arc_intensity = external_arc * np.clip(material_fraction, 0.0, 1.0)
+        if integral_arc_forcing:
+            # Source is an area mean. Footprint enters the volume integral
+            # once below, not both the growth rate and receiving area (f²).
+            juvenile_intensity = external_arc.copy()
+            continental_arc_intensity = external_arc.copy()
 
     for b in boundaries:
         if b.boundary_type != BoundaryType.CONVERGENT:
@@ -361,7 +373,11 @@ def advance_continental_cycle(
         if state.oceanic_volume_km3 is not None:
             ocean_recycled += float(np.sum(state.oceanic_volume_km3[mature]))
             state.oceanic_volume_km3[mature] = 0.
+            if state.oceanic_age_moment_km3_myr is not None:state.oceanic_age_moment_km3_myr[mature]=0.
         old_material_volume = material_volume[mature].copy()
+        old_material_fraction = material_fraction[mature].copy()
+        if integral_arc_forcing:
+            juvenile_area = float(np.sum(areas[mature]*(1-old_material_fraction)))
         state.crust_type[mature] = int(CrustType.CONTINENTAL)
         state.crust_age_myr[mature] = float(params.juvenile_seed_age_myr)
         if params.analytic_maturation:
@@ -369,6 +385,9 @@ def advance_continental_cycle(
         state.crust_thickness_km[mature] = float(params.juvenile_continental_thickness_km)
         material_fraction[mature] = 1.0
         material_volume[mature] = areas[mature] * float(params.juvenile_continental_thickness_km)
+        if integral_arc_forcing:
+            material_volume[mature] = old_material_volume + areas[mature]*(1-old_material_fraction)*float(params.juvenile_continental_thickness_km)
+            state.crust_thickness_km[mature] = material_volume[mature]/areas[mature]
         state.tidal_damage[mature] *= 0.7
         if state.rift_extension is not None:
             state.rift_extension[mature] = 0.0
@@ -388,10 +407,13 @@ def advance_continental_cycle(
 
     # Continental volcanic arcs add lower/middle-crustal volume.
     cont = state.crust_type == int(CrustType.CONTINENTAL)
-    thicken = cont & (continental_arc_intensity > 0.0)
+    thicken = (material_fraction>0 if integral_arc_forcing else cont) & (continental_arc_intensity > 0.0)
     arc_thickening_volume = 0.0
     if np.any(thicken):
-        requested = continental_arc_intensity[thicken] * params.continental_arc_thickening_km_per_myr * event_fraction[thicken]
+        growth_time=event_fraction.copy()
+        if integral_arc_forcing and np.any(mature):
+            growth_time[mature]+=old_material_fraction*(float(dt_myr)-event_fraction[mature])
+        requested = continental_arc_intensity[thicken] * params.continental_arc_thickening_km_per_myr * growth_time[thicken]
         if params.analytic_maturation and np.any(requested > params.max_arc_thickening_km_per_step):
             raise ValueError('Arc thickness increment exceeds numerical step bound; reduce timestep')
         delta = np.minimum(params.max_arc_thickening_km_per_step, requested)
@@ -489,6 +511,9 @@ def advance_continental_cycle(
         footprint = areas * (1 - material_fraction)
         state.crust_thickness_km[ocean] = np.divide(state.oceanic_volume_km3[ocean], footprint[ocean],
             out=np.zeros(np.count_nonzero(ocean)), where=footprint[ocean] > 0)
+        if state.oceanic_age_moment_km3_myr is not None:
+            state.crust_age_myr[ocean]=np.divide(state.oceanic_age_moment_km3_myr[ocean],state.oceanic_volume_km3[ocean],
+                out=np.zeros(np.count_nonzero(ocean)),where=state.oceanic_volume_km3[ocean]>0)
 
     new_cycle = ContinentalCycleState(
         time_myr=float(state.time_myr),

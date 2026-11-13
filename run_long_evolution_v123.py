@@ -178,6 +178,17 @@ def main():
     if saved_material is not None and not material_enabled:
         raise ValueError('Material checkpoint requires its finite inventory mode')
     material_budget = None
+    saved_arc = cp.arc_integration if a.resume else None
+    if lc.get('integral_ocean_fluxes',False) and not (material_enabled and arcp.integral_production):
+        raise ValueError('Integral ocean exchange requires finite inventory and the declared integral boundary mode')
+    if saved_arc is not None and not arcp.integral_production:
+        raise ValueError('Integral arc checkpoint cannot silently revert its production law')
+    if arcp.integral_production:
+        from dataclasses import asdict
+        if not material_enabled:
+            raise ValueError('Integral arc production requires the finite material/enthalpy mode')
+        if a.resume and (saved_arc is None or saved_arc['parameters']!=asdict(arcp) or saved_arc.get('integral_ocean_fluxes',False)!=bool(lc.get('integral_ocean_fluxes',False))):
+            raise ValueError('Integral arc restart requires matching saved law; use a new explicit initial state')
     if material_enabled:
         if integration_enabled or saved_integration is not None:
             raise ValueError('Two thermal owners are not allowed; select the material-exchange mode explicitly')
@@ -198,6 +209,10 @@ def main():
                 ocean_reference_km=float(lc['oceanic_thickness_km']))
             thermal, init_diag = material_budget.thermal_state(thermal,mass,radius,grav,period,pmj,ecc,thp)
             thermal_rows[-1] = {k:getattr(init_diag,k) for k in init_diag.__dataclass_fields__}
+        if lc.get('integral_ocean_fluxes',False):
+            if not arcp.integral_production:raise ValueError('Integral ocean exchange requires the declared integral boundary mode')
+            if not a.resume:state.oceanic_age_moment_km3_myr=state.oceanic_volume_km3*state.crust_age_myr
+            elif state.oceanic_age_moment_km3_myr is None:raise ValueError('Integral basalt restart missing age memory')
         print('EXPERIMENTAL finite mantle/crust inventories: conservative sensible enthalpy; latent heat and mechanical work unclosed; topology disabled')
     if integration_enabled:
         integration_options = ThermalIntegrationParameters(**integration_cfg)
@@ -261,7 +276,7 @@ def main():
         # v0.9.7: rift accumulation/thinning follows the waning tectonic
         # activity instead of remaining at formation-era speed forever.
         rift_activity_scale=float(max(activity,0.0)) ** float(rc.get('activity_scaling_exponent',0.75))
-        state,_,_,lith_diag=advance_lithosphere(proto.mesh,system,state,dti,radius,grav,period,ecc,primary_mass_jupiter=pmj,love_h2=float(tc['love_h2']),reference_eccentricity=float(tc['eccentricity_rms']),oceanic_thickness_km=float(lc['oceanic_thickness_km']),continental_thickness_km=float(lc['continental_thickness_km']),max_continental_thickness_km=float(lc['max_continental_thickness_km']),collision_accretion_fraction=float(lc['collision_accretion_fraction']),tidal_damage_rate_per_myr=float(tc['damage_rate_per_myr'])*max(activity,.5),tidal_damage_relaxation_myr=float(tc['damage_relaxation_myr']),tidal_damage_background_fraction=float(tc.get('damage_background_fraction',0.10)),continental_extension_rate_per_myr=float(rc.get('extension_rate_per_myr',0.012))*rift_activity_scale,continental_extension_relaxation_myr=float(rc.get('extension_relaxation_myr',90.0)),continental_extension_min_duration_myr=float(rc.get('min_duration_myr',32.0)),continental_rift_extension_threshold=float(rc.get('extension_threshold',0.70)),continental_thinning_km_per_myr=float(rc.get('thinning_km_per_myr',0.16))*rift_activity_scale,continental_min_breakup_thickness_km=float(rc.get('min_breakup_thickness_km',19.0)),continental_breakup_min_extension_forcing=float(rc.get('breakup_min_extension_forcing',0.75)),continental_extension_requires_two_plate_flanks=bool(rc.get('extension_requires_two_plate_flanks',True)),tidal_thinning_boost_max_fraction=float(rc.get('tidal_thinning_boost_max_fraction',0.25)),continental_extension_suppression=collision_suppression,continental_extension_external_forcing=backarc_forcing,transport_state=transport_state,transport_parameters=transportp)
+        state,_,_,lith_diag=advance_lithosphere(proto.mesh,system,state,dti,radius,grav,period,ecc,primary_mass_jupiter=pmj,love_h2=float(tc['love_h2']),reference_eccentricity=float(tc['eccentricity_rms']),oceanic_thickness_km=float(lc['oceanic_thickness_km']),continental_thickness_km=float(lc['continental_thickness_km']),max_continental_thickness_km=float(lc['max_continental_thickness_km']),collision_accretion_fraction=float(lc['collision_accretion_fraction']),tidal_damage_rate_per_myr=float(tc['damage_rate_per_myr'])*max(activity,.5),tidal_damage_relaxation_myr=float(tc['damage_relaxation_myr']),tidal_damage_background_fraction=float(tc.get('damage_background_fraction',0.10)),continental_extension_rate_per_myr=float(rc.get('extension_rate_per_myr',0.012))*rift_activity_scale,continental_extension_relaxation_myr=float(rc.get('extension_relaxation_myr',90.0)),continental_extension_min_duration_myr=float(rc.get('min_duration_myr',32.0)),continental_rift_extension_threshold=float(rc.get('extension_threshold',0.70)),continental_thinning_km_per_myr=float(rc.get('thinning_km_per_myr',0.16))*rift_activity_scale,continental_min_breakup_thickness_km=float(rc.get('min_breakup_thickness_km',19.0)),continental_breakup_min_extension_forcing=float(rc.get('breakup_min_extension_forcing',0.75)),continental_extension_requires_two_plate_flanks=bool(rc.get('extension_requires_two_plate_flanks',True)),tidal_thinning_boost_max_fraction=float(rc.get('tidal_thinning_boost_max_fraction',0.25)),continental_extension_suppression=collision_suppression,continental_extension_external_forcing=backarc_forcing,transport_state=transport_state,transport_parameters=transportp,ocean_flux_boundaries=pre_lith_boundaries if lc.get('integral_ocean_fluxes',False) else None)
         lithosphere_rows.append({k:getattr(lith_diag,k) for k in lith_diag.__dataclass_fields__ if k!='material_source_index' and getattr(lith_diag,k) is not None})
         lithosphere_rows[-1].update({
             'mean_ridge_push_factor':float(dyn_diag.mean_ridge_push_factor),
@@ -270,8 +285,8 @@ def main():
         })
         system=PlateSystem(cell_plate=state.cell_plate.copy(),plates=system.plates);boundaries=boundary_records_for_state(proto.mesh,state,system,radius,normal,inactive)
         arc_forcing,arcdiag=compute_volcanic_arc_forcing(proto.mesh,state,subduction_memory,radius,arcp,boundaries)
-        arc_rows.append({k:getattr(arcdiag,k) for k in arcdiag.__dataclass_fields__})
-        state,cycle,cycle_diag=advance_continental_cycle(proto.mesh,state,boundaries,cycle,dti,radius,ccp,oceanic_thickness_km=float(lc['oceanic_thickness_km']),previous_lithosphere=previous_state,plate_system=system,transport_source_index=lith_diag.material_source_index,volcanic_arc_forcing=arc_forcing)
+        arc_rows.append({k:getattr(arcdiag,k) for k in arcdiag.__dataclass_fields__ if getattr(arcdiag,k) is not None})
+        state,cycle,cycle_diag=advance_continental_cycle(proto.mesh,state,boundaries,cycle,dti,radius,ccp,oceanic_thickness_km=float(lc['oceanic_thickness_km']),previous_lithosphere=previous_state,plate_system=system,transport_source_index=lith_diag.material_source_index,volcanic_arc_forcing=arc_forcing,integral_arc_forcing=arcp.integral_production)
         refresh_mechanical_lithosphere(state,dti,oceanic_crust_reference_km=float(lc['oceanic_thickness_km']),thermal_diffusivity_m2_s=float(mlc.get('thermal_diffusivity_m2_s',1e-6)),cooling_coefficient=float(mlc.get('cooling_coefficient',2.0)),oceanic_max_total_thickness_km=float(mlc.get('oceanic_max_total_thickness_km',155.0)),continental_mantle_thickness_km=float(mlc.get('continental_mantle_thickness_km',125.0)),continental_min_rifted_mantle_thickness_km=float(mlc.get('continental_min_rifted_mantle_thickness_km',55.0)),mantle_density_kg_m3=float(mlc.get('mantle_density_kg_m3',3300.0)),thermal_expansion_per_k=float(mlc.get('thermal_expansion_per_k',3e-5)),mantle_temperature_contrast_k=float(mlc.get('mantle_temperature_contrast_k',1300.0)),oceanic_mean_temperature_deficit_fraction=float(mlc.get('oceanic_mean_temperature_deficit_fraction',0.5)),continental_density_anomaly_kg_m3=float(mlc.get('continental_density_anomaly_kg_m3',-8.0)),continental_relaxation_myr=float(mlc.get('continental_relaxation_myr',250.0)))
         if state.mantle_lithosphere_thickness_km is not None:
             _mh=np.asarray(state.mantle_lithosphere_thickness_km,dtype=float); _mf,_=continental_material_fields(state,areas)
@@ -323,6 +338,11 @@ def main():
     contf=100*float(np.sum(areas[state.crust_type==int(CrustType.CONTINENTAL)])/np.sum(areas))
     print(f"SEGMENT END t={state.time_myr:7.1f} Myr | Tm={thermal.mantle_temperature_k:7.1f} K | activity={thermal.tectonic_activity_factor:5.3f} | plates={len(system.plates):2d} | continent={contf:5.2f}% | transport_commits={transport_state.cumulative_commit_count} | mantle_rms={mantle_diag.rms_speed_deg_per_myr if 'mantle_diag' in locals() else 0.0:.3f} deg/Myr | sea={last_hydro_diag.sea_level_m:+.1f} m | land={100*last_hydro_diag.land_area_fraction:.1f}%")
     cp=build_checkpoint(state,cycle,thermal,topo,system,baseline,manager,initial_cont_frac,initial_cont_vol,topo_rows,lithosphere_rows,relief_rows,cycle_rows,thermal_rows,late_rows,events,mantle_flow,transport_state,hydrosphere,hydrosphere_rows,subduction_memory,subduction_memory_rows,rollback_rows,breakoff_rows,arc_rows,sediment_budget,sediment_rows)
+    if arcp.integral_production:
+        from dataclasses import asdict
+        cp.arc_integration = saved_arc if saved_arc is not None else {
+            'version':1,'parameters':asdict(arcp),'initialization':'new explicit line-integral production control; not recovered history',
+            'maturation_is_cell_averaged':True,'integral_ocean_fluxes':bool(lc.get('integral_ocean_fluxes',False))}
     if thermal_integrator is not None:
         cp.thermal_integration = thermal_integrator.checkpoint()
         with (out/'thermal_budget.json').open('w', encoding='utf-8') as handle:

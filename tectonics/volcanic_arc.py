@@ -39,6 +39,9 @@ class VolcanicArcParameters:
     post_breakoff_decay_myr: float = 10.0
     post_breakoff_duration_myr: float = 32.0
     post_breakoff_width_km: float = 260.0
+    integral_production: bool = False
+    integration_spacing_km: float = 200.0
+    integration_order: int = 8
 
 
 @dataclass(slots=True)
@@ -53,6 +56,10 @@ class VolcanicArcDiagnostics:
     mean_trench_arc_distance_km: float
     max_trench_arc_distance_km: float
     max_arc_forcing: float
+    source_integral_km2: float | None = None
+    outside_overriding_integral_km2: float | None = None
+    deposition_residual_km2: float | None = None
+    quadrature_points: int | None = None
 
 
 def target_slab_depth_km(convergence_rate_km_per_myr: float, params: VolcanicArcParameters) -> float:
@@ -139,6 +146,8 @@ def compute_volcanic_arc_forcing(
     params: VolcanicArcParameters,
     boundaries: list[BoundaryRecord] | None = None,
 ) -> tuple[Array, VolcanicArcDiagnostics]:
+    if params.integral_production:
+        return _integrated_arc_forcing(mesh,state,memory,radius_km,params,boundaries)
     field=np.zeros(mesh.cell_count,dtype=np.float64)
     areas=mesh.physical_cell_areas_km2(float(radius_km))
     frac,_=continental_material_fields(state,areas)
@@ -202,6 +211,40 @@ def compute_volcanic_arc_forcing(
         max_trench_arc_distance_km=float(np.max(distances)) if distances else 0.0,
         max_arc_forcing=float(np.max(field)) if len(field) else 0.0,
     )
+    return field,diag
+
+
+def _integrated_arc_forcing(mesh,state,memory,radius_km,params,boundaries):
+    from .integral_arcs import ArcSegment,integrate_sources
+    segments=[];caps=[];depths=[];distances=[];active=pulses=0
+    if params.enabled and memory is not None:
+        for key in sorted(memory.zones):
+            z=memory.zones[key]
+            if z.broken_off:
+                if params.post_breakoff_enabled and z.post_breakoff_age_myr<=params.post_breakoff_duration_myr:
+                    center,depth,distance=projected_arc_center(z,radius_km,params)
+                    amp=params.post_breakoff_peak_fraction*np.exp(-z.post_breakoff_age_myr/params.post_breakoff_decay_myr)
+                    caps.append((center,z.overriding_plate,amp,params.post_breakoff_width_km,2.2*params.post_breakoff_width_km))
+                    depths.append(depth);distances.append(distance);pulses+=1
+                continue
+            if not z.active or z.active_age_myr<params.min_active_age_myr or z.slab_depth_km<params.min_active_slab_depth_km:continue
+            _,depth,distance=projected_arc_center(z,radius_km,params)
+            count=0
+            for b in boundaries or []:
+                if b.boundary_type!=BoundaryType.CONVERGENT or {b.plate_a,b.plate_b}!={z.subducting_plate,z.overriding_plate}:continue
+                _,toward=_boundary_toward_overriding(mesh,b,z.subducting_plate)
+                amplitude=float(np.clip(-b.normal_rate_km_per_myr/params.convergence_reference_km_per_myr,0.,params.max_forcing))
+                segments.append(ArcSegment(mesh.vertices[b.vertex_u],mesh.vertices[b.vertex_v],toward,
+                                           z.overriding_plate,amplitude,distance));count+=1
+            if count:depths.append(depth);distances.append(distance);active+=1
+    integral,stats=integrate_sources(mesh,state.cell_plate,segments,radius_km,params.arc_half_width_km,
+                                    params.arc_outer_width_km,params.integration_spacing_km,params.integration_order,caps)
+    areas=mesh.physical_cell_areas_km2(radius_km);field=integral/areas
+    frac,_=continental_material_fields(state,areas);forced=field>0
+    diag=VolcanicArcDiagnostics(float(state.time_myr),active,pulses,float(sum(areas[forced])),
+        float(sum(areas*forced*(1-frac))),float(sum(areas*forced*frac)),
+        float(np.mean(depths)) if depths else 0.,float(np.mean(distances)) if distances else 0.,
+        float(max(distances,default=0.)),float(max(field,default=0.)),**stats)
     return field,diag
 
 

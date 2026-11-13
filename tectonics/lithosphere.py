@@ -86,6 +86,7 @@ class LithosphereState:
     # Opt-in material inventory. Unlike the display thickness, this is extensive
     # basaltic volume, including mixed coasts and retained basaltic basement.
     oceanic_volume_km3: Array | None = None
+    oceanic_age_moment_km3_myr: Array | None = None
 
 
 @dataclass(slots=True)
@@ -868,6 +869,7 @@ def advance_lithosphere(
     craton_min_extension_factor: float = 0.28,
     transport_state=None,
     transport_parameters=None,
+    ocean_flux_boundaries=None,
 ) -> tuple[LithosphereState, Array, Array, LithosphereStepDiagnostics]:
     if dt_myr <= 0.0:
         raise ValueError("dt_myr must be positive")
@@ -877,6 +879,10 @@ def advance_lithosphere(
     conservative_transport = transport_state is not None
     if state.oceanic_volume_km3 is not None and not conservative_transport:
         raise ValueError('Explicit oceanic inventory requires conservative transport')
+    if state.oceanic_age_moment_km3_myr is not None and ocean_flux_boundaries is None:
+        raise ValueError('Integral basalt age memory cannot silently revert to raster exchange')
+    if ocean_flux_boundaries is not None and state.oceanic_volume_km3 is None:
+        raise ValueError('Integral basalt exchange requires an explicit finite inventory')
     if conservative_transport:
         # Local import avoids a module cycle: transport needs LithosphereState.
         from .transport import build_transport_map
@@ -1319,6 +1325,7 @@ def advance_lithosphere(
         new_thickness[visible_cont] = effective_h[visible_cont]
 
     new_ocean_volume = None
+    new_ocean_age_moment = None
     ocean_created = ocean_recycled = None
     unfilled_ocean_area = None
     if state.oceanic_volume_km3 is not None:
@@ -1351,10 +1358,28 @@ def advance_lithosphere(
         unfilled_ocean_area = float(np.sum(available_area[new_ocean_volume == 0]))
         ocean_created = float(np.sum(created))
         ocean_recycled = float(np.sum(old_ocean - retained))
+        if ocean_flux_boundaries is not None:
+            if state.oceanic_age_moment_km3_myr is None:
+                raise ValueError('Integral basalt flux requires explicit material-age initialization')
+            from .boundary_exchange import exchange_on_boundaries
+            exchanged,aged,born,returned=exchange_on_boundaries(
+                mesh,state,ocean_flux_boundaries,dt_myr,radius_km,oceanic_thickness_km)
+            new_ocean_volume[:]=0.;new_ocean_age_moment=np.zeros(n)
+            # Keep all parcels, including losers of visible surface ownership.
+            # Only the physical boundary sink, not overlap, returns material.
+            for pid,targets in enumerate(tmap.source_to_target):
+                src=np.flatnonzero(state.cell_plate==pid)
+                np.add.at(new_ocean_volume,targets,exchanged[src])
+                np.add.at(new_ocean_age_moment,targets,aged[src])
+            ocean_created=float(np.sum(born));ocean_recycled=float(np.sum(returned))
+            unfilled_ocean_area=float(np.sum(available_area[new_ocean_volume==0]))
         ocean_visible = new_cont_fraction < .5
         new_thickness[ocean_visible] = np.divide(
             new_ocean_volume[ocean_visible], available_area[ocean_visible],
             out=np.zeros(np.count_nonzero(ocean_visible)), where=available_area[ocean_visible] > 0)
+        if new_ocean_age_moment is not None:
+            new_age[ocean_visible]=np.divide(new_ocean_age_moment[ocean_visible],new_ocean_volume[ocean_visible],
+                out=np.zeros(np.count_nonzero(ocean_visible)),where=new_ocean_volume[ocean_visible]>0)
 
     new_state = LithosphereState(
         time_myr=new_time,
@@ -1377,6 +1402,7 @@ def advance_lithosphere(
         mantle_depletion_fraction=None if not track_craton_memory else new_mantle_depletion,
         craton_strength=None if not track_craton_memory else new_craton_strength,
         oceanic_volume_km3=new_ocean_volume,
+        oceanic_age_moment_km3_myr=new_ocean_age_moment,
     )
 
     ocean_mask = new_type == int(CrustType.OCEANIC)

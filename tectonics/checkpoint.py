@@ -82,6 +82,7 @@ class RunCheckpoint:
     # Opt-in numerical reconstruction. Old checkpoints have no fabricated ledger.
     thermal_integration: dict[str, Any] | None = None
     material_exchange: dict[str, Any] | None = None
+    arc_integration: dict[str, Any] | None = None
 
 
 def _plate_dict(p: Plate) -> dict[str, Any]:
@@ -215,6 +216,8 @@ def save_checkpoint(path: str | Path, cp: RunCheckpoint) -> Path:
         arrays["hotspot_track_last_tail_productivity"] = np.asarray(cp.hotspot_track_state.last_tail_productivity, dtype=np.float64)
     if cp.state.oceanic_volume_km3 is not None:
         arrays['oceanic_volume_km3'] = np.asarray(cp.state.oceanic_volume_km3, dtype=float)
+    if cp.state.oceanic_age_moment_km3_myr is not None:
+        arrays['oceanic_age_moment_km3_myr'] = np.asarray(cp.state.oceanic_age_moment_km3_myr,dtype=float)
     np.savez_compressed(root/"state.npz", **arrays)
     collision=[
         [int(a), int(b), float(age)]
@@ -330,6 +333,11 @@ def save_checkpoint(path: str | Path, cp: RunCheckpoint) -> Path:
             raise ValueError('Material checkpoint requires one thermal owner and explicit basalt volume')
         meta['version'] = '0.33-material-exchange-reconstruction'
         meta['material_exchange'] = cp.material_exchange
+    if cp.arc_integration is not None:
+        if cp.material_exchange is None:
+            raise ValueError('Integral arc history requires a finite material inventory')
+        meta['arc_integration'] = cp.arc_integration
+        meta['version'] = '0.34-integral-arcs-reconstruction'
     with (root/"meta.json").open("w",encoding="utf-8") as h:
         json.dump(meta,h,ensure_ascii=False,indent=2)
     return root
@@ -345,9 +353,13 @@ def load_checkpoint(path: str | Path, manager: PlateTopologyManager) -> RunCheck
         raise ValueError("Budgeted checkpoint is missing its thermal controller history")
     if meta.get('version') == '0.33-material-exchange-reconstruction' and meta.get('material_exchange') is None:
         raise ValueError('Material checkpoint missing inventory history')
-    if meta.get("version") not in {"0.9.1", "0.9.2", "0.9.3", "0.9.4", "0.9.5", "0.10-reconstructed", "0.11-material", "0.14-hydrosphere", "0.16-lithosphere-split", "0.18-subduction-memory", "0.19-rollback", "0.20-slab-breakoff", "0.21-slab-geometry-arcs", "0.22-flexural-isostasy", "0.23-conservative-sediments", "0.24-cratonic-memory", "0.25-mantle-plumes", "0.26-plume-rifting", "0.27-plume-dynamic-topography", "0.28-plume-magmatism", "0.29-hotspot-tracks", "0.30-mobile-plumes", "0.31-flow-coupled-plumes", "0.32-thermal-budget-reconstruction", "0.33-material-exchange-reconstruction"}:
+    if meta.get('version') == '0.34-integral-arcs-reconstruction' and (meta.get('arc_integration') is None or meta.get('material_exchange') is None):
+        raise ValueError('Integral arc checkpoint missing law or inventory history')
+    if meta.get("version") not in {"0.9.1", "0.9.2", "0.9.3", "0.9.4", "0.9.5", "0.10-reconstructed", "0.11-material", "0.14-hydrosphere", "0.16-lithosphere-split", "0.18-subduction-memory", "0.19-rollback", "0.20-slab-breakoff", "0.21-slab-geometry-arcs", "0.22-flexural-isostasy", "0.23-conservative-sediments", "0.24-cratonic-memory", "0.25-mantle-plumes", "0.26-plume-rifting", "0.27-plume-dynamic-topography", "0.28-plume-magmatism", "0.29-hotspot-tracks", "0.30-mobile-plumes", "0.31-flow-coupled-plumes", "0.32-thermal-budget-reconstruction", "0.33-material-exchange-reconstruction", "0.34-integral-arcs-reconstruction"}:
         raise ValueError(f"Unsupported checkpoint version: {meta.get('version')}")
     with np.load(root/"state.npz", allow_pickle=False) as z:
+        if (meta.get('arc_integration') or {}).get('integral_ocean_fluxes',False) and 'oceanic_age_moment_km3_myr' not in z.files:
+            raise ValueError('Integral basalt checkpoint missing material age moment')
         if meta.get('material_exchange') is not None and 'oceanic_volume_km3' not in z.files:
             raise ValueError('Material checkpoint missing basalt volume')
         state=LithosphereState(
@@ -371,6 +383,7 @@ def load_checkpoint(path: str | Path, manager: PlateTopologyManager) -> RunCheck
             mantle_depletion_fraction=z["mantle_depletion_fraction"].copy() if "mantle_depletion_fraction" in z.files else None,
             craton_strength=z["craton_strength"].copy() if "craton_strength" in z.files else None,
             oceanic_volume_km3=z['oceanic_volume_km3'].copy() if 'oceanic_volume_km3' in z.files else None,
+            oceanic_age_moment_km3_myr=z['oceanic_age_moment_km3_myr'].copy() if 'oceanic_age_moment_km3_myr' in z.files else None,
         )
         cc=meta["continental_cycle"]
         cycle=ContinentalCycleState(
@@ -535,4 +548,5 @@ def load_checkpoint(path: str | Path, manager: PlateTopologyManager) -> RunCheck
         plume_flow_coupling_rows=list(meta.get("plume_flow_coupling_rows",[])),
         thermal_integration=meta.get("thermal_integration"),
         material_exchange=meta.get('material_exchange'),
+        arc_integration=meta.get('arc_integration'),
     )
