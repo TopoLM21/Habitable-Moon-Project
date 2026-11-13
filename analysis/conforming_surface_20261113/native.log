@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/workspace/Habitable-Moon-Project/analysis/conforming_surface_20261113/verify.py", line 131, in <module>
+    run('native20',scenario='native',end=20.,adaptive=True)
+  File "/workspace/Habitable-Moon-Project/analysis/conforming_surface_20261113/verify.py", line 80, in run
+    obj=ConformingSurface.load(HERE/'states'/resume) if resume else (native(params,control)[0] if scenario=='native' else synthetic(scenario,sub,params,control))
+                                                                     ^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/Habitable-Moon-Project/analysis/conforming_surface_20261113/verify.py", line 47, in native
+    inv=AreaMaterialInventory.restore(d,RegionalMaterialParameters(**d['parameters']),ActiveAreaParameters(**d['area_parameters']))
+                                                                     ~^^^^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable

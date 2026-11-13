@@ -42,7 +42,9 @@ validates this prototype's coarse rock rheology or its parameters for the Moon.
    mismatch; it changes the old kinematics and is not a force solution. Work
    of the imposed deformation is independently integrated with 5/9-point
    Gaussian quadrature of the potential gradient along the geometric path.
-   It is recorded as external work, not obtained by balancing a heat residual.
+   Orders 17/33 are used if the 5/9 pair is insufficient, with the same work
+   tolerance. It is recorded as external work, not obtained by balancing a
+   heat residual.
 2. **Unforced gravity/drag control.** Derive tangential forces from finite column
    gravitational energy. Basal resistance is β times velocity, with β in
    Pa·s/m. Positive dissipation goes into an explicitly recorded crustal heat

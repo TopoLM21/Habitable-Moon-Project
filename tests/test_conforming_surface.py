@@ -144,3 +144,22 @@ def test_uniform_prescribed_rotation_keeps_all_areas_and_energy():
     obj.prescribed_step(np.array([[.3,-.2,.1]]*2),1.)
     assert obj.evaluate(obj.vertices)['area_m2']==pytest.approx(area,rel=2e-15)
     assert abs(obj.budget()['external_work_j'])/initial<1e-15
+
+
+def test_existing_area_inventory_import_preserves_material_and_declares_new_energy():
+    from test_regional_area import inventory
+    inv=inventory();before=inv.checkpoint();heat={'energy_c_j':[4e27,17.], 'origin_hi':[[1.,0.,0.],[0.,2.,0.],[0.,0.,3.]]}
+    obj=ConformingSurface.from_area_inventory(inv,thermal_data=heat)
+    assert obj.data['initial_heat_j']==[4e27,17.]
+    assert obj.data['provenance']['prior_thermal_inventory']==heat
+    obj.advance(2.)
+    assert inv.checkpoint()==before
+    assert obj.budget()['volume_m3'][1]==pytest.approx(math.fsum(inv.coarse.arrays['basalt_volume'])*1e9,rel=2e-15)
+    assert 'new fixed-base' in obj.data['provenance']['initialization']
+
+
+def test_drag_time_rescaling_keeps_geometry_and_dissipated_energy():
+    a=surface(1);b=surface(1,params=replace(a.params,basal_drag_pa_s_m=2e17))
+    for _ in range(10):a.step_fixed(1.);b.step_fixed(2.)
+    assert np.array_equal(a.vertices,b.vertices)
+    assert a.data['heat_generated_j']==b.data['heat_generated_j']

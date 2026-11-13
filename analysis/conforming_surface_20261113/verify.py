@@ -41,10 +41,15 @@ def synthetic(scenario,sub,params,control):
     return obj
 
 
-def native(params,control):
+def native(params,control,sub=3):
     cp=load_checkpoint(NATIVE,PlateTopologyManager(PlateTopologyParameters()))
     d=cp.regional_material
-    inv=AreaMaterialInventory.restore(d,RegionalMaterialParameters(**d['parameters']),ActiveAreaParameters(**d['area_parameters']))
+    if d is None:
+        # This protected zero-time state predates optional material-area
+        # initialization. Use its actual inventories, never invent past memory.
+        inv=AreaMaterialInventory.initialize(build_icosphere(2),cp.state,params.radius_m/1000,
+            RegionalMaterialParameters(material_subdivisions=sub),ActiveAreaParameters())
+    else:inv=AreaMaterialInventory.restore(d,RegionalMaterialParameters(**d['parameters']),ActiveAreaParameters(**d['area_parameters']))
     obj=ConformingSurface.from_area_inventory(inv,params,control,cp.material_exchange,dict(
         source_files={str((NATIVE/n).relative_to(ROOT)):sha(NATIVE/n) for n in ('meta.json','state.npz')}))
     return obj,cp,inv
@@ -72,12 +77,12 @@ def metrics(obj):
     return b
 
 
-def run(name,scenario='smooth',sub=2,dt=1.,end=100.,beta=1e17,adaptive=False,resume=None):
+def run(name,scenario='smooth',sub=2,dt=1.,end=100.,beta=1e17,adaptive=False,resume=None,native_resolution=3):
     output=HERE/f'{name}.json';saved=HERE/'states'/name
     if output.exists() or saved.exists():raise FileExistsError(name)
     begin=time.perf_counter();params=replace(SurfaceParameters(),basal_drag_pa_s_m=beta)
     control=replace(SurfaceControl(),max_step_myr=dt,max_trials=2000)
-    obj=ConformingSurface.load(HERE/'states'/resume) if resume else (native(params,control)[0] if scenario=='native' else synthetic(scenario,sub,params,control))
+    obj=ConformingSurface.load(HERE/'states'/resume) if resume else (native(params,control,native_resolution)[0] if scenario=='native' else synthetic(scenario,sub,params,control))
     initial=obj.checkpoint();initial_budget=metrics(obj);start=time.perf_counter();status='complete';failure=None
     try:
         if adaptive:obj.advance(end)
@@ -99,23 +104,32 @@ def run(name,scenario='smooth',sub=2,dt=1.,end=100.,beta=1e17,adaptive=False,res
     print(json.dumps(dict(case=name,status=status,end_myr=obj.data['time_myr'],wall_s=report['wall_s'],steps=obj.data['accepted_steps'],energy_error=report['final']['relative_energy_error_on_exchange'])),flush=True)
 
 
-def kinematics():
-    name='prescribed_native20';path=HERE/f'{name}.json'
+def kinematics(name='prescribed_native20'):
+    path=HERE/f'{name}.json'
     if path.exists() or (HERE/'states'/name).exists():raise FileExistsError(name)
     obj,cp,inv=native(SurfaceParameters(),SurfaceControl());omega=angular_velocity_vectors(cp.system)
     begin=time.perf_counter();initial=metrics(obj)
-    for _ in range(20):obj.prescribed_step(omega,1.)
+    rejected=0;failure=None
+    while obj.data['time_myr']<20.:
+        dt=min(1.,20.-obj.data['time_myr'])
+        while True:
+            try:obj.prescribed_step(omega,dt);break
+            except ValueError as exc:
+                rejected+=1;dt/=2
+                if dt<1e-4:failure=str(exc);break
+        if failure is not None:break
     shared,points=sampled_coverage(obj)
     count=np.zeros(len(points),int)
     for owner,w in enumerate(omega):
-        reference=Rotation.from_rotvec(w*20).inv().apply(points)
+        reference=Rotation.from_rotvec(w*obj.data['time_myr']).inv().apply(points)
         root=inv.receiver.locate(reference);count+=inv.coarse.arrays['owner'][root]==owner
     old=dict(samples=len(points),uncovered=int(np.sum(count==0)),multiply_covered=int(np.sum(count>1)))
     obj.save(HERE/'states'/name)
     report=dict(case=name,source_commit=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),
         runtime_sha256=sha(ROOT/'tectonics/conforming_surface.py'),initial=initial,final=metrics(obj),
         shared_coverage=shared,independent_rigid_coverage=old,wall_s=time.perf_counter()-begin,
-        input_omega_rad_myr=omega.tolist(),scope='same imposed initial Euler rotations over 20 Myr; welded projection changes velocities and explicitly accounts external work; not the previous dynamically driven 20 Myr history')
+        rejected_trials=rejected,failure=failure,requested_end_myr=20.,
+        input_omega_rad_myr=omega.tolist(),scope='same imposed initial Euler rotations over achieved interval; welded projection changes velocities and explicitly accounts external work; not the previous dynamically driven 20 Myr history')
     with path.open('x') as f:json.dump(report,f,indent=2)
     print(json.dumps(report),flush=True)
 
@@ -143,5 +157,8 @@ if __name__=='__main__':
         with (HERE/'restart_comparison.json').open('x') as f:json.dump(dict(equal_arrays_and_metadata=True,stop_myr=stop,end_myr=100.),f,indent=2)
     elif mode=='sensitivity':
         for beta in (1e16,1e18):run(f'native_beta{beta:g}',scenario='native',end=100.,beta=beta,adaptive=True)
+    elif mode=='native_grid':
+        for sub in (2,4):run(f'native_g{sub}_100',scenario='native',end=100.,adaptive=True,native_resolution=sub)
+    elif mode=='benchmark':run('native100_fresh',scenario='native',end=100.,adaptive=True)
     elif mode=='kinematics':kinematics()
     else:raise ValueError(mode)

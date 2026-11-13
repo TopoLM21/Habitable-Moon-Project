@@ -1,0 +1,132 @@
+{
+  "case": "prescribed_native20",
+  "source_commit": "9be97985b96314c735278b2ed09abafcb721f49b",
+  "runtime_sha256": "fea6159f2ed656c81ca48841d93450272bd8d2b15594c2e0387b3a62f66a6ca7",
+  "initial": {
+    "time_myr": 0.0,
+    "area_relative_error": 0.0,
+    "volume_m3": [
+      3.455143927710239e+18,
+      1.7677900132812224e+18
+    ],
+    "mass_kg": 1.4800994036104215e+22,
+    "potential_j": 1.3277962693935066e+27,
+    "heat_generated_j": 0.0,
+    "external_work_j": 0.0,
+    "energy_residual_j": 0.0,
+    "integrated_defect_j": 0.0,
+    "crust_heat_increment_k": 0.0,
+    "max_height_m": 34770.822673136274,
+    "material_regions": 12,
+    "vertices": 642,
+    "cells": 1280,
+    "height_l2_m": 236.38137373673362,
+    "area_rms_change_fraction": 0.0,
+    "min_area_fraction": 1.0,
+    "relative_energy_error_on_exchange": 0.0,
+    "accepted_steps": 0,
+    "rejected_steps": 0
+  },
+  "final": {
+    "time_myr": 9.198486328125,
+    "area_relative_error": 0.0,
+    "volume_m3": [
+      3.455143927710239e+18,
+      1.7677900132812224e+18
+    ],
+    "mass_kg": 1.4800994036104215e+22,
+    "potential_j": 1.334467659358802e+27,
+    "heat_generated_j": 0.0,
+    "external_work_j": 6.671389965295298e+24,
+    "energy_residual_j": 106820534272.0,
+    "integrated_defect_j": 106820534272.0,
+    "crust_heat_increment_k": 0.0,
+    "max_height_m": 105715.22369920927,
+    "material_regions": 12,
+    "vertices": 642,
+    "cells": 1280,
+    "height_l2_m": 87.98822782433611,
+    "area_rms_change_fraction": 0.18423020411024935,
+    "min_area_fraction": 0.06490910037862677,
+    "relative_energy_error_on_exchange": 1.6011735909260668e-14,
+    "accepted_steps": 15,
+    "rejected_steps": 0
+  },
+  "shared_coverage": {
+    "samples": 2048,
+    "uncovered": 0,
+    "multiply_covered": 0
+  },
+  "independent_rigid_coverage": {
+    "samples": 2048,
+    "uncovered": 110,
+    "multiply_covered": 111
+  },
+  "wall_s": 0.5666207449976355,
+  "rejected_trials": 59,
+  "failure": "Column exceeds fixed-base gravity/drag applicability",
+  "requested_end_myr": 20.0,
+  "input_omega_rad_myr": [
+    [
+      0.004761502026043953,
+      -0.004082192632767852,
+      -0.0053811777231997735
+    ],
+    [
+      0.0009759384927844768,
+      0.0028559435698969934,
+      -0.0011940098169454258
+    ],
+    [
+      0.00030895948175348013,
+      0.0002381393936632742,
+      0.0002211083714715391
+    ],
+    [
+      -0.0006915632826562028,
+      -0.0059492238896370455,
+      -0.008915254768413709
+    ],
+    [
+      0.0028949501305265083,
+      -0.004782311035674218,
+      0.0020276979219575903
+    ],
+    [
+      0.0005683942787880307,
+      -0.0009095963820776187,
+      0.004001757695811443
+    ],
+    [
+      0.0021899853610918745,
+      -0.0003583667414251756,
+      0.0024200016529014427
+    ],
+    [
+      -0.007300368222027537,
+      -0.00014324194252627427,
+      0.009158808690429277
+    ],
+    [
+      0.0022620944957904144,
+      -5.206130066906122e-05,
+      -0.005383355228547932
+    ],
+    [
+      -0.0041633245308283304,
+      0.009085409908666705,
+      -0.0038001755205247065
+    ],
+    [
+      -0.0013094656252746074,
+      0.009866720395354918,
+      0.0026148825285086334
+    ],
+    [
+      -0.003589723790081939,
+      -0.003435662329785419,
+      0.00018969245933254334
+    ]
+  ],
+  "scope": "same imposed initial Euler rotations over achieved interval; welded projection changes velocities and explicitly accounts external work; not the previous dynamically driven 20 Myr history"
+}

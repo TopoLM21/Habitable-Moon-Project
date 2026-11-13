@@ -1,0 +1,97 @@
+{
+  "case": "native_beta1e+16",
+  "scenario": "native",
+  "source_commit": "9be97985b96314c735278b2ed09abafcb721f49b",
+  "runtime_sha256": "b165cb08c9141b51eba192ccca9e3f59c5a001bd684a29e56a978d5e344d541b",
+  "status": "complete",
+  "failure": null,
+  "requested_end_myr": 100.0,
+  "fixed_step_myr": null,
+  "parameters": {
+    "radius_m": 5287000.0,
+    "gravity_m_s2": 7.12,
+    "basal_drag_pa_s_m": 1e+16,
+    "felsic_density_kg_m3": 2800.0,
+    "basalt_density_kg_m3": 2900.0,
+    "heat_capacity_j_kg_k": 1200.0,
+    "min_area_fraction": 0.0001,
+    "max_height_radius": 0.02
+  },
+  "control": {
+    "max_step_myr": 1.0,
+    "initial_step_myr": 0.25,
+    "position_atol_rad": 1e-05,
+    "thickness_rtol": 0.001,
+    "energy_rtol": 0.0001,
+    "energy_atol_fraction": 1e-12,
+    "max_trials": 2000
+  },
+  "initial": {
+    "time_myr": 0.0,
+    "area_relative_error": 0.0,
+    "volume_m3": [
+      3.455143927710239e+18,
+      1.7677900132812224e+18
+    ],
+    "mass_kg": 1.4800994036104215e+22,
+    "potential_j": 1.3277962693935066e+27,
+    "heat_generated_j": 0.0,
+    "external_work_j": 0.0,
+    "energy_residual_j": 0.0,
+    "integrated_defect_j": 0.0,
+    "crust_heat_increment_k": 0.0,
+    "max_height_m": 34770.822673136274,
+    "material_regions": 12,
+    "vertices": 642,
+    "cells": 1280,
+    "height_l2_m": 236.38137373673362,
+    "area_rms_change_fraction": 0.0,
+    "min_area_fraction": 1.0,
+    "relative_energy_error_on_exchange": 0.0,
+    "accepted_steps": 0,
+    "rejected_steps": 0
+  },
+  "final": {
+    "time_myr": 100.0,
+    "area_relative_error": 0.0,
+    "volume_m3": [
+      3.455143927710239e+18,
+      1.7677900132812224e+18
+    ],
+    "mass_kg": 1.4800994036104215e+22,
+    "potential_j": 8.299167424498113e+26,
+    "heat_generated_j": 4.978899246720365e+26,
+    "external_work_j": 0.0,
+    "energy_residual_j": 1.0397728341213328e+22,
+    "integrated_defect_j": 1.0397728341212556e+22,
+    "crust_heat_increment_k": 28.032459816411013,
+    "max_height_m": 22127.729592311844,
+    "material_regions": 12,
+    "vertices": 642,
+    "cells": 1280,
+    "height_l2_m": 308.6205121092109,
+    "area_rms_change_fraction": 0.6621089467189734,
+    "min_area_fraction": 0.31670541124300033,
+    "relative_energy_error_on_exchange": 2.0883588572438742e-05,
+    "accepted_steps": 107,
+    "rejected_steps": 0
+  },
+  "material_unchanged": {
+    "owner": true,
+    "felsic_fraction": true,
+    "felsic_volume_m3": true,
+    "basalt_volume_m3": true,
+    "potential": true
+  },
+  "native_restore_equal": true,
+  "coverage": {
+    "samples": 2048,
+    "uncovered": 0,
+    "multiply_covered": 0
+  },
+  "integration_wall_s": 1.1379142459991272,
+  "wall_s": 1.3724438469980669,
+  "process_peak_rss_mib": 77.82421875,
+  "snapshot_bytes": 74555,
+  "scope": "new welded fixed-base gravity/drag control; no cooling, production, recycling, slip or fracture"
+}

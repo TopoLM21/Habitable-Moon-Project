@@ -199,12 +199,16 @@ class ConformingSurface:
                 ev=self.evaluate(x);derivative=dt*np.cross(nodal,x)
                 values.append(w*math.fsum((ev['gradient_j']*derivative).ravel()))
             return math.fsum(values)
-        low=work(5);high=work(9);defect=math.fsum([diag['potential_j'],-start['potential_j'],-high])
-        tolerance=1e-8*abs(high)+64*math.ulp(start['potential_j'])
-        if abs(high-low)>tolerance or abs(defect)>tolerance:raise ValueError('Prescribed geometric work quadrature unresolved')
+        low=work(5)
+        for order in (9,17,33):
+            high=work(order);defect=math.fsum([diag['potential_j'],-start['potential_j'],-high])
+            tolerance=1e-8*abs(high)+64*math.ulp(start['potential_j'])
+            if abs(high-low)<=tolerance and abs(defect)<=tolerance:break
+            if order==33:raise ValueError('Prescribed geometric work quadrature unresolved')
+            low=high
         _add(self.data['external_work_j'],high)
         self._accepted(end,dt,0.,defect,diag,error_ratio=None)
-        self.data['history'][-1].update(mode='prescribed_welded_projection',external_work_j=high,work_order_difference_j=abs(high-low))
+        self.data['history'][-1].update(mode='prescribed_welded_projection',external_work_j=high,work_order_difference_j=abs(high-low),work_quadrature_order=order)
 
     def advance(self,target_myr):
         if not math.isfinite(target_myr) or target_myr<self.data['time_myr']:raise ValueError('Invalid final time')

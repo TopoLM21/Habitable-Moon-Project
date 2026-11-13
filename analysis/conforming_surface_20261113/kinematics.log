@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/workspace/Habitable-Moon-Project/analysis/conforming_surface_20261113/verify.py", line 151, in <module>
+    elif mode=='kinematics':kinematics()
+                            ^^^^^^^^^^^^
+  File "/workspace/Habitable-Moon-Project/analysis/conforming_surface_20261113/verify.py", line 112, in kinematics
+    for _ in range(20):obj.prescribed_step(omega,1.)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/Habitable-Moon-Project/tectonics/conforming_surface.py", line 204, in prescribed_step
+    if abs(high-low)>tolerance or abs(defect)>tolerance:raise ValueError('Prescribed geometric work quadrature unresolved')
+                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: Prescribed geometric work quadrature unresolved
