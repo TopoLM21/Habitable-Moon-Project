@@ -1,0 +1,96 @@
+..F.........                                                             [100%]
+=================================== FAILURES ===================================
+______ test_finite_pressure_stops_at_cost_without_unlimited_replenishment ______
+
+    def test_finite_pressure_stops_at_cost_without_unlimited_replenishment():
+        v = np.array([1e15]); pressure = 1e8; initial = .5*1e9*pressure**2
+        work = 0.; heat = 0.
+        for _ in range(25):
+            v, e = project(v, v, v*1.01, pressure)
+            pressure = e['pressure_pa']; work += e['source_work_j']; heat += e['heat_j']
+        assert pressure < 1e8 and 0 < work < initial and heat > 0
+        assert .5*1e9*pressure**2+work == pytest.approx(initial, rel=3e-15)
+        v, e = project(v, v, v*100, pressure)
+>       next_v, next_e = project(v, v, v*100, e['pressure_pa'])
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_strain_exchange.py:59: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_strain_exchange.py:20: in project
+    return passive_projection(np.asarray(area), volume, np.asarray(lower), np.asarray(upper),
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+area = array([1.e+12]), volume = array([4.66948583e+15])
+lower = array([4.66948583e+15]), upper = array([4.66948583e+17])
+pressure = 96330514.17142543, compliance = 1000000000.0, rho = 2900.0
+gravity = 7.12, radius = 5287000.0
+
+    def passive_projection(area, volume, lower, upper, pressure, compliance, rho, gravity, radius):
+        """Convex hydraulic equilibration with fixed-area directional volume bounds.
+    
+        Minimize U(V)+C*P²/2, P=P_before-sum(V-V_before)/C. The unique pressure
+        root gives the KKT solution, rather than spending a guessed amount of heat.
+        Work and irreversible loss are independently integrated along the transfer.
+        """
+        area, volume, lower, upper = (np.asarray(x, float) for x in (area, volume, lower, upper))
+        if not (area.shape == volume.shape == lower.shape == upper.shape) or area.ndim != 1:
+            raise ValueError('Invalid exchange arrays')
+        if any(np.any(~np.isfinite(x)) for x in (area, volume, lower, upper)):
+            raise ValueError('Nonfinite exchange bounds')
+        if np.any(lower < 0) or np.any(lower > volume) or np.any(upper < volume):
+            raise ValueError('Invalid directional volume bounds')
+        if np.any((area <= 0) & (upper > 0)) or np.any(area < 0):
+            raise ValueError('Missing material footprint')
+        if any(not math.isfinite(x) for x in (pressure, compliance, rho, gravity, radius)) or pressure < 0 or min(compliance, rho, gravity, radius) <= 0:
+            raise ValueError('Invalid hydraulic parameters')
+        def volumes(p):
+            h = p/(rho*gravity)
+            v = area*(h+h*h/radius+h**3/(3*radius**2))
+            return np.clip(v, lower, upper)
+        def balance(p):
+            return math.fsum([p, -pressure, math.fsum(volumes(p)-volume)/compliance])
+        high = pressure+math.fsum(volume-lower)/compliance
+        if high == 0:
+            end_pressure = 0.
+        else:
+            # Outward rounding of the mathematical bracket, not a wider physical
+            # pressure range. At a fully quota-limited return the root is its end.
+            high = math.nextafter(high, math.inf)
+            end_pressure = brentq(balance, 0., high, xtol=max(1e-8, math.ulp(high)),
+                                  rtol=4*np.finfo(float).eps)
+        target = volumes(end_pressure)
+        delta = target-volume
+        net = math.fsum(delta)
+        actual_pressure = pressure-net/compliance
+        scale = max(pressure, high, 1.)
+        if abs(actual_pressure-end_pressure) > 64*math.ulp(scale) or actual_pressure < 0:
+            raise ValueError('Pressure-volume solve unresolved')
+        # Integration is independent of subtracting two large stored potentials.
+        source_work = (pressure-.5*net/compliance)*net
+        def integrals(order):
+            nodes, weights = leggauss(order); work = []; loss = []
+            for t, w in zip((nodes+1)/2, weights/2):
+                h = column_potential(area, volume+t*delta, rho, gravity, radius)[2]
+                mu = rho*gravity*h
+                work.append(float(w)*math.fsum(mu*delta))
+                loss.append(float(w)*math.fsum(((pressure-t*net/compliance)-mu)*delta))
+            return math.fsum(work), math.fsum(loss)
+        low = integrals(8); placed, heat = integrals(16)
+        work_scale = max(abs(source_work), abs(placed), abs(heat), 1.)
+        if max(abs(placed-low[0]), abs(heat-low[1])) > 1e-11*work_scale or heat < 0:
+>           raise ValueError('Hydraulic work/loss is unresolved or nonpassive')
+E           ValueError: Hydraulic work/loss is unresolved or nonpassive
+
+tectonics/strain_exchange.py:141: ValueError
+=============================== warnings summary ===============================
+../../opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/anyio/pytest_plugin.py:14
+  /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/anyio/pytest_plugin.py:14: PytestRemovedIn10Warning: _pytest.python.CallSpec2 has been renamed to CallSpec.
+  The CallSpec2 alias will be removed in pytest 10.
+  Update imports to use CallSpec instead.
+  See https://docs.pytest.org/en/stable/deprecations.html#callspec2-renamed
+    from _pytest.python import CallSpec2
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_strain_exchange.py::test_finite_pressure_stops_at_cost_without_unlimited_replenishment
+1 failed, 11 passed, 1 warning in 1.93s
