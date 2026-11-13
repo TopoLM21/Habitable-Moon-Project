@@ -6,7 +6,7 @@ or coarsens away history. Each owning region still undergoes the old rigid
 rotation: overlap/contact and dimensional mechanical work remain unresolved.
 """
 from copy import deepcopy
-from dataclasses import asdict,dataclass
+from dataclasses import asdict,dataclass,replace
 import math
 import numpy as np
 from scipy.spatial.transform import Rotation
@@ -21,12 +21,16 @@ class ActiveAreaParameters:
     quadrature_order:int=16
     quadrature_spacing_km:float=100.
     max_leaves:int=131072
+    strip_rule:str='source_points'
+    source_budget_rtol:float=1e-7
 
     def __post_init__(self):
         if not 1<=self.max_edge_km<=3000:raise ValueError('Active-area edge size outside bounded numerical domain')
         if not 2<=self.quadrature_order<=32 or int(self.quadrature_order)!=self.quadrature_order:raise ValueError('Invalid area quadrature order')
         if not 1<=self.quadrature_spacing_km<=1000:raise ValueError('Invalid area quadrature spacing')
         if not 20<=self.max_leaves<=1048576 or int(self.max_leaves)!=self.max_leaves:raise ValueError('Invalid explicit numerical leaf budget')
+        if self.strip_rule not in ('source_points','coarea'):raise ValueError('Invalid material strip integration rule')
+        if not 0<self.source_budget_rtol<=1e-4:raise ValueError('Invalid material source integration tolerance')
 
 
 def _centers(tri):
@@ -122,7 +126,7 @@ class AreaMaterialInventory:
 
     @classmethod
     def restore(cls,data,params,area_params):
-        if data.get('version')!=2 or data['parameters']!=asdict(params) or data['area_parameters']!=asdict(area_params):
+        if data.get('version')!=2 or data['parameters']!=asdict(params) or asdict(ActiveAreaParameters(**data['area_parameters']))!=asdict(area_params):
             raise ValueError('Material-area restart mode/parameters/history mismatch')
         a=data['arrays'];coarse={k[7:]:v for k,v in a.items() if k.startswith('coarse_')};leaves={k[5:]:v for k,v in a.items() if k.startswith('leaf_')}
         return cls(RegionalMaterialInventory(coarse,params,data['time_myr']),RegionalMaterialInventory(leaves,params,data['time_myr']),
@@ -210,6 +214,7 @@ class AreaMaterialInventory:
         raise ValueError('Material quadrature failed to reach a saved leaf')
 
     def integrated_field(self,segments,caps,radius,sigma,outer):
+        if self.area_params.strip_rule=='coarea':return self._coarea_field(segments,caps,radius,sigma,outer)
         indices=[];values=[];source=[];excluded=[];source_area=[];excluded_area=[];points_count=0
         ap=self.area_params
         streams=[]
@@ -239,9 +244,59 @@ class AreaMaterialInventory:
             source_supported_area_sum_km2=math.fsum(source_area),excluded_material_area_sum_km2=math.fsum(excluded_area),
             supported_area_scope='sum of source supports; overlaps count once per additive source, not union area')
 
+    def _coarea_field(self,segments,caps,radius,sigma,outer):
+        from .strip_intersection import strip_intersection_integrals
+        integral=np.zeros(len(self.roots));sources=[];excluded=[];source_area=[];outside_area=[];inside_area=[];error_estimates=[];area_estimates=[];panels=0
+        roots=self.mesh.vertices[self.mesh.faces];owner=self.leaves.arrays['owner'];rootowner=self.coarse.arrays['owner']
+        for s in segments:
+            if s.amplitude==0:continue
+            inverse=Rotation.from_quat(self.quaternions[s.overriding_plate]).inv()
+            local=replace(s,start=inverse.apply(s.start),end=inverse.apply(s.end),toward=inverse.apply(s.toward))
+            take=_touches_sources(self.reference_triangles,owner,[(local,sigma,outer)],[],radius)
+            # Independently integrate complementary material regions in this
+            # frame. Exclusion is not defined as total minus deposited source.
+            complement=_touches_sources(roots,np.full(len(roots),s.overriding_plate),[(local,sigma,outer)],[],radius)&(rootowner!=s.overriding_plate)
+            tri=np.concatenate([self.reference_triangles[take],roots[complement]])
+            q=self.area_params.quadrature_order
+            low=strip_intersection_integrals(tri,local,radius,sigma,outer,q)
+            high=strip_intersection_integrals(tri,local,radius,sigma,outer,2*q)
+            count=int(sum(take));integral[take]+=high[:count,0];excluded.append(math.fsum(high[count:,0]));outside_area.append(math.fsum(high[count:,1]))
+            inside_area.append(math.fsum(high[:count,1]));area_estimates.append(math.fsum(abs(high[:,1]-low[:,1])))
+            error_estimates.append(math.fsum(abs(high[:,0]-low[:,0])));panels+=len(tri)
+            _,weights=strip_quadrature(local,radius,sigma,outer,self.area_params.quadrature_spacing_km,32)
+            sources.append(math.fsum(weights))
+            length=math.atan2(np.linalg.norm(np.cross(local.start,local.end)),local.start@local.end)
+            source_area.append(radius**2*length*(math.sin((local.offset_km+outer)/radius)-math.sin(max(0,local.offset_km-outer)/radius)))
+        capdiag=None
+        if caps:
+            # Localized post-breakoff caps retain their explicitly reported
+            # point quadrature; do not claim the strip proof applies to them.
+            original=self.area_params
+            try:
+                self.area_params=replace(original,strip_rule='source_points')
+                field,capdiag=self.integrated_field([],caps,radius,sigma,outer)
+            finally:self.area_params=original
+            integral+=field*self.leaves.arrays['area']
+            sources.append(capdiag['source_integral_km2']);excluded.append(capdiag['excluded_material_source_km2'])
+            source_area.append(capdiag['source_supported_area_sum_km2']);outside_area.append(capdiag['excluded_material_area_sum_km2'])
+            inside_area.append(capdiag['source_supported_area_sum_km2']-capdiag['excluded_material_area_sum_km2'])
+        total=math.fsum(sources);out=math.fsum(excluded);error=math.fsum([*integral,out,-total])
+        total_area=math.fsum(source_area);area_error=math.fsum([*inside_area,*outside_area,-total_area])
+        if max(abs(error),math.fsum(error_estimates))>self.area_params.source_budget_rtol*max(total,1.)+64*math.ulp(max(total,1.)):
+            raise ValueError(f'Coarea source quadrature unresolved: residual {error} km2 / total {total}')
+        if max(abs(area_error),math.fsum(area_estimates))>self.area_params.source_budget_rtol*max(total_area,1.)+64*math.ulp(max(total_area,1.)):
+            raise ValueError(f'Coarea support quadrature unresolved: residual {area_error} km2 / area {total_area}')
+        return integral/self.leaves.arrays['area'],dict(source_integral_km2=total,excluded_material_source_km2=out,
+            deposited_source_km2=math.fsum(integral),source_deposition_residual_km2=error,
+            coarea_order_difference_estimate_km2=math.fsum(error_estimates),coarea_triangle_pairs=panels,
+            support_area_residual_km2=area_error,coarea_area_order_difference_estimate_km2=math.fsum(area_estimates),
+            source_supported_area_sum_km2=math.fsum(source_area),excluded_material_area_sum_km2=math.fsum(outside_area),
+            cap_quadrature_points=0 if capdiag is None else capdiag['quadrature_points'],
+            supported_area_scope='physical strip support sums; overlapping sources additive; caps use point quadrature')
+
     def aggregate(self):
         a=self.leaves.arrays;b=self.coarse.arrays;n=len(b['area'])
-        for k in ('felsic_area','felsic_volume','felsic_age_moment','basalt_volume','basalt_age_moment'):
+        for k in ('area','felsic_area','felsic_volume','felsic_age_moment','basalt_volume','basalt_age_moment'):
             b[k]=_group_sum(self.roots,a[k],n)
         ocean=a['area']-a['felsic_area'];parent_ocean=b['area']-b['felsic_area']
         b['potential']=np.divide(_group_sum(self.roots,a['potential']*ocean,n),parent_ocean,out=np.zeros(n),where=parent_ocean>0)
