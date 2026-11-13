@@ -76,7 +76,12 @@ def _initialize_lithosphere_v124(*args, **kwargs):
 def _load_checkpoint_v124(path, manager):
     global _last_state, _craton_rows
     checkpoint = _original_load_checkpoint(path, manager)
-    initialize_craton_memory(_mesh, checkpoint.state, _radius_km, _params)
+    # Initialization recomputes strength and clears fields outside the CURRENT
+    # footprint. A saved state must not change merely because it was loaded,
+    # including controls where this memory is intentionally frozen.
+    if any(getattr(checkpoint.state,name) is None for name in
+           ('continental_lithosphere_age_myr','mantle_depletion_fraction','craton_strength')):
+        initialize_craton_memory(_mesh, checkpoint.state, _radius_km, _params)
     _last_state = checkpoint.state
     _craton_rows = list(checkpoint.craton_rows)
     if not _craton_rows:
