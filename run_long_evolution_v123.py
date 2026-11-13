@@ -8,6 +8,7 @@ explicit reconstruction assumptions because their original source was lost.
 """
 from __future__ import annotations
 import argparse,csv,json
+from time import perf_counter
 from dataclasses import replace
 from pathlib import Path
 import matplotlib
@@ -29,6 +30,7 @@ from tectonics.plates import PlateSystem
 from tectonics.simulation import build_prototype,load_config
 from tectonics.tides import eccentricity_history_from_config
 from tectonics.thermal import ThermalParameters,advance_thermal_state,initialize_thermal_state,diagnose_thermal_state
+from tectonics.thermal_budget import ThermalBudgetIntegrator, ThermalIntegrationParameters
 from tectonics.topography import TopographyParameters,advance_topography,equilibrium_elevation,initialize_topography,topography_components
 from tectonics.flexure import FlexureParameters
 from tectonics.sediment import SedimentParameters, initialize_sediment_budget, advance_sediments, continental_material_ledger_error_km3, sediment_thickness_m
@@ -163,6 +165,17 @@ def main():
         sediment_rows=[]
         print(f'Initialized hydrosphere: water={hydrosphere.water_volume_km3/1e9:.3f} billion km3 | sea={last_hydro_diag.sea_level_m:+.3f} m | land={100*last_hydro_diag.land_area_fraction:.2f}%')
         d0=diagnose_thermal_state(thermal,mass,radius,grav,period,pmj,ecc.at(0.0),thp);thermal_rows=[{k:getattr(d0,k) for k in d0.__dataclass_fields__}]
+    integration_cfg = dict(cfg.get('thermal_integration', {}))
+    integration_enabled = integration_cfg.pop('enabled', False)
+    saved_integration = cp.thermal_integration if a.resume else None
+    if saved_integration is not None and not integration_enabled:
+        raise ValueError('Budgeted checkpoint requires thermal_integration.enabled; refusing to discard its history')
+    thermal_integrator = None
+    if integration_enabled:
+        integration_options = ThermalIntegrationParameters(**integration_cfg)
+        thermal_integrator = (ThermalBudgetIntegrator.restore(saved_integration, integration_options)
+                              if saved_integration is not None else ThermalBudgetIntegrator(thermal, integration_options))
+        print('EXPERIMENTAL thermal budget: fixed mantle mass; prescribed orbital input; plate work and crust enthalpy remain unclosed')
     end=float(a.end_time);last_td=None;last_relief=None
     frame_interval=None if a.frame_interval is None else float(a.frame_interval)
     if frame_interval is not None:
@@ -184,9 +197,12 @@ def main():
     # Include t=0 in fresh animation sets. Resumed segments inherit prior frames.
     if frame_interval is not None and not a.resume:
         save_animation_frames()
+    integration_start_time = float(state.time_myr)
+    integration_clock = perf_counter()
     for dti in step_sizes(float(state.time_myr),end,dt):
         assert_plate_consistency(state,system,"step start")
-        thermal,thdiag=advance_thermal_state(thermal,dti,mass,radius,grav,period,pmj,ecc,thp);thermal_rows.append({k:getattr(thdiag,k) for k in thdiag.__dataclass_fields__})
+        thermal_step = advance_thermal_state if thermal_integrator is None else thermal_integrator.advance
+        thermal,thdiag=thermal_step(thermal,dti,mass,radius,grav,period,pmj,ecc,thp);thermal_rows.append({k:getattr(thdiag,k) for k in thdiag.__dataclass_fields__})
         activity=thermal.tectonic_activity_factor
         mantle_flow,mantle_diag=advance_mantle_flow(proto.mesh,mantle_flow,dti,activity,mantlep)
         dynp=replace(dyn0,force_speed_scale_deg_per_myr=dyn0.force_speed_scale_deg_per_myr*activity)
@@ -261,10 +277,20 @@ def main():
         topo_rows.append({k:getattr(last_td,k) for k in last_td.__dataclass_fields__});relief_rows.append({k:getattr(last_relief,k) for k in last_relief.__dataclass_fields__});cycle_rows.append({k:getattr(cycle_diag,k) for k in cycle_diag.__dataclass_fields__})
         if frame_interval is not None and abs((state.time_myr/frame_interval)-round(state.time_myr/frame_interval))<1e-9:
             save_animation_frames()
+    integration_wall_seconds = perf_counter() - integration_clock
     boundaries=boundary_records_for_state(proto.mesh,state,system,radius,normal,inactive)
     contf=100*float(np.sum(areas[state.crust_type==int(CrustType.CONTINENTAL)])/np.sum(areas))
     print(f"SEGMENT END t={state.time_myr:7.1f} Myr | Tm={thermal.mantle_temperature_k:7.1f} K | activity={thermal.tectonic_activity_factor:5.3f} | plates={len(system.plates):2d} | continent={contf:5.2f}% | transport_commits={transport_state.cumulative_commit_count} | mantle_rms={mantle_diag.rms_speed_deg_per_myr if 'mantle_diag' in locals() else 0.0:.3f} deg/Myr | sea={last_hydro_diag.sea_level_m:+.1f} m | land={100*last_hydro_diag.land_area_fraction:.1f}%")
     cp=build_checkpoint(state,cycle,thermal,topo,system,baseline,manager,initial_cont_frac,initial_cont_vol,topo_rows,lithosphere_rows,relief_rows,cycle_rows,thermal_rows,late_rows,events,mantle_flow,transport_state,hydrosphere,hydrosphere_rows,subduction_memory,subduction_memory_rows,rollback_rows,breakoff_rows,arc_rows,sediment_budget,sediment_rows)
+    if thermal_integrator is not None:
+        cp.thermal_integration = thermal_integrator.checkpoint()
+        with (out/'thermal_budget.json').open('w', encoding='utf-8') as handle:
+            json.dump(cp.thermal_integration, handle, indent=2, allow_nan=False)
+        with (out/'runtime_stats.json').open('w', encoding='utf-8') as handle:
+            json.dump({'start_time_myr': integration_start_time, 'end_time_myr': state.time_myr,
+                       'outer_dt_myr': dt, 'mesh_cells': proto.mesh.cell_count,
+                       'integration_wall_seconds': integration_wall_seconds,
+                       'scope': 'global loop only; excludes initialization, checkpoint and rendering'}, handle, indent=2)
     cp_path=Path(a.checkpoint) if a.checkpoint else checkpoints/f'checkpoint_{int(round(state.time_myr)):04d}_Myr'
     save_checkpoint(cp_path,cp);print('Checkpoint:',cp_path.resolve())
     if a.save_frame or a.finalize:

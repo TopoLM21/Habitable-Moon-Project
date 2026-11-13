@@ -79,6 +79,8 @@ class RunCheckpoint:
     plume_drift_rows: list[dict[str, Any]] = field(default_factory=list)
     plume_source_path_rows: list[dict[str, Any]] = field(default_factory=list)
     plume_flow_coupling_rows: list[dict[str, Any]] = field(default_factory=list)
+    # Opt-in numerical reconstruction. Old checkpoints have no fabricated ledger.
+    thermal_integration: dict[str, Any] | None = None
 
 
 def _plate_dict(p: Plate) -> dict[str, Any]:
@@ -317,6 +319,9 @@ def save_checkpoint(path: str | Path, cp: RunCheckpoint) -> Path:
         meta["version"] = "0.30-mobile-plumes"
     if cp.plume_flow_coupling_rows:
         meta["version"] = "0.31-flow-coupled-plumes"
+    if cp.thermal_integration is not None:
+        meta["version"] = "0.32-thermal-budget-reconstruction"
+        meta["thermal_integration"] = cp.thermal_integration
     with (root/"meta.json").open("w",encoding="utf-8") as h:
         json.dump(meta,h,ensure_ascii=False,indent=2)
     return root
@@ -328,7 +333,9 @@ def load_checkpoint(path: str | Path, manager: PlateTopologyManager) -> RunCheck
         meta=json.load(h)
     if meta.get("format")!="moon_tectonics_checkpoint":
         raise ValueError("Not a moon tectonics checkpoint")
-    if meta.get("version") not in {"0.9.1", "0.9.2", "0.9.3", "0.9.4", "0.9.5", "0.10-reconstructed", "0.11-material", "0.14-hydrosphere", "0.16-lithosphere-split", "0.18-subduction-memory", "0.19-rollback", "0.20-slab-breakoff", "0.21-slab-geometry-arcs", "0.22-flexural-isostasy", "0.23-conservative-sediments", "0.24-cratonic-memory", "0.25-mantle-plumes", "0.26-plume-rifting", "0.27-plume-dynamic-topography", "0.28-plume-magmatism", "0.29-hotspot-tracks", "0.30-mobile-plumes", "0.31-flow-coupled-plumes"}:
+    if meta.get("version") == "0.32-thermal-budget-reconstruction" and meta.get("thermal_integration") is None:
+        raise ValueError("Budgeted checkpoint is missing its thermal controller history")
+    if meta.get("version") not in {"0.9.1", "0.9.2", "0.9.3", "0.9.4", "0.9.5", "0.10-reconstructed", "0.11-material", "0.14-hydrosphere", "0.16-lithosphere-split", "0.18-subduction-memory", "0.19-rollback", "0.20-slab-breakoff", "0.21-slab-geometry-arcs", "0.22-flexural-isostasy", "0.23-conservative-sediments", "0.24-cratonic-memory", "0.25-mantle-plumes", "0.26-plume-rifting", "0.27-plume-dynamic-topography", "0.28-plume-magmatism", "0.29-hotspot-tracks", "0.30-mobile-plumes", "0.31-flow-coupled-plumes", "0.32-thermal-budget-reconstruction"}:
         raise ValueError(f"Unsupported checkpoint version: {meta.get('version')}")
     with np.load(root/"state.npz", allow_pickle=False) as z:
         state=LithosphereState(
@@ -513,4 +520,5 @@ def load_checkpoint(path: str | Path, manager: PlateTopologyManager) -> RunCheck
         plume_drift_rows=list(meta.get("plume_drift_rows",[])),
         plume_source_path_rows=list(meta.get("plume_source_path_rows",[])),
         plume_flow_coupling_rows=list(meta.get("plume_flow_coupling_rows",[])),
+        thermal_integration=meta.get("thermal_integration"),
     )
