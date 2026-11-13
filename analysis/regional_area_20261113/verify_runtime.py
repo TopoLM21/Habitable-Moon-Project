@@ -13,7 +13,9 @@ CASES={
     'area20':(125.,2,4.,20.,'initial_same_g2'),
     'area_restart20':(125.,2,4.,20.,'area12'),
     'area20_edge250':(250.,2,4.,20.,'initial_same_g2'),
+    'area20_edge62':(62.5,2,4.,20.,'initial_same_g2'),
     'area20_dt2':(125.,2,2.,20.,'initial_same_g2'),
+    'area20_dt1':(125.,2,1.,20.,'initial_same_g2'),
     'area20_g1':(125.,1,4.,20.,'initial_same_g1'),
     'area20_g3':(125.,3,4.,20.,'initial_same_g3'),
 }

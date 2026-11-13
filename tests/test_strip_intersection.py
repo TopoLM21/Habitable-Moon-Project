@@ -40,3 +40,27 @@ def test_pure_felsic_refinement_cannot_generate_negative_ocean_area():
     inv.refine([source()],[],R,140.,320.);inv.aggregate()
     assert np.array_equal(inv.coarse.arrays['area'],inv.coarse.arrays['felsic_area'])
     assert np.all(inv.coarse.arrays['potential']==0)
+
+
+def test_coarea_rigid_material_motion_and_saved_memory_are_covariant():
+    import json
+    from tectonics.regional_area import AreaMaterialInventory
+    from tectonics.plates import Plate,PlateSystem
+    inv=inventory(edge=125.);inv.area_params=replace(inv.area_params,strip_rule='coarea')
+    s=source();inv.refine([s],[],R,140.,320.)
+    values,_=inv.integrated_field([s],[],R,140.,320.)
+    params=ContinentalCycleParameters(analytic_maturation=True)
+    inv.leaves.react(10.,values,params);inv.aggregate()
+    saved=inv.checkpoint();restored=AreaMaterialInventory.restore(json.loads(json.dumps(saved)),inv.params,inv.area_params)
+    w=np.array([.6,-.4,.2]);rot=Rotation.from_rotvec(w)
+    system=PlateSystem(inv.coarse.arrays['owner'].copy(),(Plate(0,0,w/np.linalg.norm(w),np.linalg.norm(w)),))
+    moved=replace(s,start=rot.apply(s.start),end=rot.apply(s.end),toward=rot.apply(s.toward))
+    for item in (inv,restored):
+        item.rotate(system,1.)
+        after,_=item.integrated_field([moved],[],R,140.,320.)
+        assert after==pytest.approx(values,rel=1e-8,abs=2e-12)
+        for key in ('area','basalt_volume','basalt_age_moment','potential'):
+            assert item.leaves.arrays[key].tolist()==saved['arrays']['leaf_'+key]
+    assert restored.checkpoint()==inv.checkpoint()
+    with pytest.raises(ValueError,match='restart'):
+        AreaMaterialInventory.restore(saved,inv.params,replace(inv.area_params,strip_rule='source_points'))
