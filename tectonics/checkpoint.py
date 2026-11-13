@@ -83,6 +83,7 @@ class RunCheckpoint:
     thermal_integration: dict[str, Any] | None = None
     material_exchange: dict[str, Any] | None = None
     arc_integration: dict[str, Any] | None = None
+    regional_material: dict[str, Any] | None = None
 
 
 def _plate_dict(p: Plate) -> dict[str, Any]:
@@ -220,6 +221,9 @@ def save_checkpoint(path: str | Path, cp: RunCheckpoint) -> Path:
         arrays['oceanic_volume_km3'] = np.asarray(cp.state.oceanic_volume_km3, dtype=float)
     if cp.state.oceanic_age_moment_km3_myr is not None:
         arrays['oceanic_age_moment_km3_myr'] = np.asarray(cp.state.oceanic_age_moment_km3_myr,dtype=float)
+    if cp.regional_material is not None:
+        for name,values in cp.regional_material['arrays'].items():
+            arrays['regional_material_'+name]=np.asarray(values)
     np.savez_compressed(root/"state.npz", **arrays)
     collision=[
         [int(a), int(b), float(age)]
@@ -340,6 +344,12 @@ def save_checkpoint(path: str | Path, cp: RunCheckpoint) -> Path:
             raise ValueError('Integral arc history requires a finite material inventory')
         meta['arc_integration'] = cp.arc_integration
         meta['version'] = '0.34-integral-arcs-reconstruction'
+    if cp.regional_material is not None:
+        if cp.material_exchange is None or cp.arc_integration is None:
+            raise ValueError('Regional material checkpoint requires its finite inventory and source law')
+        meta['regional_material']={k:v for k,v in cp.regional_material.items() if k!='arrays'}
+        meta['regional_material']['array_names']=list(cp.regional_material['arrays'])
+        meta['version']='0.35-regional-material-reconstruction'
     with (root/"meta.json").open("w",encoding="utf-8") as h:
         json.dump(meta,h,ensure_ascii=False,indent=2)
     return root
@@ -357,9 +367,17 @@ def load_checkpoint(path: str | Path, manager: PlateTopologyManager) -> RunCheck
         raise ValueError('Material checkpoint missing inventory history')
     if meta.get('version') == '0.34-integral-arcs-reconstruction' and (meta.get('arc_integration') is None or meta.get('material_exchange') is None):
         raise ValueError('Integral arc checkpoint missing law or inventory history')
-    if meta.get("version") not in {"0.9.1", "0.9.2", "0.9.3", "0.9.4", "0.9.5", "0.10-reconstructed", "0.11-material", "0.14-hydrosphere", "0.16-lithosphere-split", "0.18-subduction-memory", "0.19-rollback", "0.20-slab-breakoff", "0.21-slab-geometry-arcs", "0.22-flexural-isostasy", "0.23-conservative-sediments", "0.24-cratonic-memory", "0.25-mantle-plumes", "0.26-plume-rifting", "0.27-plume-dynamic-topography", "0.28-plume-magmatism", "0.29-hotspot-tracks", "0.30-mobile-plumes", "0.31-flow-coupled-plumes", "0.32-thermal-budget-reconstruction", "0.33-material-exchange-reconstruction", "0.34-integral-arcs-reconstruction"}:
+    if meta.get("version") not in {"0.9.1", "0.9.2", "0.9.3", "0.9.4", "0.9.5", "0.10-reconstructed", "0.11-material", "0.14-hydrosphere", "0.16-lithosphere-split", "0.18-subduction-memory", "0.19-rollback", "0.20-slab-breakoff", "0.21-slab-geometry-arcs", "0.22-flexural-isostasy", "0.23-conservative-sediments", "0.24-cratonic-memory", "0.25-mantle-plumes", "0.26-plume-rifting", "0.27-plume-dynamic-topography", "0.28-plume-magmatism", "0.29-hotspot-tracks", "0.30-mobile-plumes", "0.31-flow-coupled-plumes", "0.32-thermal-budget-reconstruction", "0.33-material-exchange-reconstruction", "0.34-integral-arcs-reconstruction", "0.35-regional-material-reconstruction"}:
         raise ValueError(f"Unsupported checkpoint version: {meta.get('version')}")
+    if meta.get('version')=='0.35-regional-material-reconstruction' and (meta.get('regional_material') is None or meta.get('material_exchange') is None or meta.get('arc_integration') is None):
+        raise ValueError('Regional checkpoint missing its coupled history')
+    regional_material=None
     with np.load(root/"state.npz", allow_pickle=False) as z:
+        if meta.get('regional_material') is not None:
+            regional_material=dict(meta['regional_material']);names=regional_material.pop('array_names')
+            if any('regional_material_'+name not in z.files for name in names):
+                raise ValueError('Regional checkpoint lost material history arrays')
+            regional_material['arrays']={name:z['regional_material_'+name].tolist() for name in names}
         if (meta.get('arc_integration') or {}).get('integral_ocean_fluxes',False) and 'oceanic_age_moment_km3_myr' not in z.files:
             raise ValueError('Integral basalt checkpoint missing material age moment')
         if meta.get('material_exchange') is not None and 'oceanic_volume_km3' not in z.files:
@@ -551,4 +569,5 @@ def load_checkpoint(path: str | Path, manager: PlateTopologyManager) -> RunCheck
         thermal_integration=meta.get("thermal_integration"),
         material_exchange=meta.get('material_exchange'),
         arc_integration=meta.get('arc_integration'),
+        regional_material=regional_material,
     )

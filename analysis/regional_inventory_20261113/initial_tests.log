@@ -1,0 +1,56 @@
+........F.F.                                                             [100%]
+=================================== FAILURES ===================================
+___ test_analytic_maturation_event_and_budget_independent_of_time_partition ____
+
+    def test_analytic_maturation_event_and_budget_independent_of_time_partition():
+        params=ContinentalCycleParameters(analytic_maturation=True,arc_maturation_rate_per_myr=.018,juvenile_threshold=.75)
+        expected=-params.arc_potential_decay_myr*math.log(1-params.juvenile_threshold/(.7*.018*params.arc_potential_decay_myr))
+        results=[]
+        for dt in (4.,2.,1.):
+            _,inv=columns();first=None;born=returned=0.
+            for i in range(round(100/dt)):
+                x=inv.react(dt,np.ones(80)*.7,params);born+=x['born_felsic_km3'];returned+=x['returned_basalt_km3']
+                if first is None:first=x['first_event_myr']
+            assert first==pytest.approx(expected,abs=1e-9)
+>           assert math.fsum(inv.arrays['felsic_volume'])==pytest.approx(born,rel=3e-15)
+E           assert 9487008799.833698 == 9487008799.833742 ± 2.8e-05
+E             
+E             comparison failed
+E             Obtained: 9487008799.833698
+E             Expected: 9487008799.833742 ± 2.8e-05
+
+tests/test_regional_material.py:44: AssertionError
+____ test_rotation_projection_and_restart_preserve_material_not_cell_labels ____
+
+    def test_rotation_projection_and_restart_preserve_material_not_cell_labels():
+        mesh,inv=columns(2);a=inv.arrays
+        a['owner'][mesh.centroids[:,0]<0]=1
+        a['felsic_area']=a['area']*.2;a['felsic_volume']=a['felsic_area']*35
+        a['felsic_age_moment']=a['felsic_volume']*300;a['basalt_volume']*=.8;a['basalt_age_moment']*=.8
+        a['potential']=np.linspace(.1,.4,len(a['area']))
+        system=PlateSystem(a['owner'].copy(),(Plate(0,0,np.array([0.,0.,1.]),.002),Plate(1,1,np.array([1.,0.,0.]),.003)))
+        inv.rotate(system,4.);saved=inv.checkpoint();restored=RegionalMaterialInventory.restore(json.loads(json.dumps(saved)),inv.params)
+        assert saved==restored.checkpoint()
+        for sub in (1,2,3):
+            receiver=build_icosphere(sub);state,cycle,d=inv.project(receiver,shell(receiver),initialize_continental_cycle(receiver),R)
+>           assert sum(state.oceanic_volume_km3)==pytest.approx(sum(a['basalt_volume']),rel=2e-15)
+E           assert np.float64(1967055039.0586147) == 1967055039.0586252 ± 3.9e-06
+E             
+E             comparison failed
+E             Obtained: 1967055039.0586147
+E             Expected: 1967055039.0586252 ± 3.9e-06
+
+tests/test_regional_material.py:69: AssertionError
+=============================== warnings summary ===============================
+../../opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/anyio/pytest_plugin.py:14
+  /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/anyio/pytest_plugin.py:14: PytestRemovedIn10Warning: _pytest.python.CallSpec2 has been renamed to CallSpec.
+  The CallSpec2 alias will be removed in pytest 10.
+  Update imports to use CallSpec instead.
+  See https://docs.pytest.org/en/stable/deprecations.html#callspec2-renamed
+    from _pytest.python import CallSpec2
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_regional_material.py::test_analytic_maturation_event_and_budget_independent_of_time_partition
+FAILED tests/test_regional_material.py::test_rotation_projection_and_restart_preserve_material_not_cell_labels
+2 failed, 10 passed, 1 warning in 8.45s

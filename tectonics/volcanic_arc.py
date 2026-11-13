@@ -214,8 +214,8 @@ def compute_volcanic_arc_forcing(
     return field,diag
 
 
-def _integrated_arc_forcing(mesh,state,memory,radius_km,params,boundaries):
-    from .integral_arcs import ArcSegment,integrate_sources
+def integrated_arc_sources(mesh,memory,radius_km,params,boundaries):
+    from .integral_arcs import ArcSegment
     segments=[];caps=[];depths=[];distances=[];active=pulses=0
     if params.enabled and memory is not None:
         for key in sorted(memory.zones):
@@ -237,6 +237,12 @@ def _integrated_arc_forcing(mesh,state,memory,radius_km,params,boundaries):
                 segments.append(ArcSegment(mesh.vertices[b.vertex_u],mesh.vertices[b.vertex_v],toward,
                                            z.overriding_plate,amplitude,distance));count+=1
             if count:depths.append(depth);distances.append(distance);active+=1
+    return segments,caps,depths,distances,active,pulses
+
+
+def _integrated_arc_forcing(mesh,state,memory,radius_km,params,boundaries):
+    from .integral_arcs import integrate_sources
+    segments,caps,depths,distances,active,pulses=integrated_arc_sources(mesh,memory,radius_km,params,boundaries)
     integral,stats=integrate_sources(mesh,state.cell_plate,segments,radius_km,params.arc_half_width_km,
                                     params.arc_outer_width_km,params.integration_spacing_km,params.integration_order,caps)
     areas=mesh.physical_cell_areas_km2(radius_km);field=integral/areas
