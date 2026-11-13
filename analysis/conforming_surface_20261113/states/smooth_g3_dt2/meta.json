@@ -1,0 +1,613 @@
+{
+  "parameters": {
+    "radius_m": 5287000.0,
+    "gravity_m_s2": 7.12,
+    "basal_drag_pa_s_m": 1e+17,
+    "felsic_density_kg_m3": 2800.0,
+    "basalt_density_kg_m3": 2900.0,
+    "heat_capacity_j_kg_k": 1200.0,
+    "min_area_fraction": 0.0001,
+    "max_height_radius": 0.02
+  },
+  "control": {
+    "max_step_myr": 2.0,
+    "initial_step_myr": 0.25,
+    "position_atol_rad": 1e-05,
+    "thickness_rtol": 0.001,
+    "energy_rtol": 0.0001,
+    "energy_atol_fraction": 1e-12,
+    "max_trials": 2000
+  },
+  "data": {
+    "version": 1,
+    "time_myr": 100.0,
+    "origin_time_myr": 0.0,
+    "next_step_myr": 0.25,
+    "accepted_steps": 50,
+    "rejected_steps": 0,
+    "heat_generated_j": [
+      3.143570201404261e+23,
+      -13631488.0
+    ],
+    "initial_heat_j": [
+      0.0,
+      0.0
+    ],
+    "energy_defect_j": [
+      1730184075018240.0,
+      0.0
+    ],
+    "external_work_j": [
+      0.0,
+      0.0
+    ],
+    "history": [
+      {
+        "time_myr": 2.0,
+        "dt_myr": 2.0,
+        "potential_j": 1.460812488482872e+27,
+        "heat_j": 6.655739337093636e+21,
+        "energy_defect_j": 41746613403648.0,
+        "error_ratio": null,
+        "max_height_m": 21970.06618979136,
+        "max_speed_mm_yr": 0.07569120897314827,
+        "min_area_fraction": 0.9999458768370115
+      },
+      {
+        "time_myr": 4.0,
+        "dt_myr": 2.0,
+        "potential_j": 1.4608058484139397e+27,
+        "heat_j": 6.640068973521528e+21,
+        "energy_defect_j": 41313748647936.0,
+        "error_ratio": null,
+        "max_height_m": 21967.36364636388,
+        "max_speed_mm_yr": 0.07559730687867729,
+        "min_area_fraction": 0.9998918274367581
+      },
+      {
+        "time_myr": 6.0,
+        "dt_myr": 2.0,
+        "potential_j": 1.460799223974228e+27,
+        "heat_j": 6.624439752404131e+21,
+        "energy_defect_j": 40709996412928.0,
+        "error_ratio": null,
+        "max_height_m": 21964.668094444576,
+        "max_speed_mm_yr": 0.07550342181607611,
+        "min_area_fraction": 0.9998378506928093
+      },
+      {
+        "time_myr": 8.0,
+        "dt_myr": 2.0,
+        "potential_j": 1.4607926151228152e+27,
+        "heat_j": 6.608851453234311e+21,
+        "energy_defect_j": 40430057029632.0,
+        "error_ratio": null,
+        "max_height_m": 21961.979450865565,
+        "max_speed_mm_yr": 0.07540956229903409,
+        "min_area_fraction": 0.999783945539048
+      },
+      {
+        "time_myr": 10.0,
+        "dt_myr": 2.0,
+        "potential_j": 1.460786021818992e+27,
+        "heat_j": 6.59330386348515e+21,
+        "energy_defect_j": 40152759009280.0,
+        "error_ratio": null,
+        "max_height_m": 21959.297635567294,
+        "max_speed_mm_yr": 0.07531573634329396,
+        "min_area_fraction": 0.9997301109481788
+      },
+      {
+        "time_myr": 12.0,
+        "dt_myr": 2.0,
+        "potential_j": 1.4607794440222536e+27,
+        "heat_j": 6.577796777991972e+21,
+        "energy_defect_j": 39772345073664.0,
+        "error_ratio": null,
+        "max_height_m": 21956.62257144369,
+        "max_speed_mm_yr": 0.07522195149213608,
+        "min_area_fraction": 0.9996763459302943
+      },
+      {
+        "time_myr": 14.0,
+        "dt_myr": 2.0,
+        "potential_j": 1.460772881692295e+27,
+        "heat_j": 6.562329998387768e+21,
+        "energy_defect_j": 39658530537472.0,
+        "error_ratio": null,
+        "max_height_m": 21953.9541841954,
+        "max_speed_mm_yr": 0.07512821484066916,
+        "min_area_fraction": 0.9996226495314957
+      },
+      {
+        "time_myr": 16.0,
+        "dt_myr": 2.0,
+        "potential_j": 1.4607663347890014e+27,
+        "heat_j": 6.546903332587178e+21,
+        "energy_defect_j": 39040981139456.0,
+        "error_ratio": null,
+        "max_height_m": 21951.292402190877,
+        "max_speed_mm_yr": 0.07503453305898847,
+        "min_area_fraction": 0.9995690208325643
+      },
+      {
+        "time_myr": 18.0,
+        "dt_myr": 2.0,
+        "potential_j": 1.460759803272446e+27,
+        "heat_j": 6.531516594314784e+21,
+        "energy_defect_j": 38836132380672.0,
+        "error_ratio": null,
+        "max_height_m": 21948.637156334713,
+        "max_speed_mm_yr": 0.07494091241416287,
+        "min_area_fraction": 0.9995154589476841
+      },
+      {
+        "time_myr": 20.0,
+        "dt_myr": 2.0,
+        "potential_j": 1.4607532871028817e+27,
+        "heat_j": 6.516169602673598e+21,
+        "energy_defect_j": 38466902556672.0,
+        "error_ratio": null,
+        "max_height_m": 21945.988379942984,
+        "max_speed_mm_yr": 0.07484735879118155,
+        "min_area_fraction": 0.9994619630232112
+      },
+      {
+        "time_myr": 22.0,
+        "dt_myr": 2.0,
+        "potential_j": 1.4607467862407382e+27,
+        "heat_j": 6.500862181750299e+21,
+        "energy_defect_j": 38216710225920.0,
+        "error_ratio": null,
+        "max_height_m": 21943.346008625154,
+        "max_speed_mm_yr": 0.07475387771284321,
+        "min_area_fraction": 0.9994085322364901
+      },
+      {
+        "time_myr": 24.0,
+        "dt_myr": 2.0,
+        "potential_j": 1.4607403006466157e+27,
+        "heat_j": 6.485594160253924e+21,
+        "energy_defect_j": 37768650555392.0,
+        "error_ratio": null,
+        "max_height_m": 21940.709980172156,
+        "max_speed_mm_yr": 0.07466047435879036,
+        "min_area_fraction": 0.9993551657947152
+      },
+      {
+        "time_myr": 26.0,
+        "dt_myr": 2.0,
+        "potential_j": 1.460733830281282e+27,
+        "heat_j": 6.470365371185012e+21,
+        "energy_defect_j": 37523906625536.0,
+        "error_ratio": null,
+        "max_height_m": 21938.08023445042,
+        "max_speed_mm_yr": 0.07456715358344253,
+        "min_area_fraction": 0.9993018629338335
+      },
+      {
+        "time_myr": 28.0,
+        "dt_myr": 2.0,
+        "potential_j": 1.4607273751056677e+27,
+        "heat_j": 6.45517565153245e+21,
+        "energy_defect_j": 37199088189440.0,
+        "error_ratio": null,
+        "max_height_m": 21935.45671330138,
+        "max_speed_mm_yr": 0.0744739199332288,
+        "min_area_fraction": 0.9992486229174901
+      },
+      {
+        "time_myr": 30.0,
+        "dt_myr": 2.0,
+        "potential_j": 1.4607209350808626e+27,
+        "heat_j": 6.440024841995949e+21,
+        "energy_defect_j": 36923090403328.0,
+        "error_ratio": null,
+        "max_height_m": 21932.839360446385,
+        "max_speed_mm_yr": 0.07438077766282708,
+        "min_area_fraction": 0.9991954450360113
+      },
+      {
+        "time_myr": 32.0,
+        "dt_myr": 2.0,
+        "potential_j": 1.4607145101681126e+27,
+        "heat_j": 6.424912786731279e+21,
+        "energy_defect_j": 36707457040384.0,
+        "error_ratio": null,
+        "max_height_m": 21930.228121396427,
+        "max_speed_mm_yr": 0.0742877307507051,
+        "min_area_fraction": 0.999142328605427
+      },
+      {
+        "time_myr": 34.0,
+        "dt_myr": 2.0,
+        "potential_j": 1.4607081003288157e+27,
+        "heat_j": 6.409839333116758e+21,
+        "energy_defect_j": 36212867858432.0,
+        "error_ratio": null,
+        "max_height_m": 21927.62294336674,
+        "max_speed_mm_yr": 0.07419478291388762,
+        "min_area_fraction": 0.9990892729665312
+      },
+      {
+        "time_myr": 36.0,
+        "dt_myr": 2.0,
+        "potential_j": 1.4607017055245206e+27,
+        "heat_j": 6.394804331539113e+21,
+        "energy_defect_j": 36459140612096.0,
+        "error_ratio": null,
+        "max_height_m": 21925.02377519576,
+        "max_speed_mm_yr": 0.0741019376219204,
+        "min_area_fraction": 0.9990362774839731
+      },
+      {
+        "time_myr": 38.0,
+        "dt_myr": 2.0,
+        "potential_j": 1.4606953257169212e+27,
+        "heat_j": 6.379807635196704e+21,
+        "energy_defect_j": 35780171923456.0,
+        "error_ratio": null,
+        "max_height_m": 21922.470240693096,
+        "max_speed_mm_yr": 0.07400919811022193,
+        "min_area_fraction": 0.9989833415453868
+      },
+      {
+        "time_myr": 40.0,
+        "dt_myr": 2.0,
+        "potential_j": 1.4606889608678567e+27,
+        "heat_j": 6.364849099918876e+21,
+        "energy_defect_j": 35415719411712.0,
+        "error_ratio": null,
+        "max_height_m": 21919.986411132195,
+        "max_speed_mm_yr": 0.0739165673927655,
+        "min_area_fraction": 0.998930464560552
+      },
+      {
+        "time_myr": 42.0,
+        "dt_myr": 2.0,
+        "potential_j": 1.4606826109393082e+27,
+        "heat_j": 6.349928584000086e+21,
+        "energy_defect_j": 35497238855680.0,
+        "error_ratio": null,
+        "max_height_m": 21917.50613181527,
+        "max_speed_mm_yr": 0.07382404827407782,
+        "min_area_fraction": 0.9988776459605829
+      },
+      {
+        "time_myr": 44.0,
+        "dt_myr": 2.0,
+        "potential_j": 1.460676275893395e+27,
+        "heat_j": 6.335045948047278e+21,
+        "energy_defect_j": 34895262908416.0,
+        "error_ratio": null,
+        "max_height_m": 21915.029436534915,
+        "max_speed_mm_yr": 0.07373164336067758,
+        "min_area_fraction": 0.9988248851971526
+      },
+      {
+        "time_myr": 46.0,
+        "dt_myr": 2.0,
+        "potential_j": 1.460669955692375e+27,
+        "heat_j": 6.320201054839544e+21,
+        "energy_defect_j": 34927347236864.0,
+        "error_ratio": null,
+        "max_height_m": 21912.556357018275,
+        "max_speed_mm_yr": 0.07363935507196488,
+        "min_area_fraction": 0.9987721817417442
+      },
+      {
+        "time_myr": 48.0,
+        "dt_myr": 2.0,
+        "potential_j": 1.4606636502986405e+27,
+        "heat_j": 6.305393769199087e+21,
+        "energy_defect_j": 34556114632704.0,
+        "error_ratio": null,
+        "max_height_m": 21910.08692302253,
+        "max_speed_mm_yr": 0.0735471856505158,
+        "min_area_fraction": 0.9987195350849263
+      },
+      {
+        "time_myr": 50.0,
+        "dt_myr": 2.0,
+        "potential_j": 1.460657359674717e+27,
+        "heat_j": 6.290623957872267e+21,
+        "energy_defect_j": 34393465815040.0,
+        "error_ratio": null,
+        "max_height_m": 21907.621162425974,
+        "max_speed_mm_yr": 0.0734551371718967,
+        "min_area_fraction": 0.9986669447356612
+      },
+      {
+        "time_myr": 52.0,
+        "dt_myr": 2.0,
+        "potential_j": 1.4606510837832617e+27,
+        "heat_j": 6.275891489420195e+21,
+        "energy_defect_j": 34117272993792.0,
+        "error_ratio": null,
+        "max_height_m": 21905.15910131478,
+        "max_speed_mm_yr": 0.07336321155397621,
+        "min_area_fraction": 0.9986144102206341
+      },
+      {
+        "time_myr": 54.0,
+        "dt_myr": 2.0,
+        "potential_j": 1.4606448225870616e+27,
+        "heat_j": 6.261196234117709e+21,
+        "energy_defect_j": 34019623305216.0,
+        "error_ratio": null,
+        "max_height_m": 21902.70076406598,
+        "max_speed_mm_yr": 0.0732714105657398,
+        "min_area_fraction": 0.9985619310836106
+      },
+      {
+        "time_myr": 56.0,
+        "dt_myr": 2.0,
+        "potential_j": 1.4606385760490313e+27,
+        "heat_j": 6.246538063860451e+21,
+        "energy_defect_j": 33539508666368.0,
+        "error_ratio": null,
+        "max_height_m": 21900.246173426433,
+        "max_speed_mm_yr": 0.07317973583568058,
+        "min_area_fraction": 0.9985095068848153
+      },
+      {
+        "time_myr": 58.0,
+        "dt_myr": 2.0,
+        "potential_j": 1.4606323441322126e+27,
+        "heat_j": 6.231916852078872e+21,
+        "energy_defect_j": 33375851118592.0,
+        "error_ratio": null,
+        "max_height_m": 21897.795350588327,
+        "max_speed_mm_yr": 0.0730881888597992,
+        "min_area_fraction": 0.9984571372003357
+      },
+      {
+        "time_myr": 60.0,
+        "dt_myr": 2.0,
+        "potential_j": 1.460626126799772e+27,
+        "heat_j": 6.217332473659044e+21,
+        "energy_defect_j": 33209291112448.0,
+        "error_ratio": null,
+        "max_height_m": 21895.348315261126,
+        "max_speed_mm_yr": 0.0729967710091091,
+        "min_area_fraction": 0.9984048216215449
+      },
+      {
+        "time_myr": 62.0,
+        "dt_myr": 2.0,
+        "potential_j": 1.4606199240150002e+27,
+        "heat_j": 6.202784804869372e+21,
+        "energy_defect_j": 33003293114368.0,
+        "error_ratio": null,
+        "max_height_m": 21892.905085740207,
+        "max_speed_mm_yr": 0.07290548353687722,
+        "min_area_fraction": 0.9983525597545501
+      },
+      {
+        "time_myr": 64.0,
+        "dt_myr": 2.0,
+        "potential_j": 1.4606137357413096e+27,
+        "heat_j": 6.188273723292952e+21,
+        "energy_defect_j": 32661620916224.0,
+        "error_ratio": null,
+        "max_height_m": 21890.465678972454,
+        "max_speed_mm_yr": 0.07281432758532845,
+        "min_area_fraction": 0.9983003512196584
+      },
+      {
+        "time_myr": 66.0,
+        "dt_myr": 2.0,
+        "potential_j": 1.4606075619422344e+27,
+        "heat_j": 6.17379910776492e+21,
+        "energy_defect_j": 32515446276096.0,
+        "error_ratio": null,
+        "max_height_m": 21888.03011061872,
+        "max_speed_mm_yr": 0.07272330419219351,
+        "min_area_fraction": 0.9982481956508623
+      },
+      {
+        "time_myr": 68.0,
+        "dt_myr": 2.0,
+        "potential_j": 1.4606014025814282e+27,
+        "heat_j": 6.159360838314524e+21,
+        "energy_defect_j": 32165906612224.0,
+        "error_ratio": null,
+        "max_height_m": 21885.598395113582,
+        "max_speed_mm_yr": 0.07263241429678598,
+        "min_area_fraction": 0.9981960926953447
+      },
+      {
+        "time_myr": 70.0,
+        "dt_myr": 2.0,
+        "potential_j": 1.4605952576226645e+27,
+        "heat_j": 6.144958796111411e+21,
+        "energy_defect_j": 32354537046016.0,
+        "error_ratio": null,
+        "max_height_m": 21883.17054572221,
+        "max_speed_mm_yr": 0.07254165874579654,
+        "min_area_fraction": 0.9981440420130034
+      },
+      {
+        "time_myr": 72.0,
+        "dt_myr": 2.0,
+        "potential_j": 1.4605891270298327e+27,
+        "heat_j": 6.130592863415964e+21,
+        "energy_defect_j": 31615076007936.0,
+        "error_ratio": null,
+        "max_height_m": 21880.746574594723,
+        "max_speed_mm_yr": 0.07245103829880906,
+        "min_area_fraction": 0.9980920432759911
+      },
+      {
+        "time_myr": 74.0,
+        "dt_myr": 2.0,
+        "potential_j": 1.4605830107669408e+27,
+        "heat_j": 6.116262923533032e+21,
+        "energy_defect_j": 31724750766080.0,
+        "error_ratio": null,
+        "max_height_m": 21878.32649281813,
+        "max_speed_mm_yr": 0.07236055363352331,
+        "min_area_fraction": 0.9980400961682734
+      },
+      {
+        "time_myr": 76.0,
+        "dt_myr": 2.0,
+        "potential_j": 1.4605769087981117e+27,
+        "heat_j": 6.101968860769293e+21,
+        "energy_defect_j": 31614327324672.0,
+        "error_ratio": null,
+        "max_height_m": 21875.910310465748,
+        "max_speed_mm_yr": 0.0722702053506583,
+        "min_area_fraction": 0.997988200385202
+      },
+      {
+        "time_myr": 78.0,
+        "dt_myr": 2.0,
+        "potential_j": 1.4605708210875825e+27,
+        "heat_j": 6.087710560393261e+21,
+        "energy_defect_j": 31176404238336.0,
+        "error_ratio": null,
+        "max_height_m": 21873.49803664448,
+        "max_speed_mm_yr": 0.07217999397870038,
+        "min_area_fraction": 0.9979363556331061
+      },
+      {
+        "time_myr": 80.0,
+        "dt_myr": 2.0,
+        "potential_j": 1.4605647475997048e+27,
+        "heat_j": 6.073487908598522e+21,
+        "energy_defect_j": 30953778970624.0,
+        "error_ratio": null,
+        "max_height_m": 21871.089679539975,
+        "max_speed_mm_yr": 0.07208991997826493,
+        "min_area_fraction": 0.9978845616288953
+      },
+      {
+        "time_myr": 82.0,
+        "dt_myr": 2.0,
+        "potential_j": 1.4605586882989434e+27,
+        "heat_j": 6.059300792469198e+21,
+        "energy_defect_j": 31005393027072.0,
+        "error_ratio": null,
+        "max_height_m": 21868.68524645956,
+        "max_speed_mm_yr": 0.07199998374634592,
+        "min_area_fraction": 0.997832818099679
+      },
+      {
+        "time_myr": 84.0,
+        "dt_myr": 2.0,
+        "potential_j": 1.460552643149874e+27,
+        "heat_j": 6.04514909994797e+21,
+        "energy_defect_j": 30599479820288.0,
+        "error_ratio": null,
+        "max_height_m": 21866.284743873464,
+        "max_speed_mm_yr": 0.07191018562026724,
+        "min_area_fraction": 0.9977811247824
+      },
+      {
+        "time_myr": 86.0,
+        "dt_myr": 2.0,
+        "potential_j": 1.4605466121171846e+27,
+        "heat_j": 6.031032719806321e+21,
+        "energy_defect_j": 30382829338624.0,
+        "error_ratio": null,
+        "max_height_m": 21863.88817745396,
+        "max_speed_mm_yr": 0.07182052588146756,
+        "min_area_fraction": 0.9977294814234802
+      },
+      {
+        "time_myr": 88.0,
+        "dt_myr": 2.0,
+        "potential_j": 1.460540595165673e+27,
+        "heat_j": 6.016951541616577e+21,
+        "energy_defect_j": 30153808805888.0,
+        "error_ratio": null,
+        "max_height_m": 21861.495552112825,
+        "max_speed_mm_yr": 0.0717310047590251,
+        "min_area_fraction": 0.9976778877784803
+      },
+      {
+        "time_myr": 90.0,
+        "dt_myr": 2.0,
+        "potential_j": 1.4605345922602476e+27,
+        "heat_j": 6.002905455726016e+21,
+        "energy_defect_j": 30210859728896.0,
+        "error_ratio": null,
+        "max_height_m": 21859.10687203713,
+        "max_speed_mm_yr": 0.07164162243306768,
+        "min_area_fraction": 0.9976263436117722
+      },
+      {
+        "time_myr": 92.0,
+        "dt_myr": 2.0,
+        "potential_j": 1.460528603365924e+27,
+        "heat_j": 5.988894353232639e+21,
+        "energy_defect_j": 29678999961600.0,
+        "error_ratio": null,
+        "max_height_m": 21856.72214072339,
+        "max_speed_mm_yr": 0.07155237903793635,
+        "min_area_fraction": 0.9975748486962207
+      },
+      {
+        "time_myr": 94.0,
+        "dt_myr": 2.0,
+        "potential_j": 1.4605226284478276e+27,
+        "heat_j": 5.974918125962443e+21,
+        "energy_defect_j": 29510754893824.0,
+        "error_ratio": null,
+        "max_height_m": 21854.34136101002,
+        "max_speed_mm_yr": 0.07146327466520129,
+        "min_area_fraction": 0.9975234028128802
+      },
+      {
+        "time_myr": 96.0,
+        "dt_myr": 2.0,
+        "potential_j": 1.460516667471191e+27,
+        "heat_j": 5.960976666448228e+21,
+        "energy_defect_j": 29716187709440.0,
+        "error_ratio": null,
+        "max_height_m": 21851.96453510862,
+        "max_speed_mm_yr": 0.07137430936653973,
+        "min_area_fraction": 0.9974720057507017
+      },
+      {
+        "time_myr": 98.0,
+        "dt_myr": 2.0,
+        "potential_j": 1.460510720401352e+27,
+        "heat_j": 5.947069867909693e+21,
+        "energy_defect_j": 29068112166912.0,
+        "error_ratio": null,
+        "max_height_m": 21849.5916646336,
+        "max_speed_mm_yr": 0.07128548315636983,
+        "min_area_fraction": 0.997420657306247
+      },
+      {
+        "time_myr": 100.0,
+        "dt_myr": 2.0,
+        "potential_j": 1.460504787203757e+27,
+        "heat_j": 5.933197624234832e+21,
+        "energy_defect_j": 29206662610944.0,
+        "error_ratio": null,
+        "max_height_m": 21847.222750630543,
+        "max_speed_mm_yr": 0.07119679601444226,
+        "min_area_fraction": 0.9973693572834185
+      }
+    ],
+    "provenance": {
+      "scenario": "smooth",
+      "common_reference_subdivision": 5,
+      "initialization": "conservative aggregation of same analytic profile on common fine quadrature",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    "initial_potential_j": 1.4608191442221673e+27,
+    "initial_volume_m3": [
+      0.0,
+      7.051858792661324e+18
+    ],
+    "material_identity": "e237efb342e1368d8f9efc033cd8fd776e51f40ebf5b7584f0985403d1c5deae"
+  }
+}
