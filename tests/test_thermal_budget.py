@@ -170,6 +170,16 @@ def test_old_state_starts_new_explicit_budget_origin():
     assert advance(ctl, s, .1, p).time_myr == 27.1
 
 
+def test_incomplete_saved_controller_is_not_silently_reinitialized():
+    p = ThermalParameters(); ctl = ThermalBudgetIntegrator(initial(p))
+    data = ctl.checkpoint(); del data['next_step_myr']
+    with pytest.raises(ValueError, match='Incomplete thermal budget checkpoint'):
+        ThermalBudgetIntegrator.restore(data)
+    data = ctl.checkpoint(); data['energy_change_j'][1] = math.nan
+    with pytest.raises(ValueError, match='Invalid compensated energy'):
+        ThermalBudgetIntegrator.restore(data)
+
+
 def test_native_checkpoint_roundtrip_retains_new_controller(tmp_path):
     from tectonics.checkpoint import RunCheckpoint, load_checkpoint, save_checkpoint
     from tectonics.mesh import build_icosphere

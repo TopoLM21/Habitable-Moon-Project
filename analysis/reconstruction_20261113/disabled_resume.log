@@ -1,0 +1,12 @@
+mkdir -p failed for path /home/agent/.config/matplotlib: [Errno 30] Read-only file system: '/home/agent/.config/matplotlib'
+Matplotlib created a temporary cache directory at /tmp/matplotlib-5_yckwo3 because there was an issue with the default path (/home/agent/.config/matplotlib); it is highly recommended to set the MPLCONFIGDIR environment variable to a writable directory, in particular to speed up the import of Matplotlib and to better support multiprocessing.
+Fontconfig error: No writable cache directories
+Resumed checkpoint at t=100.0 Myr with 12 plates | sea=-861.5 m
+Traceback (most recent call last):
+  File "/workspace/Habitable-Moon-Project/run_long_evolution_v131.py", line 252, in <module>
+    main()
+  File "/workspace/Habitable-Moon-Project/run_long_evolution_v131.py", line 231, in main
+    base.main()
+  File "/workspace/Habitable-Moon-Project/run_long_evolution_v123.py", line 172, in main
+    raise ValueError('Budgeted checkpoint requires thermal_integration.enabled; refusing to discard its history')
+ValueError: Budgeted checkpoint requires thermal_integration.enabled; refusing to discard its history

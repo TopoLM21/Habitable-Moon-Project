@@ -76,6 +76,23 @@ class ThermalBudgetIntegrator:
     def restore(cls, data: dict, options: ThermalIntegrationParameters | None = None):
         if data.get("version") != cls.VERSION:
             raise ValueError("Unsupported thermal budget checkpoint")
+        required = {"options", "origin_time_myr", "origin_system_age_myr",
+                    "origin_temperature_k", "time_myr", "next_step_myr",
+                    "accepted_steps", "rejected_steps", "max_accepted_error_ratio",
+                    "energy_change_j", "radiogenic_input_j", "orbital_input_j",
+                    "surface_output_j", "physical_signature", "history"}
+        if required - data.keys():
+            raise ValueError(f"Incomplete thermal budget checkpoint: {sorted(required - data.keys())}")
+        for key in ("energy_change_j", "radiogenic_input_j", "orbital_input_j", "surface_output_j"):
+            pair = data[key]
+            if len(pair) != 2 or not all(math.isfinite(value) for value in pair):
+                raise ValueError(f"Invalid compensated energy field: {key}")
+        for key in ("origin_time_myr", "origin_system_age_myr", "origin_temperature_k",
+                    "time_myr", "next_step_myr", "max_accepted_error_ratio"):
+            if not math.isfinite(data[key]):
+                raise ValueError(f"Invalid thermal controller field: {key}")
+        if data["next_step_myr"] <= 0 or data["time_myr"] < data["origin_time_myr"]:
+            raise ValueError("Invalid thermal controller chronology")
         saved = ThermalIntegrationParameters(**data["options"])
         if options is not None and options != saved:
             raise ValueError("Thermal controller options changed at restart")

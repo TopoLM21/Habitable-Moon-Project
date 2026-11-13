@@ -1,0 +1,216 @@
+{
+  "status": "new reconstruction stage 1, not a reproduced lost regional model",
+  "runtime_source_commit": "f32900cb2bcd7ac2e4ccd264be997a78bf1a8af9",
+  "base_commit": "831e6e3e0d58e352efab575f561aa677595a4b7f",
+  "temperature_step_difference_k": 1.613632548469468e-06,
+  "continental_generation_dt2_over_dt4": 2.04253018644562,
+  "grid_comparison": "same thermal inventory; mechanically different seeded raster worlds, NOT geometric convergence",
+  "full_mass_energy_closure": false,
+  "source_work_for_paid_fracture_reconstructed": false,
+  "cases": [
+    {
+      "case": "measured_grid1_dt4",
+      "source_commit": "f32900cb2bcd7ac2e4ccd264be997a78bf1a8af9",
+      "subdivisions": 1,
+      "dt_myr": 4.0,
+      "end_myr": 100.0,
+      "elapsed_process_s": 11.39941164800075,
+      "resources": {
+        "max_rss_kib": 199060,
+        "user_s": 11.682812,
+        "system_s": 0.657906,
+        "wall_s": 11.39941164800075
+      },
+      "runtime": {
+        "start_time_myr": 0.0,
+        "end_time_myr": 100.0,
+        "outer_dt_myr": 4.0,
+        "mesh_cells": 80,
+        "integration_wall_seconds": 0.8776500979984121,
+        "scope": "global loop only; excludes initialization, checkpoint and rendering"
+      },
+      "parameters_sha256": "fefda1447f6e436c3abc5621d68327f6b6b83d2c86773400c54fc43e728d9344",
+      "temperature_k": 1842.2199093664399,
+      "plate_count": 13,
+      "topology_events": [
+        "disconnect_split"
+      ],
+      "continental_generated_km3": 73813565.58185267,
+      "continental_recycled_km3": 0.0,
+      "continental_material_ledger_error_km3": 0.0,
+      "igneous_ledger_error_km3": -4.656612873077393e-10,
+      "thickness_min_km": 7.0,
+      "thickness_max_km": 33.270646274542784,
+      "thermal_budget": {
+        "time_myr": 100.0,
+        "temperature_k": 1842.2199093664399,
+        "accepted_steps": 35,
+        "rejected_steps": 0,
+        "balance_residual_j": 0.0,
+        "rounded_temperature_energy_residual_j": -102538049224704.0,
+        "mantle_mass_is_fixed": true,
+        "plate_work_is_accounted": false,
+        "energy_change_j": -1.8957416970952985e+28,
+        "radiogenic_input_j": 2.7334824834291816e+28,
+        "orbital_input_j": 9.597289897696418e+27,
+        "surface_output_j": 5.588953170294122e+28
+      },
+      "full_mass_energy_closure": false
+    },
+    {
+      "case": "measured_grid2_dt2",
+      "source_commit": "f32900cb2bcd7ac2e4ccd264be997a78bf1a8af9",
+      "subdivisions": 2,
+      "dt_myr": 2.0,
+      "end_myr": 100.0,
+      "elapsed_process_s": 14.358696811999835,
+      "resources": {
+        "max_rss_kib": 206284,
+        "user_s": 14.463726,
+        "system_s": 0.899627,
+        "wall_s": 14.358696811999835
+      },
+      "runtime": {
+        "start_time_myr": 0.0,
+        "end_time_myr": 100.0,
+        "outer_dt_myr": 2.0,
+        "mesh_cells": 320,
+        "integration_wall_seconds": 3.621322261999012,
+        "scope": "global loop only; excludes initialization, checkpoint and rendering"
+      },
+      "parameters_sha256": "3ee530ad44760325db61a271c445cd07cc69a7f5c8fdbd4d570d2ed1cc56a339",
+      "temperature_k": 1842.2199077528073,
+      "plate_count": 12,
+      "topology_events": [],
+      "continental_generated_km3": 131036657.13793196,
+      "continental_recycled_km3": 0.0,
+      "continental_material_ledger_error_km3": 4.76837158203125e-07,
+      "igneous_ledger_error_km3": 4.656612873077393e-10,
+      "thickness_min_km": 7.0,
+      "thickness_max_km": 34.74714413028144,
+      "thermal_budget": {
+        "time_myr": 100.0,
+        "temperature_k": 1842.2199077528073,
+        "accepted_steps": 56,
+        "rejected_steps": 0,
+        "balance_residual_j": 0.0,
+        "rounded_temperature_energy_residual_j": 64862596104192.0,
+        "mantle_mass_is_fixed": true,
+        "plate_work_is_accounted": false,
+        "energy_change_j": -1.8957420902823165e+28,
+        "radiogenic_input_j": 2.733482435658399e+28,
+        "orbital_input_j": 9.597289897696418e+27,
+        "surface_output_j": 5.5889535157103575e+28
+      },
+      "full_mass_energy_closure": false
+    },
+    {
+      "case": "measured_grid2_dt4",
+      "source_commit": "f32900cb2bcd7ac2e4ccd264be997a78bf1a8af9",
+      "subdivisions": 2,
+      "dt_myr": 4.0,
+      "end_myr": 100.0,
+      "elapsed_process_s": 12.246800635999534,
+      "resources": {
+        "max_rss_kib": 196900,
+        "user_s": 12.431837,
+        "system_s": 0.7663829999999999,
+        "wall_s": 12.246800635999534
+      },
+      "runtime": {
+        "start_time_myr": 0.0,
+        "end_time_myr": 100.0,
+        "outer_dt_myr": 4.0,
+        "mesh_cells": 320,
+        "integration_wall_seconds": 1.763141142000677,
+        "scope": "global loop only; excludes initialization, checkpoint and rendering"
+      },
+      "parameters_sha256": "3ee530ad44760325db61a271c445cd07cc69a7f5c8fdbd4d570d2ed1cc56a339",
+      "temperature_k": 1842.2199093664399,
+      "plate_count": 12,
+      "topology_events": [],
+      "continental_generated_km3": 64154085.95060226,
+      "continental_recycled_km3": 0.0,
+      "continental_material_ledger_error_km3": 0.0,
+      "igneous_ledger_error_km3": 0.0,
+      "thickness_min_km": 7.0,
+      "thickness_max_km": 34.924172661787985,
+      "thermal_budget": {
+        "time_myr": 100.0,
+        "temperature_k": 1842.2199093664399,
+        "accepted_steps": 35,
+        "rejected_steps": 0,
+        "balance_residual_j": 0.0,
+        "rounded_temperature_energy_residual_j": -102538049224704.0,
+        "mantle_mass_is_fixed": true,
+        "plate_work_is_accounted": false,
+        "energy_change_j": -1.8957416970952985e+28,
+        "radiogenic_input_j": 2.7334824834291816e+28,
+        "orbital_input_j": 9.597289897696418e+27,
+        "surface_output_j": 5.588953170294122e+28
+      },
+      "full_mass_energy_closure": false
+    },
+    {
+      "case": "measured_grid3_dt4",
+      "source_commit": "f32900cb2bcd7ac2e4ccd264be997a78bf1a8af9",
+      "subdivisions": 3,
+      "dt_myr": 4.0,
+      "end_myr": 100.0,
+      "elapsed_process_s": 14.80761177199929,
+      "resources": {
+        "max_rss_kib": 212384,
+        "user_s": 15.247727,
+        "system_s": 0.6774,
+        "wall_s": 14.80761177199929
+      },
+      "runtime": {
+        "start_time_myr": 0.0,
+        "end_time_myr": 100.0,
+        "outer_dt_myr": 4.0,
+        "mesh_cells": 1280,
+        "integration_wall_seconds": 4.267854973000794,
+        "scope": "global loop only; excludes initialization, checkpoint and rendering"
+      },
+      "parameters_sha256": "947a927a2edd31ee6cfde7b334f28e8c9c8aea50aa328b0392ff491bf92d6094",
+      "temperature_k": 1842.2199093664399,
+      "plate_count": 12,
+      "topology_events": [],
+      "continental_generated_km3": 30064584.71338567,
+      "continental_recycled_km3": 0.0,
+      "continental_material_ledger_error_km3": 9.5367431640625e-07,
+      "igneous_ledger_error_km3": -6.984919309616089e-10,
+      "thickness_min_km": 7.0,
+      "thickness_max_km": 36.878541376392064,
+      "thermal_budget": {
+        "time_myr": 100.0,
+        "temperature_k": 1842.2199093664399,
+        "accepted_steps": 35,
+        "rejected_steps": 0,
+        "balance_residual_j": 0.0,
+        "rounded_temperature_energy_residual_j": -102538049224704.0,
+        "mantle_mass_is_fixed": true,
+        "plate_work_is_accounted": false,
+        "energy_change_j": -1.8957416970952985e+28,
+        "radiogenic_input_j": 2.7334824834291816e+28,
+        "orbital_input_j": 9.597289897696418e+27,
+        "surface_output_j": 5.588953170294122e+28
+      },
+      "full_mass_energy_closure": false
+    }
+  ],
+  "restart": {
+    "array_count": 62,
+    "array_keys_equal": true,
+    "array_differences": [],
+    "metadata_equal": true,
+    "metadata_differences": []
+  },
+  "default_mode_regression": {
+    "baseline_commit": "831e6e3e0d58e352efab575f561aa677595a4b7f",
+    "array_count": 62,
+    "array_differences": [],
+    "metadata_equal": true,
+    "end_time_myr": 20.0
+  }
+}
