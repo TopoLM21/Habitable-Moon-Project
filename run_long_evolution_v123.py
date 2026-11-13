@@ -8,6 +8,7 @@ explicit reconstruction assumptions because their original source was lost.
 """
 from __future__ import annotations
 import argparse,csv,json
+from copy import deepcopy
 from time import perf_counter
 from dataclasses import replace
 from pathlib import Path
@@ -285,6 +286,8 @@ def main():
         dynp=replace(dyn0,force_speed_scale_deg_per_myr=dyn0.force_speed_scale_deg_per_myr*activity)
         ccp=replace(cc0,arc_maturation_rate_per_myr=cc0.arc_maturation_rate_per_myr*activity,continental_arc_thickening_km_per_myr=cc0.continental_arc_thickening_km_per_myr*activity,subduction_erosion_km_per_myr=cc0.subduction_erosion_km_per_myr*activity,delamination_rate_per_myr=cc0.delamination_rate_per_myr*activity)
         memory_boundaries=boundary_records_for_state(proto.mesh,state,system,radius,normal,inactive)
+        localize_sources=area_enabled and regional_inventory.area_params.source_time_rule=='localized'
+        source_memory_before=deepcopy(subduction_memory) if localize_sources else None
         subduction_memory,subdiag=advance_subduction_memory(proto.mesh,state,memory_boundaries,radius,dti,subduction_memory,subp)
         subduction_memory_rows.append({k:getattr(subdiag,k) for k in subdiag.__dataclass_fields__})
         subduction_memory,breakdiag=advance_slab_breakoff(proto.mesh,state,subduction_memory,radius,dti,breakp)
@@ -309,7 +312,8 @@ def main():
         if regional_inventory is None:
             state,_,_,lith_diag=advance_lithosphere(proto.mesh,system,state,dti,radius,grav,period,ecc,primary_mass_jupiter=pmj,love_h2=float(tc['love_h2']),reference_eccentricity=float(tc['eccentricity_rms']),oceanic_thickness_km=float(lc['oceanic_thickness_km']),continental_thickness_km=float(lc['continental_thickness_km']),max_continental_thickness_km=float(lc['max_continental_thickness_km']),collision_accretion_fraction=float(lc['collision_accretion_fraction']),tidal_damage_rate_per_myr=float(tc['damage_rate_per_myr'])*max(activity,.5),tidal_damage_relaxation_myr=float(tc['damage_relaxation_myr']),tidal_damage_background_fraction=float(tc.get('damage_background_fraction',0.10)),continental_extension_rate_per_myr=float(rc.get('extension_rate_per_myr',0.012))*rift_activity_scale,continental_extension_relaxation_myr=float(rc.get('extension_relaxation_myr',90.0)),continental_extension_min_duration_myr=float(rc.get('min_duration_myr',32.0)),continental_rift_extension_threshold=float(rc.get('extension_threshold',0.70)),continental_thinning_km_per_myr=float(rc.get('thinning_km_per_myr',0.16))*rift_activity_scale,continental_min_breakup_thickness_km=float(rc.get('min_breakup_thickness_km',19.0)),continental_breakup_min_extension_forcing=float(rc.get('breakup_min_extension_forcing',0.75)),continental_extension_requires_two_plate_flanks=bool(rc.get('extension_requires_two_plate_flanks',True)),tidal_thinning_boost_max_fraction=float(rc.get('tidal_thinning_boost_max_fraction',0.25)),continental_extension_suppression=collision_suppression,continental_extension_external_forcing=backarc_forcing,transport_state=transport_state,transport_parameters=transportp,ocean_flux_boundaries=pre_lith_boundaries if lc.get('integral_ocean_fluxes',False) else None)
         else:
-            state,cycle,lith_diag,cycle_diag=regional_inventory.runtime_step(proto.mesh,state,system,cycle,pre_lith_boundaries,subduction_memory,radius,dti,arcp,ccp,float(lc['oceanic_thickness_km']))
+            source_options=dict(memory_before=source_memory_before,slab_params=subp) if localize_sources else {}
+            state,cycle,lith_diag,cycle_diag=regional_inventory.runtime_step(proto.mesh,state,system,cycle,pre_lith_boundaries,subduction_memory,radius,dti,arcp,ccp,float(lc['oceanic_thickness_km']),**source_options)
             assert_plate_consistency(state,system,'regional projection: material regions must remain visible')
         lithosphere_rows.append({k:getattr(lith_diag,k) for k in lith_diag.__dataclass_fields__ if k!='material_source_index' and getattr(lith_diag,k) is not None})
         lithosphere_rows[-1].update({

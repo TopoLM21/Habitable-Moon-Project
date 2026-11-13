@@ -1,0 +1,72 @@
+{
+  "case": "gate8",
+  "source_commit": "df23c6139faa932078585e617e3c78af3ed14cdd",
+  "mode": "inventory",
+  "subdivisions": 2,
+  "dt_myr": 4.0,
+  "end_myr": 8.0,
+  "parameters_sha256": "5372d72433f7d8f35a7c2345fb55d10582199781d2f74e6ac8c6053974f0516b",
+  "resources": {
+    "max_rss_kib": 210604,
+    "user_s": 12.337259,
+    "system_s": 0.620271,
+    "wall_s": 11.101072114001,
+    "returncode": 0
+  },
+  "plate_count": 12,
+  "topology_events": [],
+  "continental_generated_km3": 0.0,
+  "juvenile_area_km2": 0.0,
+  "arc_thickening_km3": 0.0,
+  "transport_commits": 0,
+  "continental_ledger_error_km3": 4.76837158203125e-07,
+  "thickness_min_km": 4.064913074710782,
+  "thickness_max_km": 35.000000000000036,
+  "temperature_k": 1859.81396406954,
+  "full_energy_closure": false,
+  "runtime": {
+    "start_time_myr": 0.0,
+    "end_time_myr": 8.0,
+    "mesh_cells": 320,
+    "outer_dt_myr": 4.0,
+    "integration_wall_seconds": 1.591111911002372
+  },
+  "material_budget": {
+    "time_myr": 8.0,
+    "mantle_temperature_k": 1859.81396406954,
+    "crust_temperature_k": 406.85556903901266,
+    "pool_masses_kg": [
+      2.0156968482781535e+24,
+      9.67440299758867e+21,
+      5.176748724258147e+21
+    ],
+    "mass_residual_kg": -28311552.0,
+    "origin_mass_residual_kg": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "energy_residual_j": 0.0,
+    "created_kg": 3.1041801894448307e+20,
+    "recycled_kg": 2.6026033320188114e+20,
+    "advected_out_j": 6.92901910711505e+26,
+    "advected_return_j": 1.2645334698201853e+26,
+    "surface_output_j": 4.96419514010991e+27,
+    "radiogenic_input_j": 2.2159554003097023e+27,
+    "orbital_input_j": 7.677831918157134e+26,
+    "accepted_steps": 9,
+    "rejected_steps": 0,
+    "latent_chemical_mechanical_energy_included": false
+  },
+  "max_energy_residual_j": 0.0,
+  "max_origin_residual_kg": 0.0,
+  "ocean_created_km3": 107040696.18775277,
+  "ocean_recycled_km3": 89744942.48340729,
+  "max_unfilled_ocean_footprint_km2": 0.0,
+  "source_scope": "working tree based on source_commit; exact tested runtime hashes below",
+  "runtime_sha256": {
+    "tectonics/arc_time.py": "bc3dcfe351caa25712798891378e8f304329c3a3b1472be15fc43e23a7c0c864",
+    "tectonics/regional_area.py": "50c8db05ed6cf7136b4bfda811c0ab68513a737e1dac1a4483e8330286c82ca3",
+    "run_long_evolution_v123.py": "18b7ad96e86d9a5ace75c5350452d941ca392a479f2f59a06aabd64b469ccb15"
+  }
+}

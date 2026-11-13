@@ -23,6 +23,7 @@ class ActiveAreaParameters:
     max_leaves:int=131072
     strip_rule:str='source_points'
     source_budget_rtol:float=1e-7
+    source_time_rule:str='endpoint'
 
     def __post_init__(self):
         if not 1<=self.max_edge_km<=3000:raise ValueError('Active-area edge size outside bounded numerical domain')
@@ -31,6 +32,7 @@ class ActiveAreaParameters:
         if not 20<=self.max_leaves<=1048576 or int(self.max_leaves)!=self.max_leaves:raise ValueError('Invalid explicit numerical leaf budget')
         if self.strip_rule not in ('source_points','coarea'):raise ValueError('Invalid material strip integration rule')
         if not 0<self.source_budget_rtol<=1e-4:raise ValueError('Invalid material source integration tolerance')
+        if self.source_time_rule not in ('endpoint','localized'):raise ValueError('Invalid source time rule')
 
 
 def _centers(tri):
@@ -135,7 +137,9 @@ class AreaMaterialInventory:
     def checkpoint(self):
         a={**{'coarse_'+k:v.tolist() for k,v in self.coarse.arrays.items()},**{'leaf_'+k:v.tolist() for k,v in self.leaves.arrays.items()}}
         a.update(reference_triangles=self.reference_triangles.tolist(),roots=self.roots.tolist(),codes=self.codes.tolist(),quaternions=self.quaternions.tolist())
-        return dict(version=2,parameters=asdict(self.params),area_parameters=asdict(self.area_params),time_myr=self.leaves.time_myr,
+        ap=asdict(self.area_params)
+        if ap['source_time_rule']=='endpoint':ap.pop('source_time_rule') # preserve previous native metadata
+        return dict(version=2,parameters=asdict(self.params),area_parameters=ap,time_myr=self.leaves.time_myr,
                     history=deepcopy(self.history),arrays=a,scope='persistent spherical material-area refinement; regional rigid motion and nonlocal receiver mapping remain limited')
 
     def _world_triangles(self,tri=None,owners=None):
@@ -302,7 +306,9 @@ class AreaMaterialInventory:
         b['potential']=np.divide(_group_sum(self.roots,a['potential']*ocean,n),parent_ocean,out=np.zeros(n),where=parent_ocean>0)
         self.coarse.time_myr=self.leaves.time_myr
 
-    def runtime_step(self,mesh,state,system,cycle,boundaries,memory,radius,dt,arc_params,cycle_params,reference_thickness):
+    def runtime_step(self,mesh,state,system,cycle,boundaries,memory,radius,dt,arc_params,cycle_params,reference_thickness,*,memory_before=None,slab_params=None):
+        if self.area_params.source_time_rule=='localized':
+            return self._localized_step(mesh,state,system,cycle,boundaries,memory,radius,dt,arc_params,cycle_params,reference_thickness,memory_before,slab_params)
         from .volcanic_arc import integrated_arc_sources
         from .lithosphere import LithosphereStepDiagnostics
         from .continental import ContinentalCycleDiagnostics
@@ -330,4 +336,43 @@ class AreaMaterialInventory:
             juvenile_arc_area_created_km2=reaction['matured_area_km2'],arc_thickening_volume_km3=reaction['arc_thickening_km3'],
             delaminated_volume_km3=reaction['returned_felsic_km3'],max_felsic_potential=float(max(a['potential'])))
         self.history.append(dict(time_myr=self.leaves.time_myr,**reaction,**projection,**refinement,**integration))
+        return state,cycle,LithosphereStepDiagnostics(**lith),ContinentalCycleDiagnostics(**cd)
+
+    def _localized_step(self,mesh,state,system,cycle,boundaries,memory,radius,dt,arc_params,cycle_params,reference_thickness,memory_before,slab_params):
+        from .arc_time import arc_time_slices
+        from .volcanic_arc import integrated_arc_sources
+        from .lithosphere import LithosphereStepDiagnostics
+        from .continental import ContinentalCycleDiagnostics
+        slices=arc_time_slices(memory_before,memory,dt,slab_params,arc_params)
+        start=self.leaves.time_myr;records=[];initial=len(self.roots)
+        for lo,hi,sample in slices:
+            h=hi-lo;self.rotate(system,h/2)
+            segments,caps,*_=integrated_arc_sources(mesh,sample,radius,arc_params,boundaries)
+            ref=self.refine(segments,caps,radius,arc_params.arc_half_width_km,arc_params.arc_outer_width_km)
+            field,integ=self.integrated_field(segments,caps,radius,arc_params.arc_half_width_km,arc_params.arc_outer_width_km)
+            self.aggregate();a=self.leaves.arrays;b=self.coarse.arrays
+            source,drain=self.coarse.boundary_rates(mesh,state,boundaries,radius,reference_thickness,arc_params.integration_spacing_km)
+            ocean=a['area']-a['felsic_area'];parent=b['area']-b['felsic_area']
+            incoming=source[self.roots]*np.divide(ocean,parent[self.roots],out=np.zeros(len(ocean)),where=parent[self.roots]>0)
+            reaction=self.leaves.react(h,field,cycle_params,incoming,drain[self.roots])
+            self.rotate(system,h/2);self.aggregate()
+            records.append(dict(start_myr=start+lo,end_myr=start+hi,**reaction,**ref,**integ))
+        # Exact requested outer time, with no omitted physical interval.
+        self.leaves.time_myr=start+dt;self.coarse.time_myr=start+dt
+        totals={key:math.fsum(x[key] for x in records) for key in ('born_felsic_km3','returned_felsic_km3','born_basalt_km3','returned_basalt_km3','matured_area_km2','arc_thickening_km3')}
+        first=min((x['first_event_myr'] for x in records if x['first_event_myr'] is not None),default=None)
+        totals.update(events=sum(x['events'] for x in records),first_event_myr=first)
+        state,cycle,projection=self.coarse.project(mesh,state,cycle,radius)
+        cycle.cumulative_generated_area_km2+=totals['matured_area_km2'];cycle.cumulative_generated_volume_km3+=totals['born_felsic_km3']
+        cycle.cumulative_recycled_volume_km3+=totals['returned_felsic_km3']
+        a=self.leaves.arrays;fraction=math.fsum(a['felsic_area'])/math.fsum(a['area'])
+        lith={k:0. for k in LithosphereStepDiagnostics.__dataclass_fields__}
+        lith.update(time_myr=start+dt,dt_myr=dt,continental_area_fraction=fraction,visible_continental_area_fraction=fraction,
+                    oceanic_created_volume_km3=totals['born_basalt_km3'],oceanic_recycled_volume_km3=totals['returned_basalt_km3'],material_source_index=np.arange(mesh.cell_count,dtype=np.int32))
+        cd={k:0. for k in ContinentalCycleDiagnostics.__dataclass_fields__}
+        cd.update(time_myr=start+dt,dt_myr=dt,continental_area_fraction=fraction,continental_volume_km3=math.fsum(a['felsic_volume']),
+                  juvenile_arc_area_created_km2=totals['matured_area_km2'],arc_thickening_volume_km3=totals['arc_thickening_km3'],
+                  delaminated_volume_km3=totals['returned_felsic_km3'],max_felsic_potential=float(max(a['potential'])))
+        self.history.append(dict(time_myr=start+dt,**totals,**projection,leaves_before=initial,leaves_after=len(self.roots),
+                                 source_time_rule='localized',source_intervals=records))
         return state,cycle,LithosphereStepDiagnostics(**lith),ContinentalCycleDiagnostics(**cd)
