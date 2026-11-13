@@ -216,6 +216,9 @@ def main():
         print('EXPERIMENTAL finite mantle/crust inventories: conservative sensible enthalpy; latent heat and mechanical work unclosed; topology disabled')
     regional_cfg = dict(cfg.get('regional_material', {}))
     regional_enabled = regional_cfg.pop('enabled', False)
+    area_cfg = dict(regional_cfg.pop('active_area', {}))
+    area_enabled = area_cfg.pop('enabled', False)
+    if area_enabled and not regional_enabled:raise ValueError('Active material area requires regional inventory')
     saved_regional = cp.regional_material if a.resume else None
     regional_inventory = None
     if saved_regional is not None and not regional_enabled:
@@ -231,8 +234,15 @@ def main():
         if unsupported:
             raise ValueError('Regional inventory control requires sediment, plumes, cratons, late rifts, collapse, continental erosion, rift loading and tidal damage disabled explicitly; their material-memory coupling is not implemented')
         regional_params=RegionalMaterialParameters(**regional_cfg)
-        regional_inventory=(RegionalMaterialInventory.restore(saved_regional,regional_params) if saved_regional is not None
-            else RegionalMaterialInventory.initialize(proto.mesh,state,radius,regional_params))
+        if area_enabled:
+            from tectonics.regional_area import AreaMaterialInventory,ActiveAreaParameters
+            area_params=ActiveAreaParameters(**area_cfg)
+            regional_inventory=(AreaMaterialInventory.restore(saved_regional,regional_params,area_params) if saved_regional is not None
+                else AreaMaterialInventory.initialize(proto.mesh,state,radius,regional_params,area_params))
+            print('EXPERIMENTAL persistent active-area integration: exact spherical weights, locally refined history; receiver geometry still limited')
+        else:
+            regional_inventory=(RegionalMaterialInventory.restore(saved_regional,regional_params) if saved_regional is not None
+                else RegionalMaterialInventory.initialize(proto.mesh,state,radius,regional_params))
         print('EXPERIMENTAL moving regional columns: fixed quadrature areas; conservative map is not contact geometry')
     if integration_enabled:
         integration_options = ThermalIntegrationParameters(**integration_cfg)

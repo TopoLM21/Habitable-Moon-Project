@@ -1,0 +1,300 @@
+FFFFFF..F                                                                [100%]
+=================================== FAILURES ===================================
+_____ test_physical_strip_measure_independent_of_material_parents[500.0-1] _____
+
+sub = 1, edge = 500.0
+
+    @pytest.mark.parametrize('sub',[1,2])
+    @pytest.mark.parametrize('edge',[500.,250.])
+    def test_physical_strip_measure_independent_of_material_parents(sub,edge):
+        inv=inventory(sub,edge);s=source();before=math.fsum(inv.leaves.arrays['area'])
+>       inv.refine([s],[],R,140.,320.);field,diag=inv.integrated_field([s],[],R,140.,320.)
+                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_regional_area.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tectonics/regional_area.py:230: in integrated_field
+    cells=self.locate(points,owner);good=cells>=0
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <tectonics.regional_area.AreaMaterialInventory object at 0x7eff35700650>
+world_points = array([[9.99999904e-01, 9.99911701e-05, 4.26007423e-04],
+       [9.99997514e-01, 9.99909310e-05, 2.22769016e-03],
+    ...36754e-01, 8.38848282e-01, 7.80786103e-02],
+       [5.38659862e-01, 8.38728556e-01, 7.98746670e-02]], shape=(13568, 3))
+owner = 0
+
+    def locate(self,world_points,owner):
+        """Inverse rigid rotation + exact root/child containment, no nearest label."""
+        points=Rotation.from_quat(self.quaternions[int(owner)]).inv().apply(world_points)
+        roots=self.receiver.locate(points);allowed=self.coarse.arrays['owner'][roots]==owner
+        result=np.full(len(points),-1,int);indices=np.flatnonzero(allowed)
+        if not len(indices):return result
+        p=points[indices];r=roots[indices];codes=np.ones(len(r),np.int64)
+        tri=self.mesh.vertices[self.mesh.faces[r]]
+        leafkeys=self.roots*2**32+self.codes;order=np.argsort(leafkeys);sortedkeys=leafkeys[order]
+        for _ in range(16):
+>           keys=r*2**32+codes;pos=np.searchsorted(sortedkeys,keys);found=(pos<len(sortedkeys))
+                 ^^^^^^^
+E           OverflowError: Python integer 4294967296 out of bounds for int32
+
+tectonics/regional_area.py:199: OverflowError
+_____ test_physical_strip_measure_independent_of_material_parents[500.0-2] _____
+
+sub = 2, edge = 500.0
+
+    @pytest.mark.parametrize('sub',[1,2])
+    @pytest.mark.parametrize('edge',[500.,250.])
+    def test_physical_strip_measure_independent_of_material_parents(sub,edge):
+        inv=inventory(sub,edge);s=source();before=math.fsum(inv.leaves.arrays['area'])
+>       inv.refine([s],[],R,140.,320.);field,diag=inv.integrated_field([s],[],R,140.,320.)
+                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_regional_area.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tectonics/regional_area.py:230: in integrated_field
+    cells=self.locate(points,owner);good=cells>=0
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <tectonics.regional_area.AreaMaterialInventory object at 0x7eff35559fa0>
+world_points = array([[9.99999904e-01, 9.99911701e-05, 4.26007423e-04],
+       [9.99997514e-01, 9.99909310e-05, 2.22769016e-03],
+    ...36754e-01, 8.38848282e-01, 7.80786103e-02],
+       [5.38659862e-01, 8.38728556e-01, 7.98746670e-02]], shape=(13568, 3))
+owner = 0
+
+    def locate(self,world_points,owner):
+        """Inverse rigid rotation + exact root/child containment, no nearest label."""
+        points=Rotation.from_quat(self.quaternions[int(owner)]).inv().apply(world_points)
+        roots=self.receiver.locate(points);allowed=self.coarse.arrays['owner'][roots]==owner
+        result=np.full(len(points),-1,int);indices=np.flatnonzero(allowed)
+        if not len(indices):return result
+        p=points[indices];r=roots[indices];codes=np.ones(len(r),np.int64)
+        tri=self.mesh.vertices[self.mesh.faces[r]]
+        leafkeys=self.roots*2**32+self.codes;order=np.argsort(leafkeys);sortedkeys=leafkeys[order]
+        for _ in range(16):
+>           keys=r*2**32+codes;pos=np.searchsorted(sortedkeys,keys);found=(pos<len(sortedkeys))
+                 ^^^^^^^
+E           OverflowError: Python integer 4294967296 out of bounds for int32
+
+tectonics/regional_area.py:199: OverflowError
+_____ test_physical_strip_measure_independent_of_material_parents[250.0-1] _____
+
+sub = 1, edge = 250.0
+
+    @pytest.mark.parametrize('sub',[1,2])
+    @pytest.mark.parametrize('edge',[500.,250.])
+    def test_physical_strip_measure_independent_of_material_parents(sub,edge):
+        inv=inventory(sub,edge);s=source();before=math.fsum(inv.leaves.arrays['area'])
+>       inv.refine([s],[],R,140.,320.);field,diag=inv.integrated_field([s],[],R,140.,320.)
+                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_regional_area.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tectonics/regional_area.py:230: in integrated_field
+    cells=self.locate(points,owner);good=cells>=0
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <tectonics.regional_area.AreaMaterialInventory object at 0x7eff3559a2d0>
+world_points = array([[9.99999904e-01, 9.99911701e-05, 4.26007423e-04],
+       [9.99997514e-01, 9.99909310e-05, 2.22769016e-03],
+    ...36754e-01, 8.38848282e-01, 7.80786103e-02],
+       [5.38659862e-01, 8.38728556e-01, 7.98746670e-02]], shape=(13568, 3))
+owner = 0
+
+    def locate(self,world_points,owner):
+        """Inverse rigid rotation + exact root/child containment, no nearest label."""
+        points=Rotation.from_quat(self.quaternions[int(owner)]).inv().apply(world_points)
+        roots=self.receiver.locate(points);allowed=self.coarse.arrays['owner'][roots]==owner
+        result=np.full(len(points),-1,int);indices=np.flatnonzero(allowed)
+        if not len(indices):return result
+        p=points[indices];r=roots[indices];codes=np.ones(len(r),np.int64)
+        tri=self.mesh.vertices[self.mesh.faces[r]]
+        leafkeys=self.roots*2**32+self.codes;order=np.argsort(leafkeys);sortedkeys=leafkeys[order]
+        for _ in range(16):
+>           keys=r*2**32+codes;pos=np.searchsorted(sortedkeys,keys);found=(pos<len(sortedkeys))
+                 ^^^^^^^
+E           OverflowError: Python integer 4294967296 out of bounds for int32
+
+tectonics/regional_area.py:199: OverflowError
+_____ test_physical_strip_measure_independent_of_material_parents[250.0-2] _____
+
+sub = 2, edge = 250.0
+
+    @pytest.mark.parametrize('sub',[1,2])
+    @pytest.mark.parametrize('edge',[500.,250.])
+    def test_physical_strip_measure_independent_of_material_parents(sub,edge):
+        inv=inventory(sub,edge);s=source();before=math.fsum(inv.leaves.arrays['area'])
+>       inv.refine([s],[],R,140.,320.);field,diag=inv.integrated_field([s],[],R,140.,320.)
+                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_regional_area.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tectonics/regional_area.py:230: in integrated_field
+    cells=self.locate(points,owner);good=cells>=0
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <tectonics.regional_area.AreaMaterialInventory object at 0x7eff3559af00>
+world_points = array([[9.99999904e-01, 9.99911701e-05, 4.26007423e-04],
+       [9.99997514e-01, 9.99909310e-05, 2.22769016e-03],
+    ...36754e-01, 8.38848282e-01, 7.80786103e-02],
+       [5.38659862e-01, 8.38728556e-01, 7.98746670e-02]], shape=(13568, 3))
+owner = 0
+
+    def locate(self,world_points,owner):
+        """Inverse rigid rotation + exact root/child containment, no nearest label."""
+        points=Rotation.from_quat(self.quaternions[int(owner)]).inv().apply(world_points)
+        roots=self.receiver.locate(points);allowed=self.coarse.arrays['owner'][roots]==owner
+        result=np.full(len(points),-1,int);indices=np.flatnonzero(allowed)
+        if not len(indices):return result
+        p=points[indices];r=roots[indices];codes=np.ones(len(r),np.int64)
+        tri=self.mesh.vertices[self.mesh.faces[r]]
+        leafkeys=self.roots*2**32+self.codes;order=np.argsort(leafkeys);sortedkeys=leafkeys[order]
+        for _ in range(16):
+>           keys=r*2**32+codes;pos=np.searchsorted(sortedkeys,keys);found=(pos<len(sortedkeys))
+                 ^^^^^^^
+E           OverflowError: Python integer 4294967296 out of bounds for int32
+
+tectonics/regional_area.py:199: OverflowError
+________ test_rotation_preserves_partial_material_integrals_and_history ________
+
+    def test_rotation_preserves_partial_material_integrals_and_history():
+        inv=inventory();s=source();inv.refine([s],[],R,140.,320.)
+>       values,diag=inv.integrated_field([s],[],R,140.,320.)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_regional_area.py:44: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tectonics/regional_area.py:230: in integrated_field
+    cells=self.locate(points,owner);good=cells>=0
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <tectonics.regional_area.AreaMaterialInventory object at 0x7eff3559b7a0>
+world_points = array([[9.99999904e-01, 9.99911701e-05, 4.26007423e-04],
+       [9.99997514e-01, 9.99909310e-05, 2.22769016e-03],
+    ...36754e-01, 8.38848282e-01, 7.80786103e-02],
+       [5.38659862e-01, 8.38728556e-01, 7.98746670e-02]], shape=(13568, 3))
+owner = 0
+
+    def locate(self,world_points,owner):
+        """Inverse rigid rotation + exact root/child containment, no nearest label."""
+        points=Rotation.from_quat(self.quaternions[int(owner)]).inv().apply(world_points)
+        roots=self.receiver.locate(points);allowed=self.coarse.arrays['owner'][roots]==owner
+        result=np.full(len(points),-1,int);indices=np.flatnonzero(allowed)
+        if not len(indices):return result
+        p=points[indices];r=roots[indices];codes=np.ones(len(r),np.int64)
+        tri=self.mesh.vertices[self.mesh.faces[r]]
+        leafkeys=self.roots*2**32+self.codes;order=np.argsort(leafkeys);sortedkeys=leafkeys[order]
+        for _ in range(16):
+>           keys=r*2**32+codes;pos=np.searchsorted(sortedkeys,keys);found=(pos<len(sortedkeys))
+                 ^^^^^^^
+E           OverflowError: Python integer 4294967296 out of bounds for int32
+
+tectonics/regional_area.py:199: OverflowError
+_ test_refinement_preserves_nonuniform_volume_age_and_maturation_moments_and_restart _
+
+    def test_refinement_preserves_nonuniform_volume_age_and_maturation_moments_and_restart():
+        inv=inventory(edge=250.);a=inv.leaves.arrays
+        a['potential']=np.linspace(.1,.4,len(a['area']))
+        a['basalt_volume']*=np.linspace(.5,1.5,len(a['area']));a['basalt_age_moment']=a['basalt_volume']*np.linspace(10.,100.,len(a['area']))
+        before={k:math.fsum(a[k]) for k in ('area','basalt_volume','basalt_age_moment')}
+        moment=math.fsum(a['basalt_volume']*a['potential'])
+        inv.refine([source()],[],R,140.,320.);a=inv.leaves.arrays
+        for k in before:assert math.fsum(a[k])==pytest.approx(before[k],rel=2e-15)
+        assert math.fsum(a['basalt_volume']*a['potential'])==pytest.approx(moment,rel=3e-15)
+        inv.aggregate();saved=inv.checkpoint()
+        restored=AreaMaterialInventory.restore(json.loads(json.dumps(saved)),inv.params,inv.area_params)
+        assert restored.checkpoint()==saved
+        for item in (inv,restored):
+            item.refine([source()],[],R,140.,320.)
+>           f,_=item.integrated_field([source()],[],R,140.,320.)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_regional_area.py:69: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tectonics/regional_area.py:230: in integrated_field
+    cells=self.locate(points,owner);good=cells>=0
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <tectonics.regional_area.AreaMaterialInventory object at 0x7eff355f5ca0>
+world_points = array([[9.99999904e-01, 9.99911701e-05, 4.26007423e-04],
+       [9.99997514e-01, 9.99909310e-05, 2.22769016e-03],
+    ...36754e-01, 8.38848282e-01, 7.80786103e-02],
+       [5.38659862e-01, 8.38728556e-01, 7.98746670e-02]], shape=(13568, 3))
+owner = 0
+
+    def locate(self,world_points,owner):
+        """Inverse rigid rotation + exact root/child containment, no nearest label."""
+        points=Rotation.from_quat(self.quaternions[int(owner)]).inv().apply(world_points)
+        roots=self.receiver.locate(points);allowed=self.coarse.arrays['owner'][roots]==owner
+        result=np.full(len(points),-1,int);indices=np.flatnonzero(allowed)
+        if not len(indices):return result
+        p=points[indices];r=roots[indices];codes=np.ones(len(r),np.int64)
+        tri=self.mesh.vertices[self.mesh.faces[r]]
+        leafkeys=self.roots*2**32+self.codes;order=np.argsort(leafkeys);sortedkeys=leafkeys[order]
+        for _ in range(16):
+>           keys=r*2**32+codes;pos=np.searchsorted(sortedkeys,keys);found=(pos<len(sortedkeys))
+                 ^^^^^^^
+E           OverflowError: Python integer 4294967296 out of bounds for int32
+
+tectonics/regional_area.py:199: OverflowError
+_____________ test_additive_sources_do_not_duplicate_material_area _____________
+
+    def test_additive_sources_do_not_duplicate_material_area():
+        inv=inventory();s=source();inv.refine([s],[],R,140.,320.)
+>       f,_=inv.integrated_field([s],[],R,140.,320.);before=inv.checkpoint()
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_regional_area.py:84: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tectonics/regional_area.py:230: in integrated_field
+    cells=self.locate(points,owner);good=cells>=0
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <tectonics.regional_area.AreaMaterialInventory object at 0x7eff3559be90>
+world_points = array([[9.99999904e-01, 9.99911701e-05, 4.26007423e-04],
+       [9.99997514e-01, 9.99909310e-05, 2.22769016e-03],
+    ...36754e-01, 8.38848282e-01, 7.80786103e-02],
+       [5.38659862e-01, 8.38728556e-01, 7.98746670e-02]], shape=(13568, 3))
+owner = 0
+
+    def locate(self,world_points,owner):
+        """Inverse rigid rotation + exact root/child containment, no nearest label."""
+        points=Rotation.from_quat(self.quaternions[int(owner)]).inv().apply(world_points)
+        roots=self.receiver.locate(points);allowed=self.coarse.arrays['owner'][roots]==owner
+        result=np.full(len(points),-1,int);indices=np.flatnonzero(allowed)
+        if not len(indices):return result
+        p=points[indices];r=roots[indices];codes=np.ones(len(r),np.int64)
+        tri=self.mesh.vertices[self.mesh.faces[r]]
+        leafkeys=self.roots*2**32+self.codes;order=np.argsort(leafkeys);sortedkeys=leafkeys[order]
+        for _ in range(16):
+>           keys=r*2**32+codes;pos=np.searchsorted(sortedkeys,keys);found=(pos<len(sortedkeys))
+                 ^^^^^^^
+E           OverflowError: Python integer 4294967296 out of bounds for int32
+
+tectonics/regional_area.py:199: OverflowError
+=============================== warnings summary ===============================
+../../opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/anyio/pytest_plugin.py:14
+  /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/anyio/pytest_plugin.py:14: PytestRemovedIn10Warning: _pytest.python.CallSpec2 has been renamed to CallSpec.
+  The CallSpec2 alias will be removed in pytest 10.
+  Update imports to use CallSpec instead.
+  See https://docs.pytest.org/en/stable/deprecations.html#callspec2-renamed
+    from _pytest.python import CallSpec2
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_regional_area.py::test_physical_strip_measure_independent_of_material_parents[500.0-1]
+FAILED tests/test_regional_area.py::test_physical_strip_measure_independent_of_material_parents[500.0-2]
+FAILED tests/test_regional_area.py::test_physical_strip_measure_independent_of_material_parents[250.0-1]
+FAILED tests/test_regional_area.py::test_physical_strip_measure_independent_of_material_parents[250.0-2]
+FAILED tests/test_regional_area.py::test_rotation_preserves_partial_material_integrals_and_history
+FAILED tests/test_regional_area.py::test_refinement_preserves_nonuniform_volume_age_and_maturation_moments_and_restart
+FAILED tests/test_regional_area.py::test_additive_sources_do_not_duplicate_material_area
+7 failed, 2 passed, 1 warning in 0.85s
