@@ -76,6 +76,7 @@ def run_case(name,sub,dt,end=100.,resume=None,mode='inventory'):
         item['max_origin_residual_kg']=max(abs(v) for x in data['history'] for v in x['origin_mass_residual_kg'])
         item['ocean_created_km3']=sum(x['oceanic_created_volume_km3'] for x in cp.lithosphere_rows)+sum(x['oceanic_created_volume_km3'] for x in cp.cycle_rows)
         item['ocean_recycled_km3']=sum(x['oceanic_recycled_volume_km3'] for x in cp.lithosphere_rows)+sum(x['oceanic_recycled_volume_km3'] for x in cp.cycle_rows)
+        item['max_unfilled_ocean_footprint_km2']=max(x.get('oceanic_unfilled_footprint_km2',0.) for x in cp.lithosphere_rows)
     (HERE/f'{name}_result.json').write_text(json.dumps(item,indent=2,allow_nan=False)+'\n')
     print(json.dumps({k:item[k] for k in ('case','continental_generated_km3','temperature_k','plate_count','resources')}),flush=True)
 

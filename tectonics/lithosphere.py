@@ -134,6 +134,7 @@ class LithosphereStepDiagnostics:
     rift_recycled_volume_km3: float = 0.0
     oceanic_created_volume_km3: float | None = None
     oceanic_recycled_volume_km3: float | None = None
+    oceanic_unfilled_footprint_km2: float | None = None
 
 
 @dataclass(slots=True)
@@ -1319,6 +1320,7 @@ def advance_lithosphere(
 
     new_ocean_volume = None
     ocean_created = ocean_recycled = None
+    unfilled_ocean_area = None
     if state.oceanic_volume_km3 is not None:
         old_ocean = np.asarray(state.oceanic_volume_km3, dtype=float)
         if old_ocean.shape != (n,) or np.any(~np.isfinite(old_ocean)) or np.any(old_ocean < 0):
@@ -1340,11 +1342,13 @@ def advance_lithosphere(
         carried = old_ocean[sources]
         new_ocean_volume[destinations] = carried
         retained[sources] = carried
-        # Empty newly exposed oceanic footprint is a real, separately debited
-        # creation request. Existing basalt expands/thins at unchanged volume.
-        exposed = (new_ocean_volume == 0) & (available_area > 0)
-        created = np.where(exposed, available_area * float(oceanic_thickness_km), 0.)
+        # Only actual interplate gaps/breakup request new basalt. Unequal raster
+        # cells can expose a fractional coast even in a rigid one-plate rotation;
+        # that geometric approximation cannot manufacture crust. Keep it as an
+        # explicitly unfilled footprint, not an unpriced material source.
+        created = np.where(fresh, available_area * float(oceanic_thickness_km), 0.)
         new_ocean_volume += created
+        unfilled_ocean_area = float(np.sum(available_area[new_ocean_volume == 0]))
         ocean_created = float(np.sum(created))
         ocean_recycled = float(np.sum(old_ocean - retained))
         ocean_visible = new_cont_fraction < .5
@@ -1403,6 +1407,7 @@ def advance_lithosphere(
         rift_recycled_volume_km3=float(continental_thinning_volume + breakup_recycled_volume),
         oceanic_created_volume_km3=ocean_created,
         oceanic_recycled_volume_km3=ocean_recycled,
+        oceanic_unfilled_footprint_km2=unfilled_ocean_area,
         active_continental_rift_gap_cells=int(active_continental_rift_gap_cells),
         passive_margin_gap_cells_suppressed=int(passive_margin_gap_cells),
         mean_rift_extension_continental=float(np.mean(new_extension[cont_mask])) if np.any(cont_mask) else 0.0,

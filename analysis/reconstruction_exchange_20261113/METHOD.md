@@ -14,6 +14,13 @@ requests, gaps explicit production requests. Covered basaltic basement stays in
 the inventory. Legacy mode continues to reset visible oceanic thickness to its
 reference value and is unchanged for reproducibility.
 
+The first reconstruction also filled fractional coastal exposure after unequal
+cell remapping. A rigid-rotation control disproved that rule: it requested
+9,957,601 km3 of basalt with no opening boundary. The corrected version permits
+birth only at a real raster gap or modeled breakup, preserving zero-source
+rigid advection. Residual coastal footprints are explicitly reported as unfilled;
+this is a limitation of raster geometry, not a physical prediction of bare mantle.
+
 The arc maturation equation dP/dt = S - P/tau is integrated analytically for
 piecewise constant forcing. Threshold time and the remaining interval for
 thickening are computed inside each step. The old per-step thickness cap becomes

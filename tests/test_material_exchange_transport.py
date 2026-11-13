@@ -47,6 +47,21 @@ def test_whole_sphere_rotation_preserves_all_basalt_on_unequal_cells():
     assert d.oceanic_created_volume_km3 == d.oceanic_recycled_volume_km3 == 0.
 
 
+def test_rigid_mixed_coast_rotation_cannot_create_basalt_from_raster_area_difference():
+    mesh,s=ocean(2);a=mesh.physical_cell_areas_km2(5287.)
+    continent=mesh.centroids[:,0]>.2
+    s.crust_type=continent.astype(np.int8)
+    s.crust_thickness_km=np.where(continent,35.,7.)
+    s.continental_fraction=continent.astype(float)
+    s.continental_volume_km3=a*s.continental_fraction*s.crust_thickness_km
+    s.oceanic_volume_km3=a*(1-s.continental_fraction)*7
+    n,_,_,d=lith_step(mesh,s,20.,speed=.04)
+    assert math.fsum(n.oceanic_volume_km3)==math.fsum(s.oceanic_volume_km3)
+    assert d.oceanic_created_volume_km3==d.oceanic_recycled_volume_km3==0.
+    # The raster's imperfect coastal footprint is exposed, not filled for free.
+    assert d.oceanic_unfilled_footprint_km2>0.
+
+
 def test_moving_two_plates_have_explicit_created_and_returned_volumes():
     mesh, s = ocean(2)
     s.cell_plate[mesh.centroids[:,0] < 0] = 1
