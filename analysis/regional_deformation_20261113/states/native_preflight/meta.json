@@ -1,0 +1,451 @@
+{
+  "data": {
+    "version": 1,
+    "mechanical_heat_deposited_j": [
+      1.6858583955340278e+24,
+      0.0
+    ],
+    "transfer_work_j": [
+      0.0,
+      0.0
+    ],
+    "transfer_heat_j": [
+      0.0,
+      0.0
+    ],
+    "history": [
+      {
+        "time_myr": 1.0,
+        "dt_myr": 1.0,
+        "deposited_heat_j": 1.6858583955340278e+24,
+        "crust_temperature_k": 388.0509386088445,
+        "mantle_temperature_k": 1860.603457123059,
+        "energy_residual_j": 6.338146643161907e+16
+      }
+    ],
+    "initial_surface_potential_j": 1.3277962693935066e+27
+  },
+  "surface": {
+    "parameters": {
+      "radius_m": 5287000.0,
+      "gravity_m_s2": 7.12,
+      "basal_drag_pa_s_m": 1e+17,
+      "felsic_density_kg_m3": 2800.0,
+      "basalt_density_kg_m3": 2900.0,
+      "heat_capacity_j_kg_k": 1200.0,
+      "min_area_fraction": 0.0001,
+      "max_height_radius": 0.02
+    },
+    "control": {
+      "max_step_myr": 1.0,
+      "initial_step_myr": 0.25,
+      "position_atol_rad": 1e-05,
+      "thickness_rtol": 0.001,
+      "energy_rtol": 0.0001,
+      "energy_atol_fraction": 1e-12,
+      "max_trials": 2000
+    },
+    "data": {
+      "version": "regional_dilation_1",
+      "time_myr": 1.0,
+      "origin_time_myr": 0.0,
+      "next_step_myr": 0.5,
+      "accepted_steps": 3,
+      "rejected_steps": 0,
+      "heat_generated_j": [
+        1.6858583955340278e+24,
+        67108864.0
+      ],
+      "initial_heat_j": [
+        6.889301669944943e+27,
+        0.0
+      ],
+      "energy_defect_j": [
+        6.338146653228237e+16,
+        0.0
+      ],
+      "external_work_j": [
+        0.0,
+        0.0
+      ],
+      "history": [
+        {
+          "time_myr": 0.25,
+          "dt_myr": 0.25,
+          "potential_j": 1.327373868580894e+27,
+          "heat_j": 4.2240081898338225e+23,
+          "energy_defect_j": 6370770322194432.0,
+          "error_ratio": 0.00015081812771527132,
+          "max_height_m": 34764.685604570914,
+          "max_speed_mm_yr": 1.5996405622997798,
+          "min_area_fraction": 0.999506430381486
+        },
+        {
+          "time_myr": 0.75,
+          "dt_myr": 0.5,
+          "potential_j": 1.3265309409794063e+27,
+          "heat_j": 8.429276522043136e+23,
+          "energy_defect_j": 5.071658665849651e+16,
+          "error_ratio": 0.0006016624041313108,
+          "max_height_m": 34752.419139727266,
+          "max_speed_mm_yr": 1.5975571355462321,
+          "min_area_fraction": 0.9985207327561861
+        },
+        {
+          "time_myr": 1.0,
+          "dt_myr": 0.25,
+          "potential_j": 1.326110411061354e+27,
+          "heat_j": 4.20529924346332e+23,
+          "energy_defect_j": 6294109551591424.0,
+          "error_ratio": 0.00014966618214331165,
+          "max_height_m": 34746.289750087344,
+          "max_speed_mm_yr": 1.5965175503648132,
+          "min_area_fraction": 0.9980286032166686
+        }
+      ],
+      "provenance": {
+        "source_files": {
+          "analysis/regional_inventory_20261113/saved_states/initial_same_g2/meta.json": "3357837e78df3733eb9ee787f5fdfe998dd421772a016a7b949df1447ad66dd9",
+          "analysis/regional_inventory_20261113/saved_states/initial_same_g2/state.npz": "64fe45485366a54ab58aa183e38c6a83cdf8cd7db6645b1a2413e1d232a95be5"
+        },
+        "initialization": "new fixed-base gravity/drag control from shared material areas; no recovered mechanical memory",
+        "prior_thermal_inventory": {
+          "version": 1,
+          "options": {
+            "continental_rock_density_kg_m3": 2800.0,
+            "basalt_density_kg_m3": 2900.0,
+            "temperature_atol_k": 1.0,
+            "temperature_rtol": 0.0001,
+            "exchange_rtol": 0.001,
+            "exchange_atol_j_per_myr": 1e+19,
+            "initial_step_myr": 0.25,
+            "max_step_myr": 4.0,
+            "max_trials": 10000
+          },
+          "time_myr": 0.0,
+          "origin_time_myr": 0.0,
+          "origin_system_age_myr": 500.0,
+          "total_mass_kg": 2.0305480000000004e+24,
+          "initial_energy_j": 4.507816560000001e+30,
+          "origin_mass_kg": [
+            2.015747005963896e+24,
+            9.67440299758867e+21,
+            5.126591038515545e+21
+          ],
+          "origin_hi": [
+            [
+              2.015747005963896e+24,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              9.67440299758867e+21,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              5.126591038515545e+21
+            ]
+          ],
+          "origin_lo": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "energy_m_j": [
+            4.500927258330056e+30,
+            -149533581377536.0
+          ],
+          "energy_c_j": [
+            6.889301669944943e+27,
+            0.0
+          ],
+          "surface_volumes_km3": [
+            3455143927.710239,
+            1767790013.2812223
+          ],
+          "area_m2": 351259828403324.3,
+          "radiogenic_input_j": [
+            0.0,
+            0.0
+          ],
+          "orbital_input_j": [
+            0.0,
+            0.0
+          ],
+          "surface_output_j": [
+            0.0,
+            0.0
+          ],
+          "basal_exchange_j": [
+            0.0,
+            0.0
+          ],
+          "advected_out_j": [
+            0.0,
+            0.0
+          ],
+          "advected_return_j": [
+            0.0,
+            0.0
+          ],
+          "created_kg": [
+            0.0,
+            0.0
+          ],
+          "recycled_kg": [
+            0.0,
+            0.0
+          ],
+          "accepted_steps": 0,
+          "rejected_steps": 0,
+          "next_step_myr": 0.25,
+          "physical_signature": null,
+          "history": [],
+          "initialization": "new conservative partition of legacy exchangeable heat; not recovered crust history"
+        },
+        "dilation_initialization": {
+          "time_myr": 0.0,
+          "length_m": 1000000.0,
+          "scope": "new viscous resistance; no added stored energy or restored stress"
+        }
+      },
+      "initial_potential_j": 1.3277962693935066e+27,
+      "initial_volume_m3": [
+        3.455143927710239e+18,
+        1.7677900132812224e+18
+      ],
+      "material_identity": "08aab6bec2f19483e390e53790a19ff700a7d5c94d48f1a94db1662782c82beb",
+      "material_created_m3": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0
+        ]
+      ],
+      "material_returned_m3": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    "dilation": {
+      "length_m": 1000000.0
+    }
+  },
+  "material": {
+    "version": 1,
+    "options": {
+      "continental_rock_density_kg_m3": 2800.0,
+      "basalt_density_kg_m3": 2900.0,
+      "temperature_atol_k": 1.0,
+      "temperature_rtol": 0.0001,
+      "exchange_rtol": 0.001,
+      "exchange_atol_j_per_myr": 1e+19,
+      "initial_step_myr": 0.25,
+      "max_step_myr": 4.0,
+      "max_trials": 10000
+    },
+    "time_myr": 1.0,
+    "origin_time_myr": 0.0,
+    "origin_system_age_myr": 500.0,
+    "total_mass_kg": 2.0305480000000004e+24,
+    "initial_energy_j": 4.507816560000001e+30,
+    "origin_mass_kg": [
+      2.015747005963896e+24,
+      9.67440299758867e+21,
+      5.126591038515545e+21
+    ],
+    "origin_hi": [
+      [
+        2.015747005963896e+24,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        9.67440299758867e+21,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        5.126591038515545e+21
+      ]
+    ],
+    "origin_lo": [
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ]
+    ],
+    "energy_m_j": [
+      4.5006070175782564e+30,
+      -266494130782208.0
+    ],
+    "energy_c_j": [
+      6.892247553664981e+27,
+      -1468476162048.0
+    ],
+    "surface_volumes_km3": [
+      3455143927.710239,
+      1767790013.2812223
+    ],
+    "area_m2": 351259828403324.3,
+    "radiogenic_input_j": [
+      2.772745033523734e+26,
+      -6576668672.0
+    ],
+    "orbital_input_j": [
+      0.0,
+      0.0
+    ],
+    "surface_output_j": [
+      5.962552298276452e+26,
+      0.0
+    ],
+    "basal_exchange_j": [
+      5.9549415628106385e+26,
+      0.0
+    ],
+    "advected_out_j": [
+      0.0,
+      0.0
+    ],
+    "advected_return_j": [
+      0.0,
+      0.0
+    ],
+    "created_kg": [
+      0.0,
+      0.0
+    ],
+    "recycled_kg": [
+      0.0,
+      0.0
+    ],
+    "accepted_steps": 3,
+    "rejected_steps": 0,
+    "next_step_myr": 1.0,
+    "physical_signature": {
+      "params": {
+        "system_age_at_start_myr": 500.0,
+        "initial_mantle_temperature_k": 1850.0,
+        "surface_temperature_k": 288.0,
+        "mantle_mass_fraction": 0.68,
+        "mantle_depth_fraction_radius": 0.45,
+        "mantle_density_kg_m3": 4000.0,
+        "mantle_heat_capacity_j_kg_k": 1200.0,
+        "thermal_conductivity_w_m_k": 4.0,
+        "thermal_expansivity_per_k": 3e-05,
+        "thermal_diffusivity_m2_s": 1e-06,
+        "viscosity_reference_pa_s": 1e+21,
+        "viscosity_reference_temperature_k": 1600.0,
+        "activation_energy_j_mol": 300000.0,
+        "viscosity_min_pa_s": 1e+18,
+        "viscosity_max_pa_s": 1e+24,
+        "critical_rayleigh": 1000.0,
+        "nusselt_prefactor": 0.27,
+        "nusselt_exponent": 0.3333333333333333,
+        "radiogenic_specific_power_at_formation_w_kg": 5e-12,
+        "radiogenic_effective_half_life_myr": 2400.0,
+        "tidal_k2_over_q": 0.0003,
+        "min_tectonic_activity_factor": 0.35,
+        "max_tectonic_activity_factor": 1.8
+      },
+      "mass_earth": 0.5,
+      "radius_km": 5287.0,
+      "gravity": 7.12,
+      "period_hours": 47.0,
+      "primary_mass_jupiter": 5.0,
+      "eccentricity_times": [
+        0.0
+      ],
+      "eccentricity_values": [
+        0.0
+      ]
+    },
+    "history": [],
+    "initialization": "new conservative partition of legacy exchangeable heat; not recovered crust history"
+  },
+  "thermal": {
+    "time_myr": 1.0,
+    "system_age_myr": 501.0,
+    "mantle_temperature_k": 1860.603457123059,
+    "reference_convective_flux_w_m2": 0.05129179213003612,
+    "tectonic_activity_factor": 1.0471482920151274,
+    "thermal_lithosphere_thickness_km": 117.11786724997265
+  },
+  "thermal_parameters": {
+    "system_age_at_start_myr": 500.0,
+    "initial_mantle_temperature_k": 1850.0,
+    "surface_temperature_k": 288.0,
+    "mantle_mass_fraction": 0.68,
+    "mantle_depth_fraction_radius": 0.45,
+    "mantle_density_kg_m3": 4000.0,
+    "mantle_heat_capacity_j_kg_k": 1200.0,
+    "thermal_conductivity_w_m_k": 4.0,
+    "thermal_expansivity_per_k": 3e-05,
+    "thermal_diffusivity_m2_s": 1e-06,
+    "viscosity_reference_pa_s": 1e+21,
+    "viscosity_reference_temperature_k": 1600.0,
+    "activation_energy_j_mol": 300000.0,
+    "viscosity_min_pa_s": 1e+18,
+    "viscosity_max_pa_s": 1e+24,
+    "critical_rayleigh": 1000.0,
+    "nusselt_prefactor": 0.27,
+    "nusselt_exponent": 0.3333333333333333,
+    "radiogenic_specific_power_at_formation_w_kg": 5e-12,
+    "radiogenic_effective_half_life_myr": 2400.0,
+    "tidal_k2_over_q": 0.0003,
+    "min_tectonic_activity_factor": 0.35,
+    "max_tectonic_activity_factor": 1.8
+  },
+  "options": {
+    "mass_earth": 0.5,
+    "period_hours": 47.0,
+    "primary_mass_jupiter": 5.0,
+    "step_myr": 1.0
+  },
+  "eccentricity": {
+    "times_myr": [
+      0.0
+    ],
+    "eccentricity": [
+      0.0
+    ]
+  }
+}
