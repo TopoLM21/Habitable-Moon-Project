@@ -39,7 +39,7 @@ for name in names:
          'transport_commits':x['transport_commits'],'source_commit':x['source_commit']}
     rows.append(row)
 with (HERE/'comparison.csv').open('x',newline='') as f:
-    writer=csv.DictWriter(f,fieldnames=list(rows[0]));writer.writeheader();writer.writerows(rows)
+    writer=csv.DictWriter(f,fieldnames=list(rows[0]),lineterminator='\n');writer.writeheader();writer.writerows(rows)
 with (HERE/'summary.json').open('x') as f:json.dump(rows,f,indent=2,allow_nan=False)
 
 saved=[]
