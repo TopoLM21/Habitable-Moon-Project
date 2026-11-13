@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "/workspace/Habitable-Moon-Project/analysis/regional_inventory_20261113/operator_checks.py", line 113, in <module>
+    if __name__=='__main__':run()
+                            ^^^^^
+  File "/workspace/Habitable-Moon-Project/analysis/regional_inventory_20261113/operator_checks.py", line 108, in run
+    finite_exchange=finite_exchange_check(),wall_s=time.perf_counter()-start,
+                    ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/Habitable-Moon-Project/analysis/regional_inventory_20261113/operator_checks.py", line 76, in finite_exchange_check
+    budget.exchange(born,returned,target,thermal)
+  File "/workspace/Habitable-Moon-Project/tectonics/material_exchange.py", line 223, in exchange
+    raise ValueError(f'Material requests disagree with geometric inventories: {actual-target} kg')
+ValueError: Material requests disagree with geometric inventories: [-4194304.  1048576.] kg
