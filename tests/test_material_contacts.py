@@ -4,10 +4,38 @@ import numpy as np
 import pytest
 from scipy.spatial.transform import Rotation
 from tectonics.mesh import SphereMesh,_build_topology,_subdivide,_spherical_triangle_area
-from tectonics.material_contacts import MaterialBoundaryRegistry
+from tectonics.material_contacts import MaterialBoundaryRegistry,_interval_coverage
 from tectonics.plates import Plate,PlateSystem
 from tectonics.regional_area import AreaMaterialInventory
 from test_regional_area import inventory,R
+
+
+def test_double_coverage_cannot_pay_for_an_uncovered_bank_segment():
+    # Both data sets have total length 1. Only one covers the whole bank.
+    assert _interval_coverage([(0.,.5),(.5,1.)])==(1.,0.)
+    assert _interval_coverage([(0.,.5),(0.,.5)])==(.5,.5)
+    assert _interval_coverage([(0.,1.),(.25,.75),(.25,.75)])==(1.,1.)
+    assert _interval_coverage([])==(0.,0.)
+
+
+def test_local_coincident_banks_reject_double_coverage_and_a_gap_together():
+    # One quarter-circle bank faces two identical eighth-circle banks.
+    # Integral lengths match, but half the first bank has no neighbour.
+    reg=MaterialBoundaryRegistry.__new__(MaterialBoundaryRegistry)
+    reg.owners=reg.bank_owners=np.arange(3)
+    arc=lambda x,y:np.array([[math.cos(x),math.sin(x),0.],[math.cos(y),math.sin(y),0.]])
+    reg.reference=np.array([arc(0.,math.pi/2),arc(0.,math.pi/4),arc(0.,math.pi/4)])
+    reg.outward=np.array([[0.,0.,1.],[0.,0.,-1.],[0.,0.,-1.]])
+    # Old-partner displacement is only a paired-bank diagnostic. An unused
+    # zero-length-free bank is appended away from this local example.
+    reg.reference=np.concatenate([reg.reference,[arc(math.pi,3*math.pi/2)]])
+    reg.outward=np.vstack([reg.outward,[0.,0.,1.]])
+    reg.owners=reg.bank_owners=np.arange(4);reg.identity='local-independent-bank-control'
+    q=Rotation.from_rotvec(np.zeros((4,3))).as_quat()
+    _,diag=reg.evaluate(q,R)
+    assert diag['multiply_covered_bank_length_km']==pytest.approx(math.pi*R/4,rel=2e-14)
+    assert diag['unmatched_bank_length_km']==pytest.approx(3*math.pi*R/4,rel=2e-14)
+    with pytest.raises(ValueError,match='not geometrically closed'):reg.require_shared_support(q,R)
 
 
 def hemispheres(level):

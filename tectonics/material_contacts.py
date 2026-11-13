@@ -37,6 +37,19 @@ def arc_overlaps(a,b):
     return result
 
 
+def _interval_coverage(intervals):
+    """Union length and extra coverage; overlaps must not cancel open parts."""
+    if not intervals:return 0.,0.
+    ordered=sorted(intervals);lo,hi=ordered[0];pieces=[]
+    for start,end in ordered[1:]:
+        if start>hi:pieces.append(hi-lo);lo,hi=start,end
+        else:hi=max(hi,end)
+    pieces.append(hi-lo)
+    union=math.fsum(pieces)
+    extra=max(0.,math.fsum(end-start for start,end in ordered)-union)
+    return union,extra
+
+
 class MaterialBoundaryRegistry:
     """One bank per material side; no independent area or mass is introduced."""
     def __init__(self,mesh,owners):
@@ -58,13 +71,16 @@ class MaterialBoundaryRegistry:
         # enforces the actual angular tolerance, without cancellation near -1.
         i,j=np.nonzero(np.triu(normals@normals.T<-1+1e-12,1))
         valid=(self.bank_owners[i]!=self.bank_owners[j])&(np.linalg.norm(normals[i]+normals[j],axis=1)<=angular_tolerance)
-        contacts=[];covered=np.zeros(len(lengths))
+        contacts=[];intervals=[[] for _ in lengths]
         for a,b in zip(i[valid],j[valid]):
             for lo,hi,start,end in arc_overlaps(banks[a],banks[b]):
                 length=(hi-lo)*radius
                 if length<=angular_tolerance*radius:continue # numerical endpoint only, not a physical length threshold
-                covered[a]+=length;covered[b]+=length
+                intervals[a].append((lo,hi))
                 contacts.append(MaterialContact(int(a),int(b),int(self.bank_owners[a]),int(self.bank_owners[b]),start,end,normals[a].copy(),length))
+            # Each side uses its own arc coordinate, including after sliding.
+            intervals[b].extend((lo,hi) for lo,hi,_,_ in arc_overlaps(banks[b],banks[a]) if hi-lo>angular_tolerance)
+        coverage=np.asarray([_interval_coverage(parts) for parts in intervals],dtype=float).reshape(-1,2)*radius
         middle=np.sum(banks,axis=1);middle/=np.linalg.norm(middle,axis=1)[:,None]
         # Signed distance of the old partner's midpoint to the first bank's
         # supporting great circle. Diagnostic only: not an overlap-area budget.
@@ -72,8 +88,8 @@ class MaterialBoundaryRegistry:
         diag=dict(identity_sha256=self.identity,banks=len(banks),material_owner_count=len(np.unique(self.owners)),
                   bank_length_sum_km=math.fsum(lengths),contact_fragments=len(contacts),
                   coincident_contact_length_km=math.fsum(c.length_km for c in contacts),
-                  unmatched_bank_length_km=math.fsum(np.maximum(lengths-covered,0.)),
-                  multiply_covered_bank_length_km=math.fsum(np.maximum(covered-lengths,0.)),
+                  unmatched_bank_length_km=math.fsum(np.maximum(lengths-coverage[:,0],0.)),
+                  multiply_covered_bank_length_km=math.fsum(coverage[:,1]),
                   old_partner_signed_separation_min_km=float(min(gap,default=0.)),
                   old_partner_signed_separation_max_km=float(max(gap,default=0.)),
                   angular_coincidence_tolerance=angular_tolerance,
